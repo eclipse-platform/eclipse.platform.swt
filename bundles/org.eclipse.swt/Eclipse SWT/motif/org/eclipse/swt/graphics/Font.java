@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
-import java.util.Locale;
 
 /**
  * Instances of this class manage operating system resources that
@@ -320,14 +319,13 @@ void init (Device device, FontData fd) {
 //		}
 //	}
 //	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
-	Locale locale = fd.locale;
-	if (locale != null) {
-		String lang = locale.getLanguage();
-		String country = locale.getCountry();
-		String variant = locale.getVariant();
-		String osLocale =  lang;
-		if (country != null && country.length() > 0) osLocale += "_" + country;
-		if (variant != null && variant.length() > 0) osLocale += "." + variant;
+	if (fd.lang != null) {
+		String lang = fd.lang;
+		String country = fd.country;
+		String variant = fd.variant;
+		String osLocale = lang;
+		if (country != null) osLocale += "_" + country;
+		if (variant != null) osLocale += "." + variant;
 		int length = osLocale.length();
 		byte [] buffer = new byte[length + 1];
 		for (int i=0; i<length; i++) {
@@ -357,7 +355,7 @@ void init (Device device, FontData fd) {
 		}
 		fontSet = matchFont(xDisplay, newFD, true);
 	}
-	if (locale != null) OS.setlocale (OS.LC_CTYPE, new byte [0]);
+	if (fd.lang != null) OS.setlocale (OS.LC_CTYPE, new byte [0]);
 	
 	/* Failed to load any font. Use the system font. */
 	if (fontSet == 0) {

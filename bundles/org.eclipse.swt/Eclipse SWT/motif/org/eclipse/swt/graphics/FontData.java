@@ -106,10 +106,10 @@ public final class FontData {
 	public String characterSetName;
 
 	/**
-	 * The locale of the font
-	 * (Warning: This field is platform dependent)
+	 * The locales of the font
+	 * (Warning: These fields are platform dependent)
 	 */
-	Locale locale;
+	String lang, country, variant;
 /**	 
  * Constructs a new un-initialized font data.
  */
@@ -402,10 +402,27 @@ public void setName(String name) {
  * locale will determine the character set.
  * </p>
  * 
- * @param locale the Locale of the <code>FontData</code>
+ * @param locale the <code>String</code> representing a Locale object
+ * @see java.util.Locale#toString
  */
-public void setLocale(Locale locale) {
-	this.locale = locale;
+public void setLocale(String locale) {
+	lang = country = variant = null;
+	if (locale != null) {
+		char sep = '_';
+		int length = locale.length();
+		int firstSep, secondSep;
+		
+		firstSep = locale.indexOf(sep);
+		if (firstSep == -1) {
+			firstSep = secondSep = length;
+		} else {
+			secondSep = locale.indexOf(sep, firstSep + 1);
+			if (secondSep == -1) secondSep = length;
+		}
+		if (firstSep > 0) lang = locale.substring(0, firstSep);
+		if (secondSep > firstSep + 1) country = locale.substring(firstSep + 1, secondSep);
+		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
+	}	
 }
 /**
  * Sets the style of the receiver to the argument which must

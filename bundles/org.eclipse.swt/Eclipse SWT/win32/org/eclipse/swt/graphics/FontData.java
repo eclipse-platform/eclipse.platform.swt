@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import java.util.Locale;
 
 /**
  * Instances of this class describe operating system fonts.
@@ -51,10 +50,10 @@ public final class FontData {
 	public int height;
 	
 	/**
-	 * The locale of the font
-	 * (Warning: This field is platform dependent)
+	 * The locales of the font
+	 * (Warning: These fields are platform dependent)
 	 */
-	Locale locale;
+	String lang, country, variant;
 	
 /**	 
  * Constructs a new un-initialized font data.
@@ -343,15 +342,14 @@ int EnumLocalesProc(int lpLocaleString) {
 
 	/* Check the language */
 	int size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO639LANGNAME, buffer, length);
-	String lang = buffer.toString(0, size - 1);
-	if (!locale.getLanguage().equals(lang)) return 1;
+	String osLang = buffer.toString(0, size - 1);
+	if (!lang.equals(osLang)) return 1;
 
 	/* Check the country */
-	String javaCountry = locale.getCountry();
-	if (javaCountry.length() != 0) {
+	if (country != null) {
 		size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
-		String country = buffer.toString(0, size - 1);
-		if (!javaCountry.equals(country)) return 1;
+		String osCountry = buffer.toString(0, size - 1);
+		if (!country.equals(osCountry)) return 1;
 	}
 
 	/* Get the charset */
@@ -479,11 +477,28 @@ public void setHeight(int height) {
  * locale will determine the character set.
  * </p>
  * 
- * @param locale the Locale of the <code>FontData</code>
+ * @param locale the <code>String</code> representing a Locale object
+ * @see java.util.Locale#toString
  */
-public void setLocale(Locale locale) {
-	this.locale = locale;
-	if (locale == null) {
+public void setLocale(String locale) {	
+	lang = country = variant = null;
+	if (locale != null) {
+		char sep = '_';
+		int length = locale.length();
+		int firstSep, secondSep;
+		
+		firstSep = locale.indexOf(sep);
+		if (firstSep == -1) {
+			firstSep = secondSep = length;
+		} else {
+			secondSep = locale.indexOf(sep, firstSep + 1);
+			if (secondSep == -1) secondSep = length;
+		}
+		if (firstSep > 0) lang = locale.substring(0, firstSep);
+		if (secondSep > firstSep + 1) country = locale.substring(firstSep + 1, secondSep);
+		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
+	}
+	if (lang == null) {
 		data.lfCharSet = OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1);
@@ -521,10 +536,7 @@ public void setLocale(Locale locale) {
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	char [] chars = new char [32];
-
-	/* The field lfFaceName must be NULL terminated */
-	int length = name.length();
-	name.getChars (0, length <= 31 ? length : 31, chars, 0);
+	name.getChars (0, name.length(), chars, 0);
 	data.lfFaceName0 = chars[0];
 	data.lfFaceName1 = chars[1];
 	data.lfFaceName2 = chars[2];
@@ -638,7 +650,7 @@ public String toString() {
 	};
 	int i = 0;
 	while (i < faceName.length && faceName[i] != 0) {
-		buffer.append(faceName[i++]);
+		buffer.append((char)faceName[i++]);
 	}
 	return buffer.toString();
 }
@@ -658,7 +670,16 @@ public String toString() {
  * @private
  */
 public static FontData win32_new(LOGFONT data, int height) {
-	return new FontData(data, height);
+	/*
+	 * Feature in Windows 98.  When setting the faceName,
+	 * Windows 98 null terminates the string but does not
+	 * clear the rest of the buffer while Windows NT does.
+	 * The fix is to get and set the name which fills the
+	 * rest of the faceName buffer with null.
+	 */
+	FontData fontData = new FontData(data, height);
+	fontData.setName(fontData.getName());
+	return fontData;
 }
 
 }
