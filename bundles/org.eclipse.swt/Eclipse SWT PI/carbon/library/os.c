@@ -9720,9 +9720,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3BI)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy__I_3BI_FUNC);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	}
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy__I_3BI_FUNC);
 }
 #endif
@@ -9733,9 +9747,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3CI)
 {
 	jchar *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy__I_3CI_FUNC);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	}
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy__I_3CI_FUNC);
 }
 #endif
@@ -9746,9 +9774,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
 {
 	jint *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy__I_3II_FUNC);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	}
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy__I_3II_FUNC);
 }
 #endif
@@ -9837,9 +9879,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3BII)
 {
 	jbyte *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3BII_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3BII_FUNC);
 }
 #endif
@@ -9851,11 +9907,27 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3B_3CI)
 	jbyte *lparg0=NULL;
 	jchar *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3B_3CI_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+		if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+		if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3B_3CI_FUNC);
 }
 #endif
@@ -9866,9 +9938,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3CII)
 {
 	jchar *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3CII_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3CII_FUNC);
 }
 #endif
@@ -9880,11 +9966,27 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3C_3BI)
 	jchar *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3C_3BI_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+		if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3C_3BI_FUNC);
 }
 #endif
@@ -9895,9 +9997,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3FII)
 {
 	jfloat *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3FII_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0) (*env)->ReleaseFloatArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3FII_FUNC);
 }
 #endif
@@ -9908,9 +10024,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3III)
 {
 	jint *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memcpy___3III_FUNC);
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	} else
+#endif
+	{
+		if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	}
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	}
 	OS_NATIVE_EXIT(env, that, memcpy___3III_FUNC);
 }
 #endif
