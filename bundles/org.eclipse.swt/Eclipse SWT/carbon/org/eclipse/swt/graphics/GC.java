@@ -1776,9 +1776,8 @@ public Point stringExtent(String string) {
 		return new Point(width, height);
 	} else {
 		OS.CGContextSetTextDrawingMode(handle, OS.kCGTextInvisible);
-		OS.CGContextSetTextPosition(handle, 0, 0);
 		byte[] buffer = string.getBytes();
-		OS.CGContextShowText(handle, buffer, buffer.length);
+		OS.CGContextShowTextAtPoint(handle, 0, 0, buffer, buffer.length);
 		CGPoint pt = new CGPoint();
 		OS.CGContextGetTextPosition(handle, pt);
 		return new Point((int)pt.x, data.fontAscent + data.fontDescent);

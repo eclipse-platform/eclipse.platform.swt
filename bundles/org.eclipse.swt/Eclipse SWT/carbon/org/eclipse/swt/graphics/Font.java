@@ -161,6 +161,28 @@ int createStyle () {
 	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
 	OS.ATSUSetAttributes(buffer[0], tags.length, tags, sizes, values);
 	OS.DisposePtr(ptr);
+	short[] types = {
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+		OS.kLigaturesType,
+	};
+	short[] selectors = {
+		OS.kRequiredLigaturesOffSelector,
+		OS.kCommonLigaturesOffSelector,
+		OS.kRareLigaturesOffSelector,
+		OS.kLogosOffSelector,
+		OS.kRebusPicturesOffSelector,
+		OS.kDiphthongLigaturesOffSelector,
+		OS.kSquaredLigaturesOffSelector,
+		OS.kAbbrevSquaredLigaturesOffSelector,
+		OS.kSymbolLigaturesOffSelector,
+	};
+	OS.ATSUSetFontFeatures(buffer[0], types.length, types, selectors);
 	return buffer [0];
 }
 

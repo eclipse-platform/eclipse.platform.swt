@@ -300,6 +300,16 @@ public class OS {
 	public static final int kHMSupplyContent = 0;
 	public static final int kHelpWindowClass = 10;
 	public static final int kInvalidFontFamily = -1;
+	public static final int kLigaturesType = 1;
+	public static final int kRequiredLigaturesOffSelector = 1;
+	public static final int kCommonLigaturesOffSelector = 3;
+	public static final int kRareLigaturesOffSelector = 5;
+	public static final int kLogosOffSelector = 7;
+	public static final int kRebusPicturesOffSelector = 9;
+	public static final int kDiphthongLigaturesOffSelector = 11;
+	public static final int kSquaredLigaturesOffSelector = 13;
+	public static final int kAbbrevSquaredLigaturesOffSelector = 15;
+	public static final int kSymbolLigaturesOffSelector = 17;
 	public static final int kMacHelpVersion = 3;
 	public static final int kMenuBlankGlyph = 97;
 	public static final int kMenuCapsLockGlyph = 99;
@@ -534,6 +544,7 @@ public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, in
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, ATSTrapezoid oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUSetAttributes(int iStyle, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue); 
+public static final native int ATSUSetFontFeatures(int iStyle, int iFeatureCount,  short[] iType, short[] iSelector);
 public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
 public static final native int ATSUSetRunStyle(int iTextLayout, int iStyle, int iRunStart, int iRunLength);
 public static final native int ATSUSetTextPointerLocation(int iTextLayout, int iText, int iTextOffset, int iTextLength, int iTextTotalLength);

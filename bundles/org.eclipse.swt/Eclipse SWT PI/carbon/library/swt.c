@@ -289,6 +289,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetAttributes)
 }
 #endif
 
+#ifndef NO_ATSUSetFontFeatures
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUSetFontFeatures
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3)
+{
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUSetFontFeatures\n")
+
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)ATSUSetFontFeatures((ATSUStyle)arg0, (ItemCount)arg1, (const ATSUFontFeatureType *)lparg2, (const ATSUFontFeatureSelector *)lparg3);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUSetLayoutControls
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetLayoutControls)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
