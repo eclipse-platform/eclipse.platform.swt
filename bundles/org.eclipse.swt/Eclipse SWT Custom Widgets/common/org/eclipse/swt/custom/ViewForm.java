@@ -332,10 +332,12 @@ public void layout (boolean changed) {
 			leftSize = topLeft.computeSize(x - rect.x - marginWidth - highlight, SWT.DEFAULT);
 			topLeft.setBounds(rect.x + marginWidth + highlight, y, leftSize.x, topHeight);
 		}
-		if (top)y += topHeight + verticalSpacing;
+		if (top) y += topHeight + verticalSpacing;
 		if (topCenter != null && !topCenter.isDisposed()) {
 			top = true;
-			centerSize = topCenter.computeSize(rect.width - 2*marginWidth - 2*highlight, SWT.DEFAULT);
+			int w = rect.width - 2*marginWidth - 2*highlight;
+			int trim = topCenter.computeSize(w, SWT.DEFAULT).x - w;
+			centerSize = topCenter.computeSize(w - trim, SWT.DEFAULT);
 			topCenter.setBounds(rect.x + rect.width - marginWidth - highlight - centerSize.x, y, centerSize.x, centerSize.y);
 			y += centerSize.y + verticalSpacing;
 		}		
