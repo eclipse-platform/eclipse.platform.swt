@@ -971,12 +971,14 @@ public boolean readAndDispatch () {
 	int [] outEvent = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
-		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
-		OS.ReleaseEvent (outEvent [0]);
-		runPopups ();
-		runDeferredEvents ();
-		runGrabs ();
-		return true;
+		if (!(OS.GetEventKind (outEvent [0]) == 0 && OS.GetEventClass (outEvent [0]) == 0)) {
+			OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+			OS.ReleaseEvent (outEvent [0]);
+			runPopups ();
+			runDeferredEvents ();
+			runGrabs ();
+			return true;
+		}
 	}
 	return runAsyncMessages ();
 }
