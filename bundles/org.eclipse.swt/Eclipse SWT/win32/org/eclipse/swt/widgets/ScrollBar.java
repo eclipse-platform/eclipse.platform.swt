@@ -945,8 +945,7 @@ public void setVisible (boolean visible) {
 	* that runs during WM_SIZE that queries the visibility
 	* of the scroll bar will get the correct value.
 	*/
-	state &= ~HIDDEN;
-	if (!visible) state |= HIDDEN;
+	state = visible ? state & ~HIDDEN : state | HIDDEN;
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	if (OS.ShowScrollBar (hwnd, type, visible)) {
 		/*

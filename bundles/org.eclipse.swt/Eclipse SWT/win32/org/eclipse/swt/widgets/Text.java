@@ -1328,10 +1328,10 @@ public void setRedraw (boolean redraw) {
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (!redraw) {
 		oldStart = start [0];  oldEnd = end [0];
-		return;
+	} else {
+		if (oldStart == start [0] && oldEnd == end [0]) return;
+		OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 	}
-	if (oldStart == start [0] && oldEnd == end [0]) return;
-	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);		
 }
 
 /**

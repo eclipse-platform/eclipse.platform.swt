@@ -941,6 +941,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget ();
+	if (drawCount != 0) return (style & HIDDEN) == 0;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_VISIBLE) != 0;
 }
@@ -2136,29 +2137,31 @@ boolean setRadioSelection (boolean value) {
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	/*
-	 * This code is intentionally commented.
-	 *
 	 * Feature in Windows.  When WM_SETREDRAW is used to turn
 	 * off drawing in a widget, it clears the WS_VISIBLE bits
 	 * and then sets them when redraw is turned back on.  This
 	 * means that WM_SETREDRAW will make a widget unexpectedly
-	 * visible.
-	 *
-	 * There is no fix at this time.
+	 * visible.  The fix is to track the visibility state while
+	 * drawing is turned off and restore it when drawing is
+	 * turned back on.
 	 */
-//	if (drawCount == 0) {
-//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//		if ((bits & OS.WS_VISIBLE) == 0) return;
-//	}
-	
+	if (drawCount == 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.WS_VISIBLE) == 0) state |= HIDDEN;
+	}
 	if (redraw) {
 		if (--drawCount == 0) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			if (OS.IsWinCE) {
-				OS.InvalidateRect (handle, null, true);
+			if ((state & HIDDEN) != 0) {
+				state &= ~HIDDEN;
+				OS.ShowWindow (handle, OS.SW_HIDE);
 			} else {
-				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-				OS.RedrawWindow (handle, null, 0, flags);
+				if (OS.IsWinCE) {
+					OS.InvalidateRect (handle, null, true);
+				} else {
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
 			}
 		}
 	} else {
@@ -2263,8 +2266,12 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if (((bits & OS.WS_VISIBLE) != 0) == visible) return;
+	if (drawCount != 0) {
+		if (((state & HIDDEN) == 0) == visible) return;
+	} else {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if (((bits & OS.WS_VISIBLE) != 0) == visible) return;
+	}
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -2284,7 +2291,11 @@ public void setVisible (boolean visible) {
 	*/
 	boolean fixFocus = false;
 	if (!visible) fixFocus = isFocusAncestor ();
-	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+	if (drawCount != 0) {
+		state = visible ? state & ~HIDDEN : state | HIDDEN;
+	} else {
+		OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+	}
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application

@@ -1006,7 +1006,7 @@ public void setRedraw (boolean redraw) {
 	* the tree.
 	*/
 	int hItem = 0;
-	if (redraw) {
+	if (redraw && drawCount == 1) {
 		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 		if (count == 0) {
 			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();

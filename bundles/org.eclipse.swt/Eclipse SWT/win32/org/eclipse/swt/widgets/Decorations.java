@@ -1107,7 +1107,11 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (visible == OS.IsWindowVisible (handle)) return;
+	if (drawCount != 0) {
+		if (((state & HIDDEN) == 0) == visible) return;
+	} else {
+		if (visible == OS.IsWindowVisible (handle)) return;
+	}
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -1122,16 +1126,20 @@ public void setVisible (boolean visible) {
 				OS.CommandBar_DrawMenuBar (hwndCB, 0);
 			}
 		}
-		if (OS.IsWinCE) {
-			OS.ShowWindow (handle, OS.SW_SHOW);
+		if (drawCount != 0) {
+			state &= ~HIDDEN;
 		} else {
-			if (menuBar != null) {
-				display.removeBar (menuBar);
-				OS.DrawMenuBar (handle);
+			if (OS.IsWinCE) {
+				OS.ShowWindow (handle, OS.SW_SHOW);
+			} else {
+				if (menuBar != null) {
+					display.removeBar (menuBar);
+					OS.DrawMenuBar (handle);
+				}
+				OS.ShowWindow (handle, swFlags);
 			}
-			OS.ShowWindow (handle, swFlags);
+			OS.UpdateWindow (handle);
 		}
-		OS.UpdateWindow (handle);
 	} else {
 		if (!OS.IsWinCE) {
 			if (OS.IsIconic (handle)) {
@@ -1148,7 +1156,11 @@ public void setVisible (boolean visible) {
 				}
 			}
 		}
-		OS.ShowWindow (handle, OS.SW_HIDE);
+		if (drawCount != 0) {
+			state |= HIDDEN;
+		} else {
+			OS.ShowWindow (handle, OS.SW_HIDE);
+		}
 		sendEvent (SWT.Hide);
 	}
 }
