@@ -143,6 +143,14 @@ public BrowserExample(Composite parent) {
 				else if (item == itemGo) browser.setUrl(location.getText());
 			}
 		};
+		browser.addLocationListener(new LocationListener() {
+			public void changed(LocationEvent event) {
+				busy = true;
+				location.setText(event.location);
+			}
+			public void changing(LocationEvent event) {
+			}
+		});
 		browser.addProgressListener(new ProgressListener() {
 			public void changed(ProgressEvent event) {
 				if (event.total == 0) return;                            
@@ -168,14 +176,14 @@ public BrowserExample(Composite parent) {
 				status.setText(event.text);	
 			}
 		});
-		browser.addLocationListener(new LocationListener() {
-			public void changed(LocationEvent event) {
-				busy = true;
-				location.setText(event.location);
-			}
-			public void changing(LocationEvent event) {
-			}
-		});
+		if (parent instanceof Shell) {
+			final Shell shell = (Shell)parent;
+			browser.addTitleListener(new TitleListener() {
+				public void changed(TitleEvent event) {
+					shell.setText(event.title+" - "+getResourceString("window.title"));
+				}
+			});
+		}
 		itemBack.addListener(SWT.Selection, listener);
 		itemForward.addListener(SWT.Selection, listener);
 		itemStop.addListener(SWT.Selection, listener);
@@ -311,8 +319,8 @@ public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	BrowserExample instance = new BrowserExample(shell);
 	shell.setText(getResourceString("window.title"));
+	BrowserExample instance = new BrowserExample(shell);
 	Image icon = new Image(display, BrowserExample.class.getResourceAsStream(iconLocation));
 	shell.setImage(icon);
 	shell.open();

@@ -14,8 +14,8 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * a {@link StatusTextEvent} notification when the status text
- * for a {@link Browser} needs to be updated.
+ * a {@link TitleEvent} notification when the title of the document
+ * displayed in a {@link Browser} is known or has been changed.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -24,29 +24,29 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see Browser#addStatusTextListener(StatusTextListener)
- * @see Browser#removeStatusTextListener(StatusTextListener)
+ * @see Browser#addTitleListener(TitleListener)
+ * @see Browser#removeTitleListener(TitleListener)
  * 
  * @since 3.0
  */
-public interface StatusTextListener extends SWTEventListener {
+public interface TitleListener extends SWTEventListener {
 
 /**
- * This method is called when the status text is changed. The
- * status text is typically showed in the status bar of a browser 
- * application. 
+ * This method is called when the title of the current document
+ * is available or has changed.
  * <p>
  *
- * <p>The following fields in the <code>StatusTextEvent</code> apply:
+ * <p>The following fields in the <code>TitleEvent</code> apply:
  * <ul>
- * <li>(in) text the modified status text
- * <li>(in) widget the <code>Browser</code> whose status text is changed
+ * <li>(in) title the title of the current document
+ * <li>(in) widget the <code>Browser</code> whose current document's
+ * title is known or modified
  * </ul>
  * 
- * @param event the <code>StatusTextEvent</code> that contains the updated
- * status description of a <code>Browser</code>
+ * @param event the <code>TitleEvent</code> that contains the title
+ * of the document currently displayed in a <code>Browser</code>
  * 
  * @since 3.0
  */
-public void changed(StatusTextEvent event);
+public void changed(TitleEvent event);
 }

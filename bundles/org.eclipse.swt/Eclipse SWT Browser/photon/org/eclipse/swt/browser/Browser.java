@@ -308,6 +308,11 @@ public void addStatusTextListener(StatusTextListener listener) {
 	statusTextListeners[statusTextListeners.length - 1] = listener;
 }
 
+public void addTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
 /**	 
  * Adds the listener to receive events.
  * <p>
@@ -854,6 +859,11 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
 	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
 	statusTextListeners = newStatusTextListeners;
+}
+
+public void removeTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
 /**	 

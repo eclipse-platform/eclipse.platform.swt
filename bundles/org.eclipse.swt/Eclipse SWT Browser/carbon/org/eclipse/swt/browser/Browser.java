@@ -48,6 +48,11 @@ public void addStatusTextListener(StatusTextListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
+public void addTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
 public void addVisibilityWindowListener(VisibilityWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -111,6 +116,11 @@ public void removeProgressListener(ProgressListener listener) {
 }
 
 public void removeStatusTextListener(StatusTextListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
+public void removeTitleListener(TitleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }

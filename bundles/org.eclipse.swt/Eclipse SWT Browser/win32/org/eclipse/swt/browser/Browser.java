@@ -54,6 +54,7 @@ public class Browser extends Composite {
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
+	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 	
 	static final int BeforeNavigate2 = 0xfa;
@@ -64,6 +65,7 @@ public class Browser extends Composite {
 	static final int ProgressChange = 0x6c;
 	static final int RegisterAsBrowser = 0x228;
 	static final int StatusTextChange = 0x66;
+	static final int TitleChange = 0x71;
 	static final int WindowClosing = 0x107;
 	static final int WindowSetHeight = 0x10b;
 	static final int WindowSetLeft = 0x108;
@@ -335,6 +337,19 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
+				case TitleChange : {
+					Variant arg1 = event.arguments[0];
+					if (arg1.getType() == OLE.VT_BSTR) {
+						String title = arg1.getString();
+						TitleEvent newEvent = new TitleEvent(Browser.this);
+						newEvent.display = getDisplay();
+						newEvent.widget = Browser.this;
+						newEvent.title = title;
+						for (int i = 0; i < titleListeners.length; i++)
+							titleListeners[i].changed(newEvent);
+					}
+					break;
+				}
 				case WindowClosing : {
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
@@ -389,6 +404,7 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(OnVisible, listener);
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);
+	site.addEventListener(TitleChange, listener);
 	site.addEventListener(WindowClosing, listener);
 	site.addEventListener(WindowSetHeight, listener);
 	site.addEventListener(WindowSetLeft, listener);
@@ -528,6 +544,32 @@ public void addStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
 	statusTextListeners = newStatusTextListeners;
 	statusTextListeners[statusTextListeners.length - 1] = listener;
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
+	titleListeners = newTitleListeners;
+	titleListeners[titleListeners.length - 1] = listener;
 }
 
 /**	 
@@ -871,6 +913,44 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
 	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
 	statusTextListeners = newStatusTextListeners;
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void removeTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (titleListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < titleListeners.length; i++) {
+		if (listener == titleListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (titleListeners.length == 1) {
+		titleListeners = new TitleListener[0];
+		return;
+	}
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
+	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
+	titleListeners = newTitleListeners;
 }
 
 /**	 
