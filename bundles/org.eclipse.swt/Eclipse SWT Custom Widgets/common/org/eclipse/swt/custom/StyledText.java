@@ -5824,6 +5824,27 @@ void setBidiKeyboardLanguage() {
 }
 /**
  * Moves the Caret to the current caret offset.
+ * <p>
+ * 
+ * @param caretX the new x location of the caret.
+ * 	passed in for better performance when it has already been 
+ * 	calculated outside this method.
+ * @param line index of the line the caret is on. Relative to 
+ *	the first line in the document.
+ */
+void setCaretLocation(int caretX, int line) {
+	if (isBidi()) {
+		setBidiCaretLocation(null);
+	}
+	else {	
+		Caret caret = getCaret();		
+		if (caret != null) {
+			caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+		}
+	}
+}
+/**
+ * Moves the Caret to the current caret offset.
  */
 void setCaretLocation() {
 	if (isBidi()) {
@@ -6754,7 +6775,7 @@ void showCaret() {
 	boolean scrolled = showLocation(xAtOffset, line);
 	
 	if (scrolled == false) {
-		setCaretLocation();
+		setCaretLocation(xAtOffset, line);
 	}
 	if (isBidi()) {
 		setBidiKeyboardLanguage();
