@@ -769,7 +769,7 @@ public void setText (String string) {
 	buffer = Converter.wcsToMbcs (null, accelString, true);
 	int /*long*/ ptr = OS.g_malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
+	int /*long*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
 	OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
 	if (oldPtr != 0) OS.g_free (oldPtr);
 }
