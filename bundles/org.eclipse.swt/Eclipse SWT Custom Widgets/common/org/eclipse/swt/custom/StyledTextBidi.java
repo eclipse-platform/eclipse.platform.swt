@@ -118,7 +118,7 @@ public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Fon
 			// the specified bidi segments.  Each bidi segment will be treated separately 
 			// for font style purposes.
 			StyleRange[] segmentedRanges;
-			if (isCharacterShaped(gc)) segmentedRanges = segmentedRangesFor(ranges);
+			if (isCharacterShaped(gc)) segmentedRanges = getSegmentedRangesFor(ranges);
 			else segmentedRanges = ranges;
 			Font normalFont = gc.getFont();
 			gc.setFont(boldFont);
@@ -196,6 +196,42 @@ static int getKeyboardLanguageDirection() {
 	return SWT.DEFAULT;
 }
 /**
+ * Returns whether the current platform supports a bidi language.
+ * <p>
+ * 
+ * @return true=bidi is supported, false otherwise. 
+ */
+static boolean isBidiPlatform() {
+	return BidiUtil.isBidiPlatform();
+}
+/**
+ * Returns whether the font set in the specified gc supports 
+ * character shaping.
+ * <p>
+ * 
+ * @param gc the GC that should be tested for character shaping.
+ * @return 
+ * 	true=the font set in the specified gc supports character shaped glyphs
+ * 	false=the font set in the specified gc doesn't support character shaped glyphs 
+ */
+static boolean isCharacterShaped(GC gc) {
+	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.GLYPHSHAPE) != 0;
+}
+/**
+ * Returns whether the font set in the specified gc contains 
+ * ligatured glyphs.
+ * <p>
+ * 
+ * @param gc the GC that should be tested for ligatures.
+ * @return 
+ * 	true=the font set in the specified gc contains ligatured glyphs. 
+ * 	false=the font set in the specified gc doesn't contain ligatured 
+ * 	glyphs. 
+ */
+static boolean isLigated(GC gc) {
+	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.LIGATE) != 0;
+}
+/**
  * Removes the keyboard language listener for the specified window.
  * <p>
  * 
@@ -256,12 +292,13 @@ private void calculateTabStops(String text, int tabWidth) {
  * @param yOffset y location of the line start 
  */
 void drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
-	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
+	Enumeration directionRuns;
 	int endOffset = logicalStart + length;
 
-	if (endOffset > getTextLength()) {
+	if (logicalStart < 0 || endOffset > getTextLength()) {
 		return;
 	}
+	directionRuns = getDirectionRuns(logicalStart, length).elements();
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
 		int visualStart = run.getVisualStart();
@@ -307,7 +344,7 @@ private void drawGlyphs(int visualStart, int length, int x, int y) {
 void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 
-	if (logicalStart + length > getTextLength()) {
+	if (logicalStart < 0 || logicalStart + length > getTextLength()) {
 		return;
 	}
 	while (directionRuns.hasMoreElements()) {
@@ -394,9 +431,239 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 	return new int[] {offset, direction};		
 }
 /**
+ * Returns the direction segments that are in the specified text
+ * range. The text range may be visually discontiguous if the 
+ * text is bidirectional. Each returned direction run has a single 
+ * direction and the runs all go from left to right, regardless of
+ * the direction of the text in the segment.  User specified segments 
+ * (via BidiSegmentListener) are taken into account and result in 
+ * separate direction runs.
+ * <p>
+ * 
+ * @param logicalStart offset of the logcial start of the first 
+ * 	direction segment
+ * @param length length of the text included in the direction 
+ * 	segments
+ * @return the direction segments that are in the specified 
+ *  text range, each segment has a single direction.
+ */
+private Vector getDirectionRuns(int logicalStart, int length) {
+	Vector directionRuns = new Vector();
+	int logicalEnd = logicalStart + length - 1;
+	int segmentLogicalStart = logicalStart;
+	int segmentLogicalEnd = segmentLogicalStart;
+	 
+	if (logicalEnd < getTextLength()) {
+		int bidiSegmentIndex = 0;
+		int bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];			
+
+		// Find the bidi segment that the direction runs start in.
+		// There will always be at least on bidi segment (for the entire line).
+		while (bidiSegmentIndex < bidiSegments.length - 2 && bidiSegmentEnd <= logicalStart) {
+			bidiSegmentIndex++;
+			bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
+		}
+		while (segmentLogicalEnd <= logicalEnd) {
+			boolean isRightToLeftSegment = isRightToLeft(segmentLogicalStart);
+			// Search for the end of the direction segment. Each segment needs to 
+			// be rendered separately. 
+			// E.g., 11211 (1=R2L, 2=L2R), rendering from logical index 0 to 5 
+			// would be visual 1 to 4 and would thus miss visual 0. Rendering the 
+			// segments separately would render from visual 1 to 0, then 2, then 
+			// 4 to 3.
+			while (segmentLogicalEnd < logicalEnd &&
+					// If our segment type is RtoL, the order index for the next character should be one less, if there
+					// is no direction change.
+					// If our segment type is LtoR, the order index for the next character will be one more if there is
+					// no direction change.
+					((isRightToLeftSegment && (order[segmentLogicalEnd + 1]+ 1 == order[segmentLogicalEnd])) ||
+					(isRightToLeftSegment == false && (order[segmentLogicalEnd + 1]- 1 == order[segmentLogicalEnd]))) &&
+					segmentLogicalEnd + 1 < bidiSegmentEnd) {
+				segmentLogicalEnd++;
+			}
+			directionRuns.addElement(new DirectionRun(segmentLogicalStart, segmentLogicalEnd));
+			segmentLogicalStart = ++segmentLogicalEnd;
+			// The current direction run ends at a bidi segment end. Get the next bidi segment.
+			if (segmentLogicalEnd == bidiSegmentEnd && bidiSegmentIndex < bidiSegments.length - 2) {
+				bidiSegmentIndex++;
+				bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
+			}
+		}
+	}
+	return directionRuns;
+}
+/**
+ * Returns the offset of the last character comprising a ligature.
+ * <p>
+ * 
+ * @param offset the logical offset of a character that may be a 
+ * 	ligature.
+ * @return the offset of the last character comprising a ligature.
+ */
+int getLigatureEndOffset(int offset) {
+	int newOffset = offset;
+	int i = offset + 1;
+
+	// assume only bidi languages support ligatures
+	if (offset < 0 || offset >= order.length || isRightToLeft(offset) == false) {
+		return offset;	
+	}
+	// a ligature is a visual character that is comprised of 
+	// multiple logical characters, thus each logical part of
+	// a ligature will have the same order value
+	while (i < order.length && (order[i] == order[offset])) {
+		newOffset = i;
+		i++;
+	}
+	return newOffset;
+}
+/**
+ * Returns the offset of the first character comprising a ligature.
+ * <p>
+ * 
+ * @param offset the logical offset of a character that may be a 
+ * 	ligature.
+ * @return the offset of the first character comprising a ligature.
+ */
+int getLigatureStartOffset(int offset) {
+	int newOffset = offset;
+	int i = offset - 1;
+
+	// assume only bidi languages support ligatures
+	if (offset < 0 || offset >= order.length || isRightToLeft(offset) == false) {
+		return offset;	
+	}
+	// a ligature is a visual character that is comprised of 
+	// multiple logical characters, thus each logical part of
+	// a ligature will have the same order value
+	while (i >= 0 && (order[i] == order[offset])) {
+		newOffset = i;
+		i--;
+	}
+	return newOffset;
+}
+/**
+ * Returns the logical offset of the character at the specified 
+ * visual offset.
+ * <p>
+ * 
+ * @param visualOffset the visual offset
+ * @return the logical offset of the character at <code>visualOffset</code>.
+ */
+private int getLogicalOffset(int visualOffset) {
+	int logicalOffset = 0;
+	
+	while (logicalOffset < order.length && order[logicalOffset] != visualOffset) {
+		logicalOffset++;
+	}
+	return logicalOffset;
+}
+/**
+ * Returns the offset of the character at the specified x location.
+ * <p>
+ * 
+ * @param x the location of the character
+ * @return the logical offset of the character at the specified x 
+ * 	location.
+ */
+int getOffsetAtX(int x) {
+	int visualOffset;
+
+	if (getTextLength() == 0) {
+		return 0;
+	}
+	if (x >= renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
+		// Return when x is past the end of the line. Fixes 1GLADBK.
+		return -1;
+	}
+	visualOffset = getVisualOffsetAtX(x);
+	return getLogicalOffset(visualOffset);
+}
+/**
+ * Returns the reordering indices that map between logical and 
+ * visual index of characters in the specified range.
+ * <p>
+ * 
+ * @param start start offset of the reordering indices
+ * @param length number of reordering indices to return
+ * @return the reordering indices that map between logical and 
+ * 	visual index of characters in the specified range. Relative 
+ * 	to the start of the range.
+ */
+private int[] getRenderIndexesFor(int start, int length) {
+	int[] positions = new int[length];
+	int end = start + length;
+	
+	for (int i = start; i < end; i++) {
+		positions[i-start] = order[i];
+	}		
+	return positions;
+}
+/**
+ * Break up the given ranges such that each range is fully contained within a bidi
+ * segment.
+ */
+private StyleRange[] getSegmentedRangesFor(StyleRange[] ranges) {
+	if ((bidiSegments == null) || (bidiSegments.length == 0)) return ranges;
+	Vector newRanges = new Vector();
+	int j=0;
+	int startSegment;
+	int endSegment;
+	for (int i=0; i<ranges.length; i++) {
+		int start = ranges[i].start;
+		int end = start+ranges[i].length;
+		startSegment=-1;
+		endSegment=-1;
+		boolean done = false;
+		while (j<bidiSegments.length && !done) {
+			if (bidiSegments[j]<=start) {
+				startSegment=j;
+			}
+			if (bidiSegments[j]>=end) {
+				endSegment=j-1;
+				j--;
+			}
+			done = (startSegment != -1) && (endSegment != -1);
+			if (!done) j++;
+		}
+		if (startSegment == endSegment) {
+			// range is within one segment
+			StyleRange newStyle = new StyleRange(start, end-start, null, null);
+			newRanges.addElement(newStyle);
+		} else if (startSegment > endSegment) {
+			// range is within no segment (i.e., it's empty)
+		} else {
+			// range spans multiple segments
+			StyleRange newStyle = new StyleRange(start, bidiSegments[startSegment+1]-start, null, null);
+			newRanges.addElement(newStyle);
+			startSegment++;
+			for (int k=startSegment; k<endSegment; k++) {
+				newStyle = new StyleRange(bidiSegments[k], bidiSegments[k+1]-bidiSegments[k], null, null);
+				newRanges.addElement(newStyle);
+			}
+			newStyle = new StyleRange(bidiSegments[endSegment], end-bidiSegments[endSegment], null, null);
+			newRanges.addElement(newStyle);
+		}	
+	}
+	StyleRange[] rangeArray = new StyleRange[newRanges.size()];
+	for (int i=0; i<newRanges.size(); i++) {
+		rangeArray[i]=(StyleRange)newRanges.elementAt(i);
+	}
+	return rangeArray;
+}
+/**
+ * Returns the number of characters in the line.
+ * <p>
+ * 
+ * @return the number of characters in the line.
+ */
+private int getTextLength() {
+	return dx.length;
+}
+/**
  * Returns the x position at the specified offset in the line.
  * <p>
- * @param logicalOffset offset of the character in the line
+ * @param logicalOffset offset of the character in the line.
  * @return the x position at the specified offset in the line.
  */
 int getTextPosition(int logicalOffset) {
@@ -500,143 +767,18 @@ int getTextPosition(int logicalOffset, int direction) {
 	return caretX;
 }
 /**
- * Returns the direction segments that are in the specified text
- * range. The text range may be visually discontiguous if the 
- * text is bidirectional. Each returned direction run has a single 
- * direction and the runs all go from left to right, regardless of
- * the direction of the text in the segment.  User specified segments 
- * (via BidiSegmentListener) are taken into account and result in 
- * separate direction runs.
+ * Returns the width in pixels of the line.
  * <p>
  * 
- * @param logicalStart offset of the logcial start of the first 
- * 	direction segment
- * @param length length of the text included in the direction 
- * 	segments
- * @return the direction segments that are in the specified 
- *  text range, each segment has a single direction.
+ * @return the width in pixels of the line.
  */
-private Vector getDirectionRuns(int logicalStart, int length) {
-	Vector directionRuns = new Vector();
-	int logicalEnd = logicalStart + length - 1;
-	int segmentLogicalStart = logicalStart;
-	int segmentLogicalEnd = segmentLogicalStart;
-	 
-	if (logicalEnd < getTextLength()) {
-		int bidiSegmentIndex = 0;
-		int bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];			
-
-		// Find the bidi segment that the direction runs start in.
-		// There will always be at least on bidi segment (for the entire line).
-		while (bidiSegmentIndex < bidiSegments.length - 2 && bidiSegmentEnd <= logicalStart) {
-			bidiSegmentIndex++;
-			bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
-		}
-		while (segmentLogicalEnd <= logicalEnd) {
-			boolean isRightToLeftSegment = isRightToLeft(segmentLogicalStart);
-			// Search for the end of the direction segment. Each segment needs to 
-			// be rendered separately. 
-			// E.g., 11211 (1=R2L, 2=L2R), rendering from logical index 0 to 5 
-			// would be visual 1 to 4 and would thus miss visual 0. Rendering the 
-			// segments separately would render from visual 1 to 0, then 2, then 
-			// 4 to 3.
-			while (segmentLogicalEnd < logicalEnd &&
-					// If our segment type is RtoL, the order index for the next character should be one less, if there
-					// is no direction change.
-					// If our segment type is LtoR, the order index for the next character will be one more if there is
-					// no direction change.
-					((isRightToLeftSegment && (order[segmentLogicalEnd + 1]+ 1 == order[segmentLogicalEnd])) ||
-					(isRightToLeftSegment == false && (order[segmentLogicalEnd + 1]- 1 == order[segmentLogicalEnd]))) &&
-					segmentLogicalEnd + 1 < bidiSegmentEnd) {
-				segmentLogicalEnd++;
-			}
-			directionRuns.addElement(new DirectionRun(segmentLogicalStart, segmentLogicalEnd));
-			segmentLogicalStart = ++segmentLogicalEnd;
-			// The current direction run ends at a bidi segment end. Get the next bidi segment.
-			if (segmentLogicalEnd == bidiSegmentEnd && bidiSegmentIndex < bidiSegments.length - 2) {
-				bidiSegmentIndex++;
-				bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
-			}
-		}
-	}
-	return directionRuns;
-}
-/**
- * Returns the offset of the last character comprising a ligature.
- * <p>
- * 
- * @return the offset of the last character comprising a ligature.
- */
-int getLigatureEndOffset(int offset) {
-	// assume only bidi languages support ligatures
-	if (!isRightToLeft(offset)) return offset;	
-	int newOffset = offset;
-	int i = offset + 1;
-	// a ligature is a visual character that is comprised of 
-	// multiple logical characters, thus each logical part of
-	// a ligature will have the same order value
-	while (i<order.length && (order[i] == order[offset])) {
-		newOffset = i;
-		i++;
-	}
-	return newOffset;
-}
-/**
- * Returns the offset of the first character comprising a ligature.
- * <p>
- * 
- * @return the offset of the first character comprising a ligature.
- */
-int getLigatureStartOffset(int offset) {
-	// assume only bidi languages support ligatures
-	if (!isRightToLeft(offset)) return offset;	
-	int newOffset = offset;
-	int i = offset - 1;
-	// a ligature is a visual character that is comprised of 
-	// multiple logical characters, thus each logical part of
-	// a ligature will have the same order value
-	while (i>=0 && (order[i] == order[offset])) {
-		newOffset = i;
-		i--;
-	}
-	return newOffset;
-}
-/**
- * Returns the logical offset of the character at the specified 
- * visual offset.
- * <p>
- * 
- * @param visualOffset the visual offset
- * @return the logical offset of the character at <code>visualOffset</code>.
- */
-private int getLogicalOffset(int visualOffset) {
-	int logicalOffset = 0;
+int getTextWidth() {
+	int width = 0;
 	
-	while (logicalOffset < order.length && order[logicalOffset] != visualOffset) {
-		logicalOffset++;
+	if (getTextLength() > 0) {
+		width = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
 	}
-	return logicalOffset;
-}
-/**
- * Returns the offset of the character at the specified x location.
- * <p>
- * 
- * @param x the location of the character
- * @return the logical offset of the character at the specified x 
- * 	location.
- */
-int getOffsetAtX(int x) {
-	int visualOffset;
-
-	if (getTextLength() == 0) {
-		return 0;
-	}
-	if (x >= renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
-		// Return when x is past the end of the line. Fixes 1GLADBK.
-		return -1;
-	}
-	visualOffset = getVisualOffsetAtX(x);
-	return getLogicalOffset(visualOffset);
+	return width;
 }
 /**
  * Returns the visual offset of the character at the specified x 
@@ -673,141 +815,10 @@ private int getVisualOffsetAtX(int x) {
 	return high;
 }
 /**
- * Returns the reordering indices that map between logical and 
- * visual index of characters in the specified range.
- * <p>
- * 
- * @param start start offset of the reordering indices
- * @param length number of reordering indices to return
- * @return the reordering indices that map between logical and 
- * 	visual index of characters in the specified range. Relative 
- * 	to the start of the range.
- */
-private int[] getRenderIndexesFor(int start, int length) {
-	int[] positions = new int[length];
-	int end = start + length;
-	
-	for (int i = start; i < end; i++) {
-		positions[i-start] = order[i];
-	}		
-	return positions;
-}
-/**
- * Break up the given ranges such that each range is fully contained within a bidi
- * segment.
- */
-private StyleRange[] segmentedRangesFor(StyleRange[] ranges) {
-	if ((bidiSegments == null) || (bidiSegments.length == 0)) return ranges;
-	Vector newRanges = new Vector();
-	int j=0;
-	int startSegment;
-	int endSegment;
-	for (int i=0; i<ranges.length; i++) {
-		int start = ranges[i].start;
-		int end = start+ranges[i].length;
-		startSegment=-1;
-		endSegment=-1;
-		boolean done = false;
-		while (j<bidiSegments.length && !done) {
-			if (bidiSegments[j]<=start) {
-				startSegment=j;
-			}
-			if (bidiSegments[j]>=end) {
-				endSegment=j-1;
-				j--;
-			}
-			done = (startSegment != -1) && (endSegment != -1);
-			if (!done) j++;
-		}
-		if (startSegment == endSegment) {
-			// range is within one segment
-			StyleRange newStyle = new StyleRange(start, end-start, null, null);
-			newRanges.addElement(newStyle);
-		} else if (startSegment > endSegment) {
-			// range is within no segment (i.e., it's empty)
-		} else {
-			// range spans multiple segments
-			StyleRange newStyle = new StyleRange(start, bidiSegments[startSegment+1]-start, null, null);
-			newRanges.addElement(newStyle);
-			startSegment++;
-			for (int k=startSegment; k<endSegment; k++) {
-				newStyle = new StyleRange(bidiSegments[k], bidiSegments[k+1]-bidiSegments[k], null, null);
-				newRanges.addElement(newStyle);
-			}
-			newStyle = new StyleRange(bidiSegments[endSegment], end-bidiSegments[endSegment], null, null);
-			newRanges.addElement(newStyle);
-		}	
-	}
-	StyleRange[] rangeArray = new StyleRange[newRanges.size()];
-	for (int i=0; i<newRanges.size(); i++) {
-		rangeArray[i]=(StyleRange)newRanges.elementAt(i);
-	}
-	return rangeArray;
-}
-/**
- * Returns the number of characters in the line.
- * <p>
- * 
- * @return the number of characters in the line.
- */
-private int getTextLength() {
-	return dx.length;
-}
-/**
- * Returns the width in pixels of the line.
- * <p>
- * 
- * @return the width in pixels of the line.
- */
-int getTextWidth() {
-	int width = 0;
-	
-	if (getTextLength() > 0) {
-		width = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
-	}
-	return width;
-}
-/**
- * Returns whether the current platform supports a bidi language.
- * <p>
- * 
- * @return true=bidi is supported, false otherwise. 
- */
-static boolean isBidiPlatform() {
-	return BidiUtil.isBidiPlatform();
-}
-/**
- * Returns whether the font set in the specified gc supports 
- * character shaping.
- * <p>
- * 
- * @param gc the GC that should be tested for character shaping.
- * @return 
- * 	true=the font set in the specified gc supports character shaped glyphs
- * 	false=the font set in the specified gc doesn't support character shaped glyphs 
- */
-static boolean isCharacterShaped(GC gc) {
-	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.GLYPHSHAPE) != 0;
-}
-/**
- * Returns whether the font set in the specified gc contains 
- * ligatured glyphs.
- * <p>
- * 
- * @param gc the GC that should be tested for ligatures.
- * @return 
- * 	true=the font set in the specified gc contains ligatured glyphs. 
- * 	false=the font set in the specified gc doesn't contain ligatured 
- * 	glyphs. 
- */
-static boolean isLigated(GC gc) {
-	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.LIGATE) != 0;
-}
-/**
  * Returns if the character at the given offset is a local number.
  * <p>
  * 
- * @param logicalIndex the index of the character
+ * @param logicalIndex the index of the character 
  * @return 
  * 	true=the character at the specified index is a local number
  * 	false=the character at the specified index is not a local number
@@ -815,7 +826,7 @@ static boolean isLigated(GC gc) {
 boolean isLocalNumber(int logicalIndex) {
 	boolean isLocalNumber = false;
 	
-	if (logicalIndex < classBuffer.length) {
+	if (logicalIndex >= 0 && logicalIndex < classBuffer.length) {
 		isLocalNumber = classBuffer[logicalIndex] == BidiUtil.CLASS_LOCALNUMBER;
 	}
 	return isLocalNumber;
@@ -836,7 +847,7 @@ boolean isLocalNumber(int logicalIndex) {
 boolean isRightToLeft(int logicalIndex) {
 	boolean isRightToLeft = false;
 	
-	if (logicalIndex < classBuffer.length) {
+	if (logicalIndex >= 0 && logicalIndex < classBuffer.length) {
 		isRightToLeft = (classBuffer[logicalIndex] == BidiUtil.CLASS_ARABIC) || 
 					    (classBuffer[logicalIndex] == BidiUtil.CLASS_HEBREW);
 	}
@@ -858,7 +869,7 @@ boolean isRightToLeft(int logicalIndex) {
 boolean isRightToLeftInput(int logicalIndex) {
 	boolean isRightToLeft = false;
 	
-	if (logicalIndex < classBuffer.length) {
+	if (logicalIndex >= 0 && logicalIndex < classBuffer.length) {
 		isRightToLeft = (classBuffer[logicalIndex] == BidiUtil.CLASS_ARABIC) || 
 					    (classBuffer[logicalIndex] == BidiUtil.CLASS_HEBREW) ||
 					    (classBuffer[logicalIndex] == BidiUtil.CLASS_LOCALNUMBER);
@@ -949,11 +960,12 @@ private void prepareFontStyledText(String textline, int logicalStart, int length
  * @param height height of the invalidated rectangle
  */
 void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
-	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
+	Enumeration directionRuns;
 
-	if (logicalStart + length > getTextLength()) {
+	if (logicalStart < 0 || logicalStart + length > getTextLength()) {
 		return;
 	}
+	directionRuns = getDirectionRuns(logicalStart, length).elements();
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
 		int startX = run.getRenderStartX();
@@ -972,11 +984,12 @@ void redrawRange(Control parent, int logicalStart, int length, int xOffset, int 
  * 	determining the new keyboard language.
  */
 void setKeyboardLanguage(int logicalIndex) {	
-	if (logicalIndex >= classBuffer.length) {
-		return;
-	}
 	int language;
 	int current = BidiUtil.getKeyboardLanguage();
+
+	if (logicalIndex < 0 || logicalIndex >= classBuffer.length) {
+		return;
+	}
 	if (isRightToLeftInput(logicalIndex)) {
 		// keyboard already in bidi mode, since we cannot distinguish between
 		// multiple bidi languages, just return
