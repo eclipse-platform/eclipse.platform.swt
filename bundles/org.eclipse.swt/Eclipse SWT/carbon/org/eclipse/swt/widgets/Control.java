@@ -1258,7 +1258,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		sendFocusEvent (part [0] != 0);
+		sendFocusEvent (part [0] != 0, false);
 	}
 	return OS.eventNotHandledErr;
 }	
@@ -1727,10 +1727,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
 }
-	
-void sendFocusEvent (boolean focusIn) {
-	sendFocusEvent (focusIn, false);
-}
 
 void sendFocusEvent (boolean focusIn, boolean post) {
 	Shell shell = getShell ();
@@ -1750,6 +1746,7 @@ void sendFocusEvent (boolean focusIn, boolean post) {
 		if (focusIn) {
 			shell.setActiveControl (this);
 		} else {
+			Display display = shell.display;
 			Control control = display.getFocusControl ();
 			if (control == null || shell != control.getShell () ) {
 				shell.setActiveControl (null);
