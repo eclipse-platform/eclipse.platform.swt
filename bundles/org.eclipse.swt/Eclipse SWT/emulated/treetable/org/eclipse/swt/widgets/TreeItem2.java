@@ -8,12 +8,9 @@ public class TreeItem2 extends Item {
 	Tree2 parent;
 	TreeItem2 parentItem;
 	TreeItem2[] items = new TreeItem2[0];
-	/* index relative to the parent item, or to parent if this item is at root level */
-	int index;
 	/* index in parent's flat list of available (though not necessarily visible) items */
 	int availableIndex = -1;
-	int depth = 0;
-	boolean isChecked, isGrayed, isExpanded, isSelected;
+	boolean checked, grayed, expanded, selected;
 
 	String[] texts = new String [0];
 	int[] textWidths = new int [0];		/* cached string measurements */
@@ -81,9 +78,8 @@ public TreeItem2(Tree2 parent, int style) {
 public TreeItem2(Tree2 parent, int style, int index) {
 	super(parent, style);
 	this.parent = parent;
-	this.index = index;
 	initialize();
-	parent.addItem(this);
+	parent.addItem(this, index);
 }
 public TreeItem2(TreeItem2 parentItem, int style) {
 	this(parentItem, style, checkNull(parentItem).getItemCount());
@@ -91,25 +87,17 @@ public TreeItem2(TreeItem2 parentItem, int style) {
 public TreeItem2(TreeItem2 parentItem, int style, int index) {
 	super(checkNull(parentItem).parent, style);
 	this.parentItem = parentItem;
-	this.index = index;
-	depth = parentItem.depth + 1;
 	parent = parentItem.getParent();
-	parentItem.addItem(this);
+	parentItem.addItem(this, index);
 }
-void addItem(TreeItem2 item) {
+void addItem(TreeItem2 item, int index) {
 	/* adds a child item to the receiver */
-	int index = item.getIndex();
 	TreeItem2[] newChildren = new TreeItem2 [items.length + 1];
 	System.arraycopy(items, 0, newChildren, 0, index);
 	newChildren[index] = item;
 	System.arraycopy(items, index, newChildren, index + 1, items.length - index);
 	items = newChildren;
 
-	/* update the index on any child items bumped down by this new item */
-	for (int i = index + 1; i < items.length; i++) {
-		items[i].index++;
-	}
-	
 	/* if item should be available immediately then update parent accordingly */
 	if (item.isAvailable()) {
 		parent.makeAvailable(item);
@@ -135,7 +123,7 @@ static TreeItem2 checkNull(TreeItem2 item) {
  */
 int computeAvailableDescendentCount() {
 	int result = 1;		/* receiver */
-	if (!isExpanded) return result;
+	if (!expanded) return result;
 	for (int i = 0; i < items.length; i++) {
 		result += items[i].computeAvailableDescendentCount();
 	}
@@ -148,7 +136,7 @@ int computeAvailableDescendentCount() {
  * child0tree, child1tree, ..., childNtree. 
  */
 TreeItem2[] computeAvailableDescendents() {
-	if (!isExpanded) return new TreeItem2[] {this};
+	if (!expanded) return new TreeItem2[] {this};
 	int childCount = items.length;
 	TreeItem2[][] childResults = new TreeItem2[childCount][];
 	int count = 1;	/* self */
@@ -169,15 +157,16 @@ public void dispose() {
 	if (isDisposed()) return;
 	int startIndex = -1, endIndex = -1;
 	Tree2 parent = this.parent;
+	int index = getIndex();
 	
 	/* determine the indices, if any, that will need to be visually updated */
 	if (isAvailable()) {
 		if (isLastChild() && index > 0) {
 			/* vertical connector lines no longer needed for this item */
-			if (isRoot()) {
-				startIndex = parent.getItems()[index - 1].getAvailableIndex();
+			if (parentItem != null) {
+				startIndex = parentItem.getItems()[index - 1].availableIndex;
 			} else {
-				startIndex = parentItem.getItems()[index - 1].getAvailableIndex();
+				startIndex = parent.getItems()[index - 1].availableIndex;
 			}
 		} else {
 			startIndex = availableIndex;
@@ -191,9 +180,8 @@ public void dispose() {
 		parent.setFocusItem(this, false);
 		parent.reassignFocus();
 	}
-	
-	if (!isRoot()) {
-		parentItem.removeItem(this);
+	if (parentItem != null) {
+		parentItem.removeItem(this, index);
 	}
 	dispose(true);
 	if (startIndex != -1) {
@@ -219,11 +207,8 @@ void dispose(boolean notifyParent) {
  * Ensure that all ancestors of the receiver are expanded
  */
 void expandAncestors() {
-	if (!isRoot()) parentItem.expandAncestors();
+	if (parentItem != null) parentItem.expandAncestors();
 	setExpanded(true);
-}
-int getAvailableIndex() {
-	return availableIndex;
 }
 public Color getBackground () {
 	checkWidget ();
@@ -281,7 +266,7 @@ Rectangle getCheckboxBounds() {
 }
 public boolean getChecked () {
 	checkWidget();
-	return isChecked;
+	return checked;
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
@@ -299,9 +284,13 @@ int getContentX (int columnIndex) {
 	}
 	return getHconnectorEndpoints()[1].x + Tree2.MARGIN_IMAGE;
 }
+int getDepth() {
+	if (parentItem == null) return 0;
+	return 1 + parentItem.getDepth();
+}
 public boolean getExpanded () {
 	checkWidget();
-	return isExpanded;
+	return expanded;
 }
 /*
  * Returns the bounds of the receiver's expander box, regardless of whether the
@@ -313,7 +302,7 @@ Rectangle getExpanderBounds() {
 	int y = parent.getItemY(this);
 	if (!isRoot()) {
 		int expanderWidth = ExpandedImage.getBounds().width + INDENT_HIERARCHY;
-		x += expanderWidth * depth;
+		x += expanderWidth * getDepth();
 	}
 	Rectangle result = ExpandedImage.getBounds();
 	result.x = x;
@@ -356,7 +345,7 @@ public Color getForeground () {
 }
 public boolean getGrayed() {
 	checkWidget();
-	return isGrayed;
+	return grayed;
 }
 /*
  * Answers the start and end points of the horizontal connector line that is
@@ -402,7 +391,16 @@ public Image getImage (int index) {
 	return internalGetImage(index);
 }
 int getIndex() {
-	return index;
+	TreeItem2[] items;
+	if (parentItem != null) {
+		items = parentItem.getItems();
+	} else {
+		items = parent.getItems();
+	}
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] == this) return i;
+	}
+	return -1;
 }
 public int getItemCount() {
 	checkWidget();
@@ -523,7 +521,7 @@ int internalGetTextWidth(int columnIndex) {
 }
 boolean isAvailable() {
 	if (parentItem == null) return true; 	/* root items are always available */
-	if (!parentItem.isExpanded) return false;
+	if (!parentItem.expanded) return false;
 	return parentItem.isAvailable();
 }
 /*
@@ -531,16 +529,13 @@ boolean isAvailable() {
  * if the receiver is a root item, and false otherwise.
  */
 boolean isLastChild() {
-	if (isRoot()) {
-		return index == parent.getItemCount() - 1;
+	if (parentItem != null) {
+		return getIndex() == parentItem.getItemCount() - 1;
 	}
-	return index == parentItem.getItemCount() - 1;
+	return getIndex() == parent.getItemCount() - 1;
 }
 boolean isRoot() {
-	return depth == 0;
-}
-boolean isSelected() {
-	return isSelected;
+	return parentItem == null;
 }
 /*
  * The paintCellContent argument indicates whether the item should paint
@@ -578,7 +573,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 	}
 
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected && columnIndex == 0) {
+	if (selected && columnIndex == 0) {
 		Color oldBackground = gc.getBackground();
 		gc.setBackground(SelectionBackgroundColor);
 		int startX = getFocusX() + 1;
@@ -613,7 +608,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 		
 		/* Do not draw this line iff this is the very first item in the tree */ 
-		if (!isRoot() || index != 0) {
+		if (!isRoot() || getIndex() != 0) {
 			gc.drawLine(lineX, y, lineX, y2);
 		}
 		
@@ -644,17 +639,17 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 		
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
-			Image image = isExpanded ? ExpandedImage : CollapsedImage;
+			Image image = expanded ? ExpandedImage : CollapsedImage;
 			gc.drawImage(image, expanderBounds.x, expanderBounds.y);
 		}
 		
 		/* Draw checkbox if parent Tree has style SWT.CHECK */
 		if ((parent.style & SWT.CHECK) != 0) {
-			Image baseImage = isGrayed ? GrayUncheckedImage : UncheckedImage;
+			Image baseImage = grayed ? GrayUncheckedImage : UncheckedImage;
 			Rectangle checkboxBounds = getCheckboxBounds();
 			gc.drawImage(baseImage, checkboxBounds.x, checkboxBounds.y);
 
-			if (isChecked) {
+			if (checked) {
 				Rectangle checkmarkBounds = CheckmarkImage.getBounds();
 				int xInset = (checkboxBounds.width - checkmarkBounds.width) / 2;
 				int yInset = (checkboxBounds.height - checkmarkBounds.height) / 2;
@@ -723,7 +718,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 			fontHeight = parent.getFontHeight();
 		}
 		Color oldForeground = null;
-		if (isSelected && columnIndex == 0) {
+		if (selected && columnIndex == 0) {
 			oldForeground = gc.getForeground();
 			gc.setForeground(SelectionForegroundColor);
 		} else {
@@ -740,9 +735,8 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 	/* restore the original clipping */
 	gc.setClipping(oldClipping);
 }
-void recomputeTextWidths() {
+void recomputeTextWidths(GC gc) {
 	textWidths = new int[texts.length];
-	GC gc = new GC(parent);
 	if (font != null) gc.setFont(font);
 	for (int i = 0; i < texts.length; i++) {
 		String value = texts[i];
@@ -750,7 +744,6 @@ void recomputeTextWidths() {
 			textWidths[i] = gc.textExtent(value).x;
 		}
 	}
-	gc.dispose();
 }
 void redrawItem () {
 	parent.redraw(0, parent.getItemY(this), parent.getClientArea().width, parent.getItemHeight(), false);
@@ -758,27 +751,17 @@ void redrawItem () {
 /*
  * Make changes that are needed to handle the disposal of a child item.
  */
-void removeItem(TreeItem2 item) {
+void removeItem(TreeItem2 item, int index) {
 	if (isDisposed()) return;
-	int index = item.getIndex();
 	TreeItem2[] newItems = new TreeItem2[items.length - 1];
 	System.arraycopy(items, 0, newItems, 0, index);
 	System.arraycopy(items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
-	item.setIndex(-1);
 	// TODO second condition below is ugly, handles creation of item within Expand callback
 	if (items.length == 0 && !parent.inExpand) {
-		isExpanded = false;
+		expanded = false;
 		if (isAvailable()) redrawItem();	/* expander no longer needed */
-	} else {
-		/* update the indices of other children */
-		for (int i = index; i < items.length; i++) {
-			items[i].setIndex(i);
-		}
 	}
-}
-void setAvailableIndex(int value) {
-	availableIndex = value;
 }
 public void setBackground (Color value) {
 	checkWidget ();
@@ -793,25 +776,25 @@ public void setBackground (Color value) {
 public void setChecked (boolean value) {
 	checkWidget();
 	if ((parent.getStyle() & SWT.CHECK) == 0) return;
-	if (isChecked == value) return;
-	isChecked = value;
+	if (checked == value) return;
+	checked = value;
 	Rectangle bounds = getCheckboxBounds();
 	parent.redraw(bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setExpanded(boolean value) {
 	checkWidget ();
-	if (isExpanded == value) return;
+	if (expanded == value) return;
 	if (items.length == 0) return;
 	// TODO the next line seems to match other platforms, test case is lazy Tree snippet
 	if (parent.inExpand) return;
 	if (value) {
-		isExpanded = value;
+		expanded = value;
 		parent.makeDescendentsAvailable(this);
 		parent.redrawFromItemDownwards(availableIndex);
 	} else {
 		int oldAvailableLength = parent.getAvailableItemsCount();
 		TreeItem2[] descendents = computeAvailableDescendents();
-		isExpanded = value;
+		expanded = value;
 		parent.makeDescendentsUnavailable(this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem2 focusItem = parent.getFocusItem();
@@ -839,9 +822,9 @@ public void setFont (Font value) {
 	
 	font = value;
 	/* recompute cached values for string measurements */
-	recomputeTextWidths();
 	GC gc = new GC(parent);
 	if (font != null) gc.setFont(font);
+	recomputeTextWidths(gc);
 	fontHeight = gc.getFontMetrics().getHeight();
 	gc.dispose();
 
@@ -860,8 +843,8 @@ public void setForeground (Color value) {
 public void setGrayed(boolean value) {
 	checkWidget();
 	if ((parent.getStyle() & SWT.CHECK) == 0) return;
-	if (isGrayed == value) return;
-	isGrayed = value;
+	if (grayed == value) return;
+	grayed = value;
 	redrawItem();
 }
 public void setImage (Image value) {
@@ -920,12 +903,6 @@ public void setImage (int index, Image value) {
 	}
 	redrawItem();
 }
-void setIndex(int value) {
-	index = value;
-}
-void setSelected(boolean value) {
-	isSelected = value;
-}
 public void setText (String value) {
 	checkWidget ();
 	setText (0, value);
@@ -952,16 +929,17 @@ public void setText (int index, String value) {
 	redrawItem();
 }
 /*
- * The parent's font has changed, so recompute the receiver's cached text sizes if this
- * font was being used.  Pass this notification on to all child items as well.
+ * The parent's font has changed, so if this font was being used by the receiver then
+ * recompute its cached text sizes using the gc argument.  Pass this notification on to
+ * all child items as well.
  */
-void treeFontChange () {
+void updateFont (GC gc) {
 	if (font == null) {		/* receiver is using the Tree's font */
-		recomputeTextWidths();
+		recomputeTextWidths(gc);
 	}
 	/* pass notification on to all children */
 	for (int i = 0; i < items.length; i++) {
-		items[i].treeFontChange();
+		items[i].updateFont(gc);
 	}
 }
 }

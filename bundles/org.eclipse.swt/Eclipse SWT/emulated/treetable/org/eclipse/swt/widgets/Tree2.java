@@ -76,9 +76,7 @@ public Tree2 (Composite parent, int style) {
 	hBar.addListener(SWT.Selection, listener);
 	hBar.setMaximum(1);	// TODO ok?
 }
-void addColumn(TreeColumn column) {
-	int index = column.getIndex();
-	
+void addColumn(TreeColumn column, int index) {
 	/* insert column into the columns collection */
 	TreeColumn[] newColumns = new TreeColumn [columns.length + 1];
 	System.arraycopy(columns, 0, newColumns, 0, index);
@@ -86,22 +84,9 @@ void addColumn(TreeColumn column) {
 	System.arraycopy(columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
 
-	/* initialize the new column's x based on its position in the Tree */
-	if (index > 0) {
-		TreeColumn previousColumn = columns [index - 1];
-		column.setX(previousColumn.getRightmostX());
-	}
-	
-	/* update the index on columns bumped to the right by this new column */
-	for (int i = index + 1; i < columns.length; i++) {
-		columns[i].setIndex(columns[i].getIndex());
-	}
-
 	/* no visual update needed because column's initial width is 0 */
 }
-void addItem(TreeItem2 item) {
-	int index = item.index;
-	
+void addItem(TreeItem2 item, int index) {
 	/* insert item into the root items collection */
 	TreeItem2[] newItems = new TreeItem2 [items.length + 1];
 	System.arraycopy(items, 0, newItems, 0, index);
@@ -109,17 +94,12 @@ void addItem(TreeItem2 item) {
 	System.arraycopy(items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 
-	/* update the index on root-level items bumped down by this new item */
-	for (int i = index + 1; i < items.length; i++) {
-		items[i].setIndex(items[i].getIndex() + 1);
-	}
-
 	/* determine the item's availability index */
 	int startIndex;
 	if (index == items.length - 1) {
 		startIndex = availableItems.length;		/* last item */
 	} else {
-		startIndex = items[index + 1].getAvailableIndex();
+		startIndex = items[index + 1].availableIndex;
 	}
 	
 	/* root items are always available so insert into available items collection */
@@ -131,14 +111,14 @@ void addItem(TreeItem2 item) {
 	
 	/* update the availableIndex for items bumped down by this new item */
 	for (int i = startIndex; i < availableItems.length; i++) {
-		availableItems[i].setAvailableIndex(i);
+		availableItems[i].availableIndex = i;
 	}
 
 	updateVerticalBar();
 	updateHorizontalBar();
-	int redrawIndex = item.getIndex();
+	int redrawIndex = index;
 	if (redrawIndex > 0) redrawIndex--;
-	redrawFromItemDownwards(items[redrawIndex].getAvailableIndex());
+	redrawFromItemDownwards(items[redrawIndex].availableIndex);
 }
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
@@ -174,12 +154,12 @@ public void deselectAll() {
 	TreeItem2[] oldSelection = selectedItems;
 	internalSetSelection(new TreeItem2[0]);
 	for (int i = 0; i < oldSelection.length; i++) {
-		redrawItem(oldSelection[i].getAvailableIndex());
+		redrawItem(oldSelection[i].availableIndex);
 	}
 }
 void doArrowDown(int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
-		int newFocusIndex = focusItem.getAvailableIndex() + 1;
+		int newFocusIndex = focusItem.availableIndex + 1;
 		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 		selectItem(availableItems[newFocusIndex], false);
 		setFocusItem(availableItems[newFocusIndex], true);
@@ -199,7 +179,7 @@ void doArrowDown(int stateMask) {
 			redraw();
 			return;
 		} else {
-			int newFocusIndex = focusItem.getAvailableIndex() + 1;
+			int newFocusIndex = focusItem.availableIndex + 1;
 			if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 			selectItem(availableItems[newFocusIndex], false);
 			setFocusItem(availableItems[newFocusIndex], true);
@@ -221,12 +201,12 @@ void doArrowDown(int stateMask) {
 			redraw();
 			return;
 		} else {
-			int focusIndex = focusItem.getAvailableIndex(); 
+			int focusIndex = focusItem.availableIndex; 
 			if (focusIndex == availableItems.length - 1) return;	/* at bottom */
 			TreeItem2 newFocusItem = availableItems[focusIndex + 1];
 			setFocusItem(newFocusItem, true);
 			showItem(newFocusItem);
-			redrawItem(newFocusItem.getAvailableIndex());
+			redrawItem(newFocusItem.availableIndex);
 			return;
 		}
 	} else {
@@ -252,7 +232,7 @@ void doArrowLeft(int stateMask) {
 			newEvent.item = this;
 			sendEvent(SWT.Selection, newEvent);
 			showItem(parentItem);
-			redrawItem(parentItem.getAvailableIndex());
+			redrawItem(parentItem.availableIndex);
 		}
 	}
 }
@@ -271,7 +251,7 @@ void doArrowRight(int stateMask) {
 		sendEvent(SWT.Expand, newEvent);
 		inExpand = false;
 		if (focusItem.getItemCount() == 0) {
-			focusItem.isExpanded = false;
+			focusItem.expanded = false;
 		}
 	} else {
 		selectItem(children[0], false);
@@ -280,12 +260,12 @@ void doArrowRight(int stateMask) {
 		newEvent.item = children[0];
 		sendEvent(SWT.Selection, newEvent);
 		showItem(children[0]);
-		redrawItem(children[0].getAvailableIndex());	
+		redrawItem(children[0].availableIndex);	
 	}
 }
 void doArrowUp(int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
-		int newFocusIndex = focusItem.getAvailableIndex() - 1;
+		int newFocusIndex = focusItem.availableIndex - 1;
 		if (newFocusIndex < 0) return; 		/* at top */
 		TreeItem2 item = availableItems[newFocusIndex];
 		selectItem(item, false);
@@ -305,7 +285,7 @@ void doArrowUp(int stateMask) {
 			redraw();
 			return;
 		} else {
-			int newFocusIndex = focusItem.getAvailableIndex() - 1;
+			int newFocusIndex = focusItem.availableIndex - 1;
 			if (newFocusIndex < 0) return; 	/* at top */
 			TreeItem2 item = availableItems[newFocusIndex];
 			selectItem(item, false);
@@ -327,12 +307,12 @@ void doArrowUp(int stateMask) {
 			redraw();
 			return;
 		} else {
-			int focusIndex = focusItem.getAvailableIndex(); 
+			int focusIndex = focusItem.availableIndex; 
 			if (focusIndex == 0) return;	/* at top */
 			TreeItem2 newFocusItem = availableItems[focusIndex - 1];
 			setFocusItem(newFocusItem, true);
 			showItem(newFocusItem);
-			redrawItem(newFocusItem.getAvailableIndex());
+			redrawItem(newFocusItem.availableIndex);
 			return;
 		}
 	} else {
@@ -363,7 +343,7 @@ void doDispose() {
 void doEnd(int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 		int lastAvailableIndex = availableItems.length - 1;
-		if (focusItem.getAvailableIndex() == lastAvailableIndex) return; 	/* at bottom */
+		if (focusItem.availableIndex == lastAvailableIndex) return; 	/* at bottom */
 		TreeItem2 item = availableItems[lastAvailableIndex]; 
 		selectItem(item, false);
 		setFocusItem(item, true);
@@ -381,7 +361,7 @@ void doEnd(int stateMask) {
 			return;
 		} else {
 			int lastAvailableIndex = availableItems.length - 1;
-			if (focusItem.getAvailableIndex() == lastAvailableIndex) return; /* at bottom */
+			if (focusItem.availableIndex == lastAvailableIndex) return; /* at bottom */
 			TreeItem2 item = availableItems[lastAvailableIndex]; 
 			selectItem(item, false);
 			setFocusItem(item, true);
@@ -399,11 +379,11 @@ void doEnd(int stateMask) {
 			// TODO scroll to bottom, fire selection (?) but don't change it
 		} else {
 			int lastAvailableIndex = availableItems.length - 1;
-			if (focusItem.getAvailableIndex() == lastAvailableIndex) return; /* at bottom */
+			if (focusItem.availableIndex == lastAvailableIndex) return; /* at bottom */
 			TreeItem2 item = availableItems[lastAvailableIndex];
 			setFocusItem(item, true);
 			showItem(item);
-			redrawItem(item.getAvailableIndex());
+			redrawItem(item.availableIndex);
 			return;
 		}
 	} else {
@@ -421,16 +401,16 @@ void doFocusIn() {
 		sendEvent(SWT.Selection, newEvent);
 		showItem(item);
 	}
-	redrawItem(focusItem.getAvailableIndex());
+	redrawItem(focusItem.availableIndex);
 }
 void doFocusOut() {
 	if (focusItem != null) {
-		redrawItem(focusItem.getAvailableIndex());
+		redrawItem(focusItem.availableIndex);
 	}
 }
 void doHome(int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
-		if (focusItem.getAvailableIndex() == 0) return; 		/* at top */
+		if (focusItem.availableIndex == 0) return; 		/* at top */
 		TreeItem2 item = availableItems[0];
 		selectItem(item, false);
 		setFocusItem(item, true);
@@ -446,7 +426,7 @@ void doHome(int stateMask) {
 			setTopItem(availableItems[0]);
 			return;
 		} else {
-			if (focusItem.getAvailableIndex() == 0) return; 		/* at top */
+			if (focusItem.availableIndex == 0) return; 		/* at top */
 			TreeItem2 item = availableItems[0];
 			selectItem(item, false);
 			setFocusItem(item, true);
@@ -463,11 +443,11 @@ void doHome(int stateMask) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			// TODO scroll to top, fire selection (?) but don't change it
 		} else {
-			if (focusItem.getAvailableIndex() == 0) return; /* at top */
+			if (focusItem.availableIndex == 0) return; /* at top */
 			TreeItem2 item = availableItems[0];
 			setFocusItem(item, true);
 			showItem(item);
-			redrawItem(item.getAvailableIndex());
+			redrawItem(item.availableIndex);
 			return;
 		}
 	} else {
@@ -540,7 +520,7 @@ void doMouseDown(Event event) {
 			sendEvent(SWT.Expand, newEvent);
 			inExpand = false;
 			if (focusItem != null && focusItem.getItemCount() == 0) {
-				focusItem.isExpanded = false;
+				focusItem.expanded = false;
 			}
 		} else {
 			sendEvent(SWT.Collapse, newEvent);
@@ -561,14 +541,14 @@ void doMouseDown(Event event) {
 	if (!selectedItem.getHitBounds().contains(event.x, event.y)) return;
 	
 	if ((style & SWT.SINGLE) != 0) {
-		if (!selectedItem.isSelected()) {
+		if (!selectedItem.selected) {
 			if (event.button == 1) {
 				selectItem(selectedItem, false);
 				setFocusItem(selectedItem, true);
 				Event newEvent = new Event();
 				newEvent.item = selectedItem;
 				sendEvent(SWT.Selection, newEvent);
-				redrawItem(selectedItem.getAvailableIndex());
+				redrawItem(selectedItem.availableIndex);
 			} else {
 				if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 					selectItem(selectedItem, false);
@@ -576,7 +556,7 @@ void doMouseDown(Event event) {
 					Event newEvent = new Event();
 					newEvent.item = selectedItem;
 					sendEvent(SWT.Selection, newEvent);
-					redrawItem(selectedItem.getAvailableIndex());
+					redrawItem(selectedItem.availableIndex);
 				}
 			}
 		} else {	/* item is selected */
@@ -588,7 +568,7 @@ void doMouseDown(Event event) {
 			}
 		}
 	} else {	/* SWT.MULTI */
-		if (!selectedItem.isSelected()) {
+		if (!selectedItem.selected) {
 			if (event.button == 1) {	// TODO button 2?
 				if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == SWT.SHIFT) {
 					// TODO do shift-select
@@ -598,7 +578,7 @@ void doMouseDown(Event event) {
 					Event newEvent = new Event();
 					newEvent.item = selectedItem;
 					sendEvent(SWT.Selection, newEvent);
-					redrawItem(selectedItem.getAvailableIndex());
+					redrawItem(selectedItem.availableIndex);
 				}
 			} else {	/* button 3 */
 				if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
@@ -607,7 +587,7 @@ void doMouseDown(Event event) {
 					Event newEvent = new Event();
 					newEvent.item = selectedItem;
 					sendEvent(SWT.Selection, newEvent);
-					redrawItem(selectedItem.getAvailableIndex());
+					redrawItem(selectedItem.availableIndex);
 				}
 			}
 		} else {	/* item is selected */
@@ -615,7 +595,7 @@ void doMouseDown(Event event) {
 			if ((event.stateMask & SWT.CTRL) != 0) {
 				removeSelectedItem(getSelectionIndex(selectedItem));
 				setFocusItem(selectedItem, true);
-				redrawItem(selectedItem.getAvailableIndex());
+				redrawItem(selectedItem.availableIndex);
 				Event newEvent = new Event();
 				newEvent.item = selectedItem;
 				sendEvent(SWT.Selection, newEvent);
@@ -628,17 +608,39 @@ void doMouseDown(Event event) {
 					Event newEvent = new Event();
 					newEvent.item = selectedItem;
 					sendEvent(SWT.Selection, newEvent);
-					redrawItem(selectedItem.getAvailableIndex());
+					redrawItem(selectedItem.availableIndex);
 				}
 			}
 		}
 	}		
 }
 void doPageDown(int stateMask) {
-	// TODO Tree.doPageDown
+	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
+		int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
+		newFocusIndex = Math.min(newFocusIndex, availableItems.length - 1);
+		TreeItem2 item = availableItems[newFocusIndex];
+		selectItem(item, false);
+		setFocusItem(item, true);
+		showItem(item);
+		redrawItem(item.availableIndex);
+		return;
+	}
+	// TODO handle modifier key cases
 }
 void doPageUp(int stateMask) {
-	// TODO Tree.doPageUp
+	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
+		int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
+		newFocusIndex = Math.max(newFocusIndex, 0);
+		TreeItem2 item = availableItems[newFocusIndex];
+		selectItem(item, false);
+		setFocusItem(item, true);
+		showItem(item);
+		redrawItem(item.availableIndex);
+		return;
+	}
+	// TODO handle modifier key cases
 }
 void doPaint (Event event) {
 	GC gc = event.gc;
@@ -753,10 +755,10 @@ void doScrollVertical(Event event) {
 }
 void doSpace() {
 	if (focusItem == null) return;
-	if (!focusItem.isSelected()) {
+	if (!focusItem.selected) {
 		selectItem(focusItem, (style & SWT.MULTI) != 0);
 		showItem(focusItem);
-		redrawItem(focusItem.getAvailableIndex());
+		redrawItem(focusItem.availableIndex);
 	}
 	Event event = new Event();
 	event.item = focusItem;
@@ -855,7 +857,7 @@ public TreeItem2 [] getItems() {
  * Returns the current y-coordinate that the specified item should have. 
  */
 int getItemY(TreeItem2 item) {
-	int index = item.getAvailableIndex();
+	int index = item.availableIndex;
 	if (index == -1) return -1;
 	return (index - topIndex) * itemHeight + getHeaderHeight();
 }
@@ -1116,10 +1118,10 @@ void headerPaintShadow(GC gc, Rectangle bounds, boolean paintHorizontalLines, bo
  */
 void internalSetSelection(TreeItem2[] items) {
 	for (int i = 0; i < selectedItems.length; i++) {
-		selectedItems[i].setSelected(false);
+		selectedItems[i].selected = false;
 	}
 	for (int i = 0; i < items.length; i++) {
-		items[i].setSelected(true);
+		items[i].selected = true;
 	}
 	selectedItems = items;
 
@@ -1130,7 +1132,7 @@ void internalSetSelection(TreeItem2[] items) {
  * item.
  */
 void itemDisposing(TreeItem2 item) {
-	int availableIndex = item.getAvailableIndex(); 
+	int availableIndex = item.availableIndex; 
 	if (availableIndex != -1) {
 		TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length - 1];
 		System.arraycopy(availableItems, 0, newAvailableItems, 0, availableIndex);
@@ -1143,13 +1145,13 @@ void itemDisposing(TreeItem2 item) {
 		availableItems = newAvailableItems;
 		/* update the availableIndex on affected items */
 		for (int i = availableIndex; i < availableItems.length; i++) {
-			availableItems[i].setAvailableIndex(i);
+			availableItems[i].availableIndex = i;
 		}
 		item.availableIndex = -1;
 		updateVerticalBar();
 		updateHorizontalBar();
 	}
-	if (item.isSelected()) {
+	if (item.selected) {
 		int selectionIndex = getSelectionIndex(item);
 		TreeItem2[] newSelectedItems = new TreeItem2[selectedItems.length - 1];
 		System.arraycopy(selectedItems, 0, newSelectedItems, 0, selectionIndex);
@@ -1160,7 +1162,7 @@ void itemDisposing(TreeItem2 item) {
 			selectionIndex,
 			newSelectedItems.length - selectionIndex);
 		selectedItems = newSelectedItems;
-		item.setSelected(false);
+		item.selected = false;
 	}
 	if (item.isRoot()) {
 		int index = item.getIndex();
@@ -1168,11 +1170,6 @@ void itemDisposing(TreeItem2 item) {
 		System.arraycopy(items, 0, newItems, 0, index);
 		System.arraycopy(items, index + 1, newItems, index, newItems.length - index);
 		items = newItems;
-		/* update the index on affected root-level items */
-		for (int i = index; i < items.length; i++) {
-			items[i].setIndex(i);
-		}
-		item.setIndex(-1);
 	}
 	if (item == focusItem) reassignFocus();
 }
@@ -1182,7 +1179,7 @@ void itemDisposing(TreeItem2 item) {
  */
 void makeAvailable(TreeItem2 item) {
 	TreeItem2 parentItem = item.getParentItem();
-	int parentAvailableIndex = parentItem.getAvailableIndex();
+	int parentAvailableIndex = parentItem.availableIndex;
 	TreeItem2[] parentAvailableDescendents = parentItem.computeAvailableDescendents();
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length + 1];
 	
@@ -1198,7 +1195,7 @@ void makeAvailable(TreeItem2 item) {
 	
 	/* update availableIndex as needed */
 	for (int i = parentAvailableIndex; i < availableItems.length; i++) {
-		availableItems[i].setAvailableIndex(i);
+		availableItems[i].availableIndex = i;
 	}
 	updateVerticalBar();
 	updateHorizontalBar();
@@ -1209,7 +1206,7 @@ void makeAvailable(TreeItem2 item) {
  * available (ie.- they were either created or the item was expanded).
  */
 void makeDescendentsAvailable(TreeItem2 item) {
-	int itemAvailableIndex = item.getAvailableIndex();
+	int itemAvailableIndex = item.availableIndex;
 	TreeItem2[] availableDescendents = item.computeAvailableDescendents();
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length + availableDescendents.length - 1];
 	
@@ -1225,7 +1222,7 @@ void makeDescendentsAvailable(TreeItem2 item) {
 	
 	/* update availableIndex as needed */
 	for (int i = itemAvailableIndex; i < availableItems.length; i++) {
-		availableItems[i].setAvailableIndex(i);
+		availableItems[i].availableIndex = i;
 	}
 	
 	updateVerticalBar();
@@ -1240,18 +1237,18 @@ void makeDescendentsUnavailable(TreeItem2 item, TreeItem2[] removedDescendents) 
 	int descendentsLength = removedDescendents.length;
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length - descendentsLength + 1];
 	
-	System.arraycopy(availableItems, 0, newAvailableItems, 0, item.getAvailableIndex() + 1);
+	System.arraycopy(availableItems, 0, newAvailableItems, 0, item.availableIndex + 1);
 	System.arraycopy(			// TODO ugly!
 			availableItems,
-			item.getAvailableIndex() + descendentsLength,
+			item.availableIndex + descendentsLength,
 			newAvailableItems,
-			item.getAvailableIndex() + 1,
-			availableItems.length - (item.getAvailableIndex() + descendentsLength));
+			item.availableIndex + 1,
+			availableItems.length - (item.availableIndex + descendentsLength));
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
-	for (int i = item.getAvailableIndex(); i < availableItems.length; i++) {
-		availableItems[i].setAvailableIndex(i);
+	for (int i = item.availableIndex; i < availableItems.length; i++) {
+		availableItems[i].availableIndex = i;
 	}
 	
 	/* remove the selection from all descendents */
@@ -1275,26 +1272,26 @@ void makeUnavailable(TreeItem2 item) {
 	TreeItem2[] parentAvailableDescendents = parentItem.computeAvailableDescendents();
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length - 1];
 	
-	System.arraycopy(availableItems, 0, newAvailableItems, 0, parentItem.getAvailableIndex());
-	System.arraycopy(parentAvailableDescendents, 0, newAvailableItems, parentItem.getAvailableIndex(), parentAvailableDescendents.length);
+	System.arraycopy(availableItems, 0, newAvailableItems, 0, parentItem.availableIndex);
+	System.arraycopy(parentAvailableDescendents, 0, newAvailableItems, parentItem.availableIndex, parentAvailableDescendents.length);
 	System.arraycopy(			// TODO ugly!
 		availableItems,
-		parentItem.getAvailableIndex() + parentAvailableDescendents.length + 1,
+		parentItem.availableIndex + parentAvailableDescendents.length + 1,
 		newAvailableItems,
-		parentItem.getAvailableIndex() + parentAvailableDescendents.length,
-		availableItems.length - (parentItem.getAvailableIndex() + parentAvailableDescendents.length + 1));
+		parentItem.availableIndex + parentAvailableDescendents.length,
+		availableItems.length - (parentItem.availableIndex + parentAvailableDescendents.length + 1));
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
-	for (int i = parentItem.getAvailableIndex(); i < availableItems.length; i++) {
-		availableItems[i].setAvailableIndex(i);
+	for (int i = parentItem.availableIndex; i < availableItems.length; i++) {
+		availableItems[i].availableIndex = i;
 	}
 	
 	// TODO handle selection change if needed?
 	
 	updateVerticalBar();
 	updateHorizontalBar();
-	redrawItems(item.getParentItem().getAvailableIndex(), oldAvailableLength - 1);
+	redrawItems(item.getParentItem().availableIndex, oldAvailableLength - 1);
 }
 /*
  * The current focus item is about to become unavailable, so reassign focus.
@@ -1326,7 +1323,7 @@ void reassignFocus() {
 	} else {
 		index++;
 	}
-	if (index < availableItems.length) {
+	if (index < items.length) {
 		TreeItem2 item = items[index];
 		setFocusItem(item, false);
 		if ((style & SWT.SINGLE) != 0) {
@@ -1385,20 +1382,16 @@ public void removeAll() {
 void removeColumn(TreeColumn column) {
 	int numColumns = getColumnCount();
 	int index = column.getIndex();
-	int width = column.getWidth();
-	for (int i = index + 1; i < numColumns; i++) {
-		columns[i].setX(columns[i].getX() - width);
-	}
+
 	TreeColumn[] newColumns = new TreeColumn[columns.length - 1];
 	System.arraycopy(columns, 0, newColumns, 0, index);
 	System.arraycopy(columns, index + 1, newColumns, index, columns.length - index);
 	columns = newColumns;
-	column.setIndex(-1);
 	
 	getHorizontalBar().setMaximum(columns[columns.length - 1].getRightmostX());
 }
 void removeSelectedItem(int index) {
-	selectedItems[index].setSelected(false);
+	selectedItems[index].selected = false;
 	TreeItem2[] newSelectedItems = new TreeItem2[selectedItems.length - 1];
 	System.arraycopy(selectedItems, 0, newSelectedItems, 0, index);
 	System.arraycopy(selectedItems, index + 1, newSelectedItems, index, newSelectedItems.length - index);
@@ -1419,7 +1412,7 @@ public void removeTreeListener(TreeListener listener) {
 public void selectAll() {
 	checkWidget();
 	for (int i = 0; i < availableItems.length; i++) {
-		availableItems[i].setSelected(true);
+		availableItems[i].selected = true;
 	}
 	redraw();
 }
@@ -1429,16 +1422,16 @@ void selectItem(TreeItem2 item, boolean addToSelection) {
 		selectedItems = new TreeItem2[] {item};
 		for (int i = 0; i < oldSelectedItems.length; i++) {
 			if (oldSelectedItems[i] != item) {
-				oldSelectedItems[i].setSelected(false);
-				redrawItem(oldSelectedItems[i].getAvailableIndex());
+				oldSelectedItems[i].selected = false;
+				redrawItem(oldSelectedItems[i].availableIndex);
 			}
 		}
-		item.setSelected(true);
+		item.selected = true;
 	} else {
 		selectedItems = new TreeItem2[selectedItems.length + 1];
 		System.arraycopy(oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems[selectedItems.length - 1] = item;
-		item.setSelected(true);
+		item.selected = true;
 	}
 }
 void setCol0ImageWidth(int value) {
@@ -1449,7 +1442,7 @@ void setFocusItem(TreeItem2 item, boolean redrawOldFocus) {
 	TreeItem2 oldFocusItem = focusItem;
 	focusItem = item;
 	if (redrawOldFocus && oldFocusItem != null) {
-		redrawItem(oldFocusItem.getAvailableIndex());
+		redrawItem(oldFocusItem.availableIndex);
 	}
 }
 public void setFont (Font value) {
@@ -1459,13 +1452,12 @@ public void setFont (Font value) {
 	if (font != null && value.equals (font)) return;
 	super.setFont(value);
 	
-	/* recompute the receiver's cached font height and item height values */
 	GC gc = new GC(this);
 	gc.setFont(getFont());
-	fontHeight = gc.getFontMetrics().getHeight();
-	gc.dispose();
-	itemHeight = Math.max(fontHeight, imageHeight) + 2 * getCellPadding();
 	
+	/* recompute the receiver's cached font height and item height values */
+	fontHeight = gc.getFontMetrics().getHeight();
+	itemHeight = Math.max(fontHeight, imageHeight) + 2 * getCellPadding();
 	Point headerSize = header.getSize();
 	int newHeaderHeight = Math.max(fontHeight, headerImageHeight) + 2 * getHeaderPadding();
 	if (headerSize.y != newHeaderHeight) {
@@ -1477,7 +1469,7 @@ public void setFont (Font value) {
 	 * their cached string widths.
 	 */
 	for (int i = 0; i < columns.length; i++) {
-		columns[i].treeFontChange();
+		columns[i].updateFont(gc);
 	}
 
 	/* 
@@ -1485,8 +1477,10 @@ public void setFont (Font value) {
 	 * use the receiver's font can recompute their cached string widths.
 	 */
 	for (int i = 0; i < items.length; i++) {
-		items[i].treeFontChange();
+		items[i].updateFont(gc);
 	}
+	
+	gc.dispose();
 	
 	if (header.isVisible()) header.redraw();
 	redraw();
@@ -1524,12 +1518,12 @@ public void setSelection(TreeItem2[] items) {
 	TreeItem2[] oldSelection = selectedItems;
 	internalSetSelection(items);
 	for (int i = 0; i < oldSelection.length; i++) {
-		if (!oldSelection[i].isSelected()) {
-			redrawItem(oldSelection[i].getAvailableIndex());
+		if (!oldSelection[i].selected) {
+			redrawItem(oldSelection[i].availableIndex);
 		}
 	}
 	for (int i = 0; i < items.length; i++) {
-		redrawItem(items[i].getAvailableIndex());
+		redrawItem(items[i].availableIndex);
 	}
 }
 public void setTopItem(TreeItem2 item) {
@@ -1541,7 +1535,7 @@ public void setTopItem(TreeItem2 item) {
 	if (!item.isAvailable()) item.expandAncestors();
 	
 	int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
-	int index = Math.min (item.getAvailableIndex(), availableItems.length - visibleItemCount);
+	int index = Math.min (item.availableIndex, availableItems.length - visibleItemCount);
 	if (topIndex == index) return;
 	topIndex = index;
 	getVerticalBar().setSelection(topIndex);
@@ -1555,7 +1549,7 @@ public void showItem(TreeItem2 item) {
 	
 	if (!item.isAvailable()) item.getParentItem().expandAncestors();
 	
-	int index = item.getAvailableIndex();
+	int index = item.availableIndex;
 	int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
 	/* determine if item is already visible */
 	if (topIndex <= index && index < topIndex + visibleItemCount) return;
@@ -1575,11 +1569,8 @@ public void showSelection() {
 }
 void updateColumnWidth (TreeColumn column, int width) {
 	int oldWidth = column.getWidth();
-	column.internalSetWidth(width);
-	int diff = width - oldWidth;
-	for (int i = column.getIndex() + 1; i < columns.length; i++) {
-		columns[i].setX(columns[i].getX() + diff);
-	}
+	column.width = width;
+
 	Rectangle bounds = getClientArea();
 	ScrollBar hBar = getHorizontalBar();
 	hBar.setMaximum(columns[columns.length - 1].getRightmostX());
