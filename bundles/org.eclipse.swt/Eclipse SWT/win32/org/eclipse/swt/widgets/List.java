@@ -1130,7 +1130,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Bug in Windows.  If the receiver is scrolled horizontally
 	* and is resized, the list does not redraw properly.  The fix
-	* is to redraw the receiver.
+	* is to redraw the control when resizing is not deferred and
+	* the new size is different from the previous size.
 	*/
 	if (parent.lpwp != null || (flags & OS.SWP_NOSIZE) != 0) {	
 		super.setBounds (x, y, width, height, flags);
@@ -1138,8 +1139,10 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
+	int oldWidth = rect.right - rect.left;
+	int oldHeight = rect.bottom - rect.top;
 	super.setBounds (x, y, width, height, flags);
-	if (((rect.right - rect.left) == width) || ((rect.bottom - rect.top) == height)) return;
+	if (oldWidth == width && oldHeight == height) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_POS;
