@@ -41,20 +41,20 @@ import org.eclipse.swt.internal.win32.*;
 private URLTransfer() {}
 
 /**
- * Returns the singleton instance of the HTMLTransfer class.
+ * Returns the singleton instance of the URLTransfer class.
  *
- * @return the singleton instance of the HTMLTransfer class
+ * @return the singleton instance of the URLTransfer class
  */
 public static URLTransfer getInstance () {
 	return _instance;
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts HTML-formatted text
- * represented by a java <code>String</code> to a platform specific representation.
+ * This implementation of <code>javaToNative</code> converts a URL and optionally a title
+ * represented by a java <code>String[]</code> to a platform specific representation.
  * For additional information see <code>Transfer#javaToNative</code>.
  * 
- * @param object a java <code>String</code> containing HTML text
+ * @param object a java <code>String[]</code> containing a URL and optionally, a title
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
@@ -86,12 +86,12 @@ public void javaToNative (Object object, TransferData transferData){
 
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of HTML text to a java <code>String</code>.
+ * representation of a URL and optionally, a title to a java <code>String[]</code>.
  * For additional information see <code>Transfer#nativeToJava</code>.
  * 
  * @param transferData the platform specific representation of the data to be 
  * been converted
- * @return a java <code>String</code> containing HTML text if the 
+ * @return a java <code>String[]</code> containing a URL and optionally a title if the 
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
