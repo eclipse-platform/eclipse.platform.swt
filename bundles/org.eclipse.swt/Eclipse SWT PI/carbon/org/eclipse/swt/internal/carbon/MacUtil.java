@@ -148,7 +148,7 @@ public class MacUtil {
 		int tmpRgn= OS.NewRgn();
 		
 		getControlRegion(cHandle, OS.kControlEntireControl, result);
-		
+
 		int parent= cHandle;
 		while ((parent= MacUtil.getSuperControl(parent)) != 0) {
 			getControlRegion(parent, OS.kControlContentMetaPart, tmpRgn);
@@ -171,7 +171,7 @@ public class MacUtil {
 				}
 			}
 		}
-				
+		
 		OS.DisposeRgn(tmpRgn);
                 
 		return OS.kNoErr;
@@ -183,7 +183,7 @@ public class MacUtil {
 			OS.GetControlBounds(cHandle, bounds);
 			OS.RectRgn(rgn, bounds);
 		} else {
-			OS.GetControlRegion(cHandle, OS.kControlContentMetaPart, rgn);
+			OS.GetControlRegion(cHandle, part, rgn);
 		}
 	}
 
