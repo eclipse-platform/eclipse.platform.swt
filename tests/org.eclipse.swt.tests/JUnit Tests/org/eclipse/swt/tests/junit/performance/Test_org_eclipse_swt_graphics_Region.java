@@ -38,7 +38,7 @@ protected void setUp() throws Exception {
 }
 
 public void test_Constructor() {
-	final int COUNT = 9000;	// 10000 causes No More Handles error
+	final int COUNT = 2000000;
 	
 	PerformanceMeter meter = createMeter("Region constr.()");
 	meter.start();
@@ -57,7 +57,7 @@ public void test_Constructor() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
-	final int COUNT = 9000;	// 10000 causes No More Handles error
+	final int COUNT = 2000000;
 	
 	PerformanceMeter meter = createMeter("Region constr.(Device)");
 	meter.start();
