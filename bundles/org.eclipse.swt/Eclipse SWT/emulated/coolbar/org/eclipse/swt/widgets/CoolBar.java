@@ -651,42 +651,47 @@ void onPaint(Event event) {
 
 	boolean flat = (style & SWT.FLAT) != 0;
 	int stopX = getBounds().width;
+	Rectangle clipping = gc.getClipping();
 	for (int row = 0; row < items.length; row++) {
 		Rectangle bounds = new Rectangle(0, 0, 0, 0);
 		for (int i = 0; i < items[row].length; i++) {
 			bounds = items[row][i].getBounds();
-			if (!gc.getClipping().intersects(bounds)) continue;
-
+			if (!clipping.intersects(bounds)) continue;
+			boolean nativeGripper = false;
+			
+			/* Draw gripper. */
+			if (!isLocked) {
+				nativeGripper = drawGripper(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
+				if (!nativeGripper) {
+					int grabberTrim = 2; 
+					int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - (2 * grabberTrim) - 1;				
+					gc.setForeground(shadowColor);
+					gc.drawRectangle(
+						bounds.x + CoolItem.MARGIN_WIDTH, 
+						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
+						2, 
+						grabberHeight);
+					gc.setForeground(highlightColor);
+					gc.drawLine(
+						bounds.x + CoolItem.MARGIN_WIDTH, 
+						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + 1, 
+						bounds.x + CoolItem.MARGIN_WIDTH, 
+						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + grabberHeight - 1);
+					gc.drawLine(
+						bounds.x + CoolItem.MARGIN_WIDTH, 
+						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
+						bounds.x + CoolItem.MARGIN_WIDTH + 1, 
+						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim);
+				}
+			}
+			
 			/* Draw separator. */
-			if (!flat && i != 0) {
+			if (!flat && !nativeGripper && i != 0) {
 				gc.setForeground(shadowColor);
 				gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
 				gc.setForeground(highlightColor);
 				gc.drawLine(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
 			}
-
-			/* Draw grabber. */
-			if (!isLocked) {
-				int grabberTrim = 2; 
-				int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - (2 * grabberTrim) - 1;				
-				gc.setForeground(shadowColor);
-				gc.drawRectangle(
-					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
-					2, 
-					grabberHeight);
-				gc.setForeground(highlightColor);
-				gc.drawLine(
-					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + 1, 
-					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + grabberHeight - 1);
-				gc.drawLine(
-					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
-					bounds.x + CoolItem.MARGIN_WIDTH + 1, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim);
-			}	
 		}
 		if (!flat && row + 1 < items.length) {
 			/* Draw row separator. */

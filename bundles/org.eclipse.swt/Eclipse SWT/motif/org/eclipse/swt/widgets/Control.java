@@ -500,6 +500,9 @@ Font defaultFont () {
 int defaultForeground () {
 	return display.defaultForeground;
 }
+boolean drawGripper (int x, int y, int width, int height) {
+	return false;
+}
 void enableWidget (boolean enabled) {
 	enableHandle (enabled, handle);
 }

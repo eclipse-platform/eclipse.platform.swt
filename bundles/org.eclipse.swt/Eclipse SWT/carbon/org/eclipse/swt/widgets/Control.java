@@ -510,6 +510,10 @@ void destroyWidget () {
 	}
 }
 
+boolean drawGripper (int x, int y, int width, int height) {
+	return false;
+}
+
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if (control != handle) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;

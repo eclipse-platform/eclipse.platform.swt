@@ -5442,6 +5442,22 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1object_1sink)
 }
 #endif
 
+#ifndef NO_gtk_1paint_1handle
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1paint_1handle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	NATIVE_ENTER(env, that, "gtk_1paint_1handle\n")
+	if (arg4) lparg4 = getGdkRectangleFields(env, arg4, &_arg4);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	gtk_paint_handle((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, lparg6, arg7, arg8, arg9, arg10, arg11);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4) setGdkRectangleFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "gtk_1paint_1handle\n")
+}
+#endif
+
 #ifndef NO_gtk_1plug_1get_1id
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1plug_1get_1id)
 	(JNIEnv *env, jclass that, jint arg0)

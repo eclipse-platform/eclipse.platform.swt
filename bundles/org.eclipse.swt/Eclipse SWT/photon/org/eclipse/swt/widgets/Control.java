@@ -479,6 +479,10 @@ int defaultForeground () {
 	return display.WIDGET_FOREGROUND;
 }
 
+boolean drawGripper (int x, int y, int width, int height) {
+	return false;
+}
+
 int drawProc (int widget, int damage) {
 	drawWidget (widget, damage);
 	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return OS.Pt_CONTINUE;
