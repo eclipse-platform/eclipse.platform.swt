@@ -327,8 +327,8 @@ public void drawFocus(int x, int y, int width, int height) {
 	/*
 	* Feature in GTK.  The function gtk_widget_get_default_style() 
 	* can't be used here because gtk_paint_focus() uses GCs, which
-	* are not valid in the default style. The fix is to use a style from a 
-	* widget.
+	* are not valid in the default style. The fix is to use a style
+	* from a widget.
 	*/
 	int /*long*/ style = OS.gtk_widget_get_style(data.device.shellHandle);
 	OS.gtk_paint_focus(style, data.drawable, OS.GTK_STATE_NORMAL, null, 0, new byte[1], x, y, width, height);
