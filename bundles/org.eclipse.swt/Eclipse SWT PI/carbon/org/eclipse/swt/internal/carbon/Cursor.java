@@ -12,23 +12,5 @@ public class Cursor {
 	public short[] mask = new short[16];
 	public short hotSpot_v;
 	public short hotSpot_h;
-	public int absX;
-	public int absY;
-	public int absZ;
-	public short buttons;
-	public short pressure;
-	public short tiltX;
-	public short tiltY;
-	public short rotation;
-	public short tangentialPressure;
-	public short vendorID;
-	public short tabletID;
-	public short pointerID;
-	public short deviceID;
-	public short systemTabletID;
-	public short vendorPointerType;
-	public int pointerSerialNumber;
-	public long uniqueID;
-	public int capabilityMask;
-	public static final int sizeof = 120;
+	public static final int sizeof = 68;
 }
