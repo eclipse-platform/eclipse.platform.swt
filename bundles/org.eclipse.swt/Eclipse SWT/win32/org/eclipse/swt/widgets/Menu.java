@@ -915,9 +915,9 @@ public void setVisible (boolean visible) {
 	MSG msg = new MSG ();
 	if (OS.PeekMessage (msg, hwndParent, OS.WM_COMMAND, OS.WM_COMMAND, OS.PM_REMOVE)) {
 		OS.DispatchMessage (msg);
-		Display display = getDisplay ();
-		display.runDeferredEvents ();
 	}
+	Display display = getDisplay ();
+	display.runDeferredEvents ();
 }
 
 }
