@@ -2205,7 +2205,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	if (display.smallFonts) setFontStyle (getFont ());
+	if (display.smallFonts) setFontStyle (defaultFont ());
 }
 
 /**
