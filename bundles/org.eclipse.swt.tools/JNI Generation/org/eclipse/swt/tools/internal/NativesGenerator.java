@@ -480,6 +480,46 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
 		outputln();
 		outputln("\t\t}");
+	} else if (getPlatform().equals("carbon")) {
+		outputln("\t\tstatic int initialized = 0;");
+		outputln("\t\tstatic CFBundleRef bundle = NULL;");
+		output("\t\ttypedef ");
+		output(getTypeSignature2(returnType));
+		output(" (*FPTR)(");
+		for (int i = 0; i < paramTypes.length; i++) {
+			if (i != 0) output(", ");
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			String cast = paramData.getCast();
+			if (cast.length() > 2) {
+				output(cast.substring(1, cast.length() - 1));
+			} else {
+				output(getTypeSignature4(paramType));
+			}
+		}
+		outputln(");");
+		outputln("\t\tstatic FPTR fptr;");
+		if (returnType != Void.TYPE) {
+			if (needsReturn) {
+				outputln("\t\trc = 0;");
+			}
+		}
+		outputln("\t\tif (!initialized) {");
+		output("\t\t\tif (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(");
+		output(name);
+		outputln("_LIB));");
+		output("\t\t\tif (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR(\"");
+		output(name);
+		outputln("\"));");
+		outputln("\t\t\tinitialized = 1;");
+		outputln("\t\t}");
+		outputln("\t\tif (fptr) {");
+		output("\t\t");
+		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+		output("(*fptr)");
+		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
+		outputln();
+		outputln("\t\t}");
 	} else {
 		outputln("\t\tstatic int initialized = 0;");
 		outputln("\t\tstatic void *handle = NULL;");
