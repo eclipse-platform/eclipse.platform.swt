@@ -101,10 +101,7 @@ boolean drawGripper (int x, int y, int width, int height) {
 	int /*long*/ paintHandle = paintHandle ();
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle);
 	if (window == 0) return false;
-	int /*long*/ style = OS.gtk_widget_get_style (paintHandle);
-	if (style == 0) return false;
-	byte[] detail = Converter.wcsToMbcs (null, "", true);
-	OS.gtk_paint_handle (style, window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, detail, x, y, width, height, OS.GTK_ORIENTATION_VERTICAL);
+	OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, OS.GTK_ORIENTATION_VERTICAL);
 	return true;
 }
 
