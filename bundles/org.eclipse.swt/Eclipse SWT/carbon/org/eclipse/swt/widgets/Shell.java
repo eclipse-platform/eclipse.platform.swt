@@ -319,8 +319,7 @@ public boolean isEnabled () {
 
 public boolean isVisible () {
 	checkWidget();
-	if (getVisible ()) return true;
-	return parent != null && parent.isVisible ();
+	return getVisible ();
 }
 
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {

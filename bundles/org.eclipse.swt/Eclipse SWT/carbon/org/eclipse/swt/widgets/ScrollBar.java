@@ -192,7 +192,7 @@ boolean isTrimHandle (int trimHandle) {
 
 public boolean isVisible () {
 	checkWidget();
-	return OS.HIViewIsVisible (handle);
+	return OS.IsControlVisible (handle);
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
