@@ -13,12 +13,16 @@ package org.eclipse.swt.custom;
 
 import java.util.*;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.printing.*;
+import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -1662,6 +1666,7 @@ public StyledText(Composite parent, int style) {
 	setCursor(ibeamCursor);
 	installListeners();
 	installDefaultLineStyler();
+	initializeAccessible();
 }
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
@@ -5459,6 +5464,38 @@ void handleTraverse(Event event) {
  */
 void handleVerticalScroll(Event event) {
 	setVerticalScrollOffset(getVerticalBar().getSelection(), false);
+}
+/**
+ * Add accessibility support for the widget.
+ */
+void initializeAccessible() {
+	final Accessible accessible = getAccessible();
+	accessible.addAccessibleListener(new AccessibleAdapter() {
+		public void getHelp(AccessibleEvent e) {
+			e.result = getToolTipText();
+		}
+	});
+	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void getRole(AccessibleControlEvent e) {
+			e.detail = ACC.ROLE_TEXT;
+		}
+		public void getState(AccessibleControlEvent e) {
+			int state = 0;
+			if (isEnabled()) state |= ACC.STATE_FOCUSABLE;
+			if (isFocusControl()) state |= ACC.STATE_FOCUSED;
+			if (isVisible() == false) state |= ACC.STATE_INVISIBLE;
+			if (getEditable() == false) state |= ACC.STATE_READONLY;
+			e.detail = state;
+		}
+		public void getValue(AccessibleControlEvent e) {
+			e.result = getText();
+		}
+	});		
+	addListener(SWT.FocusIn, new Listener() {
+		public void handleEvent(Event event) {
+			accessible.setFocus(ACC.CHILDID_SELF);
+		}
+	});
 }
 /** 
  * Initializes the fonts used to render font styles.
