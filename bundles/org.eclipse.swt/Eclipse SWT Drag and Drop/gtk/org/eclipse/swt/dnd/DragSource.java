@@ -344,6 +344,7 @@ void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selecti
 	transfer.javaToNative(event.data, transferData);
 	if (transferData.result != 1) return;
 	OS.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
+	OS.g_free(transferData.pValue);
 	return;	
 }
 
