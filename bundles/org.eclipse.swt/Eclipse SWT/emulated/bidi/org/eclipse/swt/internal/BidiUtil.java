@@ -101,5 +101,6 @@ public static void setKeyboardLanguage(int language) {
  * Not implemented.
  */
 public static boolean setOrientation(int hwnd, int orientation) {
+	return false;
 }
 }
