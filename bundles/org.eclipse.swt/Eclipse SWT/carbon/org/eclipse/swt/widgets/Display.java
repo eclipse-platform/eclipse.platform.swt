@@ -2239,6 +2239,8 @@ boolean runGrabs () {
 	mouseUpControl = null;
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
+			//TEMPORARY CODE
+			grabControl.getShell().update (true);
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
 			int oldState = OS.GetCurrentEventButtonState ();
 			int handle = grabControl.handle;
@@ -2291,8 +2293,6 @@ boolean runGrabs () {
 						grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0], true);
 					}
 				}
-				//TEMPORARY CODE
-				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
 			}
 		}
 	} finally {
