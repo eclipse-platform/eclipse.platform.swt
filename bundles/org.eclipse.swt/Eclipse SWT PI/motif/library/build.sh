@@ -16,26 +16,6 @@
 # Determine the operating system being built
 OS=`uname -s`
 
-# Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
-if [ "$OS" = "SunOS" ]; then
-    fixup_files=`/usr/xpg4/bin/grep -l "\
-" *.[ch]`
-else
-    fixup_files=`grep -l "\
-" *.[ch]`
-fi
-
-if test -n "$fixup_files"; then
-    echo "Converting files from DOS to UNIX format:"
-    for file in $fixup_files; do
-        echo "    $file"
-        ex $file << EOF 2> /dev/null
-g/\$/s///
-w
-EOF
-    done
-fi
-
 # build according to the operating system
 case $OS in
 
