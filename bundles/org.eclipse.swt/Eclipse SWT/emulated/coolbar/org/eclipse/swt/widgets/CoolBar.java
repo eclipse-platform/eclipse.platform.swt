@@ -661,7 +661,7 @@ void onPaint(Event event) {
 			
 			/* Draw gripper. */
 			if (!isLocked) {
-				nativeGripper = drawGripper(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
+				if (!flat) nativeGripper = drawGripper(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
 				if (!nativeGripper) {
 					int grabberTrim = 2; 
 					int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - (2 * grabberTrim) - 1;				
