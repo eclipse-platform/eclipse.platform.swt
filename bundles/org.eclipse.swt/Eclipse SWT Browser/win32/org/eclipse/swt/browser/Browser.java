@@ -723,6 +723,54 @@ protected void checkSubclass() {
 }
 
 /**
+ * Execute the specified script.
+ *
+ * <p>
+ * Execute a script containing javascript commands in the context of the current document. 
+ * 
+ * @param script the script with javascript commands
+ *  
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * WARNING 3.1 API STILL UNDER CONSTRUCTION
+ * @since 3.1
+ */
+public boolean execute(String script) {
+	checkWidget();
+	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
+	/* get IHTMLDocument2 */
+	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	int dispIdMember = rgdispid[0];
+	Variant pVarResult = auto.getProperty(dispIdMember);
+	if (pVarResult == null) return false;
+	OleAutomation document = pVarResult.getAutomation();
+
+	rgdispid = document.getIDsOfNames(new String[]{"parentWindow"}); //$NON-NLS-1$ 
+	dispIdMember = rgdispid[0];
+	pVarResult = document.getProperty(dispIdMember);
+	if (pVarResult == null) return false;
+	OleAutomation ihtmlWindow2 = pVarResult.getAutomation();
+	
+	rgdispid = ihtmlWindow2.getIDsOfNames(new String[] { "ExecScript", "CODE" }); //$NON-NLS-1$  //$NON-NLS-2$
+	Variant[] rgvarg = new Variant[1];
+	rgvarg[0] = new Variant(script);
+	int[] rgdispidNamedArgs = new int[1];
+	rgdispidNamedArgs[0] = rgdispid[1];
+	pVarResult = ihtmlWindow2.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	return pVarResult != null;
+}
+
+/**
  * Navigate to the next session history item.
  *
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
