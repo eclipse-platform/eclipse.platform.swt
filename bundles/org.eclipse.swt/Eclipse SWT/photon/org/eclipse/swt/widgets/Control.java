@@ -1131,7 +1131,7 @@ public Point toControl (Point point) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	short [] x = new short [1], y = new short [1];
 	OS.PtGetAbsPosition (handle, x, y);
-	return new Point (x [0] - point.x, y [0] - point.y);
+	return new Point (point.x - x [0], point.y - y [0]);
 }
 
 public Point toDisplay (Point point) {
