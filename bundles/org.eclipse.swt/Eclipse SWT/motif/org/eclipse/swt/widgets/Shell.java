@@ -1286,10 +1286,8 @@ public void setRegion (Region region) {
 	if (xWindow == 0) return;
 	if (region != null) {
 		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, region.handle, OS.ShapeSet);
 	} else {
 		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
-		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeClip, 0, 0, 0, OS.ShapeSet);
 	}
 	this.region = region;
 }

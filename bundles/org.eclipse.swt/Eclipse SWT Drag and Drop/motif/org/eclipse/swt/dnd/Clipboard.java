@@ -14,7 +14,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.motif.*;;
+import org.eclipse.swt.internal.motif.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -118,7 +118,6 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	Display display = this.display;
 	if (display == null) DND.error (SWT.ERROR_WIDGET_DISPOSED);
 	if (display.getThread() != Thread.currentThread ()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (display.isDisposed()) DND.error(SWT.ERROR_WIDGET_DISPOSED);
