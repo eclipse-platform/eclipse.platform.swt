@@ -633,6 +633,7 @@ public void removeSelectionListener(SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget();
+	if (this.accelerator == accelerator) return;
 	this.accelerator = accelerator;
 	parent.destroyAccelerators ();
 }
@@ -693,14 +694,12 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
+	parent.destroyAccelerators ();
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
-	int menuHandle = 0;
-
-	/* Destroy accelerators */
-	parent.destroyAccelerators ();
 	
 	/* Set the new menu in the OS */
+	int menuHandle = 0;
 	if (menu != null) {
 		menu.cascade = this;
 		menuHandle = menu.handle;
