@@ -914,7 +914,7 @@ public int getNextOffset (int offset, int movement) {
 		}
 	}
 	offset++;
-	if (segments != null) {
+	if (segments != null && segments.length > 2) {
 		for (int j = 0; j < segments.length; j++) {
 			if (translateOffset(segments[j]) - 1 == offset) {
 				offset++;
@@ -952,7 +952,7 @@ public int getNextOffset (int offset, int movement) {
 					previousWhitespace = logAttr.fWhiteSpace;
 				}
 				offset++;
-				if (segments != null) {
+				if (segments != null && segments.length > 2) {
 					for (int j = 0; j < segments.length; j++) {
 						if (translateOffset(segments[j]) - 1 == offset) {
 							offset++;
@@ -1094,7 +1094,7 @@ public int getPreviousOffset (int offset, int movement) {
 	int i = allRuns.length - 1;
 	int lastScript  = -1;
 	offset--;
-	if (segments != null) {
+	if (segments != null && segments.length > 2) {
 		for (int j = 0; j < segments.length; j++) {
 			if (translateOffset(segments[j]) - 1 == offset) {
 				offset--;
@@ -1142,7 +1142,7 @@ public int getPreviousOffset (int offset, int movement) {
 					previousWhitespace = logAttr.fWhiteSpace;
 				};
 				offset--;
-				if (segments != null) {
+				if (segments != null && segments.length > 2) {
 					for (int j = 0; j < segments.length; j++) {
 						if (translateOffset(segments[j]) - 1 == offset) {
 							offset--;
