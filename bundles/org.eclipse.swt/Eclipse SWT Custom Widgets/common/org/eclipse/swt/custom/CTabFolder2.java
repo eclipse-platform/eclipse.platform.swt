@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -717,6 +716,44 @@ void drawBorder(GC gc) {
 				shape[index++] = itemY + itemH;
 			}
 		}
+
+		// Anti- aliasing
+		int[] shape2 = new int[shape.length];
+		int index = 0;
+		boolean left = true;
+		for (int i = 0; i < shape.length/2; i++) { 
+			shape2[index] = shape[index++] + (left ? -1 : +1);
+			shape2[index] = shape[index++];
+			if (left) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
+		}
+		RGB from = CTabFolder2.borderColor1.getRGB();
+		RGB to = single ? getBackground().getRGB() : getParent().getBackground().getRGB();
+		int red = from.red + 3*(to.red - from.red)/4;
+		int green = from.green + 3*(to.green - from.green)/4;
+		int blue = from.blue + 3*(to.blue - from.blue)/4;
+		Color color = new Color(getDisplay(), red, green, blue);
+		gc.setForeground(color);
+		gc.drawPolyline(shape2);
+		color.dispose();
+		int[] shape3 = new int[shape.length];
+		index = 0;
+		left = true;
+		for (int i = 0; i < shape.length/2; i++) {
+			shape3[index] = shape[index++] + (left ? +1 : -1);
+			shape3[index] = shape[index++];
+			if (left) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
+		}
+		from = CTabFolder2.borderColor1.getRGB();
+		to = selectionBackground == null ? getBackground().getRGB() : selectionBackground.getRGB();
+		red = from.red + 3*(to.red - from.red)/4;
+		green = from.green + 3*(to.green - from.green)/4;
+		blue = from.blue + 3*(to.blue - from.blue)/4;
+		color = new Color(getDisplay(), red, green, blue);
+		gc.setForeground(color);
+		gc.drawPolyline(shape3);
+		color.dispose();
+		
+		// draw line
 		gc.setForeground(borderColor1);
 		gc.drawPolyline(shape);
 	}
@@ -1060,13 +1097,13 @@ void drawChevron(GC gc) {
 		gc.setBackground(getParent().getBackground());
 		gc.fillRectangle(chevronRect);
 	}
-	// draw chevron (6x5)
+	// draw chevron (10x7)
 	int indent = Math.max(1, (tabHeight-11)/2);
 	int x = chevronRect.x + indent - 1;
 	int y = chevronRect.y + indent;
 	switch (chevronImageState) {
 		case NORMAL: {
-			int[] shape = new int[] {x,y, x+2,y, x+6,y+4, x+6,y+5, x+2,y+9, x,y+9, x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			int[] shape = new int[] {x,y, x+9,y, x+9,y+2, x+5,y+6, x+4,y+6, x,y+2, x,y};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
 			gc.setForeground(borderColor1);
@@ -1074,7 +1111,7 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case HOT: {
-			int[] shape = new int[] {x,y, x+2,y, x+6,y+4, x+6,y+5, x+2,y+9, x,y+9, x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			int[] shape = new int[] {x,y, x+9,y, x+9,y+2, x+5,y+6, x+4,y+6, x,y+2, x,y};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
 			Color border = new Color(display, CHEVRON_BORDER);
@@ -1084,7 +1121,7 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case SELECTED: {
-			int[] shape = new int[] {x+1,y+1, x+3,y+1, x+7,y+5, x+7,y+6, x+3,y+10, x+1,y+10, x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
+			int[] shape = new int[] {x+1,y+1, x+10,y+1, x+10,y+3, x+6,y+7, x+5,y+7, x+1,y+3, x+1,y+1};
 			Color fill = new Color(display, CHEVRON_FILL);
 			gc.setBackground(fill);
 			gc.fillPolygon(shape);

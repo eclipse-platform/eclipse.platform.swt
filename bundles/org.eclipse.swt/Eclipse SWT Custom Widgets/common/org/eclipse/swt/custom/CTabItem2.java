@@ -368,6 +368,44 @@ void drawUnselected(GC gc) {
 		shape[index++]=x + width - 3; // -3 = 2 pixel gap between tabs, gap on right side
 		shape[index++]=y + height;
 	}
+	// Anti-aliasing
+	int[] shape2 = new int[shape.length];
+	int index = 0;
+	boolean left = true;
+	for (int i = 0; i < shape.length/2; i++) {
+		shape2[index] = shape[index++] + (left ? -1 : +1);
+		shape2[index] = shape[index++];
+		if (left) left = parent.onBottom  ? shape[index-1] < y + height - 2 : shape[index-1] > y + 1;
+	}
+	RGB from = CTabFolder2.borderColor1.getRGB();
+	RGB to = parent.getParent().getBackground().getRGB();
+	int red = from.red + 3*(to.red - from.red)/4;
+	int green = from.green + 3*(to.green - from.green)/4;
+	int blue = from.blue + 3*(to.blue - from.blue)/4;
+	Color color = new Color(getDisplay(), red, green, blue);
+	gc.setForeground(color);
+	gc.drawPolyline(shape2);
+	color.dispose();
+	
+	int[] shape3 = new int[shape.length];
+	index = 0;
+	left = true;
+	for (int i = 0; i < shape.length/2; i++) {
+		shape3[index] = shape[index++] + (left ? +1 : -1);
+		shape3[index] = shape[index++];
+		if (left) left = parent.onBottom  ? shape[index-1] < y + height - 2 : shape[index-1] > y + 1;
+	}
+	from = CTabFolder2.borderColor1.getRGB();
+	to = parent.getBackground().getRGB();
+	red = from.red + 3*(to.red - from.red)/4;
+	green = from.green + 3*(to.green - from.green)/4;
+	blue = from.blue + 3*(to.blue - from.blue)/4;
+	color = new Color(getDisplay(), red, green, blue);
+	gc.setForeground(color);
+	gc.drawPolyline(shape3);
+	color.dispose();
+	
+	// Draw line
 	gc.setForeground(CTabFolder2.borderColor1);
 	gc.drawPolyline(shape);
 	
