@@ -1530,23 +1530,26 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	}
 	
 	/*
-	* Feature in Windows.  When a table item is reselected,
-	* the table does not issue a WM_NOTIFY when the item
-	* state has not changed.  This is inconsistent with
-	* the list widget and other widgets in Windows.  The
-	* fix is to detect the case when an item is reselected
-	* and issue the notification.
+	* Feature in Windows.  When a table item is reselected
+	* in a single-select table, Windows does not issue a
+	* WM_NOTIFY because the item state has not changed.
+	* This is strictly correct but is inconsistent with the
+	* list widget and other widgets in Windows.  The fix is
+	* to detect the case when an item is reselected and issue
+	* the notification.
 	*/
 	boolean wasSelected = false;
-	int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
-	if (count == 1 && pinfo.iItem != -1) {
-		LVITEM lvItem = new LVITEM ();
-		lvItem.mask = OS.LVIF_STATE;
-		lvItem.stateMask = OS.LVIS_SELECTED;
-		lvItem.iItem = pinfo.iItem;
-		OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-		wasSelected = (lvItem.state & OS.LVIS_SELECTED) != 0;
-		if (wasSelected) ignoreSelect = true;
+	if ((style & SWT.SINGLE) != 0) {
+		int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+		if (count == 1 && pinfo.iItem != -1) {
+			LVITEM lvItem = new LVITEM ();
+			lvItem.mask = OS.LVIF_STATE;
+			lvItem.stateMask = OS.LVIS_SELECTED;
+			lvItem.iItem = pinfo.iItem;
+			OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+			wasSelected = (lvItem.state & OS.LVIS_SELECTED) != 0;
+			if (wasSelected) ignoreSelect = true;
+		}
 	}
 	dragStarted = false;
 	int code = callWindowProc (msg, wParam, lParam);
