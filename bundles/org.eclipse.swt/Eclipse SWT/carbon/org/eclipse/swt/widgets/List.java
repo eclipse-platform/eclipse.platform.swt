@@ -522,7 +522,7 @@ public void setSelection (int index) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, id [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	showIndex (index);
 }
 
 public void setSelection (int start, int end) {
@@ -538,7 +538,7 @@ public void setSelection (int start, int end) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) showIndex (ids [0] - 1);
 }
 
 public void setSelection (int [] indices) {
@@ -554,7 +554,7 @@ public void setSelection (int [] indices) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) showIndex (ids [0] - 1);
 }
 
 public void setSelection (String [] items) {
@@ -571,7 +571,7 @@ public void setSelection (String [] items) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) showIndex (ids [0] - 1);
 }
 
 public void setTopIndex (int index) {
@@ -582,13 +582,18 @@ public void setTopIndex (int index) {
     OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 }
 
+void showIndex (int index) {
+	OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+    int [] top = new int [1], left = new int [1];
+    OS.GetDataBrowserScrollPosition (handle, top, left);
+    OS.SetDataBrowserScrollPosition (handle, top [0], 0);
+
+}
+
 public void showSelection () {
 	checkWidget();
 	int index = getSelectionIndex ();
-	if (index >= 0) {
-		int [] id = new int [] {index + 1};
-		OS.RevealDataBrowserItem (handle, id [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
-	}
+	if (index >= 0) showIndex (index);
 }
 
 }
