@@ -256,9 +256,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	/* Get the size of the trimmings */
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
-	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+	OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
 
 	/* Get the size of the scroll bars */
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
@@ -422,15 +423,32 @@ public Rectangle getClientArea () {
 	}
 	if (!OS.IsWinCE) {
 		if (OS.IsIconic (handle)) {
-			RECT rect = new RECT ();
 			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 			lpwndpl.length = WINDOWPLACEMENT.sizeof;
 			OS.GetWindowPlacement (handle, lpwndpl);
 			int width = lpwndpl.right - lpwndpl.left;
 			int height = lpwndpl.bottom - lpwndpl.top;
-			OS.SetRect (rect, 0, 0, width, height);
-			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
-			return new Rectangle (0, 0, rect.right, rect.bottom);
+			/*
+			* Feature in Windows.  For some reason WM_NCCALCSIZE does
+			* not compute the client area when the window is minimized.
+			* The fix is to compute it using AdjustWindowRectEx() and
+			* GetSystemMetrics().
+			* 
+			* NOTE: This code fails to compute the correct client area
+			* for a minimized window where the menu bar would wrap were
+			* the window restored.  There is no fix for this problem at
+			* this time.
+			*/
+			if (horizontalBar != null) width -= OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+			if (verticalBar != null) height -= OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+			RECT rect = new RECT ();
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
+			OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
+			width = Math.max (0, width - (rect.right - rect.left));
+			height = Math.max (0, height - (rect.bottom - rect.top));
+			return new Rectangle (0, 0, width, height);
 		}
 	}
 	return super.getClientArea ();
@@ -734,10 +752,14 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	if ((OS.SWP_NOMOVE & flags) == 0) {
-		moved = rect.left != x || rect.top != y;
+		if (rect.left != x || rect.top != y) {
+			moved = true;
+		}
 	}
 	if ((OS.SWP_NOSIZE & flags) == 0) {
-		resized = rect.right - rect.left != width || rect.bottom - rect.top != height;
+		if (rect.right - rect.left != width || rect.bottom - rect.top != height) {
+			resized = true;
+		}
 	}
 	super.setBounds (x, y, width, height, flags, defer);
 }
@@ -1119,17 +1141,38 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 			lpwndpl.showCmd = OS.SW_SHOWMAXIMIZED;
 		}
 	}
+	boolean move = false;
 	if ((flags & OS.SWP_NOMOVE) == 0) {
+		move = lpwndpl.left != x || lpwndpl.top != y;
 		lpwndpl.right = x + (lpwndpl.right - lpwndpl.left);
 		lpwndpl.bottom = y + (lpwndpl.bottom - lpwndpl.top);
 		lpwndpl.left = x;
 		lpwndpl.top = y;
 	}
+	boolean resize = false;
 	if ((flags & OS.SWP_NOSIZE) == 0) {
+		resize = lpwndpl.right - lpwndpl.left != width || lpwndpl.bottom - lpwndpl.top != height;
 		lpwndpl.right = lpwndpl.left + width;
 		lpwndpl.bottom = lpwndpl.top + height;
 	}
 	OS.SetWindowPlacement (handle, lpwndpl);
+	if (move) {
+		moved = true;
+		Point location = getLocation ();
+		oldX = location.x;
+		oldY = location.y;
+		sendEvent (SWT.Move);
+		if (isDisposed ()) return;
+	}
+	if (resize) {
+		resized = true;
+		Rectangle rect = getClientArea ();
+		oldWidth = rect.width;
+		oldHeight = rect.height;
+		sendEvent (SWT.Resize);
+		if (isDisposed ()) return;
+		if (layout != null) layout.layout (this, false);
+	}
 }
 
 void setSavedFocus (Control control) {
@@ -1232,6 +1275,18 @@ public void setVisible (boolean visible) {
 				OS.ShowWindow (handle, swFlags);
 			}
 			if (isDisposed ()) return;
+			if (!moved) {
+				moved = true;
+				Point location = getLocation ();
+				oldX = location.x;
+				oldY = location.y;
+			}
+			if (!resized) {
+				resized = true;
+				Rectangle rect = getClientArea ();
+				oldWidth = rect.width;
+				oldHeight = rect.height;
+			}
 			OS.UpdateWindow (handle);
 		}
 	} else {
@@ -1496,13 +1551,14 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	if (moved && rect.left == oldX && rect.top == oldY) {
-		return null;
+	if (moved) {
+		Point location = getLocation ();
+		if (location.x == oldX && location.y == oldY) {
+			return null;
+		}
+		oldX = location.x;
+		oldY = location.y;
 	}
-	oldX = rect.left;
-	oldY = rect.top;
 	return super.WM_MOVE (wParam, lParam);
 }
 
@@ -1547,20 +1603,32 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	if (resized && (lParam & 0xFFFF) == oldWidth && (lParam >> 16) == oldHeight) {
-		return null;
+	LRESULT result = null;
+	boolean changed = true;
+	if (resized) {
+		int newWidth = 0, newHeight = 0;
+		switch (wParam) {
+			case OS.SIZE_RESTORED:
+			case OS.SIZE_MAXIMIZED:
+				newWidth = lParam & 0xFFFF;
+				newHeight = lParam >> 16;
+				break;
+			case OS.SIZE_MINIMIZED:
+				Rectangle rect = getClientArea ();
+				newWidth = rect.width;
+				newHeight = rect.height;
+				break;
+		}
+		changed = newWidth != oldWidth || newHeight != oldHeight;
+		if (changed) {
+			oldWidth = newWidth;
+			oldHeight = newHeight;
+		}
 	}
-	oldWidth = lParam & 0xFFFF;
-	oldHeight = lParam >> 16;
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
-	if (isDisposed ()) return result;
+	if (changed) {
+		result = super.WM_SIZE (wParam, lParam);
+		if (isDisposed ()) return result;
+	}
 	if (wParam == OS.SIZE_MINIMIZED) {
 		sendEvent (SWT.Iconify);
 		// widget could be disposed at this point

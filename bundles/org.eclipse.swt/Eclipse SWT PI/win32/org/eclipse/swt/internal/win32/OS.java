@@ -932,7 +932,9 @@ public class OS {
 	public static final int SIP_DOWN = 1;
 	public static final int SIP_UP = 0;
 	public static final int SIPF_ON = 0x1;
-	public static final int SIZE_MINIMIZED = 0x1;
+	public static final int SIZE_RESTORED = 0;
+	public static final int SIZE_MINIMIZED = 1;
+	public static final int SIZE_MAXIMIZED = 2;
 	public static final int SIZEPALETTE = 104;
 	public static final int SM_CMONITORS = 80;
 	public static final int SM_CXBORDER = 0x5;
