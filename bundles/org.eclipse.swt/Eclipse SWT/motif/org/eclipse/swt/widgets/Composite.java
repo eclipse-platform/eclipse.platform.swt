@@ -832,7 +832,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	if (xDisplay == 0) return 0;
 	Event event = new Event ();
 	GC gc = event.gc = new GC (this);
-	Region region = Region.motif_new (damagedRegion);
+	Region region = Region.motif_new (display, damagedRegion);
 	gc.setClipping (region);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);

@@ -30,6 +30,12 @@ public final class Region {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+
+	/**
+	 * The device where this image was created.
+	 */
+	Device device;
+
 /**
  * Constructs a new empty region.
  * 
@@ -38,9 +44,18 @@ public final class Region {
  * </ul>
  */
 public Region () {
-	handle = OS.XCreateRegion ();
+	this(null);
 }
-Region (int handle) {
+public Region (Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	handle = OS.XCreateRegion ();
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+Region (Device device, int handle) {
+	this.device = device;
 	this.handle = handle;
 }
 /**
@@ -132,8 +147,12 @@ public boolean contains (Point pt) {
  * they allocate.
  */
 public void dispose () {
-	if (handle != 0) OS.XDestroyRegion(handle);
+	if (handle == 0) return;
+	if (device.isDisposed()) return;
+	OS.XDestroyRegion(handle);
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -182,6 +201,27 @@ public Rectangle getBounds() {
  */
 public int hashCode () {
 	return handle;
+}
+public void intersect (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+	int rectRgn = OS.XCreateRegion();
+	XRectangle xRect = new XRectangle();
+	xRect.x = (short)rect.x;
+	xRect.y = (short)rect.y;
+	xRect.width = (short)rect.width;
+	xRect.height = (short)rect.height;
+	OS.XUnionRectWithRegion(xRect, rectRgn, rectRgn);
+	OS.XIntersectRegion(handle, rectRgn, handle);
+	OS.XDestroyRegion(rectRgn);
+}
+public void intersect (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.XIntersectRegion(handle, region.handle, handle);
 }
 /**
  * Returns <code>true</code> if the rectangle described by the
@@ -253,8 +293,29 @@ public boolean isEmpty () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.XEmptyRegion(handle);
 }
-public static Region motif_new(int handle) {
-	return new Region(handle);
+public static Region motif_new(Device device, int handle) {
+	return new Region(device, handle);
+}
+public void subtract (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+	int rectRgn = OS.XCreateRegion();
+	XRectangle xRect = new XRectangle();
+	xRect.x = (short)rect.x;
+	xRect.y = (short)rect.y;
+	xRect.width = (short)rect.width;
+	xRect.height = (short)rect.height;
+	OS.XUnionRectWithRegion(xRect, rectRgn, rectRgn);
+	OS.XSubtractRegion(handle, rectRgn, handle);
+	OS.XDestroyRegion(rectRgn);
+}
+public void subtract (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.XSubtractRegion(handle, region.handle, handle);
 }
 /**
  * Returns a string containing a concise, human-readable
