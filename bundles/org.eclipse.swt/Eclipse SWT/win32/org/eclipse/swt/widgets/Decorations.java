@@ -744,7 +744,9 @@ boolean restoreFocus () {
 
 void saveFocus () {
 	Control control = display.getFocusControl ();
-	if (control != null) setSavedFocus (control);
+	if (control != null && control != this) {
+		setSavedFocus (control);
+	}
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -1167,10 +1169,6 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 }
 
 void setSavedFocus (Control control) {
-	if (this == control) {
-		savedFocus = null;
-		return;
-	}
 	if (this != control.menuShell ()) return;
 	savedFocus = control;
 }
@@ -1579,7 +1577,7 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	restoreFocus ();
+	if (savedFocus != this) restoreFocus ();
 	return result;
 }
 
