@@ -43,15 +43,19 @@ public static Panel new_Panel (final Composite parent) {
 	});
 	parent.addListener (SWT.Deactivate, new Listener () {
 		public void handleEvent (Event e) {
-			frame.dispatchEvent (new WindowEvent(frame, WindowEvent.WINDOW_DEACTIVATED));
-			frame.dispatchEvent (new FocusEvent(frame, FocusEvent.FOCUS_LOST));
+			frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+			frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 		}
 	});
 	parent.addListener (SWT.Resize, new Listener () {
 		public void handleEvent (Event e) {
-			Rectangle rect = parent.getClientArea ();
-			frame.setSize (rect.width, rect.height);
-			frame.validate ();
+			final Rectangle rect = parent.getClientArea ();
+			frame.getToolkit ().getSystemEventQueue ().invokeLater(new Runnable () {
+				public void run () {
+					frame.setSize (rect.width, rect.height);
+					frame.validate ();
+				}
+			});
 		}
 	});
 	parent.addListener (SWT.Dispose, new Listener () {
@@ -66,7 +70,7 @@ public static Shell new_Shell (Display display, final Canvas parent) {
 	DrawingSurface ds = (DrawingSurface)parent.getPeer();
 	WDrawingSurfaceInfo wds = (WDrawingSurfaceInfo)ds.getDrawingSurfaceInfo();
 	wds.lock ();
-	int handle = wds.getHWnd ();
+	int handle = (int) wds.getHWnd ();
 	wds.unlock ();
 	final Shell shell = Shell.win32_new (display, handle);
 	final Display newDisplay = shell.getDisplay ();
