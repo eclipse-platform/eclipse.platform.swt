@@ -33,6 +33,11 @@ public class GRE {
 	public static String mozillaPath = null;
 	
 	static {
-		grePath = mozillaPath = XPCOM.PR_GetEnv(XPCOM.MOZILLA_FIVE_HOME);
+		int ptr = XPCOM.PR_GetEnv(XPCOM.MOZILLA_FIVE_HOME.getBytes());
+		if (ptr != 0) {
+			byte[] buffer = new byte[XPCOM.strlen(ptr)];
+			XPCOM.memmove(buffer, ptr, buffer.length);
+			grePath = mozillaPath = new String(buffer);
+		}
 	}
 }

@@ -101,43 +101,33 @@ int Close() {
 
 int Available(int _retval) {
 	int available = buffer == null ? 0 : buffer.length - index;
-	int[] tmp = new int[10];
-	XPCOM.memmove(tmp ,_retval, 8);
-	tmp[0] = tmp[0] - 1;
 	XPCOM.memmove(_retval, new int[] {available}, 4);
 	return XPCOM.NS_OK;
 }
 
 int Read(int aBuf, int aCount, int _retval) {
-	int available = buffer == null ? 0 : buffer.length - index;
-	int cnt = Math.min(aCount, available);
-	if (cnt != 0) {
-		byte[] src = new byte[cnt];
-		System.arraycopy(buffer, index, src, 0, cnt);
-		XPCOM.memmove(aBuf, src, cnt);
+	int max = Math.min(aCount, buffer == null ? 0 : buffer.length - index);
+	if (max > 0) {
+		byte[] src = new byte[max];
+		System.arraycopy(buffer, index, src, 0, max);
+		XPCOM.memmove(aBuf, src, max);
+		index += max;
 	}
-	XPCOM.memmove(_retval, new int[] {cnt}, 4);
+	XPCOM.memmove(_retval, new int[] {max}, 4);
 	return XPCOM.NS_OK;
 }
 
 int ReadSegments(int aWriter, int aClosure, int aCount, int _retval) {
-	int available = buffer == null ? 0 : buffer.length - index;
-	int cnt = Math.min(aCount, available);
-	if (cnt == 0) {
-		/* end of stream */
-		XPCOM.memmove(_retval, new int[] {0}, 4);
-		return XPCOM.NS_OK;
-	}
-	int[] aWriteCount = new int[1];
-	int rc = XPCOM.nsWriteSegmentFun(aWriter, getAddress(), aClosure, buffer, index, cnt, aWriteCount);
-	if (rc == XPCOM.NS_OK) {
+	int max = Math.min(aCount, buffer == null ? 0 : buffer.length - index);
+	int cnt = max;
+	while (cnt > 0) {
+		int[] aWriteCount = new int[1];
+		int rc = XPCOM.Call(aWriter, getAddress(), aClosure, buffer, index, cnt, aWriteCount);
+		if (rc != XPCOM.NS_OK) break;
 		index += aWriteCount[0];
-		available = buffer.length - index;
-		if (available == 0) {
-			/* end of stream */
-			XPCOM.memmove(_retval, new int[] {0}, 4);
-		}
+		cnt -= aWriteCount[0];
 	}
+	XPCOM.memmove(_retval, new int[] {max - cnt}, 4);
 	return XPCOM.NS_OK;
 }
 
