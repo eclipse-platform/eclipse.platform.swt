@@ -4,7 +4,7 @@
    id="org.eclipse.swt.examples.ole.win32"
    name="%plugin.SWTOLEExample.name"
    version="0.9"
-   provider-name="IBM"
+   provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.ole.win32.OlePlugin">
 <!-- Required plugins -->
 <requires>
@@ -19,8 +19,8 @@
    <library name="olewin32.jar"/>
 </runtime>
 
-<!-- Extensions -->
 <!-- Extension points -->
+<!-- Extensions -->
 <extension
       point="org.eclipse.ui.views">
    <category

@@ -4,7 +4,7 @@
    id="org.eclipse.swt.examples.launcher"
    name="%plugin.SWTLauncherExample.name"
    version="0.9"
-   provider-name="IBM"
+   provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.launcher.LauncherPlugin">
 <!-- Required plugins -->
 <requires>
