@@ -2184,7 +2184,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setControlToolTip
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl(JNIEnv *env, jclass zz,
 			jint wHandle, jboolean visible, jshort initialValue, jshort minValue, jshort maxValue, jshort procID) {
-	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "\p", visible, initialValue, minValue, maxValue, procID, 0);
+	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "\0", visible, initialValue, minValue, maxValue, procID, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl(JNIEnv *env, jclass zz, jint cHandle) {
@@ -3254,4 +3254,5 @@ static void setColor(struct RGBColor *c, int rgb) {
 	c->red= (rgb >> 16) * 257;
 	c->green= ((rgb >> 8) & 0xff) * 257;
 	c->blue= (rgb & 0xff) * 257;
-}
+
+
