@@ -22,6 +22,56 @@ import org.eclipse.swt.SWT;
  */
 public final class Compatibility {
 
+static double pi = 3.1415926535;
+static double toRadians = pi / 180;
+
+/**
+ * Answers the length of the side adjacent to the given angle
+ * of a right triangle.
+ * <p>
+ * The length of the triangle's hypotenuse must be between -32767
+ *  and 32767 (inclusive).
+ * </p>
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the length of the side adjacent to the given angle
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
+ * </ul>
+ */
+public static int cos(int angle, int length) {
+	if (length < -32767 || length > 32767) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}
+	return (int)(Math.cos(angle * toRadians) * length);
+}
+
+/**
+ * Answers the length of the side opposite to the given angle
+ * of a right triangle.
+ * <p>
+ * The length of the triangle's hypotenuse must be between -32767
+ *  and 32767 (inclusive).
+ * </p>
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the length of the side opposite to the given angle
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
+ * </ul>
+ */
+public static int sin(int angle, int length) {
+	if (length < -32767 || length > 32767) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}
+	return (int)(Math.sin(angle * toRadians) * length);
+}
+
+
 /**
  * Answers the most negative (i.e. closest to negative infinity)
  * integer value which is greater than the given rational number.
@@ -210,6 +260,18 @@ public static String getMessage(String key) {
  */
 public static void interrupt() {
 	Thread.currentThread().interrupt();
+}
+
+/**
+ * Compares two instances of class String ignoring the case of the
+ * characters and answers if they are equal.
+ *
+ * @param s1 string
+ * @param s2 string
+ * @return true if the two instances of class String are equal
+ */
+public static boolean equalsIgnoreCase(String s1, String s2) {
+	return s1.equalsIgnoreCase(s2);
 }
 
 /**

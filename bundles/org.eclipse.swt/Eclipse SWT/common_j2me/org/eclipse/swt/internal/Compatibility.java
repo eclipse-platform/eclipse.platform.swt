@@ -20,6 +20,82 @@ import java.io.*;
  */
 public final class Compatibility {
 
+/** 
+ * Sine table
+ * <p>
+ * Values represent sine for each degree between 0 and 90. Values have
+ * been multiplied by 65536 and rounded.
+ * </p>
+ */
+static int[] sineTable = {
+	    0,  1143,  2287,  3429,  4571,  5711,  6850,  7986,  9120, 10252, //  0 to  9 degrees
+	11380, 12504, 13625, 14742, 15854, 16961, 18064, 19160, 20251, 21336, // 10 to 19 degrees
+	22414, 23486, 24550, 25606, 26655, 27696, 28729, 29752, 30767, 31772, // 20 to 29 degrees
+	32767, 33753, 34728, 35693, 36647, 37589, 38521, 39440, 40347, 41243, // 30 to 39 degrees
+	42125, 42995, 43852, 44695, 45525, 46340, 47142, 47929, 48702, 49460, // 40 to 49 degrees
+	50203, 50931, 51643, 52339, 53019, 53683, 54331, 54963, 55577, 56175, // 50 to 59 degrees
+	56755, 57319, 57864, 58393, 58903, 59395, 59870, 60326, 60763, 61183, // 60 to 69 degrees
+	61583, 61965, 62328, 62672, 62997, 63302, 63589, 63856, 64103, 64331, // 70 to 79 degrees
+	64540, 64729, 64898, 65047, 65176, 65286, 65376, 65446, 65496, 65526, // 80 to 89 degrees
+	65536 };                                                              //       90 degrees
+
+/**
+ * Answers the length of the side adjacent to the given angle
+ * of a right triangle.
+ * <p>
+ * The length of the triangle's hypotenuse must be between -32767
+ *  and 32767 (inclusive).
+ * </p>
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the length of the side adjacent to the given angle
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
+ * </ul>
+ */
+public static int cos(int angle, int length) {
+	return sin(90 - angle, length);
+}
+
+/**
+ * Answers the length of the side opposite to the given angle
+ * of a right triangle.
+ * <p>
+ * The length of the triangle's hypotenuse must be between -32767
+ *  and 32767 (inclusive).
+ * </p>
+ * 
+ * @param angle the angle in degrees
+ * @param length the length of the triangle's hypotenuse
+ * @return the length of the side opposite to the given angle
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
+ * </ul>
+ */
+public static int sin(int angle, int length) {
+	if (length < -32767 || length > 32767) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}
+	if (angle < 0 || angle >= 360) {
+		angle = angle % 360;
+		if (angle < 0) angle += 360;
+	}
+	
+	int sineValue;
+	if (angle >= 0 && angle < 90) sineValue = sineTable[angle];
+	else if (angle >= 90 && angle < 180) sineValue = sineTable[180 - angle];
+	else if (angle >= 180 && angle < 270) sineValue = 0 - sineTable[angle - 180];
+	else {
+		// angle >= 270 && angle < 360
+		sineValue = 0 - sineTable[360 - angle];
+	}
+
+	return (sineValue * length) >> 16;
+}
+
 /**
  * Answers the most negative (i.e. closest to negative infinity)
  * integer value which is greater than the given rational number.
@@ -229,6 +305,35 @@ public static String getMessage(String key) {
  * </p>
  */
 public static void interrupt() {
+}
+
+/**
+ * Compares two instances of class String ignoring the case of the
+ * characters and answers if they are equal.
+ *
+ * @param s1 string
+ * @param s2 string
+ * @return true if the two instances of class String are equal
+ */
+public static boolean equalsIgnoreCase(String s1, String s2) {
+	if (s1 == s2) return true;
+	if (s2 == null || s1.length() != s2.length()) return false;
+
+	char[] cArray1 = s1.toCharArray();
+	char[] cArray2 = s2.toCharArray();
+	int length = s1.length();
+	char c1, c2;
+
+	for (int index = 0; index < length; index++) {
+		c1 = cArray1[index];
+		c2 = cArray2[index];
+		if (c1 != c2 && 
+			Character.toUpperCase(c1) != Character.toUpperCase(c2) &&
+			Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
