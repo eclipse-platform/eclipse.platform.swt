@@ -1363,6 +1363,7 @@ public void setAlignment (int alignment) {
  * @param font
  */
 public void setFont (Font font) {
+	checkLayout();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.font == font) return;
 	if (font != null && font.equals(this.font)) return;
