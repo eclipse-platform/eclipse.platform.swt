@@ -187,8 +187,26 @@ public Object getContents(Transfer transfer) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 
+	/*
+	* Bug in Windows. When a new application takes control
+	* of the clipboard, other applications may open the 
+	* clipboard to determine if they want to record the 
+	* clipoard updates.  When this happens, the clipboard 
+	* can not be accessed until the other application is
+	* finished.  To allow the other applications to release
+	* the clipboard, use PeekMessage() to enable cross thread
+	* message sends.
+	*/
 	int[] ppv = new int[1];
-	if (COM.OleGetClipboard(ppv) != COM.S_OK) return null;
+	int retryCount = 0;
+	int result = COM.OleGetClipboard(ppv);
+	while (result != COM.S_OK && retryCount++ < 10) {
+		try { Thread.sleep(50);} catch (Throwable t) {}
+		MSG msg = new MSG();
+		COM.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
+		result = COM.OleGetClipboard(ppv);
+	}
+	if (result != COM.S_OK) return null;
 	IDataObject dataObject = new IDataObject(ppv[0]);
 	try {
 		TransferData[] allowed = transfer.getSupportedTypes();
@@ -274,7 +292,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	* of the clipboard, other applications may open the 
 	* clipboard to determine if they want to record the 
 	* clipoard updates.  When this happens, the clipboard 
-	* can not be flushed until the other aplication is
+	* can not be flushed until the other application is
 	* finished.  To allow other applications to get the
 	* data, use PeekMessage() to enable cross thread
 	* message sends.
