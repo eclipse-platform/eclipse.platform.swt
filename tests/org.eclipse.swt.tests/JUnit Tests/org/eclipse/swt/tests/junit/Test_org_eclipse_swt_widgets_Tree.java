@@ -267,19 +267,19 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertEquals(0, tree.getSelectionCount());
 
 	tree.setSelection(new TreeItem[]{items[0], items[3], items[2]});
-	assertEquals(":b:", new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());	
+	assertSame(":b:", new TreeItem[]{items[0], items[2], items[3]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[3], items[2], items[1]});
-	assertEquals(":c:", new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());	
+	assertSame(":c:", new TreeItem[]{items[1], items[2], items[3]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[1], items[4], items[0]});
-	assertEquals(":d:", new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());	
+	assertSame(":d:", new TreeItem[]{items[0], items[1], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[0], items[4], items[0]});
-	assertEquals(":e:", new TreeItem[]{items[0], items[4]}, tree.getSelection());	
+	assertSame(":e:", new TreeItem[]{items[0], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[2], items[3], items[4]});
-	assertEquals(":f:", new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());	
+	assertSame(":f:", new TreeItem[]{items[2], items[3], items[4]}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
 	assertEquals(":g:", new TreeItem[]{items[4]}, tree.getSelection());	
