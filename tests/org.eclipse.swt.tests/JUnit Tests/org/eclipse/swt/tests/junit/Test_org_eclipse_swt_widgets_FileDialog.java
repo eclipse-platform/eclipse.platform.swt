@@ -54,23 +54,32 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
+	// Test FileDialog(Shell, int)
+	FileDialog fd;
+	fd = new FileDialog(shell, SWT.NULL);
+	assertTrue(fd.getStyle()==SWT.NULL);
+	fd = new FileDialog(shell, SWT.APPLICATION_MODAL);
+	assertTrue(fd.getStyle()==SWT.APPLICATION_MODAL);
+	fd = new FileDialog(shell, SWT.PRIMARY_MODAL);
+	assertTrue(fd.getStyle()==SWT.PRIMARY_MODAL);
+	fd = new FileDialog(shell, SWT.SYSTEM_MODAL);
+	assertTrue(fd.getStyle()==SWT.SYSTEM_MODAL);
 }
-
 public void test_getFileName() {
-	warnUnimpl("Test test_getFileName not written");
+	//	tested in test_setFileNameLjava_lang_String()
 }
 
 public void test_getFileNames() {
-	warnUnimpl("Test test_getFileNames not written");
+	String[] names = fileDialog.getFileNames();
+	assertTrue(names.length==0);
 }
 
 public void test_getFilterExtensions() {
-	warnUnimpl("Test test_getFilterExtensions not written");
+	// tested in test_setFilterExtensions$Ljava_lang_String()
 }
 
 public void test_getFilterNames() {
-	warnUnimpl("Test test_getFilterNames not written");
+	// tested in test_setFilterNames$Ljava_lang_String()
 }
 
 public void test_getFilterPath() {
@@ -83,15 +92,43 @@ public void test_open() {
 }
 
 public void test_setFileNameLjava_lang_String() {
-	warnUnimpl("Test test_setFileNameLjava_lang_String not written");
+	fileDialog.setFileName("");
+	String name = fileDialog.getFileName();
+	assertTrue(name.equals(""));
+	fileDialog.setFileName(null);
+	name = fileDialog.getFileName();
+	assertTrue(name==null);
+	fileDialog.setFileName("somefile.test");
+	name = fileDialog.getFileName();
+	assertTrue(name.equals("somefile.test"));
 }
 
 public void test_setFilterExtensions$Ljava_lang_String() {
-	warnUnimpl("Test test_setFilterExtensions$Ljava_lang_String not written");
+	fileDialog.setFilterExtensions(new String[] {"txt","java"});
+	String filters[] = fileDialog.getFilterExtensions();
+	assertTrue(filters.length == 2);
+	assertTrue(filters[0].equals("txt"));
+	assertTrue(filters[1].equals("java"));
+	fileDialog.setFilterExtensions(new String[] {""});
+	filters = fileDialog.getFilterExtensions();
+	assertTrue(filters.length == 1);
+	fileDialog.setFilterExtensions(null);
+	filters = fileDialog.getFilterExtensions();
+	assertTrue(filters==null);
 }
 
 public void test_setFilterNames$Ljava_lang_String() {
-	warnUnimpl("Test test_setFilterNames$Ljava_lang_String not written");
+	fileDialog.setFilterNames(new String[] {"a.txt","b.java"});
+	String filters[] = fileDialog.getFilterNames();
+	assertTrue(filters.length == 2);
+	assertTrue(filters[0].equals("a.txt"));
+	assertTrue(filters[1].equals("b.java"));
+	fileDialog.setFilterNames(new String[] {""});
+	filters = fileDialog.getFilterNames();
+	assertTrue(filters.length == 1);
+	fileDialog.setFilterNames(null);
+	filters = fileDialog.getFilterNames();
+	assertTrue(filters==null);
 }
 
 public void test_setFilterPathLjava_lang_String() {
