@@ -1108,7 +1108,6 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_Return: 		event.character = '\r'; break;
 		case OS.GDK_KP_Delete:
 		case OS.GDK_Delete:		event.character = 0x7F; break;
-		case OS.GDK_Cancel:
 		case OS.GDK_Escape:		event.character = 0x1B; break;
 		case OS.GDK_Tab:
 		case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;

@@ -2735,8 +2735,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	int code = traversalCode (key, keyEvent);
 	boolean all = false;
 	switch (key) {
-		case OS.GDK_Escape:
-		case OS.GDK_Cancel: {
+		case OS.GDK_Escape: {
 			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;

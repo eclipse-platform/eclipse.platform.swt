@@ -220,7 +220,6 @@ public class Display extends Device {
 		{OS.GDK_Delete,				SWT.DEL},
 		{OS.GDK_KP_Delete,		SWT.DEL},
 		{OS.GDK_Escape,			SWT.ESC},
-		{OS.GDK_Cancel,				SWT.ESC},
 		{OS.GDK_Linefeed,			SWT.LF},
 		{OS.GDK_Tab,					SWT.TAB},
 		{OS.GDK_ISO_Left_Tab, 	SWT.TAB},
