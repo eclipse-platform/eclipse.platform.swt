@@ -132,6 +132,18 @@ public void dispose() {
 	device = null;
 }
 
+public void getBounds(float[] bounds) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	RectF rect = new RectF();
+	Gdip.GraphicsPath_GetBounds(handle, rect, 0, 0);
+	bounds[0] = rect.X;
+	bounds[1] = rect.Y;
+	bounds[2] = rect.Width;
+	bounds[3] = rect.Height;
+}
+
 public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
