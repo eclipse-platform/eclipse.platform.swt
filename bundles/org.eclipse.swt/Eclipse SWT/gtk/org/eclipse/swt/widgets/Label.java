@@ -116,7 +116,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (labelHandle != 0) {
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
-		if (text.length () == 0)  {
+		if (text.length () == 0 && OS.GTK_WIDGET_VISIBLE (labelHandle))  {
 			requisition.height += fontHeight (getFontDescription (), labelHandle);
 		}
 	}
