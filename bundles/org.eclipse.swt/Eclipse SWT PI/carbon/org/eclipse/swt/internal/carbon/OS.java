@@ -45,8 +45,10 @@ public class OS {
 	public static final int kAlertStdAlertCancelButton    = 2;
 	public static final int kAlertStdAlertOtherButton     = 3;
 	public static final int kAtSpecifiedOrigin = 0;
+	public static final int kATSLineUseDeviceMetrics = 0x01000000;
 	public static final int kATSUCGContextTag = 32767;
 	public static final int kATSUFontTag = 261;
+	public static final int kATSULineLayoutOptionsTag = 7;
 	public static final int kATSUQDBoldfaceTag = 256;
 	public static final int kATSUQDItalicTag = 257;
 	public static final int kATSUseDeviceOrigins = 1;
