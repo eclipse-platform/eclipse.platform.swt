@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 973;
-int OS_nativeFunctionCallCount[973];
+int OS_nativeFunctionCount = 976;
+int OS_nativeFunctionCallCount[976];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -699,6 +699,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1model_1iter_1next",
 	"_1gtk_1tree_1model_1iter_1nth_1child",
 	"_1gtk_1tree_1path_1append_1index",
+	"_1gtk_1tree_1path_1down",
 	"_1gtk_1tree_1path_1free",
 	"_1gtk_1tree_1path_1get_1depth",
 	"_1gtk_1tree_1path_1get_1indices",
@@ -706,6 +707,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1path_1new_1first",
 	"_1gtk_1tree_1path_1new_1from_1string__I",
 	"_1gtk_1tree_1path_1new_1from_1string___3B",
+	"_1gtk_1tree_1path_1next",
+	"_1gtk_1tree_1path_1prev",
 	"_1gtk_1tree_1path_1up",
 	"_1gtk_1tree_1selection_1get_1selected",
 	"_1gtk_1tree_1selection_1get_1selected_1rows",

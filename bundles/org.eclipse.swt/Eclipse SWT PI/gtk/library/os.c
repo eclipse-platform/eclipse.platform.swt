@@ -8808,6 +8808,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1append_1index)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1path_1down
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1down)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1path_1down_FUNC);
+	gtk_tree_path_down((GtkTreePath *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1path_1down_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1path_1free
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1free)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8890,6 +8900,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1path_1new_1from_1string___3B)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1path_1new_1from_1string___3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1path_1next
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1next)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1path_1next_FUNC);
+	gtk_tree_path_next((GtkTreePath *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1path_1next_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1path_1prev
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1path_1prev)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1path_1prev_FUNC);
+	rc = (jboolean)gtk_tree_path_prev((GtkTreePath *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1path_1prev_FUNC);
 	return rc;
 }
 #endif

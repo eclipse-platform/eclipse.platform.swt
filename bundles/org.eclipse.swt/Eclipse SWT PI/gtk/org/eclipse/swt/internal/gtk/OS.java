@@ -5991,6 +5991,15 @@ public static final void gtk_tree_path_append_index(int /*long*/ path, int index
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_path_down(int /*long*/ path);
+public static final void gtk_tree_path_down(int /*long*/ path) {
+	lock.lock();
+	try {
+		 _gtk_tree_path_down(path);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_path_free(int /*long*/ path);
 public static final void gtk_tree_path_free(int /*long*/ path) {
 	lock.lock();
@@ -6050,6 +6059,24 @@ public static final int /*long*/ gtk_tree_path_new_from_string(int /*long*/ path
 	lock.lock();
 	try {
 		return _gtk_tree_path_new_from_string(path);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_tree_path_next(int /*long*/ path);
+public static final void gtk_tree_path_next(int /*long*/ path) {
+	lock.lock();
+	try {
+		_gtk_tree_path_next(path);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gtk_tree_path_prev(int /*long*/ path);
+public static final boolean gtk_tree_path_prev(int /*long*/ path) {
+	lock.lock();
+	try {
+		return _gtk_tree_path_prev(path);
 	} finally {
 		lock.unlock();
 	}
