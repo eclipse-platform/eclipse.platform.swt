@@ -1212,7 +1212,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XQueryBestCursor)
 	NATIVE_ENTER(env, that, "XQueryBestCursor\n")
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	rc = (jint)XQueryBestCursor((Display *)arg0, arg1, arg2, arg3, (int *)lparg4, (int *)lparg5);
+	rc = (jint)XQueryBestCursor((Display *)arg0, arg1, arg2, arg3, (unsigned int *)lparg4, (unsigned int *)lparg5);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	NATIVE_EXIT(env, that, "XQueryBestCursor\n")
