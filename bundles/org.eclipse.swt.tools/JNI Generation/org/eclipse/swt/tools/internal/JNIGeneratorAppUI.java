@@ -214,7 +214,6 @@ public void open () {
 		}
 	};	
 	createMainClassPanel(panel, updateMainClassListener);
-	createOutputDirPanel(panel, updateMainClassListener);
 	createClassesPanel(panel);
 	createMembersPanel(panel);
 	createParametersPanel(panel);
@@ -245,13 +244,10 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 	mainClassCb.setLayoutData(data);
 	mainClassCb.addListener(SWT.Selection, updateListener);
 	mainClassCb.addListener(SWT.DefaultSelection, updateListener);
-}
 
-void createOutputDirPanel(Composite panel, Listener updateListener) {
 	Label outputDirLb = new Label(panel, SWT.NONE);
 	outputDirLb.setText("Output Dir:");
 	
-	GridData data;
 	outputDirCb = new Combo(panel, SWT.DROP_DOWN);
 	String outputDir = app.getOutputDir();
 	outputDirCb.setText(outputDir == null ? "" : outputDir);
@@ -259,6 +255,15 @@ void createOutputDirPanel(Composite panel, Listener updateListener) {
 	outputDirCb.setLayoutData(data);
 	outputDirCb.addListener(SWT.Selection, updateListener);
 	outputDirCb.addListener(SWT.DefaultSelection, updateListener);
+
+	String mainClasses = app.getMetaData().getMetaData("swt_main_classes", null);
+	if (mainClasses != null) {
+		String[] list = ItemData.split(mainClasses, ",");
+		for (int i = 0; i < list.length - 1; i += 2) {
+			mainClassCb.add(list[i]);
+			outputDirCb.add(list[i + 1]);
+		}
+	}
 }
 
 void createClassesPanel(Composite panel) {
@@ -1059,6 +1064,16 @@ void updateMainClass() {
 		}
 		if (mainClassCb.indexOf(mainClassStr) == -1) {
 			mainClassCb.add(mainClassStr);
+		}
+		String mainClasses = app.getMetaData().getMetaData("swt_main_classes", null);
+		if (mainClasses != null) {
+			String[] list = ItemData.split(mainClasses, ",");
+			for (int i = 0; i < list.length - 1; i += 2) {
+				if (mainClassStr.equals(list[i])) {
+					int index = outputDirCb.indexOf(list[i + 1]);
+					if (index != -1) outputDirCb.select(index);
+				}
+			}
 		}
 	}
 }
