@@ -482,24 +482,22 @@ char mbcsToWcs (int ch, String codePage) {
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	event.type = eventType;
-	event.widget = this;
-	eventTable.sendEvent (event);
-}
-void postEvent (int eventType) {
-	if (eventTable == null) return;
-	postEvent (eventType, new Event ());
+	sendEvent (eventType, event);
 }
 void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
 	event.widget = this;
-	Display display = getDisplay ();
+	event.display = display;
 	if (event.time == 0) {
 		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
 	}
 	display.postEvent (event);
+}
+void postEvent (int eventType) {
+	if (eventTable == null) return;
+	postEvent (eventType, new Event ());
 }
 int processArm (int callData) {
 	return 0;
@@ -709,10 +707,6 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
-void sendEvent (int eventType) {
-	if (eventTable == null) return;
-	sendEvent (eventType, new Event ());
-}
 void setInputState (Event event, XInputEvent xEvent) {
 	if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
 	if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
@@ -777,12 +771,21 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 }
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
+	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		Display display = getDisplay ();
 		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
 	}
+	eventTable.sendEvent (event);
+}
+void sendEvent (int eventType) {
+	if (eventTable == null) return;
+	sendEvent (eventType, new Event ());
+}
+void sendEvent (Event event) {
+	if (eventTable == null) return;
 	eventTable.sendEvent (event);
 }
 /**

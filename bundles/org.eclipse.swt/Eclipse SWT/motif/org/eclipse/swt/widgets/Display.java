@@ -63,7 +63,14 @@ import org.eclipse.swt.graphics.*;
  * (only) when constructing multi-threaded applications to use the
  * inter-thread communication mechanisms which this class provides
  * when required.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose</dd>
+ * </dl>
+ * <p>
  * All SWT API methods which may only be called from the user-interface
  * thread are distinguished in their documentation by indicating that
  * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
@@ -93,6 +100,7 @@ public class Display extends Device {
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
+	EventTable eventTable;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
@@ -330,6 +338,33 @@ void addMouseHoverTimeOut (int handle) {
 	mouseHoverHandle = handle;
 }
 /**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs. When the
+ * event does occur in the display, the listener is notified by
+ * sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeListener
+ * 
+ * @since 2.0 
+ */
+public void addListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+/**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
@@ -405,6 +440,51 @@ protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) {
 		error (SWT.ERROR_INVALID_SUBCLASS);
 	}
+}
+/**
+ * Requests that the connection between SWT and the underlying
+ * operating system be closed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 2.0
+ */
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
+}
+String convertToLf(String text) {
+	char Cr = '\r';
+	char Lf = '\n';
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf (Lf, 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != Cr) return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf (Cr, i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append (Lf);
+	}
+	return result.toString ();
 }
 protected void create (DeviceData data) {
 	checkSubclass ();
@@ -1436,6 +1516,7 @@ static synchronized void register (Display display) {
 	Displays = newDisplays;
 }
 protected void release () {
+	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1449,7 +1530,7 @@ protected void release () {
 			if (disposeList [i] != null) disposeList [i].run ();
 		}
 	}
-	disposeList = null;	
+	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();
@@ -1546,14 +1627,39 @@ void removeMouseHoverTimeOut () {
 	if (mouseHoverID != 0) OS.XtRemoveTimeOut (mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
 }
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ * 
+ * @since 2.0 
+ */
+public void removeListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
 boolean runDeferredEvents () {
 	/*
 	* Run deferred events.  This code is always
-	* called  in the Display's thread so it must
-	* be re-enterant need not be synchronized.
+	* called in the Display's thread so it must
+	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
 		
@@ -1569,7 +1675,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
-				widget.notifyListeners (event.type, event);
+				widget.sendEvent (event);
 			}
 		}
 
@@ -1583,6 +1689,16 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
+	event.display = this;
+	event.type = eventType;
+	if (event.time == 0) {
+		event.time = OS.XtLastTimestampProcessed (xDisplay);
+	}
+	eventTable.sendEvent (event);
 }
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
@@ -2037,34 +2153,6 @@ String wrapText (String text, Font font, int width) {
 			result.append (Lf);
 		}
 		lineStart = nextStart;
-	}
-	return result.toString ();
-}
-
-String convertToLf(String text) {
-	char Cr = '\r';
-	char Lf = '\n';
-	int length = text.length ();
-	if (length == 0) return text;
-	
-	/* Check for an LF or CR/LF.  Assume the rest of the string 
-	 * is formated that way.  This will not work if the string 
-	 * contains mixed delimiters. */
-	int i = text.indexOf (Lf, 0);
-	if (i == -1 || i == 0) return text;
-	if (text.charAt (i - 1) != Cr) return text;
-
-	/* The string is formatted with CR/LF.
-	 * Create a new string with the LF line delimiter. */
-	i = 0;
-	StringBuffer result = new StringBuffer ();
-	while (i < length) {
-		int j = text.indexOf (Cr, i);
-		if (j == -1) j = length;
-		String s = text.substring (i, j);
-		result.append (s);
-		i = j + 2;
-		result.append (Lf);
 	}
 	return result.toString ();
 }
