@@ -140,7 +140,7 @@ void paint (GC gc) {
 	}
 	if (text.length () > 0) {
 		int fontHeight = parent.fontHeight;
-		gc.drawString (text, startX, (headerHeight - fontHeight) / 2, true);
+		gc.drawText (text, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
 	}
 }
 public void removeControlListener (ControlListener listener) {
@@ -195,7 +195,7 @@ public void setText (String value) {
 	if (value.equals (text)) return;						/* same value */
 	super.setText (value);
 	GC gc = new GC (parent);
-	textWidth = gc.textExtent (value).x;
+	textWidth = gc.textExtent (value, SWT.DRAW_MNEMONIC).x;
 	gc.dispose ();
 	parent.redraw(getX (), 0, width, parent.getHeaderHeight (), true);
 }
