@@ -70,6 +70,7 @@
 #define NO_TRIVERTEX
 #define NO_WINDOWPLACEMENT
 #define NO_DROPFILES
+#define NO_MONITORINFO
 #define NO_OLECMD
 #define NO_OLECMDTEXT
 
@@ -348,6 +349,14 @@ void setMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpStruct
 #define getMENUITEMINFOFields(a,b,c) NULL
 #define setMENUITEMINFOFields(a,b,c)
 #endif /* NO_MENUITEMINFO */
+
+#ifndef NO_MONITORINFO
+MONITORINFO *getMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct);
+void setMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct);
+#else
+#define getMONITORINFOFields(a,b,c) NULL
+#define setMONITORINFOFields(a,b,c)
+#endif /* NO_MONITORINFO */
 
 #ifndef NO_MSG
 MSG *getMSGFields(JNIEnv *env, jobject lpObject, MSG *lpStruct);

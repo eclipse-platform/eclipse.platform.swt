@@ -1703,6 +1703,64 @@ void setMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpStruct
 }
 #endif /* NO_MENUITEMINFO */
 
+#ifndef NO_MONITORINFO
+typedef struct MONITORINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID rcWork_bottom, rcWork_right, rcWork_top, rcWork_left, rcMonitor_bottom, rcMonitor_right, rcMonitor_top, rcMonitor_left, dwFlags, cbSize;
+} MONITORINFO_FID_CACHE;
+
+MONITORINFO_FID_CACHE MONITORINFOFc;
+
+void cacheMONITORINFOFids(JNIEnv *env, jobject lpObject)
+{
+	if (MONITORINFOFc.cached) return;
+	MONITORINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MONITORINFOFc.rcWork_bottom = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcWork_bottom", "I");
+	MONITORINFOFc.rcWork_right = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcWork_right", "I");
+	MONITORINFOFc.rcWork_top = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcWork_top", "I");
+	MONITORINFOFc.rcWork_left = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcWork_left", "I");
+	MONITORINFOFc.rcMonitor_bottom = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcMonitor_bottom", "I");
+	MONITORINFOFc.rcMonitor_right = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcMonitor_right", "I");
+	MONITORINFOFc.rcMonitor_top = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcMonitor_top", "I");
+	MONITORINFOFc.rcMonitor_left = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "rcMonitor_left", "I");
+	MONITORINFOFc.dwFlags = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "dwFlags", "I");
+	MONITORINFOFc.cbSize = (*env)->GetFieldID(env, MONITORINFOFc.clazz, "cbSize", "I");
+	MONITORINFOFc.cached = 1;
+}
+
+MONITORINFO *getMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct)
+{
+	if (!MONITORINFOFc.cached) cacheMONITORINFOFids(env, lpObject);
+	lpStruct->rcWork.bottom = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcWork_bottom);
+	lpStruct->rcWork.right = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcWork_right);
+	lpStruct->rcWork.top = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcWork_top);
+	lpStruct->rcWork.left = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcWork_left);
+	lpStruct->rcMonitor.bottom = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcMonitor_bottom);
+	lpStruct->rcMonitor.right = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcMonitor_right);
+	lpStruct->rcMonitor.top = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcMonitor_top);
+	lpStruct->rcMonitor.left = (*env)->GetIntField(env, lpObject, MONITORINFOFc.rcMonitor_left);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, MONITORINFOFc.dwFlags);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, MONITORINFOFc.cbSize);
+	return lpStruct;
+}
+
+void setMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct)
+{
+	if (!MONITORINFOFc.cached) cacheMONITORINFOFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_bottom, (jint)lpStruct->rcWork.bottom);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_right, (jint)lpStruct->rcWork.right);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_top, (jint)lpStruct->rcWork.top);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_left, (jint)lpStruct->rcWork.left);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcMonitor_bottom, (jint)lpStruct->rcMonitor.bottom);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcMonitor_right, (jint)lpStruct->rcMonitor.right);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcMonitor_top, (jint)lpStruct->rcMonitor.top);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcMonitor_left, (jint)lpStruct->rcMonitor.left);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, MONITORINFOFc.cbSize, (jint)lpStruct->cbSize);
+}
+#endif /* NO_MONITORINFO */
+
 #ifndef NO_MSG
 typedef struct MSG_FID_CACHE {
 	int cached;

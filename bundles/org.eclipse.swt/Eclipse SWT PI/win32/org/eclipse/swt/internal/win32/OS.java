@@ -635,6 +635,7 @@ public class OS {
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
+	public static final int MONITORINFOF_PRIMARY = 0x1;
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
 	public static final int NM_CLICK = 0xfffffffe;
 	public static final int NM_CUSTOMDRAW = OS.NM_FIRST - 12;
@@ -1460,6 +1461,11 @@ public static final int GetModuleHandle (TCHAR lpModuleName) {
 	return GetModuleHandleA (lpModuleName1);
 }
 
+public static final boolean GetMonitorInfo (int hmonitor, MONITORINFO lpmi) {
+	if (IsUnicode) return GetMonitorInfoW (hmonitor, lpmi);
+	return GetMonitorInfoA (hmonitor, lpmi);
+}
+
 public static final int GetObject (int hgdiobj, int cbBuffer, BITMAP lpvObject) {
 	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
 	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
@@ -2025,6 +2031,7 @@ public static final native boolean EndDeferWindowPos (int hWinPosInfo);
 public static final native int EndDoc (int hdc);
 public static final native int EndPage (int hdc);
 public static final native int EndPaint (int hWnd, PAINTSTRUCT lpPaint);
+public static final native boolean EnumDisplayMonitors (int hdc, RECT lprcClip, int lpfnEnum, int dwData);
 public static final native int EnumFontFamiliesW (int hdc, char [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native int EnumFontFamiliesA (int hdc, byte [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
@@ -2100,6 +2107,8 @@ public static final native int GetTextCharset(int hdc);
 public static final native int GetTickCount ();
 public static final native int GetModuleHandleW (char [] lpModuleName);
 public static final native int GetModuleHandleA (byte [] lpModuleName);
+public static final native boolean GetMonitorInfoW (int hmonitor, MONITORINFO lpmi);
+public static final native boolean GetMonitorInfoA (int hmonitor, MONITORINFO lpmi);
 public static final native int GetNearestPaletteIndex(int hPal, int crColor);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, BITMAP lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, BITMAP lpvObject);

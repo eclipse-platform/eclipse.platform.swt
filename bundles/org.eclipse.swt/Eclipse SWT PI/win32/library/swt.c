@@ -47,6 +47,7 @@
 #define NO_EnableScrollBar
 #define NO_EndDoc
 #define NO_EndPage
+#define NO_EnumDisplayMonitors
 #define NO_EnumFontFamiliesA
 #define NO_EnumSystemLanguageGroupsA
 #define NO_EnumSystemLanguageGroupsW
@@ -83,6 +84,8 @@
 #define NO_GetMessageA
 #define NO_GetMessageTime
 #define NO_GetModuleHandleA
+#define NO_GetMonitorInfoA
+#define NO_GetMonitorInfoW
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONT_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2
@@ -1403,6 +1406,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(EndPaint)
 }
 #endif /* NO_EndPaint */
 
+#ifndef NO_EnumDisplayMonitors
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumDisplayMonitors
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+{
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+    HMODULE hm;
+    FARPROC fp;
+    
+	DEBUG_CALL("EnumDisplayMonitors\n")
+	
+	/* SPECIAL */
+    /*
+    *  EnumDisplayMonitors is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "EnumDisplayMonitors"))) {
+    
+		if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1);	
+	rc = (jboolean)(fp)((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
+//	rc = (jboolean)EnumDisplayMonitors((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
+		if (arg1) setRECTFields(env, arg1, lparg1);
+	}
+	return rc;
+}
+#endif /* NO_EnumDisplayMonitors */
+
 #ifndef NO_EnumFontFamiliesA
 JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesA)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
@@ -2517,6 +2549,62 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetModuleHandleW)
 	return rc;
 }
 #endif /* NO_GetModuleHandleW */
+
+#ifndef NO_GetMonitorInfoA
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMonitorInfoA
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MONITORINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+    HMODULE hm;
+    FARPROC fp;
+    
+	DEBUG_CALL("GetMonitorInfoA\n")
+
+	/* SPECIAL */
+    /*
+    *  GetMonitorInfoA is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "GetMonitorInfoA"))) {
+		if (arg1) lparg1 = getMONITORINFOFields(env, arg1, &_arg1);		
+		rc = (jboolean)(fp)((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+///		rc = (jboolean)GetMonitorInfoA((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+		if (arg1) setMONITORINFOFields(env, arg1, lparg1);
+	}
+	return rc;
+}
+#endif /* NO_GetMonitorInfoA */
+
+#ifndef NO_GetMonitorInfoW
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMonitorInfoW
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MONITORINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+    HMODULE hm;
+    FARPROC fp;
+    
+	DEBUG_CALL("GetMonitorInfoW\n")
+
+	/* SPECIAL */
+    /*
+    *  GetMonitorInfoW is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "GetMonitorInfoW"))) {
+		if (arg1) lparg1 = getMONITORINFOFields(env, arg1, &_arg1);		
+		rc = (jboolean)(fp)((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+///		rc = (jboolean)GetMonitorInfoW((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+		if (arg1) setMONITORINFOFields(env, arg1, lparg1);
+	}
+	return rc;
+}
+#endif /* NO_GetMonitorInfoW */
 
 #ifndef NO_GetNearestPaletteIndex
 JNIEXPORT jint JNICALL OS_NATIVE(GetNearestPaletteIndex)
