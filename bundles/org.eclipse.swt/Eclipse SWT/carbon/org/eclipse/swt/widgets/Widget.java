@@ -1183,52 +1183,56 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	Rect inset = getInset ();
+	/* Compute the old bounds */
 	Rect oldBounds = new Rect ();
 	OS.GetControlBounds (control, oldBounds);
+	int [] theRoot = new int [1];
+	int window = OS.GetControlOwner (control);
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	Rect parentRect = new Rect ();
+	if (parentHandle [0] != theRoot [0]) {
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (oldBounds, (short) -parentRect.left, (short) -parentRect.top);
+	}
+	Rect inset = getInset ();
 	oldBounds.left -= inset.left;
 	oldBounds.top -= inset.top;
 	oldBounds.right += inset.right;
 	oldBounds.bottom += inset.bottom;
-	x += inset.left;
-	y += inset.top;
-	width -= (inset.left + inset.right);
-	height -= (inset.top + inset.bottom);
-	int window = OS.GetControlOwner (control);
-	if (move) {
-		int [] theRoot = new int [1];
-		OS.GetRootControl (window, theRoot);
-		int [] parentHandle = new int [1];
-		OS.GetSuperControl (control, parentHandle);
-		if (parentHandle [0] != theRoot [0]) {
-			Rect rect = new Rect ();
-			OS.GetControlBounds (parentHandle [0], rect);
-			x += rect.left;
-			y += rect.top;
-		}
-	} else {
+	
+	/* Compute the new bounds */
+	if (!move) {
 		x = oldBounds.left;
 		y = oldBounds.top;
 	}
 	if (!resize) {
 		width = oldBounds.right - oldBounds.left;
 		height = oldBounds.bottom - oldBounds.top;
-	}
-	width = Math.max (0, width);
-	height = Math.max (0, height);
-	boolean sameOrigin = x == oldBounds.left && y == oldBounds.top;
-	boolean sameExtent = width == (oldBounds.right - oldBounds.left) && height == (oldBounds.bottom - oldBounds.top);
-	if (sameOrigin && sameExtent) return 0;
+	}	
 	Rect newBounds = new Rect ();
-	newBounds.left = (short) x;
-	newBounds.top = (short) y;
-	newBounds.right = (short) (x + width);
-	newBounds.bottom = (short) (y + height);
+	newBounds.left = (short) (parentRect.left + x + inset.left);
+	newBounds.top = (short) (parentRect.top + y + inset.top);
+	newBounds.right = (short) (newBounds.left + width - inset.right - inset.left);
+	newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);
+	
+	/* Get bounds again, since the one above is in SWT coordinates */
+	OS.GetControlBounds (control, oldBounds);
+	
+	/* Check if anything changed */
+	boolean sameOrigin = newBounds.left == oldBounds.left && newBounds.top == oldBounds.top;
+	boolean sameExtent = (newBounds.right - newBounds.left) == (oldBounds.right - oldBounds.left) && (newBounds.bottom - newBounds.top) == (oldBounds.bottom - oldBounds.top);
+	if (sameOrigin && sameExtent) return 0;
+	
+	/* Apply changes and invalidate appropriate rectangles */
 	boolean visible = OS.IsControlVisible (control);
 	if (visible) OS.InvalWindowRect (window, oldBounds);
 	OS.SetControlBounds (control, newBounds);
 	invalidateVisibleRegion (control);
 	if (visible) OS.InvalWindowRect (window, newBounds);
+	
+	/* Send events */
 	int result = 0;
 	if (move && !sameOrigin) {
 		if (events) sendEvent (SWT.Move);

@@ -2473,11 +2473,15 @@ void setZOrder () {
 	OS.HIViewAddSubview (parentHandle, topHandle);
 	//OS.EmbedControl (topHandle, parentHandle);
 	/* Place the child at (0, 0) in the parent */
-	Rect rect = new Rect ();
-	OS.GetControlBounds (parentHandle, rect);
-	rect.right = rect.left;
-	rect.bottom = rect.top;
-	OS.SetControlBounds (topHandle, rect);
+	Rect parentRect = new Rect ();
+	OS.GetControlBounds (parentHandle, parentRect);
+	Rect inset = getInset ();
+	Rect newBounds = new Rect ();
+	newBounds.left = (short) (parentRect.left + inset.left);
+	newBounds.top = (short) (parentRect.top + inset.top);
+	newBounds.right = (short) (newBounds.left - inset.right - inset.left);
+	newBounds.bottom = (short) (newBounds.top - inset.bottom - inset.top);
+	OS.SetControlBounds (topHandle, newBounds);
 }
 
 void setZOrder (Control control, boolean above) {
