@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
 import org.eclipse.swt.internal.motif.OS;
 
 /**
@@ -59,7 +58,7 @@ import org.eclipse.swt.internal.motif.OS;
  * 			// write data to a byte array and then ask super to convert to pMedium
  * 			ByteArrayOutputStream out = new ByteArrayOutputStream();
  * 			DataOutputStream writeOut = new DataOutputStream(out);
- * 			for (int i = 0, length = myTypes.length; i < length;  i++){
+ * 			for (int i = 0, length = myTypes.length; i &lt length;  i++){
  * 				byte[] buffer = myTypes[i].fileName.getBytes();
  * 				writeOut.writeInt(buffer.length);
  * 				writeOut.write(buffer);
@@ -117,8 +116,8 @@ import org.eclipse.swt.internal.motif.OS;
  * }
  */
 public abstract class ByteArrayTransfer extends Transfer {
-	
-public TransferData[] getSupportedTypes(){
+
+public TransferData[] getSupportedTypes() {
 	int[] types = getTypeIds();
 	TransferData[] data = new TransferData[types.length];
 	for (int i = 0; i < types.length; i++) {
@@ -127,6 +126,7 @@ public TransferData[] getSupportedTypes(){
 	}
 	return data;
 }
+
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
 	int[] types = getTypeIds();
@@ -147,16 +147,17 @@ public boolean isSupportedType(TransferData transferData){
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
-protected void javaToNative (Object object, TransferData transferData){
-	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) {
-		transferData.result = 0;
-		return;
-	}
-	byte[] buffer = (byte[])object;	
-	transferData.pValue = OS.XtMalloc(buffer.length);
-	OS.memmove(transferData.pValue, buffer, buffer.length);
+protected void javaToNative (Object object, TransferData transferData) {
+	transferData.result = 0;
+	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) return;
+	byte[] buffer = (byte[])object;
+	if (buffer.length == 0) return;
+	int pValue = OS.XtMalloc(buffer.length);
+	if (pValue == 0) return;
+	OS.memmove(pValue, buffer, buffer.length);
 	transferData.length = buffer.length;
 	transferData.format = 8;
+	transferData.pValue = pValue;
 	transferData.result = 1;
 }
 
@@ -172,9 +173,10 @@ protected void javaToNative (Object object, TransferData transferData){
  * @return a java <code>byte[]</code> containing the converted data if the 
  * conversion was successful; otherwise null
  */
-protected Object nativeToJava(TransferData transferData){
-	if ( !(isSupportedType(transferData) || transferData.pValue == 0)) return null;
+protected Object nativeToJava(TransferData transferData) {
+	if (!isSupportedType(transferData) || transferData.pValue == 0) return null;
 	int size = transferData.format * transferData.length / 8;
+	if (size == 0) return null;
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);
 	return buffer;

@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.motif.OS;
 import org.eclipse.swt.internal.motif.XTextProperty;
+
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
  * for converting plain text represented as a java <code>String</code> 
@@ -31,13 +31,13 @@ import org.eclipse.swt.internal.motif.XTextProperty;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "COMPOUND_TEXT";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "STRING";
-	private static final int TYPEID2 = registerType(TYPENAME2);
+	private static final String COMPOUND_TEXT = "COMPOUND_TEXT";
+	private static final String STRING = "STRING";
+	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
+	private static final int STRING_ID = registerType(STRING);
 
-private TextTransfer() {
-}
+private TextTransfer() {}
+
 /**
  * Returns the singleton instance of the TextTransfer class.
  *
@@ -46,6 +46,7 @@ private TextTransfer() {
 public static TextTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts plain text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -55,37 +56,49 @@ public static TextTransfer getInstance () {
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
-public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-	byte[] buffer = Converter.wcsToMbcs (null, (String)object, true);
-	if (transferData.type == TYPEID1) { // COMPOUND_TEXT
+public void javaToNative (Object object, TransferData transferData) {
+	transferData.result = 0;
+	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	String string = (String)object;
+	if (string.length() == 0) return;
+	
+	byte[] buffer = Converter.wcsToMbcs (null, string, true);
+	if (transferData.type ==  COMPOUND_TEXT_ID) {
 		Display display = Display.getCurrent();
-		if (display == null) {
-			transferData.result = 0;
-			return;
-		}
+		if (display == null) return;
 		int xDisplay = display.xDisplay;
 		int pBuffer = OS.XtMalloc(buffer.length);
-		OS.memmove(pBuffer, buffer, buffer.length);
-		int list = OS.XtMalloc(4);
-		OS.memmove(list, new int[] {pBuffer}, 4);
-		XTextProperty text_prop_return = new XTextProperty();
-		int result = OS.XmbTextListToTextProperty (xDisplay, list, 1, OS.XCompoundTextStyle, text_prop_return);
-		OS.XtFree(pBuffer);
-		OS.XtFree(list);
-		if (result != 0){
-			transferData.result = 0;
-		} else {	
+		if (pBuffer == 0) return;
+		try {
+			OS.memmove(pBuffer, buffer, buffer.length);
+			int list = OS.XtMalloc(4);
+			if (list == 0) return;
+			OS.memmove(list, new int[] {pBuffer}, 4);
+			XTextProperty text_prop_return = new XTextProperty();
+			int result = OS.XmbTextListToTextProperty (xDisplay, list, 1, OS.XCompoundTextStyle, text_prop_return);
+			OS.XtFree(list);
+			if (result != 0)return;
 			transferData.format = text_prop_return.format;
 			transferData.length = text_prop_return.nitems;
 			transferData.pValue = text_prop_return.value;
 			transferData.type = text_prop_return.encoding;
 			transferData.result = 1;
+		} finally {
+			OS.XtFree(pBuffer);
 		}
-	} else {
-		super.javaToNative(buffer, transferData);
+	}
+	if (transferData.type == STRING_ID) {
+		int pValue = OS.XtMalloc(buffer.length);
+		if (pValue ==  0) return;
+		OS.memmove(pValue, buffer, buffer.length);
+		transferData.type = STRING_ID;
+		transferData.format = 8;
+		transferData.length = buffer.length;
+		transferData.pValue = pValue;
+		transferData.result = 1;
 	}
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of plain text to a java <code>String</code>.
@@ -97,9 +110,9 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
+	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	byte[] buffer = null;
-	if (transferData.type == TYPEID1){ //COMPOUND_TEXT
+	if (transferData.type == COMPOUND_TEXT_ID) {
 		Display display = Display.getCurrent();
 		if (display == null) return null;
 		int xDisplay = display.xDisplay;
@@ -117,10 +130,14 @@ public Object nativeToJava(TransferData transferData){
 		OS.memmove(ptr, list_return[0], 4);
 		int length = OS.strlen(ptr[0]);
 		buffer = new byte[length];
-		OS.memmove(buffer, ptr[0], buffer.length);
+		OS.memmove(buffer, ptr[0], length);
 		OS.XFreeStringList(list_return[0]);
-	} else {
-		buffer = (byte[])super.nativeToJava(transferData);
+	}
+	if (transferData.type == STRING_ID) {
+		int size = transferData.format * transferData.length / 8;
+		if (size == 0) return null;
+		buffer = new byte[size];
+		OS.memmove(buffer, transferData.pValue, size);
 	}
 	if (buffer == null) return null;
 	// convert byte array to a string
@@ -129,10 +146,12 @@ public Object nativeToJava(TransferData transferData){
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2,};
+
+protected int[] getTypeIds() {
+	return new int[] {COMPOUND_TEXT_ID, STRING_ID};
 }
-protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2,};
+
+protected String[] getTypeNames() {
+	return new String[] {COMPOUND_TEXT, STRING};
 }
 }

@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.motif.*;
 
 /**
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
@@ -34,10 +35,13 @@ import org.eclipse.swt.internal.Converter;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	private static final String TYPENAME = "text/uri-list";
-	private static final int TYPEID = registerType(TYPENAME);
+	private static final String URI_LIST = "text/uri-list";
+	private static final int URI_LIST_ID = registerType(URI_LIST);
+	private static final String URI_LIST_PREFIX = "file:";
+	private static final String URI_LIST_SEPARATOR = "\r";
 
 private FileTransfer() {}
+
 /**
  * Returns the singleton instance of the FileTransfer class.
  *
@@ -46,6 +50,7 @@ private FileTransfer() {}
 public static FileTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts a list of file names
  * represented by a java <code>String[]</code> to a platform specific representation.
@@ -59,18 +64,25 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
+	transferData.result = 0;
 	if (object == null || !(object instanceof String[])) return;
-	// build a byte array from data
 	String[] files = (String[])object;
-	
-	// create a string separated by "new lines" to represent list of files
-	String nativeFormat = "";
+	if (files.length == 0) return;
+
+	StringBuffer sb = new StringBuffer();
 	for (int i = 0, length = files.length; i < length; i++){
-		nativeFormat += "file:"+files[i]+"\r";
+		sb.append(URI_LIST_PREFIX);
+		sb.append(files[i]);
+		sb.append(URI_LIST_SEPARATOR);
 	}
-	byte[] buffer = Converter.wcsToMbcs(null, nativeFormat, true);
-	// pass byte array on to super to convert to native
-	super.javaToNative(buffer, transferData);
+	byte[] buffer = Converter.wcsToMbcs(null, sb.toString(), true);
+	int pValue = OS.XtMalloc(buffer.length);
+	if (pValue == 0) return;
+	OS.memmove(pValue, buffer, buffer.length);
+	transferData.length = buffer.length;
+	transferData.format = 8;
+	transferData.pValue = pValue;
+	transferData.result = 1;
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
@@ -84,36 +96,39 @@ public void javaToNative(Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-
-	byte[] data = (byte[])super.nativeToJava(transferData);
-	if (data == null) return null;
-	char[] unicode = Converter.mbcsToWcs(null, data);
-	String string  = new String(unicode);
+	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
+	int size = transferData.format * transferData.length / 8;
+	if (size == 0) return null;
+	
+	byte[] buffer = new byte[size];
+	OS.memmove(buffer, transferData.pValue, size);
+	char[] chars = Converter.mbcsToWcs(null, buffer);
+	String string  = new String(chars);
 	// parse data and convert string to array of files
-	int start = string.indexOf("file:");
+	int start = string.indexOf(URI_LIST_PREFIX);
 	if (start == -1) return null;
-	start += 5;
+	start += URI_LIST_PREFIX.length();
 	String[] fileNames = new String[0];
 	while (start < string.length()) { 
-		int end = string.indexOf("\r", start);
+		int end = string.indexOf(URI_LIST_SEPARATOR, start);
 		if (end == -1) end = string.length() - 1;
 		String fileName = string.substring(start, end);
-		
 		String[] newFileNames = new String[fileNames.length + 1];
 		System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
 		newFileNames[fileNames.length] = fileName;
 		fileNames = newFileNames;
-
-		start = string.indexOf("file:", end);
+		start = string.indexOf(URI_LIST_PREFIX, end);
 		if (start == -1) break;
-		start += 5;
+		start += URI_LIST_PREFIX.length();
 	}
 	return fileNames;
 }
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME};
-}
+
 protected int[] getTypeIds(){
-	return new int[]{TYPEID};
+	return new int[]{URI_LIST_ID};
+}
+
+protected String[] getTypeNames(){
+	return new String[]{URI_LIST};
 }
 }

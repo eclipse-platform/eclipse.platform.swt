@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.motif.*;;
 public class Clipboard {
 
 	private Display display;
-	private final int MAX_RETRIES = 10;
 	private int shellHandle;
 
 /**
@@ -144,59 +143,50 @@ public Object getContents(Transfer transfer) {
 	if (xWindow == 0) return null;
 	
 	// Open clipboard for retrieval
-	int retries = 0;
-	int status = OS.XmClipboardStartRetrieve(xDisplay, xWindow, OS.XtLastTimestampProcessed(xDisplay));
-	while ( status == OS.XmClipboardLocked && retries < MAX_RETRIES) {
-		retries ++;
-		status = OS.XmClipboardStartRetrieve(xDisplay, xWindow, OS.XtLastTimestampProcessed(xDisplay));
-	};
-	if (status != OS.XmClipboardSuccess) return null;
-	
-	// Does Clipboard have data in required format?
-	byte[] type = null;
-	int[] length = new int[1];
-	String[] supportedTypes = transfer.getTypeNames();
-	for (int i = 0; i < supportedTypes.length; i++) {
-		byte[] bName = Converter.wcsToMbcs(null, supportedTypes[i], true);
-		if (OS.XmClipboardInquireLength(xDisplay, xWindow, bName, length) == 1 /*OS.XmClipboardSuccess*/ ) {
-			type = bName;
-			break;
-		}
-	}
-	
-	// Retrieve data from Clipboard
+	if (OS.XmClipboardStartRetrieve(xDisplay, xWindow, OS.XtLastTimestampProcessed(xDisplay)) != OS.XmClipboardSuccess) return null;
 	byte[] data = null;
-	if (type != null) {
-		data = new byte[length[0]];
-		status = OS.XmClipboardRetrieve(xDisplay, xWindow, type, data, length[0], new int[1], new int[1]);
-		if (status != OS.XmClipboardSuccess) {
-			data = null;
+	byte[] type = null;
+	try {
+		// Does Clipboard have data in required format?
+		int[] length = new int[1];
+		String[] supportedTypes = transfer.getTypeNames();
+		for (int i = 0; i < supportedTypes.length; i++) {
+			byte[] bName = Converter.wcsToMbcs(null, supportedTypes[i], true);
+			if (OS.XmClipboardInquireLength(xDisplay, xWindow, bName, length) == OS.XmClipboardSuccess) {
+				type = bName;
+				break;
+			}
 		}
+		// Retrieve data from Clipboard
+		if (type == null) return null;
+		data = new byte[length[0]];
+		if (OS.XmClipboardRetrieve(xDisplay, xWindow, type, data, length[0], new int[1], new int[1]) != OS.XmClipboardSuccess) {
+			return null;
+		}
+	} finally {
+		// Close Clipboard
+		OS.XmClipboardEndRetrieve(xDisplay, xWindow);
 	}
 	
-	// Close Clipboard
-	status = OS.XmClipboardEndRetrieve(xDisplay, xWindow);
-	
-	if (data == null) return null;
-
 	// Pass data to transfer agent for conversion to a Java Object
 	// Memory is allocated here to emulate the way Drag and Drop transfers data.
-	TransferData transferData = new TransferData();
-	/* Use the character encoding for the default locale */
-	transferData.type = OS.XmInternAtom (xDisplay, type, true);
-	transferData.pValue = OS.XtMalloc(data.length);
-	OS.memmove(transferData.pValue, data, data.length);
-	transferData.length = data.length;
-	transferData.format = 8;
-	transferData.result = 1;
-	
-	Object result = transfer.nativeToJava(transferData);
-	
-	// Clean up allocated memory
-	OS.XtFree(transferData.pValue);
-	
-	return result;
+	int pValue = OS.XtMalloc(data.length);
+	if (pValue == 0) return null;
+	try {
+		OS.memmove(pValue, data, data.length);
+		TransferData transferData = new TransferData();
+		transferData.type = OS.XmInternAtom (xDisplay, type, true);
+		transferData.length = data.length;
+		transferData.format = 8;
+		transferData.pValue = pValue;
+		transferData.result = 1;
+		return transfer.nativeToJava(transferData);
+	} finally {
+		// Clean up allocated memory
+		OS.XtFree(pValue);
+	}
 }
+
 /**
  * Place data of the specified type on the system clipboard.  More than one type of
  * data can be placed on the system clipboard at the same time.  Setting the data 
@@ -241,55 +231,64 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	}
 
 	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0)
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	if (xDisplay == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0)
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-		
+	if (xWindow == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);	
 	// Open clipboard for setting
 	int[] item_id = new int[1];			
-	int retries = 0;
-	int status = OS.XmClipboardStartCopy(xDisplay, xWindow, 0, OS.XtLastTimestampProcessed(xDisplay), shellHandle, 0, item_id);
-	while ( status == OS.XmClipboardLocked && retries < MAX_RETRIES) {
-		retries ++;
-		status = OS.XmClipboardStartCopy(xDisplay, xWindow, 0, OS.XtLastTimestampProcessed(xDisplay), shellHandle, 0, item_id);
-	};
-	if (status != OS.XmClipboardSuccess)
+	if (OS.XmClipboardStartCopy(xDisplay, xWindow, 0, OS.XtLastTimestampProcessed(xDisplay), shellHandle, 0, item_id) != OS.XmClipboardSuccess){
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	
-	// copy data directly over to System clipboard (not deferred)
-	for (int i = 0; i < dataTypes.length; i++) {
-		int[] ids = dataTypes[i].getTypeIds();
-		String[] names = dataTypes[i].getTypeNames();
-		for (int j = 0; j < names.length; j++) {
-			TransferData transferData = new TransferData();
-			/* Use the character encoding for the default locale */
-			transferData.type = ids[j];
-			dataTypes[i].javaToNative(data[i], transferData);
-			status = OS.XmClipboardFail;
-			if (transferData.result == 1) {
-				if (transferData.format == 8){
+	}
+	try {
+		// copy data directly over to System clipboard (not deferred)
+		for (int i = 0; i < dataTypes.length; i++) {
+			int[] ids = dataTypes[i].getTypeIds();
+			String[] names = dataTypes[i].getTypeNames();
+			for (int j = 0; j < names.length; j++) {
+				TransferData transferData = new TransferData();
+				transferData.type = ids[j];
+				dataTypes[i].javaToNative(data[i], transferData);
+				if (transferData.result != 1) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+				try {
+					if (transferData.format != 8) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 					byte[] buffer = new byte[transferData.length];
 					OS.memmove(buffer, transferData.pValue, transferData.length);
 					byte[] bName = Converter.wcsToMbcs(null, names[j], true);
-					status = OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null);
+					if (OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null) != OS.XmClipboardSuccess) {
+						DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+					}
+				} finally {
+					OS.XtFree(transferData.pValue);
 				}
 			}
-			// Clean up allocated memory
-			if (transferData.pValue != 0) {
-				OS.XtFree(transferData.pValue);
-			}
 		}
+	} finally {
+		// close clipboard  for setting
+		OS.XmClipboardEndCopy(xDisplay, xWindow, item_id[0]);
 	}
-	
-	// close clipboard  for setting
-	OS.XmClipboardEndCopy(xDisplay, xWindow, item_id[0]);
-	
-	if (status != OS.XmClipboardSuccess)
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	
 }
+
+/**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	int xDisplay = OS.XtDisplay(shellHandle);
+	if (xDisplay == 0) return new TransferData[0];
+	byte[][] types = _getAvailableTypes();
+	TransferData[] result = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		int atom = OS.XmInternAtom(xDisplay, types[i], true);
+		result[i] = new TransferData();
+		result[i].type = atom;
+	}
+	return result;
+}
+
 /**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
@@ -304,31 +303,45 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	byte[][] types = _getAvailableTypes();
+	String[] names = new String[types.length];
+	for (int i = 0; i < names.length; i++) {
+		/* Use the character encoding for the default locale */
+		names[i] = new String(Converter.mbcsToWcs(null, types[i]));
+	}
+	return names;
+}
+
+private byte[][] _getAvailableTypes() {
+	byte[][] types = new byte[0][];
 	int[] count = new int[1];
 	int[] max_length = new int[1];
 	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0)
-		DND.error(SWT.ERROR_UNSPECIFIED);
+	if (xDisplay == 0) return types;
 	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0)
-		DND.error(SWT.ERROR_UNSPECIFIED);
-	if (OS.XmClipboardInquireCount(xDisplay, xWindow, count, max_length) != OS.XmClipboardSuccess)
-		DND.error(SWT.ERROR_UNSPECIFIED);
-	String[] types = new String[count[0]];
+	if (xWindow == 0) return types;
+	if (OS.XmClipboardInquireCount(xDisplay, xWindow, count, max_length) == 0) {
+		return types;
+	}
+	if (count[0] == 0) return types;
+	types = new byte[count[0]][];
+	int index = -1;
 	for (int i = 0; i < count[0]; i++) {
 		byte[] buffer = new byte[max_length[0]];
 		int[] copied_length = new int[1];
 		int rc = OS.XmClipboardInquireFormat(xDisplay, xWindow, i + 1, buffer, buffer.length, copied_length);
-		if (rc == OS.XmClipboardNoData){
-			types[i] = "";
-			continue;
-		}
-		if (rc != OS.XmClipboardSuccess)
-			DND.error(SWT.ERROR_UNSPECIFIED);
+		if (rc != OS.XmClipboardSuccess) continue;
+		index++;
 		byte[] buffer2 = new byte[copied_length[0]];
 		System.arraycopy(buffer, 0, buffer2, 0, copied_length[0]);
-		char [] unicode = Converter.mbcsToWcs (null, buffer2);
-		types[i] = new String (unicode);
+		types[index] = buffer2;
+	}
+	if (index == -1) {
+		types = new byte[0][0];
+	} else if (index + 1 < types.length) {
+		byte[][] newTypes = new byte[index + 1][];
+		System.arraycopy(types, 0, newTypes, 0, index + 1);
+		types = newTypes;
 	}
 	return types;
 }

@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.motif.*;
  
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
@@ -29,15 +29,15 @@ import org.eclipse.swt.internal.Converter;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TYPENAME1 = "text/rtf";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "TEXT/RTF";
-	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "application/rtf";
-	private static final int TYPEID3 = registerType(TYPENAME3);
+	private static final String TEXT_RTF = "text/rtf";
+	private static final int TEXT_RTF_ID = registerType(TEXT_RTF);
+	private static final String TEXT_RTF2 = "TEXT/RTF";
+	private static final int TEXT_RTF2_ID = registerType(TEXT_RTF2);
+	private static final String APPLICATION_RTF = "application/rtf";
+	private static final int APPLICATION_RTF_ID = registerType(APPLICATION_RTF);
 
-private RTFTransfer() {
-}
+private RTFTransfer() {}
+
 /**
  * Returns the singleton instance of the RTFTransfer class.
  *
@@ -46,6 +46,7 @@ private RTFTransfer() {
 public static RTFTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts RTF-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -56,10 +57,20 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
-	super.javaToNative(buffer, transferData);
+	transferData.result = 0;
+	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	String string = (String)object;
+	if (string.length() == 0) return;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	int pValue = OS.XtMalloc(buffer.length);
+	if (pValue == 0) return;
+	OS.memmove(pValue, buffer, buffer.length);
+	transferData.length = buffer.length;
+	transferData.format = 8;
+	transferData.pValue = pValue;
+	transferData.result = 1;
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of RTF text to a java <code>String</code>.
@@ -71,19 +82,21 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	// convert byte array to a string
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	String string = new String (unicode);
+	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
+	int size = transferData.format * transferData.length / 8;
+	if (size == 0) return null;
+	byte[] buffer = new byte[size];
+	OS.memmove(buffer, transferData.pValue, size);
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	String string = new String (chars);
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
+protected int[] getTypeIds() {
+	return new int[] {TEXT_RTF_ID, TEXT_RTF2_ID, APPLICATION_RTF_ID};
 }
-protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2, TYPEID3};
+
+protected String[] getTypeNames() {
+	return new String[] {TEXT_RTF, TEXT_RTF2, APPLICATION_RTF};
 }
 }
