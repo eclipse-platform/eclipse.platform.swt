@@ -43,19 +43,6 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-private String getPath(String fileName) {
-	final String packageName = "org/eclipse/swt/tests/junit/";
-	String pathName = packageName + fileName;
-	URL url = SwtTestCase.class.getClassLoader().getResource(pathName);
-	
-	if (url != null) {
-		pathName = url.getFile();
-		return pathName.replaceAll("%20", " ");
-	} else {
-		return null;
-	}	
-}
-
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	Image image;
 	try {
@@ -736,5 +723,17 @@ void getImageData2(int depth, PaletteData palette) {
 	color.dispose();
 	gc.dispose();
 	image.dispose();
+}
+String getPath(String fileName) {
+	final String packageName = "org/eclipse/swt/tests/junit/";
+	String pathName = packageName + fileName;
+	URL url = SwtTestCase.class.getClassLoader().getResource(pathName);
+	
+	if (url != null) {
+		pathName = url.getFile();
+		return pathName.replaceAll("%20", " ");
+	} else {
+		return null;
+	}	
 }
 }
