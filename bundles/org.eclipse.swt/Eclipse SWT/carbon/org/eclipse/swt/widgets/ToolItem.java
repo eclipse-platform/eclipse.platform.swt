@@ -191,14 +191,8 @@ void createHandle (int index) {
 		else
 			height= DEFAULT_SEPARATOR_WIDTH;
 	}
-	handle = MacUtil.createDrawingArea(parentHandle, false, width, height, 0);
+	handle = MacUtil.createDrawingArea(parentHandle, index, false, width, height, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	/*
-	short n= OS.CountSubControls(parentHandle);
-	if ((n-1) != index)
-		System.out.println("ToolItem.createHandle: creation at position nyi " + index);
-	*/
 }
 void click (boolean dropDown, MacEvent mEvent) {
 	if ((style & SWT.RADIO) != 0) {
@@ -217,7 +211,7 @@ Point computeSize () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		MacRect bounds= new MacRect();
 		OS.GetControlBounds(handle, bounds.getData());
-		return new Point(bounds.getWidth(), bounds.getHeight());
+		return bounds.getSize();
 	}
 	/* AW
 	int [] argList = {
@@ -447,18 +441,6 @@ public int getWidth () {
 	return bounds.getWidth();
 }
 boolean hasCursor () {
-	/* AW
-	int [] unused = new int [1], buffer = new int [1];
-	int xDisplay = OS.XtDisplay (handle);
-	int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
-	do {
-		if (OS.XQueryPointer (
-			xDisplay, xParent, unused, buffer,
-			unused, unused, unused, unused, unused) == 0) return false;
-		if ((xWindow = buffer [0]) != 0) xParent = xWindow;
-	} while (xWindow != 0);
-	return handle == OS.XtWindowToWidget (xDisplay, xParent);
-	*/
 	MacPoint mp= new MacPoint();
 	OS.GetMouse(mp.getData());
 	MacRect bounds= new MacRect();
@@ -891,9 +873,6 @@ Point toControl (Point point) {
 	return MacUtil.toControl(handle, point);
 }
 /* AW
-boolean translateMnemonic (int key, XKeyEvent xEvent) {
-	return parent.translateMnemonic (key, xEvent);
-}
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
@@ -989,6 +968,7 @@ int processPaint (Object callData) {
 
 	MacRect bounds= new MacRect();
 	OS.GetControlBounds(handle, bounds.getData());
+	bounds.setLocation(0, 0);
 	
 	int width= bounds.getWidth();
 	int height= bounds.getHeight();
@@ -1005,121 +985,123 @@ int processPaint (Object callData) {
 		public void internal_dispose_GC (int xGC, GCData data) {
 		}
 	};
+	
+	boolean hasCursor= hasCursor ();
 
 	GC gc= new GC(drawable);
 	
-	gc.carbon_focus();
-	
-	// erase background
-	gc.fillRectangle(0, 0, width, height);
-	
-	if ((parent.style & SWT.FLAT) != 0 && set) {
-		gc.setBackground(Color.carbon_new(display, 0xE0E0E0));
-		gc.fillRoundRectangle(1, 1, width-2, height-2, 8, 8);
-		gc.setForeground(display.getSystemColor (SWT.COLOR_GRAY));
-		gc.drawRoundRectangle(1, 1, width-3, height-3, 8, 8);
-	}
-	
-	if ((style & SWT.SEPARATOR) != 0) {
-	
-		OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
+	MacControlEvent me= (MacControlEvent) callData;
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	if (!r.isEmpty()) {
 		
-	} else {
-				
-		Image currentImage = image;
-		boolean enabled = getEnabled();
-	
-		short[] newInfo= new short[3];
-				
-		newInfo[1]= set ? OS.kThemeButtonOn : OS.kThemeButtonOff;
+		// erase background
+		gc.fillRectangle(0, 0, width, height);
 		
-		if ((parent.style & SWT.FLAT) != 0) {
-			boolean hasCursor = hasCursor ();
+		if ((parent.style & SWT.FLAT) != 0 && set) {
+			gc.setBackground(Color.carbon_new(display, 0xE0E0E0));
+			gc.fillRoundRectangle(1, 1, width-2, height-2, 8, 8);
+			gc.setForeground(display.getSystemColor (SWT.COLOR_GRAY));
+			gc.drawRoundRectangle(1, 1, width-3, height-3, 8, 8);
+		}
+		
+		if ((style & SWT.SEPARATOR) != 0) {
+		
+			OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
 			
-			if (hasCursor && enabled) {
-				if (OS.StillDown())
-					newInfo[0]= OS.kThemeStatePressed;
-				else
-					newInfo[0]= OS.kThemeStateActive;
-			} else
-				newInfo= null;
-			
-			/* Determine if hot image should be used */
-			if (enabled && hasCursor && hotImage != null) {
-				currentImage = hotImage;
-			}
 		} else {
-			newInfo[0]= (hasCursor() && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive;
-		}
-
-		if (newInfo != null) {
-			MacRect b= new MacRect(bounds.getX()+1, bounds.getY()+1, width-2, height-2);
-			//OS.DrawThemeButton(bounds.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
-			OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
-		}
-		fPrevInfo= newInfo;
+					
+			Image currentImage = image;
+			boolean enabled = getEnabled();
+		
+			short[] newInfo= new short[3];
+					
+			newInfo[1]= set ? OS.kThemeButtonOn : OS.kThemeButtonOff;
 			
-		if (enabled) {
-			gc.setForeground (parent.getForeground());
-		} else {
-			currentImage = disabledImage;
-			if (currentImage == null && image != null) {
-				currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
+			if ((parent.style & SWT.FLAT) != 0) {
+				
+				if (hasCursor && enabled) {
+					if (OS.StillDown())
+						newInfo[0]= OS.kThemeStatePressed;
+					else
+						newInfo[0]= OS.kThemeStateActive;
+				} else
+					newInfo= null;
+				
+				/* Determine if hot image should be used */
+				if (enabled && hasCursor && hotImage != null) {
+					currentImage = hotImage;
+				}
+			} else {
+				newInfo[0]= (hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive;
 			}
-			Color disabledColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			gc.setForeground (disabledColor);
-		}
-		
-		int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-		if (text.length () != 0) {
-			int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
-			Point textExtent = gc.textExtent (text, flags);
-			textWidth = textExtent.x;
-			textHeight = textExtent.y;
-		}	
-		int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
-		if (currentImage != null) {
-			Rectangle imageBounds = currentImage.getBounds ();
-			imageWidth = imageBounds.width;
-			imageHeight = imageBounds.height;
-		}
-		
-		int spacing = 0;
-		if (textWidth != 0 && imageWidth != 0) spacing = 2;
-		if ((parent.style & SWT.RIGHT) != 0) {
-			imageX = (width - imageWidth - textWidth - spacing) / 2;
-			imageY = (height - imageHeight) / 2;
-			textX = spacing + imageX + imageWidth;
-			textY = (height - textHeight) / 2;
-		} else {		
-			imageX = (width - imageWidth) / 2;
-			imageY = (height - imageHeight - textHeight - spacing) / 2;
-			textX = (width - textWidth) / 2;
-			textY = spacing + imageY + imageHeight;
-		}
-		
-		if ((style & SWT.DROP_DOWN) != 0) {
-			textX -= 6;  imageX -=6;
-		}
-		if (textWidth > 0) {
-			int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-			gc.drawText(text, textX, textY, flags);
-		}
-		if (imageWidth > 0)
-			gc.drawImage(currentImage, imageX, imageY);
+	
+			if (newInfo != null) {
+				MacRect b= new MacRect(1, 1, width-2, height-2);
+				OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
+			}
+			fPrevInfo= newInfo;
+				
+			if (enabled) {
+				gc.setForeground (parent.getForeground());
+			} else {
+				currentImage = disabledImage;
+				if (currentImage == null && image != null) {
+					currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
+				}
+				Color disabledColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+				gc.setForeground (disabledColor);
+			}
 			
-		if ((style & SWT.DROP_DOWN) != 0) {
-			int startX = width - 12, startY = (height - 2) / 2;
-			int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
-			gc.setBackground (gc.getForeground ());
-			gc.fillPolygon (arrow);
-			gc.drawPolygon (arrow);
-		}
-		if (!enabled && disabledImage == null) {
-			if (currentImage != null) currentImage.dispose ();
+			int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
+			if (text.length() > 0) {
+				int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+				Point textExtent = gc.textExtent (text, flags);
+				textWidth = textExtent.x;
+				textHeight = textExtent.y;
+			}	
+			int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
+			if (currentImage != null) {
+				Rectangle imageBounds = currentImage.getBounds ();
+				imageWidth = imageBounds.width;
+				imageHeight = imageBounds.height;
+			}
+			
+			int spacing = 0;
+			if (textWidth != 0 && imageWidth != 0) spacing = 2;
+			if ((parent.style & SWT.RIGHT) != 0) {
+				imageX = (width - imageWidth - textWidth - spacing) / 2;
+				imageY = (height - imageHeight) / 2;
+				textX = spacing + imageX + imageWidth;
+				textY = (height - textHeight) / 2;
+			} else {		
+				imageX = (width - imageWidth) / 2;
+				imageY = (height - imageHeight - textHeight - spacing) / 2;
+				textX = (width - textWidth) / 2;
+				textY = spacing + imageY + imageHeight;
+			}
+			
+			if ((style & SWT.DROP_DOWN) != 0) {
+				textX -= 6;  imageX -=6;
+			}
+			if (textWidth > 0) {
+				int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
+				gc.drawText(text, textX, textY, flags);
+			}
+			if (imageWidth > 0)
+				gc.drawImage(currentImage, imageX, imageY);
+				
+			if ((style & SWT.DROP_DOWN) != 0) {
+				int startX = width - 12, startY = (height - 2) / 2;
+				int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
+				gc.setBackground (gc.getForeground ());
+				gc.fillPolygon (arrow);
+				gc.drawPolygon (arrow);
+			}
+			if (!enabled && disabledImage == null) {
+				if (currentImage != null) currentImage.dispose ();
+			}
 		}
 	}
-		
 	gc.carbon_unfocus();
 	gc.dispose ();
 	
