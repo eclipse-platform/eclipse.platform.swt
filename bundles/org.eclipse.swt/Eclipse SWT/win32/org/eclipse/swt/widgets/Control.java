@@ -1862,6 +1862,10 @@ public void setCursor (Cursor cursor) {
 		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		hCursor = cursor.handle;
 	}
+	if (OS.IsWinCE) {
+		OS.SetCursor (hCursor);
+		return;
+	}
 	int hwndCursor = OS.GetCapture ();
 	if (hwndCursor == 0) {
 		POINT pt = new POINT ();
