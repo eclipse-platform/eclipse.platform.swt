@@ -163,29 +163,17 @@ public DropTarget(Control control, int style) {
 					break;
 				}
 				case SWT.Show: {
-					Display display = event.display;
-					display.asyncExec(new Runnable() {
-						public void run() {
-							if (DropTarget.this.control == null || 
-								DropTarget.this.control.isDisposed() ||
-								!DropTarget.this.control.isVisible()) return;
-
-							registerDropTarget();
-						}
-					});
+					if (!registered) {
+						registerDropTarget();
+					} else {
+						int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,};
+						OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);
+					}
 					break;
 				}
 				case SWT.Hide: {
-					Display display = event.display;
-					display.asyncExec(new Runnable() {
-						public void run() {
-							if (DropTarget.this.control == null || 
-							    DropTarget.this.control.isDisposed() || 
-							    DropTarget.this.control.isVisible()) return;
-					
-							unregisterDropTarget();
-						}
-					});	
+					int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_INACTIVE,};
+					OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);	
 					break;
 				}
 			}
