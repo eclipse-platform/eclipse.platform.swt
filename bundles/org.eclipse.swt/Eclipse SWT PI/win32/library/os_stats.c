@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 574;
-int OS_nativeFunctionCallCount[574];
+int OS_nativeFunctionCount = 575;
+int OS_nativeFunctionCallCount[575];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -320,9 +320,10 @@ char * OS_nativeFunctionNames[] = {
 	"LoadCursorW", 
 	"LoadIconA", 
 	"LoadIconW", 
-	"LoadImage__IIIIII", 
-	"LoadImageA", 
-	"LoadImageW", 
+	"LoadImageA__IIIIII", 
+	"LoadImageA__I_3BIIII", 
+	"LoadImageW__IIIIII", 
+	"LoadImageW__I_3CIIII", 
 	"LoadLibraryA", 
 	"LoadLibraryW", 
 	"LoadStringA", 

@@ -4283,44 +4283,56 @@ JNIEXPORT jint JNICALL OS_NATIVE(LoadIconW)
 }
 #endif
 
-#ifndef NO_LoadImage__IIIIII
-JNIEXPORT jint JNICALL OS_NATIVE(LoadImage__IIIIII)
+#ifndef NO_LoadImageA__IIIIII
+JNIEXPORT jint JNICALL OS_NATIVE(LoadImageA__IIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jint rc;
-	OS_NATIVE_ENTER(env, that, LoadImage__IIIIII_FUNC);
-	rc = (jint)LoadImage((HINSTANCE)arg0, (LPCTSTR)arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, LoadImage__IIIIII_FUNC);
+	OS_NATIVE_ENTER(env, that, LoadImageA__IIIIII_FUNC);
+	rc = (jint)LoadImageA((HINSTANCE)arg0, (LPSTR)arg1, arg2, arg3, arg4, arg5);
+	OS_NATIVE_EXIT(env, that, LoadImageA__IIIIII_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_LoadImageA
-JNIEXPORT jint JNICALL OS_NATIVE(LoadImageA)
+#ifndef NO_LoadImageA__I_3BIIII
+JNIEXPORT jint JNICALL OS_NATIVE(LoadImageA__I_3BIIII)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jbyte *lparg1=NULL;
 	jint rc;
-	OS_NATIVE_ENTER(env, that, LoadImageA_FUNC);
+	OS_NATIVE_ENTER(env, that, LoadImageA__I_3BIIII_FUNC);
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	rc = (jint)LoadImageA((HINSTANCE)arg0, (LPSTR)lparg1, arg2, arg3, arg4, arg5);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, LoadImageA_FUNC);
+	OS_NATIVE_EXIT(env, that, LoadImageA__I_3BIIII_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_LoadImageW
-JNIEXPORT jint JNICALL OS_NATIVE(LoadImageW)
+#ifndef NO_LoadImageW__IIIIII
+JNIEXPORT jint JNICALL OS_NATIVE(LoadImageW__IIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, LoadImageW__IIIIII_FUNC);
+	rc = (jint)LoadImageW((HINSTANCE)arg0, (LPWSTR)arg1, arg2, arg3, arg4, arg5);
+	OS_NATIVE_EXIT(env, that, LoadImageW__IIIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LoadImageW__I_3CIIII
+JNIEXPORT jint JNICALL OS_NATIVE(LoadImageW__I_3CIIII)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jchar *lparg1=NULL;
 	jint rc;
-	OS_NATIVE_ENTER(env, that, LoadImageW_FUNC);
+	OS_NATIVE_ENTER(env, that, LoadImageW__I_3CIIII_FUNC);
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	rc = (jint)LoadImageW((HINSTANCE)arg0, (LPWSTR)lparg1, arg2, arg3, arg4, arg5);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, LoadImageW_FUNC);
+	OS_NATIVE_EXIT(env, that, LoadImageW__I_3CIIII_FUNC);
 	return rc;
 }
 #endif

@@ -1785,6 +1785,11 @@ public static final int LoadImage (int hinst, TCHAR lpszName, int uType, int cxD
 	return LoadImageA (hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
 }
 
+public static final int LoadImage (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad) {
+	if (IsUnicode) return LoadImageW (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+	return LoadImageA (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+}
+
 public static final int LoadLibrary (TCHAR lpLibFileName) {
 	if (IsUnicode) {
 		char [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.chars;
@@ -2436,9 +2441,10 @@ public static final native int LoadCursorW (int hInstance, int lpCursorName);
 public static final native int LoadCursorA (int hInstance, int lpCursorName);
 public static final native int LoadIconW (int hInstance, int lpIconName);
 public static final native int LoadIconA (int hInstance, int lpIconName);
-public static final native int LoadImage (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadImageW (int hinst, char [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadImageA (int hinst, byte [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+public static final native int LoadImageW (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+public static final native int LoadImageA (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadStringW (int hinst, int uID, char [] lpBuffer, int nBufferMax);
 public static final native int LoadStringA (int hinst, int uID, byte [] lpBuffer, int nBufferMax);
 public static final native int LoadLibraryW (char [] lpLibFileName);
