@@ -29,15 +29,83 @@ public class MacUtil {
 		JAGUAR= System.getProperty("os.version").startsWith("10.2");
 	}
 	
+	//////////////////////////////////////////////////////////////////////
+		
+	public static int getChild(int handle, int[] t, int n, int i) {
+		int index= (n-1 - i);
+		int status= OS.GetIndexedSubControl(handle, (short)(index+1), t);
+		if (status != OS.kNoErr)
+			System.out.println("MacUtil.getChild: error");
+		return status;
+	}
+		
 	public static int indexOf(int parentHandle, int handle) {
 		int n= countSubControls(parentHandle);
 		int[] outControl= new int[1];
-		
-		for (int i= 0; i < n; i++)
-			if (OS.GetIndexedSubControl(parentHandle, (short)(n-i), outControl) == 0)
+		for (int i= 0; i < n; i++) {
+			if (getChild(parentHandle, outControl, n, i) == OS.kNoErr)
 				if (outControl[0] == handle)
 					return i;
+		}
 		return -1;
+	}
+	
+	/**
+	 * Inserts the given child at position in the parent.
+	 * If pos is out of range the child is added at the end (below all other).
+	 */
+	private static void insertControl(int controlHandle, int parentControlHandle, int pos) {
+		
+		
+		int n= countSubControls(parentControlHandle);
+		
+		int should= pos;
+		if (should < 0 || should > n)
+			should= n;
+		
+		boolean add= false;
+		if (getSuperControl(controlHandle) != parentControlHandle) {
+			add= true;
+		} else {
+			/*
+			String w1= getHIObjectClassID(parentControlHandle);
+			String w2= getHIObjectClassID(controlHandle);
+			System.out.println("MacUtil.insertControl: already there: " + w1 + " " + w2);
+			*/
+			if (n == 1)
+				return;
+		}
+		
+		if (n == 0) {
+			OS.HIViewAddSubview(parentControlHandle, controlHandle);
+			pos= 0;
+		} else {
+			if (pos >= 0 && pos < n) {
+				int[] where= new int[1];
+				getChild(parentControlHandle, where, n, pos);
+				if (add)
+					OS.HIViewAddSubview(parentControlHandle, controlHandle);
+				OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderAbove, where[0]);
+			} else {
+				if (add)
+					OS.HIViewAddSubview(parentControlHandle, controlHandle);
+				if (OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderBelow, 0) != OS.kNoErr)
+					System.out.println("eroor 2");
+				pos= n;
+			}
+		}
+	
+		// verify correct position
+		int i= indexOf(parentControlHandle, controlHandle);
+		if (i != should)
+			System.out.println("MacUtil.insertControl: is: "+i+" should: "+ should  + " n:" + n + " add: " + add);
+	}
+	
+	/**
+	 * Adds the given child at the end.
+	 */
+	public static void addControl(int controlHandle, int parentControlHandle) {
+		insertControl(controlHandle, parentControlHandle, -1);
 	}
 	
 	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
