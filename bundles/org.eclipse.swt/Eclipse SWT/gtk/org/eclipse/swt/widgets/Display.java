@@ -570,19 +570,6 @@ int eventProc (int event, int data) {
 				gdkEvent.x = oldX;  gdkEvent.y = oldY;
 				OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 				return 0;
-			
-//				int copyEvent = OS.gdk_event_copy (event);
-//				int eventHandle = control.eventHandle ();
-//				gdkEvent.window = OS.GTK_WIDGET_WINDOW (eventHandle);
-//				OS.g_object_ref (gdkEvent.window);
-//				int [] origin_x = new int [1], origin_y = new int [1];
-//				OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
-//				gdkEvent.x = gdkEvent.x_root - origin_x [0];
-//				gdkEvent.y = gdkEvent.y_root - origin_y [0];
-//				OS.memmove (copyEvent, gdkEvent, GdkEventButton.sizeof);
-//				OS.gtk_main_do_event (copyEvent);
-//				OS.gdk_event_free (copyEvent);
-//				return 0;
 			}
 		}
 	}
