@@ -99,6 +99,15 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
+	if ((style & SWT.FLAT) != 0) {
+		GtkStyle style = new GtkStyle ();
+		int stylePtr = OS.gtk_style_copy (OS.gtk_widget_get_style (handle));
+		OS.memmove (style, stylePtr);
+		style.xthickness = 0;
+		style.ythickness = 0;
+		OS.memmove (stylePtr, style);
+		OS.gtk_widget_set_style (handle, stylePtr);
+	}
 	setForegroundColor (parent.getForegroundColor ());
 	setFontDescription (parent.getFontDescription ());
 }
