@@ -1435,8 +1435,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		int length= OS.GetHandleSize(dataHandle[0]);
 		if (length <= 0)
 			return "";
+		int[] ptr= new int[1];
+		OS.HLock(dataHandle[0]);
+		OS.memcpy(ptr, dataHandle[0], 4);
 		char[] chars= new char[length/2];
-		OS.getHandleData(dataHandle[0], chars);
+		OS.memcpy(chars, ptr[0], length);
+		OS.HUnlock(dataHandle[0]);
 		OS.DisposeHandle(dataHandle[0]);
 		return new String(chars);
 	}

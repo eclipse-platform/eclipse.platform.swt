@@ -486,21 +486,21 @@ public class MacUtil {
 	//---- data browser utilities 
 	
 	static int[] getDataBrowserItems(int dataBrowserHandle, int containerID, int state, boolean recurse) {
-		int resultHandle= 0;
-		try {
-			resultHandle= OS.NewHandle(0);
-			if (OS.GetDataBrowserItems(dataBrowserHandle, containerID, recurse, state, resultHandle) == OS.noErr) {
-				int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
-				if (itemCount > 0) {	
-					int resultIDs[]= new int[itemCount];
-					OS.getHandleData(resultHandle, resultIDs);
-					return resultIDs;
-				}
+		int[] resultIDs= new int[0];
+		int resultHandle= OS.NewHandle(0);
+		if (OS.GetDataBrowserItems(dataBrowserHandle, containerID, recurse, state, resultHandle) == OS.noErr) {
+			int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+			if (itemCount > 0) {
+				resultIDs= new int[itemCount];
+				OS.HLock(resultHandle);
+				int[] ptr= new int[1];
+				OS.memcpy(ptr, resultHandle, 4);
+				OS.memcpy(resultIDs, ptr[0], itemCount*4);
+				OS.HUnlock(resultHandle);
 			}
-		} finally {
-			OS.DisposeHandle(resultHandle);
 		}
-		return new int[0];
+		OS.DisposeHandle(resultHandle);
+		return resultIDs;
 	}
 
 	static int[] getSelectionIDs(int dataBrowserHandle, int containerID, boolean recurse) {

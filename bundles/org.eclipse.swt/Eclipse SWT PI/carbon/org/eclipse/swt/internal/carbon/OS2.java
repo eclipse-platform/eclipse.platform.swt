@@ -9,10 +9,6 @@ package org.eclipse.swt.internal.carbon;
  
 class OS2 {
 
-/** Custom natives - misc */	
-public static final native void getHandleData(int handle, char[] data);
-public static final native void getHandleData(int handle, int[] data);
-
 /** Custom natives - pixmap */
 public static final native int CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle, Rect srcRect, Rect maskRect, Rect dstRect);
 public static final native int DerefHandle(int handle);

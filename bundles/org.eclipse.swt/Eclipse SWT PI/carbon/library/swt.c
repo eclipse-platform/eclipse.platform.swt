@@ -3015,6 +3015,26 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiliteMenu
 }
 #endif /* NO_HiliteMenu */
 
+#ifndef NO_HLock
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HLock
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HLock\n")
+
+	HLock((Handle)arg0);
+}
+#endif /* NO_HLock */
+
+#ifndef NO_HUnlock
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HUnlock
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HUnlock\n")
+
+	HUnlock((Handle)arg0);
+}
+#endif /* NO_HUnlock */
+
 #ifndef NO_InitContextualMenus
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitContextualMenus
 	(JNIEnv *env, jclass that)
@@ -5275,6 +5295,34 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3BII
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 }
 #endif /* NO_memcpy___3BII */
+
+#ifndef NO_memcpy___3CII
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3CII
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+
+	DEBUG_CALL("memcpy___3CII\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+}
+#endif /* NO_memcpy___3CII */
+
+#ifndef NO_memcpy___3III
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3III
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+
+	DEBUG_CALL("memcpy___3III\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+}
+#endif /* NO_memcpy___3III */
 
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I

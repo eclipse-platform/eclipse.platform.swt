@@ -338,24 +338,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DerefHandle(JNIE
 	return (jint) *h;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getHandleData__I_3C(JNIEnv *env, jclass zz,
-				jint hndl, jcharArray data) {
-	Handle handle= (Handle)hndl;
-	jchar *sa= (*env)->GetCharArrayElements(env, data, 0);
-	int length= (*env)->GetArrayLength(env, data);
-	memcpy(sa, *handle, length*sizeof(jchar));
-	(*env)->ReleaseCharArrayElements(env, data, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getHandleData__I_3I(JNIEnv *env, jclass zz,
-				jint hndl, jintArray data) {
-	Handle handle= (Handle)hndl;
-	jint *sa= (*env)->GetIntArrayElements(env, data, 0);
-	int length= (*env)->GetArrayLength(env, data);
-	memcpy(sa, *handle, length*sizeof(jint));
-	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewGWorldFromPtr(JNIEnv *env, jclass zz,
 					jintArray offscreenGWorld, jint pixMapHandle) {
 		
