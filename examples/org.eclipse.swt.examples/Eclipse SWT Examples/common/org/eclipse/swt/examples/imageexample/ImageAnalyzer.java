@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.text.MessageFormat;
 
 public class ImageAnalyzer {
@@ -41,7 +41,8 @@ public class ImageAnalyzer {
 	boolean showMask = false; // used to display an icon mask or transparent image mask
 	boolean showBackground = false; // used to display the background of an animated image
 	boolean animate = false; // used to animate a multi-image file
-	Thread animateThread;
+	Thread animateThread; // draws animated images
+	Thread incrementalThread; // draws incremental images
 	String lastPath; // used to seed the file dialog
 	String fileName; // the current image file
 	ImageLoader loader; // the loader for the current image file
@@ -49,8 +50,7 @@ public class ImageAnalyzer {
 	int imageDataIndex; // the index of the current image data
 	ImageData imageData; // the currently-displayed image data
 	Image image; // the currently-displayed image
-	int drawIncrement = 0; // the index of the current incremental imageData to draw
-	int finalIncrement = 0; // the index of the final incremental imageData to draw
+	Vector incrementalEvents; // incremental image events
 	
 	public static final int ALPHA_CONSTANT = 0;
 	public static final int ALPHA_X = 1;
@@ -668,14 +668,13 @@ public class ImageAnalyzer {
 		try {
 			loader = new ImageLoader();
 			if (incremental) {
-				// Prepare to handle incremental images.
-				drawIncrement = 0;
-				finalIncrement = 0;
+				// Prepare to handle incremental events.
 				loader.addImageLoaderListener(new ImageLoaderListener() {
 					public void imageDataLoaded(ImageLoaderEvent event) {
 						incrementalDataLoaded(event);
 					}
 				});
+				incrementalThreadStart();
 			}
 			// Read the new image(s) from the chosen file.
 			imageDataArray = loader.load(filename);
@@ -704,41 +703,55 @@ public class ImageAnalyzer {
 	}
 	
 	/*
+	 * Called to start a thread that draws incremental images
+	 * as they are loaded.
+	 */
+	void incrementalThreadStart() {
+		incrementalEvents = new Vector();
+		incrementalThread = new Thread("Incremental") {
+			public void run() {
+				// Draw the first ImageData increment.
+				while (incrementalEvents != null) {
+					// Synchronize so we don't try to remove when the vector is null.
+					synchronized (ImageAnalyzer.this) {
+						if (incrementalEvents != null) {
+							if (incrementalEvents.size() > 0) {
+								ImageLoaderEvent event = (ImageLoaderEvent) incrementalEvents.remove(0);
+								if (image != null) image.dispose();
+								image = new Image(null, event.imageData);
+								imageData = event.imageData;
+								imageCanvasGC.drawImage(
+									image,
+									0,
+									0,
+									imageData.width,
+									imageData.height,
+									imageData.x,
+									imageData.y,
+									imageData.width,
+									imageData.height);
+							} else {
+								yield();
+							}
+						}
+					}
+				}
+				display.wake();
+			}
+		};
+		incrementalThread.setDaemon(true);
+		incrementalThread.start();
+	}
+	
+	/*
 	 * Called when incremental image data has been loaded,
 	 * for example, for interlaced GIF/PNG or progressive JPEG.
 	 */
-	void incrementalDataLoaded(final ImageLoaderEvent event) {
-		if (event.endOfImage) {
-			finalIncrement = event.incrementCount;
-		} else {
-			Thread incrementalThread = new Thread("Incremental") {
-				public void run() {
-					// make absolutely certain that threads draw in order
-					while (event.incrementCount != drawIncrement) {
-						yield();
-					}
-					
-					// lock so threads draw one at a time
-					synchronized (imageCanvas) {
-						drawIncrement++;
-						if (image != null) image.dispose();
-						image = new Image(null, event.imageData);
-						imageData = event.imageData;
-						imageCanvasGC.drawImage(
-							image,
-							0,
-							0,
-							imageData.width,
-							imageData.height,
-							imageData.x,
-							imageData.y,
-							imageData.width,
-							imageData.height);
-					}
-					display.wake();
-				}
-			};
-			incrementalThread.start();
+	void incrementalDataLoaded(ImageLoaderEvent event) {
+		// Synchronize so that we do not try to add while
+		// the incremental drawing thread is removing.
+		synchronized (this) {
+			incrementalEvents.addElement(event);
 		}
 	}
 	
@@ -1083,6 +1096,7 @@ public class ImageAnalyzer {
 					postAnimation();
 				}
 			};
+			animateThread.setDaemon(true);
 			animateThread.start();
 		}
 	}
@@ -1285,8 +1299,13 @@ public class ImageAnalyzer {
 
 	void displayImage(ImageData newImageData) {
 		if (incremental) {
-			// Wait until all incremental threads have finished drawing
-			while (drawIncrement < finalIncrement) {
+			// Tell the incremental thread to stop drawing.
+			synchronized (this) {
+				incrementalEvents = null;
+			}
+			
+			// Wait until the incremental thread is done.
+			while (incrementalThread.isAlive()) {
 				if (!display.readAndDispatch()) display.sleep();
 			}
 		}
