@@ -25,6 +25,12 @@
 /* define this to print out debug statements */
 /* #define DEBUG_CALL_PRINTS */
 
+#ifdef DEBUG_CALL_PRINTS
+#define DEBUG_CALL(func) fprintf(stderr, func);
+#else
+#define DEBUG_CALL(func)
+#endif
+
 /* Define the current lib ID. */
 /* A unique constant is required for each lib.*/
 #define ID_LIB_SWT              63
