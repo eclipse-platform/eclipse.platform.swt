@@ -176,8 +176,10 @@ protected boolean isValidReplace(int start, int replaceLength, String newText){
 		if (start == 0) return true;
 		if (start == getCharCount()) return true;
 		char before = getTextRange(start - 1, 1).charAt(0);
-		char after = getTextRange(start, 1).charAt(0);
-		if ((before == '\r') && (after == '\n')) return false;
+		if (before == '\r') {
+			char after = getTextRange(start, 1).charAt(0);
+			if (after == '\n') return false;
+		}
 	} else {
 		// deleting text, see if part of a \r\n line delimiter is being deleted
 		char startChar = getTextRange(start, 1).charAt(0);
