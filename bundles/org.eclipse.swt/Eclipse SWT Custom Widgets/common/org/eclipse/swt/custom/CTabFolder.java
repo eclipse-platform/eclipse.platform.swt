@@ -602,6 +602,7 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		if (!fixedTabHeight) tabHeight = 0;
+		hideToolTip();
 		redraw();
 		return;
 	} 
