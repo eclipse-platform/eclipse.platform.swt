@@ -676,6 +676,38 @@ boolean setTabItemFocus () {
 	}
 	return super.setTabItemFocus ();
 }
+void setScrollbarVisible (int barHandle, boolean visible) {
+	/*
+	* Bug in Motif.  When XtDestroyWidget() is called from
+	* within a FocusOut event handler, Motif GP's.  The fix
+	* is to post focus events and run them when the handler
+	* has returned.
+	*/
+	Display display = getDisplay ();
+	boolean oldFocusOut = display.postFocusOut;
+	Control [] children = _getChildren ();
+	int [] traversals = new int [children.length];
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	for (int i=0; i<children.length; i++) {
+		OS.XtGetValues (children [i].handle, argList, argList.length / 2);
+		if ((traversals [i] = argList [1]) != 0) {
+			argList [1] = 0;
+			display.postFocusOut = true;
+			OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+		}
+	}
+	super.setScrollbarVisible(barHandle, visible);
+	for (int i=0; i<children.length; i++) {
+		argList [1] = traversals [i];
+		Control control = children [i];
+		if (!control.isDisposed ()) {
+			OS.XtSetValues (control.handle, argList, argList.length / 2);
+			if (argList [1] != 0) control.overrideTranslations ();
+		}
+	}
+	display.postFocusOut = oldFocusOut;
+	if (!display.postFocusOut) display.runDeferredEvents ();
+}
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;

@@ -298,6 +298,27 @@ void setBackgroundPixel (int pixel) {
 		if (argList1 [3] != 0) OS.XmChangeColor (argList1 [3], pixel);
 	}
 }
+void setScrollbarVisible (int barHandle, boolean visible) {
+	if (scrolledHandle == 0) return;
+	/*
+	* Feature in Motif.  Hiding or showing a scroll bar
+	* can cause the widget to automatically resize in
+	* the OS.  This behavior is unwanted.  The fix is
+	* to force the widget to resize to original size.
+	*/
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+	
+	/* Hide or show the scroll bar */
+	if (visible) {
+		OS.XtManageChild (barHandle);
+	} else {
+		OS.XtUnmanageChild (barHandle);
+	}
+	
+	/* Restore the size */
+	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
+}
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;
 	if (formHandle != 0) return formHandle;

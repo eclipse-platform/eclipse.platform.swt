@@ -665,24 +665,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	/*
-	* Feature in Motif.  Hiding or showing a scroll bar
-	* can cause the widget to automatically resize in
-	* the OS.  This behavior is unwanted.  The fix is
-	* to force the widget to resize to original size.
-	*/
-	int scrolledHandle = parent.scrolledHandle;
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-
-	/* Hide or show the scroll bar */
-	if (visible) {
-		OS.XtManageChild (handle);
-	} else {
-		OS.XtUnmanageChild (handle);
-	}
-
-	/* Restore the size */
-	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
+	parent.setScrollbarVisible (this.handle, visible);
 }
 }
