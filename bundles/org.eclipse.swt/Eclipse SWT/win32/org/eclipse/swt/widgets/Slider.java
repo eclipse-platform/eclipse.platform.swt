@@ -147,7 +147,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  Windows runs a modal message
@@ -162,7 +162,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 		case OS.WM_LBUTTONDBLCLK: 
 			display.runDeferredEvents ();
 	}
-	return OS.CallWindowProc (ScrollBarProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (ScrollBarProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
@@ -637,7 +637,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	 		case OS.VK_LEFT: 
 			case OS.VK_RIGHT: {
 				int key = wParam == OS.VK_LEFT ? OS.VK_RIGHT : OS.VK_LEFT;
-				int code = callWindowProc (OS.WM_KEYDOWN, key, lParam);
+				int code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
 	 			return new LRESULT (code);
 	 		}
 	 	}
@@ -669,7 +669,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* release the automatic capture.
 	*/
 	if (!OS.IsWinCE) {
-		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
 	}
 	return result;
@@ -698,7 +698,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* release the automatic capture.
 	*/	
 	if (!OS.IsWinCE) {
-		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
 	}
 	return result;

@@ -114,7 +114,7 @@ public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  When the user clicks on the group
@@ -124,9 +124,9 @@ int callWindowProc (int msg, int wParam, int lParam) {
 	switch (msg) {
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_LBUTTONDBLCLK: 
-			return OS.DefWindowProc (handle, msg, wParam, lParam);
+			return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
-	return OS.CallWindowProc (GroupProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (GroupProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
@@ -325,7 +325,7 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	* allow children, answer HTCLIENT to allow mouse messages
 	* to be delivered to the children.
 	*/
-	int code = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	if (code == OS.HTTRANSPARENT) code = OS.HTCLIENT;
 	return new LRESULT (code);
 }
@@ -357,7 +357,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
 		int nSavedDC = OS.SaveDC (wParam);
-		int code = callWindowProc (OS.WM_PRINTCLIENT, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
 		OS.RestoreDC (wParam, nSavedDC);
 		return new LRESULT (code);
 	}

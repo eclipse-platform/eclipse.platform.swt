@@ -111,7 +111,7 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Bug in Windows.  For some reason, during the processing
@@ -121,9 +121,9 @@ int callWindowProc (int msg, int wParam, int lParam) {
 	* window proc for WM_SYSCHAR.
 	*/
 	if (msg == OS.WM_SYSCHAR) {
-		return OS.DefWindowProc (handle, msg, wParam, lParam);
+		return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
-	return OS.CallWindowProc (ToolBarProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (ToolBarProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
@@ -849,7 +849,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	if (ignoreResize) {
-		int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}

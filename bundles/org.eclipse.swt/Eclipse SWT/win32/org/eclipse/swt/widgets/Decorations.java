@@ -232,8 +232,9 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
-	return OS.DefMDIChildProc (handle, msg, wParam, lParam);
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
+	return OS.DefMDIChildProc (hwnd, msg, wParam, lParam);
 }
 
 void closeWidget () {

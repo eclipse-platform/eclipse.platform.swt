@@ -166,9 +166,9 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 } 
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (TreeProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 }
 
 boolean checkScroll (int hItem) {
@@ -1497,7 +1497,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				if (hItem != 0) {
 					if (hAnchor == 0) hAnchor = hItem;
 					ignoreSelect = ignoreDeselect = true;
-					int code = callWindowProc (OS.WM_KEYDOWN, wParam, lParam);
+					int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 					ignoreSelect = ignoreDeselect = false;
 					int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 					TVITEM tvItem = new TVITEM ();
@@ -1635,7 +1635,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					}
 				}
 			}
-			int code = callWindowProc (OS.WM_KEYDOWN, wParam, lParam);
+			int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 			hAnchor = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			return new LRESULT (code);
 		}
@@ -1674,7 +1674,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEM) == 0) {
-		sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+		sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		/*
 		* In a multi-select tree, if the user is collapsing a subtree that
 		* contains selected items, clear the selection from these items and
@@ -1710,7 +1710,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 		}
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
-		int code = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		if (deselected) {
@@ -1752,7 +1752,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			event.item = items [tvItem.lParam];
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
-			sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			return LRESULT.ZERO;
 		}
@@ -1791,10 +1791,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 
 	/* Do the selection */
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
-	int code = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	ignoreDeselect = ignoreSelect = false;
 	if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
 	int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -1929,7 +1929,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		event.y = (short) (lParam >> 16);
 		postEvent (SWT.DragDetect, event);
 	} else {
-		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 	}
 	dragStarted = false;
 	return new LRESULT (code);
@@ -1944,7 +1944,7 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	* WM_RBUTTONUP.  The fix is to avoid calling the window proc for
 	* the tree.
 	*/
-	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
 	/*
 	* This code is intentionally commented.
 	*/
@@ -2209,7 +2209,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					showMenu (nmrg.x, nmrg.y);
+					showMenu (menu, nmrg.x, nmrg.y);
 					gestureCompleted = true;
 					return LRESULT.ONE;
 				}

@@ -88,9 +88,9 @@ public CoolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (ReBarProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (ReBarProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
@@ -1009,7 +1009,7 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
 	Rectangle rect = getBounds ();		
-	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (!rect.equals (getBounds ())) {
 		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
@@ -1017,13 +1017,13 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SIZE(int wParam, int lParam) {
+LRESULT WM_SIZE (int wParam, int lParam) {
 	if (ignoreResize) {
-		int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
-	return super.WM_SIZE(wParam, lParam);
+	return super.WM_SIZE (wParam, lParam);
 }
 
 LRESULT wmNotifyChild (int wParam, int lParam) {

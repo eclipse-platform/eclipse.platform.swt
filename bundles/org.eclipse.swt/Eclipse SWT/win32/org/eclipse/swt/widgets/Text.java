@@ -122,9 +122,9 @@ public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (EditProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 }
 
 void createHandle () {
@@ -1733,7 +1733,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		if ((style & SWT.SINGLE) != 0) {
 			LRESULT result = wmClipboard (OS.EM_UNDO, wParam, lParam);
 			if (result != null) return result.value;
-			return callWindowProc (OS.EM_UNDO, wParam, lParam);
+			return callWindowProc (hwnd, OS.EM_UNDO, wParam, lParam);
 		}
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
@@ -1815,7 +1815,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	* so DLGC_WANTARROWS should not be cleared.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {
-		int code = callWindowProc (OS.WM_GETDLGCODE, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 		code &= ~(OS.DLGC_WANTALLKEYS | OS.DLGC_WANTTAB);
 		return new LRESULT (code);
 	}
@@ -1841,7 +1841,7 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 	* them to the application.
 	*/
 	ignoreCharacter = true;
-	int result = callWindowProc (OS.WM_IME_CHAR, wParam, lParam);
+	int result = callWindowProc (handle, OS.WM_IME_CHAR, wParam, lParam);
 	MSG msg = new MSG ();
 	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 	while (OS.PeekMessage (msg, handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
@@ -1862,8 +1862,8 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* when double clicking behavior is disabled by not
 	* calling the window proc.
 	*/
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	if (!doubleClick) return LRESULT.ZERO;
 		
@@ -1891,7 +1891,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (!OS.IsPPC) return super.WM_LBUTTONDOWN (wParam, lParam);
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	/*
 	* Note: On WinCE PPC, only attempt to recognize the gesture for
 	* a context menu when the control contains a valid menu or there
@@ -1913,11 +1913,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		shrg.dwFlags = OS.SHRG_RETURNCMD;
 		int type = OS.SHRecognizeGesture (shrg);
 		if (type == OS.GN_CONTEXTMENU) {
-			showMenu (x, y);
+			showMenu (menu, x, y);
 			return LRESULT.ONE;
 		}
 	}
-	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return new LRESULT (result);
 }
@@ -1958,9 +1958,9 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 			if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) != 0) {
 				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 				ignoreModify = ignoreCharacter = true;
-				callWindowProc (msg, wParam, lParam);
+				callWindowProc (handle, msg, wParam, lParam);
 				newText = getSelectionText ();
-				callWindowProc (msg, wParam, lParam);
+				callWindowProc (handle, msg, wParam, lParam);
 				ignoreModify = ignoreCharacter = false;
 			}
 			break;
@@ -1971,7 +1971,7 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 		if (newText == null) return LRESULT.ZERO;
 		if (!newText.equals (oldText)) {
 			if (call) {
-				callWindowProc (msg, wParam, lParam);
+				callWindowProc (handle, msg, wParam, lParam);
 			}
 			newText = Display.withCrLf (newText);
 			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
@@ -1994,7 +1994,7 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 	}
 	if (msg == OS.WM_UNDO) {
 		ignoreVerify = ignoreCharacter = true;
-		callWindowProc (OS.WM_UNDO, wParam, lParam);
+		callWindowProc (handle, OS.WM_UNDO, wParam, lParam);
 		ignoreVerify = ignoreCharacter = false;
 		return LRESULT.ONE;
 	}

@@ -105,9 +105,9 @@ public ProgressBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (ProgressBarProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (ProgressBarProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {

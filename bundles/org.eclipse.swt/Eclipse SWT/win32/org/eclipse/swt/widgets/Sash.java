@@ -105,9 +105,9 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.DefWindowProc (handle, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {

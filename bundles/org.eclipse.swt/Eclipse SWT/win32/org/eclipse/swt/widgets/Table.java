@@ -132,9 +132,9 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (TableProc, handle, msg, wParam, lParam);
+	return OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
@@ -1945,7 +1945,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	sendMouseEvent (type, button, msg, wParam, lParam);
+	sendMouseEvent (type, button, handle, msg, wParam, lParam);
 
 	/*
 	* Force the table to have focus so that when the user
@@ -1994,7 +1994,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 		if (wasSelected) ignoreSelect = true;
 	}
 	dragStarted = false;
-	int code = callWindowProc (msg, wParam, lParam);
+	int code = callWindowProc (handle, msg, wParam, lParam);
 	if (wasSelected) {
 		ignoreSelect = false;
 		Event event = new Event ();
@@ -2011,7 +2011,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 		}
 		if (fakeMouseUp) {
 			mouseDown = false;
-			sendMouseEvent (SWT.MouseUp, button, msg, wParam, lParam);
+			sendMouseEvent (SWT.MouseUp, button, handle, msg, wParam, lParam);
 		}
 	}
 	dragStarted = false;
@@ -2921,9 +2921,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, OS.WM_LBUTTONDBLCLK, wParam, lParam);
-	if (pinfo.iItem != -1) callWindowProc (OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return LRESULT.ZERO;
 }
@@ -3118,9 +3118,9 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_RBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, OS.WM_RBUTTONDBLCLK, wParam, lParam);
-	if (pinfo.iItem != -1) callWindowProc (OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return LRESULT.ZERO;
 }
@@ -3190,7 +3190,7 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
 	if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
 		setResizeChildren (false);
-		int code = callWindowProc (OS.WM_WINDOWPOSCHANGED, wParam, lParam);
+		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
 		sendEvent (SWT.Resize);
 		// widget may be disposed at this point
 		if (isDisposed ()) return new LRESULT (code);
@@ -3382,7 +3382,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							/*
 							* This code is intentionally commented.
 							*/
-//								OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+//							OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
 							event.item = _getItem (index);
 						}
 						postEvent (SWT.Selection, event);
@@ -3412,7 +3412,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					showMenu (nmrg.x, nmrg.y);
+					showMenu (menu, nmrg.x, nmrg.y);
 					return LRESULT.ONE;
 				}
 			}

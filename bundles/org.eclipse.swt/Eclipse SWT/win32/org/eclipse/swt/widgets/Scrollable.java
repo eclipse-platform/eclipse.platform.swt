@@ -72,9 +72,9 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.DefWindowProc (handle, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 /**
@@ -288,7 +288,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	*/
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int code = callWindowProc (OS.WM_MOUSEWHEEL, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
@@ -309,7 +309,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);
 	// widget may be disposed at this point
 	if (code == 0) return LRESULT.ZERO;
@@ -378,7 +378,7 @@ LRESULT wmScroll (ScrollBar bar, int msg, int wParam, int lParam) {
 		}
 		OS.SetScrollInfo (handle, type, info, true);
 	} else {
-		int code = callWindowProc (msg, wParam, lParam);
+		int code = callWindowProc (handle, msg, wParam, lParam);
 		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	bar.wmScrollChild (wParam, lParam);

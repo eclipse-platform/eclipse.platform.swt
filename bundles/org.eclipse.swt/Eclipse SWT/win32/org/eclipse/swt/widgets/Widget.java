@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -168,7 +169,7 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return 0;
 }
 
@@ -476,6 +477,10 @@ public Display getDisplay () {
 	return display;
 }
 
+Menu getMenu () {
+	return null;
+}
+
 /**
  * Returns the name of the widget. This is the name of
  * the class without the package name.
@@ -598,6 +603,13 @@ boolean isValidSubclass () {
  */
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
+}
+
+void mapEvent (int hwnd, Event event) {
+}
+
+GC new_GC (GCData data) {
+	return null;
 }
 
 /**
@@ -849,6 +861,21 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return event.doit;
 }
 
+boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
+	Event event = new Event ();
+	event.button = button;
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	setInputState (event, type);
+	mapEvent (hwnd, event);
+	return sendMouseEvent (type, hwnd, msg, wParam, lParam, event);
+}
+
+boolean sendMouseEvent (int type, int hwnd, int msg, int wParam, int lParam, Event event) {
+	postEvent (type, event);
+	return true;
+}
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
@@ -945,6 +972,12 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+}
+
+boolean sendFocusEvent (int type) {
+	sendEvent (type);
+	// widget could be disposed at this point
+	return true;
 }
 
 boolean setInputState (Event event, int type) {
@@ -1070,6 +1103,22 @@ boolean SetWindowPos (int hWnd, int hWndInsertAfter, int X, int Y, int cx, int c
 	return OS.SetWindowPos (hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 }
 
+boolean showMenu (Menu menu, int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (!event.doit) return true;
+	if (menu != null && !menu.isDisposed ()) {
+		if (x != event.x || y != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
+		menu.setVisible (true);
+		return true;
+	}
+	return false;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -1100,6 +1149,53 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	}
 	// widget could be disposed at this point
 	return null;
+}
+
+LRESULT wmContextMenu (int hwnd, int wParam, int lParam) {
+	if (wParam != hwnd) return null;
+	
+	/*
+	* Feature in Windows.  SHRecognizeGesture() sends an undocumented
+	* WM_CONTEXTMENU notification when the flag SHRG_NOTIFY_PARENT is
+	* not set.  This causes the context menu to be displayed twice,
+	* once by the caller of SHRecognizeGesture() and once from this
+	* method.  The fix is to ignore WM_CONTEXTMENU notifications on
+	* all WinCE platforms.
+	* 
+	* NOTE: This only happens on WM2003.  Previous WinCE versions did
+	* not support WM_CONTEXTMENU.
+	*/
+	if (OS.IsWinCE) return null;
+	
+	/*
+	* Feature in Windows.  When the user presses  WM_NCRBUTTONUP,
+	* a WM_CONTEXTMENU message is generated.  This happens when
+	* the user releases the mouse over a scroll bar.  Normally,
+	* window displays the default scrolling menu but applications
+	* can process WM_CONTEXTMENU to display a different menu.
+	* Typically, an application does not want to supply a special
+	* scroll menu.  The fix is to look for a WM_CONTEXTMENU that
+	* originated from a mouse event and display the menu when the
+	* mouse was released in the client area.
+	*/
+	int x = 0, y = 0;
+	if (lParam != -1) {
+		POINT pt = new POINT ();
+		x = pt.x = (short) (lParam & 0xFFFF);
+		y = pt.y = (short) (lParam >> 16);
+		OS.ScreenToClient (hwnd, pt);
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
+		if (!OS.PtInRect (rect, pt)) return null;
+	} else {
+		int pos = OS.GetMessagePos ();
+		x = (short) (pos & 0xFFFF);
+		y = (short) (pos >> 16);
+	}
+
+	/* Show the menu */
+	Menu menu = getMenu ();
+	return showMenu (menu, x, y) ? LRESULT.ZERO : null;
 }
 
 LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
@@ -1430,6 +1526,344 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
+LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
+	int code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
+	sendFocusEvent (SWT.FocusOut);
+	// widget could be disposed at this point
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the focus
+	* or deactivate events.  If this happens, end the
+	* processing of the Windows message by returning
+	* zero as the result of the window proc.
+	*/
+	if (isDisposed ()) return LRESULT.ZERO;
+	if (code == 0) return LRESULT.ZERO;
+	return new LRESULT (code);
+}
+
+LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows. Windows sends the following
+	* messages when the user double clicks the mouse:
+	*
+	*	WM_LBUTTONDOWN		- mouse down
+	*	WM_LBUTTONUP		- mouse up
+	*	WM_LBUTTONDBLCLK	- double click
+	*	WM_LBUTTONUP		- mouse up
+	*
+	* Applications that expect matching mouse down/up
+	* pairs will not see the second mouse down.  The
+	* fix is to send a mouse down event.
+	*/
+	sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 1, hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (result);
+}
+
+LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
+	boolean dragging = false, mouseDown = true;
+	boolean dragDetect = hooks (SWT.DragDetect);
+	if (dragDetect) {
+		if (!OS.IsWinCE) {
+			/*
+			* Feature in Windows.  It's possible that the drag
+			* operation will not be started while the mouse is
+			* down, meaning that the mouse should be captured.
+			* This can happen when the user types the ESC key
+			* to cancel the drag.  The fix is to query the state
+			* of the mouse and capture the mouse accordingly.
+			*/
+			POINT pt = new POINT ();
+			pt.x = (short) (lParam & 0xFFFF);
+			pt.y = (short) (lParam >> 16);
+			OS.ClientToScreen (hwnd, pt);
+			dragging = OS.DragDetect (hwnd, pt);
+			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
+		}
+	}
+	sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);	
+	if (OS.IsPPC) {
+		/*
+		* Note: On WinCE PPC, only attempt to recognize the gesture for
+		* a context menu when the control contains a valid menu or there
+		* are listeners for the MenuDetect event.
+		*/
+		Menu menu = getMenu ();
+		boolean hasMenu = menu != null && !menu.isDisposed ();
+		if (hasMenu || hooks (SWT.MenuDetect)) {
+			int x = (short) (lParam & 0xFFFF);
+			int y = (short) (lParam >> 16);
+			SHRGINFO shrg = new SHRGINFO ();
+			shrg.cbSize = SHRGINFO.sizeof;
+			shrg.hwndClient = hwnd;
+			shrg.ptDown_x = x;
+			shrg.ptDown_y = y; 
+			shrg.dwFlags = OS.SHRG_RETURNCMD;
+			int type = OS.SHRecognizeGesture (shrg);
+			if (type == OS.GN_CONTEXTMENU) showMenu (menu, x, y);
+		}
+	}
+	if (mouseDown) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
+	if (dragging) {
+		Event event = new Event ();
+		event.x = (short) (lParam & 0xFFFF);
+		event.y = (short) (lParam >> 16);
+		postEvent (SWT.DragDetect, event);
+	} else {
+		if (dragDetect) {
+			/*
+			* Feature in Windows.  DragDetect() captures the mouse
+			* and tracks its movement until the user releases the
+			* left mouse button, presses the ESC key, or moves the
+			* mouse outside the drag rectangle.  If the user moves
+			* the mouse outside of the drag rectangle, DragDetect()
+			* returns true and a drag and drop operation can be
+			* started.  When the left mouse button is released or
+			* the ESC key is pressed, these events are consumed by
+			* DragDetect() so that application code that matches
+			* mouse down/up pairs or looks for the ESC key will not
+			* function properly.  The fix is to send these events
+			* when the drag has not started.
+			* 
+			* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
+			* events for the ESC key.  This would require computing
+			* wParam (the key) and lParam (the repeat count, scan code,
+			* extended-key flag, context code, previous key-state flag,
+			* and transition-state flag) which is non-trivial.
+			*/
+			if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
+				OS.SendMessage (hwnd, OS.WM_LBUTTONUP, wParam, lParam);
+			}
+		}
+	}
+	return new LRESULT (result);
+}
+
+LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam);
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
+	}
+	return new LRESULT (result);
+}
+
+LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows. Windows sends the following
+	* messages when the user double clicks the mouse:
+	*
+	*	WM_MBUTTONDOWN		- mouse down
+	*	WM_MBUTTONUP		- mouse up
+	*	WM_MLBUTTONDBLCLK	- double click
+	*	WM_MBUTTONUP		- mouse up
+	*
+	* Applications that expect matching mouse down/up
+	* pairs will not see the second mouse down.  The
+	* fix is to send a mouse down event.
+	*/
+	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 2, hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (hwnd);
+}
+
+LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (hwnd);
+}
+
+LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_MBUTTONUP, wParam, lParam);
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
+	}
+	return new LRESULT (result);
+}
+
+LRESULT wmMouseHover (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseHover, 0, hwnd, OS.WM_MOUSEHOVER, wParam, lParam);
+	return null;
+}
+
+LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
+	int pos = OS.GetMessagePos ();
+	POINT pt = new POINT ();
+	pt.x = (short) (pos & 0xFFFF);
+	pt.y = (short) (pos >> 16); 
+	OS.ScreenToClient (hwnd, pt);
+	lParam = pt.x | (pt.y << 16);
+	sendMouseEvent (SWT.MouseExit, 0, hwnd, OS.WM_MOUSELEAVE, wParam, lParam);
+	return null;
+}
+
+LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
+	int pos = OS.GetMessagePos ();
+	if (pos != display.lastMouse) {
+		if (!OS.IsWinCE) {
+			boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
+			boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
+			boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
+			if (mouseEnter || mouseExit || mouseHover) {
+				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
+				lpEventTrack.dwFlags = OS.TME_QUERY;
+				lpEventTrack.hwndTrack = hwnd;
+				OS.TrackMouseEvent (lpEventTrack);
+				if (lpEventTrack.dwFlags == 0) {
+					lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
+					lpEventTrack.hwndTrack = hwnd;
+					OS.TrackMouseEvent (lpEventTrack);
+					if (mouseEnter) {
+						/*
+						* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
+						* issuing a mouse enter.  This causes mouse exit events to be processed
+						* before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
+						* event queue by TrackMouseEvent().
+						*/
+						MSG msg = new MSG ();
+						int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
+							OS.TranslateMessage (msg);
+							OS.DispatchMessage (msg);
+						}
+						sendMouseEvent (SWT.MouseEnter, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
+					}
+				} else {
+					lpEventTrack.dwFlags = OS.TME_HOVER;
+					OS.TrackMouseEvent (lpEventTrack);
+				}
+			}
+		}
+		display.lastMouse = pos;
+		sendMouseEvent (SWT.MouseMove, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
+	}
+	return null;
+}
+
+LRESULT wmPaint (int hwnd, int wParam, int lParam) {
+
+	/* Exit early - don't draw the background */
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		return null;
+	}
+
+	/* Get the damage */
+	int result = 0;
+	if (OS.IsWinCE) {
+		RECT rect = new RECT ();
+		OS.GetUpdateRect (hwnd, rect, false);
+		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
+		OS.InvalidateRect (hwnd, rect, false);
+	} else {
+		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.GetUpdateRgn (hwnd, rgn, false);
+		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
+		/*
+		* Bug in Windows.  When InvalidateRgn(), InvalidateRect()
+		* or RedrawWindow() with RDW_INVALIDATE is called from
+		* within WM_PAINT to invalidate a region for a further
+		* BeginPaint(), the caret is not properly erased causing
+		* pixel corruption.  The fix is to hide and show the
+		* caret.
+		*/
+		OS.HideCaret (hwnd);
+		OS.InvalidateRgn (hwnd, rgn, false);
+		OS.ShowCaret (hwnd);
+		OS.DeleteObject (rgn);
+	}
+	
+	/* Send the paint event */
+	PAINTSTRUCT ps = new PAINTSTRUCT ();
+	GCData data = new GCData ();
+	data.ps = ps;
+	data.hwnd = hwnd;
+	GC gc = new_GC (data);
+	if (gc != null) {
+		int width = ps.right - ps.left;
+		int height = ps.bottom - ps.top;
+		if (width != 0 && height != 0) {
+			Event event = new Event ();
+			event.gc = gc;
+			event.x = ps.left;
+			event.y = ps.top;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Paint, event);
+			// widget could be disposed at this point
+			event.gc = null;
+		}
+		gc.dispose ();
+	}
+	if (result == 0) return LRESULT.ZERO;
+	return new LRESULT (result);
+}
+
+LRESULT wmRButtonDblClk (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows. Windows sends the following
+	* messages when the user double clicks the mouse:
+	*
+	*	WM_RBUTTONDOWN		- mouse down
+	*	WM_RBUTTONUP		- mouse up
+	*	WM_RBUTTONDBLCLK	- double click
+	*	WM_LBUTTONUP		- mouse up
+	*
+	* Applications that expect matching mouse down/up
+	* pairs will not see the second mouse down.  The
+	* fix is to send a mouse down event.
+	*/
+	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 3, hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (result);
+}
+
+LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (hwnd);
+}
+
+LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
+	sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam);
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
+	}
+	return new LRESULT (result);
+}
+
+LRESULT wmSetFocus (int hwnd, int wParam, int lParam) {
+	int code = callWindowProc (hwnd, OS.WM_SETFOCUS, wParam, lParam);
+	sendFocusEvent (SWT.FocusIn);
+	// widget could be disposed at this point
+
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the focus
+	* or activate events.  If this happens, end the
+	* processing of the Windows message by returning
+	* zero as the result of the window proc.
+	*/
+	if (isDisposed ()) return LRESULT.ZERO;
+	if (code == 0) return LRESULT.ZERO;
+	return new LRESULT (code);
+}
+
 LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
 	Display display = this.display;
 	display.lastAscii = wParam;
@@ -1443,8 +1877,7 @@ LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
 	/* Call the window proc to determine whether it is a system key or mnemonic */
 	boolean oldKeyHit = display.mnemonicKeyHit;
 	display.mnemonicKeyHit = true;
-	//TEMPORARY CODE
-	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_SYSCHAR, wParam, lParam);
 	boolean consumed = false;
 	if (!display.mnemonicKeyHit) {
 		consumed = !sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);

@@ -382,21 +382,21 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deactivate, typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (parent != null) {
 		if (handle == 0) return 0;
 		switch (msg) {
 			case OS.WM_KILLFOCUS:
 			case OS.WM_SETFOCUS: 
-				return OS.DefWindowProc (handle, msg, wParam, lParam);
+				return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 		}
-		return OS.CallWindowProc (DialogProc, handle, msg, wParam, lParam);
+		return OS.CallWindowProc (DialogProc, hwnd, msg, wParam, lParam);
 	}
 	if (handle == 0) return 0;
 	if (hwndMDIClient != 0) {
-		return OS.DefFrameProc (handle, hwndMDIClient, msg, wParam, lParam);
+		return OS.DefFrameProc (hwnd, hwndMDIClient, msg, wParam, lParam);
 	}
-	return OS.DefWindowProc (handle, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 /**
@@ -1598,12 +1598,12 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isEnabled () || !isActive ()) {
 		if (!Display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
-		int hittest = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
+		int hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTCLIENT || hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
 	}
 	if (menuBar != null && !menuBar.getEnabled ()) {
-		int hittest = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
+		int hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
 	}
@@ -1626,7 +1626,7 @@ LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	boolean fixActive = OS.IsWin95 && display.lastHittest == OS.HTCAPTION;
 	if (fixActive) hwndActive = OS.SetActiveWindow (handle);
 	display.lockActiveWindow = true;
-	int code = callWindowProc (OS.WM_NCLBUTTONDOWN, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_NCLBUTTONDOWN, wParam, lParam);
 	display.lockActiveWindow = false;
 	if (fixActive) OS.SetActiveWindow (hwndActive);
 	Control focusControl = display.lastHittestControl;

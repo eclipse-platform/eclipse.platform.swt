@@ -271,9 +271,24 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (ComboProc, handle, msg, wParam, lParam);
+	if (hwnd == handle) {
+		return OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
+	}
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwnd == hwndText) {
+		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
+	}
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwnd == hwndList) {
+		return OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	}
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+}
+
+boolean checkHandle (int hwnd) {
+	return hwnd == handle || hwnd == OS.GetDlgItem (handle, CBID_EDIT) || hwnd == OS.GetDlgItem (handle, CBID_LIST);
 }
 
 protected void checkSubclass () {
@@ -1674,19 +1689,36 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			LRESULT result = null;
 			switch (msg) {
 				/* Keyboard messages */
-				case OS.WM_CHAR:		result = WM_CHAR (wParam, lParam); break;
-				case OS.WM_IME_CHAR:	result = WM_IME_CHAR (wParam, lParam); break;
-				case OS.WM_KEYDOWN:		result = WM_KEYDOWN (wParam, lParam); break;
-				case OS.WM_KEYUP:		result = WM_KEYUP (wParam, lParam); break;
-				case OS.WM_SYSCHAR:		result = WM_SYSCHAR (wParam, lParam); break;
-				case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (wParam, lParam); break;
-				case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (wParam, lParam); break;
+				case OS.WM_CHAR:		result = wmChar (hwnd, wParam, lParam); break;
+				case OS.WM_IME_CHAR:	result = wmIMEChar (hwnd, wParam, lParam); break;
+				case OS.WM_KEYDOWN:		result = wmKeyDown (hwnd, wParam, lParam); break;
+				case OS.WM_KEYUP:		result = wmKeyUp (hwnd, wParam, lParam); break;
+				case OS.WM_SYSCHAR:		result = wmSysChar (hwnd, wParam, lParam); break;
+				case OS.WM_SYSKEYDOWN:	result = wmSysKeyDown (hwnd, wParam, lParam); break;
+				case OS.WM_SYSKEYUP:	result = wmSysKeyUp (hwnd, wParam, lParam); break;
 
-				/* Context menu messages */
-				case OS.WM_CONTEXTMENU:
-					/* Pretend the WM_CONTEXTMENU was sent to the combo box */
-					result = WM_CONTEXTMENU (handle, lParam);
-					break;
+				/* Mouse Messages */
+				case OS.WM_LBUTTONDBLCLK:	result = wmLButtonDblClk (hwnd, wParam, lParam); break;
+				case OS.WM_LBUTTONDOWN:		result = wmLButtonDown (hwnd, wParam, lParam); break;
+				case OS.WM_LBUTTONUP:		result = wmLButtonUp (hwnd, wParam, lParam); break;
+				case OS.WM_MBUTTONDBLCLK:	result = wmMButtonDblClk (hwnd, wParam, lParam); break;
+				case OS.WM_MBUTTONDOWN:		result = wmMButtonDown (hwnd, wParam, lParam); break;
+				case OS.WM_MBUTTONUP:		result = wmMButtonUp (hwnd, wParam, lParam); break;
+				case OS.WM_MOUSEHOVER:		result = wmMouseHover (hwnd, wParam, lParam); break;
+				case OS.WM_MOUSELEAVE:		result = wmMouseLeave (hwnd, wParam, lParam); break;
+				case OS.WM_MOUSEMOVE:		result = wmMouseMove (hwnd, wParam, lParam); break;
+//				case OS.WM_MOUSEWHEEL:		result = wmMouseWheel (hwnd, wParam, lParam); break;
+				case OS.WM_RBUTTONDBLCLK:	result = wmRButtonDblClk (hwnd, wParam, lParam); break;
+				case OS.WM_RBUTTONDOWN:		result = wmRButtonDown (hwnd, wParam, lParam); break;
+				case OS.WM_RBUTTONUP:		result = wmRButtonUp (hwnd, wParam, lParam); break;
+
+				/* Paint messages */
+				case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;
+
+				/* Menu messages */
+				case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam);
+//				case OS.WM_MENUCHAR:		result = WM_MENUCHAR (wParam, lParam); break;
+//				case OS.WM_MENUSELECT:		result = WM_MENUSELECT (wParam, lParam); break;
 					
 				/* Clipboard messages */
 				case OS.WM_CLEAR:
@@ -1696,7 +1728,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.EM_UNDO:
 				case OS.WM_SETTEXT:
 					if (hwnd == hwndText) {
-						result = wmClipboard (hwndText, msg, wParam, lParam);
+						result = wmClipboard (hwnd, msg, wParam, lParam);
 					}
 					break;
 			}
@@ -1724,7 +1756,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					if (!newText.equals (oldText)) {
 						int index = indexOf (newText);
 						if (index != -1 && index != wParam) {
-							return callWindowProc (OS.CB_SETCURSEL, index, lParam);
+							return callWindowProc (handle, OS.CB_SETCURSEL, index, lParam);
 						}
 					}
 				}
@@ -1734,74 +1766,13 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_CHAR (int wParam, int lParam) {
-	if (ignoreCharacter) return null;
-	LRESULT result = super.WM_CHAR (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  For some reason, when the
-	* widget is a single line text widget, when the
-	* user presses tab, return or escape, Windows beeps.
-	* The fix is to look for these keys and not call
-	* the window proc.
-	* 
-	* NOTE: This only happens when the drop down list
-	* is not visible.
-	*/
-	switch (wParam) {
-		case SWT.TAB: return LRESULT.ZERO;
-		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
-			// FALL THROUGH
-		case SWT.ESC: 
-			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
-				return LRESULT.ZERO;
-			}
-	}
-	return result;
-}
-
 LRESULT WM_CTLCOLOR (int wParam, int lParam) {
 	return wmColorChild (wParam, lParam);
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
-	int code = callWindowProc (OS.WM_GETDLGCODE, wParam, lParam);
+	int code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 	return new LRESULT (code | OS.DLGC_WANTARROWS);
-}
-
-LRESULT WM_IME_CHAR (int wParam, int lParam) {
-
-	/* Process a DBCS character */
-	Display display = this.display;
-	display.lastKey = 0;
-	display.lastAscii = wParam;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
-	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
-		return LRESULT.ZERO;
-	}
-
-	/*
-	* Feature in Windows.  The Windows text widget uses
-	* two 2 WM_CHAR's to process a DBCS key instead of
-	* using WM_IME_CHAR.  The fix is to allow the text
-	* widget to get the WM_CHAR's but ignore sending
-	* them to the application.
-	*/
-	ignoreCharacter = true;
-	int result = callWindowProc (OS.WM_IME_CHAR, wParam, lParam);
-	MSG msg = new MSG ();
-	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-	while (OS.PeekMessage (msg, handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
-		OS.TranslateMessage (msg);
-		OS.DispatchMessage (msg);
-	}
-	ignoreCharacter = false;
-	
-	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
-	// widget could be disposed at this point
-	display.lastKey = display.lastAscii = 0;
-	return new LRESULT (result);
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
@@ -1862,6 +1833,33 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (redraw) setRedraw (true);
 	}
 	return result; 
+}
+
+LRESULT wmChar (int hwnd, int wParam, int lParam) {
+	if (ignoreCharacter) return null;
+	LRESULT result = super.wmChar (hwnd, wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  For some reason, when the
+	* widget is a single line text widget, when the
+	* user presses tab, return or escape, Windows beeps.
+	* The fix is to look for these keys and not call
+	* the window proc.
+	* 
+	* NOTE: This only happens when the drop down list
+	* is not visible.
+	*/
+	switch (wParam) {
+		case SWT.TAB: return LRESULT.ZERO;
+		case SWT.CR:
+			postEvent (SWT.DefaultSelection);
+			// FALL THROUGH
+		case SWT.ESC: 
+			if (OS.SendMessage (hwnd, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
+				return LRESULT.ZERO;
+			}
+	}
+	return result;
 }
 
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
@@ -2005,6 +2003,40 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
+
+	/* Process a DBCS character */
+	Display display = this.display;
+	display.lastKey = 0;
+	display.lastAscii = wParam;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
+
+	/*
+	* Feature in Windows.  The Windows text widget uses
+	* two 2 WM_CHAR's to process a DBCS key instead of
+	* using WM_IME_CHAR.  The fix is to allow the text
+	* widget to get the WM_CHAR's but ignore sending
+	* them to the application.
+	*/
+	ignoreCharacter = true;
+	int result = callWindowProc (hwnd, OS.WM_IME_CHAR, wParam, lParam);
+	MSG msg = new MSG ();
+	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+	while (OS.PeekMessage (msg, hwnd, OS.WM_CHAR, OS.WM_CHAR, flags)) {
+		OS.TranslateMessage (msg);
+		OS.DispatchMessage (msg);
+	}
+	ignoreCharacter = false;
+	
+	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
+	return new LRESULT (result);
 }
 
 }
