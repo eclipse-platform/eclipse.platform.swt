@@ -85,7 +85,7 @@ public class ATK extends OS {
 public static final native int AtkObjectFactory_sizeof ();
 public static final native int AtkObjectFactoryClass_sizeof ();
 	
-/** Native methods */
+/** Natives */
 public static final synchronized native int /*long*/ ATK_ACTION_GET_IFACE (int /*long*/ obj);
 public static final synchronized native int /*long*/ ATK_COMPONENT_GET_IFACE(int /*long*/ atkHandle);
 public static final synchronized native int /*long*/ ATK_OBJECT_FACTORY_CLASS (int /*long*/ klass);

@@ -3,7 +3,8 @@ package org.eclipse.swt.internal.gtk;
 import org.eclipse.swt.internal.*;
 
 public class GTK extends Platform {
-	
+
+/** Natives */
 public static final synchronized native int GTK_WIDGET_HEIGHT(int widget);
 public static final synchronized native int GTK_WIDGET_WIDTH(int widget);
 public static final synchronized native int g_signal_connect(int instance, byte[] detailed_signal, int proc, int data);
