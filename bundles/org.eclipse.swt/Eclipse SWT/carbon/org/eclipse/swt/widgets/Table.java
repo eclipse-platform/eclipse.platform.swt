@@ -307,17 +307,9 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	if (columnCount > 1) {
+	if (columnCount >= 1) {
 		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			Image [] images = item.images;
-			if (images != null) {
-				Image [] temp = new Image [columnCount];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-				items [i].images = temp;
-			}
-			String [] strings = item.strings;
+			String [] strings = items [i].strings;
 			if (strings != null) {
 				String [] temp = new String [columnCount];
 				System.arraycopy (strings, 0, temp, 0, index);
@@ -325,6 +317,15 @@ void createItem (TableColumn column, int index) {
 				temp [index] = "";
 				items [i].strings = temp;
 			}
+			if (index == 0) items [i].text = "";
+			Image [] images = items [i].images;
+			if (images != null) {
+				Image [] temp = new Image [columnCount];
+				System.arraycopy (images, 0, temp, 0, index);
+				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+				items [i].images = temp;
+			}
+			if (index == 0) items [i].image = null;
 			Color [] cellBackground = items [i].cellBackground;
 			if (cellBackground != null) {
 				Color [] temp = new Color [columnCount];
@@ -500,43 +501,64 @@ void destroyItem (TableColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
-	if (columnCount > 1) {
+	if (columnCount >= 1) {
 		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			Image [] images = item.images;
-			if (images != null) {
-				Image [] temp = new Image [columnCount - 1];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
-				items [i].images = temp;
-			}
-			String [] strings = item.strings;
+			String [] strings = items [i].strings;
 			if (strings != null) {
-				String [] temp = new String [columnCount - 1];
-				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
-				items [i].strings = temp;
+				if (columnCount == 1) {
+					items [i].strings = null;
+				} else {
+					if (index == 0) items [i].text = strings [1];
+					String [] temp = new String [columnCount - 1];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
+					items [i].strings = temp;
+				}
+			}
+			Image [] images = items [i].images;
+			if (images != null) {
+				if (columnCount == 1) {
+					items [i].images = null;
+				} else {
+					if (index == 0) items [i].image = images [1];
+					Image [] temp = new Image [columnCount - 1];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
+					items [i].images = temp;
+				}
 			}
 			Color [] cellBackground = items [i].cellBackground;
-			if (cellBackground != null) {	
-				Color [] temp = new Color [columnCount - 1];
-				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
-				items [i].cellBackground = temp;
+			if (cellBackground != null) {
+				if (columnCount == 1) {
+					items [i].cellBackground = null;
+				} else {
+					Color [] temp = new Color [columnCount - 1];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
+					items [i].cellBackground = temp;
+				}
 			}
 			Color [] cellForeground = items [i].cellForeground;
 			if (cellForeground != null) {
-				Color [] temp = new Color [columnCount - 1];
-				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
-				items [i].cellForeground = temp;
+				if (columnCount == 1) {
+					items [i].cellForeground = null;
+				} else {
+					Color [] temp = new Color [columnCount - 1];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
+					items [i].cellForeground = temp;
+				}
 			}
 			Font [] cellFont = items [i].cellFont;
 			if (cellFont != null) {
-				Font [] temp = new Font [columnCount - 1];
-				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
-				items [i].cellFont = temp;
+				if (columnCount == 1) {
+					items [i].cellFont = null;
+				} else {
+					Font [] temp = new Font [columnCount - 1];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+					items [i].cellFont = temp;
+				}
 			}
 		}
 	}
