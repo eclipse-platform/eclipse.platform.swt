@@ -290,7 +290,7 @@ public void cut () {
 	int textHandle = OS.PtWidgetChildBack (handle);
 	if (textHandle != 0) {
 		int [] start = new int [1], end = new int [1];
-		int length = OS.PtTextGetSelection (handle, start, end);
+		int length = OS.PtTextGetSelection (textHandle, start, end);
 		if (length <= 0) return;
 		int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
 		OS.PtGetResources (textHandle, args.length / 3, args);
@@ -435,13 +435,13 @@ public void paste () {
 		if (ptr == 0) return;
 		int length = OS.strlen (ptr);
 		int [] start = new int [1], end = new int [1];
-		OS.PtTextGetSelection (handle, start, end);
+		OS.PtTextGetSelection (textHandle, start, end);
 		if (start [0] == -1) {
 			int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
-			OS.PtGetResources (handle, args.length / 3, args);
+			OS.PtGetResources (textHandle, args.length / 3, args);
 			start [0] = end [0] = args [1];	
 		}
-		OS.PtTextModifyText (handle, start [0], end [0], end [0], ptr, length);
+		OS.PtTextModifyText (textHandle, start [0], end [0], end [0], ptr, length);
 		OS.free(ptr);
 	}
 }
@@ -576,6 +576,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
+	if (value < 0) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_MAX, value, 0);
 }
 
@@ -594,6 +595,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
+	if (value < 0) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_MIN, value, 0);
 }
 
