@@ -175,13 +175,21 @@ public /*final*/ class Display extends Device {
 	static {
 		DeviceFinder = new Runnable () {
 			public void run () {
-				CurrentDevice = getCurrent ();
-				if (CurrentDevice == null) {
-					CurrentDevice = getDefault ();
+				Device device = getCurrent ();
+				if (device == null) {
+					device = getDefault ();
 				}
+				setDevice (device);
 			}
 		};
 	}
+
+/*
+* TEMPORARY CODE.
+*/
+static void setDevice (Device device) {
+	CurrentDevice = device;
+}
 			
 public Display () {
 	this (null);
@@ -325,15 +333,6 @@ public Shell getActiveShell () {
 		}
 	}
 	return null;
-}
-
-public Rectangle getBounds () {
-	checkDevice ();
-	PhRect_t rect = new PhRect_t ();
-	OS.PhWindowQueryVisible (OS.Ph_QUERY_GRAPHICS, 0, 1, rect);
-	int width = rect.lr_x - rect.ul_x + 1;
-	int height = rect.lr_y - rect.ul_y + 1;
-	return new Rectangle (rect.ul_x, rect.ul_y, width, height);
 }
 
 public Control getCursorControl () {
@@ -701,6 +700,7 @@ int inputProc (int data, int rcvid, int message, int size) {
 }
 
 public int internal_new_GC (GCData data) {
+	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int phGC = OS.PgCreateGC(0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 

@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Group extends Composite {
 	static final int GroupProc;
-	static final byte [] GroupClass = Converter.wcsToMbcs (0, "BUTTON\0", false);
+	static final byte [] GroupClass = Converter.wcsToMbcs (0, "BUTTON\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -39,6 +39,34 @@ public class Group extends Composite {
 		GroupProc = lpWndClass.lpfnWndProc;
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -162,7 +190,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -194,7 +222,7 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 

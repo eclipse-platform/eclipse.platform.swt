@@ -2,13 +2,13 @@
 <!-- File written by PDE 1.0 -->
 <plugin
    id="org.eclipse.swt"
-   name="SWT"
-   version="0.9"
+   name="%pluginName"
+   version="2.0"
    provider-name="Object Technology International, Inc.">
 
 <!-- Runtime -->
 <runtime>
-   <library name="swt.jar">
+   <library name="$ws$/swt.jar">
       <export name="*"/>
    </library>
 </runtime>

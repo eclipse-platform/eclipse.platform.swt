@@ -404,6 +404,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 		}
 	} else {
+		/* Use the character encoding for the default locale */
 		byte [] lpFaceName = Converter.wcsToMbcs (0, faceName, true);
 		/**
 		 * Bug in Windows 98. When EnumFontFamiliesEx is called with a specified face name, it

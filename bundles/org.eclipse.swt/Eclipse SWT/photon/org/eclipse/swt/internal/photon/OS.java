@@ -124,6 +124,27 @@ public class OS {
 //	public static final int Pg_BLEND_DST_DST_ALPHA                          = 0x06;		// (Ad,Ad,Ad,Ad)
 //	public static final int Pg_BLEND_DST_ONE_MINUS_DST_ALPHA                = 0x07;		// (1,1,1,1)-(Ad,Ad,Ad,Ad)
 
+//	public static final int Pg_GRAD_BYTES_PER_PIXEL = 3;
+//	public static final int Pg_GRAD_IMAGE_TYPE  = Pg_IMAGE_DIRECT_888;
+//	public static final int Pg_GRAD_BOXY        = 0x80000000;
+//	public static final int Pg_GRAD_NOGRADIENT  = 0;
+//	public static final int Pg_GRAD_VECTOR      = 1;
+//	public static final int Pg_GRAD_RADIAL      = 2;
+	public static final int Pg_GRAD_HORIZONTAL  = 3;
+	public static final int Pg_GRAD_VERTICAL    = 4;
+//	public static final int Pg_GRAD_FAST_VECTOR = 5;
+//	public static final int Pg_GRAD_DIAGF       = 6;
+//	public static final int Pg_GRAD_DIAGB       = 7;
+//	public static final int Pg_GRAD_4POINT      = 8;
+//	public static final int Pg_GRAD_BOX_DIAGF   = Pg_GRAD_DIAGF | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_BOX_DIAGB   = Pg_GRAD_DIAGB | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_BOX_4POINT  = Pg_GRAD_4POINT | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_TABLE       = 100;
+	public static final int Pg_GRAD_LINEAR      = 0;
+//	public static final int Pg_GRAD_HILL        = 1;
+//	public static final int Pg_GRAD_HILL2       = 2;
+//	public static final int Pg_GRAD_EXP         = 3;
+
 //	public static final int Pt_ARG_PG_FLAGS		 			= 64 * 1000 + 0;
 //	public static final int Pt_ARG_PG_CURRENT					= 64 * 1000 + 1;
 	public static final int Pt_ARG_PG_PANEL_TITLES				= 64 * 1000 + 2;
@@ -176,6 +197,11 @@ public class OS {
 	public static final int Pt_ARG_MODIFIER_KEYS                                    = ( 7 * 1000 + 4 );
 
 	public static final byte [] Pg_PAT_HALF = {(byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55};
+
+	public static final int Pt_ARG_BEVEL_CONTRAST                                    = ( 2 * 1000 + 20 );
+
+	public static final int Pt_NO_PARENT	                                    = 1;
+
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
@@ -1065,7 +1091,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Ph_WM_STATE_ISICONIFIED                               = 0x00000040;
 //public static final int Ph_WM_STATE_ISMASK                                    = 0x0000FFFF;
 	public static final int Ph_WM_STATE_ISMAX                                     = 0x00000002;
-//public static final int Ph_WM_STATE_ISMAXING                                  = 0x00004000;
+	public static final int Ph_WM_STATE_ISMAXING                                  = 0x00004000;
 //public static final int Ph_WM_STATE_ISNORMAL                                  = 0x00000000;
 //public static final int Ph_WM_STATE_ISPDM                                     = 0x00000020;
 //public static final int Ph_WM_STATE_ISREMOTE                                  = 0x00000400;
@@ -2550,6 +2576,7 @@ public static final native int PgCreateGC (int size);
 public static final native void PgDestroyGC (int GC);
 public static final native int PgDrawArc (PhPoint_t center, PhPoint_t radii, int start, int end, int flags);
 public static final native int PgDrawEllipse (PhPoint_t center, PhPoint_t radii, int flags);
+public static final native int PgDrawGradient (PhPoint_t ul, PhPoint_t lr, int gradient_type, int transition_type, int num_color_pts, int color1, int color2, int color3, int color4, int table_size, byte[] transition_table);
 public static final native int PgDrawPolygon (short[] ptr, int num, PhPoint_t pos, int flags);
 public static final native int PgDrawRoundRect (PhRect_t rect, PhPoint_t radii, int flags);
 public static final native int PgDrawILine (int x1, int y1, int x2, int y2);
@@ -2710,7 +2737,6 @@ public static final native void PtListGotoPos (int widget, int pos);
 
 public static final native int PtTextModifyText (int widget, int start, int end, int insert_pos, byte [] text, int length);
 public static final native int PtTextModifyText (int widget, int start, int end, int insert_pos, int text, int length);
-public static final native int PhClipboardCopyString (short ig, byte [] string);
 public static final native int PtTextGetSelection (int widget, int [] start, int [] end);
 public static final native int PtTextSetSelection (int widget, int [] start, int [] end);
 
@@ -2806,10 +2832,8 @@ public static final native void PtWindowToBack (int widget);
 public static final native void PtWindowToFront (int widget);
 public static final native int PtFindDisjoint (int widget);
 
-//public static final native int PhClipboardCopyString (short ig, int string);
-public static final native int PhClipboardPasteString (short ig);
-
 public static final native int PtBlockAllWindows(int skip, short cursor, int cursor_color);
+public static final native int PtBlockWindow(int window, short cursor, int cursor_color);
 public static final native void PtUnblockWindows(int bl);
 public static final native int PtNextTopLevelWidget(int widget);
 public static final native int PtWindowGetState(int widget);
@@ -2924,4 +2948,24 @@ public static final native void PgSetFillTransPat (byte [] pat);
 
 public static final native int PtInflateBalloon (int win, int me, int position, byte [] string, byte [] font, int fill, int text_color);
 
+//public static final native void memmove (PgDisplaySettings_t dest, int src, int size);
+//public static final native void memmove (int dest, PgDisplaySettings_t src, int size);
+
+//public static final native void memmove (PgVideoModeInfo_t dest, int src, int size);
+//public static final native void memmove (int dest, PgVideoModeInfo_t src, int size);
+
+public static final native int PgGetVideoMode (PgDisplaySettings_t settings);
+public static final native int PgGetVideoModeInfo (short mode_number, PgVideoModeInfo_t mode_info);
+
+public static final native void memmove (PhClipHeader dest, int src, int size);
+public static final native void memmove (int dest, PhClipHeader src, int size);
+public static final native void memmove (byte[] dest, PhClipHeader src, int size);
+
+public static final native int PhClipboardCopyString (short ig, byte [] string);
+public static final native int PhClipboardPasteString (short ig);
+public static final native int PhClipboardCopy (short ig, int n, byte[] clip);
+public static final native int PhClipboardPasteStart (short ig);
+public static final native int PhClipboardPasteType (int cbdata, byte[] type);
+public static final native int PhClipboardPasteTypeN (int cbdata, int n);
+public static final native void PhClipboardPasteFinish (int cbdata);
 }

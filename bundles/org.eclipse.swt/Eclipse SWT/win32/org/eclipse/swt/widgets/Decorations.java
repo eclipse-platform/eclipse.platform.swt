@@ -435,6 +435,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
+	/* Use the character encoding for the default locale */
 	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
@@ -530,6 +531,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
  *
  * @param the new default button
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -544,6 +548,7 @@ void setDefaultButton (Button button, boolean save) {
 	if (button == null) {
 		if (defaultButton == saveDefault) return;
 	} else {
+		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}
@@ -579,6 +584,9 @@ public boolean setFocus () {
  * 
  * @param image the new image (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -588,6 +596,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	int hIcon = 0;
 	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
 			case SWT.BITMAP:
 				int hOld = OS.SendMessage (handle, OS.WM_GETICON, OS.ICON_BIG, 0);
@@ -680,6 +689,9 @@ public void setMaximized (boolean maximized) {
  *
  * @param menu the new menu bar
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -689,6 +701,7 @@ public void setMenuBar (Menu menu) {
 	checkWidget ();
 	if (menuBar == menu) return;
 	if (menu != null) {
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -815,6 +828,7 @@ void setSystemMenu () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (0, string, true);
 	OS.SetWindowText (handle, buffer);
 }
@@ -929,6 +943,9 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Windows message by returning zero as the result of
 		* the window proc.
 		*/
+		Shell shell = getShell ();
+		shell.setActiveControl (null);
+		if (isDisposed ()) return LRESULT.ZERO;
 		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return LRESULT.ZERO;
 		saveFocus ();

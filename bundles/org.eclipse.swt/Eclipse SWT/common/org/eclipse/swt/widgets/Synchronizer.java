@@ -4,6 +4,8 @@ package org.eclipse.swt.widgets;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+
+import org.eclipse.swt.*;
  
 /**
  * Instances of this class provide synchronization support
@@ -88,11 +90,14 @@ boolean runAsyncMessages () {
 			syncThread = lock.thread;
 			try {
 				lock.run ();
+			} catch (Throwable t) {
+				lock.throwable = t;
+				SWT.error (SWT.ERROR_FAILED_EXEC, t);
 			} finally {
 				syncThread = null;
+				lock.notifyAll ();
 			}
-			lock.notifyAll ();
-		};
+		}
 	} while (true);
 }
 
@@ -103,6 +108,10 @@ boolean runAsyncMessages () {
  * is suspended until the runnable completes.
  *
  * @param runnable code to run on the user-interface thread.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ * </ul>
  *
  * @see #asyncExec
  */
@@ -133,6 +142,9 @@ protected void syncExec (Runnable runnable) {
 		}
 		if (interrupted) {
 			Thread.currentThread ().interrupt ();
+		}
+		if (lock.throwable != null) {
+			SWT.error (SWT.ERROR_FAILED_EXEC, lock.throwable);
 		}
 	}
 }

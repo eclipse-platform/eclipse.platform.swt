@@ -212,8 +212,8 @@ public PrinterData open() {
 	pd.nToPage = (short) endPage;
 	if (OS.PrintDlg(pd)) {
 		/* Get driver and device from the DEVNAMES struct */
+		int size = OS.GlobalSize(pd.hDevNames);
 		int ptr = OS.GlobalLock(pd.hDevNames);
-		int size = OS.GlobalSize(ptr);
 		byte [] DEVNAMES = new byte[size];
 		OS.MoveMemory(DEVNAMES, ptr, size);
 		OS.GlobalUnlock(ptr);

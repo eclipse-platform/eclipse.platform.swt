@@ -63,7 +63,7 @@ public class Combo extends Composite {
 	}
 	
 	static final int ComboProc;
-	static final byte [] ComboClass = Converter.wcsToMbcs (0,"COMBOBOX\0", false);
+	static final byte [] ComboClass = Converter.wcsToMbcs (0,"COMBOBOX\0");
 	/*
 	 * These are the undocumented control id's for the children of
 	 * a combo box.  Since there are no constants for these values,
@@ -132,7 +132,7 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -167,7 +167,7 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERR) {
@@ -423,7 +423,7 @@ public String getItem (int index) {
 		byte [] buffer1 = new byte [length + 1];
 		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer1);
 		if (result != OS.CB_ERR) {
-			char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+			char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 			return new String (buffer2, 0, buffer2.length - 1);
 		}
 	}
@@ -563,7 +563,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -645,7 +645,6 @@ protected boolean hasFocus () {
  * </ul>
  */
 public int indexOf (String string) {
-	checkWidget ();
 	return indexOf (string, 0);
 }
 
@@ -673,7 +672,7 @@ public int indexOf (String string, int start) {
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!((0 <= start) && (start < count))) return -1;
 	int index = start - 1, last;
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	do {
 		index = OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
 		if ((index == OS.CB_ERR) || (index <= last)) return -1;
@@ -802,7 +801,6 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void remove (String string) {
-	checkWidget ();
 	int index = indexOf (string, 0);
 	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);
@@ -995,9 +993,10 @@ public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
+	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (0, string, true);
+		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -1054,7 +1053,7 @@ protected boolean setTabGroupFocus () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	if ((style & SWT.READ_ONLY) != 0) {
 		int code = OS.SendMessage (handle, OS.CB_SELECTSTRING, -1, buffer);
 		if (code != OS.CB_ERR) {

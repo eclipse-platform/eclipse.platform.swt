@@ -30,6 +30,7 @@ public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
 	int cursor;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -61,6 +62,7 @@ public /*final*/ class Sash extends Control {
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -87,8 +89,7 @@ public Sash (Composite parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -98,8 +99,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -260,8 +260,7 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);

@@ -384,8 +384,9 @@ void init(Device device, ImageData i) {
 	if (i.depth == 1 || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
-			i.data, i.depth, i.bytesPerLine, ImageData.MSB_FIRST, 0, 0, i.width, i.height, null, null, null, -1, null, 0,
-			img.data, img.depth, img.bytesPerLine, ImageData.MSB_FIRST, 0, 0, img.width, img.height, null, null, null, 
+			i.data, i.depth, i.bytesPerLine, img.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0,
+			img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, null, null, null, 
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;
@@ -410,15 +411,23 @@ void init(Device device, ImageData i) {
 			phPalette[j] = ((rgb.red & 0xFF) << 16) | ((rgb.green & 0xFF) << 8) | (rgb.blue & 0xFF);
 		}
 	} else {
+		final PaletteData palette = i.palette;
+		final int redMask = palette.redMask;
+		final int greenMask = palette.greenMask;
+		final int blueMask = palette.blueMask;
+		int newDepth = i.depth;
+		int newOrder = ImageData.MSB_FIRST;
 		PaletteData newPalette = null;
-		PaletteData palette = i.palette;
-		int redMask = palette.redMask;
-		int greenMask = palette.greenMask;
-		int blueMask = palette.blueMask;
-		int order = ImageData.MSB_FIRST;
+
 		switch (i.depth) {
+			case 8:
+				newDepth = 16;
+				newOrder = ImageData.LSB_FIRST;
+				newPalette = new PaletteData(0xF800, 0x7E0, 0x1F);
+				type = OS.Pg_IMAGE_DIRECT_565;
+				break;
 			case 16:
-				order = ImageData.LSB_FIRST;
+				newOrder = ImageData.LSB_FIRST;
 				if (redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F) {
 					type = OS.Pg_IMAGE_DIRECT_555;
 				} else if (redMask == 0xF800 && greenMask == 0x7E0 && blueMask == 0x1F) {
@@ -450,10 +459,11 @@ void init(Device device, ImageData i) {
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		}
 		if (newPalette != null) {
-			ImageData img = new ImageData(i.width, i.height, i.depth, newPalette);
+			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 			ImageData.blit(ImageData.BLIT_SRC, 
-					i.data, i.depth, i.bytesPerLine, order, 0, 0, i.width, i.height, redMask, greenMask, blueMask, -1, null, 0,
-					img.data, img.depth, img.bytesPerLine, order, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0,
+					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {
 				img.transparentPixel = newPalette.getPixel(palette.getRGB(i.transparentPixel));
@@ -531,6 +541,7 @@ void init(Device device, ImageData i) {
 					SWT.error(SWT.ERROR_NO_HANDLES);
 				}
 				OS.memmove(ptr, i.alphaData, i.alphaData.length);
+				alpha.src_alpha_map_bpl = (short)i.width;
 				alpha.src_alpha_map_dim_w = (short)i.width;
 				alpha.src_alpha_map_dim_h = (short)i.height;
 				alpha.src_alpha_map_map = ptr;
@@ -552,6 +563,7 @@ void init(Device device, ImageData i) {
 }
 
 public int internal_new_GC (GCData data) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
 	* Only supported for bitmaps.
@@ -582,6 +594,40 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+/**
+ * Sets the color to which to map the transparent pixel.
+ * <p>
+ * There are certain uses of <code>Images</code> that do not support
+ * transparency (for example, setting an image into a button or label).
+ * In these cases, it may be desired to simulate transparency by using
+ * the background color of the widget to paint the transparent pixels
+ * of the image. This method specifies the color that will be used in
+ * these cases. For example:
+ * <pre>
+ *    Button b = new Button();
+ *    image.setBackground(b.getBackground());>
+ *    b.setImage(image);
+ * </pre>
+ * </p><p>
+ * The image may be modified by this operation (in effect, the
+ * transparent regions may be filled with the supplied color).  Hence
+ * this operation is not reversible and it is not legal to call
+ * this function twice or with a null argument.
+ * </p><p>
+ * This method has no effect if the receiver does not have a transparent
+ * pixel value.
+ * </p>
+ *
+ * @param color the color to use when a transparent pixel is specified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public void setBackground(Color color) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

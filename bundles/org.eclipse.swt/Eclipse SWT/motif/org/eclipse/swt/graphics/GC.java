@@ -413,12 +413,14 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 				blues[i] = (byte)((color.blue >> 8) & 0xFF);
 			}
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues, srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues,
+				srcImage.alpha, srcImage.alphaData, imgWidth,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
 				false, false);
 		} else {
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask, srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
+				srcImage.alpha, srcImage.alphaData, imgWidth,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
 				false, false);
 		}
@@ -516,7 +518,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = ((destWidth + 7) / 8 + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch1(srcData, xSrcImage.bytes_per_line, bitOrder, 0, 0, srcWidth, srcHeight, buf, bplX, bitOrder, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 1, xSrcImage.bytes_per_line, bitOrder, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 1, bplX, bitOrder, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 1, OS.XYBitmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -534,7 +540,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = (destWidth + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch4(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, bplX, 0, 0, destWidth, destHeight, null, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 4, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 4, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 4, OS.ZPixmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -544,7 +554,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = (destWidth + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch8(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, bplX, 0, 0, destWidth, destHeight, null, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 8, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 8, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 8, OS.ZPixmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -557,7 +571,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch16(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 16, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 16, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;
@@ -571,7 +589,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch24(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 24, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 24, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;
@@ -585,7 +607,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch32(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 32, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 32, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;
@@ -823,7 +849,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	}
 	if (nh < 0) {
 		nh = 0 - nh;
-		ny = ny -nh;
+		ny = ny - nh;
 	}
 	if (naw < 0) 
 		naw = 0 - naw;
@@ -835,14 +861,33 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx,ny,naw,nah,5760,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx,ny + nh - nah,naw,nah,11520,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx + nw - naw, ny + nh - nah, naw, nah,17280,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + naw2, ny, nx + nw - naw2, ny);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx,ny + nah2, nx, ny + nh - nah2);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+	
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, naw, nah, 5760, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, naw, nah, 11520, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, naw, nh, 5760, 11520);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nh, 17280, 11520);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+		}
+	} else {
+		if (nh > nah) {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, nw, nah, 0, 11520);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, nw, nah, 11520, 11520);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, nw, nh, 0, 23040);
+		}
+	}
 }
 /** 
  * Draws the given string, using the receiver's current font and
@@ -888,7 +933,7 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	if (isTransparent) {
 		OS.XmStringDraw (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
@@ -996,7 +1041,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;
-	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	if (isTransparent) {
 		OS.XmStringDraw (data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
@@ -1076,6 +1121,105 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 	OS.XFillArc(xDisplay,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
+
+/**
+ * Fills the interior of the specified rectangle with a gradient
+ * sweeping from left to right or top to bottom progressing
+ * from the receiver's foreground color to its background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if horizontal)
+ * @param height the height of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if vertical)
+ * @param vertical if true sweeps from top to bottom, else 
+ *        sweeps from left to right
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle
+ */
+public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if ((width == 0) || (height == 0)) return;
+	int xDisplay = data.display;
+	int xScreenNum = OS.XDefaultScreen(xDisplay);
+	XGCValues values = new XGCValues();
+	int fromColor, toColor;
+	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
+	fromColor = values.foreground;
+	toColor = values.background;
+	boolean swapColors = false;
+	if (width < 0) {
+		x += width; width = -width;
+		if (! vertical) swapColors = true;
+	}
+	if (height < 0) {
+		y += height; height = -height;
+		if (vertical) swapColors = true;
+	}
+	if (swapColors) {
+		final int t = fromColor;
+		fromColor = toColor;
+		toColor = t;
+	}
+	if (fromColor == toColor) {
+		OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
+		return;
+	}
+	/* X Window deals with a virtually limitless array of color formats
+	 * but we only distinguish between paletted and direct modes
+	 */	
+	final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
+	final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
+	Visual visual = new Visual();
+	OS.memmove(visual, xVisual, visual.sizeof);
+	final int depth = OS.XDefaultDepthOfScreen(xScreen);
+	final boolean directColor = (depth > 8);
+
+	// This code is intentionally commented since elsewhere in SWT we
+	// assume that depth <= 8 means we are in a paletted mode though
+	// this is not always the case.
+	//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
+
+	XColor xColor = new XColor();
+	xColor.pixel = fromColor;
+	OS.XQueryColor(xDisplay, data.colormap, xColor);
+	final RGB fromRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+	xColor.pixel = toColor;
+	OS.XQueryColor(xDisplay, data.colormap, xColor);
+	final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+
+	final int redBits, greenBits, blueBits;
+	if (directColor) {
+		// RGB mapped display
+		redBits = getChannelWidth(visual.red_mask);
+		greenBits = getChannelWidth(visual.green_mask);
+		blueBits = getChannelWidth(visual.blue_mask);
+	} else {
+		// Index display
+		redBits = greenBits = blueBits = 0;
+	}
+	ImageData.fillGradientRectangle(this, data.device,
+		x, y, width, height, vertical, fromRGB, toRGB,
+		redBits, greenBits, blueBits);
+}
+
+/**
+ * Computes the required channel width (depth) from a mask.
+ */
+static int getChannelWidth(int mask) {
+	int width = 0;
+	while (mask != 0) {
+		width += (mask & 1);
+		mask >>>= 1;
+	}
+	return width;
+}
+
 /** 
  * Fills the interior of an oval, within the specified
  * rectangular area, with the receiver's background
@@ -1139,7 +1283,7 @@ public void fillPolygon(int[] pointArray) {
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Convex, OS.CoordModeOrigin);
+	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Complex, OS.CoordModeOrigin);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
 /** 
@@ -1232,9 +1376,6 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	if (nah < 0)
 		nah = 0 - nah;
 
-	naw = naw < nw ? naw : nw;
-	nah = nah < nh ? nah : nh;
-		
 	int naw2 = naw / 2;
 	int nah2 = nah / 2;
 
@@ -1243,13 +1384,30 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground(xDisplay, handle, values.background);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx,ny,naw,nah,5760,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx,ny + nh - nah,naw,nah,11520,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx + nw - naw, ny + nh - nah, naw, nah,17280,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx + naw2, ny, nw - naw, nh);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx,ny + nah2, naw2, nh - nah);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx + nw - (naw / 2), ny + nah2, naw2, nh -nah);
+
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nah, 5760, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nah2);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny + nh - nah2, nw - naw, nah2);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, naw, nah, 11520, 5760);
+		} else {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nh, 5760, 11520);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nh);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nh, 17280, 11520);
+		}
+	} else {
+		if (nh > nah) {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nah, 0, 11520);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, nw, nah, 11520, 11520);
+		} else {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nh, 0, 23040);
+		}
+	}
 	OS.XSetForeground(xDisplay, handle, values.foreground);
 }
 /**
@@ -1270,7 +1428,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList  = data.fontList;
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
+	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
 	int[] buffer = new int[1];
@@ -1368,11 +1526,7 @@ public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
-	if (OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values) == 0) {
-		// Check error case here. If a palette has been set we may be able
-		// to do a better job. 
-		return null;
-	}
+	OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values);
 	XColor xColor = new XColor();
 	xColor.pixel = values.background;
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
@@ -1398,7 +1552,7 @@ public Color getBackground() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList = data.fontList;
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
+	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
 	int[] buffer = new int[1];
@@ -1539,6 +1693,9 @@ public void getClipping(Region region) {
 	}
 	OS.XSubtractRegion (hRegion, hRegion, hRegion);
 	OS.XUnionRegion (clipRgn, hRegion, hRegion);
+}
+String getCodePage () {
+	return Converter.getCodePage(data.display, data.fontList);
 }
 /** 
  * Returns the font currently being used by the receiver
@@ -1772,11 +1929,7 @@ public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
-	if (OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values) == 0) {
-		// Check error case here. If a palette has been set we may be able
-		// to do a better job. 
-		return null;
-	}
+	OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values);
 	XColor xColor = new XColor();
 	xColor.pixel = values.foreground;
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
@@ -2154,7 +2307,7 @@ public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	byte[] buffer = Converter.wcsToMbcs(getCodePage (), string, true);
 	int xmString = OS.XmStringCreate(buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	int fontList = data.fontList;
 	int width = OS.XmStringWidth(fontList, xmString);
@@ -2185,7 +2338,7 @@ public Point textExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
-	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;

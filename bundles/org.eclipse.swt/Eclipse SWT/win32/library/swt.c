@@ -3220,6 +3220,38 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalUnlock
     return (jboolean) GlobalUnlock((HANDLE)hMem);
 }
 
+#ifdef USE_2000_CALLS
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GradientFill
+ * Signature: (IIIIII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GradientFill
+  (JNIEnv *env, jclass that, jint hdc, int pVertex, jint dwNumVertex, int pMesh, jint dwNumMesh, jint dwMode)
+{
+	DECL_GLOB(pGlob)
+	BOOL rc = FALSE;
+    HMODULE hm;
+    FARPROC fp;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GradientFill\n");
+#endif
+    /*
+    **  GradientFill is a Win2000 and Win98 specific call
+    **  If you link it into swt.dll, a system modal entry point not found dialog will
+    **  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    **  only do the call if it exists.
+    */
+    if (! (hm = GetModuleHandle("msimg32.dll"))) hm = LoadLibrary("msimg32.dll");
+    if (hm && (fp = GetProcAddress(hm, "GradientFill"))) {
+		rc = fp((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
+//		rc = GradientFill((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
+    }
+    return (jboolean) rc;
+}
+#endif
+
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    HeapAlloc
@@ -4357,6 +4389,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3II
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    MoveMemory
+ * Signature: (ILorg/eclipse/swt/internal/win32/GRADIENT_RECT;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
+  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
+{
+	DECL_GLOB(pGlob)
+    GRADIENT_RECT gradientrect, *lpSource1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I\n");
+#endif
+
+    if (Source) {
+        lpSource1 = &gradientrect;
+        cacheGradientrectFids(env, Source, &PGLOB(GradientrectFc));
+        getGradientrectFields(env, Source, lpSource1, &PGLOB(GradientrectFc));
+    }
+    MoveMemory((PVOID)Destination, lpSource1, Length);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    MoveMemory
  * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;I)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONT_2I
@@ -4465,6 +4520,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
         lpSource1 = &rect;
         cacheRectFids(env, Source, &PGLOB(RectFc));
         getRectFields(env, Source, lpSource1, &PGLOB(RectFc));
+    }
+    MoveMemory((PVOID)Destination, lpSource1, Length);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    MoveMemory
+ * Signature: (ILorg/eclipse/swt/internal/win32/TRIVERTEX;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
+  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
+{
+	DECL_GLOB(pGlob)
+    TRIVERTEX trivertex, *lpSource1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I\n");
+#endif
+
+    if (Source) {
+        lpSource1 = &trivertex;
+        cacheTrivertexFids(env, Source, &PGLOB(TrivertexFc));
+        getTrivertexFields(env, Source, lpSource1, &PGLOB(TrivertexFc));
     }
     MoveMemory((PVOID)Destination, lpSource1, Length);
 }
@@ -7964,3 +8042,276 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
         setMsgFields(env, Destination, lpDestination1, &PGLOB(MsgFc));
     }
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetCharacterPlacement
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharacterPlacement
+  (JNIEnv *env, jclass that, jint hdc, jbyteArray lpString, jint nCount, jint nMaxExtent, jobject lpResults, jint dwFlags)
+{
+	DECL_GLOB(pGlob)
+    GCP_RESULTS results, *lpResults1=NULL;
+    LPCTSTR lpString1=NULL;
+    jint rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetCharacterPlacement\n");
+#endif
+
+    if (lpString)
+        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
+    if (lpResults) {
+        lpResults1 = &results;
+        cacheGCP_RESULTSFids(env, lpResults, &PGLOB(GCP_RESULTSFc));
+        getGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
+    }
+    
+    rc = (jint) GetCharacterPlacement((HDC)hdc, lpString1, nCount, nMaxExtent, lpResults1, dwFlags);
+    
+    if (lpString)
+        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
+    if (lpResults) {
+        setGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
+    }
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    ExtTextOut
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOut
+  (JNIEnv *env, jclass that, jint hdc, jint X, jint Y, jint fuOptions, jobject lprc, jbyteArray lpString, jint cbCount, jintArray lpDx)
+{
+	DECL_GLOB(pGlob)
+    RECT rect, *lpRect1=NULL;
+    LPCTSTR lpString1=NULL;
+	CONST INT* lpDx1 = NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ExtTextOut\n");
+#endif
+
+    if (lpString)
+        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
+    if (lprc) {
+        lpRect1 = &rect;
+        cacheRectFids(env, lprc, &PGLOB(RectFc));
+        getRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
+    }
+    if (lpDx)
+        lpDx1 = (CONST INT*)(*env)->GetIntArrayElements(env, lpDx, NULL);
+    
+    rc = (jboolean) ExtTextOut((HDC)hdc, X, Y, fuOptions, lpRect1, lpString1, cbCount, lpDx1);
+    
+    if (lpString)
+        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
+    if (lprc) {
+        setRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
+    }
+    if (lpDx)
+        (*env)->ReleaseIntArrayElements(env, lpDx, (jint *)lpDx1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetFontLanguageInfo
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFontLanguageInfo
+  (JNIEnv *env, jclass that, jint hdc)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetFontLanguageInfo\n");
+#endif
+
+    return (jint) GetFontLanguageInfo((HDC)hdc);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetKeyboardLayoutList
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayoutList
+  (JNIEnv *env, jclass that, jint nBuff, jintArray lpList)
+{
+	HKL FAR *lpList1;
+    jint rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetKeyboardLayoutList\n");
+#endif
+
+    if (lpList)
+        lpList1 = (HKL FAR *)(*env)->GetIntArrayElements(env, lpList, NULL);
+
+    rc = (jint) GetKeyboardLayoutList(nBuff, lpList1);
+    
+    if (lpList)
+        (*env)->ReleaseIntArrayElements(env, lpList, (jint *)lpList1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetKeyboardLayout
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayout
+  (JNIEnv *env, jclass that, jint idThread)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetKeyboardLayout\n");
+#endif
+
+    return (jint) GetKeyboardLayout(idThread);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    ActivateKeyboardLayout
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ActivateKeyboardLayout
+  (JNIEnv *env, jclass that, jint hkl, jint Flags)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ActivateKeyboardLayout\n");
+#endif
+
+    return (jint) ActivateKeyboardLayout((HKL)hkl, Flags);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    SetTextAlign
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextAlign
+  (JNIEnv *env, jclass that, jint hdc, jint fMode)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "SetTextAlign\n");
+#endif
+
+    return (jint) SetTextAlign((HDC)hdc, fMode);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    TranslateCharsetInfo
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateCharsetInfo
+  (JNIEnv *env, jclass that, jint lpSrc, jintArray lpCs, jint dwFlags)
+{
+	LPCHARSETINFO lpCs1 =NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "TranslateCharsetInfo\n");
+#endif
+
+    if (lpCs)
+        lpCs1 = (LPCHARSETINFO)(*env)->GetIntArrayElements(env, lpCs, NULL);
+
+    rc = (jboolean)TranslateCharsetInfo((DWORD *)lpSrc, lpCs1, dwFlags);
+    
+    if (lpCs)
+        (*env)->ReleaseIntArrayElements(env, lpCs, (jint *)lpCs1, 0);
+        
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetTextCharset
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextCharset
+  (JNIEnv *env, jclass that, jint hdc)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetTextCharset\n");
+#endif
+
+    return (jint) GetTextCharset((HDC)hdc);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetLocaleInfo
+ * Signature: (II[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLocaleInfo
+  (JNIEnv *env, jclass that, jint Locale, jint LCType, jbyteArray lpLCData, jint cchData)
+{
+    LPTSTR lpLCData1=NULL;
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetLocaleInfo\n");
+#endif
+
+    if (lpLCData)
+        lpLCData1 = (*env)->GetByteArrayElements(env, lpLCData, NULL);
+
+    rc = (jint) GetLocaleInfo(Locale, LCType, lpLCData1, cchData);
+
+    if (lpLCData)
+        (*env)->ReleaseByteArrayElements(env, lpLCData, (jbyte *)lpLCData1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    EnumSystemLocales
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocales
+  (JNIEnv *env, jclass that, jint lpLocaleEnumProc, jint dwFlags)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "EnumSystemLocales\n");
+#endif
+
+    return (jboolean) EnumSystemLocales((LOCALE_ENUMPROC)lpLocaleEnumProc, (DWORD)dwFlags);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    SystemParametersInfo
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfo
+  (JNIEnv *env, jclass that, jint uiAction, jint uiName, jobject pvParam, jint fWinIni)
+{
+	DECL_GLOB(pGlob)
+    RECT rect, *pvParam1=NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "SystemParametersInfo\n");
+#endif
+
+     if (pvParam) {
+        pvParam1 = &rect;
+        cacheRectFids(env, pvParam, &PGLOB(RectFc));
+        getRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
+    }
+    
+    rc = (jboolean) SystemParametersInfo(uiAction, uiName, pvParam1, fWinIni);
+    
+    if (pvParam) {
+        setRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
+    }
+
+    return rc;
+}
+

@@ -306,6 +306,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			xlfd = "-" + faceName + "-*-*-*-*-*-*-*-*-*-*-*-*";
 		}
 	}
+	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, xlfd, true);
 	int [] ret = new int [1];
 	int listPtr = OS.XListFonts (xDisplay, buffer1, 65535, ret);
@@ -319,6 +320,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		int length = OS.strlen (charPtr);
 		byte [] buffer2 = new byte [length];
 		OS.memmove (buffer2, charPtr, length);
+		/* Use the character encoding for the default locale */
 		char [] chars = Converter.mbcsToWcs (null, buffer2);
 		FontData data = FontData.motif_new (new String (chars));
 		boolean isScalable = data.averageWidth == 0 && data.pixels == 0 && data.points == 0;

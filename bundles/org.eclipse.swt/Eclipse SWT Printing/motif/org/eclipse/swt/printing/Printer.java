@@ -39,21 +39,18 @@ public final class Printer extends Device {
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
- * </ul>
- *
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+	if (true) return new PrinterData[0]; // printing on X is currently unimplemented
+	
 	/* Connect to the default X print server */
 	//byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
 	//int pdpy = OS.XOpenDisplay(buffer);
 	int pdpy = xPrinter;
 	if (pdpy == 0) {
 		/* no print server */
-		SWT.error(SWT.ERROR_IO);
+		return new PrinterData[0];
 	}
 
 	/* Get the list of printers */
@@ -63,7 +60,7 @@ public static PrinterData[] getPrinterList() {
 	if (plist == 0 || printerCount == 0) {
 		/* no printers */
 		//OS.XCloseDisplay(pdpy);
-		SWT.error(SWT.ERROR_IO);
+		return new PrinterData[0];
 	}
     
 	/* Copy the printer names into PrinterData objects */
@@ -77,6 +74,7 @@ public static PrinterData[] getPrinterList() {
 			int length = OS.strlen(address);
 			byte[] buffer = new byte [length];
 			OS.memmove(buffer, address, length);
+			/* Use the character encoding for the default locale */
 			name = new String(Converter.mbcsToWcs(null, buffer));
 		}
 		printerList[i] = new PrinterData(Device.XDefaultPrintServer, name);
@@ -86,6 +84,16 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
+/*
+ * Returns a <code>PrinterData</code> object representing
+ * the default printer.
+ *
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
+ * </ul>
+ *
+ * @return the default printer data
+ */
 static PrinterData getDefaultPrinterData() {
 	/* Use the first printer in the list as the default */
 	PrinterData[] list = getPrinterList();
@@ -150,6 +158,7 @@ protected void init() {
 	super.init();
 	
 	/* Create the printContext for the printer */
+	/* Use the character encoding for the default locale */
 	byte[] name = Converter.wcsToMbcs(null, data.name, true);
 	printContext = OS.XpCreateContext(xDisplay, name);
 	if (printContext == OS.None) {
@@ -170,6 +179,7 @@ protected void init() {
 	OS.XtDestroyWidget(shellHandle);
 	
 	/* Initialize the default font */
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*", true);
 	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, 0, OS.XmFONTLIST_DEFAULT_TAG);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -251,6 +261,7 @@ public void internal_dispose_GC(int xGC, GCData data) {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "*job-name: " + jobName, true);
 	OS.XpSetAttributes(xDisplay, printContext, OS.XPJobAttr, buffer, OS.XPAttrMerge);
 	OS.XpStartJob(xDisplay, OS.XPSpool);
@@ -348,6 +359,7 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "default-printer-resolution", true);
 	int pool = OS.XpGetOneAttribute(xDisplay, printContext, OS.XPDocAttr, buffer);
     int length = OS.strlen(pool);
@@ -358,6 +370,7 @@ public Point getDPI() {
 	int res = 300; // default
 	if (resolution.length() == 0) {
 		/* If we can't get the info from the DocAttrs, ask the printer. */
+		/* Use the character encoding for the default locale */
 		buffer = Converter.wcsToMbcs(null, "printer-resolutions-supported", true);
 		pool = OS.XpGetOneAttribute(xDisplay, printContext, OS.XPPrinterAttr, buffer);
     		length = OS.strlen(pool);
@@ -458,12 +471,10 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 /**
- * Returns an array of <code>FontData</code>s representing the receiver.
- * On Windows, only one FontData will be returned per font. On X however, 
- * a <code>Font</code> object <em>may</em> be composed of multiple X 
- * fonts. To support this case, we return an array of font data objects.
- *
- * @return an array of font data objects describing the receiver
+ * Returns a <code>PrinterData</code> object representing the
+ * target printer for this print job.
+ * 
+ * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {
 	return data;

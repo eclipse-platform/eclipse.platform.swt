@@ -29,7 +29,7 @@ import org.eclipse.swt.events.*;
 
 public class List extends Scrollable {
 	static final int ListProc;
-	static final byte [] ListClass = Converter.wcsToMbcs (0, "LISTBOX\0", false);
+	static final byte [] ListClass = Converter.wcsToMbcs (0, "LISTBOX\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -89,7 +89,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 	if (result == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -125,7 +125,7 @@ public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.LB_INSERTSTRING, index, buffer);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERR) {
@@ -395,7 +395,7 @@ public String getItem (int index) {
 		byte [] buffer1 = new byte [length + 1];
 		int result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer1);
 		if (result != OS.LB_ERR) {
-			char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+			char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 			return new String (buffer2, 0, buffer2.length - 1);
 		}
 	}
@@ -634,7 +634,6 @@ public int getTopIndex () {
  * </ul>
  */
 public int indexOf (String string) {
-	checkWidget ();
 	return indexOf (string, 0);
 }
 
@@ -682,7 +681,7 @@ public int indexOf (String string, int start) {
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (!((0 <= start) && (start < count))) return -1;
 	int index = start - 1, last;
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	do {
 		index = OS.SendMessage (handle, OS.LB_FINDSTRINGEXACT, last = index, buffer);
 		if ((index == OS.LB_ERR) || (index <= last)) return -1;
@@ -986,12 +985,14 @@ public void select (int [] indices) {
 		}
 		return;
 	}
+	int focusIndex = getFocusIndex ();
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index != -1) {
 			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
 		}
 	}
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1017,6 +1018,7 @@ public void select (int index) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
+	int focusIndex = -1;
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
 		if (oldIndex != -1) {
@@ -1025,6 +1027,7 @@ public void select (int index) {
 		}
 		OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
 	} else {
+		focusIndex = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
 	}
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
@@ -1034,6 +1037,11 @@ public void select (int index) {
 		OS.InvalidateRect (handle, itemRect, true);
 		if (selectedRect != null) {
 			OS.InvalidateRect (handle, selectedRect, true);
+		}
+	}
+	if ((style & SWT.MULTI) != 0) {
+		if (focusIndex != -1) {
+			OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 		}
 	}
 }
@@ -1168,7 +1176,8 @@ public void setItem (int index, String string) {
  * @exception SWTError <ul>
  *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
  * </ul>
- */public void setItems (String [] items) {
+ */
+public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
@@ -1202,15 +1211,16 @@ public void setItem (int index, String string) {
 			mbcs = new byte [unicode.length * 2];
 		}
 		string.getChars (0, nUnicode, unicode, 0);
-		unicode [nUnicode] = 0;
+		unicode [nUnicode++] = 0;
 		int nMbcs = nUnicode, i = 0;
-		while (i <= nUnicode) {
+		while (i < nUnicode) {
 			if (unicode [i] > 0x7F) break;
 			mbcs [i] = (byte) unicode [i];
 			i++;
 		}
 		if (i < nUnicode) {
-			nMbcs = OS.WideCharToMultiByte (OS.CP_ACP, 0, unicode, nUnicode, mbcs, nUnicode * 2, null, null);
+			int cp = getCodePage ();
+			nMbcs = OS.WideCharToMultiByte (cp, 0, unicode, nUnicode, mbcs, nUnicode * 2, null, null);
 		}
 		int result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, mbcs);
 		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) break;
@@ -1310,8 +1320,14 @@ void setScrollWidth (int newWidth, boolean grow) {
  * @see List#select(int[])
  */
 public void setSelection(int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
+	if ((style & SWT.MULTI) != 0) {
+		int focusIndex = indices [0];
+		if (focusIndex != -1) setFocusIndex (focusIndex);
+	}
 }
 
 /**
@@ -1336,18 +1352,27 @@ public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
+	int focusIndex = -1;
 	for (int i=items.length-1; i>=0; --i) {
-		int index = 0;
 		String string = items [i];
+		int index = 0;
 		if (string != null) {
+			int localFocus = -1;
 			while ((index = indexOf (string, index)) != -1) {
+				if (localFocus == -1) localFocus = index;
 				select (index);
-				if ((style & SWT.SINGLE) != 0 && isSelected (index)) return;
+				if ((style & SWT.SINGLE) != 0 && isSelected (index)) {
+					return;
+				}
 				index++;
 			}
+			if (localFocus != -1) focusIndex = localFocus;
 		}
 	}
 	if ((style & SWT.SINGLE) != 0) deselectAll ();
+	if ((style & SWT.MULTI) != 0) {
+		if (focusIndex != -1) setFocusIndex (focusIndex);
+	}
 }
 
 /**
@@ -1366,8 +1391,12 @@ public void setSelection (String [] items) {
  * @see List#select(int)
  */
 public void setSelection (int index) {
+	checkWidget ();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
+	if ((style & SWT.MULTI) != 0) {
+		if (index != -1) setFocusIndex (index);
+	}
 }
 
 /**
@@ -1386,8 +1415,12 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget ();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
+	if ((style & SWT.MULTI) != 0) {
+		if (start != -1) setFocusIndex (start);
+	}
 }
 
 /**

@@ -47,6 +47,34 @@ public class Table extends Composite {
 		TableProc = lpWndClass.lpfnWndProc;
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -484,7 +512,8 @@ void destroyItem (TableItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-			imageList.dispose ();
+			Display display = getDisplay ();
+			display.releaseImageList (imageList);
 		}
 		imageList = null;
 		items = new TableItem [4];
@@ -860,12 +889,13 @@ public int getTopIndex () {
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		imageList = new ImageList ();
-		imageList.setBackground (getBackgroundPixel ());
-		imageList.add (image);
+		Rectangle bounds = image.getBounds ();
+		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		int index = imageList.indexOf (image);
+		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-		return 0;
+		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
@@ -992,15 +1022,16 @@ void releaseWidget () {
 //	}
 
 	items = null;
-	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	super.releaseWidget ();
 }
 
 /**
@@ -1195,7 +1226,8 @@ public void removeAll () {
 
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
 	items = new TableItem [4];
@@ -1236,7 +1268,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @param indices the array of indices for the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1439,11 +1471,6 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if (imageList != null) {
-		imageList.setBackground (pixel);
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	
 	/*
@@ -1493,6 +1520,15 @@ void setCheckboxImageList () {
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+}
+
+void setFocusIndex (int index) {
+	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_STATE;
+	lvItem.state = OS.LVIS_FOCUSED;
+	lvItem.stateMask = OS.LVIS_FOCUSED;
+	lvItem.iItem = index;
+	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 }
 
 public void setFont (Font font) {
@@ -1682,7 +1718,7 @@ void setScrollWidth () {
  * @param indices the indices of the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1693,8 +1729,12 @@ void setScrollWidth () {
  * @see Table#select(int[])
  */
 public void setSelection (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	select (indices);
+	int focusIndex = indices [0];
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1705,7 +1745,8 @@ public void setSelection (int [] indices) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1721,11 +1762,20 @@ public void setSelection (TableItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0) return;
+	int focusIndex = -1;
 	if ((style & SWT.SINGLE) != 0) length = 1;
 	for (int i=length-1; i>=0; --i) {
 		int index = indexOf (items [i]);
-		if (index != -1) select (index);
+		if (index != -1) {
+			select (focusIndex = index);
+		}
 	}
+	if (focusIndex != -1) setFocusIndex (focusIndex);
+}
+
+boolean setTabGroupFocus () {
+	if (super.setTabGroupFocus()) return true;
+	return setTabItemFocus();
 }
 
 /**
@@ -1743,8 +1793,10 @@ public void setSelection (TableItem [] items) {
  * @see Table#select(int)
  */
 public void setSelection (int index) {
+	checkWidget ();
 	deselectAll ();
 	select (index);
+	if (index != -1) setFocusIndex (index);
 }
 
 /**
@@ -1763,8 +1815,16 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget ();
 	deselectAll ();
 	select (start, end);
+	/*
+	* NOTE: This code relies on the select (int, int)
+	* selecting the last item in the range for a single
+	* selection table.
+	*/
+	int focusIndex = (style & SWT.SINGLE) != 0 ? end : start;
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1851,6 +1911,7 @@ public void setTopIndex (int index) {
 public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf (item);
 	if (index != -1) {
 		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
@@ -2137,11 +2198,6 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if (imageList != null && background == -1) {
-		imageList.setBackground (defaultBackground ());
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	return result;
 }

@@ -143,8 +143,7 @@ ScrollBar (Scrollable parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener (SWT.Selection,typedListener);
@@ -158,6 +157,16 @@ static int checkStyle (int style) {
 void createWidget () {
 	increment = 1;
 	pageIncrement = 10;
+	/*
+	* Do not set the intial values of the maximum
+	* or the thumb.  These values normally default
+	* to 100 and 10 but may have been set already
+	* by the widget that owns the scroll bar.  For
+	* example, a scroll bar that is created for a
+	* list widget, setting these defaults would
+	* override the initial values provided by the
+	* list widget.
+	*/
 }
 
 void destroyWidget () {
@@ -204,8 +213,7 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return (state & DISABLED) == 0;
 }
 
@@ -222,8 +230,7 @@ public boolean getEnabled () {
  * </ul>
  */
 public int getIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return increment;
 }
 
@@ -238,8 +245,7 @@ public int getIncrement () {
  * </ul>
  */
 public int getMaximum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE;
@@ -260,8 +266,7 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE;
@@ -284,8 +289,7 @@ public int getMinimum () {
  * </ul>
  */
 public int getPageIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return pageIncrement;
 }
 
@@ -300,8 +304,7 @@ public int getPageIncrement () {
  * </ul>
  */
 public Scrollable getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
@@ -316,8 +319,7 @@ public Scrollable getParent () {
  * </ul>
  */
 public int getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_POS;
@@ -340,8 +342,7 @@ public int getSelection () {
  * </ul>
  */
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	RECT rect = new RECT ();
 	OS.GetClientRect (parent.handle, rect);
 	int width, height;
@@ -369,8 +370,7 @@ public Point getSize () {
  * @see ScrollBar
  */
 public int getThumb () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_PAGE;
@@ -399,8 +399,7 @@ public int getThumb () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return (state & HIDDEN) == 0;
 }
 
@@ -427,8 +426,7 @@ int hwndScrollBar () {
  * </ul>
  */
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
 
@@ -450,8 +448,7 @@ public boolean isEnabled () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getVisible () && parent.isVisible ();
 }
 
@@ -484,8 +481,7 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -518,8 +514,7 @@ int scrollBarType () {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	int flags = OS.ESB_DISABLE_BOTH;
 	if (enabled) flags = OS.ESB_ENABLE_BOTH;
@@ -542,8 +537,7 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 1) return;
 	increment = value;
 }
@@ -561,8 +555,7 @@ public void setIncrement (int value) {
  * </ul>
  */
 public void setMaximum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -612,8 +605,7 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -664,8 +656,7 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setPageIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 1) return;
 	pageIncrement = value;
 }
@@ -683,8 +674,7 @@ public void setPageIncrement (int value) {
  * </ul>
  */
 public void setSelection (int selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -709,8 +699,7 @@ public void setSelection (int selection) {
  * @see ScrollBar
  */
 public void setThumb (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	/* Position the thumb */
 	if (value < 1) return;
@@ -772,8 +761,7 @@ public void setThumb (int value) {
  * </ul>
  */
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
@@ -837,8 +825,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	if (OS.ShowScrollBar (hwnd, type, visible)) {
 		/*

@@ -28,10 +28,10 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Label extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -68,8 +68,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -180,8 +179,7 @@ int defaultForeground () {
  * </ul>
  */
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return SWT.LEFT;
 	int [] argList = {OS.XmNalignment, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -203,8 +201,7 @@ public int getAlignment () {
  * </ul>
  */
 public Image getImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return image;
 }
 String getNameText () {
@@ -223,8 +220,7 @@ String getNameText () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
@@ -291,8 +287,7 @@ int separatorType () {
  * </ul>
  */
 public void setAlignment (int alignment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int [] argList = {OS.XmNalignment, OS.XmALIGNMENT_BEGINNING};
 	if ((alignment & SWT.CENTER) != 0) argList [1] = OS.XmALIGNMENT_CENTER;
@@ -312,6 +307,7 @@ void setBitmap (Image image) {
 	if (disabled != null) disabled.dispose ();
 	bitmap = disabled = null;
 	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		Display display = getDisplay ();
 		switch (image.type) {
 			case SWT.BITMAP:
@@ -356,14 +352,16 @@ public void setFont (Font font) {
  *
  * @param image the image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBitmap (this.image = image);
 }
 public void setSize (int width, int height) {
@@ -388,8 +386,7 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
@@ -422,11 +419,11 @@ public void setText (String string) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
 		Display display = getDisplay ();
-		if (mnemonic != 0) string = new String(unicode);
+		if (mnemonic != 0) string = new String (unicode);
 		string = display.wrapText (string, argList [1], width);
-		buffer = Converter.wcsToMbcs (null, string, true);
+		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	} else {
-		buffer = Converter.wcsToMbcs (null, unicode, true);
+		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
 	}
 	
 	int [] parseTable = getDisplay ().parseTable;
@@ -439,7 +436,20 @@ public void setText (String string) {
 		parseTable.length,
 		0);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
+		
+	/*
+	* Bug in Solaris.  If a mnemonic is defined to be a character
+	* that appears in a string in a position that follows a '\n',
+	* Solaris segment faults.  For example, a label with text
+	* "Hello\nthe&re" would GP since "r" appears after '\n'.
+	*
+	* The fix is to remove mnemonics from labels that contain
+	* '\n', which is fine since such labels generally just act
+	* as descriptive texts anyways.
+	*/ 
+	if (mnemonic == 0 || string.indexOf ('\n') != -1) {
+		mnemonic = OS.XK_VoidSymbol;
+	}
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,

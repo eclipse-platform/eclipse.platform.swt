@@ -199,6 +199,9 @@ static int getMsgProc(int code, int wParam, int lParam) {
 				if (site.handle == hwnd) {
 					OleFrame frame = site.frame;
 					if (frame.translateOleAccelerator(msg)) {
+						// In order to prevent this message from also being processed
+						// by the application, zero out message, wParam and lParam
+						OS.MoveMemory(lParam + 4, new int[] {OS.WM_NULL, 0, 0}, 12);
 						return 0;
 					}
 				}

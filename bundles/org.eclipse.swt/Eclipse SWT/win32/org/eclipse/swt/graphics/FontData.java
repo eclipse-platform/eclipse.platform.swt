@@ -8,6 +8,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import java.util.Locale;
 
 /**
  * Instances of this class describe operating system fonts.
@@ -48,6 +49,12 @@ public final class FontData {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int height;
+	
+	/**
+	 * The locale of the font
+	 * (Warning: This field is platform dependent)
+	 */
+	Locale locale;
 	
 /**	 
  * Constructs a new un-initialized font data.
@@ -324,6 +331,37 @@ public boolean equals (Object object) {
 		data.lfFaceName31 == lf.lfFaceName31;
 }
 
+int EnumLocalesProc(int lpLocaleString) {
+	
+	/* Get the locale ID */
+	int length = 8;
+	byte[] buffer = new byte[length];
+	OS.MoveMemory(buffer, lpLocaleString, length);
+	int lcid = Integer.parseInt(new String(buffer, 0, length), 16);
+
+	/* Check the language */
+	int size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO639LANGNAME, buffer, length);
+	String lang = new String(buffer, 0, size - 1);
+	if (!locale.getLanguage().equals(lang)) return 1;
+
+	/* Check the country */
+	String javaCountry = locale.getCountry();
+	if (javaCountry.length() != 0) {
+		size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
+		String country = new String(buffer, 0, size - 1);
+		if (!javaCountry.equals(country)) return 1;
+	}
+
+	/* Get the charset */
+	size = OS.GetLocaleInfo(lcid, OS.LOCALE_IDEFAULTANSICODEPAGE, buffer, length);
+	int cp = Integer.parseInt(new String(buffer, 0, size - 1));
+	int [] lpCs = new int[8];
+	OS.TranslateCharsetInfo(cp, lpCs, OS.TCI_SRCCODEPAGE);
+	data.lfCharSet = (byte)lpCs[0];
+
+	return 0;
+}
+
 /**
  * Returns the height of the receiver in points.
  *
@@ -366,6 +404,7 @@ public String getName() {
 		System.arraycopy(bytes, 0, newBytes, 0, index);
 		bytes = newBytes;
 	}
+	/* Use the character encoding for the default locale */
 	char[] name = Converter.mbcsToWcs(0, bytes);
 	return new String(name);
 }
@@ -433,6 +472,34 @@ public void setHeight(int height) {
 }
 
 /**
+ * Sets the locale of the receiver.
+ * <p>
+ * The locale determines which platform character set this
+ * font is going to use. Widgets and graphics operations that
+ * use this font will convert UNICODE strings to the platform
+ * character set of the specified locale.
+ * </p>
+ * <p>
+ * On platforms which there are multiple character sets for a
+ * given language/country locale, the variant portion of the
+ * locale will determine the character set.
+ * </p>
+ * 
+ * @param locale the Locale of the <code>FontData</code>
+ */
+public void setLocale(Locale locale) {
+	this.locale = locale;
+	if (locale == null) {
+		data.lfCharSet = OS.DEFAULT_CHARSET;
+	} else {
+		Callback callback = new Callback (this, "EnumLocalesProc", 1);
+		int lpEnumLocalesProc = callback.getAddress ();	
+		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
+		callback.dispose ();
+	}
+}
+
+/**
  * Sets the name of the receiver.
  * <p>
  * Some platforms support font foundries. On these platforms, the name
@@ -450,11 +517,12 @@ public void setHeight(int height) {
  * <code>getName()</code>.
  * </p>
  *
- * @param name the name of the font data
+ * @param name the name of the font data (must not be null)
  *
  * @see #getName
  */
 public void setName(String name) {
+	/* Use the character encoding for the default locale */
 	byte[] nameBytes = Converter.wcsToMbcs(0, name, true);
 	/* Pad nameBytes to 32 */
 	byte[] paddedNameBytes = new byte[32];

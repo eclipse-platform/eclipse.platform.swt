@@ -453,6 +453,7 @@ public Image(Device device, Image srcImage, int flag) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
@@ -689,6 +690,11 @@ public ImageData getImageData() {
 	OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
 	/* Calculate the palette depending on the display attributes */
 	PaletteData palette = null;
+	
+	/* Get the data for the source image. */
+	int length = xSrcImage.bytes_per_line * xSrcImage.height;
+	byte[] srcData = new byte[length];
+	OS.memmove(srcData, xSrcImage.data, length);
 	switch (xSrcImage.depth) {
 		case 1:
 			palette = new PaletteData(new RGB[] {
@@ -703,13 +709,40 @@ public ImageData getImageData() {
 			 */
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		case 8:
-			/* Use the RGBs from the display to make the palette */
-			XColor[] xcolors = device.xcolors;
-			RGB[] rgbs = new RGB[xcolors.length];
-			for (int i = 0; i < rgbs.length; i++) {
-				XColor xcolor = xcolors[i];
-				if (xcolor == null) rgbs[i] = new RGB(0, 0, 0);
-				else rgbs[i] = new RGB((xcolor.red >> 8) & 0xFF, (xcolor.green >> 8) & 0xFF, (xcolor.blue >> 8) & 0xFF);
+			/* Normalize the pixels in the source image data (by making the 
+			 * pixel values sequential starting at pixel 0). Reserve normalized 
+			 * pixel 0 so that it maps to real pixel 0. This assumes pixel 0 is 
+			 * always used in the image.
+			 */
+			byte[] normPixel = new byte[ 256 ];
+			for (int index = 0; index < normPixel.length; index++) {
+				normPixel[ index ] = 0;
+			}
+			int numPixels = 1;
+			int index = 0;
+			for (int y = 0; y < xSrcImage.height; y++) {
+				for (int x = 0; x < xSrcImage.bytes_per_line; x++) {
+					int srcPixel = srcData[ index + x ] & 0xFF;
+					if (srcPixel != 0 && normPixel[ srcPixel ] == 0) {
+						normPixel[ srcPixel ] = (byte)numPixels++;
+					}
+					srcData[ index + x ] = normPixel[ srcPixel ];
+				}
+				index += xSrcImage.bytes_per_line;
+			}
+			
+			/* Create a palette with only the RGB values used in the image. */
+			int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
+			RGB[] rgbs = new RGB[ numPixels ];
+			XColor color = new XColor();
+			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
+				// If the pixel value was used in the image, get its RGB values.
+				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
+					color.pixel = srcPixel;
+					OS.XQueryColor(xDisplay, colormap, color);
+					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
+					rgbs[ rgbIndex ] = new RGB((color.red >> 8) & 0xFF, (color.green >> 8) & 0xFF, (color.blue >> 8) & 0xFF);
+				}
 			}
 			palette = new PaletteData(rgbs);
 			break;
@@ -731,9 +764,7 @@ public ImageData getImageData() {
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 	ImageData data = new ImageData(width, height, xSrcImage.depth, palette);
-	int length = xSrcImage.bytes_per_line * xSrcImage.height;
-	data.data = new byte[length];
-	OS.memmove(data.data, xSrcImage.data, length);
+	data.data = srcData;
 	if (xSrcImage.bits_per_pixel == 32) {
 		/**
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
@@ -747,7 +778,7 @@ public ImageData getImageData() {
 		int srcIndex = 0;
 		int rOffset = 0, gOffset = 1, bOffset = 2;
 		if (xSrcImage.byte_order == OS.MSBFirst) {
-			rOffset = 2; gOffset = 1; bOffset = 0;
+			rOffset = 3; gOffset = 2; bOffset = 1;
 		}
 		for (int y = 0; y < height; y++) {
 			destIndex = y * bytesPerLine;
@@ -954,6 +985,7 @@ void init(Device device, ImageData image) {
  * @private
  */
 public int internal_new_GC (GCData data) {
+	if (pixmap == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1021,7 +1053,7 @@ public static Image motif_new(Device device, int type, int pixmap, int mask) {
 static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int display, int visual, int screenDepth, XColor[] xcolors, int[] transparentPixel, int drawable, int gc) {
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
-		((image.depth == 16 || image.depth == 24) && palette.isDirect)))
+		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			return SWT.ERROR_UNSUPPORTED_DEPTH;
 
 	boolean flipX = destWidth < 0;
@@ -1035,7 +1067,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		destY = destY - destHeight;
 	}
 	byte[] srcReds = null, srcGreens = null, srcBlues = null;
-	if (image.depth <= 8) {
+	if (! palette.isDirect) {
 		int length = palette.getRGBs().length;
 		srcReds = new byte[length];
 		srcGreens = new byte[length];
@@ -1051,6 +1083,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	byte[] destReds = null, destGreens = null, destBlues = null;
 	int destRedMask = 0, destGreenMask = 0, destBlueMask = 0;
+	final boolean screenDirect;
 	if (screenDepth <= 8) {
 		if (xcolors == null) return SWT.ERROR_UNSUPPORTED_DEPTH;
 		destReds = new byte[xcolors.length];
@@ -1063,12 +1096,14 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			destGreens[i] = (byte)((color.green >> 8) & 0xFF);
 			destBlues[i] = (byte)((color.blue >> 8) & 0xFF);
 		}
+		screenDirect = false;
 	} else {
 		Visual xVisual = new Visual();
 		OS.memmove(xVisual, visual, Visual.sizeof);
 		destRedMask = xVisual.red_mask;
 		destGreenMask = xVisual.green_mask;
 		destBlueMask = xVisual.blue_mask;
+		screenDirect = true;
 	}
 	if (transparentPixel != null) {
 		RGB rgb = image.palette.getRGB(transparentPixel[0]);
@@ -1087,15 +1122,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			OS.XtFree(bufPtr);
 			return SWT.ERROR_NO_HANDLES;
 		}
-		int foreground = 0, background = 0;
-		if (srcReds.length > 1) {
-			foreground = ImageData.closestMatch(screenDepth, srcReds[1], srcGreens[1], srcBlues[1],
-				destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
-		}
-		if (srcReds.length > 0) {
-			background = ImageData.closestMatch(screenDepth, srcReds[0], srcGreens[0], srcBlues[0],
-				destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
-		}
+		int foreground = 1, background = 0;
 		XImage xImage = new XImage();
 		OS.memmove(xImage, xImagePtr, XImage.sizeof);
 		xImage.byte_order = OS.MSBFirst;
@@ -1103,8 +1130,11 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		xImage.bitmap_bit_order = OS.MSBFirst;
 		OS.memmove(xImagePtr, xImage, XImage.sizeof);
 		int destOrder = ImageData.MSB_FIRST;
-		ImageData.stretch1(image.data, image.bytesPerLine, ImageData.MSB_FIRST, srcX, srcY, srcWidth, srcHeight,
-			buf, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, flipX, flipY);
+		ImageData.blit(ImageData.BLIT_SRC,
+			image.data, 1, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0,
+			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
+			flipX, flipY);
 		OS.memmove(xImage.data, buf, bufSize);
 		XGCValues values = new XGCValues();
 		OS.XGetGCValues(display, gc, OS.GCForeground | OS.GCBackground, values);
@@ -1127,28 +1157,36 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	int bufPtr = OS.XtMalloc(bufSize);
 	xImage.data = bufPtr;
 	OS.memmove(xImagePtr, xImage, XImage.sizeof);
-	int srcOrder = image.depth == 16 ? ImageData.LSB_FIRST : ImageData.MSB_FIRST;
+	int srcOrder = image.getByteOrder();
 	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-	if (image.depth > 8 && screenDepth > 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
-			flipX, flipY);
-	} else if (image.depth <= 8 && screenDepth > 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
-			flipX, flipY);
-	} else if (image.depth > 8 && screenDepth <= 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
-			flipX, flipY);
-	} else if (image.depth <= 8 && screenDepth <= 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
-			flipX, flipY);
+	if (palette.isDirect) {
+		if (screenDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				flipX, flipY);
+		} else {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				flipX, flipY);
+		}
+	} else {
+		if (screenDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				flipX, flipY);
+		} else {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				flipX, flipY);
+		}
 	}
 	OS.memmove(xImage.data, buf, bufSize);
 	OS.XPutImage(display, drawable, gc, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
@@ -1169,8 +1207,15 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
  *    image.setBackground(b.getBackground());>
  *    b.setImage(image);
  * </pre>
+ * </p><p>
+ * The image may be modified by this operation (in effect, the
+ * transparent regions may be filled with the supplied color).  Hence
+ * this operation is not reversible and it is not legal to call
+ * this function twice or with a null argument.
+ * </p><p>
  * This method has no effect if the receiver does not have a transparent
  * pixel value.
+ * </p>
  *
  * @param color the color to use when a transparent pixel is specified
  *

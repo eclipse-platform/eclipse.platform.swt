@@ -5,9 +5,11 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
+import java.util.Vector;
+import java.util.Enumeration;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import java.util.*;
 
 /** 
  * This class stores and manages child items of a tree item.

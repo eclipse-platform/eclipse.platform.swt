@@ -55,6 +55,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 protected void checkSubclass () {
@@ -63,7 +64,7 @@ protected void checkSubclass () {
 
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 int copyPhImage(int image) {
@@ -85,16 +86,14 @@ int copyPhImage(int image) {
 }
 
 public void addListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
 }
 
 public void addDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -174,7 +173,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
@@ -186,14 +185,12 @@ static void error (int code) {
 }
 
 public Object getData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return data;
 }
 
 public Object getData (String key) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -216,8 +213,7 @@ String getNameText () {
 }
 
 public int getStyle () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return style;
 }
 
@@ -241,8 +237,7 @@ boolean isValidSubclass () {
 }
 
 protected boolean isListening (int eventType) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return hooks (eventType);
 }
 
@@ -250,15 +245,8 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-boolean isValidWidget () {
-	if (handle != 0) return true;
-	if ((state & HANDLE) != 0) return false;
-	return (state & DISPOSED) == 0;
-}
-
 public void notifyListeners (int eventType, Event event) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -401,30 +389,27 @@ void releaseWidget () {
 }
 
 public void removeListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 protected void removeListener (int eventType, EventListener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 public void removeDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void replaceMnemonic (int mnemonic, int mods) {
+void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	Display display = getDisplay ();
 	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -436,13 +421,23 @@ void replaceMnemonic (int mnemonic, int mods) {
 			char [] accelText = Converter.mbcsToWcs (null, buffer);
 			if (accelText.length > 0) {
 				char key = Character.toLowerCase (accelText [0]);
-				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				if (normal) {
+					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				}
+				if (alt) {
+					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+				}
 			}
 		}
 	}
 	if (mnemonic == 0) return;
 	char key = Character.toLowerCase ((char)mnemonic);
-	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
+	if (normal) {
+		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+	}
+	if (alt) {
+		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+	}
 }
 
 void sendEvent (int eventType) {
@@ -461,14 +456,12 @@ void sendEvent (int eventType, Event event) {
 }
 
 public void setData (Object data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.data = data;
 }
 
 public void setData (String key, Object value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */
@@ -513,6 +506,55 @@ public void setData (String key, Object value) {
 	newValues [values.length] = value;
 	keys = newKeys;
 	values = newValues;
+}
+
+void setKeyState(Event event, PhKeyEvent_t ke) {
+	int key_mods = ke.key_mods;
+	int button_state = ke.button_state;
+	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
+	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
+	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
+	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
+	switch (event.type) {
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
+	}
+}
+
+void setMouseState(int type, Event event, PhPointerEvent_t pe) {
+	int key_mods = pe.key_mods;
+	int buttons = pe.buttons;
+	int button_state = pe.button_state;
+	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
+	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
+	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
+	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case OS.Ph_EV_BUT_PRESS:
+			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask &= ~SWT.BUTTON1;
+			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask &= ~SWT.BUTTON2;
+			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case OS.Ph_EV_BUT_RELEASE:
+		case OS.Ph_EV_DRAG:
+			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
+			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
+			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
+			break;
+	}
 }
 
 public String toString () {

@@ -453,6 +453,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawArc
     }
     if (radii) {
         lpRadii1 = &radii1;
+        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
         getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
     }
     return (jint) PgDrawArc(lpCenter1, lpRadii1, start, end, flags);
@@ -480,9 +481,51 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawEllipse
     }
     if (radii) {
         lpRadii1 = &radii1;
+        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
         getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
     }
     return (jint) PgDrawEllipse(lpCenter1, lpRadii1, flags);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgDrawGradient
+ * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhPoint_t;IIIIIIII[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawGradient
+  (JNIEnv *env, jobject that, jobject ul, jobject lr, jint gradient_type, jint transition_type, jint num_color_pts, jint color1, jint color2, jint color3, jint color4, jint table_size, jbyteArray transition_table)
+{
+	DECL_GLOB(pGlob)
+    jbyte *transition_table1=NULL;
+    PhPoint_t ul1, *lpUl1 = NULL, lr1, *lpLr1 = NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgDrawGradient\n");
+#endif
+
+    if (ul) {
+        lpUl1 = &ul1;
+        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
+        getPhPoint_tFields(env, ul, lpUl1, &PGLOB(PhPoint_tFc));
+    }
+    if (lr) {
+        lpLr1 = &lr1;
+        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
+        getPhPoint_tFields(env, lr, lpLr1, &PGLOB(PhPoint_tFc));
+    }
+    if (transition_table)
+    	transition_table1 = (*env)->GetByteArrayElements(env, transition_table, NULL);
+
+    result = (jint) PgDrawGradient(lpUl1, lpLr1,
+    	(unsigned long) gradient_type, (unsigned long) transition_type, (unsigned long) num_color_pts,
+    	(PgColor_t) color1, (PgColor_t) color2, (PgColor_t) color3, (PgColor_t) color4,
+    	(unsigned long) table_size, (unsigned char*) transition_table1);
+
+    if (transition_table)
+    	(*env)->ReleaseByteArrayElements(env, transition_table, transition_table1, 0);
+
+    return result;
 }
 
 /*
@@ -4551,6 +4594,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockAllWindows
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtBlockWindow
+ * Signature: (ISI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockWindow
+  (JNIEnv *env, jobject that, jint window, jshort cursor, jint cursor_color)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtBlockWindow\n");
+#endif
+	
+	return (jint) PtBlockWindow((PtWidget_t *)window, cursor, (PgColor_t)cursor_color);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtUnblockWindows
  * Signature: (I)V
  */
@@ -6345,3 +6403,335 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtInflateBalloon
 	return result;
 }
 
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgDisplaySettings_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PgDisplaySettings_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePgDisplaySettings_tFids(env, src, &PGLOB(PgDisplaySettings_tFc));
+        getPgDisplaySettings_tFields(env, src, src1, &PGLOB(PgDisplaySettings_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;II)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PgDisplaySettings_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePgDisplaySettings_tFids(env, dest, &PGLOB(PgDisplaySettings_tFc));
+        setPgDisplaySettings_tFields(env, dest, dest1, &PGLOB(PgDisplaySettings_tFc));
+    }
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PgVideoModeInfo_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePgVideoModeInfo_tFids(env, src, &PGLOB(PgVideoModeInfo_tFc));
+        getPgVideoModeInfo_tFields(env, src, src1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;II)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PgVideoModeInfo_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePgVideoModeInfo_tFids(env, dest, &PGLOB(PgVideoModeInfo_tFc));
+        setPgVideoModeInfo_tFields(env, dest, dest1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgGetVideoMode
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoMode
+  (JNIEnv *env, jobject that, jobject settings)
+{
+	DECL_GLOB(pGlob)
+	PgDisplaySettings_t settings1 = {0}, *lpSettings1=&settings1;
+	jint result;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgGetVideoMode\n");
+#endif
+
+    result = (jint)PgGetVideoMode(lpSettings1);
+
+    if (settings) {
+        cachePgDisplaySettings_tFids(env, settings, &PGLOB(PgDisplaySettings_tFc));
+        setPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
+    }
+	return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgGetVideoModeInfo
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoModeInfo
+  (JNIEnv *env, jobject that, jint mode_number, jobject mode_info)
+{
+	DECL_GLOB(pGlob)	
+    PgVideoModeInfo_t mode_info1, *lpmode_info1=NULL;
+	jint result;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgGetVideoModeInfo\n");
+#endif
+
+	if (mode_info) {
+        lpmode_info1 = &mode_info1;
+        cachePgVideoModeInfo_tFids(env, mode_info, &PGLOB(PgVideoModeInfo_tFc));
+        getPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+    result = (jint)PgGetVideoModeInfo(mode_number, lpmode_info1);
+
+    if (mode_info) {
+        setPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+	return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardCopy
+ * Signature: (SI[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardCopy
+  (JNIEnv *env, jclass that, jshort ig, jint n, jbyteArray clip)
+{	
+   jbyte *clip1;
+   jint result;
+   
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PhClipboardCopy\n");
+#endif
+
+    if (clip) {
+        clip1 = (*env)->GetByteArrayElements(env, clip, NULL);
+    }
+    
+    result = (jint)PhClipboardCopy(ig, n, (PhClipHeader const *)clip1);
+    
+    if (clip) {
+        (*env)->ReleaseByteArrayElements(env, clip, clip1, 0);
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteStart
+ * Signature: (S)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteStart
+  (JNIEnv *env, jobject that, jshort ig)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteStart\n");
+#endif
+	
+	return (jint) PhClipboardPasteStart(ig);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteType
+ * Signature: (I[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteType
+  (JNIEnv *env, jobject that, jint cbdata, jbyteArray type)
+{
+	 char *type1=NULL;
+	 jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteType\n");
+#endif
+
+ 	if (type)
+        type1 = (char *)(*env)->GetByteArrayElements(env, type, NULL);
+    	
+	result = (jint) PhClipboardPasteType((void *)cbdata, type1);
+	
+	if (type)
+        (*env)->ReleaseByteArrayElements(env, type, (jbyte *)type1, 0);
+        
+	return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteTypeN
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteTypeN
+  (JNIEnv *env, jobject that, jint cbdata, jint n)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PhClipboardPasteTypeN\n");
+#endif
+	return (jint) PhClipboardPasteTypeN((void *)cbdata, n);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteFinish
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteFinish
+  (JNIEnv *env, jobject that, jint cbdata)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteFinish\n");
+#endif
+	
+	PhClipboardPasteFinish((void *)cbdata);
+	
+	return;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhClipHeader;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PhClipHeader object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePhClipHeaderFids(env, dest, &PGLOB(PhClipHeaderFc));
+        setPhClipHeaderFields(env, dest, dest1, &PGLOB(PhClipHeaderFc));
+    }
+
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: ([BLorg/eclipse/swt/internal/photon/PhClipHeader;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I
+  (JNIEnv *env, jobject that, jbyteArray dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	jbyte *dest1=NULL;
+    PhClipHeader object, *src1= NULL;
+    
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
+        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
+    }
+    
+    if (dest) {
+    	dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
+    }
+    
+    memmove((void *)dest1, (void *)src1, count);
+    
+    if (dest) {
+    	 (*env)->ReleaseByteArrayElements(env, dest, (jbyte *)dest1, 0);
+    }
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhClipHeader;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___ILorg_eclipse_swt_internal_photon_PhClipHeader_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+    PhClipHeader object, *src1= NULL;
+    
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
+        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
+    }
+    
+    memmove((void *)dest, (void *)src1, count);
+}

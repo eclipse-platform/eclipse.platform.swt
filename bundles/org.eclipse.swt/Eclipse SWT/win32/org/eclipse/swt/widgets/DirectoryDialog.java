@@ -87,10 +87,12 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 	switch (uMsg) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
+				/* Use the character encoding for the default locale */
 				byte [] buffer = Converter.wcsToMbcs (0, filterPath, true);
 				OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, buffer);
 			}
 			if (title != null && title.length () != 0) {
+				/* Use the character encoding for the default locale */
 				byte [] buffer = Converter.wcsToMbcs (0, title, true);
 				OS.SetWindowText (hwnd, buffer);
 			}
@@ -98,6 +100,7 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 		case OS.BFFM_VALIDATEFAILED:
 			byte [] buffer1 = new byte [256];
 			OS.MoveMemory (buffer1, lParam, 256);
+			/* Use the character encoding for the default locale */
 			char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
 			int length = 0;
 			while (length < buffer2.length && buffer2 [length] != 0) length++;
@@ -108,7 +111,7 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 }
 
 /**
- * Returns the path which the receiver will use to filter
+ * Returns the path which the dialog will use to filter
  * the directories it shows.
  *
  * @return the filter path
@@ -118,9 +121,9 @@ public String getFilterPath () {
 }
 
 /**
- * Returns the receiver's message, which is a description of
+ * Returns the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the receiver while it is open.
+ * visible on the dialog while it is open.
  *
  * @return the message
  */
@@ -129,14 +132,15 @@ public String getMessage () {
 }
 
 /**
- * Makes the receiver visible and brings it to the front
+ * Makes the dialog visible and brings it to the front
  * of the display.
  *
- * @return a string describing the absolute path of the selected directory
+ * @return a string describing the absolute path of the selected directory,
+ *         or null if the dialog was cancelled or an error occurred
  *
  * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
  * </ul>
  */
 public String open () {
@@ -153,6 +157,7 @@ public String open () {
 	/* Copy the message to OS memory */
 	int lpszTitle = 0;
 	if (message != null && message.length () != 0) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer = Converter.wcsToMbcs (0, message, true);
 		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory (lpszTitle, buffer, buffer.length);
@@ -173,6 +178,7 @@ public String open () {
 	if (lpItemIdList != 0) {
 		byte [] buffer = new byte [256];
 		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
+			/* Use the character encoding for the default locale */
 			char [] path = Converter.mbcsToWcs (0, buffer);
 			int length = 0;
 			while ((length < path.length) && (path [length] != 0)) length++;
@@ -209,7 +215,7 @@ public String open () {
 }
 
 /**
- * Sets the path which the receiver will use to filter
+ * Sets the path which the dialog will use to filter
  * the directories it shows to the argument, which may be
  * null.
  *
@@ -220,9 +226,9 @@ public void setFilterPath (String string) {
 }
 
 /**
- * Sets the receiver's message, which is a description of
+ * Sets the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the receiver while it is open.
+ * visible on the dialog while it is open.
  *
  * @param string the message
  */

@@ -23,8 +23,7 @@ static int checkStyle (int style) {
 }
 
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -32,8 +31,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -218,8 +216,7 @@ int processPaint (int damage) {
 	return OS.Pt_CONTINUE;
 }
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);

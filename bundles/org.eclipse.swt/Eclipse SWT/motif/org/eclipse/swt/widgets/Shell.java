@@ -88,7 +88,9 @@ public /*final*/ class Shell extends Decorations {
 	int shellHandle;
 	boolean reparented, realized;
 	int oldX, oldY, oldWidth, oldHeight;
-	Control lastFocus;
+	Control lastActive;
+
+	static final  byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -283,8 +285,7 @@ public static Shell motif_new (Display display, int handle) {
  * @see #removeShellListener
  */
 public void addShellListener(ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.Activate,typedListener);
@@ -388,8 +389,7 @@ void adjustTrim () {
  * </ul>
  */
 public void close () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	closeWidget ();
 }
 void closeWidget () {
@@ -413,12 +413,11 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
-	trim.width += trimWidth; trim.height += trimHeight;
+	trim.width += trimWidth; trim.height += trimHeight + imeHeight ();
 	return trim;
 }
 void createHandle (int index) {
@@ -459,7 +458,7 @@ void createHandle (int index) {
 	byte [] buffer = {(byte)' ', 0, 0, 0};
 	int ptr = OS.XtMalloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int [] argList = {
+	int [] argList1 = {
 		OS.XmNmwmInputMode, inputMode,
 		OS.XmNmwmDecorations, decorations,
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
@@ -469,7 +468,7 @@ void createHandle (int index) {
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
 		int xDisplay = display.xDisplay;
 		int widgetClass = OS.TopLevelShellWidgetClass ();
-		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList, argList.length / 2);
+		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
 	} else {
 		int widgetClass = OS.TransientShellWidgetClass ();
 //		if ((style & SWT.ON_TOP) != 0) {
@@ -477,7 +476,7 @@ void createHandle (int index) {
 //		}
 		int parentHandle = display.shellHandle;
 		if (parent != null) parentHandle = parent.handle;
-		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList, argList.length / 2);
+		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
 	}
 	OS.XtFree (ptr);
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -493,9 +492,22 @@ void createHandle (int index) {
 	* on the client area.
 	*/
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
-		int [] argList1 = {OS.XmNborderWidth, 1};
-		OS.XtSetValues (handle, argList1, argList1.length / 2);
+		int [] argList2 = {OS.XmNborderWidth, 1};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
+	
+	/*
+	* Feature in Motif. There is no Motif API to negociate for the
+	* status line. The fix is to force the status line to appear
+	* by creating a hidden text widget.  This is much safer than
+	* using X API because this may conflict with Motif.
+	*
+	* Note that  XmNtraversalOn must be set to FALSE or the shell
+	* will not take focus when the user clicks on it.
+	*/
+	int [] argList3 = {OS.XmNtraversalOn, 0};
+	int textHandle = OS.XmCreateTextField (handle, null, argList3, argList3.length / 2);
+	if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 void deregister () {
 	super.deregister ();
@@ -525,7 +537,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 
 	/*
 	* This code is intentionally commented.  On some
@@ -563,15 +575,13 @@ void enableWidget (boolean enabled) {
 	enableHandle (enabled, shellHandle);
 }
 public int getBorderWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	return argList [1];
 }
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
@@ -604,20 +614,17 @@ public Display getDisplay () {
  * @see SWT
  */
 public int getImeInputMode () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return SWT.NONE;
 }
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (root_x [0], root_y [0]);
 }
 public Shell getShell () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return this;
 }
 /**
@@ -632,8 +639,7 @@ public Shell getShell () {
  * </ul>
  */
 public Shell [] getShells () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = 0;
 	Shell [] shells = display.getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -657,8 +663,7 @@ public Shell [] getShells () {
 	return result;
 }
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	int border = argList [5];
@@ -668,8 +673,7 @@ public Point getSize () {
 	return new Point (width, height);
 }
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (!OS.XtIsRealized (handle)) return false;
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return false;
@@ -692,30 +696,31 @@ void hookEvents () {
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay != 0) {
-		byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs (null, "WM_DELETE_WINDOW\0", false);
 		int atom = OS.XmInternAtom (xDisplay, WM_DETELE_WINDOW, false);	
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
 	}
 }
-int inputContext () {
-	//NOT DONE
-	return 0;
+int imeHeight () {
+	if (!IsDBLocale) return 0;
+//	realizeWidget ();
+	int [] argList1 = {OS.XmNheight, 0};
+	OS.XtGetValues (shellHandle, argList1, argList1.length / 2);
+	int [] argList2 = {OS.XmNheight, 0};
+	OS.XtGetValues (scrolledHandle, argList2, argList2.length / 2);
+	return argList1 [1] - argList2 [1];
 }
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled ();
 }
 boolean isModal () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNmwmInputMode, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
 }
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getVisible ();
 }
 void manageChildren () {
@@ -743,8 +748,7 @@ void manageChildren () {
  * @see Decorations#setDefaultButton
 */
 public void open () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setVisible (true);
 }
 int processDispose (int callData) {
@@ -846,7 +850,7 @@ void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
 	display = null;
-	lastFocus = null;
+	lastActive = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -866,8 +870,7 @@ void releaseWidget () {
  * @see #addShellListener
  */
 public void removeShellListener(ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Activate, listener);
@@ -886,9 +889,46 @@ void saveBounds () {
 	oldX = root_x [0] - trimWidth; oldY = root_y [0] - trimHeight;
 	oldWidth = argList [1];  oldHeight = argList [3];
 }
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
+}
+
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* Feature in Motif.  Motif will not allow a window
 	* to have a zero width or zero height.  The fix is
@@ -923,12 +963,10 @@ public void setBounds (int x, int y, int width, int height) {
  * @see SWT
  */
 public void setImeInputMode (int mode) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	saveBounds ();
 	if (!reparented) {
 		super.setLocation(x, y);
@@ -940,8 +978,7 @@ public void setLocation (int x, int y) {
 	if (isFocus) caret.setFocus ();
 }
 public void setMinimized (boolean minimized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	/* 
 	* Bug in MOTIF.  For some reason, the receiver does not keep the
@@ -971,8 +1008,7 @@ public void setMinimized (boolean minimized) {
 }
 
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* Feature in Motif.  Motif will not allow a window
 	* to have a zero width or zero height.  The fix is
@@ -991,8 +1027,7 @@ public void setSize (int width, int height) {
 	if (isFocus) caret.setFocus ();
 }
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	
@@ -1001,6 +1036,7 @@ public void setText (String string) {
 	* title to an empty string.  The fix is to set the title
 	* to be a single space.
 	*/
+	/* Use the character encoding for the default locale */
 	if (string.length () == 0) string = " ";
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int length = buffer1.length - 1;
@@ -1025,8 +1061,7 @@ public void setText (String string) {
 	OS.XtFree (ptr);
 }
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	realizeWidget ();
 
 	/* Show the shell */

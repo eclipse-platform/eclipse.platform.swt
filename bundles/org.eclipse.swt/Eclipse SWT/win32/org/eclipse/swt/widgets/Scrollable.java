@@ -105,12 +105,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
 
 	/* Get the size of the scroll bars */
-	if ((horizontalBar != null) && (horizontalBar.getVisible ())) {
-		rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-	}
-	if ((verticalBar != null) && (verticalBar.getVisible ())) {
-		rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-	}
+	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 
 	/* Get the height of the menu bar */
 	if (hasMenu) {

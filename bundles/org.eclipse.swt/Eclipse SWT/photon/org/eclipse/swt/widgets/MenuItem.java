@@ -27,24 +27,21 @@ public MenuItem (Menu parent, int style, int index) {
 }
 
 public void addArmListener (ArmListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Arm, typedListener);
 }
 
 public void addHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
 
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener (SWT.Selection,typedListener);
@@ -96,8 +93,7 @@ void createHandle (int index) {
 }
 
 public int getAccelerator () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return accelerator;
 }
 
@@ -108,8 +104,7 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* Bug in Photon. The Pt_BLOCKED flag of a menu item is cleared
 	* when its parent menu is realized. The fix is to remember
@@ -123,8 +118,7 @@ public boolean getEnabled () {
 }
 
 public Menu getMenu () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return menu;
 }
 
@@ -134,14 +128,12 @@ String getNameText () {
 }
 
 public Menu getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
 public boolean getSelection () {	
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -165,7 +157,8 @@ public boolean isEnabled () {
 }
 
 int processActivate (int info) {
-	return processArm (info);
+	showMenu ();
+	return OS.Pt_CONTINUE;
 }
 
 int processSelection (int info) {
@@ -176,7 +169,32 @@ int processSelection (int info) {
 			return OS.Pt_CONTINUE;
 		}
 	}
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	if (info != 0) {
+		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+		if (cbinfo.event != 0) {
+			PhEvent_t ev = new PhEvent_t ();
+			OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+			int data = OS.PhGetData (cbinfo.event);
+			if (data != 0) {
+				switch (ev.type) {
+					case OS.Ph_EV_KEY:
+						PhKeyEvent_t ke = new PhKeyEvent_t ();
+						OS.memmove (ke, data, PhKeyEvent_t.sizeof);
+						setKeyState (event, ke);
+						break;
+					case OS.Ph_EV_BUT_PRESS:
+					case OS.Ph_EV_BUT_RELEASE:
+						PhPointerEvent_t pe = new PhPointerEvent_t ();
+						OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+						setMouseState (ev.type, event, pe);
+						break;
+				}	
+			}
+		}
+	}
+	postEvent (SWT.Selection, event);
 	return OS.Pt_CONTINUE;
 }
 
@@ -196,42 +214,8 @@ int processShow (int info) {
 }
 
 int processArm(int info) {
-	if (menu != null) {
-		int menuHandle = menu.handle;
-		if (!OS.PtWidgetIsRealized (menuHandle)) {
-			if ((parent.style & SWT.BAR) == 0) {
-				int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
-				OS.PtSetResources (menuHandle, args.length / 3, args);
-			}
-			OS.PtReParentWidget (menuHandle, handle);
-			
-			/*
-			* Bug in Photon. PtPositionMenu does not position the menu
-			* properly when the menu is a direct child a menu bar item.
-			* The fix is to position the menu ourselfs.
-			*/
-			if ((parent.style & SWT.BAR) != 0) {
-				PhPoint_t pt = new PhPoint_t ();
-				short [] x = new short [1], y = new short [1];
-				OS.PtGetAbsPosition (handle, x, y);
-				pt.x = x [0];
-				pt.y = y [0];
-				int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
-				OS.PtGetResources (handle, args.length / 3, args);
-				pt.y += args [1];
-				int ptr = OS.malloc (PhPoint_t.sizeof);
-				OS.memmove (ptr, pt, PhPoint_t.sizeof);
-				args = new int [] {OS.Pt_ARG_POS, ptr, 0};
-				OS.PtSetResources (menuHandle, args.length / 3, args);
-				OS.free (ptr);
-			} else {
-				OS.PtPositionMenu (menuHandle, null);
-			}
-			
-			menu.sendEvent (SWT.Show);
-			OS.PtRealizeWidget (menuHandle);
-		}
-	}
+	postEvent (SWT.Arm);
+	showMenu ();
 	return OS.Pt_CONTINUE;
 }
 
@@ -254,16 +238,14 @@ void releaseWidget () {
 }
 
 public void removeArmListener (ArmListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Arm, listener);
 }
 
 public void removeHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
@@ -286,8 +268,7 @@ void removeAccelerator () {
 }
 
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -295,9 +276,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 public void setAccelerator (int accelerator) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	removeAccelerator ();
 
 	this.accelerator = accelerator;		
@@ -317,8 +296,7 @@ public void setAccelerator (int accelerator) {
 }
 
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.enabled = enabled;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
@@ -328,8 +306,7 @@ public void setEnabled (boolean enabled) {
 }
 
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	
@@ -337,12 +314,12 @@ public void setImage (Image image) {
 }
 
 public void setMenu (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.CASCADE) == 0) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
 	}
 	if (menu != null) {
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}
@@ -370,16 +347,14 @@ public void setMenu (Menu menu) {
 }
 
 public void setSelection (boolean selected) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	char [] text = new char [string.length ()];
@@ -429,7 +404,7 @@ public void setText (String string) {
 		OS.memmove (ptr3, buffer3, buffer3.length);
 	}
 	if ((parent.style & SWT.BAR) != 0) {
-		replaceMnemonic (mnemonic, OS.Pk_KM_Alt);
+		replaceMnemonic (mnemonic, false, true);
 	}
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
@@ -448,6 +423,44 @@ public void setText (String string) {
 	* to recalculate the size.
 	*/
 	if (OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
+}
+
+void showMenu() {
+	if (menu == null)  return;
+	int menuHandle = menu.handle;
+	if (!OS.PtWidgetIsRealized (menuHandle)) {
+		if ((parent.style & SWT.BAR) == 0) {
+			int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
+			OS.PtSetResources (menuHandle, args.length / 3, args);
+		}
+		OS.PtReParentWidget (menuHandle, handle);
+		
+		/*
+		* Bug in Photon. PtPositionMenu does not position the menu
+		* properly when the menu is a direct child a menu bar item.
+		* The fix is to position the menu ourselfs.
+		*/
+		if ((parent.style & SWT.BAR) != 0) {
+			PhPoint_t pt = new PhPoint_t ();
+			short [] x = new short [1], y = new short [1];
+			OS.PtGetAbsPosition (handle, x, y);
+			pt.x = x [0];
+			pt.y = y [0];
+			int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
+			OS.PtGetResources (handle, args.length / 3, args);
+			pt.y += args [1];
+			int ptr = OS.malloc (PhPoint_t.sizeof);
+			OS.memmove (ptr, pt, PhPoint_t.sizeof);
+			args = new int [] {OS.Pt_ARG_POS, ptr, 0};
+			OS.PtSetResources (menuHandle, args.length / 3, args);
+			OS.free (ptr);
+		} else {
+			OS.PtPositionMenu (menuHandle, null);
+		}
+		
+		menu.sendEvent (SWT.Show);
+		OS.PtRealizeWidget (menuHandle);
+	}
 }
 
 }

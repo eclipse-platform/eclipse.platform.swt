@@ -32,12 +32,73 @@ public class ToolItem extends Item {
 	Image disabledImage2;
 	int id;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>ToolBar</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>ToolBar</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -316,6 +377,32 @@ void releaseWidget () {
 	disabledImage2 = null;
 }
 
+void releaseImages () {
+	TBBUTTONINFO info = new TBBUTTONINFO ();
+	info.cbSize = TBBUTTONINFO.sizeof;
+	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
+	int hwnd = parent.handle;
+	int index = OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+	/*
+	* Feature in Windows.  For some reason, a tool item that has
+	* the style BTNS_SEP does not return I_IMAGENONE when queried
+	* for an image index, despite the fact that no attempt has been
+	* made to assign an image to the item.  As a result, operations
+	* on an image list that use the wrong index cause random results.	
+	* The fix is to ensure that the tool item is not a separator
+	* before using the image index.  Since separators cannot have
+	* an image and one is never assigned, this is not a problem.
+	*/
+	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
+		ImageList imageList = parent.getImageList ();
+		ImageList hotImageList = parent.getHotImageList ();
+		ImageList disabledImageList = parent.getDisabledImageList();
+		if (imageList != null) imageList.put (info.iImage, null);
+		if (hotImageList != null) hotImageList.put (info.iImage, null);
+		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+	}
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
@@ -347,6 +434,9 @@ public void removeSelectionListener(SelectionListener listener) {
  *
  * @param control the new control
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -354,8 +444,9 @@ public void removeSelectionListener(SelectionListener listener) {
  */
 public void setControl (Control control) {
 	checkWidget();
-	if (control != null && control.parent != parent) {
-		error (SWT.ERROR_INVALID_PARENT);
+	if (control != null) {
+		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	this.control = control;
@@ -397,8 +488,11 @@ public void setEnabled (boolean enabled) {
  * The disbled image is displayed when the receiver is disabled.
  * </p>
  *
- * @param image the hot image to display on the receiver (may be null)
+ * @param image the disabled image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -407,6 +501,7 @@ public void setEnabled (boolean enabled) {
 public void setDisabledImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	disabledImage = image;
 	updateImages ();
 }
@@ -420,6 +515,9 @@ public void setDisabledImage (Image image) {
  *
  * @param image the hot image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -428,6 +526,7 @@ public void setDisabledImage (Image image) {
 public void setHotImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	hotImage = image;
 	updateImages ();
 }
@@ -435,6 +534,7 @@ public void setHotImage (Image image) {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
 	updateImages ();
 }
@@ -471,7 +571,7 @@ public void setText (String string) {
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length); 
 	TBBUTTONINFO info = new TBBUTTONINFO ();
@@ -492,6 +592,8 @@ public void setText (String string) {
 	*/
 	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
+	
+	parent.layoutItems ();
 }
 
 /**
@@ -533,6 +635,7 @@ public void setWidth (int width) {
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
+	parent.layoutItems ();
 }
 
 void updateImages () {
@@ -546,10 +649,13 @@ void updateImages () {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		if (imageList == null) imageList = new ImageList ();
+		Display display = getDisplay ();
+		Rectangle bounds = image.getBounds ();
+		Point size = new Point (bounds.width, bounds.height);
+		if (imageList == null) imageList = display.getToolImageList (size);
 		info.iImage = imageList.add (image);
 		parent.setImageList (imageList);
-		if (disabledImageList == null) disabledImageList = new ImageList ();
+		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
 			disabled = image;
@@ -560,11 +666,11 @@ void updateImages () {
 		}
 		disabledImageList.add (disabled);
 		parent.setDisabledImageList (disabledImageList);
-		if ((parent.style & SWT.FLAT) != 0) {
-			if (hotImageList == null) hotImageList = new ImageList ();
+//		if ((parent.style & SWT.FLAT) != 0) {
+			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
 			hotImageList.add (hotImage != null ? hotImage : image);
 			parent.setHotImageList (hotImageList);
-		}
+//		}
 	} else {
 		if (imageList != null) imageList.put (info.iImage, image);
 		if (disabledImageList != null) {
@@ -591,6 +697,8 @@ void updateImages () {
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+	
+	parent.layoutItems ();
 }
 
 int widgetStyle () {

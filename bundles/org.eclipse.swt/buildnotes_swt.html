@@ -11,6 +11,183 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+SWT Build 2.0 006 - Thursday Sept 27, 2001
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GHWA19: SWT:WINNT - Problem with callbacks from CCombo
+<br>1GHFDPV: SWT:WIN2000 - Setting selection in Table does not update focus item
+<br>1GF644V: ITPUI:Linux - Unzoom is changing the active editor.
+</blockquote>
+
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 005 - Friday Sept 21, 2001
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GK09Z0: SWT:Linux - setEnabled(false) has no effect on aToolbar
+<br>1GJZZS6: SWT:Linux - File Dialog returns a directory
+<br>1GF7SMC: ITPUI:Linux - Wrong bg for close button on editor tab
+</blockquote>
+
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 004 - Thursday Sept 13, 2001
+
+<h2>
+<a NAME="API Behaviour change"></a>API Behaviour change</h2>
+The behaviour of dispose for GCs has been modified such that attempting to dispose of
+a GC on a control <em>after</em> the control has been disposed will generate an
+SWTException.  This fixes an OS resource leak and potential GPF situation.
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GJUAKL: SWT:Neutrino - Control.internal_new_GC() needs !isValidWidget() check
+<br>1GJN52N: SWT:Linux - Text prints system error message for horizontal scrollbar
+<br>1GJBOAV: SWT:ALL - ScrolledComposite bugs
+<br>1GIXELI: SWT:ALL - Need Caret to allow bitmaps so bidi caret can be created
+<br>1GI5O1T: SWT:WINNT - Composite.setFocus takes focus when it should not
+<br>1GHOND7: SWT:WIN2000 - Selection problem with single-selection trees
+<br>1GHG990: SWT:ALL - Probable bug in Slider page increment setting
+<br>1GENJ60: SWT:ALL - ScrolledComposite should include example in its class comment
+<br>1GEA7K7: ITPUI:Linux - Default button not working
+</blockquote>
+
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 003 - Friday Sept 07, 2001
+
+<h2>
+<a NAME="New APIs"></a>New APIs</h2>
+
+<blockquote>
+FontData.setLocale(java.util.Locale) added
+<br>Caret.getImage() added
+<br>Caret.setImage(Image) added
+<br>GC.fillGradientRectangle(int, int, int, int, boolean) added
+</blockquote>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GJM7KM: SWT:Linux - Table and Tree return a different size for every second call to computeSize
+<br>1GJLKHE: SWT:SPARC - GP on "Installed JREs" preference page
+<br>1GJLK63: SWT:ALL - StyledText - bidi - keyboard switching
+<br>1GJLE36: SWT:WINNT - Alpha data redrawing improperly after occlusion
+<br>1GJA2L7: SWT:WIN - Different behavior for GC.drawString() args on Win vs. Photon
+<br>1GIZ0P6: SWT:WINNT - GC.drawImage() problem with transparent pixels
+<br>1GIXELI: SWT:ALL - Need Caret to allow bitmaps so bidi caret can be created
+<br>1GI7FQF: SWT:ALL - Can't set focus to Tasks View by Keyboard
+<br>1GI7EBL: SWT:Linux - api typo: ToolItem>>getDisabledmage()
+<br>1GI3P86: SWT:ALL - Semantic differences between emulated Table and Tree codebase on Motif and Photon
+<br>1GI1WEA: SWT:Neutrino - Text selection code not working correctly
+<br>1GHWED2: SWT:WINNT - GC.stringExtent() not correct for Windows Arial font
+<br>1GHWB7G: SWT:Linux - Linux font dialog doesn't open with given values.
+<br>1GHVRFY: SWT:Neutrino - Text#ClearSelection changes the CaretPosition in a SINGLE-line widget
+<br>1GHVLV6: SWT:Neutrino - Text#SetTopIndex and getTopIndex inconsistent
+<br>1GHOJ6T: SWT:Neutrino - Text#setSelection inconsistent between SINGLE and MULTI
+<br>1GHBLRA: SWT:Neutrino - Display.getBounds() returns incorrect info
+<br>1GH48UQ: SWT:Neutrino - Enter key does not insert new line with Text.MULTI widget
+<br>1GGT0TM: SWT:Neutrino - GC#drawArc inconsistent between NT and NTO
+<br>1GG1DBT: SWT:SPARC - Solaris loses input characters
+<br>1GG07HW: SWT:Linux - Tree.getItem() modifies its argument on Motif
+<br>1GG0069: SWT:Linux - Weird layout issues seen in Control Example
+<br>1GFZZLK: SWT:Linux - ToolItems not disabled when containing ToolBar is disabled
+<br>1GFZU3X: SWT:ALL - ImageLoader.load(String) not closing file input stream
+<br>1GFZPDP: SWT:Linux - Combo box with SWT.SIMPLE style does not respect Disabled flag (visually)
+<br>1GFW85H: SWT:ALL - Printer.getPrinterData() has stale comment
+<br>1GFW6MQ: SWT:ALL - DCR: Program class needs .equals() and .hashCode()
+<br>1GFW4YN: SWT:ALL - Help KevinH add printing to Eclipse
+<br>1GFQKDT: SWT:ALL - Image.setBackground() / getBackground() asymmetry
+<br>1GFONVW: SWT:Linux - Empty Combo should not fire Selection event
+<br>1GFL0HP: SWT:Linux - Remaining items in SWT comments to fix
+<br>1GET90D: SWT:Linux - SWTExceptions bring down Eclipse
+<br>1GESQBK: ITPJUI:WINNT - How to get access to pop-up menus of the Java editor ?
+<br>1GELX4A: ITPUI:ALL - Hover help is not visible if pane is dragged out of workbench
+<br>1GEHWAF: ITPUI:WIN2000 - Can't enter text in a Swing TextField or TextArea
+<br>1GE5ECJ: ITPUI:WIN2000 - Hover help for title bar buttons appears behind detached view
+<br>1GDX7R8: ITPUI:ALL - SWT setText() does NOT have any way to avoid making mnemonics.
+<br>1GD5UHA: SWT:WIN2000 - Double-clicking on toolbar item gives double-click event on toolbar
+<br>1GBXIEO: SWT:ALL - DCR: Include cursor pos in Tracker move event
+<br>1G4IMQ3: SWT:WINNT - Table images incorrect after rapid removal and creation
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 002 - Wednesday July 18, 2001
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GGZ13T: SWT:Neutrino - invalid mouse state occuring in Photon
+<br>1GGRCCS: SWT:Neutrino - Label does not wrap in SWT0125
+<br>1GGAON2: SWT:ALL - Scaling image with alphas does not work correctly
+<br>1GFZQVQ: SWT:Linux - Vertical ProgressBar grows incorrectly
+<br>1GFQA18: SWT:Linux - Cheese with GC drawRoundedRectangle() on Motif
+<br>1GFPK6G: SWT:Linux - Motif fillPolygon() specifies improper hint
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 001 - Thursday July 12, 2001
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GGET76: SWT:Neutrino - Canvas does not respond to setFocus()
+<br>1GGAS5P: SWT:Neutrino - Photon on QNX 6.1.x needs SWT native changes
+<br>1GG96RO: SWT:Neutrino - drawOval and fillOval not compatible
+<br>1GG8ZLV: SWT:WINNT - drawOval behaves differently on Windows vs. other platforms
+<br>1GFKYD9: SWT:Linux - -HANG- (Xserver) When perfoming display.wake() in a DND dragStart()
+<br>1GFKK37: SWT:Linux - FileViewer examples issues
+<br>1GFBHX6: SWT:ALL - CTabItem tool tip flashing
+<br>1GF9ZMT: SWT:SPARC - 8-bit Icons are losing colors
+<br>1GF9ZJG: SWT:SPARC - Icons are being masked incorrectly on Solaris
+<br>1GF9YHD: ITPUI:WIN2000 - SWTException: help view
+<br>1GF9Y32: SWT:SPARC - 24-bit MSB Icons are wrong color (greenish)
+<br>1GF0D05: SWT:Linux - GPFs when running JUnit TestRunner in J9 AWT
+<br>1GEUZZC: SWT:ALL - "Name" of plugin inconsistant with other plugins
+<br>1GETDP5: ITPUI:Linux - NPE while closing editor on linux
+<br>1GDVRT5: SWT:Neutrino - Alpha channel memory leak
+<br>1GDRXZR: ITPJUI:Linux - SWT: Context-Menus issue under Linux 
+<br>1GD0OSK: SWT:ALL - API - package javadoc for SWT packages missing
+<br>1GCHS75: SWT:WINNT - workbench exits during expand collapse
+<br>1GCFUS0: SWT:ALL - CTabFolder "floating" X sticks sometimes
+<br>1GAR95O: SWT:ALL - Remove Smalltalk comments from SWT code
+<br>1GAQRND: SWT:ALL - DOC: Write good Javadoc comments for all of SWT
+<br>1G97I28: SWT:Linux - Tool bar buttons do not always work
+<br>1G84AZB: ITPDUI:ALL - Rename truncates name
+<br>1G845EZ: SWT:WIN2000 - Spec for Layout.computeSize() is truncated
+<br>1G7YXLB: SWT:WIN - StyledText - NLS Support
+<br>1G7NSHR: SWT:ALL - Widget.addListener(int, Listener) vs. adding typed listeners
+<br>1G4XDJO: SWT:Linux - Tree needs to display an insert marker
+<br>1G0Y8NZ: SWT:ALL - Combo box doesn't send key and mouse events 
+<br>1FXAVLF: SWT:WINNT - Disabled toolbar icons don't adapt to appearance changes
+<br>1FV1S18: SWT:ALL - Need more WM_* messages passed to ActiveX Control
+<br>1FTWX55: SWT:ALL - Inconsistant commenting of which SWT objects need to be disposed.
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 125 - Friday June 15, 2001
 
 <h2>

@@ -41,7 +41,7 @@ public /*final*/ class ColorDialog extends Dialog {
 
 	private boolean okSelected;							// true if the dialog was hidden 
 														// because the ok button was selected
-	private RGB dialogResult;													
+	private RGB rgb;
 	private int colorDepth;								// color depth of the display
 	private int colorSwatchExtent;						// the size of on square used 
 														// to display one color
@@ -197,10 +197,6 @@ void disposeColors() {
 		}
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void drawColor(int xIndex, int yIndex, Color color, GC gc) {
 	int colorSwatchExtent = getColorSwatchExtent();
 	int colorExtent = colorSwatchExtent - COLOR_SWATCH_BORDER;
@@ -210,69 +206,37 @@ void drawColor(int xIndex, int yIndex, Color color, GC gc) {
 		xIndex * colorSwatchExtent, yIndex * colorSwatchExtent, 
 		colorExtent, colorExtent);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getColorCanvas() {
 	return colorsCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 int getColorDepth() {
 	return colorDepth;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Color [][] getColorGrid() {
 	return colorGrid;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 int getColorSwatchExtent() {
 	return colorSwatchExtent;
 }
 /**
  * Returns the currently selected color in the receiver.
  *
- * @return the RGB value for the selected color
+ * @return the RGB value for the selected color, may be null
  *
  * @see PaletteData#getRGBs
  */
 public RGB getRGB() {
-	return dialogResult;
+	return rgb;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getSampleCanvas() {
 	return sampleCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Label getSampleText() {
 	return sampleLabel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getSelectionCanvas() {
 	return selectionCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Label getSelectionText() {
 	return selectionLabel;
 }
@@ -303,10 +267,6 @@ void handleEvents(Event event) {
 		}
 	}	
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void initialize4BitColors() {
 	Display display = getDialogShell().getDisplay();
 	
@@ -330,10 +290,6 @@ void initialize4BitColors() {
 	colorGrid[7][0] = new Color(display, 128, 0, 128);
 	colorGrid[7][1] = new Color(display, 255, 0, 255);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void initialize8BitColors() {
 	Display display = getDialogShell().getDisplay();	
 	int numColumns = colorGrid.length;
@@ -366,8 +322,6 @@ void initialize8BitColors() {
 void initializeWidgets() {
 	Display display = getDialogShell().getDisplay();
 	Color selectionColor;
-	RGB rgb = getRGB();
-	
 	if (rgb != null) {
 		selectionColor = new Color(display, rgb);
 		getSelectionCanvas().setBackground(selectionColor);
@@ -388,10 +342,6 @@ void installListeners() {
 	colorCanvas.addListener(SWT.MouseDown, listener);
 	colorCanvas.addListener(SWT.MouseMove, listener);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/19/99 7:13:21 PM)
- */
 void mouseDown(Event event) {
 	int swatchExtent = getColorSwatchExtent();
 	Color colorGrid[][] = getColorGrid();
@@ -400,10 +350,6 @@ void mouseDown(Event event) {
 	getSelectionCanvas().setBackground(color);
 	getSelectionText().setBackground(color);	
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/19/99 7:13:21 PM)
- */
 void mouseMove(Event event) {
 	int swatchExtent = getColorSwatchExtent();
 	Color colorGrid[][] = getColorGrid();
@@ -416,7 +362,9 @@ void mouseMove(Event event) {
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return the selected color
+ * @return the selected color, or null if the dialog was
+ *         cancelled, no color was selected, or an error
+ *         occurred
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -425,27 +373,26 @@ void mouseMove(Event event) {
  */
 public RGB open() {
 	Color selectionColor;
-	RGB dialogResult = null;
 	Shell dialog = new Shell(getParent(), getStyle() | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 	
 	setDialogShell(dialog);
 	createChildren();
 	installListeners();
 	openModal();
+	rgb = null;
 	if (isOkSelected() == true) {
 		selectionColor = getSelectionCanvas().getBackground();
-		dialogResult = new RGB(
+		rgb = new RGB(
 			selectionColor.getRed(), 
 			selectionColor.getGreen(), 
 			selectionColor.getBlue());
-		setRGB(dialogResult);
 	}
 	disposeColors();	
 	// Fix for 1G5NLY7
 	if (dialog.isDisposed() == false) {
 		dialog.dispose();
 	}	
-	return dialogResult;
+	return rgb;
 }
 void paint(Event event) {
 	Color colorGrid[][] = getColorGrid();
@@ -472,12 +419,14 @@ void setColorDepth(int bits) {
 /**
  * Returns the receiver's selected color to be the argument.
  *
- * @param rgb the new RGB value for the selected color
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
  *
  * @see PaletteData#getRGBs
  */
 public void setRGB(RGB rgb) {
-	dialogResult = rgb;
+	this.rgb = rgb;
 }
 /**
  * Create the widgets of the dialog.
@@ -521,12 +470,6 @@ Button getOKButton() {
 	return ok;
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (08/05/99 12:34:43)
- * @return boolean
- */
 boolean isOkSelected() {
 	return okSelected;
 }
@@ -563,7 +506,6 @@ void openModal() {
 	Display display = dialog.getDisplay();
 
 	initializeWidgets();
-	setRGB(null);
 	openDialog();
 	while (dialog.isDisposed() == false && dialog.getVisible() == true) {
 		if (display.readAndDispatch() == false) {
@@ -572,12 +514,6 @@ void openModal() {
 	}
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (08/05/99 12:34:43)
- * @param newOkSelected boolean
- */
 void setOkSelected(boolean newOkSelected) {
 	okSelected = newOkSelected;
 }
@@ -587,7 +523,5 @@ void setOkSelected(boolean newOkSelected) {
 void setDialogShell(Shell shell) {
 	this.shell = shell;
 }
-
-
 
 }

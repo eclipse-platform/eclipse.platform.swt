@@ -23,8 +23,7 @@ static int checkStyle (int style) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) {
 		int border = getBorderWidth ();
 		int width = border * 2, height = border * 2;
@@ -121,6 +120,7 @@ void createHandle (int index) {
 		int [] args = {
 			OS.Pt_ARG_SEP_FLAGS, orientation, OS.Pt_SEP_VERTICAL | OS.Pt_SEP_HORIZONTAL,
 			OS.Pt_ARG_SEP_TYPE, type, 0,
+			OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};		
 		handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
@@ -138,6 +138,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 		OS.Pt_ARG_VERTICAL_ALIGNMENT, verticalAlign, 0,
+		OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
@@ -145,8 +146,7 @@ void createHandle (int index) {
 }
 
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
@@ -155,8 +155,7 @@ public int getAlignment () {
 }
 
 public Image getImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return image;
 }
 
@@ -165,8 +164,7 @@ String getNameText () {
 }
 
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
@@ -203,8 +201,7 @@ void releaseWidget () {
 }
 
 public void setAlignment (int alignment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
@@ -221,6 +218,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 public boolean setFocus () {
+	checkWidget();
 	return false;
 }
 
@@ -230,12 +228,14 @@ public void setFont (Font font) {
 }
 
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	int imageHandle = 0;
-	if (image != null) imageHandle = copyPhImage (image.handle);
+	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		imageHandle = copyPhImage (image.handle);
+	}
 	int [] args = {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_IMAGE, 0
@@ -245,8 +245,7 @@ public void setImage (Image image) {
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
@@ -296,7 +295,7 @@ public void setText (String string) {
 		ptr2 = OS.malloc (buffer2.length);
 		OS.memmove (ptr2, buffer2, buffer2.length);
 	}
-	replaceMnemonic (mnemonic, 0);
+	replaceMnemonic (mnemonic, true, true);
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,

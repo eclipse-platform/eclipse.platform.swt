@@ -14,6 +14,44 @@ public class OS {
 		Callback.loadLibrary ();
 	}
 
+	/* OS and locale Constants*/
+	public static final boolean IsAIX, IsSunOS, IsLinux;
+	public static final int CODESET;
+	public static final int LC_CTYPE;
+	static {
+		
+		/* Initialize the OS flags and locale constants */
+		String osName = System.getProperty ("os.name");
+		if (osName.equals("Linux")) {
+			IsLinux = true;
+			IsAIX = IsSunOS = false;
+		} else {
+			if (osName.equals("AIX")) {
+				IsAIX = true;
+				IsLinux = IsSunOS = false;
+			} else {
+				if (osName.equals("Solaris")) {
+					IsSunOS = true;
+					IsLinux = IsAIX = false;
+				} else {
+					IsLinux = IsSunOS = IsAIX = false;
+				}
+			}
+		}
+		
+		CODESET = OS.IsLinux ? 14 : 49;
+		LC_CTYPE = OS.IsAIX ? 1 : 0;
+	}
+	
+	/* BEGIN Visual classes */
+	//public static final int StaticGray = 0;
+	//public static final int GrayScale = 1;
+	//public static final int StaticColor = 2;
+	//public static final int PseudoColor = 3;
+	//public static final int TrueColor = 4;
+	//public static final int DirectColor = 5;
+	/* END Visual clases */
+
 	/* X/Xt/Xm Constants */
 	public static final byte [] XmFONTLIST_DEFAULT_TAG = {0x46, 0x4F, 0x4E, 0x54, 0x4C, 0x49, 0x53, 0x54, 0x5F, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0x5F, 0x54, 0x41, 0x47, 0x5F, 0x53, 0x54, 0x52, 0x49, 0x4E, 0x47, 0x0};
 	public static final int Above = 0;
@@ -49,7 +87,7 @@ public class OS {
 //	public static final int ClipByChildren = 0x0;
 //	public static final int ColormapChangeMask = 1 << 23;
 //	public static final int ColormapNotify = 32;
-//	public static final int Complex = 0;
+	public static final int Complex = 0;
 	public static final int ConfigureNotify = 22;
 //	public static final int ConfigureRequest = 23;
 	public static final int ControlMask = (1<<2);
@@ -160,7 +198,7 @@ public class OS {
 //	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask	= 1 << 5;
 	public static final int LineDoubleDash = 0x2;
-//	public static final int LineOnOffDash = 0x1;
+	public static final int LineOnOffDash = 0x1;
 	public static final int LineSolid = 0x0;
 //	public static final int LockMask = (1<<1);
 	public static final int LSBFirst = 0;
@@ -733,6 +771,11 @@ public class OS {
 	public static final int XmNvisibleItemCount = malloc ("visibleItemCount");
 	public static final int XmNdropTransfers  = malloc ("dropTransfers");
 	public static final int XmNshowArrows = malloc ("showArrows");
+	public static final int XmNspotLocation = malloc ("spotLocation");
+//	public static final int XNFocusWindow = malloc ("focusWindow");
+//	public static final int XNInputStyle = malloc ("inputStyle");
+//	public static final int XNClientWindow = malloc ("clientWindow");
+//	public static final int XNQueryInputStyle = malloc ("queryInputStyle");
 			
 	/* Unknown */	
 	public static final int XmNdropSiteActivity = malloc("dropSiteActivity");
@@ -820,9 +863,7 @@ public class OS {
 	public static final native int XmCreateDrawnButton (int parent, byte [] name, int [] arglist, int argcount);
 	public static final native int XmCreateRowColumn (int parent, byte [] name, int [] arglist, int argcount);
 	public static final native int XmCreateScrolledWindow (int parent, byte [] name, int [] arglist, int argcount);
-	public static final native boolean XmDestroyPixmap (int screen, int pixmap);
 	public static final native int XmGetFocusWidget (int widget);
-	public static final native int XmGetPixmapByDepth (int screen, byte [] image_name, int foreground, int background, int depth);
 	public static final native void XmListAddItemsUnselected (int list, int xmStringTable, int item_count, int position);
 	public static final native void XmListDeleteItem (int list, int item);
 	public static final native void XmListDeselectItem (int list, int xmString);
@@ -913,8 +954,10 @@ public static final native int XGrabPointer (
 	int cursor,
 	int time);
 public static final native int XInitThreads ();	
+public static final native int XInternAtom( int display, byte [] name, boolean ifExists );
 public static final native int XKeysymToString (int keysym);
 public static final native int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
+public static final native int XListProperties(int display, int window, int[] num_prop_return);
 public static final native int XLookupString (XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native int XLowerWindow (int display, int window);
 public static final native boolean XPointInRegion (int region, int x, int y);
@@ -1006,6 +1049,7 @@ public static final native int XmCreateTextField (int parent, byte [] name, int 
 public static final native int XmCreateToggleButton (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XmCreateToggleButtonGadget (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XmCreateWarningDialog (int parent, byte [] name, int [] arglist, int argcount);
+public static final native boolean XmDestroyPixmap (int screen, int pixmap);
 public static final native void XmDragCancel(int dragcontext);
 public static final native int XmDragStart(int widget, XAnyEvent event, int[] arglist, int argcount);
 public static final native void XmDropSiteRegister(int widget, int [] arglist, int argcount);
@@ -1026,6 +1070,8 @@ public static final native int XmFontListNextEntry (int context);
 public static final native int XmGetAtomName (int display, int atom);
 public static final native int XmGetDragContext (int widget, int timestamp);
 public static final native int XmGetFocusWidget (int widget);
+public static final native int XmGetPixmap( int screen, byte [] name, int fgPixel, int bgPixel );
+public static final native int XmGetPixmapByDepth (int screen, byte [] image_name, int foreground, int background, int depth);
 public static final native int XmGetXmDisplay (int display);
 public static final native int XmImMbLookupString (int widget, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native int XmInternAtom (int display, byte [] name, boolean only_if_exists);
@@ -1102,7 +1148,7 @@ public static final native void XmTextSetString (int widget, byte [] value);
 public static final native void XmTextShowPosition (int widget, int position);
 public static final native void XmUpdateDisplay (int widget);
 public static final native boolean XmWidgetGetDisplayRect (int region, XRectangle rectangle);
-public static final native int XmbLookupString (int ic, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
+//public static final native int XmbLookupString (int ic, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native void XtAddCallback (int widget, int callback_name, int callback, int client_data);
 public static final native void XtAddEventHandler (int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
 public static final native void XtAddExposureToRegion (int event, int region);
@@ -1212,7 +1258,6 @@ public static final native void memmove (XmTextVerifyCallbackStruct dest, int sr
 public static final native void memmove (byte [] dest, int src, int count);
 public static final native void memmove (int [] dest, int src, int count);
 public static final native int strlen (int string);
-public static final native int XpmReadFileToPixmap(int display, int drawable, byte[] fileName, int[] pixmap_return, int[] shapemask_return, int attributes);
 public static final native int XmCreateDrawnButton (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XCheckIfEvent (int display, XAnyEvent event_return, int predicate, int arg);
 public static final native boolean XtToolkitThreadInitialize ();
@@ -1271,5 +1316,33 @@ public static final native void XtRemoveInput (int id);
 
 public static final native int XLoadQueryFont (int display, byte[] name);
 public static final native int XmFontListEntryCreate (byte[] tag, int type, int font);
+
+public static final native int XmImGetXIC (int widget, int input_policy, int[] args, int num_args);
+public static final native int XmImGetXIM (int widget);
+public static final native void XmImRegister (int widget, int reserved);
+//public static final native int XmImSetFocusValues (int widget, int[] args, int num_args);
+public static final native int XmImVaSetFocusValues(int widget, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9);
+public static final native int XmImSetValues (int widget, int[] args, int num_args);
+public static final native void XmImUnregister (int widget);
+public static final native void XmImUnsetFocus (int widget);
+//public static final native void XSetICFocus (int ic);
+//public static final native void XUnsetICFocus (int ic);
+//public static final native int XCreateIC (int im, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7);
+//public static final native int XSetICValues (int ic, int arg1, int arg2, int arg3);
+//public static final native int XGetICValues (int ic, int arg1, int arg2, int arg3);
+//public static final native int XGetIMValues (int im, int arg1, int arg2, int arg3);
+public static final native void memmove (int dest, short [] src, int count);
+//public static final native void memmove (char[] dest, int src, int count);
+//public static final native void memmove ( int dest, char[] src,int count);
+
+public static final native int nl_langinfo (int item);
+public static final native int iconv_open (byte[] tocode, byte[] fromcode);
+public static final native int iconv_close (int cd);
+public static final native int iconv (int cd, int[] inBuf, int[] inBytesLeft, int[] outBuf, int[] outBytesLeft);
+public static final native int MB_CUR_MAX ();
+public static final native int setlocale (int category, byte[] locale);
+
+public static final native int XCreateFontSet (int display, byte [] base_font_name_list, int [] missing_charset_list_return, int [] missing_charset_count_return, int [] def_string_return);
+public static final native int XLocaleOfFontSet (int fontSet);
 
 }

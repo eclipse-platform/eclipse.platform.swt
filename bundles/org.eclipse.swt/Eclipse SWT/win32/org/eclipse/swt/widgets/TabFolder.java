@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
@@ -69,7 +68,34 @@ public class TabFolder extends Composite {
 		}
 	}
 
-
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public TabFolder (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -197,6 +223,27 @@ void createItem (TabItem item, int index) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
+	
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	
+	/*
+	* Feature in Windows.  When the tool tip control is
+	* created, the parent of the tool tip is the shell.
+	* If SetParent () is used to reparent the tab folder
+	* into a new shell, the tool tip is not reparented
+	* and pops up underneath the new shell.  The fix is
+	* to make sure the tool tip is a topmost window.
+	*/
+	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
+	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);
 }
 
 void createWidget () {
@@ -221,7 +268,8 @@ void destroyItem (TabItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-			imageList.dispose ();
+			Display display = getDisplay ();
+			display.releaseImageList (imageList);
 		}
 		imageList = null;
 		items = new TabItem [4];
@@ -358,12 +406,13 @@ public int getSelectionIndex () {
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		imageList = new ImageList ();
-		imageList.setBackground (getBackgroundPixel ());
-		imageList.add (image);
+		Rectangle bounds = image.getBounds ();
+		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		int index = imageList.indexOf (image);
+		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
-		return 0;
+		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
@@ -404,12 +453,13 @@ void releaseWidget () {
 		if (!item.isDisposed ()) item.releaseWidget ();
 	}
 	items = null;
-	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
+	super.releaseWidget ();
 }
 
 /**
@@ -578,6 +628,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (item != null) string = item.toolTipText;
 			}
 			if (string != null && string.length () != 0) {
+				string = Display.withCrLf (string);
 				int length = string.length ();
 				char [] buffer = new char [length + 1];
 				string.getChars (0, length, buffer, 0);
@@ -607,17 +658,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (control != null && !control.isDisposed ()) {
 			control.setBounds (getClientArea ());
 		}
-	}
-	return result;
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if (imageList != null && background == -1) {
-		imageList.setBackground (defaultBackground ());
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 	}
 	return result;
 }

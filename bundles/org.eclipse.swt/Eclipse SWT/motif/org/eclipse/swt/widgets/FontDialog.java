@@ -22,6 +22,9 @@ import java.util.*;
 public /*final*/ class FontDialog extends Dialog {
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
 	private static final String TEXT_FONT_NOT_LOADED = "Could not load selected font";	// text used in place of sample text when the selected font could not be loaded
+	private static final String SCALABLE_SIZES[] = new String[] {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
+	private static final int DEFAULT_SIZE = 14;
+	private static final String DEFAULT_STYLE = FontExtStyles.MEDIUM;
 	
 	private Shell shell;						// the dialog shell
 	private Combo characterSet;
@@ -44,24 +47,67 @@ public /*final*/ class FontDialog extends Dialog {
 												// Used to correctly clean up allocated fonts
 												// will be used to initialize the font 
 												// combo boxes when the dialog is opened												
+
 /**
- * Create a new instance of the receiver with 'parent' as 
- * its parent shell.
- * @param parent - the parent shell. May be null
+ * Constructs a new instance of this class given only its
+ * parent.
+ * <p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  */
 public FontDialog(Shell parent) {
 	this(parent, SWT.NULL);
 }
+
 /**
- * Create a new instance of the receiver with 'parent' as 
- * its parent shell using 'style' as the widget style.
- * @param parent - the parent shell. May be null
- * @param style - style bits used to create the receiver.
- *	See class definition for details
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT dialog classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  */
 public FontDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 }
+
 /**
  * Add the fonts found in 'fonts' to the list of fonts.
  * Fonts are stored by character set and face name. For each character 
@@ -242,8 +288,10 @@ Combo getFaceNameCombo() {
 	return faceName;
 }
 /**
- * Returns the FontData for the selected font.
- * Returns null if no font was selected and the dialog was cancelled.
+ * Returns a FontData object describing the font that was
+ * selected in the dialog, or null if none is available.
+ * 
+ * @return the FontData for the selected font, or null
  */
 public FontData getFontData() {
 	return dialogResult;
@@ -532,32 +580,35 @@ void initFontDataCombos() {
  * is used.
  */
 void initSizeCombo(FontExtStyles fontExtStyles) {
-	Vector sizes = null;
-	Integer size;
 	Combo sizeCombo = getSizeCombo();
-	String sizeStrings[] = {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
-	int selectionIndex = -1;
-	final int SelectionSize = 14;	
-
+	String previousSize = sizeCombo.getText();
 	sizeCombo.removeAll();
-	if (fontExtStyles.isScalable() == true) {
-		sizeCombo.setItems(sizeStrings);
-		selectionIndex = 4;
+
+	int selectionIndex = -1;
+
+	if (fontExtStyles.isScalable()) {
+		sizeCombo.setItems(SCALABLE_SIZES);
+		selectionIndex = sizeCombo.indexOf(String.valueOf(DEFAULT_SIZE));
 	}
 	else {
-		sizes = fontExtStyles.getSizes(getExtStyleCombo().getText());
+		Vector sizes = fontExtStyles.getSizes(getExtStyleCombo().getText());
 		for (int i = 0; i < sizes.size(); i++) {
-			size = (Integer) sizes.elementAt(i);
+			Integer size = (Integer) sizes.elementAt(i);
 			sizeCombo.add(size.toString());
-			if (size.intValue() >= SelectionSize && selectionIndex == -1) {
+			// select the largest height if there's no font
+			// size that is at least as high as SelectionSize
+			if (size.intValue() >= DEFAULT_SIZE && selectionIndex == -1)
 				selectionIndex = i;
-			}
 		}
-	}	
-	if (selectionIndex == -1) {
-		selectionIndex = sizes.size() - 1;			// select largest height if there's no font 
-													// size that is at least as high as SelectionSize 
 	}
+
+	int indexOfPreviousSelection = sizeCombo.indexOf(previousSize);
+	if (indexOfPreviousSelection != -1)
+		selectionIndex = indexOfPreviousSelection;
+
+	if (selectionIndex == -1)	// last resort case, should not happen
+		selectionIndex = sizeCombo.getItemCount() - 1;			
+
 	sizeCombo.select(selectionIndex);	
 }
 /**
@@ -565,20 +616,20 @@ void initSizeCombo(FontExtStyles fontExtStyles) {
  * is available in.
  */
 void initStyleCombo(FontExtStyles fontExtStyles) {
-	Vector styleVector = fontExtStyles.getStyles(getExtStyleCombo().getText());
-	Enumeration styleEnum = styleVector.elements();
 	Combo styleCombo = getStyleCombo();
-	int selectionIndex = styleVector.indexOf(FontExtStyles.MEDIUM);
-	String style;
-
+	String previousStyle = styleCombo.getText();
 	styleCombo.removeAll();
-	while (styleEnum.hasMoreElements() == true) {
-		style = (String) styleEnum.nextElement();
-		styleCombo.add(style);
-	}		
-	if (selectionIndex == -1) {
+	
+	Enumeration styleEnum = fontExtStyles.getStyles(getExtStyleCombo().getText()).elements();
+	while (styleEnum.hasMoreElements())
+		styleCombo.add((String)styleEnum.nextElement());
+
+	int selectionIndex = styleCombo.indexOf(previousStyle);
+	if (selectionIndex == -1)
+		selectionIndex = styleCombo.indexOf(DEFAULT_STYLE);
+	if (selectionIndex == -1)	// last resort
 		selectionIndex = 0;
-	}
+
 	styleCombo.select(selectionIndex);
 }
 
@@ -622,8 +673,16 @@ void installListeners() {
 	getExtStyleCombo().addListener(SWT.Selection, listener);
 }
 /**
- * Initialize the widgets of the receiver, open the dialog
- * and block the method until the dialog is closed by the user.
+ * Makes the dialog visible and brings it to the front
+ * of the display.
+ *
+ * @return a FontData object describing the font that was selected,
+ *         or null if the dialog was cancelled or an error occurred
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ * </ul>
  */
 public FontData open() {
 	FontData dialogResult = null;
@@ -677,7 +736,11 @@ void setFontCombos(FontData fontData) {
 	getStyleCombo().setText(value);
 }
 /**
- * Set the preselected font of the receiver to 'fontData'.
+ * Sets a FontData object describing the font to be
+ * selected by default in the dialog, or null to let
+ * the platform choose one.
+ * 
+ * @param fontData the FontData to use initially, or null
  */
 public void setFontData(FontData fontData) {
 	dialogResult = fontData;

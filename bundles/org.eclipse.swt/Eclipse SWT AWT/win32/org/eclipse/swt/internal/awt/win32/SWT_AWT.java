@@ -25,6 +25,8 @@ import java.awt.Panel;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.FocusEvent;
 
 public class SWT_AWT {
 
@@ -33,11 +35,28 @@ public static Panel new_Panel (final Composite parent) {
 	final WEmbeddedFrame frame = new WEmbeddedFrame (handle);
 	Panel panel = new Panel ();
 	frame.add (panel);
+	parent.addListener (SWT.Activate, new Listener () {
+		public void handleEvent (Event e) {
+			frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+			frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+		}
+	});
+	parent.addListener (SWT.Deactivate, new Listener () {
+		public void handleEvent (Event e) {
+			frame.dispatchEvent (new WindowEvent(frame, WindowEvent.WINDOW_DEACTIVATED));
+			frame.dispatchEvent (new FocusEvent(frame, FocusEvent.FOCUS_LOST));
+		}
+	});
 	parent.addListener (SWT.Resize, new Listener () {
 		public void handleEvent (Event e) {
 			Rectangle rect = parent.getClientArea ();
 			frame.setSize (rect.width, rect.height);
 			frame.validate ();
+		}
+	});
+	parent.addListener (SWT.Dispose, new Listener () {
+		public void handleEvent (Event e) {
+			frame.dispose ();
 		}
 	});
 	return panel;

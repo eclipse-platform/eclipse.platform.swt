@@ -5,7 +5,7 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import java.io.Serializable;
+import org.eclipse.swt.internal.SerializableCompatability;
 import org.eclipse.swt.*;
 
 /**
@@ -25,7 +25,7 @@ import org.eclipse.swt.*;
  * @see Color
  */
 
-public final class RGB implements Serializable {
+public final class RGB implements SerializableCompatability {
 	
 	/**
 	 * the red component of the RGB

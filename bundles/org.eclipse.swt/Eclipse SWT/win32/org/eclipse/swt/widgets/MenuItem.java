@@ -29,12 +29,73 @@ public class MenuItem extends Item {
 	Menu parent, menu;
 	int id, accelerator;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Menu</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public MenuItem (Menu parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Menu</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -447,17 +508,18 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the receiver's cascade menu to the argument.
+ * Sets the receiver's pull down menu to the argument.
  * Only <code>CASCADE</code> menu items can have a
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
  *
- * @param menu the new pop up menu
+ * @param menu the new pull down menu
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
- *	<li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_MENU_NOT_DROP_DOWN - if the menu is not a drop down menu</li>
+ *    <li>ERROR_MENUITEM_NOT_CASCADE - if the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -473,6 +535,7 @@ public void setMenu (Menu menu) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
 	}
 	if (menu != null) {
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}
@@ -563,6 +626,7 @@ public void setText (String string) {
 	super.setText (string);
 	int hMenu = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (0, string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length);

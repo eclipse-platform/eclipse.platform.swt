@@ -88,8 +88,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 0x7FFFFFFF;
 	if (hHint == SWT.DEFAULT) height = 0x7FFFFFFF;
@@ -150,8 +149,7 @@ void destroyItem (ToolItem item) {
  * </ul>
  */
 public ToolItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	ToolItem [] items = getItems ();
 	if (0 <= index && index < items.length) return items [index];
 	error (SWT.ERROR_INVALID_RANGE);
@@ -175,8 +173,7 @@ public ToolItem getItem (int index) {
  * </ul>
  */
 public ToolItem getItem (Point pt) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		Rectangle rect = items [i].getBounds ();
@@ -196,8 +193,7 @@ public ToolItem getItem (Point pt) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return itemCount;
 }
 /**
@@ -217,8 +213,7 @@ public int getItemCount () {
  * </ul>
  */
 public ToolItem [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	ToolItem [] result = new ToolItem [itemCount];
 	System.arraycopy (items, 0, result, 0, itemCount);
 	return result;
@@ -237,8 +232,7 @@ public ToolItem [] getItems () {
  * </ul>
  */
 public int getRowCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Rectangle rect = getClientArea ();
 	return layout (rect.width, rect.height, false) [0];
 }
@@ -252,7 +246,8 @@ public int getRowCount () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -260,9 +255,9 @@ public int getRowCount () {
  * </ul>
  */
 public int indexOf (ToolItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == item) return i;
@@ -326,6 +321,12 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 		return layoutHorizontal (nWidth, nHeight, resize);
 	}
 }
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	for (int i=0; i<itemCount; i++) {
+		items [i].propagateWidget (enabled);
+	}
+}
 void relayout () {
 	if (drawCount > 0) return;
 	Rectangle rect = getClientArea ();
@@ -346,14 +347,21 @@ void releaseWidget () {
 	items = null;
 	super.releaseWidget ();
 }
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setBackgroundPixel (pixel);
+		}
+	}
+}
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
 public void setRedraw (boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) relayout();
 	} else {
@@ -365,4 +373,5 @@ public void setSize (int width, int height) {
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
+
 }

@@ -52,6 +52,7 @@ Region(int handle) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -60,6 +61,8 @@ Region(int handle) {
 public void add (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	
 	int rectRgn = OS.CreateRectRgn (rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_OR);
 	OS.DeleteObject (rectRgn);
@@ -74,6 +77,7 @@ public void add (Rectangle rect) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -82,6 +86,7 @@ public void add (Rectangle rect) {
 public void add (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CombineRgn (handle, handle, region.handle, OS.RGN_OR);
 }
 

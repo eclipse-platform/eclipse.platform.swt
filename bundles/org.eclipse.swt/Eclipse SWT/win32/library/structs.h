@@ -111,7 +111,10 @@
 	FUNCDESC1_FID_CACHE Funcdesc1Fc; \
 	FUNCDESC2_FID_CACHE Funcdesc2Fc; \
 	VARDESC1_FID_CACHE Vardesc1Fc; \
-	VARDESC2_FID_CACHE Vardesc2Fc;
+	VARDESC2_FID_CACHE Vardesc2Fc; \
+	GCP_RESULTS_FID_CACHE GCP_RESULTSFc; \
+	TRIVERTEX_FID_CACHE TrivertexFc; \
+	GRADIENT_RECT_FID_CACHE GradientrectFc;
 
 /*	PARAFORMAT_FID_CACHE ParaformatFc; \*/
 /*	CHARFORMAT_FID_CACHE CharformatFc; \*/
@@ -322,6 +325,17 @@ typedef struct DRAWITEMSTRUCT_FID_CACHE {
 } DRAWITEMSTRUCT_FID_CACHE;
 
 typedef DRAWITEMSTRUCT_FID_CACHE *PDRAWITEMSTRUCT_FID_CACHE;
+
+/* GRADIENT_RECT struct */
+typedef struct GRADIENT_RECT_FID_CACHE {
+    
+    int cached;
+    jclass gradientrectClass;
+    jfieldID UpperLeft, LowerRight;
+
+} GRADIENT_RECT_FID_CACHE;
+
+typedef GRADIENT_RECT_FID_CACHE *PGRADIENT_RECT_FID_CACHE;
 
 /* HDITEM struct */
 typedef struct HDITEM_FID_CACHE {
@@ -810,6 +824,17 @@ typedef struct TRACKMOUSEEVENT_FID_CACHE {
 
 typedef TRACKMOUSEEVENT_FID_CACHE *PTRACKMOUSEEVENT_FID_CACHE;
 
+/* TRIVERTEX struct */
+typedef struct TRIVERTEX_FID_CACHE {
+    
+    int cached;
+    jclass trivertexClass;
+    jfieldID x, y, Red, Green, Blue, Alpha;
+
+} TRIVERTEX_FID_CACHE;
+
+typedef TRIVERTEX_FID_CACHE *PTRIVERTEX_FID_CACHE;
+
 /* TVHITTESTINFO struct */
 typedef struct TVHITTESTINFO_FID_CACHE {
     
@@ -1210,6 +1235,16 @@ typedef struct VARDESC2_FID_CACHE {
 
 typedef VARDESC2_FID_CACHE *PVARDESC2_FID_CACHE;
 
+/* GCP_RESULTS struct */
+typedef struct GCP_RESULTS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID nMaxFit, nGlyphs, lpGlyphs, lpClass, lpCaretPos, lpDx, lpOrder, lpOutString, lStructSize;
+} GCP_RESULTS_FID_CACHE;
+
+typedef GCP_RESULTS_FID_CACHE *PGCP_RESULTS_FID_CACHE;
+
+
 /* ----------- ole cache function prototypes  ----------- */
 
 void cacheGuidFids(JNIEnv *env, jobject lpGuid, PGUID_FID_CACHE lpCache);
@@ -1233,6 +1268,7 @@ void cacheFuncdesc1Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC1_FID_CACHE lp
 void cacheFuncdesc2Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC2_FID_CACHE lpCache);
 void cacheVardesc1Fids(JNIEnv *env, jobject lpVardesc, PVARDESC1_FID_CACHE lpCache);
 void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCache);
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache);
 
 /* ----------- cache function prototypes  ----------- */
 
@@ -1254,6 +1290,7 @@ void cacheDllversioninfoFids(JNIEnv *env, jobject lpDllversioninfo, PDLLVERSIONI
 void cacheDocinfoFids(JNIEnv *env, jobject lpDocinfo, PDOCINFO_FID_CACHE lpCache);
 void cacheDrawitemstructFids(JNIEnv *env, jobject lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpCache);
 void cacheDropfilesFids(JNIEnv *env, jobject lpDropfiles, PDROPFILES_FID_CACHE lpCache);
+void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache);
 void cacheHditemFids(JNIEnv *env, jobject lpHditem, PHDITEM_FID_CACHE lpCache);
 void cacheHdlayoutFids(JNIEnv *env, jobject lpHdlayout, PHDLAYOUT_FID_CACHE lpCache);
 void cacheHelpinfoFids(JNIEnv *env, jobject lpHelpinfo, PHELPINFO_FID_CACHE lpCache);
@@ -1299,6 +1336,7 @@ void cacheTcitemFids(JNIEnv *env, jobject lpTcitem, PTCITEM_FID_CACHE lpCache);
 void cacheTextmetricFids(JNIEnv *env, jobject lpTextmetric, PTEXTMETRIC_FID_CACHE lpCache);
 void cacheToolinfoFids(JNIEnv *env, jobject lpToolinfo, PTOOLINFO_FID_CACHE lpCache);
 void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUSEEVENT_FID_CACHE lpCache);
+void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache);
 void cacheTvhittestinfoFids(JNIEnv *env, jobject lpTvhittestinfo, PTVHITTESTINFO_FID_CACHE lpCache);
 void cacheTvinsertstructFids(JNIEnv *env, jobject lpTvinsertstruct, PTVINSERTSTRUCT_FID_CACHE lpCache);
 void cacheTvitemFids(JNIEnv *env, jobject lpTvitem, PTVITEM_FID_CACHE lpCache);
@@ -1360,6 +1398,8 @@ void getDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINF
 void setDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINFO_FID_CACHE lpDocinfoFc);
 void getDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpDrawitemstructFc);
 void setDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpDrawitemstructFc);
+void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
+void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
 void getHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc);
 void setHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc);
 void getHdlayoutFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpHdlayout, HDLAYOUT_FID_CACHE *lpHdlayoutFc);
@@ -1444,6 +1484,8 @@ void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOL
 void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
 void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
 void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
+void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
+void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
 void getTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc);
 void setTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc);
 void getTvinsertstructFields(JNIEnv *env, jobject lpObject, TVINSERTSTRUCT *lpTvinsertstruct, TVINSERTSTRUCT_FID_CACHE *lpTvinsertstructFc);
@@ -1514,6 +1556,8 @@ void getVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
 void setVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC1_FID_CACHE *lpVardescFc);
 void getVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
 void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
 
 
 #endif // INC_structs_H

@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.*;
 
 public /*final*/ class Caret extends Widget {
 	Canvas parent;
+	Image image;
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible, isShowing;
@@ -91,9 +92,14 @@ boolean drawCaret () {
 	int color = foreground ^ background;
 	OS.XSetFunction (xDisplay, gc, OS.GXxor);
 	OS.XSetForeground (xDisplay, gc, color);
-	int nWidth = width;
+	int nWidth = width, nHeight = height;
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		nWidth = rect.width;
+		nHeight = rect.height;
+	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, height);
+	OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, nHeight);
 	OS.XFreeGC (xDisplay, gc);
 	return true;
 }
@@ -109,8 +115,11 @@ boolean drawCaret () {
  * </ul>
  */
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
 /**
@@ -132,9 +141,22 @@ public Display getDisplay () {
  * </ul>
  */
 public Font getFont () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent.getFont ();
+}
+/**
+ * Returns the image that the receiver will use to paint the caret.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Image getImage () {
+	checkWidget();
+	return image;
 }
 /**
  * Returns a point describing the receiver's location relative
@@ -148,8 +170,7 @@ public Font getFont () {
  * </ul>
  */
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return new Point (x, y);
 }
 /**
@@ -163,8 +184,7 @@ public Point getLocation () {
  * </ul>
  */
 public Canvas getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 /**
@@ -178,8 +198,11 @@ public Canvas getParent () {
  * </ul>
  */
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
 /**
@@ -200,8 +223,7 @@ public Point getSize () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return isVisible;
 }
 boolean hideCaret () {
@@ -229,8 +251,7 @@ boolean hideCaret () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return isVisible && parent.isVisible () && parent.hasFocus ();
 }
 boolean isFocusCaret () {
@@ -255,6 +276,7 @@ void releaseWidget () {
 		display.setCurrentCaret (null);
 	}
 	parent = null;
+	image = null;
 }
 /**
  * Sets the receiver's size and location to the rectangular
@@ -273,8 +295,7 @@ void releaseWidget () {
  * </ul>
  */
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean samePosition, sameExtent, showing;
 	samePosition = (this.x == x) && (this.y == y);
 	sameExtent = (this.width == width) && (this.height == height);
@@ -286,15 +307,13 @@ public void setBounds (int x, int y, int width, int height) {
 			moved = true;
 			if (isVisible ()) {
 				moved = false;
-				//IsDBLocale ifTrue: [
-				//widget == nil ifFalse: [widget updateCaret]].
+				parent.updateCaret ();
 			}
 	} else {
 			resized = true;
 			if (isVisible ()) {
 				moved = false;
-				//IsDBLocale ifTrue: [
-				//widget == nil ifFalse: [widget updateCaret]].
+				parent.updateCaret ();
 				resized = false;
 			}
 	}
@@ -314,8 +333,7 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
@@ -338,8 +356,25 @@ void setFocus () {
  * </ul>
  */
 public void setFont (Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+}
+/**
+ * Sets the image that the receiver will use to paint the caret
+ * to the image specified by the argument, or to the default
+ * which is a filled rectangle if the argument is null
+ *
+ * @param font the new font (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImage (Image image) {
+	checkWidget();
+	if (isShowing) hideCaret ();
+	this.image = image;
+	if (isShowing) showCaret ();
 }
 /**
  * Sets the receiver's location to the point specified by
@@ -355,8 +390,7 @@ public void setFont (Font font) {
  * </ul>
  */
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height);
 }
 /**
@@ -372,8 +406,7 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
@@ -389,8 +422,7 @@ public void setLocation (Point location) {
  * </ul>
  */
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height);
 }
 /**
@@ -408,8 +440,7 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setSize (Point size) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
@@ -430,8 +461,7 @@ public void setSize (Point size) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	if (visible == isVisible) return;
 	if (isVisible = visible) {
 		showCaret ();

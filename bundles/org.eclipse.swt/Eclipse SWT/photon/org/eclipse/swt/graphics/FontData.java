@@ -8,6 +8,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
+import java.util.Locale;
 
 public final class FontData {
 
@@ -34,6 +35,12 @@ public final class FontData {
 	 * (Warning: This field is platform dependent)
 	 */
 	public byte[] stem;
+	
+	/**
+	 * The locale of the font
+	 * (Warning: This field is platform dependent)
+	 */
+	public Locale locale;
 
 FontData(byte[] stem) {
 	FontQueryInfo info = new FontQueryInfo();
@@ -157,11 +164,16 @@ public int hashCode () {
 }
 
 public void setHeight(int height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 }
 
 public void setName(String name) {
 	this.name = name;
+}
+
+public void setLocale(Locale locale) {
+	this.locale = locale;
 }
 
 public void setStyle(int style) {

@@ -572,6 +572,16 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
+int getCodePage () {
+	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	LOGFONT logFont = new LOGFONT ();
+	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
+	int cs = logFont.lfCharSet & 0xFF;
+	int [] lpCs = new int [8];
+	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
+	return lpCs [1];
+}
+
 /**
  * Returns the display that the receiver was created on.
  *
@@ -880,7 +890,7 @@ boolean hasFocus () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget();
 	int hDC;
 	if (data == null || data.ps == null) {
 		hDC = OS.GetDC (handle);
@@ -913,7 +923,7 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int hDC, GCData data) {
-	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget ();
 	if (data == null || data.ps == null) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
@@ -1014,10 +1024,6 @@ boolean isTabItem () {
 	return true;
 }
 
-boolean isValidWidget () {
-	return handle != 0;
-}
-
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -1061,6 +1067,9 @@ boolean mnemonicMatch (char key) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1070,10 +1079,20 @@ public void moveAbove (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_TOP;
 	if (control != null) {
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int hwnd = control.handle;
-		if ((hwnd == 0) || (hwnd == handle)) return;
+		if (hwnd == 0 || hwnd == handle) return;
 		hwndAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
-		if (hwndAfter == 0) hwndAfter = OS.HWND_TOP;
+		/*
+		* Bug in Windows.  For some reason, when GetWindow ()
+		* with GW_HWNDPREV is used to query the previous window
+		* in the z-order with the first child, Windows returns
+		* the first child instead of NULL.  The fix is to detect
+		* this case and move the control to the top.
+		*/
+		if (hwndAfter == 0 || hwndAfter == handle) {
+			hwndAfter = OS.HWND_TOP;
+		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
@@ -1088,6 +1107,9 @@ public void moveAbove (Control control) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1096,8 +1118,11 @@ public void moveAbove (Control control) {
 public void moveBelow (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_BOTTOM;
-	if (control != null) hwndAfter = control.handle;
-	if (hwndAfter == 0) return;
+	if (control != null) {
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		hwndAfter = control.handle;
+	}
+	if (hwndAfter == 0 || hwndAfter == handle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
 }
@@ -1187,6 +1212,7 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	if (width <= 0 || height <= 0) return;
 	if (!OS.IsWindowVisible (handle)) return;
 	RECT rect = new RECT ();
 	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
@@ -1465,20 +1491,21 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
 	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
 	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	if (button != 1 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_LBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON1;
-		}
-	}
-	if (button != 2 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_MBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON2;
-		}
-	}
-	if (button != 3 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_RBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON3;
-		}
+	if ((wParam & OS.MK_LBUTTON) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((wParam & OS.MK_MBUTTON) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((wParam & OS.MK_RBUTTON) != 0) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (button == 3) event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case SWT.MouseUp:
+			if (button == 1) event.stateMask |= SWT.BUTTON1;
+			if (button == 2) event.stateMask |= SWT.BUTTON2;
+			if (button == 3) event.stateMask |= SWT.BUTTON3;
+			break;
 	}
 	return sendMouseEvent (type, msg, wParam, lParam, event);
 }
@@ -1495,6 +1522,9 @@ boolean sendMouseEvent (int type, int msg, int wParam, int lParam, Event event) 
  *
  * @param color the new color (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1504,6 +1534,7 @@ public void setBackground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	setBackgroundPixel (pixel);
@@ -1624,6 +1655,9 @@ public void setCapture (boolean capture) {
  *
  * @param cursor the new cursor (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1632,7 +1666,10 @@ public void setCapture (boolean capture) {
 public void setCursor (Cursor cursor) {
 	checkWidget ();
 	hCursor = 0;
-	if (cursor != null) hCursor = cursor.handle;
+	if (cursor != null) {
+		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		hCursor = cursor.handle;
+	}
 	int hwndCursor = OS.GetCapture ();
 	if (hwndCursor == 0) {
 		POINT pt = new POINT ();
@@ -1721,6 +1758,9 @@ public boolean setFocus () {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1729,7 +1769,10 @@ public boolean setFocus () {
 public void setFont (Font font) {
 	checkWidget ();
 	int hFont = 0;
-	if (font != null) hFont = font.handle;
+	if (font != null) { 
+		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		hFont = font.handle;
+	}
 	if (hFont == 0) hFont = defaultFont ();
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 1);
 }
@@ -1741,6 +1784,9 @@ public void setFont (Font font) {
  *
  * @param color the new color (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1750,6 +1796,7 @@ public void setForeground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	setForegroundPixel (pixel);
@@ -1772,29 +1819,25 @@ boolean setKeyState (Event event, int type) {
 	if (event.keyCode == 0 && event.character == 0) {
 		return false;
 	}
-	if (OS.GetKeyState (OS.VK_MENU) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.ALT) {
-			event.stateMask |= SWT.ALT;
-		}
-	}
-	if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.SHIFT) {
-			event.stateMask |= SWT.SHIFT;
-		}
-	}
-	if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.CONTROL) {
-			event.stateMask |= SWT.CONTROL;
-		}
-	}
-	if (type == SWT.KeyUp) {
-		if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-		if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-		if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
-	}
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
 	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
 	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
+	}		
 	return true;
 }
 
@@ -1862,6 +1905,7 @@ public void setLocation (Point location) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1871,6 +1915,7 @@ public void setLocation (Point location) {
 public void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
@@ -1909,7 +1954,6 @@ boolean setRadioFocus () {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
-	
 	/*
 	 * This code is intentionally commented.
 	 *
@@ -1990,6 +2034,11 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
+	Control [] path = getPath ();
+	for (int i=0; i<path.length; i++) {
+		Point size = path [i].getSize ();
+		if (size.x == 0 || size.y == 0) return false;
+	}
 	return setFocus ();
 }
 
@@ -2364,6 +2413,9 @@ int widgetStyle () {
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -2372,6 +2424,7 @@ int widgetStyle () {
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.SetParent (handle, parent.handle) == 0) {
 		return false;
 	}
@@ -2390,7 +2443,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CHAR:				result = WM_CHAR (wParam, lParam); break;
 		case OS.WM_CLEAR:				result = WM_CLEAR (wParam, lParam); break;
 		case OS.WM_CLOSE:				result = WM_CLOSE (wParam, lParam); break;
-		case OS.WM_COMMAND:			result = WM_COMMAND (wParam, lParam); break;
+		case OS.WM_COMMAND:				result = WM_COMMAND (wParam, lParam); break;
 		case OS.WM_CONTEXTMENU:			result = WM_CONTEXTMENU (wParam, lParam); break;
 		case OS.WM_CTLCOLORBTN:
 		case OS.WM_CTLCOLORDLG:
@@ -2399,18 +2452,18 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CTLCOLORMSGBOX:
 		case OS.WM_CTLCOLORSCROLLBAR:
 		case OS.WM_CTLCOLORSTATIC:		result = WM_CTLCOLOR (wParam, lParam); break;
-		case OS.WM_CUT:				result = WM_CUT (wParam, lParam); break;
-		case OS.WM_DESTROY:			result = WM_DESTROY (wParam, lParam); break;
+		case OS.WM_CUT:					result = WM_CUT (wParam, lParam); break;
+		case OS.WM_DESTROY:				result = WM_DESTROY (wParam, lParam); break;
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_HELP:				result = WM_HELP (wParam, lParam); break;
-		case OS.WM_HSCROLL:			result = WM_HSCROLL (wParam, lParam); break;
+		case OS.WM_HSCROLL:				result = WM_HSCROLL (wParam, lParam); break;
 		case OS.WM_IME_CHAR:			result = WM_IME_CHAR (wParam, lParam); break;
 		case OS.WM_IME_COMPOSITION:		result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
-		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
-		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
+		case OS.WM_GETFONT:				result = WM_GETFONT (wParam, lParam); break;
+		case OS.WM_KEYDOWN:				result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
 		case OS.WM_LBUTTONDBLCLK:		result = WM_LBUTTONDBLCLK (wParam, lParam); break;
@@ -2426,11 +2479,12 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_MOUSEHOVER:			result = WM_MOUSEHOVER (wParam, lParam); break;
 		case OS.WM_MOUSELEAVE:			result = WM_MOUSELEAVE (wParam, lParam); break;
 		case OS.WM_MOUSEMOVE:			result = WM_MOUSEMOVE (wParam, lParam); break;
+		case OS.WM_MOUSEWHEEL:			result = WM_MOUSEWHEEL (wParam, lParam); break;
 		case OS.WM_MOVE:				result = WM_MOVE (wParam, lParam); break;
 		case OS.WM_NCACTIVATE:			result = WM_NCACTIVATE (wParam, lParam); break;
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
-		case OS.WM_NOTIFY:			result = WM_NOTIFY (wParam, lParam); break;
+		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
@@ -2441,18 +2495,18 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_RBUTTONUP:			result = WM_RBUTTONUP (wParam, lParam); break;
 		case OS.WM_SETCURSOR:			result = WM_SETCURSOR (wParam, lParam); break;
 		case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
-		case OS.WM_SETFONT:			result = WM_SETFONT (wParam, lParam); break;
+		case OS.WM_SETFONT:				result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SHOWWINDOW:			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;
-		case OS.WM_SYSCHAR:			result = WM_SYSCHAR (wParam, lParam); break;
+		case OS.WM_SYSCHAR:				result = WM_SYSCHAR (wParam, lParam); break;
 		case OS.WM_SYSCOLORCHANGE:		result = WM_SYSCOLORCHANGE (wParam, lParam); break;
 		case OS.WM_SYSCOMMAND:			result = WM_SYSCOMMAND (wParam, lParam); break;
 		case OS.WM_SYSKEYDOWN:			result = WM_SYSKEYDOWN (wParam, lParam); break;
 		case OS.WM_SYSKEYUP:			result = WM_SYSKEYUP (wParam, lParam); break;
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
-		case OS.WM_VSCROLL:			result = WM_VSCROLL (wParam, lParam); break;
-		case OS.WM_WINDOWPOSCHANGING:		result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
+		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
+		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
 	return callWindowProc (msg, wParam, lParam);
@@ -2874,6 +2928,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	if (!hooks (SWT.KeyUp)) {
 		display.lastVirtual = false;
 		display.lastKey = display.lastAscii = 0;
+		return null;
 	}
 	
 	/* Map the virtual key. */
@@ -2906,27 +2961,19 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 		}
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 	}
+	
+	LRESULT result = null;
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
-		return LRESULT.ZERO;
+		result = LRESULT.ZERO;
 	}
-	return null;
+	display.lastVirtual = false;
+	display.lastKey = display.lastAscii = 0;
+	return result;
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus out list */
-	int index = 0;
-	Control [] focusOut = getPath ();
 	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusIn = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -2938,15 +2985,15 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	// widget could be disposed at this point
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus out event or the deactivate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusOut.length-1; i>=index; --i) {
-		if (!focusOut [i].isDisposed ()) {
-			focusOut [i].sendEvent (SWT.Deactivate);
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		Control control = display.findControl (wParam);
+		if (control == null || shell != control.getShell ()) {
+			shell.setActiveControl (null);
 		}
 	}
 	
@@ -3225,6 +3272,18 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  If the WM_MOUSEWHEEL is handled by
+	* the control, it may not send WM_VSCROLL and WM_HSCROLL
+	* messages.  The fix is to intercept the WM_MOUSEWHEEL message
+	* and call the DefWindowProc which will convert the message to 
+	* send the appropriate WM_HSCROLL or WM_VSCROLL message.
+	*/
+	int code = OS.DefWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	return new LRESULT (code);
+}
+
 LRESULT WM_MOVE (int wParam, int lParam) {
 	sendEvent (SWT.Move);
 	// widget could be disposed at this point
@@ -3365,20 +3424,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus in list */
-	int index = 0;
-	Control [] focusIn = getPath ();
-	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusOut = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -3390,16 +3436,13 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	// widget could be disposed at this point
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus in event or the activate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusIn.length-1; i>=index; --i) {
-		if (!focusIn [i].isDisposed ()) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
 	}
 
 	/*

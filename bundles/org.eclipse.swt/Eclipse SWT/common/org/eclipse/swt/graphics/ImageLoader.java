@@ -140,10 +140,17 @@ public ImageData[] load(String filename) {
 	InputStream stream = null;
 	try {
 		stream = new FileInputStream(filename);
+		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
+	} finally {
+		try {
+			if (stream != null) stream.close();
+		} catch (IOException e) {
+			// Ignore error
+		}
 	}
-	return load(stream);
+	return null;
 }
 
 /**

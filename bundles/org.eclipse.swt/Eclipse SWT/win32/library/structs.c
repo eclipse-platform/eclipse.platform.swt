@@ -312,6 +312,15 @@ void cacheDrawitemstructFids(JNIEnv *env, jobject lpDrawitemstruct, PDRAWITEMSTR
     lpCache->cached = 1;
 }
 
+void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->gradientrectClass = (*env)->GetObjectClass(env,lpGradientrect);
+    lpCache->UpperLeft = (*env)->GetFieldID(env,lpCache->gradientrectClass,"UpperLeft","I");
+    lpCache->LowerRight = (*env)->GetFieldID(env,lpCache->gradientrectClass,"LowerRight","I");
+    lpCache->cached = 1;
+}
+
 void cacheHditemFids(JNIEnv *env, jobject lpHditem, PHDITEM_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -1013,6 +1022,19 @@ void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUS
     lpCache->cached = 1;
 }
 
+void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->trivertexClass = (*env)->GetObjectClass(env,lpTrivertex);
+    lpCache->x = (*env)->GetFieldID(env,lpCache->trivertexClass,"x","I");
+    lpCache->y = (*env)->GetFieldID(env,lpCache->trivertexClass,"y","I");
+    lpCache->Red = (*env)->GetFieldID(env,lpCache->trivertexClass,"Red","S");
+    lpCache->Green = (*env)->GetFieldID(env,lpCache->trivertexClass,"Green","S");
+    lpCache->Blue = (*env)->GetFieldID(env,lpCache->trivertexClass,"Blue","S");
+    lpCache->Alpha = (*env)->GetFieldID(env,lpCache->trivertexClass,"Alpha","S");
+    lpCache->cached = 1;
+}
+
 void cacheTvhittestinfoFids(JNIEnv *env, jobject lpTvhittestinfo, PTVHITTESTINFO_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -1504,6 +1526,22 @@ void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCac
     lpCache->filler = (*env)->GetFieldID(env,lpCache->vardescClass,"filler","S");
     lpCache->varkind = (*env)->GetFieldID(env,lpCache->vardescClass,"varkind","I");
     lpCache->cached = 1;
+}
+
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->nMaxFit = (*env)->GetFieldID(env, lpCache->clazz, "nMaxFit", "I");
+	lpCache->nGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "nGlyphs", "I");
+	lpCache->lpGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "lpGlyphs", "I");
+	lpCache->lpClass = (*env)->GetFieldID(env, lpCache->clazz, "lpClass", "I");
+	lpCache->lpCaretPos = (*env)->GetFieldID(env, lpCache->clazz, "lpCaretPos", "I");
+	lpCache->lpDx = (*env)->GetFieldID(env, lpCache->clazz, "lpDx", "I");
+	lpCache->lpOrder = (*env)->GetFieldID(env, lpCache->clazz, "lpOrder", "I");
+	lpCache->lpOutString = (*env)->GetFieldID(env, lpCache->clazz, "lpOutString", "I");
+	lpCache->lStructSize = (*env)->GetFieldID(env, lpCache->clazz, "lStructSize", "I");
+	lpCache->cached = 1;
 }
     
 /* ----------- swt getters and setters  ----------- */
@@ -2014,6 +2052,18 @@ void setDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDr
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->right, lpDrawitemstruct->rcItem.right);
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->bottom, lpDrawitemstruct->rcItem.bottom);
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->itemData, lpDrawitemstruct->itemData);
+}
+
+void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
+{
+	lpGradientrect->UpperLeft = (*env)->GetIntField(env,lpObject,lpGradientrectFc->UpperLeft);
+	lpGradientrect->LowerRight = (*env)->GetIntField(env,lpObject,lpGradientrectFc->LowerRight);
+}
+
+void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
+{
+    (*env)->SetIntField(env,lpObject,lpGradientrectFc->UpperLeft, (jint)lpGradientrect->UpperLeft);
+    (*env)->SetIntField(env,lpObject,lpGradientrectFc->LowerRight, (jint)lpGradientrect->LowerRight);
 }
 
 void getHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc)
@@ -3189,6 +3239,26 @@ void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lp
     (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->dwHoverTime, lpTrackmouseevent->dwHoverTime);
 }
 
+void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
+{
+	lpTrivertex->x = (*env)->GetIntField(env,lpObject,lpTrivertexFc->x);
+	lpTrivertex->y = (*env)->GetIntField(env,lpObject,lpTrivertexFc->y);
+	lpTrivertex->Red = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Red);
+	lpTrivertex->Green = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Green);
+	lpTrivertex->Blue = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Blue);
+	lpTrivertex->Alpha = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Alpha);
+}
+
+void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
+{
+    (*env)->SetIntField(env,lpObject,lpTrivertexFc->x, (jint)lpTrivertex->x);
+    (*env)->SetIntField(env,lpObject,lpTrivertexFc->y, (jint)lpTrivertex->y);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Red, (jshort)lpTrivertex->Red);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Green, (jshort)lpTrivertex->Green);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Blue, (jshort)lpTrivertex->Blue);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Alpha, (jshort)lpTrivertex->Alpha);
+}
+
 void getTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc)
 {
     lpTvhittestinfo->pt.x = (*env)->GetIntField(env,lpObject,lpTvhittestinfoFc->x);
@@ -3978,4 +4048,30 @@ void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
     (*env)->SetShortField(env,lpObject,lpVardescFc->elemdescVar_idldesc_wIDLFlags, (jshort)lpVardesc->elemdescVar.idldesc.wIDLFlags);
     (*env)->SetShortField(env,lpObject,lpVardescFc->wVarFlags, (jshort)lpVardesc->wVarFlags);
     (*env)->SetIntField(env,lpObject,lpVardescFc->varkind, (jint)lpVardesc->varkind);    
+}
+
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	lpStruct->nMaxFit = (*env)->GetIntField(env, lpObject, lpCache->nMaxFit);
+	lpStruct->nGlyphs = (*env)->GetIntField(env, lpObject, lpCache->nGlyphs);
+	lpStruct->lpGlyphs = (LPWSTR)(*env)->GetIntField(env, lpObject, lpCache->lpGlyphs);
+	lpStruct->lpClass = (LPSTR)(*env)->GetIntField(env, lpObject, lpCache->lpClass);
+	lpStruct->lpCaretPos = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpCaretPos);
+	lpStruct->lpDx = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpDx);
+	lpStruct->lpOrder = (UINT  *)(*env)->GetIntField(env, lpObject, lpCache->lpOrder);
+	lpStruct->lpOutString = (LPTSTR)(*env)->GetIntField(env, lpObject, lpCache->lpOutString);
+	lpStruct->lStructSize = (*env)->GetIntField(env, lpObject, lpCache->lStructSize);
+}
+
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	(*env)->SetIntField(env, lpObject, lpCache->nMaxFit, lpStruct->nMaxFit);
+	(*env)->SetIntField(env, lpObject, lpCache->nGlyphs, lpStruct->nGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpGlyphs, (int)lpStruct->lpGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpClass, (int)lpStruct->lpClass);
+	(*env)->SetIntField(env, lpObject, lpCache->lpCaretPos, (int)lpStruct->lpCaretPos);
+	(*env)->SetIntField(env, lpObject, lpCache->lpDx, (int)lpStruct->lpDx);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOrder, (int)lpStruct->lpOrder);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOutString, (int)lpStruct->lpOutString);
+	(*env)->SetIntField(env, lpObject, lpCache->lStructSize, lpStruct->lStructSize);
 }

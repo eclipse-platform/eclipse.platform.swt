@@ -30,9 +30,63 @@ import org.eclipse.swt.widgets.*;
 public /*final*/ class MessageBox extends Dialog {
 	int button;
 	String message = "";
+
+/**
+ * Constructs a new instance of this class given only its
+ * parent.
+ * <p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ */
 public MessageBox (Shell parent) {
 	this (parent, SWT.OK | SWT.ICON_INFORMATION | SWT.APPLICATION_MODAL);
 }
+
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT dialog classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ */
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -58,9 +112,30 @@ int createHandle (int parentHandle, int [] argList) {
 	if ((style & SWT.ICON_WARNING) != 0) return OS.XmCreateWarningDialog (parentHandle, null, argList, argList.length / 2);
 	return OS.XmCreateMessageDialog (parentHandle, null, argList, argList.length / 2);
 }
+
+/**
+ * Returns the dialog's message, which is a description of
+ * the purpose for which it was opened. This message will be
+ * visible on the dialog while it is open.
+ *
+ * @return the message
+ */
 public String getMessage () {
 	return message;
 }
+
+/**
+ * Makes the dialog visible and brings it to the front
+ * of the display.
+ *
+ * @return the ID of the button that was selected to dismiss the
+ *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ * </ul>
+ */
 public int open () {
 	
 	/* Create the dialog.*/
@@ -80,6 +155,7 @@ public int open () {
 	*/
 	String string = title;
 	if (string.length () == 0) string = " ";
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr = OS.XmStringParseText (
 		buffer,
@@ -178,6 +254,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
 		OS.XtManageChild (help);
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -187,6 +264,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -196,6 +274,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
@@ -211,6 +290,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -220,6 +300,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -235,6 +316,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -244,6 +326,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -260,6 +343,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
 		OS.XtManageChild (help);
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Abort"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -269,6 +353,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -278,6 +363,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Ignore"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
@@ -308,6 +394,7 @@ void setMessage (int dialogHandle) {
 			text = display.wrapText (message, fontList, width * 3 / 5);
 		}
 	}
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int [] parseTable = Display.getDefault ().parseTable;
 	int xmStringPtr = OS.XmStringParseText (
@@ -322,6 +409,14 @@ void setMessage (int dialogHandle) {
 	OS.XtSetValues (dialogHandle, argList, argList.length / 2);
 	OS.XmStringFree (xmStringPtr);
 }
+
+/**
+ * Sets the dialog's message, which is a description of
+ * the purpose for which it was opened. This message will be
+ * visible on the dialog while it is open.
+ *
+ * @param string the message
+ */
 public void setMessage (String string) {
 	message = string;
 }

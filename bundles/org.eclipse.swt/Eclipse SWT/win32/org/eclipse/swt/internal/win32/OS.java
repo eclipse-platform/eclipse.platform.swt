@@ -29,6 +29,33 @@ public class OS {
 	/* OLE Constants */
 	public static final int S_OK = 0;
 	
+	/* Charset Constants */
+//	public static final int ANSI_CHARSET           = 0;
+	public static final int DEFAULT_CHARSET        = 1;
+//	public static final int SYMBOL_CHARSET         = 2;
+//	public static final int SHIFTJIS_CHARSET       = 128;
+//	public static final int HANGEUL_CHARSET        = 129;
+//	public static final int GB2312_CHARSET         = 134;
+//	public static final int CHINESEBIG5_CHARSET    = 136;
+//	public static final int OEM_CHARSET            = 255;
+//	public static final int JOHAB_CHARSET          = 130;
+//	public static final int HEBREW_CHARSET         = 177;
+//	public static final int ARABIC_CHARSET         = 178;
+//	public static final int GREEK_CHARSET          = 161;
+//	public static final int TURKISH_CHARSET        = 162;
+//	public static final int VIETNAMESE_CHARSET     = 163;
+//	public static final int THAI_CHARSET           = 222;
+//	public static final int EASTEUROPE_CHARSET     = 238;
+//	public static final int RUSSIAN_CHARSET        = 204;
+//	public static final int MAC_CHARSET            = 77;
+//	public static final int BALTIC_CHARSET         = 186;
+	
+	/* Locale Constants */
+	public static final int LCID_SUPPORTED = 0x00000002;
+	public static final int LOCALE_SISO3166CTRYNAME = 0x0000005A;
+	public static final int LOCALE_SISO639LANGNAME = 0x00000059;
+	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x00001004;
+	
 	/* Window Constants */
 	public static final int COLOR_BTNFACE = 15;
 	public static final int COLOR_BTNHIGHLIGHT = 20;
@@ -67,6 +94,159 @@ public class OS {
 //	public static final byte WBF_BREAKLINE = 0x20;
 //	public static final byte WBF_CLASS = 0x0F;
 //	public static final byte WBF_ISWHITE = 0x10;
+
+/*** BEGIN SystemParametersInfo ***/
+//	public static final int SPI_GETBEEP = 1;
+//	public static final int SPI_SETBEEP = 2;
+//	public static final int SPI_GETMOUSE = 3;
+//	public static final int SPI_SETMOUSE = 4;
+//	public static final int SPI_GETBORDER = 5;
+//	public static final int SPI_SETBORDER = 6;
+//	public static final int SPI_GETKEYBOARDSPEED = 10;
+//	public static final int SPI_SETKEYBOARDSPEED = 11;
+//	public static final int SPI_LANGDRIVER = 12;
+//	public static final int SPI_ICONHORIZONTALSPACING = 13;
+//	public static final int SPI_GETSCREENSAVETIMEOUT   = 14;
+//	public static final int SPI_SETSCREENSAVETIMEOUT   = 15;
+//	public static final int SPI_GETSCREENSAVEACTIVE    = 16;
+//	public static final int SPI_SETSCREENSAVEACTIVE    = 17;
+//	public static final int SPI_GETGRIDGRANULARITY     = 18;
+//	public static final int  SPI_SETGRIDGRANULARITY     = 19;
+//	public static final int  SPI_SETDESKWALLPAPER       = 20;
+//	public static final int  SPI_SETDESKPATTERN         = 21;
+//	public static final int  SPI_GETKEYBOARDDELAY       = 22;
+//	public static final int  SPI_SETKEYBOARDDELAY       = 23;
+//	public static final int  SPI_ICONVERTICALSPACING    = 24;
+//	public static final int  SPI_GETICONTITLEWRAP       = 25;
+//	public static final int  SPI_SETICONTITLEWRAP       = 26;
+//	public static final int  SPI_GETMENUDROPALIGNMENT   = 27;
+//	public static final int  SPI_SETMENUDROPALIGNMENT   = 28;
+//	public static final int  SPI_SETDOUBLECLKWIDTH      = 29;
+//	public static final int  SPI_SETDOUBLECLKHEIGHT     = 30;
+//	public static final int  SPI_GETICONTITLELOGFONT    = 31;
+//	public static final int  SPI_SETDOUBLECLICKTIME     = 32;
+//	public static final int  SPI_SETMOUSEBUTTONSWAP     = 33;
+//	public static final int  SPI_SETICONTITLELOGFONT    = 34;
+//	public static final int  SPI_GETFASTTASKSWITCH      = 35;
+//	public static final int  SPI_SETFASTTASKSWITCH      = 36;
+//	public static final int  SPI_SETDRAGFULLWINDOWS     = 37;
+//	public static final int  SPI_GETDRAGFULLWINDOWS     = 38;
+//	public static final int  SPI_GETNONCLIENTMETRICS    = 41;
+//	public static final int  SPI_SETNONCLIENTMETRICS    = 42;
+//	public static final int  SPI_GETMINIMIZEDMETRICS    = 43;
+//	public static final int  SPI_SETMINIMIZEDMETRICS    = 44;
+//	public static final int  SPI_GETICONMETRICS         = 45;
+//	public static final int  SPI_SETICONMETRICS         = 46;
+//	public static final int  SPI_SETWORKAREA            = 47;
+	public static final int  SPI_GETWORKAREA            = 48;
+//	public static final int  SPI_SETPENWINDOWS          = 49;
+//	public static final int  SPI_GETHIGHCONTRAST        = 66;
+//	public static final int  SPI_SETHIGHCONTRAST        = 67;
+//	public static final int  SPI_GETKEYBOARDPREF        = 68;
+//	public static final int  SPI_SETKEYBOARDPREF        = 69;
+//	public static final int  SPI_GETSCREENREADER        = 70;
+//	public static final int  SPI_SETSCREENREADER        = 71;
+//	public static final int  SPI_GETANIMATION           = 72;
+//	public static final int  SPI_SETANIMATION           = 73;
+//	public static final int  SPI_GETFONTSMOOTHING       = 74;
+//	public static final int  SPI_SETFONTSMOOTHING       = 75;
+//	public static final int  SPI_SETDRAGWIDTH           = 76;
+//	public static final int  SPI_SETDRAGHEIGHT          = 77;
+//	public static final int  SPI_SETHANDHELD            = 78;
+//	public static final int  SPI_GETLOWPOWERTIMEOUT     = 79;
+//	public static final int  SPI_GETPOWEROFFTIMEOUT     = 80;
+//	public static final int  SPI_SETLOWPOWERTIMEOUT     = 81;
+//	public static final int  SPI_SETPOWEROFFTIMEOUT     = 82;
+//	public static final int  SPI_GETLOWPOWERACTIVE      = 83;
+//	public static final int  SPI_GETPOWEROFFACTIVE      = 84;
+//	public static final int  SPI_SETLOWPOWERACTIVE      = 85;
+//	public static final int  SPI_SETPOWEROFFACTIVE      = 86;
+//	public static final int  SPI_SETCURSORS             = 87;
+//	public static final int  SPI_SETICONS               = 88;
+//	public static final int  SPI_GETDEFAULTINPUTLANG    = 89;
+//	public static final int  SPI_SETDEFAULTINPUTLANG    = 90;
+//	public static final int  SPI_SETLANGTOGGLE          = 91;
+//	public static final int  SPI_GETWINDOWSEXTENSION    = 92;
+//	public static final int  SPI_SETMOUSETRAILS         = 93;
+//	public static final int  SPI_GETMOUSETRAILS         = 94;
+//	public static final int  SPI_SETSCREENSAVERRUNNING  = 97;
+//	public static final int  SPI_SCREENSAVERRUNNING     = SPI_SETSCREENSAVERRUNNING;
+//	public static final int  SPI_GETFILTERKEYS          = 50;
+//	public static final int  SPI_SETFILTERKEYS          = 51;
+//	public static final int  SPI_GETTOGGLEKEYS          = 52;
+//	public static final int  SPI_SETTOGGLEKEYS          = 53;
+//	public static final int  SPI_GETMOUSEKEYS           = 54;
+//	public static final int  SPI_SETMOUSEKEYS           = 55;
+//	public static final int  SPI_GETSHOWSOUNDS          = 56;
+//	public static final int  SPI_SETSHOWSOUNDS          = 57;
+//	public static final int  SPI_GETSTICKYKEYS          = 58;
+//	public static final int  SPI_SETSTICKYKEYS          = 59;
+//	public static final int  SPI_GETACCESSTIMEOUT       = 60;
+//	public static final int  SPI_SETACCESSTIMEOUT       = 61;
+//	public static final int  SPI_GETSERIALKEYS          = 62;
+//	public static final int  SPI_SETSERIALKEYS          = 63;
+//	public static final int  SPI_GETSOUNDSENTRY         = 64;
+//	public static final int  SPI_SETSOUNDSENTRY         = 65;
+//	public static final int  SPI_GETSNAPTODEFBUTTON     = 95;
+//	public static final int  SPI_SETSNAPTODEFBUTTON     = 96;
+//	public static final int  SPI_GETMOUSEHOVERWIDTH     = 98;
+//	public static final int  SPI_SETMOUSEHOVERWIDTH     = 99;
+//	public static final int  SPI_GETMOUSEHOVERHEIGHT   = 100;
+//	public static final int  SPI_SETMOUSEHOVERHEIGHT   = 101;
+//	public static final int  SPI_GETMOUSEHOVERTIME     = 102;
+//	public static final int  SPI_SETMOUSEHOVERTIME     = 103;
+//	public static final int  SPI_GETWHEELSCROLLLINES   = 104;
+//	public static final int  SPI_SETWHEELSCROLLLINES   = 105;
+//	public static final int  SPI_GETMENUSHOWDELAY      = 106;
+//	public static final int  SPI_SETMENUSHOWDELAY      = 107;
+//	public static final int  SPI_GETSHOWIMEUI          = 110;
+//	public static final int  SPI_SETSHOWIMEUI          = 111;
+//	public static final int  SPI_GETMOUSESPEED         = 112;
+//	public static final int  SPI_SETMOUSESPEED         = 113;
+//	public static final int  SPI_GETSCREENSAVERRUNNING = 114;
+//	public static final int  SPI_GETDESKWALLPAPER      = 115;
+//	public static final int  SPI_GETACTIVEWINDOWTRACKING         = 0x1000;
+//	public static final int  SPI_SETACTIVEWINDOWTRACKING         = 0x1001;
+//	public static final int  SPI_GETMENUANIMATION                = 0x1002;
+//	public static final int  SPI_SETMENUANIMATION                = 0x1003;
+//	public static final int  SPI_GETCOMBOBOXANIMATION            = 0x1004;
+//	public static final int  SPI_SETCOMBOBOXANIMATION            = 0x1005;
+//	public static final int  SPI_GETLISTBOXSMOOTHSCROLLING       = 0x1006;
+//	public static final int  SPI_SETLISTBOXSMOOTHSCROLLING       = 0x1007;
+//	public static final int  SPI_GETGRADIENTCAPTIONS             = 0x1008;
+//	public static final int  SPI_SETGRADIENTCAPTIONS             = 0x1009;
+//	public static final int  SPI_GETKEYBOARDCUES                 = 0x100A;
+//	public static final int  SPI_SETKEYBOARDCUES                 = 0x100B;
+//	public static final int  SPI_GETMENUUNDERLINES               = SPI_GETKEYBOARDCUES;
+//	public static final int  SPI_SETMENUUNDERLINES               = SPI_SETKEYBOARDCUES;
+//	public static final int  SPI_GETACTIVEWNDTRKZORDER           = 0x100C;
+//	public static final int  SPI_SETACTIVEWNDTRKZORDER           = 0x100D;
+//	public static final int  SPI_GETHOTTRACKING                  = 0x100E;
+//	public static final int  SPI_SETHOTTRACKING                  = 0x100F;
+//	public static final int  SPI_GETMENUFADE                     = 0x1012;
+//	public static final int  SPI_SETMENUFADE                     = 0x1013;
+//	public static final int  SPI_GETSELECTIONFADE                = 0x1014;
+//	public static final int  SPI_SETSELECTIONFADE                = 0x1015;
+//	public static final int  SPI_GETTOOLTIPANIMATION             = 0x1016;
+//	public static final int  SPI_SETTOOLTIPANIMATION             = 0x1017;
+//	public static final int  SPI_GETTOOLTIPFADE                  = 0x1018;
+//	public static final int  SPI_SETTOOLTIPFADE                  = 0x1019;
+//	public static final int  SPI_GETCURSORSHADOW                 = 0x101A;
+//	public static final int  SPI_SETCURSORSHADOW                 = 0x101B;
+//	public static final int  SPI_GETUIEFFECTS                    = 0x103E;
+//	public static final int  SPI_SETUIEFFECTS                    = 0x103F;
+//	public static final int  SPI_GETFOREGROUNDLOCKTIMEOUT        = 0x2000;
+//	public static final int  SPI_SETFOREGROUNDLOCKTIMEOUT        = 0x2001;
+//	public static final int  SPI_GETACTIVEWNDTRKTIMEOUT          = 0x2002;
+//	public static final int  SPI_SETACTIVEWNDTRKTIMEOUT          = 0x2003;
+//	public static final int  SPI_GETFOREGROUNDFLASHCOUNT         = 0x2004;
+//	public static final int  SPI_SETFOREGROUNDFLASHCOUNT         = 0x2005;
+//	public static final int  SPI_GETCARETWIDTH                   = 0x2006;
+//	public static final int  SPI_SETCARETWIDTH                   = 0x2007;
+//	public static final int  SPIF_UPDATEINIFILE    = 0x0001;
+//	public static final int  SPIF_SENDWININICHANGE = 0x0002;
+//	public static final int  SPIF_SENDCHANGE       = SPIF_SENDWININICHANGE;
+/*** END SystemParamtersInfo ***/
 
 /*** BEGIN SetWindowsHook ***/
 //	public static final int WH_MSGFILTER        = -1;
@@ -156,7 +336,15 @@ public class OS {
 	public static final int WM_MOUSELEAVE = 0x02A3;
 //	public static final int WM_NCMOUSEHOVER = 0x02A0;
 //	public static final int WM_NCMOUSELEAVE = 0x02A2;
+	public static final int WM_MOUSEWHEEL = 0x020A;
 /*** END TrackMouseEvent ***/
+
+/*** BEGIN GradientFill ***/
+	public static final int GRADIENT_FILL_RECT_H = 0;
+	public static final int GRADIENT_FILL_RECT_V = 1;
+//	public static final int GRADIENT_FILL_TRIANGLE = 2;
+//	public static final int GRADIENT_FILL_OP_FLAG = 0xff;
+/*** END GradientFill ***/
 
 /*** BEGIN ICC ***/
 //	public static final int ICC_LISTVIEW_CLASSES 	= 0x00000001;
@@ -819,7 +1007,6 @@ public class OS {
 //	public static final int DCX_PARENTCLIP = 0x20;
 //	public static final int DCX_VALIDATE = 0x200000;
 //	public static final int DCX_WINDOW = 0x1;
-	public static final int DEFAULT_CHARSET = 1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
 //	public static final int DEFAULT_PALETTE = 0xF;
 //	public static final int DEVICE_DEFAULT_FONT = 0xE;
@@ -1063,7 +1250,7 @@ public class OS {
 	public static final int EM_GETLIMITTEXT = 0xD5;
 	public static final int EM_GETLINE = 0xC4;
 	public static final int EM_GETLINECOUNT = 0xBA;
-//	public static final int EM_GETMARGINS = 0xD4;
+	public static final int EM_GETMARGINS = 0xD4;
 //	public static final int EM_GETMODIFY = 0xB8;
 //	public static final int EM_GETOLEINTERFACE = (WM_USER + 60);
 //	public static final int EM_GETOPTIONS = (WM_USER + 78);
@@ -1530,7 +1717,7 @@ public class OS {
 //	public static final int HWND_DESKTOP = 0x0;
 //	public static final int HWND_NOTOPMOST = 0xFFFFFFFE;
 	public static final int HWND_TOP = 0x0;
-//	public static final int HWND_TOPMOST = 0xFFFFFFFF;
+	public static final int HWND_TOPMOST = 0xFFFFFFFF;
 //	public static final int I_CHILDRENCALLBACK = -1;
 //	public static final int ICM_LEVEL2 = 0x0002;
 //	public static final int ICM_LEVEL2_5 = 0x0003;
@@ -3131,6 +3318,8 @@ public class OS {
 //	public static final int TC_SO_ABLE = 0x1000;
 //	public static final int TC_UA_ABLE = 0x800;
 //	public static final int TC_VA_ABLE = 0x4000;
+	public static final int TCI_SRCCHARSET = 1;
+	public static final int TCI_SRCCODEPAGE = 2;
 	public static final int TCIF_IMAGE = 0x0002;
 //	public static final int TCIF_PARAM = 0x0008;
 //	public static final int TCIF_RTLREADING = 0x0004;
@@ -3250,7 +3439,7 @@ public class OS {
 //	public static final int TTM_RELAYEVENT = (WM_USER + 7);
 //	public static final int TTM_SETDELAYTIME = (WM_USER + 3);
 //	public static final int TTM_SETMARGIN = (WM_USER + 26);
-//	public static final int TTM_SETMAXTIPWIDTH = (WM_USER + 24);
+	public static final int TTM_SETMAXTIPWIDTH = (WM_USER + 24);
 //	public static final int TTM_SETTIPBKCOLOR = (WM_USER + 19);
 //	public static final int TTM_SETTIPTEXTCOLOR = (WM_USER + 20);
 //	public static final int TTM_SETTOOLINFO = (WM_USER + 9);
@@ -3760,7 +3949,7 @@ public class OS {
 //	public static final int WS_EX_RTLREADING = 0x2000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
-//	public static final int WS_EX_TOPMOST = 0x8;
+	public static final int WS_EX_TOPMOST = 0x8;
 //	public static final int WS_EX_TRANSPARENT = 0x20;
 //	public static final int WS_EX_WINDOWEDGE = 0x100;
 //	public static final int WS_GROUP = 0x20000;
@@ -4096,6 +4285,7 @@ public static final native int GlobalFree (int hMem);
 public static final native int GlobalLock (int hMem);
 public static final native int GlobalSize (int hMem);
 public static final native boolean GlobalUnlock (int hMem);
+public static final native boolean GradientFill(int hdc, int pVertex, int dwNumVertex, int pMesh, int dwNumMesh, int dwMode);
 public static final native int HeapAlloc (
   int hHeap,  // handle to the private heap block
   int dwFlags, // heap allocation control flags
@@ -4214,6 +4404,11 @@ public static final native void MoveMemory (
   int Length        // size, in bytes, of block to move
 );
 public static final native void MoveMemory (
+  int Destination,  // address of move destination
+  GRADIENT_RECT Source, 	// address of block to move
+  int Length        // size, in bytes, of block to move
+);
+public static final native void MoveMemory (
   int Destination,				// address of move destination
   LOGFONT Source, 				// address of block to move
   int Length        			// size, in bytes, of block to move
@@ -4231,6 +4426,11 @@ public static final native void MoveMemory (
 public static final native void MoveMemory (
   int Destination,  // address of move destination
   RECT Source, 	// address of block to move
+  int Length        // size, in bytes, of block to move
+);
+public static final native void MoveMemory (
+  int Destination,  // address of move destination
+  TRIVERTEX Source, 	// address of block to move
   int Length        // size, in bytes, of block to move
 );
 public static final native void MoveMemory (
@@ -4468,4 +4668,24 @@ public static final native boolean DrawState (int hdc, int hbr, int lpOutputFunc
 
 public static final native int CreatePen (int fnPenStyle, int nWidth, int crColor);
 public static final native int SetStretchBltMode(int hdc, int iStretchMode);
+
+public static final native int GetCharacterPlacement(int hdc, byte[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+public static final native boolean ExtTextOut(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
+public static final native int GetFontLanguageInfo(int hdc);
+public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
+public static final native int GetKeyboardLayout(int idThread);
+public static final native int ActivateKeyboardLayout(int hkl, int Flags);
+public static final native int SetTextAlign(int hdc, int fMode);
+
+public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
+public static final native int GetTextCharset(int hdc);
+public static final native int GetLocaleInfo(int Locale, int LCType, byte[] lpLCData, int cchData);
+public static final native boolean EnumSystemLocales(int lpLocaleEnumProc, int dwFlags);
+
+public static final native boolean SystemParametersInfo (
+	int uiAction,  // system parameter to retrieve or set
+	int uiParam,   // depends on action to be taken
+	RECT pvParam,  // depends on action to be taken
+	int fWinIni    // user profile update option
+);
 }

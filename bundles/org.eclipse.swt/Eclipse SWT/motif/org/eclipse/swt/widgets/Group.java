@@ -31,9 +31,35 @@ import org.eclipse.swt.*;
 
 public /*final*/ class Group extends Composite {
 	int labelHandle;
+
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -51,8 +77,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int trimX, trimY, trimWidth, trimHeight;	
 	int [] argList = {
 		OS.XmNwidth, 0, 
@@ -65,10 +90,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int thickness = argList [5];
 	int marginWidth = argList [7];
 	int marginHeight = argList [9];
-	trimX = x - marginWidth + thickness;
-	trimY = y - marginHeight + thickness;
-	trimWidth = width + ((marginWidth + thickness) * 2);
-	trimHeight = height + ((marginHeight + thickness) * 2);
+	int borderWidth = getBorderWidth ();
+	trimX = x - marginWidth + thickness - borderWidth;
+	trimY = y - marginHeight + thickness - borderWidth;
+	trimWidth = width + ((marginWidth + thickness + borderWidth) * 2);
+	trimHeight = height + ((marginHeight + thickness + borderWidth) * 2);
 	if (OS.XtIsManaged (labelHandle)) {
 		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
 		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
@@ -127,8 +153,7 @@ int fontHandle () {
 	return labelHandle;
 }
 public Rectangle getClientArea () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {
 		OS.XmNwidth, 0, 
 		OS.XmNheight, 0, 
@@ -165,8 +190,7 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNlabelString, 0};
 	OS.XtGetValues (labelHandle, argList, 1);
 	int xmString = argList [1];
@@ -184,7 +208,7 @@ public String getText () {
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
 	OS.XmStringFree (xmString);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 boolean mnemonicHit () {
 	return setFocus ();
@@ -226,10 +250,9 @@ void releaseHandle () {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
 		0,

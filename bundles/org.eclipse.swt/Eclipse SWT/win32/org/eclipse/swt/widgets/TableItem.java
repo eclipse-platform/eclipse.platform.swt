@@ -27,12 +27,73 @@ import org.eclipse.swt.graphics.*;
 public class TableItem extends Item {
 	Table parent;
 	
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public TableItem (Table parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public TableItem (Table parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
@@ -267,7 +328,7 @@ public String getText (int index) {
 	OS.MoveMemory (buffer1, pszText, cchTextMax);
 	OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (parent.getCodePage (), buffer1);
 	int length = 0;
 	while (length < buffer2.length && buffer2 [length] != 0) length++;
 	return new String (buffer2, 0, length);
@@ -352,10 +413,11 @@ public void setGrayed (boolean grayed) {
 /**
  * Sets the image for multiple columns in the Table. 
  * 
- * @param strings the array of new images
+ * @param images the array of new images
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -374,10 +436,10 @@ public void setImage (Image [] images) {
  * Sets the receiver's image at a column.
  *
  * @param index the column index
- * @param string the new image
+ * @param image the new image
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -386,6 +448,9 @@ public void setImage (Image [] images) {
  */
 public void setImage (int index, Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (index == 0) {
 		setImage (image);
 		return;
@@ -403,6 +468,9 @@ public void setImage (int index, Image image) {
 
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
@@ -487,7 +555,7 @@ public void setText (int index, String string) {
 	if (itemIndex == -1) return;
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();	
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, true);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_TEXT;
@@ -510,7 +578,7 @@ public void setText (String string) {
 	lvItem.mask = OS.LVIF_TEXT;
 	lvItem.iItem = index;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length); 
 	lvItem.pszText = pszText;

@@ -4,11 +4,14 @@ package org.eclipse.swt.widgets;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
- 
+
+import java.io.InputStream;
+import java.util.Vector;
+import java.util.Enumeration;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import java.io.*;
-import java.util.*;
+import org.eclipse.swt.internal.Compatability;
  
 /**
  * This class is intended for widgets that display data of 
@@ -947,7 +950,7 @@ int getItemCountTruncated(Rectangle rectangle) {
 	int startIndex;
 
 	startIndex = rectangle.y / itemHeight;
-	itemCount = (int) Math.ceil(((float) rectangle.y + rectangle.height) / itemHeight)-startIndex;
+	itemCount = (int) Compatability.ceil(((float) rectangle.y + rectangle.height) / itemHeight)-startIndex;
 	return itemCount;
 }
 /**

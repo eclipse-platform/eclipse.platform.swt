@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.*;
 
 public /*final*/ class Caret extends Widget {
 	Canvas parent;
+	Image image;
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible, isShowing;
@@ -53,17 +54,25 @@ boolean drawCaret () {
 	OS.PgSetRegion (OS.PtWidgetRid (handle));
 	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
 	OS.PgSetFillColor (color);
-	int nWidth = width;
+	int nWidth = width, nHeight = height;
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		nWidth = rect.width;
+		nHeight = rect.height;
+	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.PgDrawIRect (x, y, x + nWidth - 1, y + height - 1, OS.Pg_DRAW_FILL);
+	OS.PgDrawIRect (x, y, x + nWidth - 1, y + nHeight - 1, OS.Pg_DRAW_FILL);
 	OS.PgSetGC (prevContext);	
 	OS.PgDestroyGC (phGC);
 	return true;
 }	
 
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -74,32 +83,36 @@ public Display getDisplay () {
 }
 
 public Font getFont () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent.getFont ();
 }
 
+public Image getImage () {
+	checkWidget();
+	return image;
+}
+
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return new Point (x, y);
 }
 
 public Canvas getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
 
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return isVisible;
 }
 
@@ -112,8 +125,7 @@ boolean hideCaret () {
 }
 
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return isVisible && parent.isVisible () && parent.hasFocus ();
 }
 
@@ -137,11 +149,11 @@ void releaseWidget () {
 //		display.setCurrentCaret (null);
 //	}
 	parent = null;
+	image = null;
 }
 
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean samePosition, sameExtent, showing;
 	samePosition = (this.x == x) && (this.y == y);
 	sameExtent = (this.width == width) && (this.height == height);
@@ -172,39 +184,40 @@ void setFocus () {
 }
 
 public void setFont (Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+}
+
+public void setImage (Image image) {
+	checkWidget();
+	if (isShowing) hideCaret ();
+	this.image = image;
+	if (isShowing) showCaret ();
 }
 
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height);
 }
 
 public void setLocation (Point location) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
 
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height);
 }
 
 public void setSize (Point size) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
 
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	if (visible == isVisible) return;
 	if (isVisible = visible) {
 		showCaret ();

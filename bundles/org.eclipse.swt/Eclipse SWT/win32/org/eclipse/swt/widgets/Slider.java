@@ -56,11 +56,10 @@ import org.eclipse.swt.events.*;
  *
  * @see ScrollBar
  */
-
 public class Slider extends Control {
 	int increment, pageIncrement;
 	static final int ScrollBarProc;
-	static final byte [] ScrollBarClass = Converter.wcsToMbcs (0, "SCROLLBAR\0", false);
+	static final byte [] ScrollBarClass = Converter.wcsToMbcs (0, "SCROLLBAR\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -68,6 +67,34 @@ public class Slider extends Control {
 		ScrollBarProc = lpWndClass.lpfnWndProc;
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Slider (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -141,11 +168,17 @@ void createWidget () {
 	super.createWidget ();
 	increment = 1;
 	pageIncrement = 10;
+	/*
+	* Set the intial values of the maximum
+	* to 100 and the thumb to 10.  Note that
+	* info.nPage needs to be 11 in order to
+	* get a thumb that is 10.
+	*/
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_ALL;
 	info.nMax = 100;
-	info.nPage = pageIncrement + 1;
+	info.nPage = 11;
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 

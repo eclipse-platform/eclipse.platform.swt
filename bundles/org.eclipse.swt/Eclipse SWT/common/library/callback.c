@@ -152,8 +152,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
     isStatic = (*env)->GetBooleanField(env,lpCallback,PGLOB(isStaticID));
     argCount = (*env)->GetIntField(env,lpCallback,PGLOB(argCountID));
     isArrayBased = (*env)->GetBooleanField(env,lpCallback,PGLOB(isArrayBasedID));
-    methodString = (*env)->GetStringUTFChars(env, javaMethod, NULL);
-    sigString = (*env)->GetStringUTFChars(env, javaSignature, NULL);
+    methodString = (const char *) (*env)->GetStringUTFChars(env, javaMethod, NULL);
+    sigString = (const char *) (*env)->GetStringUTFChars(env, javaSignature, NULL);
     if (isStatic) {
         mid = (*env)->GetStaticMethodID(env, javaObject, methodString, sigString);
     } else {
@@ -236,72 +236,73 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
 
 int callback(int index, ...)
 {
-	if (!CallbacksEnabled) {
+	if (!CallbacksEnabled)  {
 		return 0;
 	} else {
-	DECL_GLOB(pGlob)
-    jobject callback = PGLOB(dllCallbackInfo)[index].callin;
-    JNIEnv *env = PGLOB(dllCallbackInfo)[index].env;
-    jmethodID mid = PGLOB(dllCallbackInfo)[index].methodID;
-    jobject javaObject;
-    jboolean isStatic, isArrayBased;
+	
+		DECL_GLOB(pGlob)
+		jobject callback = PGLOB(dllCallbackInfo)[index].callin;
+		JNIEnv *env = PGLOB(dllCallbackInfo)[index].env;
+		jmethodID mid = PGLOB(dllCallbackInfo)[index].methodID;
+		jobject javaObject;
+		jboolean isStatic, isArrayBased;
 
-    int result = 0;
-    va_list vl;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "* callback starting %d\n", PGLOB(counter)++);
-#endif
-
-	/* An exception has already occurred. Allow the stack to unwind so that
-	   the exception will be thrown in Java */
-	if ((*env)->ExceptionOccurred(env)) {
+		int result = 0;
+		va_list vl;
 
 #ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "************ java exception occurred\n");
+		fprintf(stderr, "* callback starting %d\n", PGLOB(counter)++);
 #endif
 
-		return 0;
-	}
+		/* An exception has already occurred. Allow the stack to unwind so that
+		the exception will be thrown in Java */
+		if ((*env)->ExceptionOccurred(env)) {
 
-    javaObject = (*env)->GetObjectField(env,callback,PGLOB(objectID));
-    isStatic = ((*env)->GetBooleanField(env,callback,PGLOB(isStaticID))) != 0;
-    isArrayBased = ((*env)->GetBooleanField(env,callback,PGLOB(isArrayBasedID))) != 0;
+#ifdef DEBUG_CALL_PRINTS
+			fprintf(stderr, "************ java exception occurred\n");
+#endif
 
-	va_start(vl, index);
-    if (isArrayBased) {
-    	int i;
-	    jint argCount = (*env)->GetIntField(env,callback,PGLOB(argCountID));
-		jintArray javaArray = (*env)->NewIntArray(env,argCount);
-		jint *elements = (*env)->GetIntArrayElements(env,javaArray,NULL);
-		for (i=0; i<argCount; i++) {
-			elements[i] = va_arg(vl, jint); 
+			return 0;
 		}
-		(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
-		if (isStatic) {
-			result = (*env)->CallStaticIntMethod(env, javaObject, mid, javaArray);
+
+		javaObject = (*env)->GetObjectField(env,callback,PGLOB(objectID));
+		isStatic = ((*env)->GetBooleanField(env,callback,PGLOB(isStaticID))) != 0;
+		isArrayBased = ((*env)->GetBooleanField(env,callback,PGLOB(isArrayBasedID))) != 0;
+
+		va_start(vl, index);
+		if (isArrayBased) {
+			int i;
+			jint argCount = (*env)->GetIntField(env,callback,PGLOB(argCountID));
+			jintArray javaArray = (*env)->NewIntArray(env,argCount);
+			jint *elements = (*env)->GetIntArrayElements(env,javaArray,NULL);
+			for (i=0; i<argCount; i++) {
+				elements[i] = va_arg(vl, jint); 
+			}
+			(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
+			if (isStatic) {
+				result = (*env)->CallStaticIntMethod(env, javaObject, mid, javaArray);
+			} else {
+				result = (*env)->CallIntMethod(env, javaObject, mid, javaArray);
+			}
+			(*env)->DeleteLocalRef(env, javaArray);
 		} else {
-			result = (*env)->CallIntMethod(env, javaObject, mid, javaArray);
+			if (isStatic) {
+				result = (*env)->CallStaticIntMethodV(env, javaObject, mid, vl);
+			} else {
+				result = (*env)->CallIntMethodV(env, javaObject, mid, vl);
+			}
 		}
-		(*env)->DeleteLocalRef(env, javaArray);
-    } else {
-		if (isStatic) {
-			result = (*env)->CallStaticIntMethodV(env, javaObject, mid, vl);
-		} else {
-			result = (*env)->CallIntMethodV(env, javaObject, mid, vl);
-		}
-    }
-	va_end(vl);
-	/* This call may be called many times before we return to Java.
-	   We have to explicitly delete local references to avoid GP's
-	   in the JDK and IBM Hursley VM.
-	*/
-	(*env)->DeleteLocalRef(env,javaObject);
+		va_end(vl);
+		/* This call may be called many times before we return to Java.
+		 We have to explicitly delete local references to avoid GP's
+		 in the JDK and IBM Hursley VM.
+		*/
+		(*env)->DeleteLocalRef(env,javaObject);
 
 #ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "* callback exiting %d\n", --PGLOB(counter));
+		fprintf(stderr, "* callback exiting %d\n", --PGLOB(counter));
 #endif
-	return result;
+		return result;
 	}
 }
 
