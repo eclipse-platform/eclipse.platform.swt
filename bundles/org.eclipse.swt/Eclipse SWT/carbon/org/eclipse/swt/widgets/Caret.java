@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.MacUtil;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -96,7 +95,7 @@ boolean drawCaret () {
 	MacUtil.getVisibleRegion(parent.handle, clipRgn, true);
 
 	Rect bounds= new Rect();
-	OS.GetControlBounds(parent.handle, bounds);
+	MacUtil.getControlBounds(parent.handle, bounds);
 	int left = x+bounds.left;
 	int top = y+bounds.top;
 	OS.SetRect(bounds, (short)left, (short)top, (short)(left+nWidth), (short)(top+nHeight));

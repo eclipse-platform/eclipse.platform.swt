@@ -7,12 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 /**
@@ -236,8 +235,11 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
         */
-        handle= MacUtil.newControl(parentHandle, OS.kControlPopupArrowEastProc);
+		//handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPopupArrowEastProc, 0);
+		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPushButtonProc, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		MacUtil.addControl(handle, parentHandle);
+		OS.HIViewSetVisible(handle, true);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
 			int [] argList1 = {OS.XmNshadowThickness, 1};
@@ -275,8 +277,10 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
         */
-		handle= MacUtil.newControl(parentHandle, (short)0, OS.kControlBehaviorToggles, (short)0, OS.kControlBevelButtonNormalBevelProc);
+		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)OS.kControlBehaviorToggles, (short)0, (short)OS.kControlBevelButtonNormalBevelProc, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		MacUtil.addControl(handle, parentHandle);
+		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
 	}
@@ -305,8 +309,10 @@ void createHandle (int index) {
 		int type= (style & SWT.CHECK) != 0
 					? OS.kControlCheckBoxAutoToggleProc
 					: OS.kControlRadioButtonAutoToggleProc;
-		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, type);
+		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)type, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		MacUtil.addControl(handle, parentHandle);
+		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
 	}
@@ -322,8 +328,10 @@ void createHandle (int index) {
 	int type= (style & SWT.FLAT) != 0
 					? OS.kControlBevelButtonNormalBevelProc
 					: OS.kControlPushButtonProc;
-    handle= MacUtil.newControl(parentHandle, type);
+	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)type, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	MacUtil.addControl(handle, parentHandle);
+	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 	/* AW
 	if ((style & SWT.FLAT) != 0) {
@@ -432,10 +440,8 @@ void hookEvents () {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;
 	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
 	*/
-	if (MacUtil.HIVIEW) {
-		Display display= getDisplay();
-		OS.SetControlAction(handle, display.fControlActionProc);
-	}
+	Display display= getDisplay();
+	OS.SetControlAction(handle, display.fControlActionProc);
 }
 boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
@@ -694,7 +700,9 @@ private void setMode(int icon) {
 	
 	int type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
 		
-    handle= MacUtil.newControl(parentHandle, index, (short)0, (short)0, (short)0, type);
+	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)type, 0);
+	MacUtil.insertControl(handle, parentHandle, index);
+	OS.HIViewSetVisible(handle, true);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	WidgetTable.put(handle, w);
 	

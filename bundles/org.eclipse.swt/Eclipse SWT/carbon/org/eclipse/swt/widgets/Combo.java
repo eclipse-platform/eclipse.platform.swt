@@ -7,14 +7,13 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class are controls that allow the user
@@ -386,8 +385,9 @@ public void copy () {
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.READ_ONLY) != 0) {
-		handle= MacUtil.newControl(parent.handle, (short)0, (short)-12345, (short)-1, (short)(OS.kControlPopupButtonProc+1));
+		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)-12345, (short)-1, (short)(OS.kControlPopupButtonProc+1), 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		MacUtil.addControl(handle, parent.handle);
 		int[] menuRef= new int[1];
 		OS.CreateNewMenu(20000, 0, menuRef);
 		menuHandle= menuRef[0];
@@ -399,8 +399,8 @@ void createHandle (int index) {
 		handle= outComboBox[0];
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		MacUtil.addControl(handle, parent.handle);
-		OS.HIViewSetVisible(handle, true);
 	}
+	OS.HIViewSetVisible(handle, true);
 }
 /**
  * Cuts the selected text.
