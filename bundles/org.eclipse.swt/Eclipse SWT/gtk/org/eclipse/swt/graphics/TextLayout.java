@@ -453,20 +453,18 @@ public void setStyle (TextStyle style, int start, int end) {
 	end = Math.min(Math.max(0, end), length - 1);
 	
 	/*
-	* Bug in Pango. Pango will cause a segmentation fault in a style
-	* is not applied for the whole LanAlef ligature when it is located
-	* at the end of directional run.  The fix is to applied set the
+	* Bug in Pango. Pango 1.2.2 will cause a segmentation fault if a style
+	* is not applied for a whole ligature.  The fix is to applied the
 	* style for the whole ligature.
 	* 
-	* TODO: Check other ligatures and try to seek a more fine tuned solution.
-	* FH it does happen for other ligatuers (thai), this bug is fixed in pango > 1.2.3
+	* NOTE that fix only LamAlef ligatures. 
 	*/
-//	if (start > 0 && isAlef(text.charAt(start)) && isLam(text.charAt(start - 1))) {
-//		start--;
-//	}
-//	if (end < length - 1 && isLam(text.charAt(end)) && isAlef(text.charAt(end + 1))) {
-//		end++;
-//	}
+	if (start > 0 && isAlef(text.charAt(start)) && isLam(text.charAt(start - 1))) {
+		start--;
+	}
+	if (end < length - 1 && isLam(text.charAt(end)) && isAlef(text.charAt(end + 1))) {
+		end++;
+	}
 
 	int count = 0, i;
 	StyleItem[] newStyles = new StyleItem[styles.length + 2];
