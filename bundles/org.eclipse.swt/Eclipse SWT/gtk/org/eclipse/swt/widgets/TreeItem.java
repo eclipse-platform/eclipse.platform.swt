@@ -845,10 +845,8 @@ public void removeAll () {
 	if (length == 0) return;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int [] index = new int [1];
-	boolean valid = OS.gtk_tree_model_iter_children (parent.modelHandle, iter, handle);
-	while (valid) {
+	while (OS.gtk_tree_model_iter_children (parent.modelHandle, iter, handle)) {
 		OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
-		valid = OS.gtk_tree_model_iter_next (parent.modelHandle, iter);
 		TreeItem item = parent.items [index [0]];
 		if (item != null && !item.isDisposed ()) {
 			item.dispose ();
