@@ -173,7 +173,6 @@ public CTabFolder(Composite parent, int style) {
 	borderColor1 = new Color(getDisplay(), borderInsideRGB);
 	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
 	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
-	Color background = getBackground();
 
 	// tool tip support
 	Display display = getDisplay();
@@ -230,153 +229,8 @@ public CTabFolder(Composite parent, int style) {
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
-	
-/* Start ACCESSIBILITY */
-	getAccessible().addAccessibleListener(new AccessibleAdapter() {
-		public void getName(AccessibleEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID != ACC.CHILDID_SELF) {
-				CTabItem childItem = items[childID - 1];
-				e.result = childItem.getText();
-			}
-		}
+	initAccessible();	
 
-		public void getHelp(AccessibleEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID == ACC.CHILDID_SELF) {
-				e.result = getToolTipText();
-			} else {
-				CTabItem childItem = items[childID - 1];
-				e.result = childItem.getToolTipText();
-			}
-		}
-		
-		public void getKeyboardShortcut(AccessibleEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID != ACC.CHILDID_SELF) {
-				e.result = "Ctrl+TAB";
-			}
-		}
-	});
-		
-	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void hitTest(AccessibleControlEvent e) {
-			Point testPoint = toControl(new Point(e.x, e.y));
-			int childID = ACC.CHILDID_SELF;
-			for (int i = 0; i < items.length; i++) {
-				Rectangle bounds = items[i].getBounds();
-				if (bounds.contains(testPoint)) {
-					childID = i + 1;
-					break;
-				}
-			}
-			if (childID == ACC.CHILDID_SELF && !getBounds().contains(testPoint)) {
-				e.childID = ACC.CHILDID_NONE;
-			}
-			e.childID = childID;
-		}
-		
-		public void getLocation(AccessibleControlEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			Rectangle location;
-			if (childID == ACC.CHILDID_SELF) {
-				location = getBounds();
-			} else {
-				CTabItem childItem = items[childID - 1];
-				location = childItem.getBounds();
-			}
-			Point pt = toDisplay(new Point(location.x, location.y));
-			e.x = pt.x;
-			e.y = pt.y;
-			e.width = location.width;
-			e.height = location.height;
-		}
-		
-		public void navigate(AccessibleControlEvent e) {
-			int childID = ACC.CHILDID_NONE;
-			switch (e.code) {
-				case ACC.NAVDIR_UP:
-				case ACC.NAVDIR_DOWN:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					break;
-				case ACC.NAVDIR_FIRSTCHILD:
-					if (items.length > 0) childID = 1;
-					break;
-				case ACC.NAVDIR_LASTCHILD:
-					if (items.length > 0) childID = items.length;
-					break;
-				case ACC.NAVDIR_LEFT:
-				case ACC.NAVDIR_PREVIOUS:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && childID > 1) childID = childID - 1;
-					break;
-				case ACC.NAVDIR_RIGHT:
-				case ACC.NAVDIR_NEXT:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && childID < items.length) childID = childID + 1;
-					break;
-			}
-			e.childID = childID;
-		}
-		
-		public void getChildCount(AccessibleControlEvent e) {
-			e.code = items.length;
-		}
-		
-		public void getDefaultAction(AccessibleControlEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID != ACC.CHILDID_SELF) {
-				e.result = "Switch";
-			}
-		}
-
-		public void getRole(AccessibleControlEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID == ACC.CHILDID_SELF) {
-				e.code = ACC.ROLE_SYSTEM_PAGETABLIST;
-			} else {
-				e.code = ACC.ROLE_SYSTEM_PAGETAB;
-			}
-		}
-		
-		public void getSelection(AccessibleControlEvent e) {
-			if (selectedIndex == -1) {
-				e.childID = ACC.CHILDID_NONE;
-			} else {
-				e.childID = selectedIndex + 1;
-			}
-		}
-		
-		public void getState(AccessibleControlEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			int state;
-			if (childID == ACC.CHILDID_SELF) {
-				state = ACC.STATE_SYSTEM_NORMAL;
-			} else {
-				state = ACC.STATE_SYSTEM_SELECTABLE;
-				if (selectedIndex + 1 == childID) {
-					state |= ACC.STATE_SYSTEM_SELECTED;
-				}
-			}
-			e.code = state;
-		}
-		
-		public void getChildren(AccessibleControlEvent e) {
-			Object[] children = new Object[items.length];
-			for (int i = 0; i < items.length; i++) {
-				children[i] = new Integer(i + 1);
-			}
-			e.children = children;
-		}
-	});
-/* End ACCESSIBILITY */
 }
 private static int checkStyle (int style) {
 	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT;
@@ -874,6 +728,168 @@ public int indexOf(CTabItem item) {
 	return -1;
 }
 
+private void initAccessible() {
+	Accessible accessible = getAccessible();
+	accessible.addAccessibleListener(new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			String name = "";
+			int childID = e.childID;
+			if (childID > 0 && childID <= items.length) {
+				String text = items[childID - 1].getText();
+				if (text != null) name = text;
+			}
+			e.result = name;
+		}
+
+		public void getHelp(AccessibleEvent e) {
+			String help = "";
+			int childID = e.childID;
+			if (childID == ACC.CHILDID_SELF) {
+				String tooltip = getToolTipText();
+				if (tooltip != null) help = tooltip;
+			}
+			if (childID > 0 && childID <= items.length) {
+				CTabItem childItem = items[childID - 1];
+				String tooltip = childItem.getToolTipText();
+				if (tooltip != null) help = tooltip;
+			}
+			e.result = help;
+		}
+		
+		public void getKeyboardShortcut(AccessibleEvent e) {
+			String shortcut = "";
+			int childID = e.childID;
+			if (childID > 0 && childID <= items.length) {
+				CTabItem childItem = items[childID - 1];
+				String text = childItem.getText();
+				if (text != null) {
+					char mnemonic = getMnemonic(text);	
+					if (mnemonic != '\0') {
+						shortcut = "Alt+"+mnemonic;
+					}
+				}
+			}
+			e.result = shortcut;
+		}
+	});
+	
+	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void hitTest(AccessibleControlEvent e) {
+			Point testPoint = toControl(new Point(e.x, e.y));
+			int childID = ACC.CHILDID_SELF;
+			for (int i = 0; i < items.length; i++) {
+				Rectangle bounds = items[i].getBounds();
+				if (bounds.contains(testPoint)) {
+					childID = i + 1;
+					break;
+				}
+			}
+			if (childID == ACC.CHILDID_SELF && !getBounds().contains(testPoint)) {
+				e.childID = ACC.CHILDID_NONE;
+			}
+			e.childID = childID;
+		}
+
+		
+		public void getLocation(AccessibleControlEvent e) {
+			Rectangle location = null;
+			int childID = e.childID;
+			if (childID == ACC.CHILDID_SELF) {
+				location = getBounds();
+			}
+			if (childID > 0 && childID <= items.length) {
+				CTabItem childItem = items[childID - 1];
+				location = childItem.getBounds();
+			}
+			if (location != null) {
+				Point pt = toDisplay(new Point(location.x, location.y));
+				e.x = pt.x;
+				e.y = pt.y;
+				e.width = location.width;
+				e.height = location.height;
+			}
+		}
+		
+		public void navigate(AccessibleControlEvent e) {
+			int childID = ACC.CHILDID_NONE;
+			switch (e.code) {
+				case ACC.NAVDIR_UP:
+				case ACC.NAVDIR_DOWN:
+					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
+					break;
+				case ACC.NAVDIR_FIRSTCHILD:
+					if (items.length > 0) childID = 1;
+					break;
+				case ACC.NAVDIR_LASTCHILD:
+					if (items.length > 0) childID = items.length;
+					break;
+				case ACC.NAVDIR_LEFT:
+				case ACC.NAVDIR_PREVIOUS:
+					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
+					if (items.length > 0 && childID > 1) childID = childID - 1;
+					break;
+				case ACC.NAVDIR_RIGHT:
+				case ACC.NAVDIR_NEXT:
+					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
+					if (items.length > 0 && childID < items.length) childID = childID + 1;
+					break;
+			}
+			e.childID = childID;
+		}
+		
+		public void getChildCount(AccessibleControlEvent e) {
+			e.code = items.length;
+		}
+		
+		public void getDefaultAction(AccessibleControlEvent e) {
+			String action = "";
+			int childID = e.childID;
+			if (childID > 0 && childID <= items.length) {
+				action = "Switch";
+			}
+			e.result = action;
+		}
+
+		public void getRole(AccessibleControlEvent e) {
+			int role = 0;
+			int childID = e.childID;
+			if (childID == ACC.CHILDID_SELF) {
+				role = ACC.ROLE_SYSTEM_PAGETABLIST;
+			}
+			if (childID > 0 && childID <= items.length) {
+				role = ACC.ROLE_SYSTEM_PAGETAB;
+			}
+			e.code = role;
+		}
+		
+		public void getSelection(AccessibleControlEvent e) {
+			e.childID = (selectedIndex == -1) ? ACC.CHILDID_NONE : selectedIndex + 1;
+		}
+		
+		public void getState(AccessibleControlEvent e) {
+			int state = 0;
+			int childID = e.childID;
+			if (childID == ACC.CHILDID_SELF) {
+				state = ACC.STATE_SYSTEM_NORMAL;
+			}
+			if (childID > 0 && childID <= items.length) {
+				state = ACC.STATE_SYSTEM_SELECTABLE;
+				if (selectedIndex == childID - 1) {
+					state |= ACC.STATE_SYSTEM_SELECTED;
+				}
+			}
+			e.code = state;
+		}
+		
+		public void getChildren(AccessibleControlEvent e) {
+			Object[] children = new Object[items.length];
+			for (int i = 0; i < items.length; i++) {
+				children[i] = new Integer(i + 1);
+			}
+			e.children = children;
+		}
+	});
+}
 private void layoutButtons() {
 	
 	updateArrowBar();

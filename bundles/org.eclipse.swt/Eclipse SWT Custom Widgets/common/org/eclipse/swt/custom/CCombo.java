@@ -253,7 +253,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point textSize = text.computeSize (wHint, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point listSize = list.computeSize (wHint, SWT.DEFAULT, changed);
-	Point barSize = list.getVerticalBar().getSize();
 	int borderWidth = getBorderWidth();
 	
 	height = Math.max (hHint, Math.max(textSize.y, arrowSize.y)  + 2*borderWidth);
