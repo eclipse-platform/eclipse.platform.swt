@@ -2385,14 +2385,13 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (((state & DISABLED) == 0) == enabled) return;
+	boolean fixFocus = !enabled && isFocusAncestor ();
 	if (enabled) {
-		if ((state & DISABLED) == 0) return;
 		state &= ~DISABLED;
 	} else {
-		if ((state & DISABLED) != 0) return;
 		state |= DISABLED;
 	}
-	boolean fixFocus = !enabled && isFocusAncestor ();
 	enableWidget (enabled);
 	if (fixFocus) fixFocus ();
 }
