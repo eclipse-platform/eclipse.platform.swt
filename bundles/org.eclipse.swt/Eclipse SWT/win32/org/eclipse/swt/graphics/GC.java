@@ -155,18 +155,17 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			if (disjoint) {
 				OS.InvalidateRect(hwnd, lprcScroll, true);
 			} else {
-				RECT rect = new RECT();
 				if (deltaX != 0) {
 					int newX = destX - deltaX;
 					if (deltaX < 0) newX = destX + width;
-					OS.SetRect(rect, newX, srcY, newX + Math.abs(deltaX), srcY + height);
-					OS.InvalidateRect(hwnd, rect, true);
+					OS.SetRect(lprcScroll, newX, srcY, newX + Math.abs(deltaX), srcY + height);
+					OS.InvalidateRect(hwnd, lprcScroll, true);
 				}
 				if (deltaY != 0) {
 					int newY = destY - deltaY;
 					if (deltaY < 0) newY = destY + height;
-					OS.SetRect(rect, srcX, newY, srcX + width, newY + Math.abs(deltaY));
-					OS.InvalidateRect(hwnd, rect, true);
+					OS.SetRect(lprcScroll, srcX, newY, srcX + width, newY + Math.abs(deltaY));
+					OS.InvalidateRect(hwnd, lprcScroll, true);
 				}
 			}
 		}
