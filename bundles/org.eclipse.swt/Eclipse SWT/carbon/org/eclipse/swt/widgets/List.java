@@ -120,6 +120,10 @@ ScrollBar createScrollBar (int type) {
 	return null;
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeViewsFont;
+}
+
 public void deselect (int index) {
 	checkWidget();
 	ignoreSelect = true;

@@ -142,6 +142,10 @@ void createWidget () {
 	items = new TreeItem [4];
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeViewsFont;
+}
+
 public void deselectAll () {
 	checkWidget ();
 	ignoreSelect = true;

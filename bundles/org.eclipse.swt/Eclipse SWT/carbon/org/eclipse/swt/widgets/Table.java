@@ -159,6 +159,10 @@ void createWidget () {
 	columns = new TableColumn [4];
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeViewsFont;
+}
+
 public void deselect (int index) {
 	checkWidget();
 	ignoreSelect = true;

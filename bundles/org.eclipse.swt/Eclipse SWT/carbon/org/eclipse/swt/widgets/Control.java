@@ -164,8 +164,18 @@ void createWidget () {
 }
 
 Font defaultFont () {
-	Display display = getDisplay ();
-	return display.getSystemFont ();
+	byte [] family = new byte [256];
+	short [] size = new short [1];
+	byte [] style = new byte [1];
+	OS.GetThemeFont ((short) defaultThemeFont (), (short) OS.smSystemScript, family, size, style);
+	short id = OS.FMGetFontFamilyFromName (family);
+	int [] font = new int [1]; 
+	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
+	return Font.carbon_new (getDisplay (), font [0], id, style [0], size [0]);
+}
+
+int defaultThemeFont () {	
+	return OS.kThemeSystemFont;
 }
 
 void deregister () {
@@ -220,7 +230,7 @@ public boolean getEnabled () {
 
 public Font getFont () {
 	checkWidget();
-	return (font != null) ? font : defaultFont ();
+	return font != null ? font : defaultFont ();
 }
 
 public Color getForeground () {
@@ -898,16 +908,20 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	setFontStyle (font != null ? font : defaultFont ());
+	setFontStyle (font);
 }
 
 void setFontStyle (Font font) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-	fontStyle.font = font.id;
-	fontStyle.style = font.style;
-	fontStyle.size = font.size;
-	OS.SetControlFontStyle (handle, fontStyle); 
+	if (font != null) {
+		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
+		fontStyle.font = font.id;
+		fontStyle.style = font.style;
+		fontStyle.size = font.size;
+	} else {
+		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
+		fontStyle.font = (short) defaultThemeFont ();
+	}
 }
 
 public void setForeground (Color color) {

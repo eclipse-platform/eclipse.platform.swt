@@ -410,6 +410,8 @@ public class OS {
 	public static final int kThemeStateActive = 1;
 	public static final int kThemeStatePressed = 2;
 	public static final int kThemeSystemFont = 0;
+	public static final int kThemeToolbarFont = 108;
+	public static final int kThemeViewsFont = 3;
 	public static final int kThemeWatchCursor = 7;
 	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
 	public static final int kUtilityWindowClass = 8;

@@ -160,6 +160,10 @@ void createWidget () {
 	toolTipText = "";
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeToolbarFont;
+}
+
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (handle);
@@ -420,12 +424,16 @@ public void setEnabled (boolean enabled) {
 
 void setFontStyle (Font font) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-	fontStyle.font = font.id;
-	fontStyle.style = font.style;
-	fontStyle.size = font.size;
-	OS.SetControlFontStyle (handle, fontStyle);
-} 
+	if (font != null) {
+		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
+		fontStyle.font = font.id;
+		fontStyle.style = font.style;
+		fontStyle.size = font.size;
+	} else {
+		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
+		fontStyle.font = (short) defaultThemeFont ();
+	}
+}
 
 public void setDisabledImage (Image image) {
 	checkWidget();

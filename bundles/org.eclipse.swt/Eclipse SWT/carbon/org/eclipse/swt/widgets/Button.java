@@ -174,8 +174,8 @@ void createHandle () {
 	}
 
 	ControlFontStyleRec fontRec = new ControlFontStyleRec();
-	fontRec.flags = (short)OS.kControlUseThemeFontIDMask;
-	fontRec.font = OS.kThemePushButtonFont;
+	fontRec.flags = (short) OS.kControlUseThemeFontIDMask;
+	fontRec.font = (short) defaultThemeFont ();
 	OS.SetControlFontStyle (handle, fontRec);
 	
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
@@ -196,6 +196,10 @@ void createHandle () {
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
 	}
+}
+
+int defaultThemeFont () {	
+	return OS.kThemePushButtonFont;
 }
 
 void destroyWidget () {
