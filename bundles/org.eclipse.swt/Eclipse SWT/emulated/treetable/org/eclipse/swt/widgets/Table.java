@@ -1940,9 +1940,11 @@ void paintSubItem(Event event, TableItem paintItem, TableColumn column, int pain
 	
 	if (event.x + event.width > itemDrawStopX) {	// does the invalidated area stretch past the current column's right border?
 		clipX = Math.max(columnBounds.x, event.x);
-		event.gc.setClipping(											// clip the drawing area
-			clipX, event.y, 
-			Math.max(0, itemDrawStopX - clipX), event.height);		
+		Rectangle clipRect = new Rectangle(
+				clipX, event.y, 
+				Math.max(0, itemDrawStopX - clipX), event.height);
+		if (!drawGridLines) clipRect.width++;
+		event.gc.setClipping(clipRect);				// clip the drawing area
 	}
 	paintPosition = new Point(columnBounds.x, paintYPosition);
 	paintItem.paint(event.gc, paintPosition, column);
