@@ -2400,8 +2400,11 @@ boolean translateTraversal (MSG msg) {
 			/*
 			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
 			* always attempt traversal which is not correct.
-			* The default should the same as a plain Tab key.
+			* The default should be the same as a plain Tab key.
 			* This behavior is currently relied on by StyledText.
+			*
+			* The correct behavior is to give every key to a
+			* control that answers DLGC_WANTALLKEYS.
 			*/
 			lastAscii = '\t';
 			boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
@@ -2428,8 +2431,16 @@ boolean translateTraversal (MSG msg) {
 			all = true;
 			lastVirtual = true;
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
-			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			/*
+			* The fact that this code is commented causes Ctrl+PgUp
+			* and Ctrl+PgDn to always attempt traversal which is not
+			* correct.  This behavior is relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to a control
+			* that answers DLGC_WANTALLKEYS.
+			*/
+			//int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			//if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
 		}
