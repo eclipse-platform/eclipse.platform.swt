@@ -99,7 +99,7 @@ static int checkStyle (int style) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= HANDLE | MENU;
 	int parentHandle = parent.parentingHandle ();
 	if ((style & SWT.SINGLE) != 0) {
 		handle = OS.gtk_entry_new ();
@@ -820,19 +820,6 @@ int gtk_activate (int widget) {
 	return 0;
 }
 
-int gtk_button_press_event (int widget, int event) {
-	int result = super.gtk_button_press_event (widget, event) ;
-	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
-			return 1;
-		}
-	}	
-	return 0;
-}
-
 int gtk_changed (int widget) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -885,20 +872,6 @@ int gtk_delete_text (int widget, int start_pos, int end_pos) {
 	String newText = verifyText ("", start_pos, end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
-	}
-	return 0;
-}
-
-int gtk_event_after (int widget, int gdkEvent) {
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	switch (event.type) {
-		case OS.GDK_FOCUS_CHANGE: {
-			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
-			break;
-		}
 	}
 	return 0;
 }

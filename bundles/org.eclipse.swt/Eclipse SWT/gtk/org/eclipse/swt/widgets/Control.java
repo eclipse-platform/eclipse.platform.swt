@@ -1603,6 +1603,14 @@ int gtk_button_press_event (int widget, int event) {
 	int button = gdkEvent.button;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	sendMouseEvent (type, button, event);
+	int result = 0;
+	if ((state & MENU) != 0) {
+		if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+			if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
+				result = 1;
+			}
+		}
+	}	
 	
 	/*
 	* It is possible that the shell may be
@@ -1613,7 +1621,7 @@ int gtk_button_press_event (int widget, int event) {
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
-	return 0;
+	return result;
 }
 
 int gtk_button_release_event (int widget, int event) {
@@ -1648,10 +1656,12 @@ int gtk_event_after (int widget, int gdkEvent) {
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	switch (event.type) {
 		case OS.GDK_BUTTON_PRESS: {
-			GdkEventButton gdkEventButton = new GdkEventButton ();
-			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-			if (gdkEventButton.button == 3) {
-				showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			if ((state & MENU) == 0) {
+				GdkEventButton gdkEventButton = new GdkEventButton ();
+				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+				if (gdkEventButton.button == 3) {
+					showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+				}
 			}
 			break;
 		}

@@ -70,6 +70,7 @@ public abstract class Widget {
 //	static final int MOVED				= 1<<13;
 //	static final int RESIZED				= 1<<14;
 	static final int KEYED_DATA	= 1<<15;
+	static final int MENU	= 1<<16;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -1107,6 +1108,10 @@ void setKeyState (Event event, GdkEventKey keyEvent) {
 		}
 	}
 	setInputState (event, keyEvent.state);
+}
+
+int shellMapProc (int handle, int arg0, int user_data) {
+	return 0;
 }
 
 /**

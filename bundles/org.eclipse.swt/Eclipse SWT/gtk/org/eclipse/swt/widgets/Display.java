@@ -141,7 +141,11 @@ public class Display extends Device {
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 	
-	/* GtkTreeView callbacks */
+	/* Shell map callback */
+	int shellMapProc;
+	Callback shellMapCallback;
+	
+	/* GtkTreeView callback */
 	int[] treeSelection;
 	int treeSelectionLength;
 	int treeSelectionProc;
@@ -1428,6 +1432,10 @@ void initializeCallbacks () {
 	caretCallback = new Callback(this, "caretProc", 1);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	shellMapCallback = new Callback(this, "shellMapProc", 3);
+	shellMapProc = shellMapCallback.getAddress();
+	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
 	treeSelectionProc = treeSelectionCallback.getAddress();
@@ -1692,6 +1700,10 @@ void releaseDisplay () {
 	/* Dispose preedit window */
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
 	imControl = null;
+
+	/* Dispose the shell map callbacks */
+	shellMapCallback.dispose (); shellMapCallback = null;
+	shellMapProc = 0;
 	
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
@@ -2214,6 +2226,12 @@ void setCurrentCaret (Caret caret) {
 	if (caret == null) return;
 	int blinkRate = currentCaret.blinkRate;
 	caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0); 
+}
+
+int shellMapProc (int handle, int arg0, int user_data) {
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.shellMapProc (handle, arg0, user_data);
 }
 
 /**

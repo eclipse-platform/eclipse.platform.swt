@@ -101,7 +101,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, tooltipsHandle;
-	boolean hasFocus;
+	boolean hasFocus, mapped;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 
@@ -506,6 +506,7 @@ boolean hasBorder () {
 
 void hookEvents () {
 	super.hookEvents ();
+	int shellMapProc = display.shellMapProc;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
@@ -514,6 +515,7 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, CONFIGURE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, DELETE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, EVENT_AFTER);
+	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
 }
 
 public boolean isEnabled () {
@@ -947,25 +949,13 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
+		mapped = false;
 		OS.gtk_widget_show (shellHandle);
-		
-		//TEMPORARY CODE
-		final boolean[] mapped = new boolean [1];
-		Callback proc = new Callback(new Object() {
-			public int proc(int widget, int event, int userdata) {
-				mapped [0] = true;
-				return 0;
-			}
-		}, "proc", 3);
-		int id = OS.g_signal_connect (shellHandle, OS.map_event, proc.getAddress (), 0);		
-		while (!isDisposed () && !mapped [0]) {
+		while (!isDisposed () && !mapped) {
 			OS.gtk_main_iteration ();
 		}
-		proc.dispose();
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
-		OS.g_signal_handler_disconnect (shellHandle, id);
-		
 		adjustTrim ();
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
@@ -975,6 +965,11 @@ public void setVisible (boolean visible) {
 
 void setZOrder (Control sibling, boolean above) {
 	 setZOrder (sibling, above, false);
+}
+
+int shellMapProc (int handle, int arg0, int user_data) {
+	mapped = true;
+	return 0;
 }
 
 boolean traverseEscape () {

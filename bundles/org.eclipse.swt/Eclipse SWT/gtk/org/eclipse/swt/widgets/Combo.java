@@ -334,7 +334,7 @@ public void copy () {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= HANDLE | MENU;
 	fixedHandle = OS.gtk_fixed_new ();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
@@ -734,19 +734,6 @@ int gtk_activate (int widget) {
 	return 0;
 }
 
-int gtk_button_press_event (int widget, int event) {
-	int result = super.gtk_button_press_event (widget, event) ;
-	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
-			return 1;
-		}
-	}	
-	return 0;
-}
-
 int gtk_changed (int widget) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -774,20 +761,6 @@ int gtk_commit (int imContext, int text) {
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, entryHandle);
-	return 0;
-}
-
-int gtk_event_after (int widget, int gdkEvent) {
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	switch (event.type) {
-		case OS.GDK_FOCUS_CHANGE: {
-			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
-			break;
-		}
-	}
 	return 0;
 }
 
