@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.awt.win32;
+package org.eclipse.swt.internal.awt;
 
 import java.lang.reflect.Constructor;
 
@@ -26,7 +26,6 @@ import org.eclipse.swt.internal.Library;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Panel;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -42,7 +41,7 @@ public class SWT_AWT {
 
 static final native int getAWTHandle(Canvas canvas);
 
-public static Panel new_Panel (final Composite parent) {
+public static Frame new_Frame (final Composite parent) {
 	int handle = parent.handle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
@@ -71,10 +70,7 @@ public static Panel new_Panel (final Composite parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	final Frame frame = (Frame) value;
-	
-	Panel panel = new Panel ();
-	frame.add (panel);
+	final Frame frame = (Frame) value;	
 	parent.addListener (SWT.Activate, new Listener () {
 		public void handleEvent (Event e) {
 			/* Needed to fix focus for lightweights in JDK 1.3.1 */
@@ -135,7 +131,7 @@ public static Panel new_Panel (final Composite parent) {
 			});
 		}
 	});
-	return panel;
+	return frame;
 }
 
 public static Shell new_Shell (Display display, final Canvas parent) {
@@ -162,4 +158,4 @@ public static Shell new_Shell (Display display, final Canvas parent) {
 	shell.setVisible (true);
 	return shell;
 }
-}
+}
