@@ -34,10 +34,9 @@ import org.eclipse.swt.accessibility.*;
  */
 public final class CCombo extends Composite {
 
-	static final int ITEMS_SHOWING = 5;
-
 	Text text;
 	List list;
+	int maxItemCount = 5;
 	Shell popup;
 	Button arrow;
 	boolean hasFocus;
@@ -647,7 +646,9 @@ void internalLayout () {
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 	
 	Point size = getSize();
-	int itemHeight = list.getItemHeight () * ITEMS_SHOWING;
+	int itemCount = list.getItemCount();
+	itemCount = (itemCount == 0) ? maxItemCount : Math.min(maxItemCount, itemCount);
+	int itemHeight = list.getItemHeight () * itemCount;
 	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
 	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
 }
