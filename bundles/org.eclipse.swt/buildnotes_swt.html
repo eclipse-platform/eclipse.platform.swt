@@ -11,6 +11,100 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+SWT Build 2.1 001 - Tuesday July 23, 2002
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<blockquote>
+4428: Table - Grid lines not drawn correctly (1FE4K5U)  
+<br>4451: Shell: setDefaultButton, default button cannot be reset to null (1FGLS6M)
+<br>4489: MouseUp fired for button 1 when button 1 is still pressed (1FODDP4)
+<br>4511: Pane title update flashes tool bar buttons (1FUUR7A)  
+<br>4524: CTRL sequences not handled gracefully by TextEditor (1FVSBTS)  
+<br>4544: CTRL combination not handled as accelerators when Caps are locked (1FZQDGR)
+<br>4590: VerifyEvent values ignored (1G7G5Y3)  
+<br>4626: TableTree: Two selection events generated for each checkbox selection (1GBRSLM)
+<br>4642: DirectoryDialog does not support / on windows (1GD41DZ)  
+<br>4648: MenuItem.setEnabled() always causes a redraw (1GDDCN2)  
+<br>4786: FontDialog should give access to color setting (1GIEFBD)  
+<br>4861: Key state for toolbar items (1GL54A0)  
+<br>5935: StyledText - up/down arrow behavior wrt varying line lengths  
+<br>6775: Radio button setSelection changes focus  
+<br>9859: Combo widget doesn't fire keyPressed or keyReleased for Enter key
+<br>11868: StyledText: text selection with key 'arrow down' does not include last line
+<br>11994: StyledText - replace getXAtOffset(caretOffset) with caret.getLocation().x
+<br>12178: StyledText - move StyledTextRenderer#bidiTextWidth to DisplayRenderer
+<br>12181: StyledText - mixing text width/caret position is confusing  
+<br>13944: DCR - Need cut/copy/paste routines on Combo  
+<br>14672: Combo and Scale setBackground does not refresh  
+<br>14799: Window manipulations block other threads from executing  
+<br>15088: StyledText - getTopIndex semantics undefined when no line fully visible
+<br>15554: DCR - alignment in a text widget  
+<br>15559: JAWS reads the parent window for dialog shells  
+<br>15728: Packages view selection always one too high  
+<br>16110: StyledText scroll not working with PageUp/Down keys.  
+<br>16205: StyledText - Tab does not tab out of read-only  
+<br>16402: Working set dialog: table columns have incorrect size  
+<br>16777: Busy cursor lost over progress indicator edges  
+<br>16986: JavaViewer example should remember path  
+<br>17191: SWT Error in JUnit view  
+<br>17252: Accelerator labels: Ctrl-Shift-A, Shift-Ctrl-A or Shift-Ctl-A?
+<br>17279: Extra CoolBar row created when switching perspectives.  
+<br>17370: Combo box flashes to much when resizing dialog.  
+<br>17993: Find/Replace shouldn't replace typed entry with value from history
+<br>18253: Coolbar - disposing items not honoring setRedraw = false  
+<br>18308: Ctrl+SHIFT+@ does not call the listener.  
+<br>18429: ScrolledComposite with LayoutManager is VERY slow in iPAQ  
+<br>18570: Combo flashes by resizing  
+<br>19380: Listboxes flash as preferences dialog is resized  
+<br>19434: ToolItem does not need to check for TOGGLE  
+<br>19568: {} on a german keyboard [swt-carbon]  
+<br>19615: StyledText - example Text Editor bug in copy/paste  
+<br>19630: Coolbar - odd dispose behavior  
+<br>19815: JRE crashes using error log and progress bar.  
+<br>19964: Coolbar - can "lose" items when platform widget wraps  
+<br>20159: Right-clicking on coolbar grabber causes strange behavior  
+<br>20183: Motif : Coolbar preferred size is too small width wise  
+<br>20190: CoolBar problems on Windows XP with Manifest  
+<br>20339: Hitting spacebar does not press currently focused button  
+<br>20583: Segfault when control tries to dispose of itself under Motif  
+<br>20683: [ExternalTools]  F3 (and F2) crashes the JVM when trying to cancel an external tool on linux-gtk
+<br>20690: StyledText - bidi - should force font script when keyboard language changed
+<br>20705: Cursor Keys don't work in Dialogs  
+<br>20722: GTK TableColumn#pack does not work if no header  
+<br>20788: A composite is being mysteriously disposed for no reason  
+<br>20846: WIN32: 'Combo.indexOf' always returns -1 for empty string  
+<br>20893: Bad size for Text widget when flag READ_ONLY is set (Photon)  
+<br>20904: SWT exception on LayoutExample (Photon)  
+<br>20950: GTK: F1 help does not work for menu items.  
+<br>20956: Emulated CoolItem do not respect SWT.DROP_DOWN flag  
+<br>21030: StyledText - during cut if clipboard copy fails do not delete text
+<br>21096: Properties accelerator missing ENTER  
+<br>21122: Emacs: Accelerators not shown in menus under GTK  
+<br>21154: StyledText - BIDI - Bad effect of RLO unicode character  
+<br>21192: UnsatisfiedLinkError thrown when pressing a hardware key  
+<br>21215: [Help] F1 Help does not close menu on GTK  
+<br>21223: StyledText - Cursor should stop blinking when moving  
+<br>21268: StyledText - Ctrl+Shift+J inserts line  
+<br>21368: GTK: GC.drawImage() fails when scaling an image  
+<br>21371: SWTError while using Navigator->Goto->Resource  
+<br>21378: GTK: Shell event's doit flag ignored when shellClosed() is called
+<br>21412: Paste with accelator key doesn't work  
+<br>21413: CoolBar computeSize fails on XP  
+<br>21415: Javadoc for CLabel.setBackground has typos  
+<br>21440: Unable to display Today screen when SWT app running on WinCE  
+<br>21449: GTK: Calling Text.setSelection() causes GPF  
+<br>21456: GTK: Cannot type in Text widget contained in Shell which has style bit as NO_TRIM
+<br>21484: Shift-Tab does nothing on GTK  
+<br>21523: StyledText - caret does not move when widget shell is not open
+<br>21524: StyledText - NPE when typing text and caret is null  
+<br>21596: StyledText - initial bidi caret position wrong when widget empty
+<br>21598: StyledText - setFont enables caret when it was disabled  
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 2.0 047 - Monday June 17, 2002
 
 <h2>
