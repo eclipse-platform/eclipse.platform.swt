@@ -118,7 +118,7 @@ public class Display extends Device {
 	Color COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
 	Color COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_BORDER;
 	Color COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
-	Color COLOR_INFO_BACKGROUND;
+	Color COLOR_INFO_FOREGROUND, COLOR_INFO_BACKGROUND;
 	
 	/* Initial Guesses for Shell Trimmings. */
 	int borderTrimWidth = 4, borderTrimHeight = 4;
@@ -811,8 +811,8 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	Color xColor = null;
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 		return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;
+		case SWT.COLOR_INFO_FOREGROUND: 		return COLOR_INFO_FOREGROUND;
+		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;	
 		case SWT.COLOR_TITLE_FOREGROUND:		return super.getSystemColor (SWT.COLOR_WHITE);
 		case SWT.COLOR_TITLE_BACKGROUND:		return super.getSystemColor (SWT.COLOR_DARK_BLUE);
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_BLUE);
@@ -980,6 +980,7 @@ protected void init () {
 	COLOR_LIST_SELECTION = 			Color.carbon_new(this, 0x6666CC, true);
 	COLOR_LIST_SELECTION_TEXT = 	Color.carbon_new(this, 0xFFFFFF, true);
 	COLOR_INFO_BACKGROUND = 		Color.carbon_new(this, 0xFFFFE1, true);
+	COLOR_INFO_FOREGROUND = 		Color.carbon_new(this, 0x000000, true);
 	
 	fHoverThemeFont= (short) OS.kThemeSmallSystemFont;
 
@@ -1684,16 +1685,16 @@ public void update () {
 	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
 	*/
-	/*
-	int wHandle= 0;
-	int[] macEvent= new int[6];
-	while (OS.GetNextEvent((short)OS.updateMask, macEvent)) {
-		if (macEvent[0] == OS.updateEvt) {
-			wHandle= macEvent[1];
-			updateWindow(wHandle);
-		}
+	int[] mask= new int[] {
+		OS.kEventClassWindow, OS.kEventWindowDrawContent
+	};
+	int[] evt= new int[1];
+	while (OS.ReceiveNextEvent(mask.length/2, mask, 0.01, true, evt) == OS.noErr) {
+		int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
+        if (rc != OS.noErr)
+			System.out.println("Display.update: SendEventToEventTarget: " + rc);
+		OS.ReleaseEvent(evt[0]);
 	}
-	*/
 	/*
 	if (wHandle != 0) {
 		int port= OS.GetWindowPort(wHandle);
@@ -1879,7 +1880,7 @@ static String convertToLf(String text) {
 		case OS.kEventMenuOpening:
 		
 			if (fInContextMenu)
-				OS.SetMenuFont(mHandle, (short)1024, (short)11);	// AW: FIXME menu id
+				OS.SetMenuFont(mHandle, (short)1024, (short)11);	// AW todo: FIXME menu id
 			/*
 			// copy the menu's font
 			short[] fontID= new short[1];
@@ -2029,11 +2030,28 @@ static String convertToLf(String text) {
 	}
 	
 	private int handleTooltipWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
-		if (OS.GetEventClass(eRefHandle) != OS.kEventClassWindow
-						|| OS.GetEventKind(eRefHandle) != OS.kEventWindowDrawContent)
-			return OS.eventNotHandledErr;
-		processPaintToolTip(whichWindow);
-		return OS.noErr;
+		
+		int eventClass= OS.GetEventClass(eRefHandle);
+		int eventKind= OS.GetEventKind(eRefHandle);
+
+		if (eventClass == OS.kEventClassWindow && eventKind == OS.kEventWindowDrawContent) {
+			Rect bounds= new Rect();
+			OS.GetWindowBounds(whichWindow, (short)OS.kWindowContentRgn, bounds);
+			int width= bounds.right - bounds.left;
+			int height= bounds.bottom - bounds.top;
+			OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
+			MacUtil.RGBBackColor(COLOR_INFO_BACKGROUND.handle);
+			MacUtil.RGBForeColor(COLOR_INFO_FOREGROUND.handle);
+			OS.EraseRect(bounds);
+			if (fToolTipText != null) {
+				OS.SetRect(bounds, (short)TOOLTIP_MARGIN, (short)TOOLTIP_MARGIN, (short)(width-TOOLTIP_MARGIN), (short)(height-TOOLTIP_MARGIN));
+				int sHandle= OS.CFStringCreateWithCharacters(fToolTipText);
+				OS.DrawThemeTextBox(sHandle, fHoverThemeFont, OS.kThemeStateActive, true, bounds, (short)0, 0);
+				OS.CFRelease(sHandle);
+			}
+			return OS.noErr;
+		}
+		return OS.eventNotHandledErr;
 	}
 	
 	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
@@ -2332,75 +2350,6 @@ static String convertToLf(String text) {
 		return OS.noErr;
 	}
 		
-	public void updateWindow(int whichWindow) {
-	
-		int[] curPort = new int[1];
-		OS.GetPort(curPort);
-		OS.SetPortWindowPort(whichWindow);
-		OS.BeginUpdate(whichWindow);
-		
-		int updateRegion= OS.NewRgn();
-		OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), updateRegion);
-		OS.EraseRgn(updateRegion);
-		OS.UpdateControls(whichWindow, updateRegion);			
-		OS.DisposeRgn(updateRegion);
-
-		OS.EndUpdate(whichWindow);
-		OS.SetPort(curPort[0]);
-	}
-
-	/*
-	static void processAllUpdateEvents2(int cHandle) {
-		
-		if (true) {
-			int[] macEvent= new int[6];
-			while (OS.GetNextEvent(OS.updateMask, macEvent))
-				if (macEvent[0] == OS.updateEvt)
-					getDefault().updateWindow(macEvent[1]);
-		} else {
-			int[] mask= new int[] {
-				OS.kEventClassWindow, OS.kEventWindowDrawContent
-			};
-			int[] evt= new int[1];
-			while (OS.ReceiveNextEvent(mask, 0.01, true, evt) == OS.noErr) {
-				//System.out.println("got update");
-				int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
-                if (rc != OS.noErr)
-					System.out.println("processAllUpdateEvents: " + rc);
-				OS.ReleaseEvent(evt[0]);
-			}
-		}
-
-		int wHandle= OS.GetControlOwner(cHandle);
-		if (wHandle != 0) {
-			int port= OS.GetWindowPort(wHandle);
-			if (port != 0) {
-				OS.QDFlushPortBuffer(port, 0);
-				//System.out.println("QDFlushPortBuffer");
-			}
-		}
-	}
-	*/
-	
-	private void processPaintToolTip(int wHandle) {
-			
-		Rect bounds= new Rect();
-		OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
-		int width= bounds.right - bounds.left;
-		int height= bounds.bottom - bounds.top;
-		OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
-		MacUtil.RGBBackColor(getSystemColor(SWT.COLOR_INFO_BACKGROUND).handle);
-		MacUtil.RGBForeColor(getSystemColor(SWT.COLOR_INFO_FOREGROUND).handle);
-		OS.EraseRect(bounds);
-		
-		if (fToolTipText != null) {
-			OS.SetRect(bounds, (short)TOOLTIP_MARGIN, (short)TOOLTIP_MARGIN, (short)(width-TOOLTIP_MARGIN), (short)(height-TOOLTIP_MARGIN));
-			int sHandle= OS.CFStringCreateWithCharacters(fToolTipText);
-			OS.DrawThemeTextBox(sHandle, fHoverThemeFont, OS.kThemeStateActive, true, bounds, (short)0, 0);
-			OS.CFRelease(sHandle);
-		}
-	}
-	
 	private void sendUserEvent(int kind) {
 		int[] event= new int[1];
 		OS.CreateEvent(0, SWT_USER_EVENT, kind, 0.0, OS.kEventAttributeUserEvent, event);
