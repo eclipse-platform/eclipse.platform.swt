@@ -445,9 +445,12 @@ boolean filterMessage (MSG msg) {
 		return false;
 	}
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
-		if (translateAccelerator (msg)) return true;
-		if (translateMnemonic (msg)) return true;
-		if (translateTraversal (msg)) return true;
+		Control control = findControl (msg.hwnd);
+		if (control != null) {
+			if (translateAccelerator (msg, control)) return true;
+			if (translateMnemonic (msg, control)) return true;
+			if (translateTraversal (msg, control)) return true;
+		}
 	}
 	return false;
 }
@@ -1633,9 +1636,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 }
 
-boolean translateAccelerator (MSG msg) {
-	Control control = findControl (msg.hwnd);
-	if (control == null) return false;
+boolean translateAccelerator (MSG msg, Control control) {
 	accelKeyHit = true;
 	boolean result = control.translateAccelerator (msg);
 	accelKeyHit = false;
@@ -1649,18 +1650,16 @@ static int translateKey (int key) {
 	return 0;
 }
 
-boolean translateMnemonic (MSG msg) {
+boolean translateMnemonic (MSG msg, Control control) {
 	switch (msg.message) {
 		case OS.WM_CHAR:
 		case OS.WM_SYSCHAR:
-			Control control = findControl (msg.hwnd);
-			if (control == null) return false;
 			return control.translateMnemonic (msg);
 	}
 	return false;
 }
 
-boolean translateTraversal (MSG msg) {
+boolean translateTraversal (MSG msg, Control control) {
 	if (msg.message == OS.WM_KEYDOWN) {
 		switch (msg.wParam) {
 			case OS.VK_RETURN:
@@ -1672,8 +1671,6 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_RIGHT:
 			case OS.VK_PRIOR:
 			case OS.VK_NEXT:
-				Control control = findControl (msg.hwnd);
-				if (control == null) return false;
 				return control.translateTraversal (msg);
 		}
 	}

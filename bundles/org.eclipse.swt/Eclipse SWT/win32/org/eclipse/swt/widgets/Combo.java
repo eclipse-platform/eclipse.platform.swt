@@ -1107,6 +1107,18 @@ boolean translateAccelerator (MSG msg) {
 	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (msg.hwnd == hwndText) {
+		switch (msg.message) {
+			case OS.WM_CHAR:
+			case OS.WM_SYSCHAR:
+			case OS.WM_KEYDOWN:  {
+				Display display = getDisplay ();
+				if (msg.message == OS.WM_KEYDOWN) {
+					if (display.translateTraversal (msg, this)) return true;
+				} else {
+					if (display.translateMnemonic (msg, this)) return true;
+				}
+			}
+		}
 		OS.TranslateMessage (msg);
 		switch (msg.message) {
 			case OS.WM_CHAR:		WM_CHAR (msg.wParam, msg.lParam); break;
