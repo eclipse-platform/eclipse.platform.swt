@@ -798,6 +798,7 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC,
 	memmove__I_3BI_FUNC,
+	memmove__I_3CI_FUNC,
 	memmove__I_3II_FUNC,
 	memmove__I_3JI_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I_FUNC,

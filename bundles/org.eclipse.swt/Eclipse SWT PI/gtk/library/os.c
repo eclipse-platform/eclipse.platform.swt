@@ -9622,6 +9622,33 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 }
 #endif
 
+#ifndef NO_memmove__I_3CI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3CI)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__I_3CI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	}
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, memmove__I_3CI_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__I_3II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
