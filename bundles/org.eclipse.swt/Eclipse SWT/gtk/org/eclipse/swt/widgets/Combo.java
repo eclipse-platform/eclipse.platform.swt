@@ -410,6 +410,13 @@ public void deselectAll () {
 	setItems (getItems ());
 }
 
+/*
+ * FIXME
+protected boolean hasFocus () {
+	return super.hasFocus();
+}
+*/
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
