@@ -1289,14 +1289,14 @@ void update () {
 	* and then answer the width of the widest bitmap in the menu
 	* from WM_MEASURECHILD.
 	*/	
-	if (hasImage && hasCheck) {
+	if (hasCheck) {
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
 		info.fMask = OS.MIIM_BITMAP;
-		info.hbmpItem = OS.HBMMENU_CALLBACK;
 		for (int i=0; i<items.length; i++) {
 			MenuItem item = items [i];
-			if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
+				info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
 				OS.SetMenuItemInfo (handle, item.id, false, info);
 			}
 		}
