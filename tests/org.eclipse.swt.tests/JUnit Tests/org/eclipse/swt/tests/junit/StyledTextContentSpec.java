@@ -25,7 +25,6 @@ import org.eclipse.swt.custom.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-import java.io.*;
 import java.lang.reflect.*;
 public class StyledTextContentSpec implements TextChangeListener {
 	static String contentClassName;
@@ -1007,9 +1006,9 @@ protected void setUp()  {
 	// create widget
 	widget = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 	GridData spec = new GridData();
-	spec.horizontalAlignment = spec.FILL;
+	spec.horizontalAlignment = GridData.FILL;
 	spec.grabExcessHorizontalSpace = true;
-	spec.verticalAlignment = spec.FILL;
+	spec.verticalAlignment = GridData.FILL;
 	spec.grabExcessVerticalSpace = true;
 	widget.setLayoutData(spec);
 	shell.open ();

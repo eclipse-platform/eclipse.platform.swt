@@ -6,7 +6,6 @@ package org.eclipse.swt.tests.junit;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.lang.reflect.*;
 import junit.framework.*;
 public class SwtTestCase extends TestCase {
 	/**

@@ -141,7 +141,7 @@ public void test_getCursorLocation() {
 public void test_getDefault() {
 	Display display = new Display();
 	try {
-		assertNotNull(display.getDefault());
+		assertNotNull(Display.getDefault());
 	} finally {
 		display.dispose();
 	}
