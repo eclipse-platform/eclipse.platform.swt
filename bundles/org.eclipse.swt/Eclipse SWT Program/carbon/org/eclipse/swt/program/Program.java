@@ -62,22 +62,20 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-    Vector extensions = new Vector();
-	extensions.add(".xml");
-	extensions.add(".html");
-	extensions.add(".java");
-	extensions.add(".properties");
-	extensions.add(".jar");
-	extensions.add(".zip");
-	extensions.add(".txt");
-	extensions.add(".jpeg");
-	extensions.add(".jpg");
-	extensions.add(".tiff");
-	extensions.add(".gif");
-	extensions.add(".png");
-	String[] result = new String[extensions.size()];
-	extensions.copyInto(result);
-	return result;
+	return new String [] {
+		".xml",
+		".html",
+		".java",
+		".properties",
+		".jar",
+		".zip",
+		".txt",
+		".jpeg",
+		".jpg",
+		".tiff",
+		".gif",
+		".png",
+	};
 }
 
 static Program getProgram (String key) {
@@ -117,11 +115,9 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	Vector programs = new Vector ();
-	programs.add(getProgram(".html")); 	
-	Program[] result = new Program[programs.size()];
-	programs.copyInto(result);
-	return result;
+	return new Program [] {
+		getProgram(".html"),
+	};
 }
 
 /**
