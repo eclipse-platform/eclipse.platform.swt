@@ -105,10 +105,19 @@ public class Display extends Device {
 	Callback windowCallback;
 	int windowProc, threadId, processId;
 	TCHAR windowClass;
-	static int WindowClassCount = 0;
+	static int WindowClassCount;
 	static final String WindowName = "SWT_Window";
 	EventTable eventTable, filterTable;
 
+	/* Widget Table */
+	int freeSlot = 0;
+	final static int GROW_SIZE = 1024;
+	int [] indexTable;
+	Control [] controlTable;
+	
+	/* Bar and Popup Menus */
+	Menu [] bars, popups;
+	
 	/* Message Filter */
 	Callback msgFilterCallback;
 	int msgFilterProc, hHook;
@@ -143,7 +152,7 @@ public class Display extends Device {
 	Callback messageCallback;
 	int [] systemFonts;
 	
-	/* Image list cache */	
+	/* ImageList Cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
 	/* Custom Colors for ChooseColor */
@@ -153,9 +162,6 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
-
-	/* Bar and Popup Menus */
-	Menu [] bars, popups;
 	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -394,6 +400,26 @@ void addBar (Menu menu) {
 		bars = newBars;
 	}
 	bars [index] = menu;
+}
+
+void addControl (int handle, Control control) {
+	if (handle == 0) return;
+	if (freeSlot == -1) {
+		int length = (freeSlot = indexTable.length) + GROW_SIZE;
+		int [] newIndexTable = new int [length];
+		Control [] newControlTable = new Control [length];
+		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
+		System.arraycopy (controlTable, 0, newControlTable, 0, freeSlot);
+		for (int i=freeSlot; i<length-1; i++) newIndexTable [i] = i + 1;
+		newIndexTable [length - 1] = -1;
+		indexTable = newIndexTable;
+		controlTable = newControlTable;
+	}
+	OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
+	int oldSlot = freeSlot;
+	freeSlot = indexTable [oldSlot];
+	indexTable [oldSlot] = -2;
+	controlTable [oldSlot] = control;
 }
 
 void addPopup (Menu menu) {
@@ -658,32 +684,17 @@ boolean filterMessage (MSG msg) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	return WidgetTable.get (handle);
+	return getControl (handle);
 }
 
-Control findControl(int handle) {
+Control findControl (int handle) {
 	if (handle == 0) return null;
-	/*
-	* This code is intentionally commented.  It is possible
-	* find the SWT control that is associated with a handle
-	* that belongs to another process when the handle was
-	* created by an in-proc OLE client.  In this case, the
-	* handle comes from another process, but it is a child
-	* of an SWT control.  For now, it is necessary to look
-	* at handles that do not belong to the SWT process.
-	*/
-//	int [] hwndProcessId = new int [1];
-//	OS.GetWindowThreadProcessId (handle, hwndProcessId);
-//	if (hwndProcessId [0] != processId) return null;
 	do {
-		Control control = WidgetTable.get (handle);
-		if (control != null && control.handle == handle) {
-			return control;
-		}
+		Control control = getControl (handle);
+		if (control != null) return control;
 	} while ((handle = OS.GetParent (handle)) != 0);
 	return null;
 }
-
 
 /**
  * Returns the display which the given thread is the
@@ -783,6 +794,44 @@ public Rectangle getClientArea () {
 	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 	return new Rectangle (x, y, width, height);
+}
+
+Control getControl (int handle) {
+	if (handle == 0) return null;
+	int index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	if (0 <= index && index < controlTable.length) {
+		Control control = controlTable [index];
+		/*
+		* This code is intentionally commented.  It is possible
+		* find the SWT control that is associated with a handle
+		* that belongs to another process when the handle was
+		* created by an in-proc OLE client.  In this case, the
+		* handle comes from another process, but it is a child
+		* of an SWT control.  For now, it is necessary to look
+		* at handles that do not belong to the SWT process.
+		*/
+//		int [] hwndProcessId = new int [1];
+//		int hwndThreadId = OS.GetWindowThreadProcessId (handle, hwndProcessId);
+//		if (hwndProcessId [0] != processId || hwndThreadId != threadId) {
+//			return null;
+//		}
+
+		/*
+		* Because GWL_USERDATA can be used by native widgets that
+		* do not belong to SWT, it is possible that GWL_USERDATA
+		* could return an index that is in the range of the table,
+		* but was not put there by SWT.  Therefore, it is necessary
+		* to check the handle of the control that is in the table
+		* against the handle that provided the GWL_USERDATA.
+		* 
+		* NOTE:  This check will not work in the case where the same
+		* widget is registered multiple times with different handles.
+		*/
+		if (control != null && control.handle == handle) {
+			return control;
+		}
+	}
+	return null;
 }
 
 /**
@@ -1207,27 +1256,17 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	/*
-	* NOTE:  Need to check that the shells that belong
-	* to another display have not been disposed by the
-	* other display's thread as the shells list is being
-	* processed.
-	*/
 	int count = 0;
-	Shell [] shells = WidgetTable.shells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			count++;
-		}
+	for (int i=0; i<controlTable.length; i++) {
+		Control control = controlTable [i];
+		if (control != null && control instanceof Shell) count++;
 	}
-	if (count == shells.length) return shells;
 	int index = 0;
 	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			result [index++] = shell;
+	for (int i=0; i<controlTable.length; i++) {
+		Control control = controlTable [i];
+		if (control != null && control instanceof Shell) {
+			result [index++] = (Shell) control;
 		}
 	}
 	return result;
@@ -1457,6 +1496,12 @@ protected void init () {
 		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
+	
+	/* Initialize the Widget Table */
+	indexTable = new int [GROW_SIZE];
+	controlTable = new Control [GROW_SIZE];
+	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
+	indexTable [GROW_SIZE - 1] = -1;
 }
 
 /**	 
@@ -1790,12 +1835,10 @@ static synchronized void register (Display display) {
  */
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = WidgetTable.shells ();
+	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			if (this == shell.display) shell.dispose ();
-		}
+		if (!shell.isDisposed ())  shell.dispose ();
 	}
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
@@ -1860,6 +1903,10 @@ void releaseDisplay () {
 	data = null;
 	keys = null;
 	values = null;
+	bars = popups = null;
+	indexTable = null;
+	controlTable = null;
+	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 }
 
 void releaseImageList (ImageList list) {
@@ -2002,6 +2049,20 @@ void removeBar (Menu menu) {
 			return;
 		}
 	}
+}
+
+Control removeControl (int handle) {
+	if (handle == 0) return null;
+	Control control = null;
+	int index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	if (0 <= index && index < controlTable.length) {
+		control = controlTable [index];
+		controlTable [index] = null;
+		indexTable [index] = freeSlot;
+		freeSlot = index;
+		OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
+	}
+	return control;
 }
 
 void removePopup (Menu menu) {
@@ -2501,12 +2562,10 @@ static int untranslateKey (int key) {
  */
 public void update() {
 	checkDevice ();
-	Shell[] shells = WidgetTable.shells ();
+	Shell[] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			shell.update (true);
-		}
+		if (!shell.isDisposed ()) shell.update (true);
 	}
 }
 
@@ -2561,9 +2620,12 @@ public void wake () {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
-	Control control = WidgetTable.get (hwnd);
-	if (control != null) {
-		return control.windowProc (msg, wParam, lParam);
+	int index = OS.GetWindowLong (hwnd, OS.GWL_USERDATA) - 1;
+	if (0 <= index && index < controlTable.length) {
+		Control control = controlTable [index];
+		if (control != null) {
+			return control.windowProc (msg, wParam, lParam);
+		}
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }

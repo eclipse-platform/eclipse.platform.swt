@@ -1421,7 +1421,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 			if (!OS.IsWinCE) {
 				int hwndPopup = OS.GetLastActivePopup (handle);
 				if (hwndPopup != 0 && hwndPopup != handle) {
-					if (WidgetTable.get (hwndPopup) == null) {
+					if (display.getControl (hwndPopup) == null) {
 						if (OS.IsWindowEnabled (hwndPopup)) {
 							OS.SetActiveWindow (hwndPopup);
 						}

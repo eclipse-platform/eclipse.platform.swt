@@ -498,7 +498,7 @@ int defaultForeground () {
 }
 
 void deregister () {
-	WidgetTable.remove (handle);
+	display.removeControl (handle);
 }
 
 void destroyWidget () {
@@ -962,7 +962,7 @@ boolean hasFocus () {
 	int hwndFocus = OS.GetFocus ();
 	while (hwndFocus != 0) {
 		if (hwndFocus == handle) return true;
-		if (WidgetTable.get (hwndFocus) != null) {
+		if (display.getControl (hwndFocus) != null) {
 			return false;
 		}
 		hwndFocus = OS.GetParent (hwndFocus);
@@ -1374,7 +1374,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void register () {
-	WidgetTable.put (handle, this);
+	display.addControl (handle, this);
 }
 
 void releaseHandle () {
@@ -1891,7 +1891,7 @@ public void setCursor (Cursor cursor) {
 		}
 		if (hwnd == 0) return;
 	}
-	Control control = WidgetTable.get (hwndCursor);
+	Control control = display.getControl (hwndCursor);
 	if (control == null) control = this;
 	control.setCursor (hwndCursor);
 }
@@ -2975,7 +2975,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 		}
 		return null;
 	}
-	Control control = WidgetTable.get (lParam);
+	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmCommandChild (wParam, lParam);
 }
@@ -3019,7 +3019,7 @@ LRESULT WM_CTLCOLOR (int wParam, int lParam) {
 		OS.SelectPalette (wParam, hPalette, false);
 		OS.RealizePalette (wParam);
 	}
-	Control control = WidgetTable.get (lParam);
+	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmColorChild (wParam, lParam);
 }
@@ -3041,7 +3041,7 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 		if (item == null) return null;
 		return item.wmDrawChild (wParam, lParam);
 	}
-	Control control = WidgetTable.get (struct.hwndItem);
+	Control control = display.getControl (struct.hwndItem);
 	if (control == null) return null;
 	return control.wmDrawChild (wParam, lParam);
 }
@@ -3108,7 +3108,7 @@ LRESULT WM_HELP (int wParam, int lParam) {
 
 LRESULT WM_HSCROLL (int wParam, int lParam) {
 	if (lParam == 0) return null;
-	Control control = WidgetTable.get (lParam);
+	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
 }
@@ -3631,7 +3631,7 @@ LRESULT WM_MEASUREITEM (int wParam, int lParam) {
 		return item.wmMeasureChild (wParam, lParam);
 	}
 	int hwnd = OS.GetDlgItem (handle, struct.CtlID);
-	Control control = WidgetTable.get (hwnd);
+	Control control = display.getControl (hwnd);
 	if (control == null) return null;
 	return control.wmMeasureChild (wParam, lParam);
 }
@@ -3843,7 +3843,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	int hwnd = hdr.hwndFrom;
 	if (hwnd == 0) return null;
-	Control control = WidgetTable.get (hwnd);
+	Control control = display.getControl (hwnd);
 	if (control == null) return null;
 	return control.wmNotifyChild (wParam, lParam);
 }
@@ -3969,7 +3969,7 @@ LRESULT WM_RBUTTONUP (int wParam, int lParam) {
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	int hitTest = lParam & 0xFFFF;
  	if (hitTest == OS.HTCLIENT) {
-		Control control = WidgetTable.get (wParam);
+		Control control = display.getControl (wParam);
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();
 		if (cursor != null) {
@@ -4240,7 +4240,7 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 
 LRESULT WM_VSCROLL (int wParam, int lParam) {
 	if (lParam == 0) return null;
-	Control control = WidgetTable.get (lParam);
+	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
 }

@@ -84,6 +84,7 @@ Composite () {
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
+
 Control [] _getChildren () {
 	int count = 0;
 	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
@@ -96,7 +97,7 @@ Control [] _getChildren () {
 	int index = 0;
 	hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
-		Control control = WidgetTable.get (hwndChild);
+		Control control = display.getControl (hwndChild);
 		if (control != null && control != this) {
 			children [index++] = control;
 		}
@@ -491,7 +492,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	}
 	int hwnd = hdr.idFrom;
 	if (hwnd == 0) return null;
-	Control control = WidgetTable.get (hwnd);
+	Control control = display.getControl (hwnd);
 	if (control == null) return null;
 	return control.toolTipText;
 }
@@ -632,7 +633,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					*/
 					int hwnd = hdr.idFrom;
 					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
-						Control control = WidgetTable.get (hwnd);
+						Control control = display.getControl (hwnd);
 						if (control != null) {
 							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
