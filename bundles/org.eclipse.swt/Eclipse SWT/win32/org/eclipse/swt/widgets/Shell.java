@@ -802,6 +802,7 @@ public void open () {
 	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 	setVisible (true);
+	if (isDisposed ()) return;
 	/*
 	* Bug in Windows XP.  Despite the fact that an icon has been
 	* set for a window, the task bar displays the wrong icon the
