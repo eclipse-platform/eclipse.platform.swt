@@ -280,6 +280,7 @@ public final class GridData {
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
 	int cacheWidth = -1, cacheHeight = -1;
+	boolean flushCache = false;
 
 /**
  * Constructs a new instance of GridData using
@@ -407,4 +408,15 @@ public String toString () {
  	string += "}";
 	return string;
 }
+
+public int childIndex;
+public boolean isItemData = true;
+public int hSpan;
+public boolean isItemData() {
+	return isItemData;
+}
+public boolean isSpacerData() {
+	return !isItemData;
+}
+
 }

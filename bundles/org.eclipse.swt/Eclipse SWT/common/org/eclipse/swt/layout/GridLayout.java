@@ -121,6 +121,10 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 
 Point computeSize (Control control, boolean flushCache) {
 	GridData data = (GridData) control.getLayoutData ();
+	if (data.flushCache) {
+		data.cacheWidth = data.cacheHeight = -1;
+		data.flushCache = false;
+	}
 	if (!flushCache & data.cacheWidth != -1 && data.cacheHeight != -1) {
 		return new Point (data.cacheWidth, data.cacheHeight);
 	}
@@ -359,6 +363,44 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 				delta = (availableWidth - totalWidth) / count;
 				remainder = (availableWidth - totalWidth) % count;
 				last = -1;
+			}
+		}
+	}
+	
+	/* Wrapping */
+	if (move) {
+		for (int j=0; j<columnCount; j++) {
+			for (int i=0; i<rowCount; i++) {
+				GridData data = getData (grid, i, j, rowCount, columnCount, false);
+				if (data != null) {
+					if (data.heightHint == SWT.DEFAULT) {
+						Control child = grid [i][j];
+						//TEMPORARY CODE
+						if ((child.getStyle () & SWT.WRAP) != 0) {
+							int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
+							int currentWidth = 0;
+							for (int k=0; k<hSpan; k++) {
+								currentWidth += widths [j-k];
+							}
+							currentWidth += (hSpan - 1) * horizontalSpacing - data.horizontalIndent;
+							if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) ||
+								(data.cacheWidth > currentWidth)) { 
+								int trim = 0;
+								if (child instanceof Scrollable) {
+									Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
+									trim = rect.width;
+								} else {
+									trim = child.getBorderWidth () * 2;
+								}
+								currentWidth = Math.max (0, currentWidth - trim);
+								Point size = child.computeSize (currentWidth, data.heightHint, true);
+								data.cacheWidth = size.x;
+								data.cacheHeight = size.y;
+								data.flushCache = true;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
