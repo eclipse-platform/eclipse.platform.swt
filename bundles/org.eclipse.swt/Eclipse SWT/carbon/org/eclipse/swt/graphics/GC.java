@@ -7,7 +7,6 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
  
@@ -365,11 +364,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	if (destBits == 0)
 		return;
 
-	MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-
  	try {
 		if (focus(true, null)) {
 	
+			MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
 			fRect.set(destX, destY, destWidth, destHeight);
 		
 			OS.RGBBackColor(0x00FFFFFF);
@@ -1225,8 +1223,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			fRect.set(x, y, width, height);
-			int t= data.background & 0xff000000;
-			if (t == 0) {
+			if ((data.background & 0xFF000000) == 0) {
 				OS.RGBForeColor(data.background);
 				OS.PaintRect(fRect.getData());
 			} else {
@@ -1680,9 +1677,6 @@ public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	/* AW
-	OS.XSetBackground(data.display, handle, color.handle.pixel);
-	*/
 	data.background= color.handle;
 }
 /**
@@ -1796,9 +1790,6 @@ public void setForeground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	/* AW
-	OS.XSetForeground(data.display, handle, color.handle.pixel);
-	*/
 	data.foreground= color.handle;
 }
 /** 
@@ -2140,7 +2131,7 @@ public String toString () {
 		if ((color & 0xff000000) == 0) {
 			OS.RGBForeColor(color);
 		} else {
-			OS.RGBForeColor(0x000000);
+			OS.RGBForeColor(0x000000);	// black
 		}
 	}
 	
@@ -2148,7 +2139,7 @@ public String toString () {
 		if ((color & 0xff000000) == 0) {
 			OS.RGBBackColor(color);
 		} else {
-			OS.RGBBackColor(0xFFFFFF);
+			OS.RGBBackColor(0xFFFFFF);	// white
 		}
 	}
 	
