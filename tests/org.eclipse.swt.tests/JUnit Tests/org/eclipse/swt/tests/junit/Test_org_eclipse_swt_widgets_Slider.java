@@ -12,7 +12,10 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
-import org.eclipse.swt.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -54,15 +57,39 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	boolean exceptionThrown = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent event) {
+			listenerCalled = true;
+		}
+		public void widgetDefaultSelected(SelectionEvent event) {
+		}
+	};
+	try {
+		slider.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	slider.addSelectionListener(listener);
+	slider.setSelection(0);
+	assertTrue(":a:", listenerCalled == false);
+	slider.removeSelectionListener(listener);
+	try {
+		slider.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// super class method sufficient test
 }
 
 public void test_getEnabled() {
-	warnUnimpl("Test test_getEnabled not written");
+	// tested in setEnabled method
 }
 
 public void test_getIncrement() {
@@ -75,11 +102,29 @@ public void test_getIncrement() {
 }
 
 public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
+	slider.setMaximum(2000);
+	assertTrue(":a:", slider.getMaximum() == 2000);
+	slider.setMaximum(20);
+	assertTrue(":b:", slider.getMaximum() == 20);
+	slider.setMaximum(-1);
+	assertTrue(":c:", slider.getMaximum() == 20);
+	slider.setMaximum(0);
+	assertTrue(":d:", slider.getMaximum() == 20);
+	slider.setMaximum(10);
+	assertTrue(":d:", slider.getMaximum() == 10);
 }
 
 public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
+	slider.setMinimum(5);
+	assertTrue(":a:", slider.getMinimum() == 5);
+	slider.setMinimum(20);
+	assertTrue(":b:", slider.getMinimum() == 20);
+	slider.setMinimum(-1);
+	assertTrue(":c:", slider.getMinimum() == 20);
+	slider.setMinimum(0);
+	assertTrue(":d:", slider.getMinimum() == 0);
+	slider.setMinimum(10);
+	assertTrue(":d:", slider.getMinimum() == 10);
 }
 
 public void test_getPageIncrement() {
@@ -92,7 +137,9 @@ public void test_getPageIncrement() {
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	slider.setSelection(10);
+	assertTrue(":a:", slider.getSelection()== 10);
+	
 }
 
 public void test_getThumb() {
@@ -100,15 +147,18 @@ public void test_getThumb() {
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in addSelectionListener method
 }
 
 public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
+	slider.setEnabled(true);
+	assertTrue(slider.getEnabled());
+	slider.setEnabled(false);
+	assertEquals(slider.getEnabled(), false);
 }
 
 public void test_setIncrementI() {
-	warnUnimpl("Test test_setIncrementI not written");
+	// tested in getIncrement method
 }
 
 public void test_setMaximumI() {
@@ -136,7 +186,8 @@ public void test_setMinimumI() {
 }
 
 public void test_setPageIncrementI() {
-	warnUnimpl("Test test_setPageIncrementI not written");
+	 slider.setPageIncrement(3);
+	 assertTrue(":a:", slider.getPageIncrement()== 3);
 }
 
 public void test_setSelectionI() {
@@ -162,7 +213,13 @@ public void test_setThumbI() {
 }
 
 public void test_setValuesIIIIII() {
-	warnUnimpl("Test test_setValuesIIIIII not written");
+	slider.setValues(10, 10, 50, 2, 5, 10);
+	assertTrue(":a:", slider.getSelection() == 10);
+	assertTrue(":b:", slider.getMinimum() == 10);
+	assertTrue(":c:", slider.getMaximum() == 50);
+	assertTrue(":d:", slider.getThumb() == 2);
+	assertTrue(":e:", slider.getIncrement() == 5);
+	assertTrue(":f:", slider.getPageIncrement() == 10);
 }
 
 public static Test suite() {
