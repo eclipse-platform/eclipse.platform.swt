@@ -202,7 +202,7 @@ public class PaintView extends ViewPart {
 
 		/*** Create the remaining application elements inside the principal GUI layout elements ***/	
 		// paintSurface
-		paintSurface = new PaintSurface(paintCanvas, statusText);
+		paintSurface = new PaintSurface(paintCanvas, statusText, paintColorWhite);
 
 		// paintToolMap
 		paintToolMap = new HashMap();
