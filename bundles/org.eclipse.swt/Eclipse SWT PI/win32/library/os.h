@@ -276,6 +276,7 @@
 #define NO_RegQueryValueExA
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
+#define NO_RegisterWindowMessageA
 #define NO_SetLayout
 #define NO_Shell_1NotifyIconA
 #define NO_SHBrowseForFolderA
