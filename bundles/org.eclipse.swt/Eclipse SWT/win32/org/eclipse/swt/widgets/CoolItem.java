@@ -167,6 +167,11 @@ protected void checkSubclass () {
  * </ul>
  *
  * @see Layout
+ * @see #getBounds
+ * @see #getSize
+ * @see CoolBar#getBorderWidth
+ * @see CoolBar#computeTrim
+ * @see CoolBar#getClientArea
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget ();

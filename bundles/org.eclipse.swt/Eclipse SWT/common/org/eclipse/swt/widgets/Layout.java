@@ -40,7 +40,13 @@ public abstract class Layout {
  * @param hHint height (<code>SWT.DEFAULT</code> for minimum)
  * @param flushCache <code>true</code> means flush cached layout values
  * @return a point containing the computed size (width, height)
+ * 
  * @see #layout
+ * @see Control#getBorderWidth
+ * @see Control#getBounds
+ * @see Control#getSize
+ * @see Control#pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 protected abstract Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache);
 

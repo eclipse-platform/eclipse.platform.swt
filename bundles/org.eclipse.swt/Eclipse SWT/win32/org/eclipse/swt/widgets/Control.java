@@ -346,6 +346,11 @@ abstract int callWindowProc (int msg, int wParam, int lParam);
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
@@ -379,6 +384,11 @@ public Point computeSize (int wHint, int hHint) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -586,8 +596,8 @@ public boolean forceFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see addAccessibleListener
- * @see addAccessibleControlListener
+ * @see Accessible#addAccessibleListener
+ * @see Accessible#addAccessibleControlListener
  * 
  * @since 2.0
  */
