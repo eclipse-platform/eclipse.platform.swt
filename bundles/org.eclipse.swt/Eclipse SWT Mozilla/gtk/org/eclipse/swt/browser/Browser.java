@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 
@@ -32,7 +33,7 @@ import org.eclipse.swt.layout.*;
  * @since 3.0
  */
 public class Browser extends Composite {
-	
+	int boxHandle;
 	nsIWebBrowser webBrowser;
 
 	/* Interfaces for this Mozilla embedding notification */
@@ -262,11 +263,25 @@ public Browser(Composite parent, int style) {
 		rect.width = 1;
 		rect.height = 1;
 	}
+
+	/*
+	* Bug in Mozilla Linux GTK.  Embedding Mozilla into a GtkFixed
+	* handle causes problems with some Mozilla plug-ins.  For some
+	* reason, the Flash plug-in causes the child of the GtkFixed
+	* handle to be resized to 1 when the Flash document is loaded.
+	* That could be due to gtk_container_resize_children being called
+	* by Mozilla - or one of its plug-ins - on the GtkFixed handle,
+	* causing the child of the GtkFixed handle to be resized to 1.
+	* The workaround is to embed Mozilla into a GtkHBox handle.
+	*/
+	boxHandle = OS.gtk_hbox_new (false, 0);
+	OS.gtk_container_add (handle, boxHandle);
+	OS.gtk_widget_show (boxHandle);
 	/*
 	* Note. The following code compiles without warning on a 
 	* 64 bit platform but won't run. 
 	*/
-	rc = baseWindow.InitWindow((int)/*64*/handle, 0, 0, 0, rect.width, rect.height);
+	rc = baseWindow.InitWindow((int)/*64*/boxHandle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
@@ -923,11 +938,13 @@ void onResize() {
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
+
+	OS.gtk_widget_set_size_request(boxHandle, rect.width, rect.height);
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.SetPositionAndSize(rect.x, rect.y, rect.width, rect.height, true);
 	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
+
 }
 
 /**
@@ -1621,17 +1638,6 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 				inputStream.Release();
 			}
 		}
-
-		/*
-		* Bug on Mozilla Linux GTK.  The Mozilla browser is embedded into
-		* a GtkFixed handle. The Flash plug-in causes the GtkFixed handle
-		* to be reset to 1 pixel wide when a Flash document is loaded.  
-		* A workaround specific to Linux GTK would be to resize Mozilla on 
-		* the size-allocate callback for that GtkFixed handle.  This would
-		* add a dependency on the GTK API.  The workaround is to resize 
-		* Mozilla after every document complete.
-		*/
-		if (IsLinux) onResize();
 		
 		/*
 		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
@@ -1904,7 +1910,7 @@ int GetSiteWindow(int aSiteWindow) {
 	* Note. The following code compiles without warning on a 
 	* 64 bit platform but won't run. 
 	*/
-	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/handle}, 4);
+	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/boxHandle}, 4);
 	return XPCOM.NS_OK;     	
 }  
  
@@ -2068,5 +2074,4 @@ int OnHideTooltip() {
 	tip = null;
 	return XPCOM.NS_OK;
 }
-
 }

@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
@@ -130,8 +131,13 @@ Browser getBrowser(int aDOMWindow) {
 	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
 	embeddingSiteWindow.Release();
 	
+	/*
+	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
+	* and not directly into the parent Composite handle.
+	*/
+	int handle = OS.gtk_widget_get_parent(result[0]);
 	Display display = Display.getCurrent();
-	return (Browser)display.findWidget(result[0]); 
+	return (Browser)display.findWidget(handle); 
 }
 
 String getLabel(int buttonFlag, int index, int buttonTitle) {

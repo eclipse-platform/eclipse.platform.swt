@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -113,7 +114,12 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 	baseWindow.Release();
 
 	Display display = Display.getCurrent();
-	Browser src = (Browser)display.findWidget(aParentNativeWindow[0]);
+	/*
+	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
+	* and not directly into the parent Composite handle.
+	*/
+	int handle = OS.gtk_widget_get_parent(aParentNativeWindow[0]);
+	Browser src = (Browser)display.findWidget(handle);
 	final Browser browser;
 	boolean doit = false;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
