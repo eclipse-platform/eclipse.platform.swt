@@ -173,10 +173,10 @@ public void copyArea(Image image, int x, int y) {
 	if (data.control != 0) {
 		int[] offscreen = new int[1];
 		OS.HIViewCreateOffscreenImage(data.control, 0, null, offscreen);
-		copyArea(image, x, y, offscreen[0], false);
+		copyArea(image, x, y, offscreen[0]);
 		if (offscreen[0] != 0) OS.CGImageRelease(offscreen[0]);
 	} else if (data.image != null) {
-		copyArea(image, x, y, data.image.handle, false);
+		copyArea(image, x, y, data.image.handle);
 	} else if (data.window != 0) {
 		int imageHandle = image.handle;
 		CGRect rect = new CGRect();
@@ -199,14 +199,14 @@ public void copyArea(Image image, int x, int y) {
 				int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
 				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
 				OS.CGDataProviderRelease(provider);
-				copyArea(image, x, y, srcImage, true);
+				copyArea(image, x, y, srcImage);
 				if (srcImage != 0) OS.CGImageRelease(srcImage);
 			}
 		}
 	}	
 }
 
-void copyArea (Image image, int x, int y, int srcImage, boolean screen) {
+void copyArea (Image image, int x, int y, int srcImage) {
 	if (srcImage == 0) return;
 	int imageHandle = image.handle;
 	int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
@@ -221,12 +221,7 @@ void copyArea (Image image, int x, int y, int srcImage, boolean screen) {
 	 	rect.y = -y;
 	 	rect.width = OS.CGImageGetWidth(srcImage);
 		rect.height = OS.CGImageGetHeight(srcImage);
-		if (screen) {
-			OS.CGContextTranslateCTM(context, 0, -(rect.height - height));
-		} else {	
-			OS.CGContextScaleCTM(context, 1, -1);
-			OS.CGContextTranslateCTM(context, 0, -height);
-		}
+		OS.CGContextTranslateCTM(context, 0, -(rect.height - height));
 		OS.CGContextDrawImage(context, rect, srcImage);
 		OS.CGContextRelease(context);
 	}
