@@ -989,13 +989,18 @@ void setForegroundColor (GdkColor color) {
  * @see Tree#deselectAll()
  */
 public void setSelection (TreeItem [] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
 	boolean first = true;
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < length; i++) {
 		TreeItem item = items [i];
 		if (item == null) continue;
 		if (item.isDisposed ()) break;
@@ -1008,7 +1013,6 @@ public void setSelection (TreeItem [] items) {
 		}
 		OS.gtk_tree_path_free (path);
 		first = false;
-		if ((style & SWT.SINGLE) != 0) break;
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
