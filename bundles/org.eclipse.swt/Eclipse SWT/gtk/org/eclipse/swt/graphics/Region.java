@@ -260,4 +260,14 @@ public boolean isDisposed() {
 public boolean isEmpty() {
 	return OS.gdk_region_empty(handle);
 }
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Region {*DISPOSED*}";
+	return "Region {" + handle + "}";
+}
 }

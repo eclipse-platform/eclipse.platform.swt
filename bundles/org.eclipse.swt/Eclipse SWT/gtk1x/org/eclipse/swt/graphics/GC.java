@@ -1708,6 +1708,18 @@ public void dispose() {
 	
 }
 
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "GC {*DISPOSED*}";
+	return "GC {" + handle + "}";
+}
+
 /**
  * Returns the extent of the given string. Tab expansion, line
  * delimiter and mnemonic processing are performed according to

@@ -635,4 +635,16 @@ void init(Device display, ImageData image) {
 public boolean isDisposed() {
 	return pixmap == 0;
 }
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Image {*DISPOSED*}";
+	return "Image {" + pixmap + "}";
+}
+
 }
