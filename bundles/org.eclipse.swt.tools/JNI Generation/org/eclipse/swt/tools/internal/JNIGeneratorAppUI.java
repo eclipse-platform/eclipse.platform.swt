@@ -571,7 +571,7 @@ void createActionButtons(Composite parent) {
 	actionsLayout.numColumns = 1;
 	actionsPanel.setLayout(actionsLayout);
 	
-	createActionButton(actionsPanel, "Generate All", new Listener() {
+	createActionButton(actionsPanel, "Generate &All", new Listener() {
 		public void handleEvent(Event e) {
 			if (!updateOutputDir()) return;
 			Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
