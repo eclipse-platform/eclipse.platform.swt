@@ -1075,6 +1075,28 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	
+	/*
+	* Bug in Motif.  When a font is set in a combo box after the widget
+	* is realized, the combo box does not lay out properly.  For example,
+	* the drop down arrow may be positioned in the middle of the text
+	* field or may be invisible, positioned outside the bounds of the
+	* widget.  The fix is to detect these cases and force the combo box
+	* to be layed out properly by temporarily growing and then shrinking
+	* the widget.
+	* 
+	* NOTE: This problem also occurs for simple combo boxes.
+	*/
+	if (OS.XtIsRealized (handle)) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		OS.XtResizeWidget (handle, argList [1] + 1, argList [3], argList [5]);
+		OS.XtResizeWidget (handle, argList [1], argList [3], argList [5]);
+	}
+}
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
