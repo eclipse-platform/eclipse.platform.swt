@@ -84,8 +84,8 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 	OS.XSetGraphicsExposures (xDisplay, handle, true);
 	OS.XCopyArea(xDisplay, xDrawable, xDrawable, handle, x, y, width, height, destX, destY);
 	OS.XSetGraphicsExposures (xDisplay, handle, false);
-	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 	if (data.image != null) return;
+	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 	if (disjoint) {
 		OS.XClearArea (xDisplay, xDrawable, x, y, width, height, true);
 	} else {
