@@ -1716,8 +1716,6 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 
 				/* Menu messages */
 				case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam);
-//				case OS.WM_MENUCHAR:		result = WM_MENUCHAR (wParam, lParam); break;
-//				case OS.WM_MENUSELECT:		result = WM_MENUSELECT (wParam, lParam); break;
 					
 				/* Clipboard messages */
 				case OS.WM_CLEAR:
