@@ -256,6 +256,51 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+public void clear (int index) {
+	checkWidget ();
+	if (!(0 <= index && index < itemCount)) {
+		error(SWT.ERROR_INVALID_RANGE);
+	}
+	TableItem item = items [index];
+	item.clear();
+}
+
+public void clear (int start, int end) {
+	checkWidget ();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < itemCount)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	if (start == 0 && end == itemCount - 1) {
+		clearAll();
+	} else {
+		for (int i=start; i<=end; i++) {
+			clear(i);
+		}
+	}
+}
+
+public void clear (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	for (int i=0; i<indices.length; i++) {
+		if (!(0 <= indices [i] && indices [i] < itemCount)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+	}
+	for (int i=0; i<indices.length; i++) {
+		clear (indices [i]);
+	}
+}
+
+public void clearAll () {
+	checkWidget ();
+	for (int i=0; i<itemCount; i++) {
+		clear (i);
+	}
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
@@ -1783,17 +1828,20 @@ boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
 		OS.gtk_tree_path_free (path);
 		if (lastDataIndex != index [0]) {
 			lastDataIndex = lastIndexOf = index [0];
-			TableItem item = items [index [0]];	
-			Event event = new Event ();
-			event.item = item;
-			int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
-			int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
-			OS.g_signal_handlers_block_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
-			sendEvent (SWT.SetData, event);
-			if (isDisposed()) return false;
-			//widget could be disposed at this point
-			OS.g_signal_handlers_unblock_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
-			return true;
+			TableItem item = items [index [0]];
+			if (!item.cached) {
+				Event event = new Event ();
+				event.item = item;
+				int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+				int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
+				OS.g_signal_handlers_block_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
+				sendEvent (SWT.SetData, event);
+				if (isDisposed()) return false;
+				//widget could be disposed at this point
+				OS.g_signal_handlers_unblock_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
+				item.cached = true;
+				return true;
+			}
 		}
 	}
 	return false;

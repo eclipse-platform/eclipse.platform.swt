@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TableItem extends Item {
 	Table parent;
+	boolean cached;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -103,6 +104,16 @@ public TableItem (Table parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
+}
+
+void clear () {
+	if (cached) {
+		int columnCount = OS.gtk_tree_model_get_n_columns (parent.modelHandle);
+		for (int i=0; i<columnCount; i++) {
+			OS.gtk_list_store_set (parent.modelHandle, handle, i, 0, -1);
+		}
+	}
+	cached = false;
 }
 
 /**
@@ -550,6 +561,7 @@ public void setBackground (Color color) {
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkColor, -1);
+	cached = true;
 }
 
 /**
@@ -584,6 +596,7 @@ public void setBackground (int index, Color color) {
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
+	cached = true;
 	
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
@@ -593,8 +606,10 @@ public void setBackground (int index, Color color) {
 			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
 			int /*long*/ pixbufRenderer = OS.g_list_nth_data (list, length - 2);
 			OS.g_list_free (list);
-			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
-			OS.gtk_tree_view_column_set_cell_data_func (column, pixbufRenderer, display.pixbufCellDataProc, parent.handle, 0);
+			if ((parent.style & SWT.VIRTUAL) == 0) {
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, pixbufRenderer, display.pixbufCellDataProc, parent.handle, 0);
+			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
 			} else {
@@ -619,6 +634,7 @@ public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.CHECKED_COLUMN, checked, -1);
+	cached = true;
 }
 
 /**
@@ -643,8 +659,9 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ fontHandle  = font != null ? font.handle : 0;
+	int /*long*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FONT_COLUMN, fontHandle, -1);
+	cached = true;
 }
 
 /**
@@ -679,6 +696,7 @@ public void setFont (int index, Font font) {
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 4, fontHandle, -1);
+	cached = true;
 	
 	if (font != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
@@ -688,8 +706,10 @@ public void setFont (int index, Font font) {
 			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
 			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
 			OS.g_list_free (list);
-			OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
-			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
+			if ((parent.style & SWT.VIRTUAL) == 0) {
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
+			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
 			} else {
@@ -724,6 +744,7 @@ public void setForeground (Color color){
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkColor, -1);
+	cached = true;
 }
 
 /**
@@ -758,6 +779,7 @@ public void setForeground (int index, Color color){
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
+	cached = true;
 	
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
@@ -767,8 +789,10 @@ public void setForeground (int index, Color color){
 			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
 			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
 			OS.g_list_free (list);
-			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
-			OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
+			if ((parent.style & SWT.VIRTUAL) == 0) {
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
+			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
 			} else {
@@ -793,6 +817,7 @@ public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.GRAYED_COLUMN, grayed, -1);
+	cached = true;
 }
 
 /**
@@ -831,6 +856,7 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex, pixbuf, -1);
+	cached = true;
 }
 
 public void setImage (Image image) {
@@ -873,7 +899,9 @@ public void setImage (Image [] images) {
  */
 public void setImageIndent (int indent) {
 	checkWidget ();
+	if (indent < 0) return;
 	/* Image indent is not supported on GTK */
+	cached = true;
 }
 
 /**
@@ -903,6 +931,7 @@ public void setText (int index, String string) {
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 1, buffer, -1);
+	cached = true;
 }
 
 public void setText (String string) {
