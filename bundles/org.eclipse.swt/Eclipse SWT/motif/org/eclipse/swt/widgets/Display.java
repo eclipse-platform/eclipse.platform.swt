@@ -727,8 +727,8 @@ int createMask (int pixmap) {
 	int mask = OS.XCreatePixmap (xDisplay, pixmap, width [0], height [0], 1);
 	int gc = OS.XCreateGC (xDisplay, mask, 0, null);
 	if (OS.IsSunOS) {
-		OS.XSetBackground(xDisplay, gc, 0);
-		OS.XSetForeground(xDisplay, gc, 1);
+		OS.XSetBackground (xDisplay, gc, 0);
+		OS.XSetForeground (xDisplay, gc, 1);
 	}
 	OS.XCopyPlane (xDisplay, pixmap, mask, gc, 0, 0, width [0], height [0], 0, 0, 1);
 	OS.XFreeGC (xDisplay, gc);
