@@ -12,12 +12,21 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XImage {
-	public int width, height;
-	public int xoffset, format;
+	public int width;
+	public int height;
+	public int xoffset;
+	public int format;
 	public int data;
-	public int byte_order, bitmap_unit, bitmap_bit_order, bitmap_pad;
-	public int depth, bytes_per_line, bits_per_pixel;
-	public int red_mask, green_mask, blue_mask;
+	public int byte_order;
+	public int bitmap_unit;
+	public int bitmap_bit_order;
+	public int bitmap_pad;
+	public int depth;
+	public int bytes_per_line;
+	public int bits_per_pixel;
+	public int red_mask;
+	public int green_mask;
+	public int blue_mask;
 	public int obdata;
 //	struct funcs {
 		public int create_image;

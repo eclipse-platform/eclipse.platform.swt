@@ -23,12 +23,14 @@ public class XFontStruct {
 	public int default_char;
 	public int n_properties;
 	public int properties;
+	//XCharStruct min_bounds;
 	public short min_bounds_lbearing;
 	public short min_bounds_rbearing;
 	public short min_bounds_width;
 	public short min_bounds_ascent;
 	public short min_bounds_descent;
 	public short min_bounds_attributes;
+	//XCharStruct max_bounds;
 	public short max_bounds_lbearing;
 	public short max_bounds_rbearing;
 	public short max_bounds_width;
