@@ -582,6 +582,7 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (result == -1) return result;
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
 	if (theControl [0] != handle) return result;
@@ -753,6 +754,7 @@ public void redraw () {
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	if (getDrawCount () > 0) return;
 	if (!OS.IsControlVisible (handle)) return;
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);

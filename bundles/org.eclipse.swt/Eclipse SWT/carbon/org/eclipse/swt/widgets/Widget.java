@@ -477,6 +477,7 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	if (getDrawCount () > 0) return -1;
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
 	int [] region = new int [1];	
@@ -643,6 +644,7 @@ void postEvent (int eventType, Event event) {
 }
 
 void redrawWidget (int control) {
+	if (getDrawCount () > 0) return;
 	if (!OS.IsControlVisible (control)) return;
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
@@ -740,7 +742,8 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	oldBounds.bottom += inset.bottom;
 	boolean visible = OS.IsControlVisible (control);
 	int window = OS.GetControlOwner (control);
-	if (visible) OS.InvalWindowRect (window, oldBounds);
+	int drawCount = getDrawCount ();
+	if (visible && drawCount > 0) OS.InvalWindowRect (window, oldBounds);
 	x += inset.left;
 	y += inset.top;
 	width -= (inset.left + inset.right);
@@ -774,7 +777,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	newBounds.right = (short) (x + width);
 	newBounds.bottom = (short) (y + height);
 	OS.SetControlBounds (control, newBounds);
-	if (visible) OS.InvalWindowRect (window, newBounds);
+	if (visible && drawCount > 0) OS.InvalWindowRect (window, newBounds);
 	int result = 0;
 	if (move && !sameOrigin) {
 		if (events) sendEvent (SWT.Move);

@@ -259,6 +259,7 @@ Rect getInset () {
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (result == -1) return result;
 	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
 		Rect rect = new Rect();
 		OS.GetControlBounds (handle, rect);
