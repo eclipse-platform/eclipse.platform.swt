@@ -108,10 +108,26 @@ public String open () {
 	return answer;
 }
 
-boolean getAnswer() {
-	answer = "Yes";
-	return true;
+abstract boolean getAnswer();
+
+String getFileNameFromOS() {
+	int lpFilename = OS.gtk_file_selection_get_filename (handle);
+	int filenameLength = OS.strlen (lpFilename);
+	byte [] filenameBytes = new byte [filenameLength];
+	OS.memmove (filenameBytes, lpFilename, filenameLength);
+	return new String (Converter.mbcsToWcs (null, filenameBytes));
 }
+
+int calculateLastSeparatorIndex(String x) {
+	int separatorIndex = x.indexOf (separator);
+	int index = separatorIndex;
+	while (index != -1) {
+		separatorIndex = index;
+		index = x.indexOf (separator, index + 1);
+	}
+	return separatorIndex;
+}
+
 
 /*
  * The callback functions.

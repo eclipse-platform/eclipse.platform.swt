@@ -19,9 +19,10 @@ import org.eclipse.swt.widgets.*;
  * </p>
  */
 
-public class DirectoryDialog extends Dialog {
+public class DirectoryDialog extends GtkFileDialog {
 	String message = "", filterPath = "";
 	String directoryPath;
+
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -100,6 +101,7 @@ public String getFilterPath () {
 public String getMessage () {
 	return message;
 }
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -113,8 +115,9 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	return null;
+	return super.open();
 }
+
 /**
  * Sets the path which the dialog will use to filter
  * the directories it shows to the argument, which may be
@@ -134,5 +137,13 @@ public void setFilterPath (String string) {
  */
 public void setMessage (String string) {
 	message = string;
+}
+
+boolean getAnswer() {
+	String fileNameFromOS = getFileNameFromOS();
+	int separatorIndex = calculateLastSeparatorIndex(fileNameFromOS);
+	if (separatorIndex+1 != fileNameFromOS.length()) return false;  // the user selected a file
+	directoryPath = answer = fileNameFromOS;
+	return true;
 }
 }
