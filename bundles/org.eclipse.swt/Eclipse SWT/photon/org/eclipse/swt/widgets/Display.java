@@ -689,6 +689,10 @@ public Control getCursorControl () {
 	return null;
 }
 
+public Point getCursorSize () {
+	return new Point (32, 32);
+}
+
 /**
  * Returns the location of the on-screen pointer relative
  * to the top left corner of the screen.
