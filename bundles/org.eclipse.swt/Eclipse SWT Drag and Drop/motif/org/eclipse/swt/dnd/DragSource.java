@@ -57,9 +57,9 @@ import org.eclipse.swt.internal.motif.*;
  *	// This example will allow the text to be copied or moved to the drop target
  *	int operations = DND.DROP_MOVE | DND.DROP_COPY;
  *	
- *	DragSource source = new DragSource (label, operations);
+ *	DragSource source = new DragSource(label, operations);
  *	source.setTransfer(types);
- *	source.addDragListener (new DragSourceListener() {
+ *	source.addDragListener(new DragSourceListener() {
  *		public void dragStart(DragSourceEvent e) {
  *			// Only start the drag if there is actually text in the
  *			// label - this text will be what is dropped on the target.
@@ -67,7 +67,7 @@ import org.eclipse.swt.internal.motif.*;
  *				event.doit = false;
  *			}
  *		};
- *		public void dragSetData (DragSourceEvent event) {
+ *		public void dragSetData(DragSourceEvent event) {
  *			// A drop has been performed, so provide the data of the 
  *			// requested type.
  *			// (Checking the type of the requested data is only 

@@ -623,7 +623,7 @@ private int Release() {
  * Returns an array of the data types currently available on the system 
  * clipboard. Use with Transfer.isSupportedType.
  *
- * @return array of data types currently available on teh system clipboard
+ * @return array of data types currently available on the system clipboard
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
