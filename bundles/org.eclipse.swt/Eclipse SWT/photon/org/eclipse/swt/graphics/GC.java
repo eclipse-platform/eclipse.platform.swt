@@ -1544,6 +1544,10 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		toColor = fromColor;
 		fromColor = t;
 	}
+	if (fromColor == toColor) {
+		fillRectangle(x, y, width, height);
+		return;
+	}
 	PhPoint_t upperLeft = new PhPoint_t();
 	upperLeft.x = (short)x;
 	upperLeft.y = (short)y;
