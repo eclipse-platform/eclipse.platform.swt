@@ -1818,7 +1818,10 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			} while (theControl [0] != 0);
 			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
-				if (ignoreMouseUp && OS.GetEventKind(theEvent) == OS.kEventMouseUp) return OS.noErr;
+				if (ignoreMouseUp && OS.GetEventKind(theEvent) == OS.kEventMouseUp) {
+					ignoreMouseUp = false;
+					return OS.noErr;
+				}
 				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
 				return forward ? OS.noErr : result;
 			}
@@ -2304,7 +2307,7 @@ void runGrabs () {
 				int chord = OS.GetCurrentEventButtonState ();
 				if (grabControl != null && !grabControl.isDisposed ()) {
 					grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
-					ignoreMouseUp = true;
+					if (type == SWT.MouseUp) ignoreMouseUp = true;
 				}
 				//TEMPORARY CODE
 				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
