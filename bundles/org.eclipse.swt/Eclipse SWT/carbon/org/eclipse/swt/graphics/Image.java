@@ -694,6 +694,7 @@ void init(Device device, int width, int height) {
 	/* Fill the image with white */
 	int bpc = OS.CGImageGetBitsPerComponent(handle);
 	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	CGRect rect = new CGRect();
 	rect.width = width; rect.height = height;
 	OS.CGContextSetRGBFillColor(context, 1, 1, 1, 1);
@@ -844,7 +845,6 @@ public int internal_new_GC (GCData data) {
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.CGContextScaleCTM(context, 1, -1);
 	OS.CGContextTranslateCTM(context, 0, -height);
-	OS.CGContextSetShouldSmoothFonts(context, false);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {

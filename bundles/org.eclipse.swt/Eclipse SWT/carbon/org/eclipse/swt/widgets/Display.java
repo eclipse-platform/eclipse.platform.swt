@@ -2810,7 +2810,7 @@ boolean runEnterExit () {
 			mouseHoverID = 0;
 		}
 		// widget could be disposed at this point
-		if (control.isDisposed()) control = null;
+		if (control != null && control.isDisposed()) control = null;
 		if ((currentControl = control) != null) {
 			eventSent = true;
 			int chord = OS.GetCurrentEventButtonState ();
