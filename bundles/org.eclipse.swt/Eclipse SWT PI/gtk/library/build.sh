@@ -41,7 +41,7 @@ case $OS in
 					GECKO_LIBS="-L${GECKO_SDK}/lib -L${GECKO_SDK}/bin -lembed_base_s -lxpcomglue_s -lxpcom -lnspr4 -lplds4 -lplc4"
 				fi
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
-				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/x86_64
 				makefile="make_linux.mak"
 				echo "Building Linux GTK AMD64 version of SWT"
 				;;
