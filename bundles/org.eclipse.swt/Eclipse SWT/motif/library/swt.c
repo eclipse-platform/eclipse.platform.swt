@@ -8620,3 +8620,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_setlocale
 
     return rc;
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtInsertEventHandler
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtInsertEventHandler
+  (JNIEnv *env, jclass that, jint w, jint event_mask, jboolean nonmaskable, jint proc, jint client_data, jint position)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtInsertEventHandler\n");
+#endif
+
+	XtInsertEventHandler ((Widget) w, (EventMask) event_mask, (Boolean) nonmaskable, (XtEventHandler) proc, (XtPointer) client_data, (XtListPosition) position);
+}
