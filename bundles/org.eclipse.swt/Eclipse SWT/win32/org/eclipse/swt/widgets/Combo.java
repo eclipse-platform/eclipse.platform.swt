@@ -1123,6 +1123,8 @@ public void setItems (String [] items) {
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	// widget could be disposed at this point
+	sendEvent (SWT.Modify);
 }
 
 /**

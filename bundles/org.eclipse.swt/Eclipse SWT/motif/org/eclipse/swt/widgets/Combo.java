@@ -423,7 +423,6 @@ public void deselect (int index) {
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.XmTextSetString (argList[1], new byte[1]);
-		OS.XmTextSetInsertionPosition (argList[1], 0);
 		display.setWarnings (warnings);	
 		OS.XmListDeselectAllItems (argList[3]);
 	}
@@ -450,7 +449,6 @@ public void deselectAll () {
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList[1], new byte[1]);
-	OS.XmTextSetInsertionPosition (argList[1], 0);
 	display.setWarnings(warnings);	
 	OS.XmListDeselectAllItems (argList[3]);
 }
@@ -985,7 +983,6 @@ public void removeAll () {
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList[1], new byte[1]);
-	OS.XmTextSetInsertionPosition (argList[1], 0);
 	display.setWarnings(warnings);	
 	OS.XmListDeselectAllItems (argList[3]);
 	
@@ -1061,7 +1058,6 @@ public void select (int index) {
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.XmTextSetString (argList[1], new byte[1]);
-		OS.XmTextSetInsertionPosition (argList[1], 0);
 		display.setWarnings (warnings);	
 		OS.XmListDeselectAllItems (argList[3]);
 	} else {
@@ -1152,11 +1148,19 @@ public void setItems (String [] items) {
 	}
 	int ptr = OS.XtMalloc (index * 4);
 	OS.memmove (ptr, table, index * 4);
-	int [] argList = {OS.XmNitems, ptr, OS.XmNitemCount, index};
-	OS.XtSetValues (handle, argList, argList.length / 2);
+	int [] argList1 = {OS.XmNitems, ptr, OS.XmNitemCount, index};
+	OS.XtSetValues (handle, argList1, argList1.length / 2);
 	for (int i=0; i<index; i++) OS.XmStringFree (table [i]);
 	OS.XtFree (ptr);
 	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
+	
+	int [] argList2 = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList2, argList2.length / 2);
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.XmTextSetString (argList2[1], new byte[1]);
+	display.setWarnings(warnings);	
 }
 /**
  * Sets the selection in the receiver's text field to the
