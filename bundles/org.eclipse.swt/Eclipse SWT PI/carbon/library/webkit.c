@@ -162,5 +162,19 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 	return (NSArray *)proc((int)sender, 15, (int)element, (int)defaultMenuItems, 0, 0);
 }
 
+- (void)webView:(WebView *)sender setStatusBarVisible:(BOOL)visible
+{
+	proc((int)sender, 16, (int)visible, 0, 0, 0);
+}
+
+- (void)webView:(WebView *)sender setResizable:(BOOL)resizable
+{
+	proc((int)sender, 17, (int)resizable, 0, 0, 0);
+}
+
+- (void)webView:(WebView *)sender setToolbarsVisible:(BOOL)visible
+{
+	proc((int)sender, 18, (int)visible, 0, 0, 0);
+}
 @end
 

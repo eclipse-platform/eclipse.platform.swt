@@ -62,6 +62,7 @@ public class Browser extends Composite {
 	String url = "";
 	Point location;
 	Point size;
+	boolean statusBar = true, toolBar = true;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -522,6 +523,9 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 13: setFrame(arg0); break;
 		case 14: webViewClose(); break;
 		case 15: ret = contextMenuItemsForElement(arg0, arg1); break;
+		case 16: setStatusBarVisible(arg0); break;
+		case 17: setResizable(arg0); break;
+		case 18: setToolbarsVisible(arg0); break;
 	}
 	return ret;
 }
@@ -1290,6 +1294,19 @@ void webViewShow(int sender) {
 	newEvent.widget = this;
 	if (location != null) newEvent.location = location;
 	if (size != null) newEvent.size = size;
+	/*
+	* Feature in Safari.  Safari's tool bar contains
+	* the address bar.  The address bar is displayed
+	* if the tool bar is displayed. There is no separate
+	* notification for the address bar.
+	* Feature in Safari.  The menu bar is always
+	* displayed. There is no notification to hide
+	* the menu bar.
+	*/
+	newEvent.addressBar = toolBar;
+	newEvent.menuBar = true;
+	newEvent.statusBar = statusBar;
+	newEvent.toolBar = toolBar;
 	for (int i = 0; i < visibilityWindowListeners.length; i++)
 		visibilityWindowListeners[i].show(newEvent);
 	location = null;
@@ -1347,4 +1364,18 @@ int contextMenuItemsForElement(int element, int defaultMenuItems) {
 	}
 	return defaultMenuItems;
 }
+
+void setStatusBarVisible(int visible) {
+	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
+	statusBar = visible != 0;
+}
+
+void setResizable(int visible) {
+}
+
+void setToolbarsVisible(int visible) {
+	/* Note.  Webkit only emits the notification when the tool bar should be hidden. */
+	toolBar = visible != 0;
+}
+
 }
