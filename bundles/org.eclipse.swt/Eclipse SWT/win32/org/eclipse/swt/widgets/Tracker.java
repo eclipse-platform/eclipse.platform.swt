@@ -28,7 +28,7 @@ public class Tracker extends Widget {
 	Control parent;
 	Display display;
 	boolean tracking, stippled;
-	Rectangle [] rectangles = new Rectangle [0];
+	Rectangle [] rectangles;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -142,6 +142,24 @@ public void close () {
 	tracking = false;
 }
 
+Rectangle computeBounds () {
+	int xMin = rectangles [0].x;
+	int yMin = rectangles [0].y;
+	int xMax = rectangles [0].x + rectangles [0].width;
+	int yMax = rectangles [0].y + rectangles [0].height;
+	
+	for (int i = 1; i < rectangles.length; i++) {
+		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
+		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
+		int rectRight = rectangles [i].x + rectangles [i].width;
+		if (rectRight > xMax) xMax = rectRight;		
+		int rectBottom = rectangles [i].y + rectangles [i].height;
+		if (rectBottom > yMax) yMax = rectBottom;
+	}
+	
+	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
+}
+
 /**
  * Draw the rectangles displayed by the tracker.
  */
@@ -213,6 +231,13 @@ public boolean getStippled () {
 	return stippled;
 }
 
+void moveRectangles(int xChange, int yChange) {
+	for (int i = 0; i < rectangles.length; i++) {
+		rectangles [i].x += xChange;
+		rectangles [i].y += yChange;
+	}
+}
+
 /**
  * Start displaying the Tracker rectangles.
  * 
@@ -223,30 +248,34 @@ public boolean getStippled () {
  */
 public boolean open () {
 	checkWidget ();
+	if (rectangles == null) return false;
 	boolean cancelled = false;
 	tracking = true;
 	Event event = new Event ();
-	POINT pt = new POINT ();
 	MSG msg = new MSG ();
 	drawRectangles ();
 	int oldPos = OS.GetMessagePos ();
-	// Tracker behaves like a Dialog with its own OS event loop.
+	int oldX = (short) (oldPos & 0xFFFF);
+	int oldY = (short) (oldPos >> 16);	
+	/*
+ 	* Tracker behaves like a Dialog with its own OS event loop.
+ 	*/
 	while (tracking && !cancelled) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.GetMessage (msg, 0, 0, 0);
-		switch (msg.message) {
+		int message = msg.message;
+		switch (message) {
 			case OS.WM_LBUTTONUP:
 			case OS.WM_MOUSEMOVE:
 				int newPos = OS.GetMessagePos ();
-				if (newPos != oldPos) {
-					int oldX = (short) (oldPos & 0xFFFF);
-					int oldY = (short) (oldPos >> 16);
-					int newX = (short) (newPos & 0xFFFF);
-					int newY = (short) (newPos >> 16);	
+				int newX = (short) (newPos & 0xFFFF);
+				int newY = (short) (newPos >> 16);	
+				if (newX != oldX || newY != oldY) {
 					drawRectangles ();
-					for (int i=0; i<rectangles.length; i++) {
-						rectangles [i].x += newX - oldX;
-						rectangles [i].y += newY - oldY;
+					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles (newX - oldX, newY - oldY);
+					} else {
+						moveRectangles (newX - oldX, newY - oldY);
 					}
 					/*
 					* It is possible (but unlikely), that application
@@ -256,16 +285,95 @@ public boolean open () {
 					*/
 					event.x = newX;
 					event.y = newY;
-					sendEvent (SWT.Move, event);
+					if ((style | SWT.RESIZE) != 0) {
+						sendEvent (SWT.Resize, event);
+					} else {
+						sendEvent (SWT.Move, event);
+					}
 					if (isDisposed ()) return false;
 					drawRectangles ();
-					oldPos = newPos;
+					oldX = newX;
+					oldY = newY;
 				}
 				tracking = msg.message != OS.WM_LBUTTONUP;
 				break;
 			case OS.WM_KEYDOWN:
-				cancelled = msg.wParam == OS.VK_ESCAPE;
+				int stepSize = OS.GetKeyState (OS.VK_CONTROL) < 0 ? 2 : 10;
+				int xChange = 0, yChange = 0;
+				switch (msg.wParam) {
+					case OS.VK_ESCAPE:
+						cancelled = true;
+						tracking = false;
+						break;
+					case OS.VK_RETURN:
+						tracking = false;
+						break;
+					case OS.VK_LEFT:
+						xChange = -stepSize;
+						break;
+					case OS.VK_RIGHT:
+						xChange = stepSize;
+						break;
+					case OS.VK_UP:
+						yChange = -stepSize;
+						break;
+					case OS.VK_DOWN:
+						yChange = stepSize;
+						break;
+				}
+				if (xChange != 0 || yChange != 0) {
+					drawRectangles ();
+					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles (xChange, yChange);
+					} else {
+						moveRectangles (xChange, yChange);
+					}
+					newX = oldX + xChange;
+					newY = oldY + yChange;
+					event.x = newX;
+					event.y = newY;
+					if ((style | SWT.RESIZE) != 0) {
+						sendEvent (SWT.Resize, event);
+					} else {
+						sendEvent (SWT.Move, event);
+					}
+					/*
+					* It is possible (but unlikely) that application
+					* code could have disposed the widget in the move
+					* event.  If this happens return false to indicate
+					* that the tracking has failed.
+					*/
+					if (isDisposed ()) return false;
+					drawRectangles ();
+					Rectangle boundingRectangle = computeBounds();
+					if ((style & SWT.RESIZE) != 0) {
+						newX = boundingRectangle.x + boundingRectangle.width;
+						newY = boundingRectangle.y + boundingRectangle.height;
+					} else {
+						newX = boundingRectangle.x + boundingRectangle.width / 2;
+						newY = boundingRectangle.y;
+					}
+					POINT pt = new POINT ();
+					pt.x = newX;  pt.y = newY;
+					/*
+					 * Convert to screen coordinates iff needed
+					 */
+					if (parent != null) {
+						OS.ClientToScreen (parent.handle, pt);
+					}
+					OS.SetCursorPos (pt.x,pt.y);
+					oldX = pt.x;  oldY = pt.y;
+				}
+				
 				break;
+		}
+		/*
+		* Don't dispatch mouse and key events in general, EXCEPT once this
+		* tracker has finished its work.
+		*/
+		if (tracking && !cancelled) {
+			if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) continue;
+			if (OS.WM_MOUSEFIRST <= message && message <= OS.WM_MOUSELAST) continue;
 		}
 		OS.DispatchMessage (msg);
 	}
@@ -296,6 +404,14 @@ public void removeControlListener (ControlListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
+}
+
+void resizeRectangles(int xChange, int yChange) {
+	Rectangle boundingRectangle = computeBounds();
+	for (int i = 0; i < rectangles.length; i++) {
+		rectangles [i].width += rectangles [i].width * xChange / Math.max(1,boundingRectangle.width);
+		rectangles [i].height += rectangles [i].height * yChange / Math.max(1,boundingRectangle.height);
+	}
 }
 
 /**
