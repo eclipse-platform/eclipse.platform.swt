@@ -197,7 +197,6 @@ public Browser(Composite parent, int style) {
 								if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
 									int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
 									Variant pVarResult = auto.getProperty(rgdispid[0]);
-									pVarResult = auto.getProperty(rgdispid[0]);
 									IDispatch dispatchDocument = pVarResult.getDispatch();
 									pVarResult.dispose();
 									int[] ppvObject = new int[1];
