@@ -28,14 +28,14 @@ public class AdvancedGraphics {
 	
 	public Shell open(final Display display) {
 		final Shell shell = new Shell(display);
-		shell.setText(RESOURCE_BUNDLE.getString("AdvancedGraphics.0")); //$NON-NLS-1$
+		shell.setText(RESOURCE_BUNDLE.getString("AdvancedGraphics")); //$NON-NLS-1$
 		try {
 			Path path = new Path(display);
 			path.dispose();
 		} catch (SWTException e) {
 			MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-			dialog.setText(RESOURCE_BUNDLE.getString("AdvancedGraphics.1")); //$NON-NLS-1$
-			dialog.setMessage(RESOURCE_BUNDLE.getString("AdvancedGraphics.2")); //$NON-NLS-1$
+			dialog.setText(RESOURCE_BUNDLE.getString("Warning")); //$NON-NLS-1$
+			dialog.setMessage(RESOURCE_BUNDLE.getString("LibNotFound")); //$NON-NLS-1$
 			dialog.open();
 			shell.dispose();
 			return null;
