@@ -223,6 +223,7 @@ public class OS {
 	public static final int GTK_REALIZED  = 1 << 6;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RC_BG = 1 << 1;
+	public static final int GTK_RC_FG = 1 << 0;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_SELECTION_BROWSE = 0x2;
 	public static final int GTK_SELECTION_MULTIPLE = 0x3;
