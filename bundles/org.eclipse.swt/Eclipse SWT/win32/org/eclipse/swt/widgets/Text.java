@@ -989,6 +989,7 @@ public void insert (String string) {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
+	if (OS.IsUnicode) return mbcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
@@ -1666,6 +1667,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos <= 0) return 0;
+	if (OS.IsUnicode) return wcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];

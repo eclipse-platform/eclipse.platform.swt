@@ -861,6 +861,7 @@ public int indexOf (String string, int start) {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
+	if (OS.IsUnicode) return mbcsPos;
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return mbcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
@@ -1623,6 +1624,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos <= 0) return 0;
+	if (OS.IsUnicode) return wcsPos;
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return wcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);

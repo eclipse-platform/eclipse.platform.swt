@@ -536,6 +536,7 @@ int getSelectionText () {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
+	if (OS.IsUnicode) return mbcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
 	if (mbcsSize == 0) return 0;
 	if (mbcsPos >= mbcsSize) return mbcsSize;
