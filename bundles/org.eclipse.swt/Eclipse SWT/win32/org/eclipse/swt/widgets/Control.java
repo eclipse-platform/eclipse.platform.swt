@@ -703,7 +703,7 @@ public Rectangle getBounds () {
 int getCodePage () {
 	if (OS.IsUnicode) return OS.CP_ACP;
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	LOGFONT logFont = new LOGFONT ();
+	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
 	int [] lpCs = new int [8];

@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public abstract class NMTTDISPINFO extends NMHDR {
-	public int lpszText;
-	public int hinst;   
-	public int uFlags;
-	public int lParam;
-	public static final int sizeof = OS.IsUnicode ? 188 : 108;
+public class LOGFONTA extends LOGFONT {
+	public byte[] lfFaceName = new byte[OS.LF_FACESIZE];
+	public static final int sizeof = 60;
 }

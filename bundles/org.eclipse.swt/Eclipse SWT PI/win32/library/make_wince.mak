@@ -30,7 +30,7 @@ CFLAGS = /nologo /c /W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_n
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver) -D"WIN32_PLATFORM_PSPC"
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 
-SWT_OBJS = swt.obj structs.obj callback.obj
+SWT_OBJS = swt.obj structs.obj swt_custom.obj callback.obj
 
 all: $(SWT_LIB)
 

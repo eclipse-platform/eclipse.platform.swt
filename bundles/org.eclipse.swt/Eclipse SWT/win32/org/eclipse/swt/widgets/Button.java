@@ -184,7 +184,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int hDC = OS.GetDC (handle);
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		TEXTMETRIC lptm = new TEXTMETRIC ();
+		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, lptm);
 		int length = OS.GetWindowTextLength (handle);
 		if (length == 0) {

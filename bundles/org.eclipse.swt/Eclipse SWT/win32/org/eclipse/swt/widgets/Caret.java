@@ -304,7 +304,7 @@ void saveIMEFont () {
 	if (oldFont != null) return;
 	int hwnd = parent.handle;
 	int hIMC = OS.ImmGetContext (hwnd);
-	oldFont = new LOGFONT ();
+	oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	if (OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
@@ -429,7 +429,7 @@ public void setImage (Image image) {
 
 void setIMEFont (int hFont) {
 	if (!OS.IsDBLocale) return;
-	LOGFONT logFont = new LOGFONT ();
+	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
 		int hwnd = parent.handle;
 		int hIMC = OS.ImmGetContext (hwnd);

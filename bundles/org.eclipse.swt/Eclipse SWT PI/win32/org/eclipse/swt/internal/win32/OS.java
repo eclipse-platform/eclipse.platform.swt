@@ -58,18 +58,21 @@ public class OS {
 		* here, after the platform is determined in order
 		* for the value to be correct.
 		*/
-		OSVERSIONINFO info = new OSVERSIONINFO ();
+		OSVERSIONINFO info;
 		
 		// TEMPORARY CODE
 		String MBCS = System.getProperty ("MBCS"); //$NON-NLS-1$
 		if (MBCS != null) {
-			info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofA;
-			OS.GetVersionExA (info);
+			info = new OSVERSIONINFOA ();
+			info.dwOSVersionInfoSize = OSVERSIONINFOA.sizeof;
+			OS.GetVersionExA ((OSVERSIONINFOA)info);
 		} else {
-			info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofW;
-			if (!OS.GetVersionExW (info)) {
-				info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofA;
-				OS.GetVersionExA (info);
+			info = new OSVERSIONINFOW ();
+			info.dwOSVersionInfoSize = OSVERSIONINFOW.sizeof;
+			if (!OS.GetVersionExW ((OSVERSIONINFOW)info)) {
+				info = new OSVERSIONINFOA ();
+				info.dwOSVersionInfoSize = OSVERSIONINFOA.sizeof;
+				OS.GetVersionExA ((OSVERSIONINFOA)info);
 			}
 		}
 		OSVERSIONINFO.sizeof = info.dwOSVersionInfoSize;
@@ -492,6 +495,7 @@ public class OS {
 	public static final int LB_SETHORIZONTALEXTENT = 0x194;
 	public static final int LB_SETSEL = 0x185;
 	public static final int LB_SETTOPINDEX = 0x197;
+	public static final int LF_FACESIZE = 32;
 	public static final int LGRPID_ARABIC = 0xd;
 	public static final int LGRPID_HEBREW = 0xc;
 	public static final int LGRPID_INSTALLED = 1;
@@ -1297,8 +1301,8 @@ public static final int CreateFontIndirect (int lplf) {
 }
 
 public static final int CreateFontIndirect (LOGFONT lplf) {
-	if (IsUnicode) return CreateFontIndirectW (lplf);
-	return CreateFontIndirectA (lplf);
+	if (IsUnicode) return CreateFontIndirectW ((LOGFONTW)lplf);
+	return CreateFontIndirectA ((LOGFONTA)lplf);
 }
 
 public static final int CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam) {
@@ -1508,8 +1512,8 @@ public static final int GetObject (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject
 }
 
 public static final int GetObject (int hgdiobj, int cbBuffer, LOGFONT lpvObject) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, (LOGFONTW)lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, (LOGFONTA)lpvObject);
 }
 
 public static final int GetObject (int hgdiobj, int cbBuffer, LOGPEN lpvObject) {
@@ -1552,13 +1556,13 @@ public static final boolean GetTextExtentPoint32 (int hdc, TCHAR lpString, int c
 }
 
 public static final boolean GetTextMetrics (int hdc, TEXTMETRIC lptm) {
-	if (IsUnicode) return GetTextMetricsW (hdc, lptm);
-	return GetTextMetricsA (hdc, lptm);
+	if (IsUnicode) return GetTextMetricsW (hdc, (TEXTMETRICW)lptm);
+	return GetTextMetricsA (hdc, (TEXTMETRICA)lptm);
 }
 
 public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
-	if (IsUnicode) return GetVersionExW (lpVersionInfo);
-	return GetVersionExA (lpVersionInfo);
+	if (IsUnicode) return GetVersionExW ((OSVERSIONINFOW)lpVersionInfo);
+	return GetVersionExA ((OSVERSIONINFOA)lpVersionInfo);
 }
 
 public static final int GetWindowLong (int hWnd, int nIndex) {
@@ -1581,13 +1585,13 @@ public static final int GetWindowTextLength (int hWnd) {
 }
 
 public static final boolean ImmGetCompositionFont (int hIMC, LOGFONT lplf) {
-	if (IsUnicode) return ImmGetCompositionFontW (hIMC, lplf);
-	return ImmGetCompositionFontA (hIMC, lplf);
+	if (IsUnicode) return ImmGetCompositionFontW (hIMC, (LOGFONTW)lplf);
+	return ImmGetCompositionFontA (hIMC, (LOGFONTA)lplf);
 }
 
 public static final boolean ImmSetCompositionFont (int hIMC, LOGFONT lplf) {
-	if (IsUnicode) return ImmSetCompositionFontW (hIMC, lplf);
-	return ImmSetCompositionFontA (hIMC, lplf);
+	if (IsUnicode) return ImmSetCompositionFontW (hIMC, (LOGFONTW)lplf);
+	return ImmSetCompositionFontA (hIMC, (LOGFONTA)lplf);
 }
 
 public static final int ImmGetCompositionString (int hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
@@ -1684,33 +1688,33 @@ public static final void MoveMemory (TCHAR Destination, int Source, int Length) 
 
 public static final void MoveMemory (int Destination, LOGFONT Source, int Length) {
 	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
+		MoveMemory (Destination, (LOGFONTW)Source, Length);
 	} else {
-		MoveMemoryA (Destination, Source, Length);
+		MoveMemory (Destination, (LOGFONTA)Source, Length);
 	}
 }
 
 public static final void MoveMemory (LOGFONT Destination, int Source, int Length) {
 	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
+		MoveMemory ((LOGFONTW)Destination, Source, Length);
 	} else {
-		MoveMemoryA (Destination, Source, Length);
+		MoveMemory ((LOGFONTA)Destination, Source, Length);
 	}
 }
 
 public static final void MoveMemory (int Destination, NMTTDISPINFO Source, int Length) {
 	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
+		MoveMemory (Destination, (NMTTDISPINFOW)Source, Length);
 	} else {
-		MoveMemoryA (Destination, Source, Length);
+		MoveMemory (Destination, (NMTTDISPINFOA)Source, Length);
 	}
 }
 
 public static final void MoveMemory (NMTTDISPINFO Destination, int Source, int Length) {
 	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
+		MoveMemory ((NMTTDISPINFOW)Destination, Source, Length);
 	} else {
-		MoveMemoryA (Destination, Source, Length);
+		MoveMemory ((NMTTDISPINFOA)Destination, Source, Length);
 	}
 }
 
@@ -1932,8 +1936,8 @@ public static final boolean SystemParametersInfo (int uiAction, int uiParam, REC
 }
 
 public static final boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni) {
-	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
-	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, (NONCLIENTMETRICSW)pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, (NONCLIENTMETRICSA)pvParam, fWinIni);
 }
 
 public static final boolean SystemParametersInfo (int uiAction, int uiParam, int[] pvParam, int fWinIni) {
@@ -2006,8 +2010,8 @@ public static final native int CreateDCA (byte [] lpszDriver, byte [] lpszDevice
 public static final native int CreateDIBSection(int hdc, byte[] pbmi, int iUsage, int[] ppvBits, int hSection, int dwOffset);
 public static final native int CreateFontIndirectW (int lplf);
 public static final native int CreateFontIndirectA (int lplf);
-public static final native int CreateFontIndirectW (LOGFONT lplf);
-public static final native int CreateFontIndirectA (LOGFONT lplf);
+public static final native int CreateFontIndirectW (LOGFONTW lplf);
+public static final native int CreateFontIndirectA (LOGFONTA lplf);
 public static final native int CreateIconIndirect (ICONINFO lplf);
 public static final native int CreateMenu ();
 public static final native int CreatePalette (byte[] logPalette);
@@ -2147,8 +2151,8 @@ public static final native int GetObjectA (int hgdiobj, int cbBuffer, DIBSECTION
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, DIBSECTION lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
-public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGFONT lpvObject);
-public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGFONT lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGFONTA lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGFONTW lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
 public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
@@ -2175,12 +2179,12 @@ public static final native int GetSystemPaletteEntries(int hdc, int iStartIndex,
 public static final native int GetTextColor (int hDC);
 public static final native boolean GetTextExtentPoint32W (int hdc, char [] lpString, int cbString, SIZE lpSize);
 public static final native boolean GetTextExtentPoint32A (int hdc, byte [] lpString, int cbString, SIZE lpSize);
-public static final native boolean GetTextMetricsW (int hdc, TEXTMETRIC lptm);
-public static final native boolean GetTextMetricsA (int hdc, TEXTMETRIC lptm);
+public static final native boolean GetTextMetricsW (int hdc, TEXTMETRICW lptm);
+public static final native boolean GetTextMetricsA (int hdc, TEXTMETRICA lptm);
 public static final native boolean GetUpdateRect (int hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int hWnd, int hRgn, boolean bErase);
-public static final native boolean GetVersionExW (OSVERSIONINFO lpVersionInfo);
-public static final native boolean GetVersionExA (OSVERSIONINFO lpVersionInfo);
+public static final native boolean GetVersionExW (OSVERSIONINFOW lpVersionInfo);
+public static final native boolean GetVersionExA (OSVERSIONINFOA lpVersionInfo);
 public static final native int GetWindow (int hWnd, int uCmd);
 public static final native int GetWindowLongW (int hWnd, int nIndex);
 public static final native int GetWindowLongA (int hWnd, int nIndex);
@@ -2214,8 +2218,8 @@ public static final native boolean ImageList_SetIconSize (int himl, int cx, int 
 public static final native int ImmAssociateContext (int hWnd, int hIMC);
 public static final native int ImmCreateContext ();
 public static final native boolean ImmDestroyContext (int hIMC);
-public static final native boolean ImmGetCompositionFontW (int hIMC, LOGFONT lplf);
-public static final native boolean ImmGetCompositionFontA (int hIMC, LOGFONT lplf);
+public static final native boolean ImmGetCompositionFontW (int hIMC, LOGFONTW lplf);
+public static final native boolean ImmGetCompositionFontA (int hIMC, LOGFONTA lplf);
 public static final native int ImmGetCompositionStringW (int hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
 public static final native int ImmGetCompositionStringA (int hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
 public static final native int ImmGetContext (int hWnd);
@@ -2223,8 +2227,8 @@ public static final native boolean ImmGetConversionStatus (int hIMC, int [] lpfd
 public static final native int ImmGetDefaultIMEWnd (int hWnd);
 public static final native boolean ImmGetOpenStatus (int hIMC);
 public static final native boolean ImmReleaseContext (int hWnd, int hIMC);
-public static final native boolean ImmSetCompositionFontW (int hIMC, LOGFONT lplf);
-public static final native boolean ImmSetCompositionFontA (int hIMC, LOGFONT lplf);
+public static final native boolean ImmSetCompositionFontW (int hIMC, LOGFONTW lplf);
+public static final native boolean ImmSetCompositionFontA (int hIMC, LOGFONTA lplf);
 public static final native boolean ImmSetCompositionWindow (int hIMC, COMPOSITIONFORM lpCompForm);
 public static final native boolean ImmSetConversionStatus (int hIMC, int fdwConversion, int dwSentence);
 public static final native boolean ImmSetOpenStatus (int hIMC, boolean fOpen);
@@ -2271,11 +2275,11 @@ public static final native void MoveMemory (int Destination, byte [] Source, int
 public static final native void MoveMemory (int Destination, char [] Source, int Length);
 public static final native void MoveMemory (int Destination, int [] Source, int Length);
 public static final native void MoveMemory (int Destination, GRADIENT_RECT Source, int Length);
-public static final native void MoveMemoryW (int Destination, LOGFONT Source, int Length);
-public static final native void MoveMemoryA (int Destination, LOGFONT Source, int Length);
+public static final native void MoveMemory (int Destination, LOGFONTW Source, int Length);
+public static final native void MoveMemory (int Destination, LOGFONTA Source, int Length);
 public static final native void MoveMemory (int Destination, MEASUREITEMSTRUCT Source, int Length);
-public static final native void MoveMemoryW (int Destination, NMTTDISPINFO Source, int Length);
-public static final native void MoveMemoryA (int Destination, NMTTDISPINFO Source, int Length);
+public static final native void MoveMemory (int Destination, NMTTDISPINFOW Source, int Length);
+public static final native void MoveMemory (int Destination, NMTTDISPINFOA Source, int Length);
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
 public static final native void MoveMemory (int Destination, TRIVERTEX Source, int Length);
 public static final native void MoveMemory (int Destination, WINDOWPOS Source, int Length);
@@ -2283,8 +2287,8 @@ public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [
 public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (HDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (HELPINFO Destination, int Source, int Length);
-public static final native void MoveMemoryW (LOGFONT Destination, int Source, int Length);
-public static final native void MoveMemoryA (LOGFONT Destination, int Source, int Length);
+public static final native void MoveMemory (LOGFONTW Destination, int Source, int Length);
+public static final native void MoveMemory (LOGFONTA Destination, int Source, int Length);
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
@@ -2295,8 +2299,8 @@ public static final native void MoveMemory (NMHEADER Destination, int Source, in
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHEVRON Destination, int Source, int Length);
 public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);
-public static final native void MoveMemoryW (NMTTDISPINFO Destination, int Source, int Length);
-public static final native void MoveMemoryA (NMTTDISPINFO Destination, int Source, int Length);
+public static final native void MoveMemory (NMTTDISPINFOW Destination, int Source, int Length);
+public static final native void MoveMemory (NMTTDISPINFOA Destination, int Source, int Length);
 public static final native void MoveMemory (TVITEM Destination, int Source, int Length);
 public static final native void MoveMemory (WINDOWPOS Destination, int Source, int Length);
 public static final native void MoveMemory (MSG Destination, int Source, int Length);
@@ -2451,8 +2455,8 @@ public static final native int StartPage (int hdc);
 public static final native boolean StretchBlt (int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
-public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
-public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICSW pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, NONCLIENTMETRICSA pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, int[] pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, int[] pvParam, int fWinIni);
 public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);

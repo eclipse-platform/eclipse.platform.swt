@@ -10,10 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public abstract class NMTTDISPINFO extends NMHDR {
-	public int lpszText;
-	public int hinst;   
-	public int uFlags;
-	public int lParam;
-	public static final int sizeof = OS.IsUnicode ? 188 : 108;
+ 
+public class NONCLIENTMETRICSA extends NONCLIENTMETRICS {
+	public LOGFONTA lfCaptionFont = new LOGFONTA ();
+	public LOGFONTA lfSmCaptionFont = new LOGFONTA (); 
+	public LOGFONTA lfMenuFont = new LOGFONTA ();
+	public LOGFONTA lfStatusFont = new LOGFONTA ();
+	public LOGFONTA lfMessageFont = new LOGFONTA ();
+	public static final int sizeof = 340;
 }
+

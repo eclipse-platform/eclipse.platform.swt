@@ -183,7 +183,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
@@ -207,7 +207,7 @@ public Rectangle getClientArea () {
 	int hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);

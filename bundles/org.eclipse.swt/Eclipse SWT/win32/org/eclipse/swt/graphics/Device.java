@@ -166,7 +166,7 @@ int computePoints(LOGFONT logFont) {
 		 */
 		int hFont = OS.CreateFontIndirect(logFont);
 		int oldFont = OS.SelectObject(hDC, hFont);
-		TEXTMETRIC lptm = new TEXTMETRIC();
+		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hDC, lptm);
 		OS.SelectObject(hDC, oldFont);
 		OS.DeleteObject(hFont);
@@ -239,7 +239,7 @@ int EnumFontFamProc (int lpelfe, int lpntme, int FontType, int lParam) {
 		logFonts = newLogFonts;
 	}
 	LOGFONT logFont = logFonts [nFonts];
-	if (logFont == null) logFont = new LOGFONT ();
+	if (logFont == null) logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 	OS.MoveMemory (logFont, lpelfe, LOGFONT.sizeof);
 	logFonts [nFonts++] = logFont;
 	return 1;
@@ -379,7 +379,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	/* Initialize the instance variables */
 	logFonts = new LOGFONT [nFonts];
 	for (int i=0; i<logFonts.length; i++) {
-		logFonts [i] = new LOGFONT ();
+		logFonts [i] = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	}
 	nFonts = 0;
 
@@ -403,18 +403,11 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			 * should enumerate for each available style of that font. Instead, it only enumerates
 			 * once. The fix is to call EnumFontFamilies, which works as expected.
 			 */
-			char [] buffer = new char [] {
-				lf.lfFaceName0,  lf.lfFaceName1,  lf.lfFaceName2,  lf.lfFaceName3,
-				lf.lfFaceName4,  lf.lfFaceName5,  lf.lfFaceName6,  lf.lfFaceName7,
-				lf.lfFaceName8,  lf.lfFaceName9,  lf.lfFaceName10, lf.lfFaceName11,
-				lf.lfFaceName12, lf.lfFaceName13, lf.lfFaceName14, lf.lfFaceName15,
-				lf.lfFaceName16, lf.lfFaceName17, lf.lfFaceName18, lf.lfFaceName19,
-				lf.lfFaceName20, lf.lfFaceName21, lf.lfFaceName22, lf.lfFaceName23,
-				lf.lfFaceName24, lf.lfFaceName25, lf.lfFaceName26, lf.lfFaceName27,
-				lf.lfFaceName28, lf.lfFaceName29, lf.lfFaceName30, lf.lfFaceName31,
-			};
-			TCHAR lpFaceName = new TCHAR (0, new String(buffer), true);
-			OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			if (OS.IsUnicode) {
+				OS.EnumFontFamiliesW (hDC, ((LOGFONTW)lf).lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			} else {
+				OS.EnumFontFamiliesA (hDC, ((LOGFONTA)lf).lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			}
 		}
 	} else {
 		/* Use the character encoding for the default locale */

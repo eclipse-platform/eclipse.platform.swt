@@ -337,7 +337,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 	}	
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);

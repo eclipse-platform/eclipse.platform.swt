@@ -23,8 +23,8 @@ package org.eclipse.swt.internal.win32;
 public class TCHAR {
 	
 int codePage;
-char [] chars;
-byte [] bytes;
+public char [] chars;
+public byte [] bytes;
 int byteCount;
 
 public final static int sizeof = OS.IsUnicode ? 2 : 1;

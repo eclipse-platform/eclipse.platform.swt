@@ -1825,7 +1825,7 @@ public int getCharWidth(char ch) {
 	}
 	
 	/* It wasn't a truetype font */
-	TEXTMETRIC tm = new TEXTMETRIC();
+	TEXTMETRICW tm = new TEXTMETRICW();
 	OS.GetTextMetricsW(handle, tm);
 	SIZE size = new SIZE();
 	OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
@@ -1911,7 +1911,7 @@ public Font getFont () {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	TEXTMETRIC lptm = new TEXTMETRIC();
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics(handle, lptm);
 	return FontMetrics.win32_new(lptm);
 }

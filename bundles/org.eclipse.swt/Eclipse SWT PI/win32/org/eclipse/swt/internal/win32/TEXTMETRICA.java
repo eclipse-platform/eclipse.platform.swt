@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public abstract class NMTTDISPINFO extends NMHDR {
-	public int lpszText;
-	public int hinst;   
-	public int uFlags;
-	public int lParam;
-	public static final int sizeof = OS.IsUnicode ? 188 : 108;
+public class TEXTMETRICA extends TEXTMETRIC {
+	public byte tmFirstChar;
+	public byte tmLastChar;
+	public byte tmDefaultChar; 
+	public byte tmBreakChar;
+	public static final int sizeof = 56;
 }

@@ -149,7 +149,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
 		if (height == 0) {
-			TEXTMETRIC tm = new TEXTMETRIC ();
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 			OS.GetTextMetrics (hDC, tm);
 			height = tm.tmHeight;
 		}

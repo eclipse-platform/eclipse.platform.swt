@@ -951,7 +951,7 @@ void setCheckboxImageList () {
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	int oldFont = OS.SelectObject (hDC, defaultFont ());
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);

@@ -35,7 +35,7 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUI
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-SWT_OBJS = swt.obj structs.obj callback.obj swtole.obj 
+SWT_OBJS = swt.obj structs.obj swt_custom.obj callback.obj structs_ole.obj swt_ole.obj 
 
 all: $(SWT_LIB)
 

@@ -290,7 +290,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 	int height = count * tm.tmHeight, width = 0;
@@ -610,7 +610,7 @@ public int getLineHeight () {
 	int hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = new TEXTMETRIC ();
+	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);

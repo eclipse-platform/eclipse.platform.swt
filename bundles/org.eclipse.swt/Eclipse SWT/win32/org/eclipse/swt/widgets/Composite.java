@@ -610,11 +610,13 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			*/
 			case OS.TTN_GETDISPINFOA:
 			case OS.TTN_GETDISPINFOW: {
-				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
+				NMTTDISPINFO lpnmtdi;
 				if (hdr.code == OS.TTN_GETDISPINFOA) {
-					OS.MoveMemoryA (lpnmtdi, lParam, NMTTDISPINFO.sizeofA);
+					lpnmtdi = new NMTTDISPINFOA ();
+					OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
 				} else {
-					OS.MoveMemoryW (lpnmtdi, lParam, NMTTDISPINFO.sizeofW);
+					lpnmtdi = new NMTTDISPINFOW ();
+					OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
 				}
 				String string = toolTipText (lpnmtdi);
 				if (string != null) {
@@ -644,10 +646,10 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						byte [] bytes = new byte [chars.length * 2];
 						OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
 						shell.setToolTipText (lpnmtdi, bytes);
-						OS.MoveMemoryA (lParam, lpnmtdi, NMTTDISPINFO.sizeofA);
+						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
 					} else {
 						shell.setToolTipText (lpnmtdi, chars);
-						OS.MoveMemoryW (lParam, lpnmtdi, NMTTDISPINFO.sizeofW);
+						OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
 					}
 					return LRESULT.ZERO;
 				}

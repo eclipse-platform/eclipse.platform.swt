@@ -11,15 +11,11 @@
 package org.eclipse.swt.internal.win32;
 
 
-public class OSVERSIONINFO {
+public abstract class OSVERSIONINFO {
 	public int dwOSVersionInfoSize; 
 	public int dwMajorVersion;
 	public int dwMinorVersion;
 	public int dwBuildNumber;
 	public int dwPlatformId;
-//	TCHAR szCSDVersion [128];
-//	public char [] szCSDVersion = new char [128];
-	public static final int sizeofW = 276;
-	public static final int sizeofA = 148;
-	public static /*final*/ int sizeof = OS.IsUnicode ? sizeofW : sizeofA;
+	public static /*final*/ int sizeof = OS.IsUnicode ? 276 : 148;
 }

@@ -65,7 +65,7 @@ public final class FontData {
  * Constructs a new un-initialized font data.
  */
 public FontData() {
-	data = new LOGFONT();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	// We set the charset field so that
 	// wildcard searching will work properly
 	// out of the box
@@ -142,7 +142,7 @@ public FontData(String string) {
 
 	start = end + 1;
 	end = string.indexOf('|', start);
-	data = new LOGFONT();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	data.lfCharSet = OS.DEFAULT_CHARSET;
 	setName(name);
 	setHeight(height);
@@ -156,7 +156,7 @@ public FontData(String string) {
 	String version2 = string.substring(start, end);
 
 	if (platform.equals("WINDOWS") && version2.equals("1")) {
-		LOGFONT newData = new LOGFONT();
+		LOGFONT newData = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 		try {
 			start = end + 1;
 			end = string.indexOf('|', start);
@@ -217,40 +217,15 @@ public FontData(String string) {
 			setStyle(style);
 			return;
 		}
-		char[] lfFaceName = new char[32];
-		string.getChars(start, string.length(), lfFaceName, 0);
-		newData.lfFaceName0 = lfFaceName[0];
-		newData.lfFaceName1 = lfFaceName[1];
-		newData.lfFaceName2 = lfFaceName[2];
-		newData.lfFaceName3 = lfFaceName[3];
-		newData.lfFaceName4 = lfFaceName[4];
-		newData.lfFaceName5 = lfFaceName[5];
-		newData.lfFaceName6 = lfFaceName[6];
-		newData.lfFaceName7 = lfFaceName[7];
-		newData.lfFaceName8 = lfFaceName[8];
-		newData.lfFaceName9 = lfFaceName[9];
-		newData.lfFaceName10 = lfFaceName[10];
-		newData.lfFaceName11 = lfFaceName[11];
-		newData.lfFaceName12 = lfFaceName[12];
-		newData.lfFaceName13 = lfFaceName[13];
-		newData.lfFaceName14 = lfFaceName[14];
-		newData.lfFaceName15 = lfFaceName[15];
-		newData.lfFaceName16 = lfFaceName[16];
-		newData.lfFaceName17 = lfFaceName[17];
-		newData.lfFaceName18 = lfFaceName[18];
-		newData.lfFaceName19 = lfFaceName[19];
-		newData.lfFaceName20 = lfFaceName[20];
-		newData.lfFaceName21 = lfFaceName[21];
-		newData.lfFaceName22 = lfFaceName[22];
-		newData.lfFaceName23 = lfFaceName[23];
-		newData.lfFaceName24 = lfFaceName[24];
-		newData.lfFaceName25 = lfFaceName[25];
-		newData.lfFaceName26 = lfFaceName[26];
-		newData.lfFaceName27 = lfFaceName[27];
-		newData.lfFaceName28 = lfFaceName[28];
-		newData.lfFaceName29 = lfFaceName[29];
-		newData.lfFaceName30 = lfFaceName[30];
-		newData.lfFaceName31 = lfFaceName[31];
+		TCHAR buffer = new TCHAR(0, string.substring(start), false);
+		int length = Math.min(OS.LF_FACESIZE - 1, buffer.length());
+		if (OS.IsUnicode) {
+			char[] lfFaceName = ((LOGFONTW)newData).lfFaceName;
+			System.arraycopy(buffer.chars, 0, lfFaceName, 0, length);
+		} else {
+			byte[] lfFaceName = ((LOGFONTA)newData).lfFaceName;
+			System.arraycopy(buffer.bytes, 0, lfFaceName, 0, length);
+		}
 		data = newData;
 	}
 }
@@ -271,7 +246,7 @@ public FontData(String string) {
  */
 public FontData(String name, int height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	data = new LOGFONT();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	setName(name);
 	setHeight(height);
 	setStyle(style);
@@ -316,38 +291,7 @@ public boolean equals (Object object) {
 		data.lfClipPrecision == lf.lfClipPrecision &&
 		data.lfQuality == lf.lfQuality &&
 		data.lfPitchAndFamily == lf.lfPitchAndFamily &&
-		data.lfFaceName0 == lf.lfFaceName0 &&
-		data.lfFaceName1 == lf.lfFaceName1 &&
-		data.lfFaceName2 == lf.lfFaceName2 &&
-		data.lfFaceName3 == lf.lfFaceName3 &&
-		data.lfFaceName4 == lf.lfFaceName4 &&
-		data.lfFaceName5 == lf.lfFaceName5 &&
-		data.lfFaceName6 == lf.lfFaceName6 &&
-		data.lfFaceName7 == lf.lfFaceName7 &&
-		data.lfFaceName8 == lf.lfFaceName8 &&
-		data.lfFaceName9 == lf.lfFaceName9 &&
-		data.lfFaceName10 == lf.lfFaceName10 &&
-		data.lfFaceName11 == lf.lfFaceName11 &&
-		data.lfFaceName12 == lf.lfFaceName12 &&
-		data.lfFaceName13 == lf.lfFaceName13 &&
-		data.lfFaceName14 == lf.lfFaceName14 &&
-		data.lfFaceName15 == lf.lfFaceName15 &&
-		data.lfFaceName16 == lf.lfFaceName16 &&
-		data.lfFaceName17 == lf.lfFaceName17 &&
-		data.lfFaceName18 == lf.lfFaceName18 &&
-		data.lfFaceName19 == lf.lfFaceName19 &&
-		data.lfFaceName20 == lf.lfFaceName20 &&
-		data.lfFaceName21 == lf.lfFaceName21 &&
-		data.lfFaceName22 == lf.lfFaceName22 &&
-		data.lfFaceName23 == lf.lfFaceName23 &&
-		data.lfFaceName24 == lf.lfFaceName24 &&
-		data.lfFaceName25 == lf.lfFaceName25 &&
-		data.lfFaceName26 == lf.lfFaceName26 &&
-		data.lfFaceName27 == lf.lfFaceName27 &&
-		data.lfFaceName28 == lf.lfFaceName28 &&
-		data.lfFaceName29 == lf.lfFaceName29 &&
-		data.lfFaceName30 == lf.lfFaceName30 &&
-		data.lfFaceName31 == lf.lfFaceName31;
+		getName().equals(fd.getName());
 }
 
 int EnumLocalesProc(int lpLocaleString) {
@@ -441,16 +385,14 @@ public String getLocale () {
  * @see #setName
  */
 public String getName() {
-	char[] chars = {
-		data.lfFaceName0,  data.lfFaceName1,  data.lfFaceName2,  data.lfFaceName3,
-		data.lfFaceName4,  data.lfFaceName5,  data.lfFaceName6,  data.lfFaceName7,
-		data.lfFaceName8,  data.lfFaceName9,  data.lfFaceName10, data.lfFaceName11,
-		data.lfFaceName12, data.lfFaceName13, data.lfFaceName14, data.lfFaceName15,
-		data.lfFaceName16, data.lfFaceName17, data.lfFaceName18, data.lfFaceName19,
-		data.lfFaceName20, data.lfFaceName21, data.lfFaceName22, data.lfFaceName23,
-		data.lfFaceName24, data.lfFaceName25, data.lfFaceName26, data.lfFaceName27,
-		data.lfFaceName28, data.lfFaceName29, data.lfFaceName30, data.lfFaceName31,
-	};
+	char[] chars;
+	if (OS.IsUnicode) {
+		chars = ((LOGFONTW)data).lfFaceName;
+	} else {
+		chars = new char[OS.LF_FACESIZE];
+		byte[] bytes = ((LOGFONTA)data).lfFaceName;
+		OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
+	}
 	int index = 0;
 	while (index < chars.length) {
 		if (chars [index] == 0) break;
@@ -490,17 +432,7 @@ public int hashCode () {
 		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^data.lfUnderline ^
 		data.lfStrikeOut ^ data.lfCharSet ^ data.lfOutPrecision ^
 		data.lfClipPrecision ^ data.lfQuality ^ data.lfPitchAndFamily ^
-		data.lfFaceName0 ^ data.lfFaceName1 ^ data.lfFaceName2 ^
-		data.lfFaceName3 ^ data.lfFaceName4 ^ data.lfFaceName5 ^
-		data.lfFaceName6 ^ data.lfFaceName7 ^ data.lfFaceName8 ^
-		data.lfFaceName9 ^ data.lfFaceName10 ^ data.lfFaceName11 ^
-		data.lfFaceName12 ^ data.lfFaceName13 ^ data.lfFaceName14 ^
-		data.lfFaceName15 ^ data.lfFaceName16 ^ data.lfFaceName17 ^
-		data.lfFaceName18 ^ data.lfFaceName19 ^ data.lfFaceName20 ^
-		data.lfFaceName21 ^ data.lfFaceName22 ^ data.lfFaceName23 ^
-		data.lfFaceName24 ^ data.lfFaceName25 ^ data.lfFaceName26 ^
-		data.lfFaceName27 ^ data.lfFaceName28 ^ data.lfFaceName29 ^
-		data.lfFaceName30 ^	data.lfFaceName31;
+		getName().hashCode();
 }
 
 /**
@@ -593,43 +525,19 @@ public void setLocale(String locale) {
  */
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	char [] chars = new char [32];
 
 	/* The field lfFaceName must be NULL terminated */
-	int length = name.length();
-	name.getChars (0, length <= 31 ? length : 31, chars, 0);
-	data.lfFaceName0 = chars[0];
-	data.lfFaceName1 = chars[1];
-	data.lfFaceName2 = chars[2];
-	data.lfFaceName3 = chars[3];
-	data.lfFaceName4 = chars[4];
-	data.lfFaceName5 = chars[5];
-	data.lfFaceName6 = chars[6];
-	data.lfFaceName7 = chars[7];
-	data.lfFaceName8 = chars[8];
-	data.lfFaceName9 = chars[9];
-	data.lfFaceName10 = chars[10];
-	data.lfFaceName11 = chars[11];
-	data.lfFaceName12 = chars[12];
-	data.lfFaceName13 = chars[13];
-	data.lfFaceName14 = chars[14];
-	data.lfFaceName15 = chars[15];
-	data.lfFaceName16 = chars[16];
-	data.lfFaceName17 = chars[17];
-	data.lfFaceName18 = chars[18];
-	data.lfFaceName19 = chars[19];
-	data.lfFaceName20 = chars[20];
-	data.lfFaceName21 = chars[21];
-	data.lfFaceName22 = chars[22];
-	data.lfFaceName23 = chars[23];
-	data.lfFaceName24 = chars[24];
-	data.lfFaceName25 = chars[25];
-	data.lfFaceName26 = chars[26];
-	data.lfFaceName27 = chars[27];
-	data.lfFaceName28 = chars[28];
-	data.lfFaceName29 = chars[29];
-	data.lfFaceName30 = chars[30];
-	data.lfFaceName31 = chars[31];
+	TCHAR buffer = new TCHAR(0, name, true);
+	int length = Math.min(OS.LF_FACESIZE - 1, buffer.length());
+	if (OS.IsUnicode) {
+		char[] lfFaceName = ((LOGFONTW)data).lfFaceName;
+		for (int i = 0; i < lfFaceName.length; i++) lfFaceName[i] = 0;
+		System.arraycopy(buffer.chars, 0, lfFaceName, 0, length);
+	} else {
+		byte[] lfFaceName = ((LOGFONTA)data).lfFaceName;
+		for (int i = 0; i < lfFaceName.length; i++) lfFaceName[i] = 0;
+		System.arraycopy(buffer.bytes, 0, lfFaceName, 0, length);
+	}
 }
 
 /**
@@ -699,20 +607,7 @@ public String toString() {
 	buffer.append("|");
 	buffer.append(data.lfPitchAndFamily);
 	buffer.append("|");
-	char[] faceName = {
-		data.lfFaceName0,  data.lfFaceName1,  data.lfFaceName2,  data.lfFaceName3,
-		data.lfFaceName4,  data.lfFaceName5,  data.lfFaceName6,  data.lfFaceName7,
-		data.lfFaceName8,  data.lfFaceName9,  data.lfFaceName10, data.lfFaceName11,
-		data.lfFaceName12, data.lfFaceName13, data.lfFaceName14, data.lfFaceName15,
-		data.lfFaceName16, data.lfFaceName17, data.lfFaceName18, data.lfFaceName19,
-		data.lfFaceName20, data.lfFaceName21, data.lfFaceName22, data.lfFaceName23,
-		data.lfFaceName24, data.lfFaceName25, data.lfFaceName26, data.lfFaceName27,
-		data.lfFaceName28, data.lfFaceName29, data.lfFaceName30, data.lfFaceName31,
-	};
-	int i = 0;
-	while (i < faceName.length && faceName[i] != 0) {
-		buffer.append(faceName[i++]);
-	}
+	buffer.append(getName());
 	return buffer.toString();
 }
 
