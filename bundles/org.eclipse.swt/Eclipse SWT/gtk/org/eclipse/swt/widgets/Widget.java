@@ -139,8 +139,8 @@ Widget () {}
  * @see #getStyle
  */
 public Widget (Widget parent, int style) {
-	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkSubclass ();
+	checkParent (parent);
 	this.style = style;
 }
 
@@ -207,6 +207,35 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int4) != 0) style = (style & ~mask) | int4;
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
+}
+
+void checkOrientation (Widget parent) {
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
+}
+
+/**
+ * Throws an exception if the specified widget can not be
+ * used as a parent for the receiver.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ */
+void checkParent (Widget parent) {
+	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**

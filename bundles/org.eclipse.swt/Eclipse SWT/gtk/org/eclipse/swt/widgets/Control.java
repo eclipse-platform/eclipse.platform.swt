@@ -247,6 +247,7 @@ Control computeTabRoot () {
 }
 
 void createWidget (int index) {
+	checkOrientation (parent);
 	super.createWidget (index);
 	setInitialSize ();
 	setZOrder (null, false);

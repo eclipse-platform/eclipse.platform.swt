@@ -251,6 +251,7 @@ void createIMMenu (int imHandle) {
 }
 
 void createWidget (int index) {
+	checkOrientation (parent);
 	super.createWidget (index);
 	parent.add (this);
 }
