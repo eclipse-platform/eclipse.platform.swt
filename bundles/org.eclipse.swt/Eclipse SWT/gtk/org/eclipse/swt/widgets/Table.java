@@ -1610,13 +1610,18 @@ public void remove (int index) {
 	checkWidget();
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	TableItem item = items [index];
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	if (item != null && !item.isDisposed ()) {
+		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, item.handle);
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		item.releaseResources ();
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, iter);
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_free (iter);
 	}
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
@@ -1648,12 +1653,15 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, start);
 	int index = start;
 	while (index <= end) {
 		TableItem item = items [index];
+		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, iter);
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 		index++;
 	}
@@ -1692,6 +1700,7 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	int last = -1;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	for (int i=0; i<newIndices.length; i++) {
@@ -1699,11 +1708,15 @@ public void remove (int [] indices) {
 		if (index != last) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) {
+				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				OS.gtk_list_store_remove (modelHandle, item.handle);
+				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				item.releaseResources ();
 			} else {
 				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				OS.gtk_list_store_remove (modelHandle, iter);
+				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			} 
 			System.arraycopy (items, index + 1, items, index, --itemCount - index);
 			items [itemCount] = null;
@@ -1729,6 +1742,8 @@ public void removeAll () {
 	* is set and there are items in the list, OS.gtk_list_store_clear()
 	* segment faults.  The fix is to create a new empty model instead.
 	*/
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 //	OS.gtk_list_store_clear (modelHandle);
 	int /*long*/ oldModel = modelHandle;
 	int /*long*/[] types = getColumnTypes (Math.max (1,columnCount));
@@ -1737,6 +1752,7 @@ public void removeAll () {
 	OS.gtk_tree_view_set_model (handle, newModel);
 	OS.g_object_unref (oldModel);
 	modelHandle = newModel;
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
 	int index = itemCount - 1;
 	while (index >= 0) {

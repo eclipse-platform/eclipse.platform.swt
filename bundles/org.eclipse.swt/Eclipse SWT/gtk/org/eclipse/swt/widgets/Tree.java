@@ -340,7 +340,10 @@ void destroyItem (TreeItem item) {
 	int [] index = new int [1];
 	releaseItems (item.getItems (), index);
 	releaseItem (item, index);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_store_remove (modelHandle, item.handle);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int childCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (childCount == 0) removeColumn ();
 }
@@ -846,7 +849,10 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TreeItem[4];
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_store_clear (modelHandle);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	removeColumn ();
 }
 
