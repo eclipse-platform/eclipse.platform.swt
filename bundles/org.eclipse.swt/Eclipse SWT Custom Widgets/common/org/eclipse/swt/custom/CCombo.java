@@ -931,6 +931,13 @@ public void setBackground (Color color) {
 	if (list != null) list.setBackground(color);
 	if (arrow != null) arrow.setBackground(color);
 }
+
+public void setEnabled (boolean enabled) {
+	super.setEnabled(enabled);
+	if (popup != null) popup.setVisible (false);
+	if (text != null) text.setEnabled(enabled);
+	if (arrow != null) arrow.setEnabled(enabled);
+}
 public boolean setFocus () {
 	checkWidget();
 	return text.setFocus ();
