@@ -55,6 +55,7 @@ public class SwtTestCase extends TestCase {
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
+	public static String[] invalidImageFilenames = new String[] {"corrupt", "corruptBadBitDepth.png"};
 	
 	// specify reparentable platforms
 	public static String[] reparentablePlatforms = new String[] {"win32", "gtk"};
@@ -139,6 +140,13 @@ static public void assertEquals(String message, Object expected[], Object actual
 	}
 	if (!equal) {
 		failNotEquals(message, expected, actual);
+	}
+}
+static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
+	try {
+		SWT.error(expectedCode);
+	} catch (Throwable expectedThrowable) {
+		assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
 	}
 }
 static public void assertEquals(Object expected[], Object actual[]) {

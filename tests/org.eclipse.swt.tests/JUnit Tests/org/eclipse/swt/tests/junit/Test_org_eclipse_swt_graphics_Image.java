@@ -49,6 +49,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 		image.dispose();
 		fail("No exception thrown for width <= 0");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for width <= 0", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	try {
+		image = new Image(display, 0, 10);
+		image.dispose();
+		fail("No exception thrown for width <= 0");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for width <= 0", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	try {
+		image = new Image(display, 10, -20);
+		image.dispose();
+		fail("No exception thrown for height <= 0");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for height <= 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	try {
@@ -56,6 +73,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 		image.dispose();
 		fail("No exception thrown for height <= 0");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for height <= 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	image = new Image(null, 10, 10);
@@ -216,6 +234,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			image.dispose();
 			fail("No exception thrown for InputStream == null");
 		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for InputStream == null", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		
 		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
@@ -227,12 +246,46 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			} catch (IOException e) {}
 			fail("No exception thrown for invalid InputStream");
 		} catch (SWTException e) {
+// TODO: test if correct exception is thrown. See bug 70160			
+//			assertEquals("Incorrect exception thrown for invalid InputStream", SWT.ERROR_INVALID_IMAGE, e);
 		}
-	
-		// create valid images
+
 		int numFormats = SwtTestCase.imageFormats.length;
-		String fileName = SwtTestCase.imageFilenames[0];
+		String fileName = SwtTestCase.invalidImageFilenames[0];
 		Display[] displays = {display, null};
+		for (int j = 0; j < displays.length; j++) {
+			Display tempDisplay = displays[j];
+			for (int i=0; i<numFormats; i++) {
+				String format = SwtTestCase.imageFormats[i];
+				stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+
+				try {
+					image = new Image(display, stream);
+					image.dispose();
+					try {
+						stream.close();
+					} catch (IOException e) {}
+					fail("No exception thrown for invalid InputStream");
+				} catch (SWTException e) {
+					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
+				}
+			}
+		}
+
+		stream = SwtTestCase.class.getResourceAsStream(SwtTestCase.invalidImageFilenames[1]);
+		try {
+			image = new Image(display, stream);
+			image.dispose();
+			try {
+				stream.close();
+			} catch (IOException e) {}
+			fail("No exception thrown for invalid InputStream");
+		} catch (SWTException e) {
+			assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
+		}		
+
+		// create valid images
+		fileName = SwtTestCase.imageFilenames[0];
 		for (int j = 0; j < displays.length; j++) {
 			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
