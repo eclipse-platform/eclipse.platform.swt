@@ -976,22 +976,56 @@ void draw3DBorder(GC gc) {
 			y1 = borderTop + tabHeight + 1;
 			y2 =  size.y - 2;
 			gc.setForeground(border2Color);
-			gc.drawLine(x2, y1, x2, y2); // right 1
 			gc.drawLine(x1, y2, x2, y2); //bottom 1
-			gc.setForeground(parentBackground);
-			gc.drawPoint(0, y2); // bottom left
-			gc.drawLine(x2, 0, x2, y1-1); // top right
+			if (single) {
+				int x = borderLeft - HIGHLIGHT_MARGIN;
+				int y = borderTop;
+				int width = size.x - borderLeft - borderRight + 1 + 2*HIGHLIGHT_MARGIN;
+				int[] shape = new int[TOP_RIGHT_OUTSIDE_CORNER.length - 2];
+				int index = 0;
+				for (int i = 2; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+					shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+					shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
+				}
+				shape[index++] = x2;
+				shape[index++] = y2;
+				gc.drawPolyline(shape); // right 1
+				gc.setForeground(parentBackground);
+				gc.drawPoint(0, y2); // bottom left
+			} else {
+				gc.drawLine(x2, y1, x2, y2); // right 1
+				gc.setForeground(parentBackground);
+				gc.drawPoint(0, y2); // bottom left
+				gc.drawLine(x2, 0, x2, y1-1); // top right
+			}
 			
 			x1 = 2;
 			x2 = size.x - 1;
 			y1 = borderTop + tabHeight + 2;
 			y2 = size.y - 1;
 			gc.setForeground(border3Color);
-			gc.drawLine(x2, y1, x2, y2); // right 2
 			gc.drawLine(x1, y2, x2, y2); //bottom 2
-			gc.setForeground(parentBackground);
-			gc.drawLine(0, y2, 1, y2); // bottom left
-			gc.drawLine(x2, 0, x2, y1-1); // top right
+			if (single) {
+				int x = borderLeft - HIGHLIGHT_MARGIN + 1;
+				int y = borderTop;
+				int width = size.x - borderLeft - borderRight + 1 + 2*HIGHLIGHT_MARGIN;
+				int[] shape = new int[TOP_RIGHT_OUTSIDE_CORNER.length - 4];
+				int index = 0;
+				for (int i = 3; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+					shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+					shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
+				}
+				shape[index++] = x2;
+				shape[index++] = y2;
+				gc.drawPolyline(shape); // right 2
+				gc.setForeground(parentBackground);
+				gc.drawLine(0, y2, 1, y2); // bottom left
+			} else {
+				gc.drawLine(x2, y1, x2, y2); // right 2
+				gc.setForeground(parentBackground);
+				gc.drawLine(0, y2, 1, y2); // bottom left
+				gc.drawLine(x2, 0, x2, y1-1); // top right
+			}
 			
 			x1 = 1;
 			x2 = size.x - 3;
