@@ -41,24 +41,19 @@ public class StyledTextPrintOptions {
 	public String jobName = null;
 	
 	/**
-	 * 0 or more of the following print options ORed together. 
-	 * ST.TEXT_FOREGROUND, ST.TEXT_BACKGROUND, ST.TEXT_FONT_STYLE,
-	 * ST.LINE_BACKGROUND 	 */
-	public int options = 0;
-	
-	/**
-	 * Creates an object of the receiver initialized with default values. 
-	 * By default, none of the text or line styles are printed. 
+	 * Print the text foreground color. Default value is <code>false</code>.
 	 */
-	public StyledTextPrintOptions() {
-	}
+	public boolean printTextForeground = false;
 	/**
-	 * Creates an object of the receiver initialized with the given print 
-	 * options. 	 */
-	public StyledTextPrintOptions(String header, String footer, String jobName, int options) {
-		this.header = header;
-		this.footer = footer;
-		this.jobName = jobName;
-		this.options = options;
-	}	    
+	 * Print the text background color. Default value is <code>false</code>.
+	 */
+	public boolean printTextBackground = false;
+	/**
+	 * Print the font styles. Default value is <code>false</code>.
+	 */
+	public boolean printTextFontStyle = false;
+	/**
+	 * Print the line background color. Default value is <code>false</code>.
+	 */
+	public boolean printLineBackground = false;
 }

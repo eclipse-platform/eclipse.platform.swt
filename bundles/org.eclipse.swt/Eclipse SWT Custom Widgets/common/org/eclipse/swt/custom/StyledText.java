@@ -243,10 +243,12 @@ public class StyledText extends Canvas {
 			int lineOffset = printerContent.getOffsetAtLine(i);
 			String line = printerContent.getLine(i);
 	
-			if ((printOptions.options & ST.LINE_BACKGROUND) != 0) {
+			if (printOptions.printLineBackground) {
 				cacheLineBackground(lineOffset, line);
 			}
-			if ((printOptions.options & (ST.TEXT_BACKGROUND | ST.TEXT_FOREGROUND | ST.TEXT_FONT_STYLE)) != 0) {
+			if (printOptions.printTextBackground ||
+				printOptions.printTextForeground ||
+				printOptions.printTextFontStyle) {
 				cacheLineStyle(lineOffset, line);
 			}
 			if (isBidi()) {
@@ -268,17 +270,17 @@ public class StyledText extends Canvas {
 			StyleRange[] styles = event.styles;
 			for (int i = 0; i < styles.length; i++) {
 				StyleRange styleCopy = null;
-				if ((printOptions.options & ST.TEXT_BACKGROUND) == 0 && styles[i].background != null) {
+				if (printOptions.printTextBackground == false && styles[i].background != null) {
 					styleCopy = (StyleRange) styles[i].clone();
 					styleCopy.background = null;
 				}
-				if ((printOptions.options & ST.TEXT_FOREGROUND) == 0 && styles[i].foreground != null) {
+				if (printOptions.printTextForeground == false && styles[i].foreground != null) {
 					if (styleCopy == null) {
 						styleCopy = (StyleRange) styles[i].clone();
 					}
 					styleCopy.foreground = null;
 				}
-				if ((printOptions.options & ST.TEXT_FONT_STYLE) == 0 && styles[i].fontStyle != SWT.NORMAL) {
+				if (printOptions.printTextFontStyle == false && styles[i].fontStyle != SWT.NORMAL) {
 					if (styleCopy == null) {
 						styleCopy = (StyleRange) styles[i].clone();
 					}
@@ -5754,8 +5756,12 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 public void print() {
 	checkWidget();
 	Printer printer = new Printer();
-	StyledTextPrintOptions options = new StyledTextPrintOptions(null, null, null, ST.TEXT_FOREGROUND | ST.TEXT_BACKGROUND | ST.TEXT_FONT_STYLE | ST.LINE_BACKGROUND);
+	StyledTextPrintOptions options = new StyledTextPrintOptions();
 	
+	options.printTextForeground = true;
+	options.printTextBackground = true;
+	options.printTextFontStyle = true;
+	options.printLineBackground = true;	
 	new Printing(this, printer, options).run();
 	printer.dispose();
 }
@@ -5776,9 +5782,13 @@ public void print() {
  * </ul>
  */
 public Runnable print(Printer printer) {
-	StyledTextPrintOptions options = new StyledTextPrintOptions(null, null, null, ST.TEXT_FOREGROUND | ST.TEXT_BACKGROUND | ST.TEXT_FONT_STYLE | ST.LINE_BACKGROUND);
-	
+	StyledTextPrintOptions options = new StyledTextPrintOptions();
+
 	checkWidget();	
+	options.printTextForeground = true;
+	options.printTextBackground = true;
+	options.printTextFontStyle = true;
+	options.printLineBackground = true;
 	if (printer == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
