@@ -35,21 +35,7 @@ public final class GC {
 	
 	Drawable drawable;
 	GCData data;
-		
-	//---- AW
-	private int[] fSavePort= new int[1];
-	private int[] fSaveGWorld= new int[1];
-	private int fSaveClip= OS.NewRgn();
-	private boolean fIsFocused= false;
-	private int fLineWidth= 1;
-	private boolean fXorMode= false;
-	private int fDamageRgn;
-	private boolean fPendingClip;
-	private boolean fClipAgainstChildren= true;
-	private int[] fContext= new int[1];
-	private boolean fCGContextCreated;
-	//---- AW
-
+	
 GC() {
 }
 /**	 
@@ -436,7 +422,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	try {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.PenSize((short) data.lineWidth, (short) data.lineWidth);
 			OS.MoveTo((short)x1, (short)y1);
 			OS.LineTo((short)x2, (short)y2);
 		}
@@ -478,7 +464,7 @@ public void drawOval(int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.PenSize((short) data.lineWidth, (short) data.lineWidth);
 			Rect rect= new Rect();
 			rect.left= (short)x; rect.top= (short)y;
 			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
@@ -588,7 +574,7 @@ public void drawPolyline(int[] pointArray) {
 			OS.ClosePoly();
 			
 			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.PenSize((short) data.lineWidth, (short) data.lineWidth);
 			OS.FramePoly(poly);
 		}
 	} finally {
@@ -626,7 +612,7 @@ public void drawRectangle (int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.PenSize((short) data.lineWidth, (short) data.lineWidth);
 			Rect rect= new Rect();
 			rect.left= (short)x; rect.top= (short)y;
 			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
@@ -688,7 +674,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	try {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.PenSize((short) data.lineWidth, (short) data.lineWidth);
 			Rect rect= new Rect();
 			rect.left= (short)x; rect.top= (short)y;
 			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
@@ -1249,7 +1235,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 			Rect rect= new Rect();
 			rect.left= (short)x; rect.top= (short)y;
 			rect.right= (short)(x + width); rect.bottom= (short)(y + height);
-			if (fXorMode) {
+			if (data.xorMode) {
 				OS.InvertRect(rect);
 			} else if ((data.background & 0xFF000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
@@ -1581,12 +1567,7 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(data.display, handle, OS.GCLineWidth, values);
-	return values.line_width;
-	*/
-	return fLineWidth;
+	return data.lineWidth;
 }
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
@@ -1604,12 +1585,7 @@ public int getLineWidth() {
  */
 public boolean getXORMode() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (data.display, handle, OS.GCFunction, values);
-	return values.function == OS.GXxor;
-	*/
-	return fXorMode;
+	return data.xorMode;
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
@@ -1684,12 +1660,14 @@ public boolean isClipped() {
 public boolean isDisposed() {
 	return handle == 0;
 }
-public static GC macosx_new(Drawable drawable, GCData data) {
+/*
+public static GC carbon_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int port = drawable.internal_new_GC(data);
 	gc.init(drawable, data, port);
 	return gc;
 }
+*/
 /**
  * Sets the background color. The background color is used
  * for fill operations and as the background color when text
@@ -1730,7 +1708,7 @@ public void setClipping (int x, int y, int width, int height) {
 	if (data.clipRgn == 0)
 		data.clipRgn = OS.NewRgn ();
 	OS.SetRectRgn(data.clipRgn, (short) x, (short) y, (short) (x+width), (short) (y+height));
-	fPendingClip= true;
+	data.pendingClip= true;
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -1750,7 +1728,7 @@ public void setClipping (Rectangle rect) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn= 0;
 		}
-		fPendingClip= true;
+		data.pendingClip= true;
 		return;
 	}
 	setClipping (rect.x, rect.y, rect.width, rect.height);
@@ -1778,7 +1756,7 @@ public void setClipping (Region region) {
 			data.clipRgn = OS.NewRgn();
 		OS.CopyRgn(region.handle, data.clipRgn);
 	}
-	fPendingClip= true;
+	data.pendingClip= true;
 }
 /** 
  * Sets the font which will be used by the receiver
@@ -1887,7 +1865,7 @@ public void setLineWidth(int width) {
 		OS.XSetLineAttributes(data.display, handle, width, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
 		*/
 	}
-	fLineWidth= width;
+	data.lineWidth= width;
 }
 /** 
  * If the argument is <code>true</code>, puts the receiver
@@ -1905,13 +1883,7 @@ public void setLineWidth(int width) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	if (xor)
-		OS.XSetFunction(data.display, handle, OS.GXxor);
-	else
-		OS.XSetFunction(data.display, handle, OS.GXcopy);
-	*/
-	fXorMode= xor;
+	data.xorMode= xor;
 }
 /**
  * Returns the extent of the given string. No tab
@@ -2059,24 +2031,24 @@ public String toString () {
 
 //---- MacOS X Carbon-only API
 
+	public void carbon_setClipAgainstChildren(boolean clipAgainstChildren) {
+		data.clipAgainstChildren= clipAgainstChildren;
+	}
+
 	public void carbon_installFont() {
 		if (data != null && data.font != null)
 			data.font.installInGrafPort();
 	}
 	
-	public void carbon_setClipAgainstChildren(boolean clipAgainstChildren) {
-		fClipAgainstChildren= clipAgainstChildren;
-	}
-
 	private boolean focus(boolean doClip, Rect bounds) {
 		
-		if (fIsFocused && !fPendingClip) {
+		if (data.isFocused && !data.pendingClip) {
 			return true;
 		}
 
 		// save global state
-		OS.GetGWorld(fSavePort, fSaveGWorld);		
-		OS.SetGWorld(handle, fSaveGWorld[0]);
+		OS.GetGWorld(data.savePort, data.saveGWorld);		
+		OS.SetGWorld(handle, data.saveGWorld[0]);
 		
 		if (!doClip)
 			return true;
@@ -2096,22 +2068,22 @@ public String toString () {
 			OS.QDSetPatternOrigin(p);
 		}
 		// save clip region
-		OS.GetClip(fSaveClip);
+		OS.GetClip(data.saveClip);
 		
 		// calculate new clip based on the Control's bound and GC clipping region
 		if (data.controlHandle != 0) {
 						
 			int result= OS.NewRgn();
 			
-			if (fDamageRgn == 0) {
+			if (data.damageRgn == 0) {
 				// since we've got no damage region
 				// we assume that focus has been called for direct drawing.
 				// We need to calculate the visible region of the control.
-				MacUtil.getVisibleRegion(data.controlHandle, result, fClipAgainstChildren); 
+				MacUtil.getVisibleRegion(data.controlHandle, result, data.clipAgainstChildren); 
 				OS.OffsetRgn(result, (short)-dx, (short)-dy);
 			} else {
 				// the damage area takes the visible region of the Control into account
-				OS.CopyRgn(fDamageRgn, result);
+				OS.CopyRgn(data.damageRgn, result);
 			}
 			
 			// clip against GC clipping region
@@ -2137,24 +2109,24 @@ public String toString () {
 					OS.SetRect(bounds, (short)0, (short)0, (short)0x7fff, (short)0x7fff);
 			}
 		}
-		fPendingClip= false;
+		data.pendingClip= false;
 		
 		return true;
 	}
 
 	private void unfocus(boolean doClip) {
 		
-		if (fIsFocused)
+		if (data.isFocused)
 			return;
 		
 		if (doClip) {
 			// restore clipping and origin of port
-			OS.SetClip(fSaveClip);
+			OS.SetClip(data.saveClip);
 			OS.SetOrigin((short)0, (short)0);
 		}
 		
 		// restore globals
-		OS.SetGWorld(fSavePort[0], fSaveGWorld[0]);
+		OS.SetGWorld(data.savePort[0], data.saveGWorld[0]);
 	}
 	
 	public Rectangle carbon_focus(int damageRgn) {
@@ -2163,21 +2135,21 @@ public String toString () {
 	
 	public Rectangle carbon_focus(int damageRgn, int cgcontext) {
 		Rect bounds= new Rect();
-		fDamageRgn= damageRgn;
-		fContext[0]= cgcontext;
+		data.damageRgn= damageRgn;
+		data.context[0]= cgcontext;
 		OS.LockPortBits(handle);
 		focus(true, bounds);
-		fIsFocused= true;
+		data.isFocused= true;
 		int width = bounds.right - bounds.left;
 		int height = bounds.bottom - bounds.top;
 		return new Rectangle(bounds.left, bounds.top, width, height);
 	}
 	
 	public void carbon_unfocus() {
-		fIsFocused= false;
-		fContext[0]= 0;
+		data.isFocused= false;
+		data.context[0]= 0;
 		unfocus(true);
-		fDamageRgn= 0;
+		data.damageRgn= 0;
 		OS.UnlockPortBits(handle);
 	}
 		
@@ -2194,29 +2166,29 @@ public String toString () {
 	// new Core Graphic stuff
 	
 	public int carbon_CG_focus() {
-		if (fContext[0] == 0) {
+		if (data.context[0] == 0) {
 			// create CGContext from GrafPort
-			if (OS.QDBeginCGContext(handle, fContext) != OS.noErr)
+			if (OS.QDBeginCGContext(handle, data.context) != OS.noErr)
 				return 0;
-			fCGContextCreated= true;
+			data.isCGContextCreated= true;
 			// synch CGContext with GrafPort clipping and offset
 			Rect b= new Rect();
 			OS.GetPortBounds(handle, b); 
 			
 			int clip= OS.NewRgn();
 			OS.GetPortClipRegion(handle, clip);
-			OS.ClipCGContextToRegion(fContext[0], b, clip);
+			OS.ClipCGContextToRegion(data.context[0], b, clip);
 			OS.DisposeRgn(clip);
 		              		
-			OS.CGContextTranslateCTM(fContext[0], 0, b.bottom-b.top);
-			OS.CGContextScaleCTM(fContext[0], 1, -1);
+			OS.CGContextTranslateCTM(data.context[0], 0, b.bottom-b.top);
+			OS.CGContextScaleCTM(data.context[0], 1, -1);
 		}
-		return fContext[0];
+		return data.context[0];
 	}
 
 	public void carbon_CG_unfocus() {
-		if (fCGContextCreated)
-			OS.QDEndCGContext(handle, fContext);
-		fContext[0]= 0;
+		if (data.isCGContextCreated)
+			OS.QDEndCGContext(handle, data.context);
+		data.context[0]= 0;
 	}
 }
