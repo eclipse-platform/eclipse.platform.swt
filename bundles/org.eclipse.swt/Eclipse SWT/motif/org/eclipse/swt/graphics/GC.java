@@ -1494,10 +1494,21 @@ public int getAdvanceWidth(char ch) {
 				/* Single byte fontStruct */
 				if (fontStruct.min_char_or_byte2 <= val && val <= fontStruct.max_char_or_byte2) {
 					/* The font contains the character */
-					OS.memmove(charStruct, fontStruct.per_char + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
-					if (charStruct.width != 0) {
+					int charWidth = 0;
+					int perCharPtr = fontStruct.per_char;	
+					if (perCharPtr == 0) {
+						/*
+						 * If perCharPtr is 0 then all glyphs in the font have
+						 * the same width as the font's maximum width.
+						 */
+						 charWidth = fontStruct.max_bounds_width;
+					} else {
+						OS.memmove(charStruct, perCharPtr + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
+						charWidth = charStruct.width;
+					} 
+					if (charWidth != 0) {
 						OS.XmFontListFreeFontContext(context);
-						return charStruct.width;
+						return charWidth;
 					}
 				}
 			} else {
@@ -1508,11 +1519,22 @@ public int getAdvanceWidth(char ch) {
 				int col = charBuffer[0] - fontStruct.min_char_or_byte2;
 				if (row <= fontStruct.max_byte1 && col <= fontStruct.max_char_or_byte2) {
 					/* The font contains the character */
-					int offset = row * charsPerRow + col;
-					OS.memmove(charStruct, fontStruct.per_char + offset * XCharStruct.sizeof, XCharStruct.sizeof);
-					if (charStruct.width != 0) {
+					int charWidth = 0;
+					int perCharPtr = fontStruct.per_char;	
+					if (perCharPtr == 0) {
+						/*
+						 * If perCharPtr is 0 then all glyphs in the font have
+						 * the same width as the font's maximum width.
+						 */
+						 charWidth = fontStruct.max_bounds_width;
+					} else {
+						int offset = row * charsPerRow + col;
+						OS.memmove(charStruct, perCharPtr + offset * XCharStruct.sizeof, XCharStruct.sizeof);
+						charWidth = charStruct.width;
+					}
+					if (charWidth != 0) {
 						OS.XmFontListFreeFontContext(context);
-						return charStruct.width;
+						return charWidth;
 					}
 				}
 			} 
@@ -1528,10 +1550,21 @@ public int getAdvanceWidth(char ch) {
 					/* Single byte fontStruct */
 					if (fontStruct.min_char_or_byte2 <= val && val <= fontStruct.max_char_or_byte2) {
 						/* The font contains the character */
-						OS.memmove(charStruct, fontStruct.per_char + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
-						if (charStruct.width != 0) {
+						int charWidth = 0;
+						int perCharPtr = fontStruct.per_char;	
+						if (perCharPtr == 0) {
+							/*
+							 * If perCharPtr is 0 then all glyphs in the font have
+							 * the same width as the font's maximum width.
+							 */
+							 charWidth = fontStruct.max_bounds_width;
+						} else {
+							OS.memmove(charStruct, perCharPtr + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
+							charWidth = charStruct.width;
+						}
+						if (charWidth != 0) {
 							OS.XmFontListFreeFontContext(context);
-							return charStruct.width;
+							return charWidth;
 						}
 					}
 				} else {
@@ -1542,11 +1575,22 @@ public int getAdvanceWidth(char ch) {
 					int col = charBuffer[0] - fontStruct.min_char_or_byte2;
 					if (row <= fontStruct.max_byte1 && col <= fontStruct.max_char_or_byte2) {
 						/* The font contains the character */
-						int offset = row * charsPerRow + col;
-						OS.memmove(charStruct, fontStruct.per_char + offset * XCharStruct.sizeof, XCharStruct.sizeof);
-						if (charStruct.width != 0) {
+						int charWidth = 0;
+						int perCharPtr = fontStruct.per_char;	
+						if (perCharPtr == 0) {
+							/*
+							 * If perCharPtr is 0 then all glyphs in the font have
+							 * the same width as the font's maximum width.
+							 */
+							 charWidth = fontStruct.max_bounds_width;
+						} else {
+							int offset = row * charsPerRow + col;
+							OS.memmove(charStruct, perCharPtr + offset * XCharStruct.sizeof, XCharStruct.sizeof);
+							charWidth = charStruct.width;
+						}
+						if (charWidth != 0) {
 							OS.XmFontListFreeFontContext(context);
-							return charStruct.width;
+							return charWidth;
 						}
 					}
 				} 
@@ -1618,10 +1662,27 @@ public int getCharWidth(char ch) {
 				/* Single byte fontStruct */
 				if (fontStruct.min_char_or_byte2 <= val && val <= fontStruct.max_char_or_byte2) {
 					/* The font contains the character */
-					OS.memmove(charStruct, fontStruct.per_char + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
-					if (charStruct.width != 0) {
+					int charWidth = 0;
+					int lBearing = 0;
+					int rBearing = 0;
+					int perCharPtr = fontStruct.per_char;	
+					if (perCharPtr == 0) {
+						/*
+						 * If perCharPtr is 0 then all glyphs in the font have
+						 * the same width and left/right bearings as the font.
+						 */
+						charWidth = fontStruct.max_bounds_width;
+						lBearing = fontStruct.min_bounds_lbearing;
+						rBearing = fontStruct.max_bounds_rbearing;
+					} else {
+						OS.memmove(charStruct, perCharPtr + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
+						charWidth = charStruct.width;
+						lBearing = charStruct.lbearing;
+						rBearing = charStruct.rbearing;
+					}
+					if (charWidth != 0) {
 						OS.XmFontListFreeFontContext(context);
-						return charStruct.rbearing - charStruct.lbearing;
+						return rBearing - lBearing;
 					}
 				}
 			} else {
@@ -1632,11 +1693,28 @@ public int getCharWidth(char ch) {
 				int col = charBuffer[0] - fontStruct.min_char_or_byte2;
 				if (row <= fontStruct.max_byte1 && col <= fontStruct.max_char_or_byte2) {
 					/* The font contains the character */
-					int offset = row * charsPerRow + col;
-					OS.memmove(charStruct, fontStruct.per_char + offset * XCharStruct.sizeof, XCharStruct.sizeof);
-					if (charStruct.width != 0) {
+					int charWidth = 0;
+					int lBearing = 0;
+					int rBearing = 0;
+					int perCharPtr = fontStruct.per_char;	
+					if (perCharPtr == 0) {
+						/*
+						 * If perCharPtr is 0 then all glyphs in the font have
+						 * the same width and left/right bearings as the font.
+						 */
+						charWidth = fontStruct.max_bounds_width;
+						lBearing = fontStruct.min_bounds_lbearing;
+						rBearing = fontStruct.max_bounds_rbearing;
+					} else {
+						int offset = row * charsPerRow + col;
+						OS.memmove(charStruct, perCharPtr + offset * XCharStruct.sizeof, XCharStruct.sizeof);
+						charWidth = charStruct.width;
+						lBearing = charStruct.lbearing;
+						rBearing = charStruct.rbearing;
+					}
+					if (charWidth != 0) {
 						OS.XmFontListFreeFontContext(context);
-						return charStruct.rbearing - charStruct.lbearing;
+						return rBearing - lBearing;
 					}
 				}
 			} 
@@ -1652,10 +1730,27 @@ public int getCharWidth(char ch) {
 					/* Single byte fontStruct */
 					if (fontStruct.min_char_or_byte2 <= val && val <= fontStruct.max_char_or_byte2) {
 						/* The font contains the character */
-						OS.memmove(charStruct, fontStruct.per_char + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
-						if (charStruct.width != 0) {
+						int charWidth = 0;
+						int lBearing = 0;
+						int rBearing = 0;
+						int perCharPtr = fontStruct.per_char;	
+						if (perCharPtr == 0) {
+							/*
+							 * If perCharPtr is 0 then all glyphs in the font have
+							 * the same width and left/right bearings as the font.
+							 */
+							charWidth = fontStruct.max_bounds_width;
+							lBearing = fontStruct.min_bounds_lbearing;
+							rBearing = fontStruct.max_bounds_rbearing;
+						} else {
+							OS.memmove(charStruct, perCharPtr + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
+							charWidth = charStruct.width;
+							lBearing = charStruct.lbearing;
+							rBearing = charStruct.rbearing;
+						}
+						if (charWidth != 0) {
 							OS.XmFontListFreeFontContext(context);
-							return charStruct.rbearing - charStruct.lbearing;
+							return rBearing - lBearing;
 						}
 					}
 				} else {
@@ -1666,11 +1761,28 @@ public int getCharWidth(char ch) {
 					int col = charBuffer[0] - fontStruct.min_char_or_byte2;
 					if (row <= fontStruct.max_byte1 && col <= fontStruct.max_char_or_byte2) {
 						/* The font contains the character */
-						int offset = row * charsPerRow + col;
-						OS.memmove(charStruct, fontStruct.per_char + offset * XCharStruct.sizeof, XCharStruct.sizeof);
-						if (charStruct.width != 0) {
+						int charWidth = 0;
+						int lBearing = 0;
+						int rBearing = 0;
+						int perCharPtr = fontStruct.per_char;	
+						if (perCharPtr == 0) {
+							/*
+							 * If perCharPtr is 0 then all glyphs in the font have
+							 * the same width and left/right bearings as the font.
+							 */
+							charWidth = fontStruct.max_bounds_width;
+							lBearing = fontStruct.min_bounds_lbearing;
+							rBearing = fontStruct.max_bounds_rbearing;
+						} else {
+							int offset = row * charsPerRow + col;
+							OS.memmove(charStruct, perCharPtr + offset * XCharStruct.sizeof, XCharStruct.sizeof);
+							charWidth = charStruct.width;
+							lBearing = charStruct.lbearing;
+							rBearing = charStruct.rbearing;
+						}
+						if (charWidth != 0) {
 							OS.XmFontListFreeFontContext(context);
-							return charStruct.rbearing - charStruct.lbearing;
+							return rBearing - lBearing;
 						}
 					}
 				} 
