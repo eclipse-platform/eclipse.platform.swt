@@ -20,6 +20,29 @@ public class EditorTab {
 	Browser browser;
 	Text htmlText, scriptText;
 	Button htmlButton, scriptButton;
+	static String html = 
+		"<html>\r\n"+
+		"	<body>\r\n"+
+		"		<h1 id='myid'>HTML Document</h1>\r\n"+
+		"		<h2>Set HTML content</h2>\r\n"+
+		"		<ol>\r\n"+
+		"			<li>Enter html data into the 'setText' pane</li>\r\n"+
+		"			<li>Click on 'setText' to set the new content</li>\r\n"+
+		"		</ol>\r\n"+
+		"		<h2>Query or modify HTML document</h2>\r\n"+
+		"		<ol>\r\n"+
+		"		<li>Enter javascript commands into the 'execute' pane</li>\r\n"+
+		"		<li>Click on 'execute' to run the javascript in the current document</li>\r\n"+
+		"		</ol>\r\n"+
+		"	</body>\r\n"+
+		"</html>";
+	
+	static String script = 
+		"var node = document.createElement('P');\r\n"+
+		"var text = document.createTextNode('Content inserted!');\r\n"+
+		"node.appendChild(text);\r\n"+
+		"document.getElementById('myid').appendChild(node);\r\n\r\n"+
+		"document.bgColor = 'yellow';";
 	
 	public EditorTab(TabItem item) {
 		final Composite parent = new Composite(item.getParent(), SWT.NONE);
@@ -106,9 +129,9 @@ public class EditorTab {
 		scriptButton.setLayoutData(gridData);
 		scriptGroup.layout();
 		
-		browser.setUrl("http://www.eclipse.org");
-		htmlText.setText("<html><title>Hello</title><p>Hello World</html>");
-		scriptText.setText("document.bgColor = 'yellow'");
+		browser.setText(html);
+		htmlText.setText(html);
+		scriptText.setText(script);
 		parent.layout();
 		
 		Listener listener = new Listener() {
