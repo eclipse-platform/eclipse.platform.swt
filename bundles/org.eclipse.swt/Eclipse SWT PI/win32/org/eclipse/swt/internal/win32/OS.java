@@ -50,10 +50,18 @@ public class OS {
 		* for the value to be correct.
 		*/
 		OSVERSIONINFO info = new OSVERSIONINFO ();
-		info.dwOSVersionInfoSize = 276;
-		if (!OS.GetVersionExW (info)) {
+		
+		// TEMPORARY CODE
+		String MBCS = System.getProperty ("MBCS");
+		if (MBCS != null) {
 			info.dwOSVersionInfoSize = 148;
 			OS.GetVersionExA (info);
+		} else {
+			info.dwOSVersionInfoSize = 276;
+			if (!OS.GetVersionExW (info)) {
+				info.dwOSVersionInfoSize = 148;
+				OS.GetVersionExA (info);
+			}
 		}
 		OSVERSIONINFO.sizeof = info.dwOSVersionInfoSize;
 		
@@ -63,8 +71,15 @@ public class OS {
 		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
-		IsUnicode = !IsWin32s && !IsWin95;
-		
+
+		// TEMPORARY CODE
+		if (MBCS != null) {
+			IsUnicode = false;
+			System.out.println ("*** SWT - Warning: Unicode disabled");
+		} else {
+			IsUnicode = !IsWin32s && !IsWin95;
+		}
+
 		/* Get the DBCS flag */
 		int index = 0;
 		while (index <= 0xFF) {
