@@ -565,6 +565,7 @@ public static final synchronized native int /*long*/ g_object_ref(int /*long*/ o
 public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int terminator);
 public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, int data, int terminator);
 public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, float data, int terminator);
+public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, long data, int terminator);
 public static final synchronized native void g_object_set_qdata(int /*long*/ object, int quark, int /*long*/ data);
 public static final synchronized native void g_object_unref(int /*long*/ object);
 public static final synchronized native int g_quark_from_string(byte[] string);

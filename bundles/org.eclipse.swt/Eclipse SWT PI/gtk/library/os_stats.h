@@ -163,6 +163,7 @@ typedef enum {
 	g_1object_1ref_FUNC,
 	g_1object_1set__I_3BFI_FUNC,
 	g_1object_1set__I_3BII_FUNC,
+	g_1object_1set__I_3BJI_FUNC,
 	g_1object_1set__I_3BZI_FUNC,
 	g_1object_1set_1qdata_FUNC,
 	g_1object_1unref_FUNC,

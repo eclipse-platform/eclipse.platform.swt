@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 889;
-int OS_nativeFunctionCallCount[889];
+int OS_nativeFunctionCount = 890;
+int OS_nativeFunctionCallCount[890];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1PIXMAP_1XID", 
@@ -159,6 +159,7 @@ char * OS_nativeFunctionNames[] = {
 	"g_1object_1ref", 
 	"g_1object_1set__I_3BFI", 
 	"g_1object_1set__I_3BII", 
+	"g_1object_1set__I_3BJI", 
 	"g_1object_1set__I_3BZI", 
 	"g_1object_1set_1qdata", 
 	"g_1object_1unref", 

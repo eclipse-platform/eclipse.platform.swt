@@ -1713,6 +1713,19 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BII)
 }
 #endif
 
+#ifndef NO_g_1object_1set__I_3BJI
+JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BJI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jlong arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, g_1object_1set__I_3BJI_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, g_1object_1set__I_3BJI_FUNC);
+}
+#endif
+
 #ifndef NO_g_1object_1set__I_3BZI
 JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BZI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2, jint arg3)
