@@ -194,6 +194,36 @@ void createWidget () {
 	}
 }
 
+void drawWidget (GC gc, RECT rect) {
+	drawBackground (gc.handle, rect);
+	int selStart = selection.x;
+	int selEnd = selection.y;
+	if (selStart > selEnd) {
+		selStart = selection.y;
+		selEnd = selection.x;
+	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
+	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
+	if (hasFocus () && focusIndex != -1) {
+		Rectangle [] rects = getRectangles (focusIndex);
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rectangle = rects [i];
+			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
+		}
+	}
+	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
+		Event event = new Event ();
+		event.gc = gc;
+		event.x = rect.left;
+		event.y = rect.top;
+		event.width = rect.right - rect.left;
+		event.height = rect.bottom - rect.top;
+		sendEvent (SWT.Paint, event);
+		event.gc = null;
+	}
+}
+
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -255,36 +285,6 @@ Rectangle [] getRectangles (int linkIndex) {
 public String getText () {
 	checkWidget ();
 	return text;
-}
-
-void onPaint (GC gc, RECT rect) {
-	drawBackground (gc.handle, rect);
-	int selStart = selection.x;
-	int selEnd = selection.y;
-	if (selStart > selEnd) {
-		selStart = selection.y;
-		selEnd = selection.x;
-	}
-	// temporary code to disable text selection
-	selStart = selEnd = -1;
-	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
-	if (hasFocus () && focusIndex != -1) {
-		Rectangle [] rects = getRectangles (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rectangle = rects [i];
-			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
-		}
-	}
-	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-		Event event = new Event ();
-		event.gc = gc;
-		event.x = rect.left;
-		event.y = rect.top;
-		event.width = rect.right - rect.left;
-		event.height = rect.bottom - rect.top;
-		sendEvent (SWT.Paint, event);
-		event.gc = null;
-	}
 }
 
 String parse (String string) {
@@ -734,7 +734,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		if (width != 0 && height != 0) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-			onPaint (gc, rect);
+			drawWidget (gc, rect);
 		}
 		gc.dispose ();
 	}
@@ -749,7 +749,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	    GCData data = new GCData ();
 	    data.device = display;
 	    GC gc = GC.win32_new (wParam, data);
-	    onPaint (gc, rect);
+	    drawWidget (gc, rect);
 	    gc.dispose ();
 	}
 	return result;
