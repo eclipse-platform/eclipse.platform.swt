@@ -2,42 +2,37 @@
 
 <project default="build_dll" basedir="../../..">
 
-<target name="init">
-	<tstamp/>
-</target>
-
 <!-- Build swt.dll for Windows -->
-<target name="build_win32_dll" depends="init">
+<target name="build_win32_dll">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.win32" depth="infinite" />	
 </target>
 
 <!-- Build swt.dll for Pocket PC -->
-<target name="build_win32_ce_dll" depends="init">
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat">
-		<arg line="clean"/>
-	</exec>
+<target name="build_wince_dll">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat">
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.win32" depth="infinite" />
 </target>
 
 <!-- Build Windows and Pocket PC swt dlls -->
 <!-- Output .dlls for these platforms into the org.eclipse.swt.win32/os directory -->
 <!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
-<target name="build_dll" depends="build_win32_dll,build_win32_ce_dll">
+<target name="build_dll" depends="build">
+	<antcall target="build_win32_dll"/>
+	<antcall target="clean"/>
+	<antcall target="build_wince_dll"/>
+	<eclipse.refreshLocal resource="org.eclipse.swt.win32" depth="infinite" />
 </target>
 
-<target name="clean" depends="init">
+<target name="clean">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 		<arg line="clean"/>
 	</exec>
 </target>
 
-<target name="build" depends="init">
+<target name="build">
    	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
 </target>
     
