@@ -172,6 +172,7 @@ public class OS extends Platform {
 	public static final int BM_SETSTYLE = 0xf4;
 	public static final int BN_CLICKED = 0x0;
 	public static final int BN_DOUBLECLICKED = 0x5;
+	public static final int BP_CHECKBOX = 3;
 	public static final int BST_CHECKED = 0x1;
 	public static final int BST_UNCHECKED = 0x0;
 	public static final int BS_BITMAP = 0x80;
@@ -204,8 +205,11 @@ public class OS extends Platform {
 	public static final int CBS_AUTOHSCROLL = 0x40;
 	public static final int CBS_DROPDOWN = 0x2;
 	public static final int CBS_DROPDOWNLIST = 0x3;
+	public static final int CBS_CHECKEDNORMAL = 5;
+	public static final int CBS_MIXEDNORMAL = 9;
 	public static final int CBS_NOINTEGRALHEIGHT = 0x400;
 	public static final int CBS_SIMPLE = 0x1;
+	public static final int CBS_UNCHECKEDNORMAL = 1;
 	public static final int CB_ADDSTRING = 0x143;
 	public static final int CB_DELETESTRING = 0x144;
 	public static final int CB_ERR = 0xffffffff;

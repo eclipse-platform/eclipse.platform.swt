@@ -54,6 +54,7 @@ public class Tree extends Composite {
 	static final int HEADER_MARGIN = 10;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
+	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TreeClass, lpWndClass);
@@ -1642,7 +1643,7 @@ void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5;
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
-	int hImageList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
+	int hImageList = OS.ImageList_Create (width, height, ImageList.CREATE_FLAGS, count, count);
 	int hDC = OS.GetDC (handle);
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		OS.SetLayout (hDC, 0);
@@ -1663,17 +1664,29 @@ void setCheckboxImageList () {
 	int itemHeight = Math.min (tm.tmHeight, height);
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
 	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		int hTheme = OS.OpenThemeData (handle, BUTTON);
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
+		OS.CloseThemeData (hTheme);
+	} else {
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+	}
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_AddMasked (hImageList, hBitmap, 0);
+	OS.ImageList_Add (hImageList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
 	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hImageList);
