@@ -9,8 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.kde;
+
+import org.eclipse.swt.internal.Library;
  
 public class KDE {
+	static {
+		Library.loadLibrary("swt-kde");
+	}
 
 	/** Constants */
 	public static final int KICON_SMALL = 0;
