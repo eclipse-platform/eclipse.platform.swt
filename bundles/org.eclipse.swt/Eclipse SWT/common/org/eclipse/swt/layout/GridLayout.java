@@ -263,6 +263,7 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 		for (int i = 0; i < numColumns; i++) {
 			maxWidth = Math.max(maxWidth, pixelColumnWidths[i]);
 		}
+		maxWidth += horizontalSpacing;
 		for (int i = 0; i < numColumns; i++) {
 			pixelColumnWidths[i] = maxWidth;
 		}
