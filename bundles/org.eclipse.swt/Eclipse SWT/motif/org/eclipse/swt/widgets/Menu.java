@@ -621,7 +621,7 @@ int processShow (int callData) {
 }
 void releaseChild () {
 	super.releaseChild ();
-	if (cascade != null) cascade.menu = null;
+	if (cascade != null) cascade.setMenu (null);
 	if ((style & SWT.BAR) != 0 && this == parent.menuBar) parent.setMenuBar (null);
 }
 void releaseWidget () {
