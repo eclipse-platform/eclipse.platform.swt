@@ -363,8 +363,8 @@ protected void checkSubclass () {
 
 private void dragProcCallback(int widget, int client_data, int call_data) {
 	if (call_data == 0) return;
-	XmDragProcCallback callbackData = new XmDragProcCallback();
-	OS.memmove(callbackData, call_data, XmDragProcCallback.sizeof);
+	XmDragProcCallbackStruct callbackData = new XmDragProcCallbackStruct();
+	OS.memmove(callbackData, call_data, XmDragProcCallbackStruct.sizeof);
 	
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
@@ -395,7 +395,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	if (!setEventData(callbackData.operations, callbackData.operation, callbackData.dragContext, callbackData.x, callbackData.y, callbackData.timeStamp, event)) {
 		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
 		callbackData.operation = opToOsOp(DND.DROP_NONE);
-		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
+		OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 		return;
 	}
 	
@@ -425,7 +425,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	} catch (Throwable err) {
 		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
 		callbackData.operation = opToOsOp(DND.DROP_NONE);
-		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
+		OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 		return;
 	}
 
@@ -452,7 +452,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 
 	callbackData.dropSiteStatus = OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
-	OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
+	OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 	
 	if (callbackData.reason == OS.XmCR_DROP_SITE_ENTER_MESSAGE) {
 		dragOverHeartbeat.run();
