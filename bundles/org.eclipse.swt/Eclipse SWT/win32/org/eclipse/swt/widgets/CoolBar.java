@@ -562,8 +562,12 @@ void setItemSizes (Point [] sizes) {
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (sizes.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
 	for (int i=0; i<count; i++) {
-		items [i].setSize (sizes [i].x, sizes [i].y);
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		items [rbBand.wID].setSize (sizes [i].x, sizes [i].y);
 	}
 }
 
