@@ -5231,6 +5231,13 @@ void handleTextChanging(TextChangingEvent event) {
 	if (defaultLineStyler != null) {
 		defaultLineStyler.textChanging(event);
 	}
+	
+	// Update the caret offset if it is greater than the length of the content.
+	// This is necessary since style range API may be called between the
+	// handleTextChanging and handleTextChanged events and this API sets the
+	// caretOffset.
+	int newEndOfText = content.getCharCount() - event.replaceCharCount + event.newCharCount;
+	if (caretOffset > newEndOfText) caretOffset = newEndOfText;
 }
 /**
  * Called when the widget content is set programatically, overwriting 
