@@ -14,32 +14,36 @@ class ImageList {
 	Image [] images;
 	static final int CREATE_FLAGS;
 	static {
-		int flags = OS.ILC_MASK;
-		int hDC = OS.GetDC (0);
-		int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-		int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-		OS.ReleaseDC (0, hDC);
-		int depth = bits * planes;
-		switch (depth) {
-			case 4:
-				flags |= OS.ILC_COLOR4;
-				break;
-			case 8:
-				flags |= OS.ILC_COLOR8;
-				break;
-			case 16:
-				flags |= OS.ILC_COLOR16;
-				break;
-			case 24:
-				flags |= OS.ILC_COLOR24;
-				break;
-			case 32:
-				flags |= OS.ILC_COLOR32;
-				break;
-			default:
-				flags |= OS.ILC_COLOR;
+		if (OS.IsWinCE) {
+			CREATE_FLAGS = OS.ILC_MASK | OS.ILC_COLOR;
+		} else {
+			int flags = OS.ILC_MASK;
+			int hDC = OS.GetDC (0);
+			int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+			int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+			OS.ReleaseDC (0, hDC);
+			int depth = bits * planes;
+			switch (depth) {
+				case 4:
+					flags |= OS.ILC_COLOR4;
+					break;
+				case 8:
+					flags |= OS.ILC_COLOR8;
+					break;
+				case 16:
+					flags |= OS.ILC_COLOR16;
+					break;
+				case 24:
+					flags |= OS.ILC_COLOR24;
+					break;
+				case 32:
+					flags |= OS.ILC_COLOR32;
+					break;
+				default:
+					flags |= OS.ILC_COLOR;
+			}
+			CREATE_FLAGS = flags;
 		}
-		CREATE_FLAGS = flags;
 	}
 	
 public ImageList () {
