@@ -387,7 +387,7 @@ void fixDecorations (Decorations newDecorations, Control control) {
 	if (control == defaultButton) defaultButton = null;
 	if (control == saveDefault) saveDefault = null;
 	if (menus == null) return;
-	if (control.menu != null && menu.parentControl == null) {
+	if (control.menu != null && control.menu.parentControl == null) {
 		control.setMenu (null);
 	}
 	for (int i=0; i<menus.length; i++) {
