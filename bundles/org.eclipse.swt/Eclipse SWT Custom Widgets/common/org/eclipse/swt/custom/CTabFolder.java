@@ -258,6 +258,10 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	showClose = true;
 	layoutItems();
 }
+void onClientAreaChange() {
+	oldArea = null;
+	notifyListeners(SWT.Resize, new Event());
+}
 private void closeNotify(CTabItem item, int time) {
 	if (item == null) return;
 	
@@ -1128,12 +1132,18 @@ public void setBorderVisible(boolean show) {
 	} else {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
 	}
-	notifyListeners(SWT.Resize, new Event());
+	onClientAreaChange();
 }
 public void setFont(Font font) {
 	if (font != null && font.equals(getFont())) return;
-	super.setFont(font);	
-	notifyListeners(SWT.Resize, new Event());
+	int oldHeight = getTabHeight();
+	super.setFont(font);
+	if (oldHeight != getTabHeight()){
+		onClientAreaChange();
+	} else {
+		layoutItems();
+		redraw();
+	}
 }
 public void setSelectionForeground (Color color) {
 	if (selectionForeground == color) return;
@@ -1545,6 +1555,6 @@ public void setTabHeight(int height) {
 	}
 	if (fixedTabHeight == height) return;
 	fixedTabHeight = height;
-	notifyListeners(SWT.Resize, new Event());
+	onClientAreaChange();
 }
 }

@@ -383,7 +383,7 @@ public void setImage (Image image) {
 	int oldHeight = parent.getTabHeight();
 	super.setImage(image);
 	if (oldHeight != parent.getTabHeight()) {
-		parent.notifyListeners(SWT.Resize, new Event());
+		parent.onClientAreaChange();
 	} else {
 		parent.layoutItems();
 		parent.redraw();
