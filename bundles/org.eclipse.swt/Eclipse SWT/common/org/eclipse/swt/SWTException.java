@@ -87,29 +87,17 @@ public String getMessage() {
 
 /**
  * Outputs a printable representation of this exception's
- * walkback on the stream specified by the argument.
- *
- * @param err The stream to write the walkback on.
+ * walkback on the standard error stream.
+ * <p>
+ * Note: printStackTrace(PrintStream) and printStackTrace(PrintWriter)
+ * are not provided in order to maintain compatibility with CLDC.
+ * </p>
  */
-public synchronized void printStackTrace (PrintStream err) {
-	super.printStackTrace(err);
+public void printStackTrace() {
+	super.printStackTrace();
 	if (throwable != null) {
-		err.println("*** Stack trace of contained exception ***");
-		throwable.printStackTrace(err);
-	}
-}
-
-/**
- * Outputs a printable representation of this exception's
- * walkback on the writer specified by the argument.
- *
- * @param err The writer to write the walkback on.
- */
-public void printStackTrace(PrintWriter err) {
-	super.printStackTrace(err);
-	if (throwable != null) {
-		err.println("*** Stack trace of contained exception ***");
-		throwable.printStackTrace(err);
+		System.err.println("*** Stack trace of contained exception ***");
+		throwable.printStackTrace();
 	}
 }
 
