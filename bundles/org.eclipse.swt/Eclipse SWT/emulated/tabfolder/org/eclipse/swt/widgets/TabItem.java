@@ -267,7 +267,7 @@ void paint(GC gc, boolean isSelected) {
 		xDraw += sourceBounds.width;
 	}
 	yCenter = y + SHADOW_WIDTH + VERTICAL_MARGIN + (height - decorationHeight - textHeight(gc)) / 2; 	
-	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+	int flags = SWT.DRAW_MNEMONIC;
 	gc.drawText(getText(), xDraw, yCenter, flags);
 }
 /**
@@ -386,7 +386,7 @@ private int textHeight(GC gc) {
 	if (text == null) {
 		return 0;
 	} else {
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		int flags = SWT.DRAW_MNEMONIC;
 		return gc.textExtent(text, flags).y;
 	}
 }
@@ -398,7 +398,7 @@ private int textWidth(GC gc) {
 	int textWidth = 0;
 	
 	if (text != null) {
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		int flags = SWT.DRAW_MNEMONIC;
 		textWidth = gc.textExtent(text, flags).x;
 	}
 	if (textWidth == 0) {
