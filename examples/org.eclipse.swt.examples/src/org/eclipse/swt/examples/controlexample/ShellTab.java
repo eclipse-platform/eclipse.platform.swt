@@ -83,13 +83,23 @@ class ShellTab extends Tab {
 			Shell shell = tabFolderPage.getShell ();
 			shells [shellCount] = new Shell (shell, style);
 		}
-		Button button = new Button(shells [shellCount], SWT.PUSH);
-		button.setBounds(20, 20, 100, 30);
+		final Shell currentShell = shells [shellCount];
+		Button button = new Button(currentShell, SWT.PUSH);
+		button.setBounds(20, 20, 120, 30);
+		Button closeButton = new Button(currentShell, SWT.PUSH);
+		closeButton.setBounds(160, 20, 120, 30);
+		closeButton.setText(ControlExample.getResourceString("Close"));
+		closeButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				currentShell.dispose();
+			}
+		});
 	
 		/* Set the size, title and open the shell */
-		shells [shellCount].setSize (300, 100);
-		shells [shellCount].setText (ControlExample.getResourceString("Title") + shellCount);
-		shells [shellCount++].open ();
+		currentShell.setSize (300, 100);
+		currentShell.setText (ControlExample.getResourceString("Title") + shellCount);
+		currentShell.open ();
+		shellCount++;
 	}
 	
 	/**
