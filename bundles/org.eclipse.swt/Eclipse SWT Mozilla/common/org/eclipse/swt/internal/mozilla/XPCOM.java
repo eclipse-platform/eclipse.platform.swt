@@ -34,6 +34,8 @@ public class XPCOM {
 	static final int MINOR = 4;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
+	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	
 	/* nsDirectoryServiceDefs constants */
 	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
 	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$

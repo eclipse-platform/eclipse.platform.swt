@@ -191,7 +191,16 @@ void drawClose(GC gc) {
 		}
 		case CTabFolder.NONE: {
 			int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
-			parent.drawBackground(gc, shape, false);
+			if (parent.gradientColors != null && !parent.gradientVertical) {
+				parent.drawBackground(gc, shape, false);
+			} else {
+				Color defaultBackground = parent.getBackground();
+				Image image = parent.bgImage;
+				Color[] colors = parent.gradientColors;
+				int[] percents = parent.gradientPercents;
+				boolean vertical = parent.gradientVertical; 
+				parent.drawBackground(gc, shape, x, y, 10, 10, defaultBackground, image, colors, percents, vertical);
+			}
 			break;
 		}
 	}
@@ -206,7 +215,12 @@ void drawSelected(GC gc ) {
 	int ww = size.x - parent.borderLeft - parent.borderRight;
 	int hh = parent.highlight_header - 1;
 	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
-	parent.drawBackground(gc, shape, true);
+	if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
+		parent.drawBackground(gc, shape, true);
+	} else {
+		gc.setBackground(parent.selectionBackground);
+		gc.fillRectangle(xx, yy, ww, hh);
+	}
 	
 	if (parent.single) {
 		if (!isShowing()) return;
@@ -267,7 +281,31 @@ void drawSelected(GC gc ) {
 			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
 		}
-		parent.drawBackground(gc, shape, true);
+		
+		Rectangle clipping = gc.getClipping();
+		Rectangle bounds = getBounds();
+		bounds.height += 1;
+		if (parent.onBottom) bounds.y -= 1;
+		boolean tabInPaint = clipping.intersects(bounds);
+		
+		if (tabInPaint) {
+			// fill in tab background
+			if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
+				parent.drawBackground(gc, shape, true);
+			} else {
+				Color defaultBackground = parent.selectionBackground;
+				Image image = parent.selectionBgImage;
+				Color[] colors = parent.selectionGradientColors;
+				int[] percents = parent.selectionGradientPercents;
+				boolean vertical = parent.selectionGradientVertical;
+				xx = x;
+				yy = parent.onBottom ? y -1 : y + 1;
+				ww = width;
+				hh = height;
+				if (!parent.single && !parent.simple) ww += parent.curveWidth - parent.curveIndent;
+				parent.drawBackground(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical);
+			}
+		}
 		
 		// draw outline
 		shape[0] = Math.max(0, parent.borderLeft - 1);
@@ -288,6 +326,8 @@ void drawSelected(GC gc ) {
 		parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);
 		gc.setForeground(CTabFolder.borderColor);
 		gc.drawPolyline(shape);
+		
+		if (!tabInPaint) return;
 	}
 	
 	// draw Image
@@ -349,6 +389,10 @@ void drawSelected(GC gc ) {
 void drawUnselected(GC gc) {
 	// Do not draw partial items
 	if (!isShowing()) return;
+	
+	Rectangle clipping = gc.getClipping();
+	Rectangle bounds = getBounds();
+	if (!clipping.intersects(bounds)) return;
 	
 	// draw border
 	if (parent.indexOf(this) != parent.selectedIndex - 1) {
@@ -412,7 +456,9 @@ void drawUnselected(GC gc) {
  */
 public Rectangle getBounds () {
 	//checkWidget();
-	return new Rectangle(x, y, width, height);
+	int w = width;
+	if (!parent.simple && !parent.single && parent.indexOf(this) == parent.selectedIndex) w += parent.curveWidth - parent.curveIndent;
+	return new Rectangle(x, y, w, height);
 }
 /**
 * Gets the control that is displayed in the content are of the tab item.

@@ -825,10 +825,13 @@ public int getNextOffset (int offset, int movement) {
 }
 
 /**
- * Returns the character offset for the specified point.  When
- * the point is over a cluster composed by multiple characters,
- * the trailing argument will determine for each character in the
- * cluster whether it is under the point.
+ * Returns the character offset for the specified point.  
+ * For a typical character, the trailing argument will be filled in to 
+ * indicate whether the point is closer to the leading edge (0) or
+ * the trailing edge (1).  When the point is over a cluster composed 
+ * of multiple characters, the trailing argument will be filled with the 
+ * position of the character in the cluster that is closest to
+ * the point.
  * 
  * @param point the point
  * @param trailing the trailing buffer
@@ -850,10 +853,13 @@ public int getOffset (Point point, int[] trailing) {
 }
 
 /**
- * Returns the character offset for the specified point.  When
- * the point is over a cluster composed by multiple characters,
- * the trailing argument will determine for each character in the
- * cluster whether it is under the point.
+ * Returns the character offset for the specified point.  
+ * For a typical character, the trailing argument will be filled in to 
+ * indicate whether the point is closer to the leading edge (0) or
+ * the trailing edge (1).  When the point is over a cluster composed 
+ * of multiple characters, the trailing argument will be filled with the 
+ * position of the character in the cluster that is closest to
+ * the point.
  * 
  * @param x the x coordinate of the point
  * @param y the y coordinate of the point
