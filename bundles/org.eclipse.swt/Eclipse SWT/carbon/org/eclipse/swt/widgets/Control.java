@@ -540,21 +540,6 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	return OS.eventNotHandledErr;
 }
 
-int kEventControlHit (int nextHandler, int theEvent, int userData) {
-	Shell shell = getShell ();
-	int result = super.kEventControlHit (nextHandler, theEvent, userData);
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
-	return result;
-}
-
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
@@ -619,6 +604,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }	
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	Shell shell = getShell ();
 	if ((state & GRAB) != 0) {
 		int [] clickCount = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
@@ -626,6 +612,16 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
 		Display display = getDisplay ();
 		display.grabControl = this;
+	}
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		System.out.println("here");
+		shell.setActiveControl (this);
 	}
 //	if ((state & CANVAS) != 0 && userData != 0) return OS.noErr;
 	return OS.eventNotHandledErr;
