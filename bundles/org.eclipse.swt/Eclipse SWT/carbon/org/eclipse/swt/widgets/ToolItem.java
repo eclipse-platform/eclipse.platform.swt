@@ -13,16 +13,20 @@ import org.eclipse.swt.internal.carbon.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
+
 public class ToolItem extends Item {
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -50,8 +54,8 @@ public class ToolItem extends Item {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -65,10 +69,15 @@ public class ToolItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -87,8 +96,8 @@ public ToolItem (ToolBar parent, int style) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -103,10 +112,15 @@ public ToolItem (ToolBar parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -386,8 +400,9 @@ public ToolBar getParent () {
  * and false otherwise.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button). If the receiver is of any other type, this method
+ * returns false.
  * </p>
  *
  * @return the selection state
@@ -397,6 +412,7 @@ public ToolBar getParent () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
@@ -683,8 +699,8 @@ public void setImage (Image image) {
  * Sets the selection state of the receiver.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button).
  * </p>
  *
  * @param selected the new selection state
@@ -694,6 +710,7 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;

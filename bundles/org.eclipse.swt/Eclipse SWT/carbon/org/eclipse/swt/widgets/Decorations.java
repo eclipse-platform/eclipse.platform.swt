@@ -16,14 +16,14 @@ import org.eclipse.swt.graphics.*;
  * shares a significant amount of code with this class,
  * and is a subclass.
  * <p>
- * Instances are always displayed in one of the maximized,
+ * Instances are always displayed in one of the maximized, 
  * minimized or normal states:
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
  * window manager will typically resize it to fill the
  * entire visible area of the display, and the instance
- * is usually put in a state where it can not be resized
+ * is usually put in a state where it can not be resized 
  * (even if it has style <code>RESIZE</code>) until it is
  * no longer maximized.
  * </li><li>
@@ -51,7 +51,7 @@ import org.eclipse.swt.graphics.*;
  * it is not set.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -61,13 +61,13 @@ import org.eclipse.swt.graphics.*;
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application top level shell: (that
+ * to produce a typical application top level shell: (that 
  * is, <code>CLOSE | TITLE | MIN | MAX | RESIZE</code>)
  * </dd>
  * <dt><code>DIALOG_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application dialog shell: (that
+ * to produce a typical application dialog shell: (that 
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
@@ -81,6 +81,7 @@ import org.eclipse.swt.graphics.*;
  * @see Shell
  * @see SWT
  */
+
 public class Decorations extends Canvas {
 	String label;
 	Image image;
@@ -102,11 +103,11 @@ Decorations () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -120,10 +121,21 @@ Decorations () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
+ * @see SWT#TOOL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -232,7 +244,7 @@ public Button getDefaultButton () {
 	return defaultButton;
 }
 /**
- * Returns the receiver's image if it had previously been
+ * Returns the receiver's image if it had previously been 
  * set using <code>setImage()</code>. The image is typically
  * displayed by the window manager when the instance is
  * marked as iconified, and may also be displayed somewhere
@@ -244,7 +256,7 @@ public Button getDefaultButton () {
  * access to a window manager provided, "default" image
  * even if one exists.
  * </p>
- *
+ * 
  * @return the image
  *
  * @exception SWTException <ul>
@@ -252,13 +264,14 @@ public Button getDefaultButton () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public Image getImage () {
 	checkWidget();
 	return image;
 }
 /**
  * Returns <code>true</code> if the receiver is currently
- * maximized, and false otherwise.
+ * maximized, and false otherwise. 
  * <p>
  *
  * @return the maximized state
@@ -270,6 +283,7 @@ public Image getImage () {
  *
  * @see #setMaximized
  */
+
 public boolean getMaximized () {
 	checkWidget();
 	return maximized;
@@ -291,7 +305,7 @@ public Menu getMenuBar () {
 }
 /**
  * Returns <code>true</code> if the receiver is currently
- * minimized, and false otherwise.
+ * minimized, and false otherwise. 
  * <p>
  *
  * @return the minimized state
@@ -303,6 +317,7 @@ public Menu getMenuBar () {
  *
  * @see #setMinimized
  */
+
 public boolean getMinimized () {
 	checkWidget();
 	return minimized;
@@ -313,7 +328,7 @@ String getNameText () {
 /**
  * Returns the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>. If the text has not previously been set,
+ * <em>title</em>. If the text has not previously been set, 
  * returns an empty string.
  *
  * @return the text
@@ -323,6 +338,7 @@ String getNameText () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public String getText () {
 	checkWidget();
 	return label;
@@ -401,22 +417,23 @@ void saveFocus () {
  * If the argument is not null, sets the receiver's default
  * button to the argument, and if the argument is null, sets
  * the receiver's default button to the first button which
- * was set as the receiver's default button (called the
+ * was set as the receiver's default button (called the 
  * <em>saved default button</em>). If no default button had
  * previously been set, or the saved default button was
  * disposed, the receiver's default button will be set to
- * null.
+ * null. 
  *
  * @param the new default button
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setDefaultButton (Button button) {
 	checkWidget();
 	setDefaultButton (button, true);
@@ -445,17 +462,18 @@ void setDefaultButton (Button button, boolean save) {
  * manager when the instance is marked as iconified, and
  * may also be displayed somewhere in the trim when the
  * instance is in normal or maximized states.
- *
+ * 
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setImage (Image image) {
 	checkWidget();
 	int pixmap = 0, mask = 0;
@@ -519,7 +537,7 @@ public void setMaximized (boolean maximized) {
  * @param menu the new menu bar
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -621,7 +639,7 @@ void setSavedFocus (Control control) {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which may not be null.
+ * <em>title</em>, to the argument, which may not be null. 
  *
  * @param text the new text
  *
@@ -633,6 +651,7 @@ void setSavedFocus (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

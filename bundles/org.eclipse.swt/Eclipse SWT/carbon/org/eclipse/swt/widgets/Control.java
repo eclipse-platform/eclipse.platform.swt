@@ -45,11 +45,11 @@ Control () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -63,10 +63,11 @@ Control () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -126,9 +127,9 @@ public void addFocusListener(FocusListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -143,6 +144,7 @@ public void addFocusListener(FocusListener listener) {
  * @see HelpListener
  * @see #removeHelpListener
  */
+
 public void addHelpListener (HelpListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -307,12 +309,12 @@ public void addTraverseListener (TraverseListener listener) {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
+ * To indicate that the caller does not wish to constrain a particular 
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -325,25 +327,31 @@ public void addTraverseListener (TraverseListener listener) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
+
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
- * To indicate that the caller does not wish to constrain a particular
- * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint.
+ * To indicate that the caller does not wish to constrain a particular 
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
  * </p><p>
  * If the changed flag is <code>true</code>, it indicates that the receiver's
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained.
+ * manager caches can be retained. 
  * </p>
  *
  * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
@@ -357,7 +365,13 @@ public Point computeSize (int wHint, int hHint) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = DEFAULT_WIDTH;
@@ -501,9 +515,12 @@ public boolean forceFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see addAccessibleListener
- * @see addAccessibleControlListener
+ * @see Accessible#addAccessibleListener
+ * @see Accessible#addAccessibleControlListener
+ * 
+ * @since 2.0
  */
+
 public Accessible getAccessible () {
 	checkWidget ();
 	if (accessible == null) {
@@ -903,7 +920,7 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
     */
 }
-/**
+/**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -913,11 +930,12 @@ void hookEvents () {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data
+ * @param data the platform specific GC data 
  * @return the platform specific GC handle
  *
  * @private
  */
+
 public int internal_new_GC (GCData data) {
 	checkWidget();
     /* AW
@@ -957,7 +975,7 @@ public int internal_new_GC (GCData data) {
 	
     return xGC;
 }
-/**
+/**	 
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -968,10 +986,11 @@ public int internal_new_GC (GCData data) {
  * </p>
  *
  * @param handle the platform specific GC handle
- * @param data the platform specific GC data
+ * @param data the platform specific GC data 
  *
  * @private
  */
+
 public void internal_dispose_GC (int xGC, GCData data) {
 	checkWidget ();
     /* AW
@@ -1079,13 +1098,14 @@ boolean mnemonicMatch (char key) {
  * @param the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void moveAbove (Control control) {
 	checkWidget();
 	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1101,13 +1121,14 @@ public void moveAbove (Control control) {
  * @param the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void moveBelow (Control control) {
 	checkWidget();
 	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1138,7 +1159,7 @@ public void pack () {
  * <em>contents</em> have changed, therefore any caches that a layout manager
  * containing the control may have been keeping need to be flushed. When the
  * control is resized, the changed flag will be <code>false</code>, so layout
- * manager caches can be retained.
+ * manager caches can be retained. 
  * </p>
  *
  * @exception SWTException <ul>
@@ -1148,6 +1169,7 @@ public void pack () {
  *
  * @see #computeSize
  */
+
 public void pack (boolean changed) {
 	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
@@ -1448,12 +1470,12 @@ public void redraw () {
 }
 /**
  * Causes the rectangular area of the receiver specified by
- * the arguments to be marked as needing to be redrawn.
+ * the arguments to be marked as needing to be redrawn. 
  * The next time a paint request is processed, that area of
  * the receiver will be painted. If the <code>all</code> flag
  * is <code>true</code>, any children of the receiver which
  * intersect with the specified area will also paint their
- * intersecting areas. If the <code>all</code> flag is
+ * intersecting areas. If the <code>all</code> flag is 
  * <code>false</code>, the children will not be painted.
  *
  * @param x the x coordinate of the area to draw
@@ -1469,6 +1491,7 @@ public void redraw () {
  *
  * @see #update
  */
+
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (width <= 0 || height <= 0) return;
@@ -1797,13 +1820,14 @@ void sendMouseEvent (int type, int button, MacEvent xEvent) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setBackground (Color color) {
 	checkWidget();
 	int pixel = -1;
@@ -1826,7 +1850,7 @@ void setBackgroundPixel (int pixel) {
 }
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the arguments. The <code>x</code> and
+ * area specified by the arguments. The <code>x</code> and 
  * <code>y</code> arguments are relative to the receiver's
  * parent (or its display if its parent is null).
  * <p>
@@ -1845,6 +1869,7 @@ void setBackgroundPixel (int pixel) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	/*
@@ -1884,7 +1909,7 @@ public void setBounds (int x, int y, int width, int height) {
 }
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the argument. The <code>x</code> and
+ * area specified by the argument. The <code>x</code> and 
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
  * <p>
@@ -1900,6 +1925,7 @@ public void setBounds (int x, int y, int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
@@ -1952,13 +1978,14 @@ public void setCapture (boolean capture) {
  * @param cursor the new cursor (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setCursor (Cursor cursor) {
 	checkWidget();
     /* AW
@@ -2001,7 +2028,7 @@ public void setEnabled (boolean enabled) {
 	}
 }
 /**
- * Causes the receiver to have the <em>keyboard focus</em>,
+ * Causes the receiver to have the <em>keyboard focus</em>, 
  * such that all keyboard events will be delivered to it.
  *
  * @return <code>true</code> if the control got focus, and <code>false</code> if it was unable to.
@@ -2013,6 +2040,7 @@ public void setEnabled (boolean enabled) {
  *
  * @see #forceFocus
  */
+
 public boolean setFocus () {
 	checkWidget();
 	return forceFocus ();
@@ -2071,13 +2099,14 @@ public void setFont (Font font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setForeground (Color color) {
 	checkWidget();
     /* AW
@@ -2114,14 +2143,15 @@ void setGrabCursor (int cursor) {
 }
 /**
  * Sets the layout data associated with the receiver to the argument.
- *
+ * 
  * @param layoutData the new layout data for the receiver.
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setLayoutData (Object layoutData) {
 	checkWidget();
 	this.layoutData = layoutData;
@@ -2188,13 +2218,14 @@ public void setLocation (Point location) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setMenu (Menu menu) {
 	checkWidget();
 	if (menu != null) {
@@ -2218,13 +2249,14 @@ public void setMenu (Menu menu) {
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  */
+
 public boolean setParent (Composite parent) {
 	checkWidget();
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2249,10 +2281,11 @@ public boolean setParent (Composite parent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @see #redraw
  * @see #update
  */
+
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	/*
@@ -2336,7 +2369,7 @@ public void setToolTipText (String string) {
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise.
+ * and marks it invisible otherwise. 
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -2350,6 +2383,7 @@ public void setToolTipText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setVisible (boolean visible) {
 	checkWidget();
 	int topHandle = topHandle ();
@@ -2633,6 +2667,7 @@ boolean traverseReturn () {
  *
  * @see #redraw
  */
+
 public void update () {
 	checkWidget();
     /* AW

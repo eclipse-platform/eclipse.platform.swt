@@ -13,7 +13,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are controls that allow the user
- * to choose an item from a list of items, or optionally
+ * to choose an item from a list of items, or optionally 
  * enter a new value by typing it into an editable text
  * field. Often, <code>Combo</code>s are used in the same place
  * where a single selection <code>List</code> widget could
@@ -26,7 +26,7 @@ import org.eclipse.swt.events.*;
  * which access one versus the other (compare for example,
  * <code>clearSelection()</code> and <code>deselectAll()</code>).
  * The API documentation is careful to indicate either "the
- * receiver's list" or the "the receiver's text field" to
+ * receiver's list" or the "the receiver's text field" to 
  * distinguish between the two cases.
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -39,11 +39,15 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles DROP_DOWN and SIMPLE 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see List
  */
+
 public /*final*/ class Combo extends Composite {
 
 	// AW
@@ -62,6 +66,7 @@ public /*final*/ class Combo extends Composite {
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
 	 */
+
 	public static int LIMIT;
 
 	/*
@@ -82,11 +87,11 @@ public /*final*/ class Combo extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -100,10 +105,13 @@ public /*final*/ class Combo extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#DROP_DOWN
+ * @see SWT#READ_ONLY
+ * @see SWT#SIMPLE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -298,7 +306,7 @@ protected void checkSubclass () {
  * text field is editable, this has the effect of placing the
  * i-beam at the start of the text.
  * <p>
- * Note: To clear the selected items in the receiver's list,
+ * Note: To clear the selected items in the receiver's list, 
  * use <code>deselectAll()</code>.
  * </p>
  *
@@ -309,6 +317,7 @@ protected void checkSubclass () {
  *
  * @see #deselectAll
  */
+
 public void clearSelection () {
 	checkWidget();
     /* AW
@@ -436,7 +445,7 @@ void deregister () {
 	if (fPopupButton != 0) WidgetTable.remove (fPopupButton);
 }	
 /**
- * Deselects the item at the given zero-relative index in the receiver's
+ * Deselects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already deselected, it remains
  * deselected. Indices that are out of range are ignored.
  *
@@ -447,6 +456,7 @@ void deregister () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void deselect (int index) {
 	checkWidget();
 	if (index == -1) return;
@@ -572,11 +582,11 @@ public int getItemHeight () {
 }
 /**
  * Returns an array of <code>String</code>s which are the items
- * in the receiver's list.
+ * in the receiver's list. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver.
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver's list
@@ -589,6 +599,7 @@ public int getItemHeight () {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public String [] getItems () {
 	checkWidget();
 	int itemCount= OS.CountMenuItems(fMenuHandle);
@@ -745,14 +756,15 @@ public int getTextHeight () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Combo.LIMIT</code>.
- *
+ * 
  * @return the text limit
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public int getTextLimit () {
 	checkWidget();
     return fTextLimit;
@@ -775,7 +787,7 @@ void hookEvents () {
 }
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the
+ * (index 0) until an item is found that is equal to the 
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -790,6 +802,7 @@ void hookEvents () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -804,7 +817,7 @@ public int indexOf (String string) {
 	return -1;
 }
 /**
- * Searches the receiver's list starting at the given,
+ * Searches the receiver's list starting at the given, 
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -821,6 +834,7 @@ public int indexOf (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -948,7 +962,7 @@ public void remove (int index) {
 }
 /**
  * Removes the items from the receiver's list which are
- * between the given zero-relative start and end
+ * between the given zero-relative start and end 
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -965,6 +979,7 @@ public void remove (int index) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -1002,7 +1017,7 @@ void register () {
 */
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument,
+ * until an item is found that is equal to the argument, 
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -1019,6 +1034,7 @@ void register () {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1129,7 +1145,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver's
+ * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1140,6 +1156,7 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void select (int index) {
 	checkWidget();
     /* AW
@@ -1304,7 +1321,7 @@ public void setItems (String [] items) {
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
  * start of the selection and whose y coordinate is the end
- * of the selection.
+ * of the selection. 
  *
  * @param a point representing the new selection start and end
  *
@@ -1316,6 +1333,7 @@ public void setItems (String [] items) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setSelection (Point selection) {
 	checkWidget();
 	if (fTX != 0)
@@ -1336,7 +1354,7 @@ public void setSize (int width, int height) {
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,
  * setting the text to a string containing line breaks or
- * other special characters will probably cause it to
+ * other special characters will probably cause it to 
  * display incorrectly.
  * </p>
  *
@@ -1350,6 +1368,7 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -12,9 +12,9 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values.
+ * objects that represent a range of positive, numeric values. 
  * <p>
- * At any given moment, a given scroll bar will have a
+ * At any given moment, a given scroll bar will have a 
  * single <em>selection</em> that is considered to be its
  * value, which is constrained to be within the range of
  * values the scroll bar represents (that is, between its
@@ -29,10 +29,10 @@ import org.eclipse.swt.events.*;
  * <li>an arrow button for incrementing the value</li>
  * </ol>
  * Based on their style, scroll bars are either <code>HORIZONTAL</code>
- * (which have left and right facing buttons for incrementing and
- * decrementing the value) or <code>VERTICAL</code> (which have
- * up and down facing buttons for incrementing and decrementing
- * the value).
+ * (which have a left facing button for decrementing the value and a
+ * right facing button for incrementing it) or <code>VERTICAL</code>
+ * (which have an upward facing button for decrementing the value
+ * and a downward facing buttons for incrementing it).
  * </p><p>
  * On some platforms, the size of the scroll bar's thumb can be
  * varied relative to the magnitude of the range of values it
@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  * have no operating system resources and are not children of the control.
  * For this reason, scroll bars are treated specially.  To create a control
  * that looks like a scroll bar but has operating system resources, use
- * <code>Slider</code>.
+ * <code>Slider</code>. 
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -63,7 +63,10 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  *
  * @see Slider
  * @see Scrollable
@@ -285,17 +288,19 @@ public int getSelection () {
 	return OS.GetControl32BitValue(handle);
 }
 /**
- * For horizontal scroll bars, returns the height of the
- * instance, and for vertical scroll bars, returns the width
- * of the instance.
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
  *
- * @return the scroll bar size
+ * @return the receiver's size
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public Point getSize () {
 	checkWidget();
     /* AW
@@ -505,7 +510,7 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least
+ * are pressed to the argument, which must be at least 
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -515,6 +520,7 @@ public void setEnabled (boolean enabled) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
@@ -615,7 +621,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is equivalent to setting the values individually
- * using the appropriate methods, but may be implemented in a
+ * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -631,6 +637,7 @@ public void setThumb (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget();
 	if (selection < 0) return;
@@ -649,7 +656,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise.
+ * and marks it invisible otherwise. 
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -663,6 +670,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setVisible (boolean visible) {
 	checkWidget();
 	/*

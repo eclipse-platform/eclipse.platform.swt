@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
  * <dd>Help, Hide, Show </dd>
  * </dl>
  * <p>
+ * Note: Only one of BAR, DROP_DOWN and POP_UP may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -32,29 +34,119 @@ public class Menu extends Widget {
 	private static int fgMenuId= 5000;
 	// AW
 
+/**
+ * Constructs a new instance of this class given its parent,
+ * and sets the style for the instance so that the instance
+ * will be a popup menu on the given parent's shell.
+ *
+ * @param parent a control which will be the parent of the new instance (cannot be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#POP_UP
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Menu (Control parent) {
 	this (checkNull (parent).getShell (), SWT.POP_UP);
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Decorations</code>) and a style value
+ * describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a decorations control which will be the parent of the new instance (cannot be null)
+ * @param style the style of menu to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#BAR
+ * @see SWT#DROP_DOWN
+ * @see SWT#POP_UP
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Menu (Decorations parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	createWidget ();
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Menu</code>) and sets the style
+ * for the instance so that the instance will be a drop-down
+ * menu on the given parent's parent.
+ *
+ * @param parent a menu which will be the parent of the new instance (cannot be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#DROP_DOWN
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Menu (Menu parentMenu) {
 	this (checkNull (parentMenu).parent, SWT.DROP_DOWN);
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>MenuItem</code>) and sets the style
+ * for the instance so that the instance will be a drop-down
+ * menu on the given parent's parent menu.
+ *
+ * @param parent a menu item which will be the parent of the new instance (cannot be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#DROP_DOWN
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -69,6 +161,7 @@ public Menu (MenuItem parentItem) {
  * @see HelpListener
  * @see #removeHelpListener
  */
+
 public void addHelpListener (HelpListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -78,8 +171,8 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>MenuListener</code>
+ * be notified when menus are hidden or shown, by sending it
+ * one of the messages defined in the <code>MenuListener</code>
  * interface.
  *
  * @param listener the listener which should be notified
@@ -95,6 +188,7 @@ public void addHelpListener (HelpListener listener) {
  * @see MenuListener
  * @see #removeMenuListener
  */
+
 public void addMenuListener (MenuListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

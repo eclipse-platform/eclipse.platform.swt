@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 
-/**
+/** 
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notificiation
  * when a string selected.  A list may be single or multi select.
@@ -26,6 +26,8 @@ import org.eclipse.swt.events.*;
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
  * <p>
+ * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -43,11 +45,11 @@ public /*final*/ class List extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -61,10 +63,12 @@ public /*final*/ class List extends Scrollable {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -370,7 +374,7 @@ public void deselect (int index) {
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver
+ * If the item at the given zero-relative index in the receiver 
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -383,6 +387,7 @@ public void deselect (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void deselect (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -399,7 +404,7 @@ public void deselect (int start, int end) {
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver
+ * If the item at the given zero-relative index in the receiver 
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -414,6 +419,7 @@ public void deselect (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -567,11 +573,11 @@ public int getItemHeight () {
 }
 /**
  * Returns an array of <code>String</code>s which are the items
- * in the receiver.
+ * in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver.
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver's list
@@ -585,6 +591,7 @@ public int getItemHeight () {
  *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
  * </ul>
  */
+
 public String [] getItems () {
 	checkWidget();
     /* AW
@@ -624,7 +631,7 @@ public String [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver.
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *
@@ -637,6 +644,7 @@ public String [] getItems () {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
+
 public String [] getSelection () {
 	checkWidget();
     /* AW
@@ -730,7 +738,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver.
+ * not affect the receiver. 
  * </p>
  * @return the array of indices of the selected items
  *
@@ -742,6 +750,7 @@ public int getSelectionIndex () {
  *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public int [] getSelectionIndices () {
 	checkWidget();
     /*
@@ -820,7 +829,7 @@ public int indexOf (String string) {
     return fData.indexOf(string);
 }
 /**
- * Searches the receiver's list starting at the given,
+ * Searches the receiver's list starting at the given, 
  * zero-relative index until an item is found that is equal
  * to the argument, and returns the index of that item. If
  * no item is found or the starting index is out of range,
@@ -841,6 +850,7 @@ public int indexOf (String string) {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
+
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -937,7 +947,7 @@ public void remove (int index) {
 }
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end
+ * between the given zero-relative start and end 
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -954,6 +964,7 @@ public void remove (int index) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -979,7 +990,7 @@ public void remove (int start, int end) {
 }
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument,
+ * until an item is found that is equal to the argument, 
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -996,6 +1007,7 @@ public void remove (int start, int end) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
+
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1094,7 +1106,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver's
+ * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1105,6 +1117,7 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void select (int index) {
 	checkWidget();
 	if (index == -1) return;
@@ -1206,7 +1219,7 @@ public void select (int start, int end) {
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver
+ * If the item at the given zero-relative index in the receiver 
  * is not selected, it is selected.  If the item at the index
  * was selected, it remains selected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -1221,6 +1234,7 @@ public void select (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1455,7 +1469,7 @@ public void setItems (String [] items) {
 	invalidateRange(0, ensureSize);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver.
+ * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
  * The current selected is first cleared, then the new items are selected.
  * Indices that are out of range are ignored.
@@ -1469,12 +1483,13 @@ public void setItems (String [] items) {
  * @see List#deselectAll()
  * @see List#select(int)
  */
+
 public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
 }
 /**
- * Selects the items at the given zero-relative indices in the receiver.
+ * Selects the items at the given zero-relative indices in the receiver. 
  * The current selected if first cleared, then the new items are selected.
  *
  * @param start the start index of the items to select
@@ -1488,13 +1503,14 @@ public void setSelection (int index) {
  * @see Table#deselectAll()
  * @see Table#select(int,int)
  */
+
 public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 }
 /**
- * Selects the items at the given zero-relative indices in the receiver.
- * The current selected of first cleared, then the new items are selected.
+ * Selects the items at the given zero-relative indices in the receiver. 
+ * The current selection is first cleared, then the new items are selected.
  *
  * @param indices the indices of the items to select
  *
@@ -1509,6 +1525,7 @@ public void setSelection (int start, int end) {
  * @see List#deselectAll()
  * @see List#select(int[])
  */
+
 public void setSelection(int[] indices) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);

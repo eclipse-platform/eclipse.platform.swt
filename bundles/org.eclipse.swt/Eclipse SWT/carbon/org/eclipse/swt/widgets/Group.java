@@ -25,6 +25,8 @@ import org.eclipse.swt.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -41,11 +43,11 @@ public /*final*/ class Group extends Composite {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -59,10 +61,15 @@ public /*final*/ class Group extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SHADOW_ETCHED_IN
+ * @see SWT#SHADOW_ETCHED_OUT
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#SHADOW_NONE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -211,7 +218,7 @@ boolean mnemonicMatch (char key) {
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
- * which may not be null.
+ * which may not be null. 
  *
  * @param text the new text
  *
@@ -223,6 +230,7 @@ boolean mnemonicMatch (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

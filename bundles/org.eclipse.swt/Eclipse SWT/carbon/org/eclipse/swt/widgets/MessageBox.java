@@ -23,10 +23,14 @@ import org.eclipse.swt.widgets.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles ICON_ERROR, ICON_INFORMATION, ICON_QUESTION,
+ * ICON_WARNING and ICON_WORKING may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
  */
+
 public  class MessageBox extends Dialog {
 	String message = "";
 	
@@ -65,8 +69,8 @@ public MessageBox (Shell parent) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT dialog classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the dialog on the currently active
@@ -86,6 +90,7 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
+
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
 }

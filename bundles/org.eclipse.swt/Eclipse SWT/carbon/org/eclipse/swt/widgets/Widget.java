@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This class is the abstract superclass of all user interface objects.
+ * This class is the abstract superclass of all user interface objects.  
  * Widgets are created, disposed and issue notification to listeners
  * when events occur which affect them.
  * <dl>
@@ -37,6 +37,7 @@ import org.eclipse.swt.events.*;
  *
  * @see #checkSubclass
  */
+
 public abstract class Widget {
 
 	public int handle;
@@ -83,11 +84,11 @@ Widget () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a widget which will be the parent of the new instance (cannot be null)
@@ -105,6 +106,7 @@ Widget () {
  * @see #checkSubclass
  * @see #getStyle
  */
+
 public Widget (Widget parent, int style) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -301,7 +303,7 @@ void error (int code) {
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
  * <em>widget data</em> is a single, unnamed field that is
- * stored with every widget.
+ * stored with every widget. 
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -319,6 +321,7 @@ void error (int code) {
  *
  * @see #setData
  */
+
 public Object getData () {
 	checkWidget();
 	return data;
@@ -759,7 +762,7 @@ protected void removeListener (int eventType, SWTEventListener handler) {
  * </ul>
  *
  * @see DisposeListener
- * @see #removeDisposeListener
+ * @see #addDisposeListener
  */
 public void removeDisposeListener (DisposeListener listener) {
 	checkWidget();
@@ -828,7 +831,7 @@ void sendEvent (int eventType, Event event) {
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
  * data</em> is a single, unnamed field that is stored
- * with every widget.
+ * with every widget. 
  * <p>
  * Applications may put arbitrary objects in this field. If
  * the object stored in the widget data needs to be notified
@@ -844,6 +847,7 @@ void sendEvent (int eventType, Event event) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
  */
+
 public void setData (Object data) {
 	checkWidget();
 	this.data = data;

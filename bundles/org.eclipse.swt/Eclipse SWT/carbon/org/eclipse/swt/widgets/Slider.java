@@ -12,9 +12,9 @@ import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that represent a range of positive, numeric values.
+ * objects that represent a range of positive, numeric values. 
  * <p>
- * At any given moment, a given slider will have a
+ * At any given moment, a given slider will have a 
  * single <em>selection</em> that is considered to be its
  * value, which is constrained to be within the range of
  * values the slider represents (that is, between its
@@ -29,10 +29,10 @@ import org.eclipse.swt.internal.carbon.*;
  * <li>an arrow button for incrementing the value</li>
  * </ol>
  * Based on their style, sliders are either <code>HORIZONTAL</code>
- * (which have left and right facing buttons for incrementing and
- * decrementing the value) or <code>VERTICAL</code> (which have
- * up and down facing buttons for incrementing and decrementing
- * the value).
+ * (which have a left facing button for decrementing the value and a
+ * right facing button for incrementing it) or <code>VERTICAL</code>
+ * (which have an upward facing button for decrementing the value
+ * and a downward facing buttons for incrementing it).
  * </p><p>
  * On some platforms, the size of the slider's thumb can be
  * varied relative to the magnitude of the range of values it
@@ -51,10 +51,14 @@ import org.eclipse.swt.internal.carbon.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  *
  * @see ScrollBar
  */
+
 public /*final*/ class Slider extends Control {
 	private int fIncrement= 1;	// AW
 	private int fPageIncrement= 10;	// AW
@@ -64,11 +68,11 @@ public /*final*/ class Slider extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -82,10 +86,12 @@ public /*final*/ class Slider extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Slider (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -342,7 +348,7 @@ public void removeSelectionListener(SelectionListener listener) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least
+ * are pressed to the argument, which must be at least 
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -352,6 +358,7 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
@@ -450,7 +457,7 @@ public void setThumb (int value) {
  * value, thumb, increment and page increment all at once.
  * <p>
  * Note: This is equivalent to setting the values individually
- * using the appropriate methods, but may be implemented in a
+ * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>
  *
@@ -466,6 +473,7 @@ public void setThumb (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget();
 	if (selection < 0) return;

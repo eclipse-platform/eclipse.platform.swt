@@ -14,21 +14,21 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent the "windows"
  * which the desktop or "window manager" is managing.
- * Instances which do not have a parent (that is, they
- * are built using the constructor which takes a
+ * Instances that do not have a parent (that is, they
+ * are built using the constructor, which takes a 
  * <code>Display</code> as the argument) are described
- * as <em>top level</em> shells. Instances which do have
- * a parent, are described as <em>secondary</em> or
+ * as <em>top level</em> shells. Instances that do have
+ * a parent are described as <em>secondary</em> or
  * <em>dialog</em> shells.
  * <p>
- * Instances are always displayed in one of the maximized,
+ * Instances are always displayed in one of the maximized, 
  * minimized or normal states:
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
  * window manager will typically resize it to fill the
  * entire visible area of the display, and the instance
- * is usually put in a state where it can not be resized
+ * is usually put in a state where it can not be resized 
  * (even if it has style <code>RESIZE</code>) until it is
  * no longer maximized.
  * </li><li>
@@ -47,16 +47,22 @@ import org.eclipse.swt.events.*;
  * </li>
  * </ul>
  * </p>
+ * <p>
  * Note: The styles supported by this class must be treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
- * control over the appearance and behavior of decorations.
- * For example, some window managers only support resizable
- * windows and will always assume the RESIZE style, even if
- * it is not set.
+ * control over the appearance and behavior of decorations
+ * and modality. For example, some window managers only
+ * support resizable windows and will always assume the
+ * RESIZE style, even if it is not set. In addition, if a
+ * modality style is not supported, it is "upgraded" to a
+ * more restrictive modality style that is supported. For
+ * example, if <code>PRIMARY_MODAL</code> is not supported,
+ * it would be upgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE</dd>
+ * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
  * </dl>
@@ -66,23 +72,28 @@ import org.eclipse.swt.events.*;
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application top level shell: (that
+ * to produce a typical application top level shell: (that 
  * is, <code>CLOSE | TITLE | MIN | MAX | RESIZE</code>)
  * </dd>
  * <dt><code>DIALOG_TRIM</code></dt>
  * <dd>
  * the result of combining the constants which are required
- * to produce a typical application dialog shell: (that
+ * to produce a typical application dialog shell: (that 
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
+ * </p>
  * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
  *
  * @see Decorations
  * @see SWT
  */
+
 public /*final*/ class Shell extends Decorations {
 	Display display;
 	int shellHandle;
@@ -106,6 +117,7 @@ public /*final*/ class Shell extends Decorations {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
+
 public Shell () {
 	this ((Display) null);
 }
@@ -116,11 +128,11 @@ public Shell () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param style the style of control to construct
@@ -129,6 +141,20 @@ public Shell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (int style) {
 	this ((Display) null, style);
@@ -139,7 +165,7 @@ public Shell (int style) {
  * <p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the
+ * display if there is one. If there is no current display, the 
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -152,6 +178,7 @@ public Shell (int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
+
 public Shell (Display display) {
 	this (display, SWT.SHELL_TRIM);
 }
@@ -162,15 +189,15 @@ public Shell (Display display) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the
+ * display if there is one. If there is no current display, the 
  * shell is created on a "default" display. <b>Passing in null as
  * the display argument is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -183,6 +210,20 @@ public Shell (Display display) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
 	this (display, null, style, 0);
@@ -207,7 +248,7 @@ Shell (Display display, Shell parent, int style, int handle) {
  * <p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the
+ * display if there is one. If there is no current display, the 
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -232,15 +273,15 @@ public Shell (Shell parent) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p><p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the shell on the currently active
- * display if there is one. If there is no current display, the
+ * display if there is one. If there is no current display, the 
  * shell is created on a "default" display. <b>Passing in null as
  * the parent is not considered to be good coding style,
  * and may not be supported in a future release of SWT.</b>
@@ -253,6 +294,20 @@ public Shell (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
 	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
@@ -410,6 +465,8 @@ void adjustTrim () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #dispose
  */
 public void close () {
 	checkWidget();
@@ -742,7 +799,7 @@ public boolean getEnabled () {
  * will be the result of bitwise OR'ing together one or
  * more of the following constants defined in class
  * <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @return the IME mode
@@ -754,6 +811,7 @@ public boolean getEnabled () {
  *
  * @see SWT
  */
+
 public int getImeInputMode () {
 	checkWidget();
 	return SWT.NONE;
@@ -775,7 +833,7 @@ public Shell getShell () {
 	return this;
 }
 /**
- * Returns an array containing all shells which are
+ * Returns an array containing all shells which are 
  * descendents of the receiver.
  * <p>
  * @return the dialog shells
@@ -785,6 +843,7 @@ public Shell getShell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public Shell [] getShells () {
 	checkWidget();
 	int count = 0;
@@ -930,15 +989,21 @@ void manageChildren () {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one).
+ * and sets focus to its default button (if it has one)
+ * and asks the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see Control#moveAbove
+ * @see Control#setFocus
  * @see Control#setVisible
+ * @see Display#getActiveShell
  * @see Decorations#setDefaultButton
+ * @see Shell#setActive
+ * @see Shell#forceActive
 */
 public void open () {
 	checkWidget();
@@ -1238,10 +1303,10 @@ public void setEnabled (boolean enabled) {
 }
 // AW
 /**
- * Sets the input method editor mode to the argument which
+ * Sets the input method editor mode to the argument which 
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
- * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>,
+ * <code>NONE</code>, <code>ROMAN</code>, <code>DBCS</code>, 
  * <code>PHONETIC</code>, <code>NATIVE</code>, <code>ALPHA</code>.
  *
  * @param mode the new IME mode
@@ -1253,6 +1318,7 @@ public void setEnabled (boolean enabled) {
  *
  * @see SWT
  */
+
 public void setImeInputMode (int mode) {
 	checkWidget();
 }

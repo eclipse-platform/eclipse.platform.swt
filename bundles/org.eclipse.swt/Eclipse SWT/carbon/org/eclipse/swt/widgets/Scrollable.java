@@ -36,11 +36,11 @@ Scrollable () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -54,10 +54,12 @@ Scrollable () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#H_SCROLL
+ * @see SWT#V_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
@@ -74,7 +76,7 @@ public Scrollable (Composite parent, int style) {
  * rectangle described by the arguments (relative to the
  * receiver's parent).
  * </p>
- *
+ * 
  * @return the required bounds to produce the given client area
  *
  * @exception SWTException <ul>
@@ -84,6 +86,7 @@ public Scrollable (Composite parent, int style) {
  *
  * @see #getClientArea
  */
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int border = getBorderWidth ();
@@ -163,7 +166,7 @@ void enableWidget (boolean enabled) {
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
  * not covered by the "trimmings").
- *
+ * 
  * @return the client area
  *
  * @exception SWTException <ul>
@@ -173,6 +176,7 @@ void enableWidget (boolean enabled) {
  *
  * @see #computeTrim
  */
+
 public Rectangle getClientArea () {
 	checkWidget();
     /* AW

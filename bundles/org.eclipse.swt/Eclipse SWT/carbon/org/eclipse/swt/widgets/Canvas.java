@@ -40,11 +40,11 @@ Canvas () {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -62,6 +62,7 @@ Canvas () {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
@@ -131,7 +132,7 @@ void releaseWidget () {
 }
 
 /**
- * Scrolls a rectangular area of the receiver by first copying
+ * Scrolls a rectangular area of the receiver by first copying 
  * the source area to the destination and then causing the area
  * of the source which is not covered by the destination to
  * be repainted. Children that intersect the rectangle are
@@ -152,6 +153,7 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;

@@ -16,10 +16,13 @@ import org.eclipse.swt.graphics.*;
  * numeric values.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd> HORIZONTAL, VERTICAL</dd>
+ * <dd>HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
+ * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * <p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
@@ -35,11 +38,11 @@ public /*final*/ class Scale extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -53,7 +56,8 @@ public /*final*/ class Scale extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -266,7 +270,7 @@ public void removeSelectionListener(SelectionListener listener) {
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least
+ * are pressed to the argument, which must be at least 
  * one.
  *
  * @param value the new increment (must be greater than zero)
@@ -276,6 +280,7 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;

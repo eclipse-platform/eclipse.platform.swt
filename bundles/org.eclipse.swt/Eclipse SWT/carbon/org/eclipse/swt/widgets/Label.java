@@ -16,16 +16,22 @@ import org.eclipse.swt.internal.carbon.*;
  * vertical or horizontal line.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SEPARATOR, HORIZONTAL, SHADOW_IN, SHADOW_OUT, VERTICAL</dd>
+ * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
+ * <dd>SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
  * <dd>CENTER, LEFT, RIGHT, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of SHADOW_IN, SHADOW_OUT and SHADOW_NONE may be specified.
+ * SHADOW_NONE is a HINT. Only one of HORIZONTAL and VERTICAL may be specified.
+ * Only one of CENTER, LEFT and RIGHT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
  */
+
 public /*final*/ class Label extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
@@ -36,11 +42,11 @@ public /*final*/ class Label extends Control {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -54,10 +60,20 @@ public /*final*/ class Label extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SEPARATOR
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#SHADOW_NONE
+ * @see SWT#CENTER
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -143,16 +159,17 @@ int defaultForeground () {
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is a <code>SEPARATOR</code> label, in
+ * unless the receiver is a <code>SEPARATOR</code> label, in 
  * which case, <code>NONE</code> is returned.
  *
- * @return the alignment
+ * @return the alignment 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public int getAlignment () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return SWT.LEFT;
@@ -316,13 +333,14 @@ int separatorType () {
  * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
  * label, the argument is ignored and the alignment is not changed.
  *
- * @param alignment the new alignment
+ * @param alignment the new alignment 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -409,13 +427,14 @@ public void setFont (Font font) {
  * @param image the image to display on the receiver (may be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setImage (Image image) {
 	checkWidget();
 	setBitmap (this.image = image);
@@ -430,7 +449,7 @@ public void setSize (int width, int height) {
  * This method sets the widget label.  The label may include
  * the mnemonic characters and line delimiters.
  * </p>
- *
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -441,6 +460,7 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

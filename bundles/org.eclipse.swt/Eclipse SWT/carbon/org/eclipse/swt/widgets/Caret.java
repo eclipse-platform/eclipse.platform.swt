@@ -37,11 +37,11 @@ public /*final*/ class Caret extends Widget {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -59,6 +59,7 @@ public /*final*/ class Caret extends Widget {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public Caret (Canvas parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -309,7 +310,7 @@ void releaseWidget () {
 }
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the arguments. The <code>x</code> and
+ * area specified by the arguments. The <code>x</code> and 
  * <code>y</code> arguments are relative to the receiver's
  * parent (or its display if its parent is null).
  *
@@ -323,6 +324,7 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	boolean samePosition, sameExtent, showing;
@@ -350,7 +352,7 @@ public void setBounds (int x, int y, int width, int height) {
 }
 /**
  * Sets the receiver's size and location to the rectangular
- * area specified by the argument. The <code>x</code> and
+ * area specified by the argument. The <code>x</code> and 
  * <code>y</code> fields of the rectangle are relative to
  * the receiver's parent (or its display if its parent is null).
  *
@@ -361,6 +363,7 @@ public void setBounds (int x, int y, int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setBounds (Rectangle rect) {
 	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -381,12 +384,13 @@ void setFocus () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
- * </ul>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setFont (Font font) {
 	checkWidget();
 	if (font != null && font.isDisposed ()) {
@@ -402,12 +406,13 @@ public void setFont (Font font) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
@@ -487,7 +492,7 @@ public void setSize (Point size) {
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise.
+ * and marks it invisible otherwise. 
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -501,6 +506,7 @@ public void setSize (Point size) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;

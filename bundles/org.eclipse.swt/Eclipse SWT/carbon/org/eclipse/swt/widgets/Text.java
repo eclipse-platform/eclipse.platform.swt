@@ -21,9 +21,13 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles MULTI and SINGLE may be specified. 
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
+
 public class Text extends Scrollable {
 	// AW
 	private int fTextLimit= LIMIT;
@@ -56,11 +60,11 @@ public class Text extends Scrollable {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
+ * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -74,7 +78,10 @@ public class Text extends Scrollable {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -457,7 +464,7 @@ public int getCaretLineNumber () {
     return 1;
 }
 /**
- * Gets the location of the caret.
+ * Gets the location the caret.
  * <p>
  * The location of the caret is returned.
  * </p>
@@ -667,7 +674,7 @@ int getLineNumber (int position) {
  * a selection is from 0..N where N is
  * the number of characters in the widget.
  * </p>
- *
+ * 
  * @return the start and end of the selection
  *
  * @exception SWTException <ul>
@@ -675,6 +682,7 @@ int getLineNumber (int position) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public Point getSelection () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
@@ -701,12 +709,13 @@ public int getSelectionCount () {
  * Gets the selected text.
  *
  * @return the selected text
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public String getSelectionText () {
 	checkWidget();
 	return getTXNText(OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
@@ -772,19 +781,20 @@ public String getText (int start, int end) {
 	return getTXNText(start, end);
 }
 /**
- * Returns the maximum number of characters that the receiver is capable of holding.
+ * Returns the maximum number of characters that the receiver is capable of holding. 
  * <p>
  * If this has not been changed by <code>setTextLimit()</code>,
  * it will be the constant <code>Text.LIMIT</code>.
  * </p>
- *
+ * 
  * @return the text limit
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public int getTextLimit () {
 	checkWidget();
     return fTextLimit;
@@ -1064,7 +1074,7 @@ public void selectAll () {
  * default action of the text widget when the user
  * double clicks.
  * </p>
- *
+ * 
  * @param doubleClick the new double click flag
  *
  * @exception SWTException <ul>
@@ -1072,6 +1082,7 @@ public void selectAll () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
 	System.out.println("Text.setDoubleClickEnabled: nyi");
@@ -1081,7 +1092,12 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * <p>
  * The echo character is the character that is
  * displayed when the user enters text or the
- * text is changed by the programmer.
+ * text is changed by the programmer. Setting
+ * the echo character to '\0' clears the echo
+ * character and redraws the original text.
+ * If for any reason the echo character is invalid,
+ * the default echo character for the platform
+ * is used.
  * </p>
  *
  * @param echo the new echo character
@@ -1151,9 +1167,6 @@ public void setRedraw (boolean redraw) {
  *
  * @param start new caret position
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1182,9 +1195,6 @@ public void setSelection (int start) {
  * @param start the start of the range
  * @param end the end of the range
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1213,7 +1223,7 @@ public void setSelection (int start, int end) {
  * @param selection the point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1225,7 +1235,7 @@ public void setSelection (Point selection) {
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
-/**
+ /**
  * Sets the number of tabs.
  * <p>
  * Tab stop spacing is specified in terms of the
@@ -1241,12 +1251,15 @@ public void setSelection (Point selection) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
 */
+
 public void setTabs (int tabs) {
 	checkWidget();
 	System.out.println("Text.setTabs: nyi");
 }
 /**
- * Sets the contents of the receiver to the given string.
+ * Sets the contents of the receiver to the given string. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
  *
  * @param text the new text
  *
@@ -1272,6 +1285,12 @@ public void setText (String string) {
 /**
  * Sets the maximum number of characters that the receiver
  * is capable of holding to be the argument.
+ * <p>
+ * Instead of trying to set the text limit to zero, consider
+ * creating a read-only text widget.
+ * </p><p>
+ * To reset this value to the default, use <code>setTextLimit(Text.LIMIT)</code>.
+ * </p>
  *
  * @param limit new text limit
  *
@@ -1329,7 +1348,7 @@ void setWrap (boolean wrap) {
  * in the receiver, this method simply returns.  Otherwise,
  * lines are scrolled until the selection is visible.
  * </p>
- *
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
@@ -1338,6 +1357,7 @@ void setWrap (boolean wrap) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void showSelection () {
 	checkWidget();
 	OS.TXNShowSelection(fTX, false);

@@ -68,7 +68,14 @@ import org.eclipse.swt.graphics.*;
  * thread are distinguished in their documentation by indicating that
  * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
  * SWT exception.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose</dd>
+ * </dl>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
@@ -79,6 +86,7 @@ import org.eclipse.swt.graphics.*;
  * @see #sleep
  * @see #dispose
  */
+
 public class Display extends Device {
 
 	/* Windows, Events and Callbacks */
@@ -529,9 +537,10 @@ public Shell getActiveShell () {
  * @return the bounding rectangle
  *
  * @exception SWTException <ul>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public Rectangle getBounds () {
 	checkDevice ();
 	//System.out.println("Display.getBounds");
@@ -1624,8 +1633,13 @@ public boolean sleep () {
  *
  * @param runnable code to run on the user-interface thread.
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ * </ul>
+ *
  * @see #asyncExec
  */
+
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
@@ -1645,17 +1659,22 @@ int textWidth2 (String string, GC gc) {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
- * number of milliseconds have elapsed.
+ * number of milliseconds have elapsed. If milliseconds is less
+ * than zero, the runnable is not executed.
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see #asyncExec
  */
+
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
@@ -1787,6 +1806,13 @@ static short keyGlyph(int key) {
 		return OS.kMenuNullGlyph;
 	}
 }
+
+/**
+ * Forces all outstanding paint requests for the display
+ * to be processed before this method returns.
+ *
+ * @see Control#update
+ */
 
 public void update () {
 	checkDevice ();
