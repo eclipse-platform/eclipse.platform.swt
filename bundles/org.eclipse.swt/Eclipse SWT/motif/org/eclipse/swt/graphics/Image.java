@@ -832,12 +832,12 @@ public ImageData getImageData() {
 	data.data = srcData;
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
 		/* Get the icon mask data */
-		data.maskPad = 4;
 		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		XImage xMask = new XImage();
 		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
 		data.maskData = new byte[xMask.bytes_per_line * xMask.height];
+		data.maskPad = xMask.bitmap_pad / 8;
 		OS.memmove(data.maskData, xMask.data, data.maskData.length);
 		OS.XDestroyImage(xMaskPtr);
 		/* Bit swap the mask data if necessary */
@@ -1168,16 +1168,23 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 
 	/* Depth 1 */
 	if (image.depth == 1) {
-
-		int bplX = ((destWidth + 7) / 8 + 3) & 0xFFFC;
-		int bufSize = bplX * destHeight;
-		byte[] buf = new byte[bufSize];
+		int xImagePtr = OS.XCreateImage(display, visual, 1, OS.XYBitmap, 0, 0, destWidth, destHeight, image.scanlinePad * 8, 0);
+		if (xImagePtr == 0) return SWT.ERROR_NO_HANDLES;
+		XImage xImage = new XImage();
+		OS.memmove(xImage, xImagePtr, XImage.sizeof);
+		int bufSize = xImage.bytes_per_line * xImage.height;
 		int bufPtr = OS.XtMalloc(bufSize);
-		int xImagePtr = OS.XCreateImage(display, visual, 1, OS.XYBitmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
-		if (xImagePtr == 0) {
-			OS.XtFree(bufPtr);
-			return SWT.ERROR_NO_HANDLES;
-		}
+		xImage.data = bufPtr;
+		OS.memmove(xImagePtr, xImage, XImage.sizeof);
+		byte[] buf = new byte[bufSize];
+		int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
+		ImageData.blit(ImageData.BLIT_SRC,
+			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
+			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, null, null, null,
+			flipX, flipY);
+		OS.memmove(xImage.data, buf, bufSize);
+
 		int foreground = 1, background = 0;
 		if (!isMask) {
 			foreground = 0;
@@ -1190,20 +1197,6 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 			}
 		}
-		XImage xImage = new XImage();
-		OS.memmove(xImage, xImagePtr, XImage.sizeof);
-		xImage.byte_order = OS.MSBFirst;
-		xImage.bitmap_unit = 8;
-		xImage.bitmap_bit_order = OS.MSBFirst;
-		OS.memmove(xImagePtr, xImage, XImage.sizeof);
-		int destOrder = ImageData.MSB_FIRST;
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, 1, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
-			flipX, flipY);
-		
-		OS.memmove(xImage.data, buf, bufSize);
 		XGCValues values = new XGCValues();
 		OS.XGetGCValues(display, gc, OS.GCForeground | OS.GCBackground, values);
 		OS.XSetForeground(display, gc, foreground);
@@ -1216,27 +1209,26 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	
 	/* Depths other than 1 */
-	int xImagePtr = OS.XCreateImage(display, visual, screenDepth, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
+	int xImagePtr = OS.XCreateImage(display, visual, screenDepth, OS.ZPixmap, 0, 0, destWidth, destHeight, image.scanlinePad * 8, 0);
 	if (xImagePtr == 0) return SWT.ERROR_NO_HANDLES;
 	XImage xImage = new XImage();
 	OS.memmove(xImage, xImagePtr, XImage.sizeof);
-	int bufSize = xImage.bytes_per_line * destHeight;
-	byte[] buf = new byte[bufSize];
+	int bufSize = xImage.bytes_per_line * xImage.height;
 	int bufPtr = OS.XtMalloc(bufSize);
 	xImage.data = bufPtr;
 	OS.memmove(xImagePtr, xImage, XImage.sizeof);
-	int srcOrder = image.getByteOrder();
+	byte[] buf = new byte[bufSize];
 	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 	if (palette.isDirect) {
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
@@ -1244,13 +1236,13 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	} else {
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
