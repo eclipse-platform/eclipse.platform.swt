@@ -28,19 +28,6 @@ public static Test suite() {
 
 public PerformanceTests() {
 	super();
-
-	/* NOTE: If the Display test suite is run, it must be run
-	 * before any other tests that need a display (i.e. graphics
-	 * or widget tests, etc). Otherwise, an InvalidThreadAccess
-	 * exception will be thrown for each Display test.
-	 */
-
 	addTest(Test_situational.suite());
-	addTest(Test_org_eclipse_swt_graphics_Font.suite());
-	addTest(Test_org_eclipse_swt_graphics_Image.suite());
-	addTest(Test_org_eclipse_swt_graphics_GC.suite());
-	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
-	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
-	addTest(Test_Button.suite());
 }
 }
