@@ -67,7 +67,13 @@ public class Table extends Composite {
 	static final String ID_UNCHECKED = "UNCHECKED";			//$NON-NLS-1$
 	static final String ID_GRAYUNCHECKED = "GRAYUNCHECKED";	//$NON-NLS-1$
 	static final String ID_CHECKMARK = "CHECKMARK";			//$NON-NLS-1$
-
+	
+//TEMPORARY CODE
+boolean hasFocus;
+public boolean isFocusControl() {
+	return hasFocus;
+}
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -1766,6 +1772,7 @@ void onEnd (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onFocusIn () {
+	hasFocus = true;
 	if (itemsCount == 0) return;
 	if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
 		for (int i = 0; i < selectedItems.length; i++) {
@@ -1792,6 +1799,7 @@ void onFocusIn () {
 	return;
 }
 void onFocusOut () {
+	hasFocus = false;
 	if (focusItem != null) {
 		redrawItem (focusItem.index, true);
 	}
