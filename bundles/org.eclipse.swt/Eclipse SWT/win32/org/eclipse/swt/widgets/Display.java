@@ -1993,10 +1993,6 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.WM_RBUTTONDBLCLK:
 					trayIcon.WM_RBUTTONDBLCLK (wParam, lParam);
 					break;
-				case OS.WM_CONTEXTMENU:
-					// TODO why isn't this ever invoked?
-					trayIcon.WM_CONTEXTMENU (wParam, lParam);
-					break;
 			}
 			break;
 	}

@@ -380,10 +380,4 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	menu.setVisible(true);
 	return null;
 }
-
-LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
-	// TODO why can't get this to be invoked?
-	System.out.println("CONTEXT MENU!!!");
-	return null;
-}
 }
