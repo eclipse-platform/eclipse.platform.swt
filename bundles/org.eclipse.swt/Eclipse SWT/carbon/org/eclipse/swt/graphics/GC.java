@@ -148,32 +148,32 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 	if (data.control != 0) {
 		//WRONG
-		int window = OS.GetControlOwner (data.control);
-		int port = OS.GetWindowPort (window);
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		OS.SetPort (port);
-		int oldRgn = OS.NewRgn ();
+		int window = OS.GetControlOwner(data.control);
+		int port = OS.GetWindowPort(window);
+		int[] currentPort = new int [1];
+		OS.GetPort(currentPort);
+		OS.SetPort(port);
+		int oldRgn = OS.NewRgn();
 		OS.GetClip (oldRgn);
 		int clipRgn = data.visibleRgn;
 		if (data.clipRgn != 0) {
-			clipRgn = OS.NewRgn ();
+			clipRgn = OS.NewRgn();
 			OS.SectRgn(data.clipRgn, data.visibleRgn, clipRgn);
 		}
-		OS.SetClip (clipRgn);
-		Rect rect = new Rect ();
-		OS.GetControlBounds (data.control, rect);
+		OS.SetClip(clipRgn);
+		Rect rect = new Rect();
+		OS.GetControlBounds(data.control, rect);
 		int left = rect.left + srcX;
 		int top = rect.top + srcY;
-		OS.SetRect(rect, (short) left, (short) top, (short) (left + width), (short) (top + height));
-		int invalRgn = OS.NewRgn ();
-		OS.ScrollRect(rect, (short) deltaX, (short) deltaY, invalRgn);
-		OS.InvalWindowRgn (window, invalRgn);
-		OS.DisposeRgn (invalRgn);
+		OS.SetRect(rect, (short)left, (short)top, (short)(left + width), (short)(top + height));
+		int invalRgn = OS.NewRgn();
+		OS.ScrollRect(rect, (short)deltaX, (short)deltaY, invalRgn);
+		OS.InvalWindowRgn(window, invalRgn);
+		OS.DisposeRgn(invalRgn);
 		OS.SetClip (oldRgn);
-		if (clipRgn != data.visibleRgn) OS.DisposeRgn (clipRgn);
-		OS.DisposeRgn (oldRgn);
-		OS.SetPort (currentPort [0]);
+		if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
+		OS.DisposeRgn(oldRgn);
+		OS.SetPort(currentPort[0]);
 	}
 }
 
@@ -1649,6 +1649,7 @@ public void setLineWidth(int width) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	//NOT DONE
 	data.xorMode = xor;
 }
 
