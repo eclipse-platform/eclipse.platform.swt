@@ -829,6 +829,10 @@ public void setSelection (TreeItem [] items) {
 		}
 		OS.gtk_tree_selection_select_iter (selection, item.handle);
 		i++;
+		if ((style & SWT.SINGLE) != 0) {
+			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			return;
+		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	if (i < items.length) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -852,7 +856,7 @@ public void setSelection (TreeItem [] items) {
 public void showSelection () {
 	checkWidget();
 	TreeItem [] items = getSelection ();
-	if (items.length == 0 && items [0] != null) showItem (items [0]);
+	if (items.length != 0 && items [0] != null) showItem (items [0]);
 }
 
 void showItem (int path) {

@@ -1376,6 +1376,7 @@ public void select (int [] indices) {
 		int index = indices [i];
 		if (index < 0 || index >= itemCount) continue;
 		OS.gtk_tree_selection_select_iter (selection, items [index].handle);
+		if ((style & SWT.SINGLE) != 0) break;
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
