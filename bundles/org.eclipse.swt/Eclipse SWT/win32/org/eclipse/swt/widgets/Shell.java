@@ -998,7 +998,7 @@ public void setVisible (boolean visible) {
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
-			display.setModal (this);
+			display.setModalShell (this);
 			Control control = display.getFocusControl ();
 			if (control != null && !control.isActive ()) bringToTop ();
 			int hwndShell = OS.GetActiveWindow ();

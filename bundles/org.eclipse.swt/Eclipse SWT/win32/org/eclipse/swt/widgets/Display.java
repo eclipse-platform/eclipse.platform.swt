@@ -1880,7 +1880,7 @@ public static void setAppName (String name) {
 	/* Do nothing */
 }
 
-void setModal (Shell shell) {
+void setModalShell (Shell shell) {
 	if (modalWidgets == null) modalWidgets = new Shell [4];
 	int index = 0, length = modalWidgets.length;
 	while (index < length) {
