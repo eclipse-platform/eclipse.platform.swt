@@ -1060,9 +1060,12 @@ int _getOffset(int offset, int movement, boolean forward) {
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
 			if (run.tab) return untranslateOffset(run.start);
 			OS.MoveMemory(properties, device.scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			breakRun(run);
+			boolean isComplex = properties.fNeedsCaretInfo || properties.fNeedsWordBreaking;
+			if (isComplex) breakRun(run);
 			while (run.start <= offset && offset < run.start + run.length) {
-				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+				if (isComplex) {
+					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+				}
 				if (!logAttr.fInvalid) {
 					if ((movement & SWT.MOVEMENT_CLUSTER) != 0) {
 						if (properties.fNeedsCaretInfo) {
