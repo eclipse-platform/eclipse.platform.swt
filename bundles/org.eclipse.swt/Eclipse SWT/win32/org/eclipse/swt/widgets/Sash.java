@@ -222,7 +222,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			/* Update the pointer position */
 			POINT cursorPt = new POINT ();
 			cursorPt.x = pt.x;  cursorPt.y = pt.y;
-			OS.ClientToScreen (parent.handle, cursorPt);
+			OS.ClientToScreen (hwndTrack, cursorPt);
 			if ((style & SWT.VERTICAL) != 0) {
 				cursorPt.y += height / 2;
 			}
