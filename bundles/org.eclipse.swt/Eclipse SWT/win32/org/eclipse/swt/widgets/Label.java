@@ -225,16 +225,6 @@ public String getText () {
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
-/*
-* Not currently used.
-*/
-boolean getWrap () {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return true;
-	if ((bits & OS.SS_LEFTNOWORDWRAP) != 0) return false;
-	return true;
-}
-
 boolean mnemonicHit () {
 	Composite control = this.parent;
 	while (control != null) {
@@ -408,18 +398,6 @@ public void setText (String string) {
 	string = Display.withCrLf (string);
 	byte [] buffer = Converter.wcsToMbcs (0, string, true);
 	OS.SetWindowText (handle, buffer);
-}
-
-/*
-* Not currently used.
-*/
-void setWrap (boolean wrap) {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return;
-	bits &= ~OS.SS_LEFTNOWORDWRAP;
-	if (!wrap) bits |= OS.SS_LEFTNOWORDWRAP;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	OS.InvalidateRect (handle, null, true);
 }
 
 int widgetExtStyle () {
