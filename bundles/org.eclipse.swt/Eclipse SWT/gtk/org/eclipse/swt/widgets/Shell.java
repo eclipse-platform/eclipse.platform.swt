@@ -922,8 +922,6 @@ public void setActive () {
 }
 
 void setActiveControl (Control control) {
-	//System.out.println ("control=" + control);
-	//new Error ().printStackTrace (System.out);
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
 	if (lastActive == control) return;
