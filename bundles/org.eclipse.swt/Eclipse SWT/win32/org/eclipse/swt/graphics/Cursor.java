@@ -141,6 +141,7 @@ Cursor() {
  * @param style the style of cursor to allocate
  * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - when an unknown style is specified</li>
  * </ul>
  * @exception SWTError <ul>
@@ -241,7 +242,9 @@ public Cursor(Device device, int style) {
  * @param hotspotY the y coordinate of the cursor's hotspot
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - when a null argument is passed that is not allowed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the source is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the mask is null and the source does not have a mask</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the source and the mask are not the same 
  *          size, or either is not of depth one, or if the hotspot is outside 
  *          the bounds of the image</li>

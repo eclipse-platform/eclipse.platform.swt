@@ -433,7 +433,7 @@ public class SWT {
 	 * and the window title is typically drawn using a smaller font.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int TOOL = 1 << 2; 
@@ -442,7 +442,7 @@ public class SWT {
 	 * style constant to ensure no trimmings are used (value is 1&lt;&lt;3)
 	 * <br>Note that this overrides all other trim styles.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int NO_TRIM = 1 << 3;
@@ -450,7 +450,8 @@ public class SWT {
 	/**
 	 * style constant for resize box trim (value is 1&lt;&lt;4)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
+	 * <li><code>Tracker</code></li>
 	 * </ul></p>
 	 */
 	public static final int RESIZE = 1 << 4;
@@ -458,7 +459,7 @@ public class SWT {
 	/**
 	 * style constant for title area trim (value is 1&lt;&lt;5)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int TITLE = 1 << 5;
@@ -467,7 +468,7 @@ public class SWT {
 	 * style constant for close box trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int CLOSE = 1 << 6;
@@ -476,7 +477,7 @@ public class SWT {
 	 * style constant for shell menu trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int MENU = CLOSE;
@@ -484,7 +485,7 @@ public class SWT {
 	/**
 	 * style constant for minimize box trim (value is 1&lt;&lt;7)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int MIN = 1 << 7;
@@ -492,7 +493,7 @@ public class SWT {
 	/**
 	 * style constant for maximize box trim (value is 1&lt;&lt;10)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int MAX = 1 << 10;
@@ -544,8 +545,9 @@ public class SWT {
 
 	/**
 	 * style constant for always on top behavior (value is 1&lt;&lt;14)
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Shell</code></li>
+	 * <li><code>Decorations</code>and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
@@ -654,7 +656,7 @@ public class SWT {
 	 * This style might be used as an alternative to "double-buffering" in order to reduce flicker.
 	 * This style does not mean "transparent" - widgets that are obscured will not draw through.
 	 * </p><p><b>Used By:</b><ul>
-	 * <li><code>Canvas</code></li>
+	 * <li><code>Composite</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_BACKGROUND = 1 << 18;
@@ -663,7 +665,7 @@ public class SWT {
 	 * style constant for does not take focus behavior (value is 1&lt;&lt;19)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Canvas</code></li>
+	 * <li><code>Composite</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_FOCUS = 1 << 19;
@@ -677,7 +679,7 @@ public class SWT {
 	 * sent with a GC clipped to only the new areas to be painted. Without this
 	 * style, the entire client area will be repainted.
 	 * </p><p><b>Used By:</b><ul>
-	 * <li><code>Canvas</code></li>
+	 * <li><code>Composite</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_REDRAW_RESIZE = 1 << 20;
@@ -685,7 +687,7 @@ public class SWT {
 	/**
 	 * style constant for no paint event merging behavior (value is 1&lt;&lt;21)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Canvas</code></li>
+	 * <li><code>Composite</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_MERGE_PAINTS = 1 << 21;
@@ -1938,19 +1940,19 @@ public class SWT {
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1&lt;&lt;0)
+	 * contains alpha transparency information (value is 1&lt;&lt;0)
 	 */
 	public static final int TRANSPARENCY_ALPHA = 1 << 0;
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1&lt;&lt;1)
+	 * contains a transparency mask (value is 1&lt;&lt;1)
 	 */
 	public static final int TRANSPARENCY_MASK = 1 << 1;
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1&lt;&lt;2)
+	 * contains a transparent pixel (value is 1&lt;&lt;2)
 	 */
 	public static final int TRANSPARENCY_PIXEL = 1 << 2;
 

@@ -142,6 +142,7 @@ Image () {
  * @param height the height of the new image
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative or zero</li>
  * </ul>
  * @exception SWTError <ul>
@@ -173,6 +174,7 @@ public Image(Device device, int width, int height) {
  * @param flag the style, either <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code>
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -506,6 +508,7 @@ public Image(Device device, Image srcImage, int flag) {
  * @param bounds a rectangle specifying the image's width and height (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
  * </ul>
@@ -529,6 +532,7 @@ public Image(Device device, Rectangle bounds) {
  * @param data the image data to create the image from (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the image data is null</li>
  * </ul>
  * @exception SWTError <ul>
@@ -561,6 +565,7 @@ public Image(Device device, ImageData data) {
  * @param mask the mask data for the icon
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
  *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
  *          if the mask is not monochrome, or if either the source or mask
@@ -718,6 +723,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @param stream the input stream to load the image from
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
@@ -749,6 +755,7 @@ public Image (Device device, InputStream stream) {
  * @param filename the name of the file to load the image from
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>

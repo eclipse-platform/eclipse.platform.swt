@@ -578,13 +578,6 @@ public boolean forceFocus () {
 }
 
 /**
- * NOTE: The API in the accessibility package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The methods in AccessibleListener are more stable than those
- * in AccessibleControlListener, however please take nothing for
- * granted. The only reason this API is being released at this
- * time is so that other teams can try it out.
- *
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
  * then the object is created and returned.

@@ -52,6 +52,7 @@ GC() {
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT
  *          - if the drawable is an image that is not a bitmap or an icon
  *          - if the drawable is an image or printer that is already selected

@@ -17,15 +17,16 @@ import org.eclipse.swt.graphics.*;
  * vertical or horizontal line.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SEPARATOR, HORIZONTAL, SHADOW_IN, SHADOW_OUT, VERTICAL</dd>
+ * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
+ * <dd>SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
  * <dd>CENTER, LEFT, RIGHT, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
  * <p>
- * Note: Only one of SHADOW_IN and SHADOW_OUT may be specified. Only
- * one of HORIZONTAL and VERTICAL may be specified. Only one of CENTER,
- * LEFT and RIGHT may be specified.
+ * Note: Only one of SHADOW_IN, SHADOW_OUT and SHADOW_NONE may be specified.
+ * SHADOW_NONE is a HINT. Only one of HORIZONTAL and VERTICAL may be specified.
+ * Only one of CENTER, LEFT and RIGHT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
@@ -68,9 +69,10 @@ public class Label extends Control {
  *
  * @see SWT#SEPARATOR
  * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see SWT#SHADOW_IN
  * @see SWT#SHADOW_OUT
- * @see SWT#VERTICAL
+ * @see SWT#SHADOW_NONE
  * @see SWT#CENTER
  * @see SWT#LEFT
  * @see SWT#RIGHT

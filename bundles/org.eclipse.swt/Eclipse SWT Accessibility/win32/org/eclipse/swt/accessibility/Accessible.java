@@ -14,12 +14,23 @@ import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
 /**
- * NOTE: The API in the accessibility package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The methods in AccessibleListener are more stable than those
- * in AccessibleControlListener, however please take nothing for
- * granted. The only reason this API is being released at this
- * time is so that other teams can try it out.
+ * Instances of this class provide a bridge between application
+ * code and assistive technology clients. Many platforms provide
+ * default accessible behavior for most widgets, and this class
+ * allows that default behavior to be overridden. Applications
+ * can get the default Accessible object for a control by sending
+ * it <code>getAccessible</code>, and then add an accessible listener
+ * to override simple items like the name and help string, or they
+ * can add an accessible control listener to override complex items.
+ * As a rule of thumb, an application would only want to use the
+ * accessible control listener to implement accessibility for a
+ * custom control.
+ * 
+ * @see Control#getAccessible
+ * @see AccessibleListener
+ * @see AccessibleEvent
+ * @see AccessibleControlListener
+ * @see AccessibleControlEvent
  * 
  * @since 2.0
  */
