@@ -625,8 +625,12 @@ public int getTopIndex () {
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();
-	OS.setDataBrowserCallbacks(handle, display.fDataBrowserDataProc,
-				display.fDataBrowserCompareProc, display.fDataBrowserItemNotificationProc);
+	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
+	OS.GetDataBrowserCallbacks(handle, callbacks);
+	callbacks.v1_itemDataCallback= display.fDataBrowserDataProc;
+	callbacks.v1_itemCompareCallback= display.fDataBrowserCompareProc;
+	callbacks.v1_itemNotificationCallback= display.fDataBrowserItemNotificationProc;
+	OS.SetDataBrowserCallbacks(handle, callbacks);
 }
 /**
  * Gets the index of an item.

@@ -1270,6 +1270,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentScrap
 }
 #endif /* NO_GetCurrentScrap */
 
+#ifndef NO_GetDataBrowserCallbacks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserCallbacks
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DataBrowserCallbacks _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserCallbacks\n")
+
+	if (arg1) lparg1 = getDataBrowserCallbacksFields(env, arg1, &_arg1);
+	rc = (jint)GetDataBrowserCallbacks((ControlRef)arg0, (DataBrowserCallbacks *)lparg1);
+	if (arg1) setDataBrowserCallbacksFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_GetDataBrowserCallbacks */
+
 #ifndef NO_GetDataBrowserItemCount
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemCount
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jintArray arg4)

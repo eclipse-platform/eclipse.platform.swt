@@ -421,6 +421,7 @@ public static final native int GetControlViewSize(int cHandle);
 public static final native int GetCurrentEventLoop();
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int GetCurrentScrap(int[] scrap);
+public static final native int GetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
 public static final native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
 public static final native int GetDataBrowserItemPartBounds(int cHandle, int item, int property, int part, Rect bounds);
 public static final native int GetDataBrowserItems(int browser, int container, boolean recurse, int state, int item);

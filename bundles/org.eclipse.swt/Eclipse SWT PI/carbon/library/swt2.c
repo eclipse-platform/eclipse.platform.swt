@@ -64,16 +64,6 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setDataBrowserCallbacks(JNIEnv *env, jclass zz,
-					jint cHandle, jint dataUPP, jint compareUPP, jint notificationUPP) {
-	DataBrowserCallbacks callbacks;
-	GetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-	callbacks.u.v1.itemDataCallback= (DataBrowserItemDataUPP) dataUPP;
-	callbacks.u.v1.itemCompareCallback= (DataBrowserItemCompareUPP) compareUPP;
-	callbacks.u.v1.itemNotificationCallback= (DataBrowserItemNotificationUPP) notificationUPP;
-	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHICommand(JNIEnv *env, jclass zz,
 			jint eRefHandle, jintArray outParamType) {
 	jint status;

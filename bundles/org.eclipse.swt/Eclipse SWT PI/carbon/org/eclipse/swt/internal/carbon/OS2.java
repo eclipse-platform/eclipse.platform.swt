@@ -18,7 +18,6 @@ public static final native int MenuEvent(int[] eventData);
 public static final native void TXNClick(int txHandle, int[] eventData);
 public static final native int TXNGetRectBounds(int txHandle, short[] viewRect, int[] destinationRect, int[] textRect);
 public static final native int GetEventHICommand(int eRefHandle, int[] outParamType);
-public static final native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP, int compareCallbackUPP, int itemNotificationCallbackUPP);
 public static final native void setTXNMargins(int txHandle, short margin);
 public static final native void getHandleData(int handle, char[] data);
 public static final native void getHandleData(int handle, int[] data);
