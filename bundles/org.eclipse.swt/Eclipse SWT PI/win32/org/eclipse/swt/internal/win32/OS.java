@@ -549,6 +549,7 @@ public class OS extends Platform {
 	public static final int ILC_COLOR4 = 0x4;
 	public static final int ILC_COLOR8 = 0x8;
 	public static final int ILC_MASK = 0x1;
+	public static final int ILC_MIRROR = 0x2000;
 	public static final int ILD_NORMAL = 0x0;
 	public static final int IMAGE_BITMAP = 0x0;
 	public static final int IMAGE_CURSOR = 0x2;
