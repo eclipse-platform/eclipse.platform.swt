@@ -582,6 +582,7 @@ public boolean forceFocus () {
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
+	shell.setSavedFocus (null);
 	/*
 	* This code is intentionally commented.
 	*
@@ -598,6 +599,8 @@ public boolean forceFocus () {
 	*/
 //	if (OS.GetFocus () != OS.SetFocus (handle)) return false;
 	OS.SetFocus (handle);
+	if (isDisposed ()) return false;
+	shell.setSavedFocus (this);
 	return isFocusControl ();
 }
 

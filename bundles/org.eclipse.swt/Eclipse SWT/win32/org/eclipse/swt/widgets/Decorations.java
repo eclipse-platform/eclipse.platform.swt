@@ -739,12 +739,12 @@ boolean restoreFocus () {
 //	if (defaultButton != null && !defaultButton.isDisposed ()) {
 //		if (defaultButton.setFocus ()) return true;
 //	}
-	return traverseGroup (true);
+	return false;
 }
 
 void saveFocus () {
 	Control control = display.getFocusControl ();
-	if (control != null && control != this) {
+	if (control != null && control != this && this == control.menuShell ()) {
 		setSavedFocus (control);
 	}
 }
@@ -1150,7 +1150,6 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 }
 
 void setSavedFocus (Control control) {
-	if (this != control.menuShell ()) return;
 	savedFocus = control;
 }
 
