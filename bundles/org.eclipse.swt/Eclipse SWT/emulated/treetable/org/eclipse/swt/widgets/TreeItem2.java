@@ -530,15 +530,6 @@ public TreeItem2 getParentItem () {
 	checkWidget ();
 	return parentItem;
 }
-/*
- * Returns the rightmost point that belongs to the receiver.  If the parent has no
- * columns then this will be where the receiver's text ends; if the parent has any
- * columns then this will be where the parent's last column ends.  
- */
-int getRightmostX () {
-	Rectangle bounds = getBounds ();
-	return bounds.x + bounds.width;
-}
 public String getText () {
 	checkWidget ();
 	return getText (0);

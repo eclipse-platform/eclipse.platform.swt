@@ -89,12 +89,6 @@ public boolean getResizable () {
 	checkWidget ();
 	return resizable;
 }
-/*
- * Returns the rightmost point that belongs to the receiver.
- */
-int getRightmostX () {
-	return getX () + width;
-}
 public int getWidth () {
 	checkWidget ();
 	return width;

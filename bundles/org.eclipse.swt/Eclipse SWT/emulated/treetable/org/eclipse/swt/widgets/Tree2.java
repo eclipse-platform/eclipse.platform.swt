@@ -151,7 +151,7 @@ static int checkStyle (int style) {
 int computeColumnIntersect(int x, int startColumn) {
 	int numColumns = getColumnCount();
 	for (int i = startColumn; i < numColumns; i++) {
-		int endX = columns[i].getRightmostX();
+		int endX = columns[i].getX() + columns[i].width;
 		if (x <= endX) return i;
 	}
 	return -1;
@@ -920,7 +920,7 @@ void doPaint (Event event) {
 			gc.setForeground(LineColor);
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
-				int x = columns[i].getRightmostX() - 1;
+				int x = columns[i].getX() + columns[i].width - 1;
 				gc.drawLine(x, clipping.y, x, clipping.y + clipping.height);
 			}
 		}
@@ -1231,7 +1231,7 @@ void headerDoMouseDown(Event event) {
 	if (event.button != 1) return;
 	for (int i = 0; i < columns.length; i++) {
 		TreeColumn column = columns[i]; 
-		int x = column.getRightmostX();
+		int x = column.getX() + column.width;
 		/* if close to a column separator line then prepare for column resize */
 		if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 			if (!column.getResizable()) return;
@@ -1257,7 +1257,7 @@ void headerDoMouseMove(Event event) {
 	if (resizeColumn == null) {
 		for (int i = 0; i < columns.length; i++) {
 			TreeColumn column = columns[i]; 
-			int x = column.getRightmostX();
+			int x = column.getX() + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 				if (column.getResizable()) {
 					setCursor(ResizeCursor);
@@ -1635,7 +1635,8 @@ void removeColumn(TreeColumn column) {
 	System.arraycopy(columns, index + 1, newColumns, index, columns.length - index);
 	columns = newColumns;
 	
-	getHorizontalBar().setMaximum(columns[columns.length - 1].getRightmostX());
+	TreeColumn lastColumn = columns[columns.length - 1];
+	getHorizontalBar().setMaximum(lastColumn.getX() + lastColumn.width);
 }
 void removeSelectedItem(int index) {
 	TreeItem2[] newSelectedItems = new TreeItem2[selectedItems.length - 1];
@@ -1853,7 +1854,8 @@ void updateColumnWidth (TreeColumn column, int width) {
 
 	Rectangle bounds = getClientArea();
 	ScrollBar hBar = getHorizontalBar();
-	hBar.setMaximum(columns[columns.length - 1].getRightmostX());
+	TreeColumn lastColumn = columns[columns.length - 1]; 
+	hBar.setMaximum(lastColumn.getX () + lastColumn.width);
 	hBar.setThumb(bounds.width);
 	int x = column.getX();
 	redraw(x, 0, bounds.width - x, bounds.height, true);
@@ -1870,7 +1872,9 @@ void updateHorizontalBar() {
 	ScrollBar hBar = getHorizontalBar();
 	int maxX = 0;
 	for (int i = 0; i < availableItems.length; i++) {
-		maxX = Math.max (maxX, availableItems[i].getRightmostX());
+		Rectangle itemBounds = availableItems[i].getBounds ();
+		int rightmostX = itemBounds.x + itemBounds.width;
+		maxX = Math.max (maxX, rightmostX);
 	}
 	
 	hBar.setMaximum(maxX);
