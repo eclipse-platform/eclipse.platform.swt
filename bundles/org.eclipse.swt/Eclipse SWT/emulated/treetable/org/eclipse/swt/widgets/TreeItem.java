@@ -1130,7 +1130,7 @@ public void setImage(Image newImage) {
 			}
 			else
 			if (newImage != null) {
-				imageWidth = newImage.getBounds().x;
+				imageWidth = newImage.getBounds().width;
 			}
 			redrawX = getItemStartX();
 		}
