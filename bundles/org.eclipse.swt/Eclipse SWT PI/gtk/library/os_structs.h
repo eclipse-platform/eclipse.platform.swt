@@ -79,6 +79,14 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct);
 #define setGdkEventKeyFields(a,b,c)
 #endif
 
+#ifndef NO_GdkEventWindowState
+GdkEventWindowState *getGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct);
+void setGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct);
+#else
+#define getGdkEventWindowStateFields(a,b,c) NULL
+#define setGdkEventWindowStateFields(a,b,c)
+#endif
+
 #ifndef NO_GdkGCValues
 GdkGCValues *getGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct);
 void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct);

@@ -426,6 +426,49 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkEventWindowState
+typedef struct GdkEventWindowState_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, changed_mask, new_window_state;
+} GdkEventWindowState_FID_CACHE;
+
+GdkEventWindowState_FID_CACHE GdkEventWindowStateFc;
+
+void cacheGdkEventWindowStateFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkEventWindowStateFc.cached) return;
+	cacheGdkEventFields(env, lpObject);
+	GdkEventWindowStateFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkEventWindowStateFc.window = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "window", "I");
+	GdkEventWindowStateFc.send_event = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "send_event", "B");
+	GdkEventWindowStateFc.changed_mask = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "changed_mask", "I");
+	GdkEventWindowStateFc.new_window_state = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "new_window_state", "I");
+	GdkEventWindowStateFc.cached = 1;
+}
+
+GdkEventWindowState *getGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct)
+{
+	if (!GdkEventWindowStateFc.cached) cacheGdkEventWindowStateFields(env, lpObject);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.window);
+	lpStruct->send_event = (*env)->GetByteField(env, lpObject, GdkEventWindowStateFc.send_event);
+	lpStruct->changed_mask = (*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.changed_mask);
+	lpStruct->new_window_state = (*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.new_window_state);
+	return lpStruct;
+}
+
+void setGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct)
+{
+	if (!GdkEventWindowStateFc.cached) cacheGdkEventWindowStateFields(env, lpObject);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, GdkEventWindowStateFc.send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.changed_mask, (jint)lpStruct->changed_mask);
+	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.new_window_state, (jint)lpStruct->new_window_state);
+}
+#endif
+
 #ifndef NO_GdkGCValues
 typedef struct GdkGCValues_FID_CACHE {
 	int cached;

@@ -153,6 +153,8 @@ public class OS {
 	public static final int GDK_XOR = 0x2;
 	public static final int GDK_XTERM = 0x98;
 	public static final int GDK_X_CURSOR = 0x0;
+	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
+	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
 	public static final int GTK_ARROW_DOWN = 0x1;
 	public static final int GTK_ARROW_LEFT = 0x2;
@@ -267,6 +269,7 @@ public class OS {
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] unrealize = signal("unrealize");
 	public static final byte[] value_changed = signal("value_changed");
+	public static final byte[] window_state_event = signal("window_state_event");
 	
 	/** Properties */
 	public static final byte[] button_relief = signal("button_relief");
@@ -858,6 +861,7 @@ public static final native void memmove(GdkEventCrossing dest, int src, int size
 public static final native void memmove(GdkEventExpose dest, int src, int size);
 public static final native void memmove(GdkEventFocus dest, int src, int size);
 public static final native void memmove(GdkEventKey dest, int src, int size);
+public static final native void memmove(GdkEventWindowState dest, int src, int size);
 public static final native void memmove(GtkFixed dest, int src);
 public static final native void memmove(int dest, GtkFixed src);
 public static final native void memmove(GdkVisual dest, int src);

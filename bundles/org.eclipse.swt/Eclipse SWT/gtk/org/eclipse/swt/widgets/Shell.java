@@ -509,6 +509,7 @@ void hookEvents () {
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
+	OS.g_signal_connect (shellHandle, OS.window_state_event, windowProc3, WINDOW_STATE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SIZE_ALLOCATE);
 	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, CONFIGURE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, DELETE_EVENT);
@@ -664,6 +665,14 @@ int gtk_size_allocate (int widget, int allocation) {
 int gtk_unmap_event (int widget, int event) {
 	minimized = true;
 	sendEvent (SWT.Iconify);
+	return 0;
+}
+
+int gtk_window_state_event (int widget, int event) {
+	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
+	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
+	minimized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_ICONIFIED) != 0;
+	maximized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_MAXIMIZED) != 0;
 	return 0;
 }
 

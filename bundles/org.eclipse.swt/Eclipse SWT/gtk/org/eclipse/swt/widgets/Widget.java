@@ -117,6 +117,7 @@ public abstract class Widget {
 	static final int UNREALIZE = 38;
 	static final int VALUE_CHANGED = 39;
 	static final int FOCUS = 40;
+	static final int WINDOW_STATE_EVENT = 41;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -666,6 +667,10 @@ int gtk_value_changed (int adjustment) {
 	return 0;
 }
 
+int gtk_window_state_event (int widget, int event) {
+	return 0;
+}
+
 int fontHeight (int font, int widgetHandle) {
 	int context = OS.gtk_widget_get_pango_context (widgetHandle);
 	int lang = OS.pango_context_get_language (context);
@@ -1193,6 +1198,7 @@ int windowProc (int handle, int arg0, int user_data) {
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
+		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
 		default: return 0;
 	}
 }
