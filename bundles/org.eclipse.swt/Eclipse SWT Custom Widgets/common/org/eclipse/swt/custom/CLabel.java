@@ -451,6 +451,7 @@ public void setText(String text) {
  * Override if you need a different strategy.
  */
 protected String shortenText(GC gc, String t, int width) {
+	if (t == null) return null;
 	int w = gc.textExtent(ellipsis).x;
 	int l = t.length();
 	int pivot = l/2;
