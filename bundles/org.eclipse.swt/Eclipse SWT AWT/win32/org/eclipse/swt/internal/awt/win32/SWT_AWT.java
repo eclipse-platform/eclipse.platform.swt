@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.graphics.Rectangle;
 
 /* AWT Imports */
+import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Panel;
 import java.awt.Dimension;
@@ -79,8 +80,7 @@ public static Panel new_Panel (final Composite parent) {
 	});
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
-			final Rectangle rect = parent.getClientArea ();
-			frame.getToolkit ().getSystemEventQueue ().invokeLater(new Runnable () {
+			EventQueue.invokeLater(new Runnable () {
 				public void run () {
 					frame.dispatchEvent (new ComponentEvent (frame, ComponentEvent.COMPONENT_MOVED));
 				}
@@ -90,7 +90,7 @@ public static Panel new_Panel (final Composite parent) {
 	parent.addListener (SWT.Resize, new Listener () {
 		public void handleEvent (Event e) {
 			final Rectangle rect = parent.getClientArea ();
-			frame.getToolkit ().getSystemEventQueue ().invokeLater(new Runnable () {
+			EventQueue.invokeLater(new Runnable () {
 				public void run () {
 					frame.setSize (rect.width, rect.height);
 					frame.validate ();
