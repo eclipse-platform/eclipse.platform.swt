@@ -100,9 +100,17 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	listenerCalled = false;
 	boolean exceptionThrown = false;
-	ShellListener listener = new ShellAdapter() {
+	ShellListener listener = new ShellListener() {
 		public void shellActivated(ShellEvent e) {
 			listenerCalled = true;
+		}
+		public void shellClosed(ShellEvent e) {
+		}
+		public void shellDeactivated(ShellEvent e) {
+		}
+		public void shellDeiconified(ShellEvent e) {
+		}
+		public void shellIconified(ShellEvent e) {
 		}
 	};
 	try {
