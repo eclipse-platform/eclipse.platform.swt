@@ -37,6 +37,7 @@
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
+#define g_list_data(arg0) (arg0)->data
 #define g_list_set_next(arg0, arg1) (arg0)->next = arg1
 #define g_list_set_previous(arg0, arg1) (arg0)->prev = arg1
 #define gtk_rc_style_get_bg_pixmap_name(arg0, arg1) (arg0)->bg_pixmap_name[arg1]

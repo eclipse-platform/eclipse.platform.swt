@@ -43,7 +43,8 @@ import org.eclipse.swt.events.*;
  */
 public class Table extends Composite {
 	int /*long*/ modelHandle, checkRenderer;
-	int itemCount, columnCount, lastIndexOf;
+	int itemCount, columnCount, lastIndexOf, lastDataIndex = -1;
+	int /*long*/ ignoreTextCell, ignorePixbufCell;
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
@@ -138,54 +139,110 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
+	if (cell == ignoreTextCell) return 0;
 	int modelIndex = -1;
+	boolean customDraw = false;
 	if (columnCount == 0) {
 		modelIndex = Table.FIRST_COLUMN;
+		customDraw = firstCustomDraw;
 	} else {
 		for (int i = 0; i < columns.length; i++) {
 			if (columns [i] != null && columns [i].handle == tree_column) {
 				modelIndex = columns [i].modelIndex;
+				customDraw = columns [i].customDraw;
 				break;
 			}
 		}
 	}
 	if (modelIndex == -1) return 0;
+	boolean setData = setCellData (tree_model, iter);
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 2, ptr, -1); //foreground-gdk
-	if (ptr [0] != 0) {
-		OS.g_object_set(cell, OS.foreground_gdk, ptr[0], 0);
+	if (setData) {
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 1, ptr, -1); //text
+		if (ptr [0] != 0) {
+			OS.g_object_set(cell, OS.text, ptr[0], 0);
+			OS.g_free (ptr[0]);
+		}
+		ptr = new int [1];
 	}
-	ptr = new int [1];
-	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //background-gdk
-	if (ptr [0] != 0) {
-		OS.g_object_set(cell, OS.background_gdk, ptr[0], 0);
+	if (customDraw) {
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 2, ptr, -1); //foreground-gdk
+		if (ptr [0] != 0) {
+			OS.g_object_set(cell, OS.foreground_gdk, ptr[0], 0);
+		}
+		ptr = new int [1];
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //background-gdk
+		if (ptr [0] != 0) {
+			OS.g_object_set(cell, OS.background_gdk, ptr[0], 0);
+		}
+		ptr = new int [1];
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 4, ptr, -1); //font-desc
+		if (ptr [0] != 0) {
+			OS.g_object_set(cell, OS.font_desc, ptr[0], 0);
+		}
 	}
-	ptr = new int [1];
-	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 4, ptr, -1); //font-desc
-	if (ptr [0] != 0) {
-		OS.g_object_set(cell, OS.font_desc, ptr[0], 0);
+	if (setData) {
+		ignoreTextCell = cell;
+		setScrollWidth (tree_column, iter);
+		ignoreTextCell = 0;
 	}
 	return 0;
 }
 int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
+	if (cell == ignorePixbufCell) return 0;
 	int modelIndex = -1;
+	boolean customDraw = false;
 	if (columnCount == 0) {
 		modelIndex = Table.FIRST_COLUMN;
+		customDraw = firstCustomDraw;
 	} else {
 		for (int i = 0; i < columns.length; i++) {
 			if (columns [i] != null && columns [i].handle == tree_column) {
 				modelIndex = columns [i].modelIndex;
+				customDraw = columns [i].customDraw;
 				break;
 			}
 		}
 	}
 	if (modelIndex == -1) return 0;
+	boolean setData = setCellData (tree_model, iter);
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
-	if (ptr [0] != 0) {
-		OS.g_object_set(cell, OS.cell_background_gdk, ptr[0], 0);
+	if (setData) {
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex, ptr, -1); //pixbuf
+		OS.g_object_set(cell, OS.pixbuf, ptr[0], 0);
+		ptr = new int [1];
+	}
+	if (customDraw) {
+		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
+		if (ptr [0] != 0) {
+			OS.g_object_set(cell, OS.cell_background_gdk, ptr[0], 0);
+		}
+	}
+	if (setData) {
+		ignorePixbufCell = cell;
+		setScrollWidth (tree_column, iter);
+		ignorePixbufCell = 0;
 	}
 	return 0;
+}
+
+int calculateWidth (int column, int iter) {
+	int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int width = calculateWidth (column, iter, renderers);
+	if (renderers != 0) OS.g_list_free (renderers);
+	return width;
+}
+
+int calculateWidth (int /*long*/ column, int /*long*/ iter, int /*long*/ renderers) {
+	int /*long*/ list = renderers;
+	while (list != 0) {
+		int /*long*/ renderer = OS.g_list_data (list);
+		OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
+		list = OS.g_list_next (list);
+	}	
+	int [] width = new int [1];
+	OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
+	return width [0];
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -247,6 +304,14 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	if ((style & SWT.VIRTUAL) != 0) {
+		/*
+		* Feature in GTK. The fixed_height_mode property only exists in GTK 2.3.2 and greater.
+		*/
+		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version () >= 232) {
+			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
+		}
+	}
 }
 
 void createColumn (TableColumn column, int index) {
@@ -295,6 +360,12 @@ void createColumn (TableColumn column, int index) {
 		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.style);
 	}
 	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
+	if ((style & SWT.VIRTUAL) == 0 && columnCount == 0) {
+		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	} else {
+		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
+		OS.gtk_tree_view_column_set_fixed_width (columnHandle, 10);
+	}
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
@@ -366,7 +437,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 			}
 		}
 	}
-	if (customDraw) {
+	if ((style & SWT.VIRTUAL) != 0 || customDraw) {
 		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.textCellDataProc, handle, 0);
 		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, pixbufRenderer, display.pixbufCellDataProc, handle, 0);
 	}
@@ -625,6 +696,7 @@ void destroyItem (TableItem item) {
 	item.handle = 0;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
+	lastDataIndex = -1;
 	if (itemCount == 0) resetCustomDraw ();
 }
 
@@ -1483,7 +1555,21 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
-	OS.gtk_list_store_clear (modelHandle);
+
+	/*
+	* Bug in GTK.  In version 2.3.2, when the property fixed-height-mode
+	* is set and there are items in the list, OS.gtk_list_store_clear()
+	* segment faults.  The fix is to create a new empty model instead.
+	*/
+//	OS.gtk_list_store_clear (modelHandle);
+	int /*long*/ oldModel = modelHandle;
+	int /*long*/[] types = getColumnTypes (Math.max (1,columnCount));
+	int /*long*/ newModel = OS.gtk_list_store_newv (types.length, types);
+	if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_tree_view_set_model (handle, newModel);
+	OS.g_object_unref (oldModel);
+	modelHandle = newModel;
+
 	int index = itemCount - 1;
 	while (index >= 0) {
 		TableItem item = items [index];
@@ -1521,6 +1607,7 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void resetCustomDraw () {
+	if ((style & SWT.VIRTUAL) != 0) return;
 	int end = Math.max (1, columnCount);
 	for (int i=0; i<end; i++) {
 		boolean customDraw = columnCount != 0 ? columns [i].customDraw : firstCustomDraw;
@@ -1666,6 +1753,30 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return result;
 }
 
+boolean setCellData(int tree_model, int iter) {
+	if ((style & SWT.VIRTUAL) != 0) {
+		int [] index = new int [1];
+		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
+		OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+		OS.gtk_tree_path_free (path);
+		if (lastDataIndex != index [0]) {
+			lastDataIndex = lastIndexOf = index [0];
+			TableItem item = items [index [0]];	
+			Event event = new Event ();
+			event.item = item;
+			int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+			int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
+			OS.g_signal_handlers_block_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
+			sendEvent (SWT.SetData, event);
+			if (isDisposed()) return false;
+			//widget could be disposed at this point
+			OS.g_signal_handlers_unblock_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
+			return true;
+		}
+	}
+	return false;
+}
+
 void setFontDescription (int font) {
 	super.setFontDescription (font);
 	TableColumn[] cloumns = getColumns ();
@@ -1702,6 +1813,18 @@ public void setHeaderVisible (boolean show) {
 	OS.gtk_tree_view_set_headers_visible (handle, show);
 }
 
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	setRedraw (false);
+	removeAll ();
+	items = new TableItem [(count + 3) / 4 * 4];
+	for (int i = 0; i<count; i++) {
+		items [i] = new TableItem (this, SWT.NONE);
+	}
+	setRedraw (true);
+}
+
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -1733,6 +1856,15 @@ public void setRedraw (boolean redraw) {
 			System.arraycopy (items, 0, newItems, 0, itemCount);
 			items = newItems;
 		}
+	}
+}
+
+void setScrollWidth (int column, int iter) {
+	if (columnCount != 0) return;
+	int width = OS.gtk_tree_view_column_get_width (column);
+	int itemWidth = calculateWidth (column, iter);
+	if (width < itemWidth) {
+		OS.gtk_tree_view_column_set_fixed_width (column, itemWidth);
 	}
 }
 

@@ -868,6 +868,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1list_1append)
 }
 #endif
 
+#ifndef NO_g_1list_1data
+JNIEXPORT jint JNICALL OS_NATIVE(g_1list_1data)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1list_1data\n")
+	rc = (jint)g_list_data((GList *)arg0);
+	NATIVE_EXIT(env, that, "g_1list_1data\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1list_1free
 JNIEXPORT void JNICALL OS_NATIVE(g_1list_1free)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1143,6 +1155,19 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BII)
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "g_1object_1set__I_3BII\n")
+}
+#endif
+
+#ifndef NO_g_1object_1set__I_3BZI
+JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BZI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "g_1object_1set__I_3BZI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "g_1object_1set__I_3BZI\n")
 }
 #endif
 
@@ -6186,6 +6211,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1model_1get_1iter)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1model_1get_1iter_1first
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1model_1get_1iter_1first)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get_1iter_1first\n")
+	rc = (jboolean)gtk_tree_model_get_iter_first((GtkTreeModel *)arg0, (GtkTreeIter *)arg1);
+	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get_1iter_1first\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1model_1get_1n_1columns
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1model_1get_1n_1columns)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6206,6 +6243,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1model_1get_1path)
 	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get_1path\n")
 	rc = (jint)gtk_tree_model_get_path((GtkTreeModel *)arg0, (GtkTreeIter *)arg1);
 	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get_1path\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tree_1model_1get_1type
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1model_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get_1type\n")
+	rc = (jint)gtk_tree_model_get_type();
+	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get_1type\n")
 	return rc;
 }
 #endif
@@ -6613,6 +6662,31 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1positio
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1cell_1get_1position\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1cell_1get_1size\n")
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	gtk_tree_view_column_cell_get_size((GtkTreeViewColumn *)arg0, (GdkRectangle *)lparg1, (gint *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1cell_1get_1size\n")
 }
 #endif
 

@@ -294,6 +294,7 @@ public class OS {
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
+	public static final byte[] row_changed = signal("row_changed");
 	public static final byte[] scroll_child = signal("scroll_child");
 	public static final byte[] select = signal("select");
 	public static final byte[] show = signal("show");
@@ -312,12 +313,15 @@ public class OS {
 	public static final byte[] background_gdk = signal("background-gdk");
 	public static final byte[] button_relief = signal("button_relief");
 	public static final byte[] cell_background_gdk = signal("cell-background-gdk");
+	public static final byte[] fixed_height_mode = signal("fixed-height-mode");
 	public static final byte[] focus_line_width = signal("focus_line_width");
 	public static final byte[] font_desc = signal("font-desc");
 	public static final byte[] foreground_gdk = signal("foreground-gdk");
 	public static final byte[] horizontal_separator = signal("horizontal_separator");
 	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
+	public static final byte[] pixbuf = signal("pixbuf");
+	public static final byte[] text = signal("text");
 	public static final byte[] xalign = signal("xalign");
 	
 protected static byte [] signal (String name) {
@@ -409,7 +413,6 @@ public static final synchronized native boolean GTK_WIDGET_VISIBLE(int /*long*/ 
 public static final synchronized native int /*long*/ G_TYPE_BOOLEAN();
 public static final synchronized native int /*long*/ G_TYPE_INT();
 public static final synchronized native int /*long*/ G_TYPE_STRING();
-
 public static final synchronized native int PANGO_PIXELS(int dimension);
 public static final synchronized native int PANGO_TYPE_FONT_DESCRIPTION();
 public static final synchronized native int /*long*/ g_filename_to_utf8(int /*long*/ opsysstring, int len, int[] bytes_read, int[] bytes_written, int /*long*/[] error);
@@ -418,6 +421,7 @@ public static final synchronized native int /*long*/ g_filename_from_utf8(int /*
 public static final synchronized native int /*long*/ g_filename_from_uri(int /*long*/ uri, int /*long*/[] hostname, int /*long*/[] error);
 public static final synchronized native void g_free(int /*long*/ mem);
 public static final synchronized native int /*long*/ g_list_append(int /*long*/ list, int /*long*/ data);
+public static final synchronized native int /*long*/ g_list_data(int /*long*/ list);
 public static final synchronized native void g_list_free(int /*long*/ list);
 public static final synchronized native void g_list_free_1(int /*long*/ list);
 public static final synchronized native int g_list_length(int /*long*/ list);
@@ -438,6 +442,7 @@ public static final synchronized native int g_log_set_handler(byte[] log_domain,
 public static final synchronized native int /*long*/ g_malloc(int /*long*/ size);
 public static final synchronized native int /*long*/ g_object_get_qdata(int /*long*/ object, int quark);
 public static final synchronized native int /*long*/ g_object_ref(int /*long*/ object);
+public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int terminator);
 public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, int data, int terminator);
 public static final synchronized native void g_object_set(int /*long*/ object, byte[] first_property_name, float data, int terminator);
 public static final synchronized native void g_object_set_qdata(int /*long*/ object, int quark, int /*long*/ data);
@@ -853,8 +858,10 @@ public static final synchronized native int /*long*/ gtk_tooltips_new();
 public static final synchronized native void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private);
 public static final synchronized native void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] ptr, int terminator);
 public static final synchronized native boolean gtk_tree_model_get_iter(int /*long*/ tree_model, int /*long*/ iter, int /*long*/ path);
+public static final synchronized native boolean gtk_tree_model_get_iter_first(int /*long*/ tree_model, int iter);
 public static final synchronized native int gtk_tree_model_get_n_columns(int /*long*/ tree_model);
 public static final synchronized native int /*long*/ gtk_tree_model_get_path(int /*long*/ tree_model, int /*long*/ iter);
+public static final synchronized native int /*long*/ gtk_tree_model_get_type();
 public static final synchronized native boolean gtk_tree_model_iter_children(int /*long*/ model, int /*long*/ iter, int /*long*/ parent);
 public static final synchronized native int gtk_tree_model_iter_n_children(int /*long*/ model, int /*long*/ iter);
 public static final synchronized native boolean gtk_tree_model_iter_next(int /*long*/ model, int /*long*/ iter);
@@ -889,6 +896,7 @@ public static final synchronized native void gtk_tree_store_set(int /*long*/ sto
 public static final synchronized native boolean gtk_tree_view_collapse_row(int /*long*/ view, int /*long*/ path);
 public static final synchronized native void gtk_tree_view_column_add_attribute(int /*long*/ treeColumn, int /*long*/ cellRenderer, String attribute, int column);
 public static final synchronized native boolean gtk_tree_view_column_cell_get_position(int /*long*/ tree_column, int /*long*/ cell_renderer, int[] start_pos, int[] width);
+public static final synchronized native void gtk_tree_view_column_cell_get_size(int /*long*/ tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
 public static final synchronized native void gtk_tree_view_column_cell_set_cell_data(int /*long*/ tree_column, int /*long*/ tree_model, int /*long*/ iter, boolean is_expander, boolean is_expanded);
 public static final synchronized native void gtk_tree_view_column_clear(int /*long*/ tree_column);
 public static final synchronized native int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);

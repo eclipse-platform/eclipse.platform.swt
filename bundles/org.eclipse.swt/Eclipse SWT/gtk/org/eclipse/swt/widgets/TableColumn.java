@@ -330,15 +330,25 @@ void hookEvents () {
  */
 public void pack () {
 	checkWidget();
-	/*
-	* Feature in GTK.  Calling gtk_tree_view_column_set_sizing() with 
-	* GTK_TREE_VIEW_COLUMN_AUTOSIZE causes the tree view
-	* column to be not resizable.  The fix is to reset this afterawards.
-	*/ 
-	boolean resizable = OS.gtk_tree_view_column_get_resizable (handle);
-	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-	OS.gtk_tree_view_column_set_resizable (handle, resizable);
-	OS.gtk_tree_view_column_set_visible (handle, true);
+	int width = 0;
+	if (buttonHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (buttonHandle, requisition);
+		width = requisition.width;
+	}
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		//NOT DONE
+	} else {
+		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter);
+		int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (handle);
+		do {
+			width = Math.max (width, parent.calculateWidth (handle, iter, renderers));
+		} while (OS.gtk_tree_model_iter_next(parent.modelHandle, iter));		
+		if (renderers != 0) OS.g_list_free (renderers);
+		OS.g_free (iter);
+	}
+	setWidth(width);
 }
 
 void register () {
@@ -510,7 +520,6 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	if (width > 0) {
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
 		OS.gtk_tree_view_column_set_visible (handle, true);
