@@ -700,22 +700,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			if (index != -1) {
 				TBBUTTON lpButton = new TBBUTTON ();
 				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
-				if (code != 0) return LRESULT.ZERO;
-			}
-	}
-	return result;
-}
-
-LRESULT WM_KEYUP (int wParam, int lParam) {
-	LRESULT result = super.WM_KEYUP (wParam, lParam);
-	if (result != null) return result;
-	switch (wParam) {
-		case OS.VK_RETURN:
-		case OS.VK_SPACE:
-			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
-			if (index != -1) {
-				TBBUTTON lpButton = new TBBUTTON ();
-				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 				if (code != 0) {
 					items [lpButton.idCommand].click (wParam == OS.VK_RETURN);
 					return LRESULT.ZERO;
