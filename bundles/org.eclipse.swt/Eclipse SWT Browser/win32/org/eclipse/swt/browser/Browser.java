@@ -97,6 +97,8 @@ public class Browser extends Composite {
 	static final int DLCTL_NO_CLIENTPULL = 0x20000000;
 	static final int DLCTL_SILENT = 0x40000000;
 	
+	static final String ABOUT_BLANK = "about:blank";//$NON-NLS-1$
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
@@ -1053,7 +1055,7 @@ public boolean setText(String html) {
 	*/
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
-	rgvarg[0] = new Variant("about:blank"); //$NON-NLS-1$
+	rgvarg[0] = new Variant(ABOUT_BLANK); //$NON-NLS-1$
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
