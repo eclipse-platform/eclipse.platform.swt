@@ -955,7 +955,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhEventPeek
 #endif
 	
 	return (jint)PhEventPeek((void *)buffer, size);
-}  
+} 
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhEventNext
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhEventNext
+  (JNIEnv *env, jobject that, jint buffer, jint size)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhEventNext\n");
+#endif
+	
+	return (jint)PhEventNext((void *)buffer, size);
+} 
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
@@ -6149,3 +6164,50 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSendEventToWidg
 
     return (jint) PtSendEventToWidget((PtWidget_t *)widget, (void *)event);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhCursorDef_t;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PhCursorDef_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhCursorDef_tFids(env, src, &PGLOB(PhCursorDef_tFc));
+        getPhCursorDef_tFields(env, src, src1, &PGLOB(PhCursorDef_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhCursorDef_t;II)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhCursorDef_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PhCursorDef_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhCursorDef_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePhCursorDef_tFids(env, dest, &PGLOB(PhCursorDef_tFc));
+        setPhCursorDef_tFields(env, dest, dest1, &PGLOB(PhCursorDef_tFc));
+    }
+}
+*/

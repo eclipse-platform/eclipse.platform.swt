@@ -857,8 +857,18 @@ public void setCursor (Cursor cursor) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int type = OS.Ph_CURSOR_INHERIT;
-	if (cursor != null) type = cursor.handle;
-	int [] args = {OS.Pt_ARG_CURSOR_TYPE, type, 0};
+	int bitmap = 0;
+	if (cursor != null) {
+		type = cursor.type;
+		bitmap = cursor.bitmap;
+		if (type == OS.Ph_CURSOR_BITMAP) {
+			type &= ~OS.Ph_CURSOR_NO_INHERIT;
+		}
+	}
+	int [] args = {
+		OS.Pt_ARG_CURSOR_TYPE, type, 0,
+		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
+	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
@@ -899,18 +909,20 @@ void sendPaintEvent (int damage) {
 	/* Send the paint event */
 	PhTile_t tile = new PhTile_t ();
 	OS.memmove (tile, damage, PhTile_t.sizeof);
-	Event event = new Event ();
-	event.x = tile.rect_ul_x;
-	event.y = tile.rect_ul_y;
-	event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-	event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-	Region region = Region.photon_new (tile.next);
-	GC gc = event.gc = new GC (this);
-	gc.setClipping (region);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
+	if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+		Event event = new Event ();
+		event.x = tile.rect_ul_x;
+		event.y = tile.rect_ul_y;
+		event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+		event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+		Region region = Region.photon_new (tile.next);
+		GC gc = event.gc = new GC (this);
+		gc.setClipping (region);
+		sendEvent (SWT.Paint, event);
+		gc.dispose ();
+		event.gc = null;
+	}
 	OS.PhFreeTiles (damage);
-	event.gc = null;
 }
 
 boolean sendResize () {

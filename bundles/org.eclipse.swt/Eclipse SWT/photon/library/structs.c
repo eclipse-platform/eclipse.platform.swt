@@ -1144,3 +1144,61 @@ void setPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCa
 	(*env)->SetShortField(env, lpObject, lpCache->old_dim_h, lpStruct->old_dim.h);
 }
 
+void cachePhCursorDef_tFids(JNIEnv *env, jobject lpObject, PPhCursorDef_t_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->bytesperline2 = (*env)->GetFieldID(env, lpCache->clazz, "bytesperline2", "B");
+	lpCache->color2 = (*env)->GetFieldID(env, lpCache->clazz, "color2", "I");
+	lpCache->offset2_y = (*env)->GetFieldID(env, lpCache->clazz, "offset2_y", "S");
+	lpCache->offset2_x = (*env)->GetFieldID(env, lpCache->clazz, "offset2_x", "S");
+	lpCache->size2_y = (*env)->GetFieldID(env, lpCache->clazz, "size2_y", "S");
+	lpCache->size2_x = (*env)->GetFieldID(env, lpCache->clazz, "size2_x", "S");
+	lpCache->bytesperline1 = (*env)->GetFieldID(env, lpCache->clazz, "bytesperline1", "B");
+	lpCache->color1 = (*env)->GetFieldID(env, lpCache->clazz, "color1", "I");
+	lpCache->offset1_y = (*env)->GetFieldID(env, lpCache->clazz, "offset1_y", "S");
+	lpCache->offset1_x = (*env)->GetFieldID(env, lpCache->clazz, "offset1_x", "S");
+	lpCache->size1_y = (*env)->GetFieldID(env, lpCache->clazz, "size1_y", "S");
+	lpCache->size1_x = (*env)->GetFieldID(env, lpCache->clazz, "size1_x", "S");
+	lpCache->hdr_type = (*env)->GetFieldID(env, lpCache->clazz, "hdr_type", "S");
+	lpCache->hdr_len = (*env)->GetFieldID(env, lpCache->clazz, "hdr_len", "S");
+	lpCache->cached = 1;
+}
+
+void getPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache)
+{
+	lpStruct->bytesperline2 = (*env)->GetByteField(env, lpObject, lpCache->bytesperline2);
+	lpStruct->color2 = (*env)->GetIntField(env, lpObject, lpCache->color2);
+	lpStruct->offset2.y = (*env)->GetShortField(env, lpObject, lpCache->offset2_y);
+	lpStruct->offset2.x = (*env)->GetShortField(env, lpObject, lpCache->offset2_x);
+	lpStruct->size2.y = (*env)->GetShortField(env, lpObject, lpCache->size2_y);
+	lpStruct->size2.x = (*env)->GetShortField(env, lpObject, lpCache->size2_x);
+	lpStruct->bytesperline1 = (*env)->GetByteField(env, lpObject, lpCache->bytesperline1);
+	lpStruct->color1 = (*env)->GetIntField(env, lpObject, lpCache->color1);
+	lpStruct->offset1.y = (*env)->GetShortField(env, lpObject, lpCache->offset1_y);
+	lpStruct->offset1.x = (*env)->GetShortField(env, lpObject, lpCache->offset1_x);
+	lpStruct->size1.y = (*env)->GetShortField(env, lpObject, lpCache->size1_y);
+	lpStruct->size1.x = (*env)->GetShortField(env, lpObject, lpCache->size1_x);
+	lpStruct->hdr.type = (*env)->GetShortField(env, lpObject, lpCache->hdr_type);
+	lpStruct->hdr.len = (*env)->GetShortField(env, lpObject, lpCache->hdr_len);
+}
+
+void setPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache)
+{
+	(*env)->SetByteField(env, lpObject, lpCache->bytesperline2, lpStruct->bytesperline2);
+	(*env)->SetIntField(env, lpObject, lpCache->color2, lpStruct->color2);
+	(*env)->SetShortField(env, lpObject, lpCache->offset2_y, lpStruct->offset2.y);
+	(*env)->SetShortField(env, lpObject, lpCache->offset2_x, lpStruct->offset2.x);
+	(*env)->SetShortField(env, lpObject, lpCache->size2_y, lpStruct->size2.y);
+	(*env)->SetShortField(env, lpObject, lpCache->size2_x, lpStruct->size2.x);
+	(*env)->SetByteField(env, lpObject, lpCache->bytesperline1, lpStruct->bytesperline1);
+	(*env)->SetIntField(env, lpObject, lpCache->color1, lpStruct->color1);
+	(*env)->SetShortField(env, lpObject, lpCache->offset1_y, lpStruct->offset1.y);
+	(*env)->SetShortField(env, lpObject, lpCache->offset1_x, lpStruct->offset1.x);
+	(*env)->SetShortField(env, lpObject, lpCache->size1_y, lpStruct->size1.y);
+	(*env)->SetShortField(env, lpObject, lpCache->size1_x, lpStruct->size1.x);
+	(*env)->SetShortField(env, lpObject, lpCache->hdr_type, lpStruct->hdr.type);
+	(*env)->SetShortField(env, lpObject, lpCache->hdr_len, lpStruct->hdr.len);
+}
+
+

@@ -197,14 +197,23 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			delta.x = (short)deltaX;
 			delta.y = (short)deltaY;
 			int clipRects = data.clipRects;
-			if (clipRects == 0) {
+			int child_clip = getClipping(widget, data.topWidget, true, true);
+			if (clipRects == 0 && child_clip == 0) {
 				OS.PhBlit(rid, rect, delta);
 			} else {
 				int dest = OS.PhGetTile();
 				OS.memmove(dest, rect, PhRect_t.sizeof);
 				OS.PhTranslateTiles(dest, delta);
-				int clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
-				int dest_tiles = OS.PhIntersectTilings(dest, clip, new short[1]);
+				short[] unused = new short[1];
+				int clip = child_clip;
+				if (clipRects != 0) {
+					clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
+					if (child_clip != 0) {
+						clip = OS.PhIntersectTilings(clip, child_clip, unused);
+						OS.PhFreeTiles(child_clip);
+					}
+				}
+				int dest_tiles = OS.PhIntersectTilings(dest, clip, unused);
 				OS.PhFreeTiles(clip);
 				OS.PhFreeTiles(dest);
 				PhPoint_t inverseDelta = new PhPoint_t();
@@ -1332,53 +1341,12 @@ void setGCClipping() {
 
 	if (widget == 0) return;
 	
-	int child_tile = 0;
-	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
-			
-	// Get the rectangle of all siblings in front of the widget
-	int temp_widget = topWidget;
-	while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
-		if (OS.PtWidgetIsRealized(temp_widget)) {
-			int tile = OS.PhGetTile();
-			if (child_tile == 0) child_tile = tile;			
-			else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-			OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-		}
-	}
-	// Translate the siblings rectangles to the widget's coordinates
-	OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
-	OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
-			
-	// Get the rectangle of the widget's children
-	temp_widget = OS.PtWidgetChildBack(widget);
-	while (temp_widget != 0) {
-		if (OS.PtWidgetIsRealized(temp_widget)) {
-			int tile = OS.PhGetTile();
-			if (child_tile == 0) child_tile = tile;			
-			else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-			OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-		}
-		temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
-	}
-
-	// Get the widget's rectangle
-	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
-	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
-
-	// Clip the widget's rectangle from the child/siblings rectangle's
-	int clip_rects;
+	int clip_tile = getClipping(widget, topWidget, true, true);
 	int[] clip_rects_count = new int[1];
-	if (child_tile != 0) {
-		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
-		clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
-		OS.PhFreeTiles(child_tile);
-		OS.PhFreeTiles(clip_tile);
-	} else {
-		clip_rects = OS.PhTilesToRects(widget_tile, clip_rects_count);
-		OS.PhFreeTiles(widget_tile);
-	}
+	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
+	OS.PhFreeTiles(clip_tile);
 	
-	// PgSetClipping sets the clipping to the full region when the count is zero
+	/* PgSetClipping sets the clipping to the full region when the count is zero */
 	if (clip_rects_count[0] == 0) {
 		clip_rects_count[0] = 1;
 		OS.free(clip_rects);
@@ -1386,6 +1354,53 @@ void setGCClipping() {
 	}
 	OS.PgSetClipping((short)clip_rects_count[0], clip_rects);
 	OS.free(clip_rects);
+}
+
+int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
+	int child_tile = 0;
+	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
+			
+	/* Get the rectangle of all siblings in front of the widget */
+	if (clipSiblings) {
+		int temp_widget = topWidget;
+		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+			}
+		}
+		/* Translate the siblings rectangles to the widget's coordinates */
+		OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
+		OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
+	}
+			
+	/* Get the rectangle of the widget's children */
+	if (clipChildren) {
+		int temp_widget = OS.PtWidgetChildBack(widget);
+		while (temp_widget != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+			}
+			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
+		}
+	}
+
+	/* Get the widget's rectangle */
+	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
+	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
+
+	/* Clip the widget's rectangle from the child/siblings rectangle's */
+	if (child_tile != 0) {
+		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
+		OS.PhFreeTiles(child_tile);
+		return clip_tile;
+	}
+	return widget_tile;
 }
 
 public void setXORMode(boolean xor) {

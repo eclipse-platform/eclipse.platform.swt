@@ -661,7 +661,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Ph_CURSOR_BITMAP                                      = 0xFB;
 	public static final int Ph_CURSOR_CLOCK                                       = 0xE908;
 	public static final int Ph_CURSOR_CROSSHAIR                                   = 0xE906;
-//public static final int Ph_CURSOR_DEFAULT_COLOR                               = 0xFFFFE0;
+	public static final int Ph_CURSOR_DEFAULT_COLOR                               = 0xFFFFE0;
 	public static final int Ph_CURSOR_DONT                                        = 0xE90A;
 //public static final int Ph_CURSOR_DRAG_BACKDIAG                               = 0xE914;
 	public static final int Ph_CURSOR_DRAG_BL                                     = 0xE916;
@@ -682,7 +682,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_CURSOR_LONG_WAIT                                   = 0xE91A;
 //public static final int Ph_CURSOR_MANUAL_CONTROL                              = 0xFF;
 	public static final int Ph_CURSOR_MOVE                                        = 0xE904;
-//public static final int Ph_CURSOR_NO_INHERIT                                  = 0x01;
+	public static final int Ph_CURSOR_NO_INHERIT                                  = 0x01;
 //public static final int Ph_CURSOR_NOINPUT                                     = 0xE90A;
 //public static final int Ph_CURSOR_NONE                                        = 0xFD;
 //public static final int Ph_CURSOR_PASTE                                       = 0xE91E;
@@ -733,9 +733,9 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_EV_DNDROP                                          = 0x00200000;
 	public static final int Ph_EV_DRAG                                            = 0x00000200;
 //public static final int Ph_EV_DRAG_BOUNDARY                                   = 5;
-//public static final int Ph_EV_DRAG_COMPLETE                                   = 2;
+	public static final int Ph_EV_DRAG_COMPLETE                                   = 2;
 //public static final int Ph_EV_DRAG_INIT                                       = 0;
-//public static final int Ph_EV_DRAG_KEY_EVENT                                  = 3;
+	public static final int Ph_EV_DRAG_KEY_EVENT                                  = 3;
 	public static final int Ph_EV_DRAG_MOTION_EVENT                               = 4;
 //public static final int Ph_EV_DRAG_MOVE                                       = 1;
 //public static final int Ph_EV_DRAG_START                                      = 6;
@@ -1310,7 +1310,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_BITMAP_BALLOON_FILL_COLOR                      = ( 20 * 1000 + 10 );
 //public static final int Pt_ARG_BITMAP_BALLOON_POSITION                        = ( 20 * 1000 + 8 );
 //public static final int Pt_ARG_BITMAP_COLORS                                  = ( 20 * 1000 + 0 );
-//public static final int Pt_ARG_BITMAP_CURSOR                                  = ( 1 * 1000 + 17 );
+	public static final int Pt_ARG_BITMAP_CURSOR                                  = ( 1 * 1000 + 17 );
 //public static final int Pt_ARG_BITMAP_DATA                                    = ( 20 * 1000 + 1 );
 //public static final int Pt_ARG_BITMAP_FLAGS                                   = ( 20 * 1000 + 7 );
 //public static final int Pt_ARG_BITMAP_TEXT                                    = ( 20 * 1000 + 2 );
@@ -1391,7 +1391,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_COLUMNS                                        = ( 4 * 1000 + 1 );
 	public static final int Pt_ARG_CONTAINER_FLAGS                                = ( 10 * 1000 + 5 );
 //public static final int Pt_ARG_CURRENT_FRAME                                  = ( 101 * 1000 + 3 );
-//public static final int Pt_ARG_CURSOR_COLOR                                   = ( 1 * 1000 + 3 );
+	public static final int Pt_ARG_CURSOR_COLOR                                   = ( 1 * 1000 + 3 );
 //public static final int Pt_ARG_CURSOR_OFFSET                                  = ( 4 * 1000 + 19);
 	public static final int Pt_ARG_CURSOR_POSITION                                = ( 4 * 1000 + 3 );
 	public static final int Pt_ARG_CURSOR_TYPE                                    = ( 1 * 1000 + 2 );
@@ -2578,6 +2578,7 @@ public static final native int PtClippedBlit (int widget, int src, PhPoint_t del
 public static final native int PgSetDrawBufferSize (int cmd_buf_len);
 
 public static final native int PhEventPeek (int buffer, int size);
+public static final native int PhEventNext (int buffer, int size);
 public static final native int PhGetMsgSize (int event_buf);
 public static final native int PhGetTile ();
 public static final native int PhAddMergeTiles (int tiles, int add_tiles, int[] added);
@@ -2910,5 +2911,8 @@ public static final native void memmove (PtContainerCallback_t dest, int src, in
 //public static final native void memmove (int dest, PtContainerCallback_t src, int size);
 
 public static final native void PtSendEventToWidget (int widget, int event);
+
+//public static final native void memmove (PhCursorDef_t dest, int src, int size);
+public static final native void memmove (int dest, PhCursorDef_t src, int size);
 
 }

@@ -520,12 +520,12 @@ void expand(TreeItem item, boolean notifyListeners) {
 	if (nestedExpand == false) {
 		setExpandingItem(item);
 	}
-	scrollForExpand(item);
-	item.internalSetExpanded(true);
 	if (notifyListeners == true) {
 		event.item = item;
 		notifyListeners(SWT.Expand, event);
 	}
+	scrollForExpand(item);
+	item.internalSetExpanded(true);
 	// redraw hierarchy image
 	item.redrawExpanded(item.getVisibleIndex() - getTopIndex());
 	calculateVerticalScrollbar();
