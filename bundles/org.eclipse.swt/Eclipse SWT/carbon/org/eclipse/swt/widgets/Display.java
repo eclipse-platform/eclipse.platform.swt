@@ -385,6 +385,7 @@ void clearMenuFlags () {
 		Menu menu = menus [i];
 		if (menu != null) {
 			menu.modified = menu.closed = false;
+			menu.lastTarget = null;
 		}
 	}
 }
