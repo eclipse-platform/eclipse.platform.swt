@@ -30,6 +30,7 @@ public class BrowserExample {
 			"eclipse01.bmp", "eclipse02.bmp", "eclipse03.bmp", "eclipse04.bmp", "eclipse05.bmp",
 			"eclipse06.bmp", "eclipse07.bmp", "eclipse08.bmp", "eclipse09.bmp", "eclipse10.bmp",
 			"eclipse11.bmp", "eclipse12.bmp",};
+	static final String iconLocation = "document.gif";
 	
 /**
  * Creates an instance of a ControlExample embedded inside
@@ -307,11 +308,15 @@ public static void main(String [] args) {
 	shell.setLayout(new FillLayout());
 	BrowserExample instance = new BrowserExample(shell);
 	shell.setText(getResourceString("window.title"));
+	shell.setSize(800, 600);
+	Image icon = new Image(display, BrowserExample.class.getResourceAsStream(iconLocation));
+	shell.setImage(icon);
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
 	}
+	icon.dispose();
 	instance.dispose();
 	display.dispose();
 }
