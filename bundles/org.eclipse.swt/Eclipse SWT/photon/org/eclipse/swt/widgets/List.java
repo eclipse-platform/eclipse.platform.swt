@@ -185,12 +185,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	PhRect_t rect = new PhRect_t();
-	int [] items = new int [1];
+	int font = args [7];
+	int [] buffer = new int [1];
 	for (int i = 0; i < args [1]; i++) {
-		OS.memmove (items, args [4] + (i * 4), 4);
-		int length = OS.strlen (items [0]);
-		OS.PfExtentText(rect, null, args [7], items [0], length);
-		width = Math.max(width, rect.lr_x - rect.ul_x + 1);
+		OS.memmove (buffer, args [4] + (i * 4), 4);
+		int str = buffer [0];
+		int length = OS.strlen (str);
+		if (length > 0) {
+			OS.PfExtentText(rect, null, font, str, length);
+			width = Math.max(width, rect.lr_x - rect.ul_x + 1);
+		}
 	}
 	rect = new PhRect_t ();
 	PhArea_t area = new PhArea_t ();

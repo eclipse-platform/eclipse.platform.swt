@@ -115,29 +115,48 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.PtWidgetPreferredSize(handle, dim);
 	int width = dim.w;
 	int height = dim.h;
-	int text = OS.PtWidgetChildBack(handle);
-	OS.PtWidgetPreferredSize(text, dim);
+	int textWidget = OS.PtWidgetChildBack(handle);
+	OS.PtWidgetPreferredSize(textWidget, dim);
 	height += dim.h;
 	PhRect_t rect = new PhRect_t ();
 	PhArea_t area = new PhArea_t ();
-	OS.PtSetAreaFromWidgetCanvas (text, rect, area);
+	OS.PtSetAreaFromWidgetCanvas (textWidget, rect, area);
 	width += area.size_w;
+	
+	/* Calculate maximum text width */
 	int [] args = new int [] {
 		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0,
 		OS.Pt_ARG_ITEMS, 0, 0,
 		OS.Pt_ARG_TEXT_FONT, 0, 0,
+		OS.Pt_ARG_TEXT_STRING, 0, 0,
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int maxWidth = 0;
 	rect = new PhRect_t();
-	int [] items = new int [1];
-	for (int i = 0; i < args [1]; i++) {
-		OS.memmove (items, args [4] + (i * 4), 4);
-		int length = OS.strlen (items [0]);
-		OS.PfExtentText(rect, null, args [7], items [0], length);
-		maxWidth = Math.max(maxWidth, rect.lr_x - rect.ul_x + 1);
-	}	
+	int str = args [10];
+	int font = args [7];
+	if (str != 0) {
+		int length = OS.strlen (str);
+		if (length > 0) {
+			OS.PfExtentText(rect, null, font, str, length);
+			maxWidth = Math.max(maxWidth, rect.lr_x - rect.ul_x + 1);
+		}
+	}
+	int count = args [1];
+	int [] buffer = new int [1];
+	for (int i = 0; i < count; i++) {
+		OS.memmove (buffer, args [4] + (i * 4), 4);
+		str = buffer [0];
+		int length = OS.strlen (str);
+		if (length > 0) {
+			OS.PfExtentText(rect, null, font, str, length);
+			maxWidth = Math.max(maxWidth, rect.lr_x - rect.ul_x + 1);
+		}
+	}
+	if (maxWidth == 0) maxWidth = DEFAULT_WIDTH;	
+	
 	width += maxWidth;
+	
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		rect = new PhRect_t ();
 		area = new PhArea_t ();

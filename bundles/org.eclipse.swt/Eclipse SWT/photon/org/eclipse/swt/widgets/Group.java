@@ -143,9 +143,12 @@ Point getTitleSize() {
 	OS.PtGetResources (handle, args.length / 3, args);
 	if ((OS.Pt_ARG_CONTAINER_FLAGS & OS.Pt_SHOW_TITLE) != 0) {
 		PhRect_t rect = new PhRect_t();
-		if (args [1] != 0) {
-			int length = OS.strlen (args [1]);
-			OS.PfExtentText(rect, null, args [4], args [1], length);
+		int str = args [1];
+		if (str != 0) {
+			int length = OS.strlen (str);
+			if (length > 0) {
+				OS.PfExtentText(rect, null, args [4], str, length);
+			}
 		}
 		int inset = 4;
 		width = inset + rect.lr_x - rect.ul_x + 1;
