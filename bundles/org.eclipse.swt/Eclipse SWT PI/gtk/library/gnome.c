@@ -18,7 +18,6 @@
 #define NDEBUG 
 
 #include "swt.h"
-#include "structs.h"
 
 #include <stdio.h>
 #include <assert.h>
