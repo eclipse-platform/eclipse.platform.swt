@@ -16,6 +16,7 @@ import org.eclipse.jface.action.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.browser.*;
 
 public class BrowserDemoView extends ViewPart {
 	Action pawnAction;
@@ -27,6 +28,15 @@ public class BrowserDemoView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
 		parent.setLayout(new FillLayout());
+		try {
+			Browser browser = new Browser(parent, SWT.NONE);
+			browser.dispose();
+		} catch (SWTError e) {
+			Text text = new Text(parent, SWT.MULTI | SWT.READ_ONLY);
+			text.setText("Browser widget cannot be instantiated. The exact error is:\r\n"+e);
+			parent.layout(true);
+			return;
+		}
 		TabFolder folder = new TabFolder(parent, SWT.NONE);
 		TabItem item = new TabItem(folder, SWT.NONE);
 		PawnTab pawnTab = new PawnTab(item);
