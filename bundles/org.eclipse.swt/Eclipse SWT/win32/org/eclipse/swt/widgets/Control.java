@@ -985,7 +985,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if (drawCount != 0) return (style & HIDDEN) == 0;
+	if (drawCount != 0) return (state & HIDDEN) == 0;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_VISIBLE) != 0;
 }
@@ -1247,7 +1247,8 @@ boolean isTabItem () {
  */
 public boolean isVisible () {
 	checkWidget ();
-	return OS.IsWindowVisible (handle);
+	if (OS.IsWindowVisible (handle)) return true;
+	return getVisible () && parent.isVisible ();
 }
 
 Decorations menuShell () {

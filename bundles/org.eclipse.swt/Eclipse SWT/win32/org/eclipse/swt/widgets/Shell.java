@@ -695,6 +695,11 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 
+public boolean isVisible () {
+	checkWidget ();
+	return getVisible ();
+}
+
 int hwndMDIClient () {
 	if (hwndMDIClient == 0) {
 		int widgetStyle = OS.MDIS_ALLCHILDSTYLES | OS.WS_CHILD | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
