@@ -63,6 +63,8 @@ Color() {
  * @see #dispose
  */
 public Color(Device device, int red, int green, int blue) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, red, green, blue);
 	if (device.tracking) device.new_Object(this);
 }
@@ -90,6 +92,8 @@ public Color(Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color(Device device, RGB rgb) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
 	if (device.tracking) device.new_Object(this);
@@ -230,8 +234,6 @@ public static Color gtk_new(Device device, GdkColor gdkColor) {
 }
 
 void init(Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if ((red > 255) || (red < 0) ||
 		(green > 255) || (green < 0) ||
