@@ -5419,9 +5419,7 @@ public void invokeAction(int action) {
 			doSelectionLineUp();
 			break;
 		case ST.SELECT_ALL:
-			internalSetSelection(0, content.getCharCount(), false);
-			setCaretLocation();
-			showCaret();
+			selectAll();
 			break;
 		case ST.SELECT_LINE_DOWN:
 			doSelectionLineDown();
@@ -6426,7 +6424,7 @@ boolean scrollHorizontalBar(int pixels) {
  */
 public void selectAll() {
 	checkWidget();
-	setSelection(new Point(0, Math.max(getCharCount(),0)));
+	setSelection(0, Math.max(getCharCount(),0));
 }
 /**
  * Replaces/inserts text as defined by the event.
