@@ -1152,14 +1152,18 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	idle = false;
+	OS.PtHold ();
 	int id = OS.PtAppAddWorkProc (app_context, workProc, 0);
 	OS.PtAppProcessEvent (app_context);
 	OS.PtAppRemoveWorkProc (app_context, id);
-	if (!idle) {
+	boolean result = true;
+	if (idle) {
+		result = runAsyncMessages ();
+	} else {
 		runDeferredEvents ();
-		return true;
 	}
-	return runAsyncMessages ();
+	OS.PtRelease ();
+	return result;
 }
 
 synchronized void register () {
@@ -1436,8 +1440,10 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
+	OS.PtHold ();
 	OS.PtAppProcessEvent (app_context);
 	runDeferredEvents ();
+	OS.PtRelease ();
 	return true;
 }
 
