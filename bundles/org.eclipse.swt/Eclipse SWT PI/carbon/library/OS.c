@@ -3254,5 +3254,4 @@ static void setColor(struct RGBColor *c, int rgb) {
 	c->red= (rgb >> 16) * 257;
 	c->green= ((rgb >> 8) & 0xff) * 257;
 	c->blue= (rgb & 0xff) * 257;
-
-
+}
