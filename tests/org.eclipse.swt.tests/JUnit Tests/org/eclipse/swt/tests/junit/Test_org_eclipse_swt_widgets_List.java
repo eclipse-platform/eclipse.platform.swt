@@ -1445,9 +1445,11 @@ public void test_setSelection$I() {
 	for (int i = 0; i < number; i++)
 		list.add("fred" + i);
 
-	list.setSelection(new int [0]);
-	assertEquals(list.getSelectionIndices(), new int[0]);
-	assertEquals(list.getFocusIndex(), 0);
+	if (fCheckSWTPolicy) {
+		list.setSelection(new int [0]);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+	}
 
 	try {
 		list.setSelection((int[]) null);
@@ -1541,9 +1543,11 @@ public void test_setSelection$I() {
 	for (int i = 0; i < number; i++)
 		list.add("fred" + i);
 
-	list.setSelection(new int [0]);
-	assertEquals(list.getSelectionIndices(), new int[0]);
-	assertEquals(list.getFocusIndex(), 0);
+	if (fCheckSWTPolicy) {
+		list.setSelection(new int [0]);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+	}
 
 	try {
 		list.setSelection((int[]) null);
