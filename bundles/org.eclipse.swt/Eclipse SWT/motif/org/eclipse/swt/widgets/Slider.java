@@ -307,7 +307,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
-public void sendScrollEvent (int detail) {
+void sendScrollEvent (int detail) {
 	Event event = new Event ();
 	event.detail = detail;
 	sendEvent (SWT.Selection, event);

@@ -470,7 +470,7 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, EXPOSURE_CALLBACK);
-	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, FOCUS_CHANGE);
+	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 }
 int hoverProc (int id) {
 	boolean showTip = toolTipText != null;
