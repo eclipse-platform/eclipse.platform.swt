@@ -5407,6 +5407,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1ne
 	return rc;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1newv
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1tree_1store_1newv\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)gtk_tree_store_newv(arg0,  (GType*)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1model
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -5884,4 +5898,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new
 	rc = (jint)gtk_tree_path_new_from_string((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1clickable
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1clickable\n")
+
+	gtk_tree_view_column_set_clickable((GtkTreeViewColumn*)arg0, (gboolean)arg1);
 }
