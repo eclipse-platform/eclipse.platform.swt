@@ -65,10 +65,12 @@ void readNextBlockHeader() {
 	if (compressionType > 2) stream.error();	
 	
 	if (compressionType == UNCOMPRESSED) {
-		int length = stream.getNextIdatByte() 
-			| (stream.getNextIdatByte() << 8);
-		int testValue = stream.getNextIdatByte() 
-			| (stream.getNextIdatByte() << 8);
+		int length =
+			(stream.getNextIdatByte() & 0xFF) |
+			((stream.getNextIdatByte() & 0xFF) << 8);
+		int testValue =
+			(stream.getNextIdatByte() & 0xFF) |
+			((stream.getNextIdatByte() & 0xFF) << 8);
 		if (length != ~testValue) stream.error();
 		uncompressedBytesRemaining = length;
 	} else if (compressionType == COMPRESSED_DYNAMIC) {

@@ -103,7 +103,7 @@ private void readCompressedDataHeader() {
 	byte headerByte1 = getNextIdatByte();
 	byte headerByte2 = getNextIdatByte();
 	
-	int number = (headerByte1 << 8) | (headerByte2 & 0xFF);
+	int number = ((headerByte1 & 0xFF) << 8) | (headerByte2 & 0xFF);
 	if (number % 31 != 0) error();
 	
 	int compressionMethod = headerByte1 & 0x0F;
