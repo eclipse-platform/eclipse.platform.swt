@@ -46,7 +46,7 @@ public class Table extends Composite {
 	TableItem[] items = new TableItem [0];
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
-	boolean linesVisible, redraw = true;
+	boolean linesVisible;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -54,6 +54,7 @@ public class Table extends Composite {
 	int headerImageHeight = 0;
 	TableColumn resizeColumn;
 	int resizeColumnX = -1;
+	int drawCount = 0;
 
 	Rectangle checkboxBounds;
 
@@ -397,7 +398,7 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item) {
 	int index = item.index;
 	if (itemsCount == items.length) {
-		int grow = redraw ? 4 : Math.max (4, items.length * 3 / 2);
+		int grow = drawCount == 0 ? 4 : Math.max (4, items.length * 3 / 2);
 		TableItem[] newItems = new TableItem [items.length + grow];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -611,7 +612,7 @@ void destroyItem (TableItem item) {
 	}
 	itemsCount--;
 	
-	if (redraw && items.length - itemsCount == 4) {
+	if (drawCount == 0 && items.length - itemsCount == 4) {
 		/* shrink the items array */
 		TableItem[] newItems = new TableItem [itemsCount];
 		System.arraycopy (items, 0, newItems, 0, newItems.length);
@@ -3047,15 +3048,18 @@ public void setLinesVisible (boolean value) {
 }
 public void setRedraw (boolean value) {
 	checkWidget();
-	redraw = value;
 	if (value) {
-		if (items.length - itemsCount > 3) {
-			TableItem[] newItems = new TableItem [itemsCount];
-			System.arraycopy (items, 0, newItems, 0, itemsCount);
-			items = newItems;
+		if (--drawCount == 0) {
+			if (items.length - itemsCount > 3) {
+				TableItem[] newItems = new TableItem [itemsCount];
+				System.arraycopy (items, 0, newItems, 0, itemsCount);
+				items = newItems;
+			}
+			updateVerticalBar ();
+			updateHorizontalBar ();
 		}
-		updateVerticalBar ();
-		updateHorizontalBar ();
+	} else {
+		drawCount++;
 	}
 	super.setRedraw (value);
 }
@@ -3408,7 +3412,7 @@ void updateColumnWidth (TableColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
@@ -3454,7 +3458,7 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
@@ -3482,7 +3486,7 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, itemsCount);

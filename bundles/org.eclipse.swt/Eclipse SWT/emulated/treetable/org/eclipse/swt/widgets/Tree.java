@@ -49,13 +49,14 @@ public class Tree extends Composite {
 	TreeItem lastClickedItem;
 	int availableItemsCount = 0;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible, redraw = true;
+	boolean linesVisible;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int col0ImageWidth = 0;
 	int headerImageHeight = 0;
 	TreeColumn resizeColumn;
 	int resizeColumnX = -1;
+	int drawCount = 0;
 	boolean inExpand = false;	/* for item creation within Expand callback */
 
 	Rectangle expanderBounds, checkboxBounds;
@@ -281,7 +282,7 @@ void createItem (TreeItem item, int index) {
 	}
 
 	if (availableItemsCount == availableItems.length) {
-		int grow = redraw ? 4 : Math.max (4, availableItems.length * 3 / 2);
+		int grow = drawCount == 0 ? 4 : Math.max (4, availableItems.length * 3 / 2);
 		TreeItem[] newAvailableItems = new TreeItem [availableItems.length + grow];
 		System.arraycopy (availableItems, 0, newAvailableItems, 0, availableItems.length);
 		availableItems = newAvailableItems;
@@ -409,7 +410,7 @@ void destroyItem (TreeItem item) {
 		}
 		availableItemsCount--;
 
-		if (redraw && availableItems.length - availableItemsCount == 4) {
+		if (drawCount == 0 && availableItems.length - availableItemsCount == 4) {
 			/* shrink the items array */
 			TreeItem[] newAvailableItems = new TreeItem [availableItemsCount];
 			System.arraycopy (availableItems, 0, newAvailableItems, 0, newAvailableItems.length);
@@ -1217,7 +1218,7 @@ void makeAvailable (TreeItem item) {
 	}
 
 	if (availableItemsCount == availableItems.length) {
-		int grow = redraw ? 4 : Math.max (4, availableItems.length * 3 / 2);
+		int grow = drawCount == 0 ? 4 : Math.max (4, availableItems.length * 3 / 2);
 		TreeItem[] newAvailableItems = new TreeItem [availableItems.length + grow];
 		System.arraycopy (availableItems, 0, newAvailableItems, 0, availableItems.length);
 		availableItems = newAvailableItems;
@@ -2735,10 +2736,18 @@ public void setLinesVisible (boolean value) {
 }
 public void setRedraw (boolean value) {
 	checkWidget();
-	redraw = value;
 	if (value) {
-		updateVerticalBar ();
-		updateHorizontalBar ();
+		if (--drawCount == 0) {
+			if (availableItems.length - availableItemsCount > 3) {
+				TreeItem[] newAvailableItems = new TreeItem [availableItemsCount];
+				System.arraycopy (availableItems, 0, newAvailableItems, 0, availableItemsCount);
+				availableItems = newAvailableItems;
+			}
+			updateVerticalBar ();
+			updateHorizontalBar ();
+		}
+	} else {
+		drawCount++;
 	}
 	super.setRedraw (value);
 }
@@ -3000,7 +3009,7 @@ void updateColumnWidth (TreeColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
@@ -3046,7 +3055,7 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
@@ -3074,7 +3083,7 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
-	if (!redraw) return;
+	if (drawCount != 0) return;
 
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, availableItemsCount);
