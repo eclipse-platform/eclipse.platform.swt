@@ -203,6 +203,7 @@ void createHandle (int index) {
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 	
+	if ((style & SWT.ARROW) != 0) return;
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
