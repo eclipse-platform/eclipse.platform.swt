@@ -1346,8 +1346,8 @@ public class SWT {
 
 	/**
 	 * traversal event detail field value indicating that the
-	 * key which designates that a dialog should be closed/accepted
-	 * was preseed; typically, this is the ENTER key
+	 * key which activates the default button in a dialog was
+	 * pressed; typically, this is the ENTER key
 	 * (value is 1&lt;&lt;2)
 	 */
 	public static final int TRAVERSE_RETURN = 1 << 2;
@@ -1366,6 +1366,7 @@ public class SWT {
 	 * key which designates that focus should be given to the
 	 * next tab group was pressed; typically, this is the
 	 * TAB key
+	 * (value is 1&lt;&lt;4)
 	 */
 	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
 
@@ -1398,7 +1399,7 @@ public class SWT {
 	 * traversal event detail field value indicating that the 
 	 * key which designates that the previous page of a multi-page
 	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PgUp key sequence
+	 * is the CTRL-PAGEUP key sequence
 	 * (value is 1&lt;&lt;8)
 	 */
 	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
@@ -1407,7 +1408,7 @@ public class SWT {
 	 * traversal event detail field value indicating that the 
 	 * key which designates that the next page of a multi-page
 	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PgDn key sequence
+	 * is the CTRL-PAGEDOWN key sequence
 	 * (value is 1&lt;&lt;9)
 	 */
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
