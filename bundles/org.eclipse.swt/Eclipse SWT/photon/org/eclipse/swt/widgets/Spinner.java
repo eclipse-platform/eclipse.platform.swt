@@ -60,7 +60,7 @@ public class Spinner extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-Spinner (Composite parent, int style) {
+public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
