@@ -664,6 +664,7 @@ typedef enum {
 	gtk_1tree_1view_1column_1cell_1set_1cell_1data_FUNC,
 	gtk_1tree_1view_1column_1clear_FUNC,
 	gtk_1tree_1view_1column_1get_1cell_1renderers_FUNC,
+	gtk_1tree_1view_1column_1get_1fixed_1width_FUNC,
 	gtk_1tree_1view_1column_1get_1resizable_FUNC,
 	gtk_1tree_1view_1column_1get_1spacing_FUNC,
 	gtk_1tree_1view_1column_1get_1visible_FUNC,

@@ -261,8 +261,12 @@ public int getWidth () {
 	checkWidget();
 	if (!OS.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
-	} 
-	return OS.gtk_tree_view_column_get_width (handle);
+	}
+	int width = OS.gtk_tree_view_column_get_width (handle);
+	if (width == 0) {
+		width = OS.gtk_tree_view_column_get_fixed_width (handle);
+	}
+	return width;
 }
 
 int /*long*/ gtk_clicked (int /*long*/ widget) {
