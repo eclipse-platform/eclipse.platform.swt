@@ -19,7 +19,7 @@ public class StyleRange implements CloneableCompatibility {
 	public int length;		// style length.	
 	public Color foreground; 
 	public Color background;
-	public int fontStyle = SWT.NORMAL;	// may be SWT.NORMAL or SWT.BOLD
+	public int fontStyle = SWT.NORMAL;	// may be SWT.NORMAL, SWT.ITALIC or SWT.BOLD
 
 public StyleRange() {
 }
@@ -47,7 +47,7 @@ public StyleRange(int start, int length, Color foreground, Color background) {
  * @param length length of the style 
  * @param foreground foreground color of the style, null if none 
  * @param background background color of the style, null if none
- * @param fontStyle font style of the style, may be SWT.NORMAL or SWT.BOLD
+ * @param fontStyle font style of the style, may be SWT.NORMAL, SWT.ITALIC or SWT.BOLD
  */
 public StyleRange(int start, int length, Color foreground, Color background, int fontStyle) {
 	this.start = start;
