@@ -428,6 +428,7 @@ void createItem (TreeColumn column, int index) {
 		bits |= OS.TVS_NOHSCROLL;
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			bits &= ~OS.TVS_FULLROWSELECT;
+			bits |= OS.TVS_HASLINES;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
@@ -702,6 +703,7 @@ void destroyItem (TreeColumn column) {
 		bits &= ~OS.TVS_NOHSCROLL;
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			bits |= OS.TVS_FULLROWSELECT;
+			bits &= ~OS.TVS_HASLINES;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	    OS.InvalidateRect (handle, null, true);
