@@ -972,9 +972,12 @@ void flushExposes (int /*long*/ window, boolean all) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-	   if (shells [i].hasFocus) return shells [i];
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			Shell shell = (Shell) widget;
+			if (shell.hasFocus) return shell;
+		}
 	}
 	return null;
 }
