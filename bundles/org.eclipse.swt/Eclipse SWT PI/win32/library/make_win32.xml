@@ -21,6 +21,7 @@
 	<copy todir="${dll_destdir}">
 		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
 	</copy>
+	<eclipse.refreshLocal resource="org.eclipse.swt.win32" depth="infinite" />	
 </target>
 
 <!-- Build swt.dll for Pocket PC -->
@@ -33,6 +34,7 @@
 	<copy todir="${dll_ce_destdir}">
 		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
 	</copy>
+	<eclipse.refreshLocal resource="org.eclipse.swt.win32" depth="infinite" />
 </target>
 
 <!-- Build Windows and Pocket PC swt dlls -->
