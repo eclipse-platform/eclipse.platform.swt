@@ -548,6 +548,7 @@ public void setGrayed (boolean grayed) {
  * </ul>
  */
 public void setExpanded (boolean expanded) {
+	System.out.println("set expanded: " + expanded);
 	checkWidget();
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	if (expanded) {
