@@ -264,7 +264,7 @@ void createItem (TreeItem item, int node, int index) {
 		items = newItems;
 	}
 	int sibling = index == -1 ? 0 : findSibling (node, index);
-	if (timerID == 0) {
+	if (OS.GTK_WIDGET_MAPPED (handle) && timerID == 0) {
 		OS.gtk_clist_freeze (handle);
 		Display display = getDisplay ();
 		timerID = OS.gtk_timeout_add (0, display.windowTimerProc, handle);
