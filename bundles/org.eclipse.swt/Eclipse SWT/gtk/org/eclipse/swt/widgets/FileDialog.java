@@ -107,6 +107,10 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
+	/*
+	 * TEMPORARY CODE.
+	 * Gtk does support multi-select in native File Dialogs.
+	 */
 	return new String[] {fileName};
 }
 /**
