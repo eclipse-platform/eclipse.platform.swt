@@ -648,6 +648,27 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	return true;
 }
 
+void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
+	if (embeddedHandle == 0) return;
+	int [] processID = new int [1];
+	int threadId = OS.GetWindowThreadProcessId (embeddedHandle, processID);
+	if (threadId != OS.GetCurrentThreadId ()) {
+		if (processID [0] == OS.GetCurrentProcessId ()) {
+			if (display.msgHook == 0) {
+				if (!OS.IsWinCE) {
+					display.getMsgCallback = new Callback (display, "getMsgProc", 3);
+					display.getMsgProc = display.getMsgCallback.getAddress ();
+					if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+					display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
+					OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
+				}
+			}
+		}
+		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_ASYNCWINDOWPOS;
+		OS.SetWindowPos (embeddedHandle, 0, 0, 0, width, height, flags);
+	}
+}
+
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
@@ -1190,26 +1211,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 
 	/* Resize the embedded window */
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
-		if (hwndChild != 0) {
-			int [] processID = new int [1];
-			int threadId = OS.GetWindowThreadProcessId (hwndChild, processID);
-			if (threadId != OS.GetCurrentThreadId ()) {
-				if (processID [0] == OS.GetCurrentProcessId ()) {
-					if (display.msgHook == 0) {
-						if (!OS.IsWinCE) {
-							display.getMsgCallback = new Callback (display, "getMsgProc", 3);
-							display.getMsgProc = display.getMsgCallback.getAddress ();
-							if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-							display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
-							OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
-						}
-					}
-				}
-				int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_ASYNCWINDOWPOS;
-				OS.SetWindowPos (hwndChild, 0, 0, 0, lParam & 0xFFFF, lParam >> 16, flags);
-			}
-		}
+		resizeEmbeddedHandle (OS.GetWindow (handle, OS.GW_CHILD), lParam & 0xFFFF, lParam >> 16);
 	}
 	return result;
 }
