@@ -1339,11 +1339,19 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
+	if (hooks (SWT.DragDetect)) {
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		display.dragMouseStart = pt;
+		display.dragging = false;
+	}
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
+	display.dragDetect (this);
 	return OS.eventNotHandledErr;
 }
 

@@ -147,6 +147,8 @@ public class Display extends Device {
 	/* Mouse Enter/Exit/Hover */
 	Control currentControl;
 	int mouseHoverID;
+	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
+	boolean dragging = false;
 	
 	/* Menus */
 	Menu menuBar;
@@ -725,6 +727,16 @@ public void disposeExec (Runnable runnable) {
 	System.arraycopy (disposeList, 0, newDisposeList, 0, disposeList.length);
 	newDisposeList [disposeList.length] = runnable;
 	disposeList = newDisposeList;
+}
+
+void dragDetect (Control control) {
+	if (!dragging && control.hooks (SWT.DragDetect)) {
+		if (OS.WaitMouseMoved (dragMouseStart)) {
+			dragging = true;
+			//control.postEvent (SWT.DragDetect);
+			control.sendEvent (SWT.DragDetect);
+		}
+	}
 }
 
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -2002,7 +2014,7 @@ boolean runEnterExit () {
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		boolean [] cursorWasSet = new boolean [1];
 		OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
-		if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+		if (!OS.StillDown () && !cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 	}
 	return eventSent;
 }
@@ -2131,7 +2143,11 @@ void runGrabs () {
 				}
 //				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
 //				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
-				case OS.kMouseTrackingMouseDragged: 			type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseDragged: {
+					type = SWT.MouseMove;
+					dragDetect (grabControl);
+					break;
+				}
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:			break;
 				case OS.kMouseTrackingTimedOut: 				break;
