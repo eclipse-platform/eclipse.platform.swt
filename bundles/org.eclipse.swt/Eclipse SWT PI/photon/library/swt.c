@@ -3250,7 +3250,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhPo
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n")
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n")
 }
 #endif
@@ -3276,7 +3275,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
 	NATIVE_ENTER(env, that, "memmove__I_3II\n")
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memmove__I_3II\n")
 }
 #endif
@@ -3289,7 +3288,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhTi
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I\n")
 	if (arg1) lparg1 = getPhTile_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhTile_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I\n")
 }
 #endif
@@ -3300,7 +3298,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhTil
 {
 	PhTile_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II\n")
-	if (arg0) lparg0 = getPhTile_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhTile_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II\n")
@@ -3313,7 +3311,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtCal
 {
 	PtCallbackInfo_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II\n")
-	if (arg0) lparg0 = getPtCallbackInfo_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPtCallbackInfo_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II\n")
@@ -3326,7 +3324,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhWin
 {
 	PhWindowEvent_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II\n")
-	if (arg0) lparg0 = getPhWindowEvent_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhWindowEvent_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II\n")
@@ -3354,7 +3352,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 	NATIVE_ENTER(env, that, "memmove__I_3BI\n")
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memmove__I_3BI\n")
 }
 #endif
@@ -3367,7 +3365,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhRe
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I\n")
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I\n")
 }
 #endif
@@ -3378,7 +3375,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhRec
 {
 	PhRect_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II\n")
-	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II\n")
@@ -3416,7 +3413,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhIm
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I\n")
 	if (arg1) lparg1 = getPhImage_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhImage_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I\n")
 }
 #endif
@@ -3427,7 +3423,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhIma
 {
 	PhImage_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II\n")
-	if (arg0) lparg0 = getPhImage_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhImage_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II\n")
@@ -3440,7 +3436,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_FontD
 {
 	FontDetails _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II\n")
-	if (arg0) lparg0 = getFontDetailsFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setFontDetailsFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II\n")
@@ -3455,7 +3451,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhPo
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I\n")
 	if (arg1) lparg1 = getPhPointerEvent_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhPointerEvent_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I\n")
 }
 #endif
@@ -3466,7 +3461,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhPoi
 {
 	PhPointerEvent_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II\n")
-	if (arg0) lparg0 = getPhPointerEvent_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhPointerEvent_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II\n")
@@ -3479,7 +3474,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhEve
 {
 	PhEvent_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II\n")
-	if (arg0) lparg0 = getPhEvent_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhEvent_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II\n")
@@ -3494,7 +3489,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhEv
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n")
 	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n")
 }
 #endif
@@ -3505,7 +3499,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhKey
 {
 	PhKeyEvent_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II\n")
-	if (arg0) lparg0 = getPhKeyEvent_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhKeyEvent_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II\n")
@@ -3518,7 +3512,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtScr
 {
 	PtScrollbarCallback_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II\n")
-	if (arg0) lparg0 = getPtScrollbarCallback_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPtScrollbarCallback_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II\n")
@@ -3533,7 +3527,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhAr
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I\n")
 	if (arg1) lparg1 = getPhArea_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhArea_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I\n")
 }
 #endif
@@ -3544,7 +3537,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PgAlp
 {
 	PgAlpha_t _arg0={0}, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II\n")
-	if (arg0) lparg0 = getPgAlpha_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPgAlpha_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II\n")
@@ -3559,7 +3552,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PgAl
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I\n")
 	if (arg1) lparg1 = getPgAlpha_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPgAlpha_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I\n")
 }
 #endif
@@ -3570,7 +3562,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtTex
 {
 	PtTextCallback_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n")
-	if (arg0) lparg0 = getPtTextCallback_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPtTextCallback_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n")
@@ -3585,7 +3577,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtTe
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I\n")
 	if (arg1) lparg1 = getPtTextCallback_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPtTextCallback_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I\n")
 }
 #endif
@@ -3596,7 +3587,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PgMap
 {
 	PgMap_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II\n")
-	if (arg0) lparg0 = getPgMap_tFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPgMap_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II\n")
@@ -3611,7 +3602,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhCu
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n")
 	if (arg1) lparg1 = getPhCursorDef_tFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, arg2);
-	if (arg1) setPhCursorDef_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n")
 }
 #endif
@@ -3622,7 +3612,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhCli
 {
 	PhClipHeader _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n")
-	if (arg0) lparg0 = getPhClipHeaderFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPhClipHeaderFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n")
