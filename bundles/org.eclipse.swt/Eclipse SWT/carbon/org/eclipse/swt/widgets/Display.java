@@ -231,6 +231,7 @@ public class Display extends Device {
 	private String fToolTipText;
 	private int fLastHoverHandle;
 	private boolean fInContextMenu;	// true while tracking context menu
+	private int fCurrentCursor;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
@@ -437,13 +438,6 @@ protected void destroy () {
 	destroyDisplay ();
 }
 void destroyDisplay () {
-	/*
-	* Destroy AppContext (this destroys the display)
-	*/
-	/* AW
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	OS.XtDestroyApplicationContext (xtContext);
-	*/
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -713,8 +707,7 @@ public Control getFocusControl () {
  * </ul>
  */
 public int getIconDepth () {
-	System.out.println("getIconDepth: nyi");
-	return 32;
+	return 8;
 }
 /**
  * Returns an array containing all shells which have not been
@@ -1052,9 +1045,6 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int gc, GCData data) {
-	/* AW
-	OS.XFreeGC(xDisplay, gc);
-	*/
 }
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
@@ -2113,10 +2103,7 @@ static String convertToLf(String text) {
 					if (c.fCursor != null && c.fCursor.handle != -1)
 						cursor= c.fCursor.handle;
 				}
-				if (cursor == 0)
-					OS.InitCursor();
-				else
-					OS.SetCursor(cursor);
+				setCursor(cursor);
 				
 				windowProc(fCurrentControl, SWT.MouseMove, me);
 				
@@ -2322,5 +2309,15 @@ static String convertToLf(String text) {
 	
 	void menuIsVisible(boolean menuIsVisible) {
 		fMenuIsVisible= menuIsVisible;
+	}
+	
+	void setCursor(int cursor) {
+		if (fCurrentCursor != cursor) {
+			fCurrentCursor= cursor;
+			if (fCurrentCursor == 0)
+				OS.InitCursor();
+			else
+				OS.SetCursor(fCurrentCursor);
+		}
 	}
 }

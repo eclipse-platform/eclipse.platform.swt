@@ -1945,17 +1945,6 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-    /* AW
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
-	int window = OS.XtWindow (handle);
-	if (window == 0) {
-		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
-		window = OS.XtWindow (handle);
-		if (window == 0) return;
-	}
-	*/
-	System.out.println("Control.setCursor: " + cursor);
 	if (cursor == null) {
 		/*
 		OS.XUndefineCursor (display, window);

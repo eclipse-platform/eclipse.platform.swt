@@ -228,7 +228,7 @@ int processMouseDown (Object callData) {
 int processMouseMove (Object callData) {
 	super.processMouseMove (callData);
 	
-	OS.SetCursor((style & SWT.VERTICAL) != 0 ? H_ARROW : V_ARROW);
+	getDisplay().setCursor((style & SWT.VERTICAL) != 0 ? H_ARROW : V_ARROW);
 
 	MacEvent mEvent= (MacEvent) callData;
 

@@ -47,104 +47,15 @@ public final class Cursor {
 	Device device;
 	
 	// AW
-	private static int CURSOR1;
-	private static int CURSOR2;
+	private boolean fDispose;
+	
 	private static int IBEAM;
 	private static int CROSS;
-	private static int PLUS;
 	private static int WATCH;
+	
 	private static int NO_CURSOR;
 	// AW
 		
-	static {
-		int handle= OS.GetCursor(OS.iBeamCursor);
-		IBEAM= OS.DerefHandle(handle);
-		handle= OS.GetCursor(OS.crossCursor);
-		CROSS= OS.DerefHandle(handle);
-		handle= OS.GetCursor(OS.plusCursor);
-		PLUS= OS.DerefHandle(handle);
-		handle= OS.GetCursor(OS.watchCursor);
-		WATCH= OS.DerefHandle(handle);
-		
-		CURSOR1= OS.NewCursor((short) 0, (short)0,
-			new short[] {
-				(short) 0x0000,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x7FFE,
-			 	(short) 0x0000
-			},
-			new short[] {
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF
-			}
-		);
-		CURSOR2= OS.NewCursor((short) 0, (short)0,
-			new short[] {
-				(short) 0xFFFF,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0x8001,
-			 	(short) 0xFFFF
-			},
-			new short[] {
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF,
-				(short) 0xFFFF
-			}
-		);
-		NO_CURSOR= OS.NewCursor((short) 0, (short)0, new short[16], new short[16]);
-	}
-
 Cursor () {
 }
 /**	 
@@ -193,14 +104,24 @@ public Cursor (Device device, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	
-	int shape = -1;		// the default cursor
+	handle = -1;		// the default cursor
 	
 	switch (style) {
-	case SWT.CURSOR_ARROW: 			break;
-	case SWT.CURSOR_WAIT: 				shape = WATCH; break;
-	case SWT.CURSOR_HAND: 				break;
-	case SWT.CURSOR_CROSS: 			shape = CROSS; break;
-	case SWT.CURSOR_APPSTARTING: 		shape = WATCH; break;
+	case SWT.CURSOR_ARROW:
+		break;
+	case SWT.CURSOR_WAIT:
+	case SWT.CURSOR_APPSTARTING:
+		if (WATCH == 0)
+			WATCH= OS.DerefHandle(OS.GetCursor(OS.watchCursor));
+		handle = WATCH;
+		break;
+	case SWT.CURSOR_HAND:
+		break;
+	case SWT.CURSOR_CROSS:
+		if (CROSS == 0)
+			CROSS= OS.DerefHandle(OS.GetCursor(OS.crossCursor));
+		handle = CROSS;
+		break;
 	case SWT.CURSOR_HELP: 				break;
 	case SWT.CURSOR_SIZEALL: 			break;
 	case SWT.CURSOR_SIZENESW: 			break;
@@ -216,12 +137,21 @@ public Cursor (Device device, int style) {
 	case SWT.CURSOR_SIZESW: 			break;
 	case SWT.CURSOR_SIZENW: 			break;
 	case SWT.CURSOR_UPARROW: 			break;
-	case SWT.CURSOR_IBEAM: 			shape = IBEAM; break;
-	case SWT.CURSOR_NO: 				shape = NO_CURSOR; break;
+	case SWT.CURSOR_IBEAM:
+		if (IBEAM == 0)
+			IBEAM= OS.DerefHandle(OS.GetCursor(OS.iBeamCursor));
+		handle = IBEAM;
+		break;
+	case SWT.CURSOR_NO:
+		if (NO_CURSOR == 0) {
+			short[] data= new short[16];
+			NO_CURSOR= OS.NewCursor((short) 0, (short)0, data, data);
+		}
+		handle = NO_CURSOR;
+		break;
 	default:
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	handle = shape;
 }
 /**	 
  * Constructs a new cursor given a device, image and mask
@@ -278,65 +208,38 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	/* Swap the bits if necessary */
-//	byte[] sourceData = new byte[source.data.length];
-//	byte[] maskData = new byte[mask.data.length];
-//	/* Swap the bits in each byte */
-//	byte[] data = source.data;
-//	for (int i = 0; i < data.length; i++) {
-//		byte s = data[i];
-//		sourceData[i] = (byte)(((s & 0x80) >> 7) |
-//			((s & 0x40) >> 5) |
-//			((s & 0x20) >> 3) |
-//			((s & 0x10) >> 1) |
-//			((s & 0x08) << 1) |
-//			((s & 0x04) << 3) |
-//			((s & 0x02) << 5) |
-//			((s & 0x01) << 7));
-//		sourceData[i] = (byte) ~sourceData[i];
-//	}
-//	data = mask.data;
-//	for (int i = 0; i < data.length; i++) {
-//		byte s = data[i];
-//		maskData[i] = (byte)(((s & 0x80) >> 7) |
-//			((s & 0x40) >> 5) |
-//			((s & 0x20) >> 3) |
-//			((s & 0x10) >> 1) |
-//			((s & 0x08) << 1) |
-//			((s & 0x04) << 3) |
-//			((s & 0x02) << 5) |
-//			((s & 0x01) << 7));
-//		maskData[i] = (byte) ~maskData[i];
-//	}
-//	int xDisplay = device.xDisplay;
-//	int drawable = OS.XDefaultRootWindow(xDisplay);
-//	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, source.width, source.height);
-//	int maskPixmap = OS.XCreateBitmapFromData(xDisplay, drawable, maskData, source.width, source.height);
-//	/* Get the colors */
-//	int screenNum = OS.XDefaultScreen(xDisplay);
-//	XColor foreground = new XColor();
-//	foreground.pixel = OS.XBlackPixel(xDisplay, screenNum);
-//	foreground.red = foreground.green = foreground.blue = 0;
-//	XColor background = new XColor();
-//	background.pixel = OS.XWhitePixel(xDisplay, screenNum);
-//	background.red = background.green = background.blue = (short)0xFFFF;
-//	/* Create the cursor */
-//	handle = OS.XCreatePixmapCursor(xDisplay, maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
-//	/* Dispose the pixmaps */
-//	OS.XFreePixmap(xDisplay, sourcePixmap);
-//	OS.XFreePixmap(xDisplay, maskPixmap);
-
-	handle= CURSOR1;
+	
+	int w= Math.min(16, source.width);
+	int h= Math.min(16, source.height);
+	
+	short[] data= new short[16];
+	short[] msk= new short[16];
+	
+	for (int y= 0; y < h; y++) {
+		short d= 0;
+		short m= 0;
+		for (int x= 0; x < w; x++) {
+			int bit= 1 >> x;
+			if (source.getPixel(x, y) != 0)
+				d |= bit;
+			if (mask.getPixel(x, y) != 0)
+				m |= bit;
+		}
+		data[y]= d;
+		msk[y]= m;
+	}
+	
+	OS.NewCursor((short) hotspotX, (short)hotspotY, data, msk);
 	
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
-public static Cursor carbon_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
-	cursor.device = device;
-	cursor.handle = handle;
-	return cursor;
-}
+//public static Cursor carbon_new(Device device, int handle) {
+//	if (device == null) device = Device.getDevice();
+//	Cursor cursor = new Cursor();
+//	cursor.device = device;
+//	cursor.handle = handle;
+//	return cursor;
+//}
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
@@ -345,7 +248,8 @@ public static Cursor carbon_new(Device device, int handle) {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
-	//OS.XFreeCursor(device.xDisplay, handle);
+	if (fDispose)
+		OS.DisposePtr(handle);
 	device = null;
 	handle = 0;
 }
