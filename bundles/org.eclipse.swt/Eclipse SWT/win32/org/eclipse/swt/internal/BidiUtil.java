@@ -401,7 +401,7 @@ static int[] getKeyboardLanguageList() {
 }
 /**
  * Return whether or not the platform supports a bidi language.  Determine this
- * by looking at the languages that are installed for the keyboard.  
+ * by looking at the languages that are installed.  
  * <p>
  *
  * @return true if bidi is supported, false otherwise. Always 
@@ -412,14 +412,16 @@ public static boolean isBidiPlatform() {
 	if (isBidiPlatform != -1) return isBidiPlatform == 1; // already set
 
 	isBidiPlatform = 0;
-	Callback callback;
+	Callback callback = null;
 	try {
 		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5);
 		int lpEnumSystemLanguageGroupsProc = callback.getAddress ();	
 		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
 		callback.dispose ();
-	} catch (ClassNotFoundException e) {}
+	} catch (ClassNotFoundException e) {
+		if (callback != null) callback.dispose();
+	}
 	if (isBidiPlatform == 1) return true;
 	// need to look at system code page for NT & 98 platforms since EnumSystemLanguageGroups is
 	// not supported for these platforms
