@@ -755,7 +755,7 @@ public void setImage (int index, Image image) {
 	lvItem.iSubItem = index;
 	lvItem.iImage = parent.imageIndex (image);
 	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	if (index == 0) parent.setScrollWidth ();
+	if (index == 0) parent.setScrollWidth (false);
 	parent.fixCheckboxImageList ();
 }
 
@@ -851,7 +851,7 @@ public void setText (int index, String string) {
 	lvItem.pszText = pszText;
 	lvItem.iSubItem = index;
 	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	if (index == 0) parent.setScrollWidth ();
+	if (index == 0) parent.setScrollWidth (false);
 	OS.HeapFree (hHeap, 0, pszText);
 }
 

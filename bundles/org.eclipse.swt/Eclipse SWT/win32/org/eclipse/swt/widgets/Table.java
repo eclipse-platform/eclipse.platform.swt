@@ -43,9 +43,10 @@ import org.eclipse.swt.events.*;
 
 public class Table extends Composite {
 	TableItem [] items;
-	int lastIndexOf, lastWidth;
 	TableColumn [] columns;
 	ImageList imageList;
+	int lastIndexOf, lastWidth;
+	boolean fixScrollWidth;
 	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown, customDraw;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -350,6 +351,8 @@ void createItem (TableColumn column, int index) {
 			lvColumn.fmt = OS.LVCFMT_LEFT;
 			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+		} else {
+			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		}
 	} else {
 		int fmt = OS.LVCFMT_LEFT;
@@ -367,9 +370,15 @@ void createItem (TableItem item, int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
-		/* Grow the array faster when redraw is off */
-		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
-		TableItem [] newItems = new TableItem [newLength];
+		/*
+		* Grow the array faster when redraw is off or the
+		* table is not visible.  When the table is painted,
+		* the items array is resized to be smaller to reduce
+		* memory usage.
+		*/
+		boolean small = drawCount == 0 && OS.IsWindowVisible (handle);
+		int length = small ? items.length + 4 : items.length * 3 / 2;
+		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -1739,7 +1748,7 @@ void setFocusIndex (int index) {
 public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
-	setScrollWidth ();
+	setScrollWidth (true);
 	/*
 	* Bug in Windows.  Setting the font will cause the 
 	* table area to be redrawn but not the column headers.
@@ -1869,15 +1878,8 @@ public void setRedraw (boolean redraw) {
 			*/
 //			subclass ();
 			
-			/* Resize the item array to match the item count */
-			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-			if (items.length > 4 && items.length - count > 3) {
-				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
-				System.arraycopy (items, 0, newItems, 0, count);
-				items = newItems;
-			}
-			
-			setScrollWidth ();
+			/* Set the width of the horizontal scroll bar */
+			setScrollWidth (true);
 
 			/*
 			* Bug in Windows.  For some reason, when WM_SETREDRAW is used 
@@ -1979,8 +1981,14 @@ void setRowHeight () {
 	OS.ImageList_Destroy (hImageList);
 }
 
-void setScrollWidth () {
-	if (drawCount != 0) return;
+void setScrollWidth (boolean force) {
+	if (!force) {
+		if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
+			fixScrollWidth = true;
+			return;
+		}
+	}
+	fixScrollWidth = false;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count == 1 && columns [0] == null) {
@@ -2399,6 +2407,18 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 	int mask = OS.LVS_EX_ONECLICKACTIVATE | OS.LVS_EX_TRACKSELECT | OS.LVS_EX_TWOCLICKACTIVATE;
 	if ((bits & mask) != 0) return result;
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_PAINT (int wParam, int lParam) {
+	/* Resize the item array to match the item count */
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (items.length > 4 && items.length - count > 3) {
+		TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+		System.arraycopy (items, 0, newItems, 0, count);
+		items = newItems;
+	}
+	if (fixScrollWidth) setScrollWidth (true);
+	return super.WM_PAINT (wParam, lParam);
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {
