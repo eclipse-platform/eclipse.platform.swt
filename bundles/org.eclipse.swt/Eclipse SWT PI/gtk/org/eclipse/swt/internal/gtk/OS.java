@@ -260,6 +260,7 @@ public class OS {
 	public static final byte[] value_changed = signal("value_changed");
 	
 	/** Properties */
+	public static final byte[] xalign = signal("xalign");
 	public static final byte[] button_relief = signal("button_relief");
 	public static final byte[] mode = signal("mode");
 	
@@ -332,6 +333,7 @@ public static final synchronized native int g_malloc(int size);
 public static final synchronized native int g_object_get_qdata(int object, int quark);
 public static final synchronized native int g_object_ref(int object);
 public static final synchronized native void g_object_set(int object, byte[] first_property_name, int data);
+public static final synchronized native void g_object_set(int object, byte[] first_property_name, float data);
 public static final synchronized native void g_object_set_qdata(int object, int quark, int data);
 public static final synchronized native void g_object_unref(int object);
 public static final synchronized native int g_quark_from_string(byte[] string);
@@ -730,6 +732,7 @@ public static final synchronized native int gtk_tree_view_column_get_spacing(int
 public static final synchronized native int gtk_tree_view_column_get_width(int column);
 public static final synchronized native int gtk_tree_view_column_new();
 public static final synchronized native void gtk_tree_view_column_pack_start(int tree_column, int cell_renderer, boolean expand);
+public static final synchronized native void gtk_tree_view_column_pack_end(int tree_column, int cell_renderer, boolean expand);
 public static final synchronized native void gtk_tree_view_column_set_alignment(int tree_column, float xalign);
 public static final synchronized native void gtk_tree_view_column_set_clickable(int column, boolean clickable);
 public static final synchronized native void gtk_tree_view_column_set_fixed_width(int column, int fixed_width);

@@ -613,16 +613,30 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1ref
 }
 #endif
 
-#ifndef NO_g_1object_1set
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set
+#ifndef NO_g_1object_1set__I_3BI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set__I_3BI
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {
 	jbyte *lparg1=NULL;
 
-	DEBUG_CALL("g_1object_1set\n")
+	DEBUG_CALL("g_1object_1set__I_3BI\n")
 
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	g_object_set((gpointer)arg0, (gchar *)lparg1, arg2, NULL);
+	g_object_set((gpointer)arg0, lparg1, arg2, NULL);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
+#ifndef NO_g_1object_1set__I_3BF
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set__I_3BF
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jfloat arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("g_1object_1set__I_3BF\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set((gpointer)arg0, lparg1, arg2, NULL);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 #endif
@@ -5219,6 +5233,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 	DEBUG_CALL("gtk_1tree_1view_1column_1new\n")
 
 	return (jint)gtk_tree_view_column_new();
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1pack_1end
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1pack_1end
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1pack_1end\n")
+
+	gtk_tree_view_column_pack_end((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gboolean)arg2);
 }
 #endif
 
