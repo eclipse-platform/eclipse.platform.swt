@@ -21,6 +21,9 @@ import org.eclipse.swt.graphics.*;
 
 public class Display extends Device {
 
+	//TEMPORARY
+	int textHighlightThickness = 4;
+	
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback actionCallback, commandCallback, controlCallback;
