@@ -1467,7 +1467,7 @@ public class SWT {
 	 * 
 	 * @since 3.0
 	 * 
-	 * @see SWT.Help
+	 * @see SWT#Help
 	 */
 	public static final int HELP = KEYCODE_BIT + 81;
 	

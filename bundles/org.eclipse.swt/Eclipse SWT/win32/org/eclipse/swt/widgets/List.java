@@ -1456,8 +1456,8 @@ public void setSelection (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see Table#deselectAll()
- * @see Table#select(int,int)
+ * @see List#deselectAll()
+ * @see List#select(int,int)
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
