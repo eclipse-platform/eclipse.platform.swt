@@ -764,9 +764,22 @@ public boolean setFocus () {
  */
 public void setImage (Image image) {
 	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	/*
+	* Feature in WinCE.  WM_SETICON and WM_GETICON set the icon
+	* for the window class, not the window instance.  This means
+	* that it is possible to set an icon into a window and then
+	* later free the icon, thus freeing the icon for every window.
+	* The fix is to avoid the API.
+	* 
+	* On WinCE PPC, icons in windows are not displayed anyways.
+	*/
+	if (OS.IsWinCE) {
+		this.image = image;
+		return;
+	}
 	int hIcon = 0;
 	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
 			case SWT.BITMAP:
 				int hOld = OS.SendMessage (handle, OS.WM_GETICON, OS.ICON_BIG, 0);
