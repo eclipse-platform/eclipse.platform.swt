@@ -704,6 +704,7 @@ void doPageUp(int keyMask) {
 void doSpace(int keyMask) {
 	SelectableItem item = getLastFocus();
 	if (item == null) return;
+	if (item.isCheckable() == true) doCheckItem(item);
 	int itemIndex = getVisibleIndex(item);
 
 	if (keyMask == SWT.NULL && item.isSelected() == false) {	// do simple space select in SINGLE and MULTI mode
