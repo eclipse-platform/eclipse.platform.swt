@@ -72,51 +72,6 @@ public class XPCOM {
 	public static final int NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT = NS_ERROR_BASE + 0x101;
 	public static final int NS_ERROR_FACTORY_EXISTS = NS_ERROR_BASE + 0x100;
 
-	static final String NS_ERROR_NOT_INITIALIZED_MSG = "Not initialized."; //$NON-NLS-1$
-	static final String NS_ERROR_ALREADY_INITIALIZED_MSG = "Already initialized."; //$NON-NLS-1$
-	static final String NS_ERROR_NOT_IMPLEMENTED_MSG = "Not implemented."; //$NON-NLS-1$
-	static final String NS_NOINTERFACE_MSG = "No interface."; //$NON-NLS-1$
-	static final String NS_ERROR_NO_INTERFACE_MSG = NS_NOINTERFACE_MSG;
-	static final String NS_ERROR_INVALID_POINTER_MSG = "Invalid pointer."; //$NON-NLS-1$
-	static final String NS_ERROR_ABORT_MSG = "Abort."; //$NON-NLS-1$
-	static final String NS_ERROR_FAILURE_MSG = "Failure."; //$NON-NLS-1$
-	static final String NS_ERROR_UNEXPECTED_MSG = "Unexpected."; //$NON-NLS-1$
-	static final String NS_ERROR_OUT_OF_MEMORY_MSG = "Out of memory."; //$NON-NLS-1$
-	static final String NS_ERROR_ILLEGAL_VALUE_MSG = "Illegal value."; //$NON-NLS-1$
-	static final String NS_ERROR_NO_AGGREGATION_MSG = "No aggregation."; //$NON-NLS-1$
-	static final String NS_ERROR_NOT_AVAILABLE_MSG = "Not available."; //$NON-NLS-1$
-	static final String NS_ERROR_FACTORY_NOT_REGISTERED_MSG = "Factory not registered."; //$NON-NLS-1$
-	static final String NS_ERROR_FACTORY_REGISTER_AGAIN_MSG = "Factory already registered."; //$NON-NLS-1$
-	static final String NS_ERROR_FACTORY_NOT_LOADED_MSG = "Factory not loaded."; //$NON-NLS-1$
-	static final String NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT_MSG = "Factory no signature support."; //$NON-NLS-1$
-	static final String NS_ERROR_FACTORY_EXISTS_MSG = "Factory already exists."; //$NON-NLS-1$
-	
-	
-public static String errorMsg (int code) {
-	String msg = "XPCOM error ";
-	switch (code) {
-		case NS_ERROR_NOT_INITIALIZED : msg += NS_ERROR_NOT_INITIALIZED_MSG; break;
-		case NS_ERROR_ALREADY_INITIALIZED : msg += NS_ERROR_ALREADY_INITIALIZED_MSG; break;
-		case NS_ERROR_NOT_IMPLEMENTED : msg += NS_ERROR_NOT_IMPLEMENTED_MSG; break;
-		case NS_ERROR_NO_INTERFACE : msg += NS_ERROR_NO_INTERFACE_MSG; break;
-		case NS_ERROR_INVALID_POINTER : msg += NS_ERROR_INVALID_POINTER_MSG; break;
-		case NS_ERROR_ABORT : msg += NS_ERROR_ABORT_MSG; break;
-		case NS_ERROR_FAILURE : msg += NS_ERROR_FAILURE_MSG; break;
-		case NS_ERROR_UNEXPECTED : msg += NS_ERROR_UNEXPECTED_MSG; break;
-		case NS_ERROR_OUT_OF_MEMORY : msg += NS_ERROR_OUT_OF_MEMORY_MSG; break;
-		case NS_ERROR_ILLEGAL_VALUE : msg += NS_ERROR_ILLEGAL_VALUE_MSG; break;
-		case NS_ERROR_NO_AGGREGATION : msg += NS_ERROR_NO_AGGREGATION_MSG; break;
-		case NS_ERROR_NOT_AVAILABLE : msg += NS_ERROR_NOT_AVAILABLE_MSG; break;
-		case NS_ERROR_FACTORY_NOT_REGISTERED : msg += NS_ERROR_FACTORY_NOT_REGISTERED_MSG; break;
-		case NS_ERROR_FACTORY_REGISTER_AGAIN : msg += NS_ERROR_FACTORY_REGISTER_AGAIN_MSG; break;
-		case NS_ERROR_FACTORY_NOT_LOADED : msg += NS_ERROR_FACTORY_NOT_LOADED_MSG; break;
-		case NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT : msg += NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT_MSG; break;
-		case NS_ERROR_FACTORY_EXISTS : msg += NS_ERROR_FACTORY_EXISTS_MSG; break;
-		default: msg += "("+code+")"; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	return msg;
-}
-
 public static final native void memmove(nsID dest, int src, int nbytes);
 public static final native void memmove(int dest, nsID src, int nbytes);
 public static final native void memmove(int dest, int[] src, int nbytes);

@@ -117,8 +117,8 @@ public Browser(Composite parent, int style) {
 
 		int[] retVal = new int[1];
 		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		if (retVal[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NULL_POINTER));
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
 			
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
@@ -131,33 +131,33 @@ public Browser(Composite parent, int style) {
 		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		nsIComponentManager componentManager = new nsIComponentManager(result[0]);
 		result[0] = 0;
 		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));		
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
 		componentManager.Release();
 		
 		AppShell = new nsIAppShell(result[0]); 
 		rc = AppShell.Create(null, null);
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+		if (rc != XPCOM.NS_OK) error(rc);
 	}
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 	
 	nsIComponentManager componentManager = new nsIComponentManager(result[0]);
 	result[0] = 0;
 	nsID NS_IWEBBROWSER_CID = new nsID("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 	rc = componentManager.CreateInstance(NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));	
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
 	componentManager.Release();
 	
 	webBrowser = new nsIWebBrowser(result[0]); 
@@ -166,11 +166,11 @@ public Browser(Composite parent, int style) {
 	AddRef();
 
 	rc = webBrowser.SetContainerWindow(webBrowserChrome.getAddress());
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 			
 	rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
 	Rectangle rect = getClientArea();
@@ -179,18 +179,18 @@ public Browser(Composite parent, int style) {
 		rect.height = 1;
 	}
 	rc = baseWindow.InitWindow(handle, 0, 0, 0, rect.width, rect.height);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
+	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
+	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.SetVisibility(true);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
+	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	baseWindow.Release();
 
 	rc = webBrowser.AddWebBrowserListener(weakReference.getAddress(), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 
 	rc = webBrowser.SetParentURIContentListener(uriContentListener.getAddress());
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
@@ -300,8 +300,8 @@ public boolean back() {
 	checkWidget();
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
 	rc = webNavigation.GoBack();	
@@ -479,8 +479,8 @@ public boolean forward() {
 	checkWidget();
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
 	rc = webNavigation.GoForward();
@@ -507,27 +507,27 @@ public String getUrl() {
 	checkWidget();           
 	int[] aContentDOMWindow = new int[1];
 	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (aContentDOMWindow[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 			
 	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);           
 	int[] result = new int[1];
 	rc = domWindow.QueryInterface(nsIDOMWindowInternal.NS_IDOMWINDOWINTERNAL_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	domWindow.Release();
          
 	nsIDOMWindowInternal domWindowInternal = new nsIDOMWindowInternal(result[0]);
 	int[] aLocation = new int[1];  
 	rc = domWindowInternal.GetLocation(aLocation);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (aLocation[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aLocation[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	domWindowInternal.Release();
 
 	nsIDOMLocation domLocation = new nsIDOMLocation(aLocation[0]); 
     nsString _retval = new nsString();
 	rc = domLocation.ToString(_retval.getAddress());
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	domLocation.Release();          
 	String url = _retval.toString();
 	_retval.dispose();
@@ -535,15 +535,19 @@ public String getUrl() {
 	return url;
 }
 
+static String error(int code) {
+	throw new SWTError("XPCOM error "+code); //$NON-NLS-1$
+}
+
 void onDispose() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.Destroy();
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
 	
 	Release();
@@ -560,7 +564,7 @@ void onDispose() {
 //		if (AppShell != null) {
 //			// Shutdown the appshell service.
 //			rc = AppShell.Spindown();
-//			if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+//			if (rc != XPCOM.NS_OK) error(rc);
 //			AppShell.Release();
 //			AppShell = null;
 //		}
@@ -573,24 +577,24 @@ void onDispose() {
 void onFocusGained(Event e) {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
 	rc = webBrowserFocus.Activate();
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	webBrowserFocus.Release();
 }
 	
 void onFocusLost(Event e) {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
 	rc = webBrowserFocus.Deactivate();
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	webBrowserFocus.Release();
 }
 
@@ -598,12 +602,12 @@ void onResize() {
 	Rectangle rect = getClientArea();
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.SetPositionAndSize(rect.x, rect.y, rect.width, rect.height, true);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
 }
 
@@ -621,8 +625,8 @@ public void refresh() {
 	checkWidget();
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
 	rc = webNavigation.Reload(nsIWebNavigation.LOAD_FLAGS_NONE);
@@ -631,7 +635,7 @@ public void refresh() {
 	* when it is called immediately after a request to load a new document using
 	* LoadURI.  The workaround is to ignore this error code. 
 	*/
-	if (rc != XPCOM.NS_OK && rc != XPCOM.NS_ERROR_INVALID_POINTER) throw new SWTError(XPCOM.errorMsg(rc));	
+	if (rc != XPCOM.NS_OK && rc != XPCOM.NS_ERROR_INVALID_POINTER) error(rc);	
 	webNavigation.Release();
 }
 
@@ -762,15 +766,15 @@ public boolean setUrl(String url) {
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
     char[] arg = url.toCharArray(); 
     char[] c = new char[arg.length+1];
     System.arraycopy(arg,0,c,0,arg.length);
 	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	onFocusGained(null); // Fixes the keyboard INput Tag issues
 	webNavigation.Release();
 	return true;
@@ -790,12 +794,12 @@ public void stop() {
 	checkWidget();
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);	 	
 	rc = webNavigation.Stop(nsIWebNavigation.STOP_ALL);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+	if (rc != XPCOM.NS_OK) error(rc);
 	webNavigation.Release();
 }
 
