@@ -378,6 +378,11 @@ void createHandle (int index) {
 	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
 	OS.gtk_window_set_modal (shellHandle, modal);	
 	int decorations = 0;
+	/*
+	 * High level GTK helpers, like gtk_window_set_decorated, simply
+	 * use gdk_window_set_decorations() with specific values.
+	 * Therefore we use that function manually.
+	 */
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
 		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
@@ -392,11 +397,11 @@ void createHandle (int index) {
 		 * kind of border is requested.
 		 */
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
-	}	
+	}
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	// TEMPORARY CODE - trim does not work for dialogs
-//	OS.gdk_window_set_decorations (window, decorations);
+	OS.gdk_window_set_decorations (window, decorations);
 	
 	accelGroup = OS.gtk_accel_group_new ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
