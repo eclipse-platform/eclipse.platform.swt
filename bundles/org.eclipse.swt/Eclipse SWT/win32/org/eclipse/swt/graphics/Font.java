@@ -69,8 +69,9 @@ public Font(Device device, FontData fd) {
 }
 
 /**	 
- * Constructs a new font given a device and font datas
- * which describes the desired font's appearance.
+ * Constructs a new font given a device and an array
+ * of font data which describes the desired font's
+ * appearance.
  * <p>
  * You must dispose the font when it is no longer required. 
  * </p>
