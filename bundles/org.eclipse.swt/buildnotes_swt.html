@@ -14,6 +14,49 @@ SWT</h1>
 SWT Build 2.0 029 - Tuesday March 5, 2002
 
 <h2>
+<a NAME="New APIs"></a>New APIs</h2>
+
+<b>Note:</b> The new Accessibility API is experimental, and will likely change.
+<ul>
+<li>Control.getAccessible() added</li>
+<li>package <b>org.eclipse.swt.accessibility</b> added, containing the following classes:<ul>
+<li>Accessible</li>
+<li>ACC</li>
+<li>AccessibleListener</li>
+<li>AccessibleAdapter</li>
+<li>AccessibleEvent</li>
+<li>AccessibleControlListener</li>
+<li>AccessibleControlAdapter</li>
+<li>AccessibleControlEvent</li>
+</ul></li></ul>
+
+Here are two examples that use the accessibility API:<ul>
+<li>For a control with no child items:
+<code><pre>
+		button.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				e.result = "My Button Label";
+			}
+		});
+</pre></code></li>
+
+<li>For a control that has child items:
+<code><pre>
+		list.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				if (e.childID == ACC.CHILDID_SELF) {
+					e.result = "My List Label";
+				} else {
+					e.result = "My List Item Label: " + list.getItem(e.childID);
+				}
+			}
+		});
+</pre></code></li></ul>
+<b>Note:</b> The API involving the AccessibleControlXxx classes is more complex, and more likely to change. 
+It is unlikely that application code will need to use it. 
+It is primarily for the use of custom control implementors.
+
+<h2>
 <a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 <blockquote>
 4436: Grid Layout Problem (1FOLZZE)  
