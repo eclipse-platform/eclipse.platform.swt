@@ -135,7 +135,7 @@ Point computeSize () {
 	}
 	
 	int contentHeight = 0, contentWidth = 0;
-	if ((parent.style & SWT.RIGHT) > 0) {
+	if ((parent.style & SWT.RIGHT) != 0) {
 		contentHeight = Math.max (imageHeight, textHeight);
 		contentWidth = imageWidth + textWidth;
 		if (imageWidth > 0 && textWidth > 0) {
@@ -153,10 +153,10 @@ Point computeSize () {
 	/* These values come from Windows */
 	int height = 22, width = 24;
 	if (contentHeight != 0) {
-		height = contentHeight + (marginHeight + shadowThickness) * 2;
+		height = contentHeight + marginHeight + shadowThickness + 4;
 	}
 	if (contentWidth != 0) {
-		width = contentWidth + (marginWidth + shadowThickness) * 2;
+		width = contentWidth + marginWidth + shadowThickness + 4;
 	}
 	
 	return new Point (width, height);
@@ -709,7 +709,7 @@ int processPaint (int callData) {
 	gc.setBackground (parent.getBackground ());
 		
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-	if (text != null && text.length() > 0) {
+	if (text.length () > 0) {
 		Point textExtent = gc.textExtent(text);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
@@ -722,13 +722,13 @@ int processPaint (int callData) {
 	}
 	
 	if ((parent.style & SWT.RIGHT) != 0) {
-		imageX = x + ((width - imageWidth - textWidth - marginWidth - shadowThickness) / 2);
+		imageX = x + ((width - imageWidth - textWidth) / 2);
 		imageY = y + ((height - imageHeight) / 2);
 		textX = imageX + imageWidth + marginWidth + shadowThickness;
 		textY = y + ((height - textHeight) / 2);
 	} else {		
 		imageX = x + ((width - imageWidth) / 2);
-		imageY = y + ((height - imageHeight - textHeight - marginHeight - shadowThickness) / 2);
+		imageY = y + ((height - imageHeight - textHeight) / 2);
 		textX = x + ((width - textWidth) / 2);
 		textY = imageY + imageHeight + marginHeight + shadowThickness;
 	}

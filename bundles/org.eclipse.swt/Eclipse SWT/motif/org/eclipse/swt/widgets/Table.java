@@ -172,6 +172,7 @@ void columnMouseDoubleClick(Event event) {
 	TableItem hitItem;
 	TableColumn hitColumn = getColumnAtX(event.x);
 	Event columnDblClickEvent;
+	boolean isFullSelection = (getStyle() & SWT.FULL_SELECTION) != 0;
 
 	if (isFocusControl() == false) {
 		setFocus();									// focus proxy gets focus here because it's the first child of the receiver
@@ -180,7 +181,7 @@ void columnMouseDoubleClick(Event event) {
 		itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
 		hitItem = (TableItem) getVisibleItem(itemIndex);
 		if (hitItem != null && 
-			hitColumn.getIndex() == TableColumn.FIRST) {
+			(hitColumn.getIndex() == TableColumn.FIRST || isFullSelection)) {
 			if (hitItem.isSelectionHit(event.x) == true) {
 				columnDblClickEvent = new Event();
 				columnDblClickEvent.item = hitItem;
