@@ -195,11 +195,20 @@ public GridData(int style) {
 * @since 3.0
 */
 public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace) {
+	this(horizontalAlignment, verticalAlignment, grabExcessHorizontalSpace, grabExcessVerticalSpace, 1, 1);
+}
+
+/*
+* @since 3.0
+*/
+public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace, int horizontalSpan, int verticalSpan) {
 	super();
 	this.horizontalAlignment = horizontalAlignment;
 	this.verticalAlignment = verticalAlignment;
 	this.grabExcessHorizontalSpace = grabExcessHorizontalSpace;
 	this.grabExcessVerticalSpace = grabExcessVerticalSpace;
+	this.horizontalSpan = horizontalSpan;
+	this.verticalSpan = verticalSpan;
 }
 
 /*
