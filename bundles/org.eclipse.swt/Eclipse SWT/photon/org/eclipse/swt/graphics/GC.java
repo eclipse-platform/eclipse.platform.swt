@@ -1377,7 +1377,9 @@ public Point stringExtent(String string) {
 		if (flags >= 0) OS.PtLeave(flags);
 	}
 	
-	int width = rect.lr_x - rect.ul_x + 1;
+	int width;
+	if (size == 0) width = 0;
+	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Point(width, height);
 }
