@@ -238,11 +238,12 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColorA
 }
 #endif // _WIN32_WCE
 
+#ifndef WIN32_PLATFORM_WFSP
 #ifdef _WIN32_WCE
 #define ChooseColorW ChooseColor
 #define CHOOSECOLORW CHOOSECOLOR
 #define LPCHOOSECOLORW LPCHOOSECOLOR
-#endif
+#endif /* _WIN32_WCE */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColorW
 	(JNIEnv *env, jclass that, jobject arg0)
 {
@@ -260,6 +261,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColorW
 
 	return rc;
 }
+#endif /* WIN32_PLATFORM_WFSP */
 
 #ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseFontA
@@ -395,6 +397,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1In
 }
 #endif // WIN32_PLATFORM_HPC2000
 
+#ifndef WIN32_PLATFORM_WFSP
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommDlgExtendedError
 	(JNIEnv *env, jclass that)
 {
@@ -402,6 +405,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommDlgExtendedErr
 
 	return (jint)CommDlgExtendedError();
 }
+#endif /* WIN32_PLATFORM_WFSP */
 
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CopyImage
@@ -3608,6 +3612,17 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsPPC
 #else
 	return FALSE;
 #endif // WIN32_PLATFORM_PSPC
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsSP
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("IsSP\n")
+#ifdef WIN32_PLATFORM_WFSP
+	return TRUE;
+#else
+	return FALSE;
+#endif // WIN32_PLATFORM_WFSP
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowEnabled

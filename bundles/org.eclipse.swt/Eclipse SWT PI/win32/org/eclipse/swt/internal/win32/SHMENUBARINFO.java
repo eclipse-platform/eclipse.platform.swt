@@ -15,5 +15,5 @@ public class SHMENUBARINFO {
 	public int nBmpId;
 	public int cBmpImages;
 	public int hwndMB;
-	public static final int sizeof = 32;
+	public static final int sizeof = OS.IsSP ? 36 : 32;
 }
