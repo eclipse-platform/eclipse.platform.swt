@@ -260,6 +260,9 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
 		dwFlags |= GCP_LIGATE;
 	}
+	if ((fontLanguageInfo & GCP_GLYPHSHAPE) == GCP_GLYPHSHAPE) {
+		dwFlags |= GCP_GLYPHSHAPE;
+	}
 	if ((flags & CLASSIN) == CLASSIN) {
 		// set classification values for the substring, classification values
 		// can be specified on input
