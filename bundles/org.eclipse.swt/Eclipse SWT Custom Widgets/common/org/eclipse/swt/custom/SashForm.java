@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class SashForm extends Composite {
 
-	public int SASH_WIDTH = 4;
+	public int SASH_WIDTH = 3;
 
 	private static final int DRAG_MINIMUM = 20;
 	
