@@ -491,7 +491,6 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean back() {
 	checkWidget();
-	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -671,7 +670,6 @@ void disposeCOMInterfaces() {
  */
 public boolean forward() {
 	checkWidget();
-	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -700,35 +698,36 @@ public boolean forward() {
  */
 public String getUrl() {
 	checkWidget();
-	if (!IsLinux) return "";
-	int[] aContentDOMWindow = new int[1];
-	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-			
-	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);           
 	int[] result = new int[1];
-	rc = domWindow.QueryInterface(nsIDOMWindowInternal.NS_IDOMWINDOWINTERNAL_IID, result);
+	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	domWindow.Release();
-         
-	nsIDOMWindowInternal domWindowInternal = new nsIDOMWindowInternal(result[0]);
-	int[] aLocation = new int[1];  
-	rc = domWindowInternal.GetLocation(aLocation);
+	
+	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+	int[] aCurrentURI = new int[1];
+	rc = webNavigation.GetCurrentURI(aCurrentURI);
 	if (rc != XPCOM.NS_OK) error(rc);
-	if (aLocation[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	domWindowInternal.Release();
-
-	nsIDOMLocation domLocation = new nsIDOMLocation(aLocation[0]); 
-    nsString _retval = new nsString();
-	rc = domLocation.ToString(_retval.getAddress());
-	if (rc != XPCOM.NS_OK) error(rc);
-	domLocation.Release();          
-	String url = _retval.toString();
-	_retval.dispose();
-                
-	return url;
+	/*
+	 * This code is intentionally commented.  aCurrentURI is 0
+	 * when no location has previously been set.
+	 */
+	//if (aCurrentURI[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	webNavigation.Release();
+	
+	byte[] dest = null;
+	if (aCurrentURI[0] != 0) {
+		nsIURI uri = new nsIURI(aCurrentURI[0]);
+		int aSpec = XPCOM.nsCString_new();
+		rc = uri.GetSpec(aSpec);
+		if (rc != XPCOM.NS_OK) error(rc);
+		int length = XPCOM.nsCString_Length(aSpec);
+		int buffer = XPCOM.nsCString_get(aSpec);
+		dest = new byte[length + 1];
+		XPCOM.memmove(dest, buffer, length);
+		XPCOM.nsCString_delete(aSpec);
+		uri.Release();
+	}
+	return dest != null ? new String(dest) : ""; //$NON-NLS-1$
 }
 
 public boolean isBackEnabled() {
@@ -867,7 +866,6 @@ void onResize() {
  */
 public void refresh() {
 	checkWidget();
-	if (!IsLinux) return;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1173,7 +1171,6 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1224,7 +1221,6 @@ public boolean setText(String html) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1252,7 +1248,6 @@ public boolean setUrl(String url) {
  */
 public void stop() {
 	checkWidget();
-	if (!IsLinux) return;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1582,51 +1577,34 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 
 int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
-	/*
-	* Bug in Mozilla.  The argument aRequest is always null.  The fix is
-	* to compare the URI aLocation with the current URI.
-	*/
-	nsIURI location = new nsIURI(aLocation);
-	int aSpec = XPCOM.nsCString_new();
-	location.GetSpec(aSpec);
-	int length = XPCOM.nsCString_Length(aSpec);
-	int buffer = XPCOM.nsCString_get(aSpec);
-	byte[] dest = new byte[length + 1];
-	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsCString_delete(aSpec);
-
-	int[] aContentDOMWindow = new int[1];
-	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-
-	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);
-	int[] result = new int[1];
-	rc = domWindow.QueryInterface(nsIDOMWindowInternal.NS_IDOMWINDOWINTERNAL_IID, result);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	domWindow.Release();
-         
-	nsIDOMWindowInternal domWindowInternal = new nsIDOMWindowInternal(result[0]);
-	int[] aCurrentLocation = new int[1];  
-	rc = domWindowInternal.GetLocation(aCurrentLocation);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (aCurrentLocation[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	domWindowInternal.Release();
-
-	nsIDOMLocation domLocation = new nsIDOMLocation(aCurrentLocation[0]); 
-	nsString _retval = new nsString();
-	rc = domLocation.ToString(_retval.getAddress());
-	if (rc != XPCOM.NS_OK) error(rc);
-	domLocation.Release();  
 	
-	int nsString = XPCOM.nsString_new();
-	XPCOM.nsString_AssignWithConversion(nsString, dest);
-	boolean send = XPCOM.nsString_Equals(_retval.getAddress(), nsString);
-	XPCOM.nsString_delete(nsString);
-	_retval.dispose();
-		
-	if (send) {
+	nsIWebProgress webProgress = new nsIWebProgress(aWebProgress);
+	int[] aDOMWindow = new int[1];
+	int rc = webProgress.GetDOMWindow(aDOMWindow);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIDOMWindow domWindow = new nsIDOMWindow(aDOMWindow[0]);
+	int[] aTop = new int[1];
+	rc = domWindow.GetTop(aTop);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aTop[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	domWindow.Release();
+	
+	nsIDOMWindow topWindow = new nsIDOMWindow(aTop[0]);
+	topWindow.Release();
+	
+	/* report only top frame changes */
+	if (aTop[0] == aDOMWindow[0]) {
+		nsIURI location = new nsIURI(aLocation);
+		int aSpec = XPCOM.nsCString_new();
+		location.GetSpec(aSpec);
+		int length = XPCOM.nsCString_Length(aSpec);
+		int buffer = XPCOM.nsCString_get(aSpec);
+		byte[] dest = new byte[length + 1];
+		XPCOM.memmove(dest, buffer, length);
+		XPCOM.nsCString_delete(aSpec);
+
 		LocationEvent event = new LocationEvent(this);
 		event.display = getDisplay();
 		event.widget = this;
@@ -1793,6 +1771,14 @@ int SetTitle(int aTitle) {
 }
 
 int GetSiteWindow(int aSiteWindow) {
+	/*
+	* Note.  The handle is expected to be an HWND on Windows and
+	* a GtkWidget* on GTK.  This callback is invoked on Windows
+	* when the javascript window.print is invoked and the print
+	* dialog comes up. If no handle is returned, the print dialog
+	* does not come up on this platform.  
+	*/
+	XPCOM.memmove(aSiteWindow, new int[] {gtkHandle}, 4);
 	return XPCOM.NS_OK;     	
 }  
  
