@@ -714,6 +714,7 @@ public class OS {
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
 	public static final int SPI_GETWORKAREA = 0x30;
+	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SRCAND = 0x8800c6;
 	public static final int SRCCOPY = 0xcc0020;
 	public static final int SRCINVERT = 0x660046;
@@ -1048,6 +1049,7 @@ public class OS {
 	public static final int WM_SETFONT = 0x30;
 	public static final int WM_SETICON = 0x80;
 	public static final int WM_SETREDRAW = 0xb;
+	public static final int WM_SETTINGCHANGE = 0x1A;
 	public static final int WM_SHOWWINDOW = 0x18;
 	public static final int WM_SIZE = 0x5;
 	public static final int WM_SYSCHAR = 0x106;
@@ -1728,6 +1730,11 @@ public static final boolean SystemParametersInfo (int uiAction, int uiParam, REC
 	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
 }
 
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
 public static final int TranslateAccelerator (int hWnd, int hAccTable, MSG lpMsg) {
 	if (IsUnicode) return TranslateAcceleratorW (hWnd, hAccTable, lpMsg);
 	return TranslateAcceleratorA (hWnd, hAccTable, lpMsg);
@@ -2197,6 +2204,8 @@ public static final native int StartPage (int hdc);
 public static final native boolean StretchBlt (int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);
 public static final native int ToUnicode(int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
 public static final native boolean TrackMouseEvent(TRACKMOUSEEVENT lpEventTrack);

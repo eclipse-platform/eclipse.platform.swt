@@ -104,6 +104,7 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
+	int timerCount;
 	int [] timerIds;
 	Runnable [] timerList;
 	
@@ -113,6 +114,10 @@ public class Display extends Device {
 	int lastKey, lastAscii, lastMouse;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
+	
+	/* System Fonts */
+	int hwndShell;
+	int [] systemFonts;
 	
 	/* Image list cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
@@ -431,16 +436,21 @@ void error (int code) {
 
 boolean filterMessage (MSG msg) {
 	int message = msg.message;
-	if (message == OS.WM_TIMER && msg.hwnd == 0) {
-		if (timerList == null || timerIds == null) return false;
-		for (int i=0; i<timerIds.length; i++) {
-			if (timerIds [i] == msg.wParam) {
-				OS.KillTimer (0, timerIds [i]);
-				timerIds [i] = 0;
-				Runnable runnable = timerList [i];
-				timerList [i] = null;
-				if (runnable != null) runnable.run ();
-			}
+	if (msg.hwnd == hwndShell) {
+		switch (message) {
+			case OS.WM_TIMER:
+				if (timerList != null && timerIds != null) {
+					for (int i=0; i<timerIds.length; i++) {
+						if (timerIds [i] == msg.wParam) {
+							OS.KillTimer (hwndShell, timerIds [i]);
+							timerIds [i] = 0;
+							Runnable runnable = timerList [i];
+							timerList [i] = null;
+							if (runnable != null) runnable.run ();
+						}
+					}
+				}
+				break;
 		}
 		return false;
 	}
@@ -1000,9 +1010,8 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	int hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-	return Font.win32_new (this, hFont);
+	int hFont = systemFont ();
+	return Font.win32_new (this, hFont);	
 }
 
 /**
@@ -1036,9 +1045,7 @@ public int internal_new_GC (GCData data) {
 	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = this;
-		int hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-		if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-		data.hFont = hFont;
+		data.hFont = systemFont ();
 	}
 	return hDC;
 }
@@ -1083,7 +1090,28 @@ protected void init () {
 	lpWndClass.lpszClassName = lpszClassName;
 	OS.MoveMemory (lpszClassName, windowClass, byteCount);
 	OS.RegisterClass (lpWndClass);
-//	OS.HeapFree (hHeap, 0, lpszClassName);
+	
+	/* Initialize the system font */
+	int systemFont = 0;
+	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
+	info.cbSize = NONCLIENTMETRICS.sizeof;
+	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+		systemFont = OS.CreateFontIndirect (info.lfMessageFont);
+	}
+	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
+	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	if (systemFont != 0) systemFonts = new int [] {systemFont};
+	
+	/* Create the message only HWND */
+	hwndShell = OS.CreateWindowEx (0,
+		windowClass,
+		null,
+		OS.WS_OVERLAPPED,
+		0, 0, 0, 0,
+		0,
+		0,
+		hInstance,
+		null);
 }
 
 /**	 
@@ -1240,20 +1268,30 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	/* Destroy the message only HWND */
+	if (hwndShell != 0) OS.DestroyWindow (hwndShell);
+	hwndShell = 0;
 	
 	/* Unregister the SWT Window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
 	OS.GetClassInfo (0, windowClass, lpWndClass);
-	int ptr = lpWndClass.lpszClassName;
 	OS.UnregisterClass (windowClass, hInstance);
-	OS.HeapFree (hHeap, 0, ptr);
+	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
 	
 	/* Release callbacks */
 	windowClass = null;
 	windowCallback.dispose ();
 	windowCallback = null;
+	
+	/* Release the system fonts */
+	if (systemFonts != null) {
+		for (int i=0; i<systemFonts.length; i++) {
+			if (systemFonts [i] != 0) OS.DeleteObject (systemFonts [i]);
+		}
+	}
+	systemFonts = null;
 	
 	/* Release references */
 	thread = null;
@@ -1596,6 +1634,17 @@ public void syncExec (Runnable runnable) {
 	synchronizer.syncExec (runnable);
 }
 
+int systemFont () {
+	int hFont = 0;
+	if (systemFonts != null) {
+		int length = systemFonts.length;
+		if (length != 0) hFont = systemFonts [length - 1];
+	}
+	if (hFont == 0) hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
+	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	return hFont;
+}
+
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
@@ -1629,7 +1678,9 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
 		timerIds = newTimerIds;
 	}
-	int timerID = OS.SetTimer (0, 0, milliseconds, 0);
+	timerCount++;
+	int timerID = OS.SetTimer (hwndShell, timerCount, milliseconds, 0);
+	System.out.println (timerID);
 	if (timerID != 0) {
 		timerList [index] = runnable;
 		timerIds [index] = timerID;
@@ -1695,6 +1746,34 @@ public void update() {
 	}
 }
 
+void updateFont () {
+	Font oldFont = getSystemFont ();
+	int systemFont = 0;
+	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
+	info.cbSize = NONCLIENTMETRICS.sizeof;
+	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+		systemFont = OS.CreateFontIndirect (info.lfMessageFont);
+	}
+	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
+	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	if (systemFont == 0) return;
+	int length = systemFonts == null ? 0 : systemFonts.length;
+	int [] newFonts = new int [length + 1];
+	if (systemFonts != null) {
+		System.arraycopy (systemFonts, 0, newFonts, 0, length);
+	}
+	newFonts [length] = systemFont;
+	systemFonts = newFonts;
+	Font newFont = getSystemFont ();
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			shell.updateFont (oldFont, newFont);
+		}
+	}
+}
+
 /**
  * If the receiver's user-interface thread was <code>sleep</code>'ing, 
  * causes it to be awakened and start running again. Note that this
@@ -1708,6 +1787,7 @@ public void wake () {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (hwnd == hwndShell && msg == OS.WM_SETTINGCHANGE) updateFont ();
 	Control control = WidgetTable.get (hwnd);
 	if (control != null) return control.windowProc (msg, wParam, lParam);
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);

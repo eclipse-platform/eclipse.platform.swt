@@ -178,7 +178,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
 		if (image != null) {
-			Rectangle rect = image.getBounds();
+			Rectangle rect = image.getBounds ();
 			width = rect.width;
 			height = rect.height;
 			extra = 8;

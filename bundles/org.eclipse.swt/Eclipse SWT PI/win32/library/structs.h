@@ -471,6 +471,23 @@ void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStru
 
 #endif // _WIN32_WCE
 
+/* NONCLIENTMETRICS struct */
+typedef struct NONCLIENTMETRICS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, iBorderWidth, iScrollWidth, iScrollHeight, iCaptionWidth, iCaptionHeight, iSmCaptionWidth, iSmCaptionHeight, iMenuWidth, iMenuHeight;
+	jfieldID lfCaptionFont, lfSmCaptionFont, lfMenuFont, lfStatusFont, lfMessageFont;
+} NONCLIENTMETRICS_FID_CACHE;
+typedef NONCLIENTMETRICS_FID_CACHE *PNONCLIENTMETRICS_FID_CACHE;
+
+void cacheNONCLIENTMETRICSFids(JNIEnv *env, jobject lpObject, PNONCLIENTMETRICS_FID_CACHE lpCache);
+#ifndef _WIN32_WCE
+NONCLIENTMETRICSA* getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache);
+void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache);
+#endif  // _WIN32_WCE
+NONCLIENTMETRICSW* getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache);
+void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache);
+
 /* OPENFILENAME struct */
 typedef struct OPENFILENAME_FID_CACHE {
 	int cached;
@@ -773,7 +790,6 @@ void cacheWNDCLASSFids(JNIEnv *env, jobject lpObject, PWNDCLASS_FID_CACHE lpCach
 WNDCLASS* getWNDCLASSFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpStruct, PWNDCLASS_FID_CACHE lpCache);
 void setWNDCLASSFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpStruct, PWNDCLASS_FID_CACHE lpCache);
 
-
 /************************ OLE ***************************/
 
 /* used to cast Vtabl entries */
@@ -1070,6 +1086,7 @@ extern NMHDR_FID_CACHE NMHDRFc;
 extern NMHEADER_FID_CACHE NMHEADERFc;
 extern NMLISTVIEW_FID_CACHE NMLISTVIEWFc;
 extern NMTOOLBAR_FID_CACHE NMTOOLBARFc;
+extern NONCLIENTMETRICS_FID_CACHE NONCLIENTMETRICSFc;
 extern OPENFILENAME_FID_CACHE OPENFILENAMEFc;
 extern OSVERSIONINFO_FID_CACHE OSVERSIONINFOFc;
 extern PAINTSTRUCT_FID_CACHE PAINTSTRUCTFc;

@@ -36,6 +36,7 @@ NMHDR_FID_CACHE NMHDRFc;
 NMHEADER_FID_CACHE NMHEADERFc;
 NMLISTVIEW_FID_CACHE NMLISTVIEWFc;
 NMTOOLBAR_FID_CACHE NMTOOLBARFc;
+NONCLIENTMETRICS_FID_CACHE NONCLIENTMETRICSFc;
 OPENFILENAME_FID_CACHE OPENFILENAMEFc;
 OSVERSIONINFO_FID_CACHE OSVERSIONINFOFc;
 PAINTSTRUCT_FID_CACHE PAINTSTRUCTFc;
@@ -1740,6 +1741,152 @@ void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStru
 
 #endif // _WIN32_WCE
 
+#ifndef _WIN32_WCE
+
+NONCLIENTMETRICSA* getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNONCLIENTMETRICSFids(env, lpObject, lpCache);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, lpCache->cbSize);
+	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, lpCache->iBorderWidth);
+	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, lpCache->iScrollWidth);
+	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, lpCache->iScrollHeight);
+	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, lpCache->iCaptionWidth);
+	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, lpCache->iCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfCaptionFont);
+	getLOGFONTAFields(env, lpLogfont, &lpStruct->lfCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, lpCache->iSmCaptionWidth);
+	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, lpCache->iSmCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfSmCaptionFont);
+	getLOGFONTAFields(env, lpLogfont, &lpStruct->lfSmCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, lpCache->iMenuWidth);
+	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, lpCache->iMenuHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMenuFont);
+	getLOGFONTAFields(env, lpLogfont, &lpStruct->lfMenuFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfStatusFont);
+	getLOGFONTAFields(env, lpLogfont, &lpStruct->lfStatusFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMessageFont);
+	getLOGFONTAFields(env, lpLogfont, &lpStruct->lfMessageFont, &PGLOB(LOGFONTFc));
+	}
+	return lpStruct;
+}
+
+void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNONCLIENTMETRICSFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->cbSize, lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, lpCache->iBorderWidth, lpStruct->iBorderWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iScrollWidth, lpStruct->iScrollWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iScrollHeight, lpStruct->iScrollHeight);
+	(*env)->SetIntField(env, lpObject, lpCache->iCaptionWidth, lpStruct->iCaptionWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iCaptionHeight, lpStruct->iCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfCaptionFont);
+	setLOGFONTAFields(env, lpLogfont, &lpStruct->lfCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->iSmCaptionWidth, lpStruct->iSmCaptionWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iSmCaptionHeight, lpStruct->iSmCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfSmCaptionFont);
+	setLOGFONTAFields(env, lpLogfont, &lpStruct->lfSmCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->iMenuWidth, lpStruct->iMenuWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iMenuHeight, lpStruct->iMenuHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMenuFont);
+	setLOGFONTAFields(env, lpLogfont, &lpStruct->lfMenuFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfStatusFont);
+	setLOGFONTAFields(env, lpLogfont, &lpStruct->lfStatusFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMessageFont);
+	setLOGFONTAFields(env, lpLogfont, &lpStruct->lfMessageFont, &PGLOB(LOGFONTFc));
+	}
+}
+
+#endif _WIN32_WCE
+
+NONCLIENTMETRICSW* getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNONCLIENTMETRICSFids(env, lpObject, lpCache);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, lpCache->cbSize);
+	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, lpCache->iBorderWidth);
+	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, lpCache->iScrollWidth);
+	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, lpCache->iScrollHeight);
+	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, lpCache->iCaptionWidth);
+	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, lpCache->iCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfCaptionFont);
+	getLOGFONTWFields(env, lpLogfont, &lpStruct->lfCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, lpCache->iSmCaptionWidth);
+	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, lpCache->iSmCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfSmCaptionFont);
+	getLOGFONTWFields(env, lpLogfont, &lpStruct->lfSmCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, lpCache->iMenuWidth);
+	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, lpCache->iMenuHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMenuFont);
+	getLOGFONTWFields(env, lpLogfont, &lpStruct->lfMenuFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfStatusFont);
+	getLOGFONTWFields(env, lpLogfont, &lpStruct->lfStatusFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMessageFont);
+	getLOGFONTWFields(env, lpLogfont, &lpStruct->lfMessageFont, &PGLOB(LOGFONTFc));
+	}
+	return lpStruct;
+}
+
+void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNONCLIENTMETRICSFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->cbSize, lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, lpCache->iBorderWidth, lpStruct->iBorderWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iScrollWidth, lpStruct->iScrollWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iScrollHeight, lpStruct->iScrollHeight);
+	(*env)->SetIntField(env, lpObject, lpCache->iCaptionWidth, lpStruct->iCaptionWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iCaptionHeight, lpStruct->iCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfCaptionFont);
+	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->iSmCaptionWidth, lpStruct->iSmCaptionWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iSmCaptionHeight, lpStruct->iSmCaptionHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfSmCaptionFont);
+	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfSmCaptionFont, &PGLOB(LOGFONTFc));
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->iMenuWidth, lpStruct->iMenuWidth);
+	(*env)->SetIntField(env, lpObject, lpCache->iMenuHeight, lpStruct->iMenuHeight);
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMenuFont);
+	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfMenuFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfStatusFont);
+	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfStatusFont, &PGLOB(LOGFONTFc));
+	}
+	{
+	jobject lpLogfont = (*env)->GetObjectField(env, lpObject, lpCache->lfMessageFont);
+	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfMessageFont, &PGLOB(LOGFONTFc));
+	}
+}
+
 void cacheOPENFILENAMEFids(JNIEnv *env, jobject lpObject, POPENFILENAME_FID_CACHE lpCache)
 {
 	if (lpCache->cached) return;
@@ -2899,6 +3046,28 @@ void setWNDCLASSFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpStruct, PWNDCL
 	(*env)->SetIntField(env, lpObject, lpCache->hbrBackground, (jint)lpStruct->hbrBackground);
 	(*env)->SetIntField(env, lpObject, lpCache->lpszMenuName, (jint)lpStruct->lpszMenuName);
 	(*env)->SetIntField(env, lpObject, lpCache->lpszClassName, (jint)lpStruct->lpszClassName);
+}
+
+void cacheNONCLIENTMETRICSFids(JNIEnv *env, jobject lpObject, PNONCLIENTMETRICS_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->cbSize = (*env)->GetFieldID(env, lpCache->clazz, "cbSize", "I");
+	lpCache->iBorderWidth = (*env)->GetFieldID(env, lpCache->clazz, "iBorderWidth", "I");
+	lpCache->iScrollWidth = (*env)->GetFieldID(env, lpCache->clazz, "iScrollWidth", "I");
+	lpCache->iScrollHeight = (*env)->GetFieldID(env, lpCache->clazz, "iScrollHeight", "I");
+	lpCache->iCaptionWidth = (*env)->GetFieldID(env, lpCache->clazz, "iCaptionWidth", "I");
+	lpCache->iCaptionHeight = (*env)->GetFieldID(env, lpCache->clazz, "iCaptionHeight", "I");
+	lpCache->lfCaptionFont = (*env)->GetFieldID(env, lpCache->clazz, "lfCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	lpCache->iSmCaptionWidth = (*env)->GetFieldID(env, lpCache->clazz, "iSmCaptionWidth", "I");
+	lpCache->iSmCaptionHeight = (*env)->GetFieldID(env, lpCache->clazz, "iSmCaptionHeight", "I");
+	lpCache->lfSmCaptionFont = (*env)->GetFieldID(env, lpCache->clazz, "lfSmCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	lpCache->iMenuWidth = (*env)->GetFieldID(env, lpCache->clazz, "iMenuWidth", "I");
+	lpCache->iMenuHeight = (*env)->GetFieldID(env, lpCache->clazz, "iMenuHeight", "I");
+	lpCache->lfMenuFont = (*env)->GetFieldID(env, lpCache->clazz, "lfMenuFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	lpCache->lfStatusFont = (*env)->GetFieldID(env, lpCache->clazz, "lfStatusFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	lpCache->lfMessageFont = (*env)->GetFieldID(env, lpCache->clazz, "lfMessageFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	lpCache->cached = 1;
 }
 
 /************************ OLE ***************************/

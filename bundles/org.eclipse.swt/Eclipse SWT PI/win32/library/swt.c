@@ -6335,14 +6335,14 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_StretchBlt
 }
 
 #ifndef _WIN32_WCE
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
 	RECT _arg2, *lparg2=NULL;
 	jboolean rc;
 
-	DEBUG_CALL("SystemParametersInfoA\n")
+	DEBUG_CALL("SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I\n")
 
 	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2, &PGLOB(RECTFc));
 
@@ -6354,20 +6354,59 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParamete
 }
 #endif // _WIN32_WCE
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_RECT_2I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
 	RECT _arg2, *lparg2=NULL;
 	jboolean rc;
 
-	DEBUG_CALL("SystemParametersInfoW\n")
+	DEBUG_CALL("SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_RECT_2I\n")
 
 	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2, &PGLOB(RECTFc));
 
 	rc = (jboolean)SystemParametersInfoW(arg0, arg1, lparg2, arg3);
 
 	if (arg2) setRECTFields(env, arg2, lparg2, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I
+    (JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	NONCLIENTMETRICSA _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I\n")
+
+	if (arg2) lparg2 = getNONCLIENTMETRICSAFields(env, arg2, &_arg2, &PGLOB(NONCLIENTMETRICSFc));
+
+	rc = (jboolean)SystemParametersInfoA(arg0, arg1, lparg2, arg3);
+
+	if (arg2) setNONCLIENTMETRICSAFields(env, arg2, lparg2, &PGLOB(NONCLIENTMETRICSFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I
+    (JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	NONCLIENTMETRICSW _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I\n")
+
+	if (arg2) lparg2 = getNONCLIENTMETRICSWFields(env, arg2, &_arg2, &PGLOB(NONCLIENTMETRICSFc));
+
+	rc = (jboolean)SystemParametersInfoW(arg0, arg1, lparg2, arg3);
+
+	if (arg2) setNONCLIENTMETRICSWFields(env, arg2, lparg2, &PGLOB(NONCLIENTMETRICSFc));
 
 	return rc;
 }
