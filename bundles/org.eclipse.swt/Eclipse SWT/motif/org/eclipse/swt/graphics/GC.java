@@ -2779,8 +2779,6 @@ void setClipping(int clipRgn) {
 		if (data.clipRgn != 0) {
 			OS.XDestroyRegion (data.clipRgn);
 			data.clipRgn = 0;
-		} else {
-			return;
 		}
 		if (data.damageRgn == 0) {
 			OS.XSetClipMask (data.display, handle, OS.None);
@@ -2877,16 +2875,12 @@ public void setClipping (Rectangle rect) {
  *
  * @param region the clipping region.
  *
- * * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(region != null ? region.handle : 0);
 }
 /** 

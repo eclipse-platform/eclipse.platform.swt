@@ -792,7 +792,7 @@ public void setFont (int index, Font font) {
 		}
 		parent.setScrollWidth (this, false);
 	}	
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 /**
@@ -867,7 +867,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 /**
@@ -950,7 +950,7 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image);
 	
 	if (index == 0) parent.setScrollWidth (this, false);
-	redraw (index, false, true);
+	redraw (index, true, true);
 }
 
 public void setImage (Image image) {
@@ -1067,7 +1067,7 @@ public void setText (int index, String string) {
 		}
 		parent.setScrollWidth (this, false);
 	}
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 public void setText (String string) {

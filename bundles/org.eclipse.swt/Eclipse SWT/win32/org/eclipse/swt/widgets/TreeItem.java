@@ -357,7 +357,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 				if (getImage) rect.right = rect.left;
 			}
 		}
-	}
+	}		
 	int gridWidth = parent.getLinesVisible () ? Tree.GRID_WIDTH : 0;
 	if (getText || !getImage) {
 		rect.right = Math.max (rect.left, rect.right - gridWidth);
@@ -601,7 +601,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
-	RECT rect = getBounds (index, false, true, false);
+	RECT rect = getBounds (index, false, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -677,18 +677,15 @@ void redraw () {
 	RECT rect = new RECT ();
 	rect.left = handle;
 	/*
-	* When there are no columns and the tree is not
-	* full selection, redraw only the text.  This is
-	* an optimization to reduce flashing.
+	* When there are no columns, redraw only the text.
+	* Otherwise, redraw the entire line.  This is an
+	* optimization that reduces flashing.
 	*/
-	boolean full = (parent.style & SWT.FULL_SELECTION) != 0;
-	if (!full) {
-		int hwndHeader = parent.hwndHeader;
-		if (hwndHeader != 0) {
-			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
-		}
+	int count = 0, hwndHeader = parent.hwndHeader;
+	if (hwndHeader != 0) {
+		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	}
-	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
+	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, count != 0 ? 0 : 1, rect) != 0) {
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
@@ -697,7 +694,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	if (parent.drawCount > 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = getBounds (column, drawText, drawImage, true);
+	RECT rect = getBounds (column, drawText, drawImage, false);
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
@@ -910,6 +907,7 @@ public void setFont (Font font){
 	tvItem.hItem = handle;
 	tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	redraw ();
 }
 
 
@@ -952,22 +950,7 @@ public void setFont (int index, Font font) {
 	}
 	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
-	/*
-	* Bug in Windows.  When the font is changed for an item,
-	* the bounds for the item are not updated, causing the text
-	* to be clipped.  The fix is to reset the text, causing
-	* Windows to compute the new bounds using the new font.
-	*/
-	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	} else {
-		redraw (index, true, false);
-	}
+	redraw (index, true, true);
 }
 
 /**
@@ -1044,7 +1027,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 /**
