@@ -158,10 +158,13 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	boolean drawCurve = left != null && right != null;
+	int borderTop = drawCurve ? BORDER_TOP : 0;
+	int borderBottom = drawCurve ? BORDER_BOTTOM : 0;
 	int trimX = x - BORDER_LEFT;
-	int trimY = y - BORDER_TOP;
+	int trimY = y - borderTop;
 	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT;
-	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
+	int trimHeight = height + borderTop + borderBottom + 2*BORDER_STRIPE;
 	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
 }
 public Rectangle getClientArea() {
@@ -215,6 +218,8 @@ public void layout (boolean changed) {
 	int curveWidth = drawCurve ? CURVE_WIDTH : 0;
 	int indentLeft = drawCurve ? INDENT_LEFT : 0;
 	int indentRight = drawCurve ? INDENT_RIGHT : 0;
+	int borderTop = drawCurve ? BORDER_TOP : 0;
+	int borderBottom = drawCurve ? BORDER_BOTTOM : 0;
 	if (right == null) {
 		int width = rightWidth == SWT.DEFAULT ? 0 : rightWidth;
 		rightSize = new Point(width, 0);
@@ -231,16 +236,16 @@ public void layout (boolean changed) {
 	Rectangle leftRect = null;
 	Rectangle rightRect = null;
 	if(left != null) {
-		int height = Math.min(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, leftSize.y);
-		int y = BORDER_TOP + BORDER_STRIPE;
+		int height = Math.min(size.y - borderTop - borderBottom - 2*BORDER_STRIPE, leftSize.y);
+		int y = borderTop + BORDER_STRIPE;
 		leftRect = new Rectangle(x, y, leftSize.x, height);
 		x += leftSize.x;
 	}
 	curveStart = x - indentLeft;
 	x += curveWidth - indentLeft - indentRight;
 	if (right != null) {
-		int height = Math.min(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
-		int y = BORDER_TOP + BORDER_STRIPE;
+		int height = Math.min(size.y - borderTop - borderBottom - 2*BORDER_STRIPE, rightSize.y);
+		int y = borderTop + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
@@ -253,8 +258,8 @@ public void layout (boolean changed) {
 	curveRegion = new Region();
 	curveRegion.add(new Rectangle(curveStart, 0, curveWidth, size.y));
 	update();
-	if (leftRect != null) left.setBounds(leftRect);
 	if (rightRect != null) right.setBounds(rightRect);
+	if (leftRect != null) left.setBounds(leftRect);
 }
 void onDispose() {
 	resizeCursor.dispose();
