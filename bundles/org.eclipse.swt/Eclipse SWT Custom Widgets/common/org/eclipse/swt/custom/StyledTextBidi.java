@@ -421,7 +421,7 @@ int getCaretPosition(int logicalOffset) {
 int getCaretPosition(int logicalOffset, int direction) {
 	int caretX;
 	
-	if (getTextLength() == 0) {
+	if (getTextLength() == 0 || logicalOffset < 0) {
 		return StyledText.XINSET;
 	}
 	// at or past end of line?
