@@ -709,11 +709,12 @@ public void drawString (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int length = string.length();
+	if (length == 0) return;
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
 	OS.CGContextSetFillColor(handle, data.foreground);
-	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
 	int ptr = OS.NewPtr(length * 2);
