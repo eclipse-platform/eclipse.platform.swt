@@ -1409,8 +1409,8 @@ LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
 	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (jbyte *)lpStruct->lfFaceName);
 	}
 	return lpStruct;
 }
@@ -1432,8 +1432,8 @@ void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (jbyte *)lpStruct->lfFaceName);
 	}
 }
 #endif
@@ -1473,8 +1473,8 @@ LOGFONTW *getLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
 	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (jchar *)lpStruct->lfFaceName);
 	}
 	return lpStruct;
 }
@@ -1496,8 +1496,8 @@ void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (jchar *)lpStruct->lfFaceName);
 	}
 }
 #endif
@@ -2758,8 +2758,8 @@ NMTTDISPINFOA *getNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINF
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (void *)lpStruct->szText);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (jbyte *)lpStruct->szText);
 	}
 	return lpStruct;
 }
@@ -2773,8 +2773,8 @@ void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStru
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lParam, (jint)lpStruct->lParam);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (void *)lpStruct->szText);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (jbyte *)lpStruct->szText);
 	}
 }
 #endif
@@ -2806,8 +2806,8 @@ NMTTDISPINFOW *getNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINF
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (void *)lpStruct->szText);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (jchar *)lpStruct->szText);
 	}
 	return lpStruct;
 }
@@ -2821,8 +2821,8 @@ void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStru
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lParam, (jint)lpStruct->lParam);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (void *)lpStruct->szText);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (jchar *)lpStruct->szText);
 	}
 }
 #endif
@@ -3233,19 +3233,19 @@ NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
 #endif
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
 	}
 #ifndef _WIN32_WCE
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
 	}
 #endif
 #ifndef _WIN32_WCE
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
 	}
 #endif
 	return lpStruct;
@@ -3273,19 +3273,19 @@ void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
 #endif
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
 	}
 #ifndef _WIN32_WCE
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
 	}
 #endif
 #ifndef _WIN32_WCE
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
 	}
 #endif
 }
@@ -3333,19 +3333,19 @@ NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
 #endif
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (jchar *)lpStruct->szTip);
 	}
 #ifndef _WIN32_WCE
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (jchar *)lpStruct->szInfo);
 	}
 #endif
 #ifndef _WIN32_WCE
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (jchar *)lpStruct->szInfoTitle);
 	}
 #endif
 	return lpStruct;
@@ -3373,19 +3373,19 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
 #endif
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (jchar *)lpStruct->szTip);
 	}
 #ifndef _WIN32_WCE
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (jchar *)lpStruct->szInfo);
 	}
 #endif
 #ifndef _WIN32_WCE
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (jchar *)lpStruct->szInfoTitle);
 	}
 #endif
 }
@@ -3549,8 +3549,8 @@ OSVERSIONINFOA *getOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSION
 	lpStruct->dwBuildNumber = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber);
 	lpStruct->dwPlatformId = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (jbyte *)lpStruct->szCSDVersion);
 	}
 	return lpStruct;
 }
@@ -3564,8 +3564,8 @@ void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpSt
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber, (jint)lpStruct->dwBuildNumber);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId, (jint)lpStruct->dwPlatformId);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (jbyte *)lpStruct->szCSDVersion);
 	}
 }
 #endif
@@ -3597,8 +3597,8 @@ OSVERSIONINFOW *getOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSION
 	lpStruct->dwBuildNumber = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber);
 	lpStruct->dwPlatformId = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (jchar *)lpStruct->szCSDVersion);
 	}
 	return lpStruct;
 }
@@ -3612,8 +3612,8 @@ void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpSt
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber, (jint)lpStruct->dwBuildNumber);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId, (jint)lpStruct->dwPlatformId);
 	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (jchar *)lpStruct->szCSDVersion);
 	}
 }
 #endif
@@ -3655,8 +3655,8 @@ PAINTSTRUCT *getPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lp
 	lpStruct->fRestore = (*env)->GetBooleanField(env, lpObject, PAINTSTRUCTFc.fRestore);
 	lpStruct->fIncUpdate = (*env)->GetBooleanField(env, lpObject, PAINTSTRUCTFc.fIncUpdate);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PAINTSTRUCTFc.rgbReserved);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgbReserved), (void *)lpStruct->rgbReserved);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PAINTSTRUCTFc.rgbReserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgbReserved), (jbyte *)lpStruct->rgbReserved);
 	}
 	return lpStruct;
 }
@@ -3673,8 +3673,8 @@ void setPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct)
 	(*env)->SetBooleanField(env, lpObject, PAINTSTRUCTFc.fRestore, (jboolean)lpStruct->fRestore);
 	(*env)->SetBooleanField(env, lpObject, PAINTSTRUCTFc.fIncUpdate, (jboolean)lpStruct->fIncUpdate);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PAINTSTRUCTFc.rgbReserved);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgbReserved), (void *)lpStruct->rgbReserved);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PAINTSTRUCTFc.rgbReserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgbReserved), (jbyte *)lpStruct->rgbReserved);
 	}
 }
 #endif
