@@ -28,6 +28,9 @@ public class CTabItem extends Item {
 	
 	private static final String ellipsis = "...";
 	
+	String shortenedText;
+	int shortenedTextWidth;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>CTabFolder</code>) and a style value
@@ -356,7 +359,11 @@ void onPaint(GC gc, boolean isSelected) {
 	if (isSelected && parent.showClose) {
 		textWidth = x + width - xDraw - parent.closeBar.getSize().x - RIGHT_MARGIN;
 	}
-	String text = shortenText(gc, getText(), textWidth);
+	if (shortenedText == null || shortenedTextWidth != textWidth) {
+		shortenedText = shortenText(gc, getText(), textWidth);
+		shortenedTextWidth = textWidth;
+	}
+	String text = shortenedText;
 	
 	if (isSelected && parent.selectionForeground != null) {
 		gc.setForeground(parent.selectionForeground);
@@ -495,6 +502,8 @@ public void setText (String string) {
 	checkWidget();
 	if (string.equals(getText())) return;
 	super.setText(string);
+	shortenedText = null;
+	shortenedTextWidth = 0;
 	parent.setItemBounds();
 	parent.redraw();	
 }
