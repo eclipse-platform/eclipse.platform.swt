@@ -2970,6 +2970,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+	mouseDown = true;
+
 	/*
 	* Feature in Windows.  When the user selects outside of
 	* a table item, Windows deselects all the items, even
@@ -2980,11 +2982,30 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
-	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
+	int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
 	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	
+	/* Look for check/uncheck */
+	if ((style & SWT.CHECK) != 0) {
+		/*
+		* Note that when the table has LVS_EX_FULLROWSELECT and the
+		* user clicks anywhere on a row except on the check box, all
+		* of the bits are set.  The hit test flags are LVHT_ONITEM.
+		* This means that a bit test for LVHT_ONITEMSTATEICON is not
+		* the correct way to determine that the user has selected
+		* the check box, equality is needed.
+		*/
+		if (index != -1 && pinfo.flags == OS.LVHT_ONITEMSTATEICON) {
+			TableItem item = _getItem (index);
+			item.setChecked (!item.getChecked (), true);
+			if (!OS.IsWinCE) {
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
+			}
+		}	
+	}
 	return LRESULT.ZERO;
 }
 
@@ -3011,7 +3032,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		* of the bits are set.  The hit test flags are LVHT_ONITEM.
 		* This means that a bit test for LVHT_ONITEMSTATEICON is not
 		* the correct way to determine that the user has selected
-		* the check box.
+		* the check box, equality is needed.
 		*/
 		int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 		if (index != -1 && pinfo.flags == OS.LVHT_ONITEMSTATEICON) {
