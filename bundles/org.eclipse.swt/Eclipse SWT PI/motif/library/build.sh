@@ -15,52 +15,96 @@
 
 cd `dirname $0`
 
-# Determine the operating system being built
-makefile=""
-OS=`uname -s`
-MODEL=`uname -m`
+if [ "${OS}" = "" ]; then
+	OS=`uname -s`
+fi
+if [ "${MODEL}" = "" ]; then
+	MODEL=`uname -m`
+fi
 
 case $OS in
 	"AIX")
-		JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
-		MOTIF_HOME=/usr
-		CDE_HOME=/usr/dt
-		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/aix/ppc
-		makefile="make_aix.mak"
-		echo "Building AIX version of SWT"
+		case $MODEL in		
+		*) 
+			if [ "${JAVA_HOME}" = "" ]; then
+				JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
+			fi
+			if [ "${MOTIF_HOME}" = "" ]; then
+				MOTIF_HOME=/usr
+			fi
+			if [ "${CDE_HOME}" = "" ]; then
+				CDE_HOME=/usr/dt
+			fi
+			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/aix/ppc
+			makefile="make_aix.mak"
+			echo "Building AIX motif ppc version of SWT"
+		esac
 		;;
 	"Linux")
-		JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
-		MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
-		QT_HOME=$QTDIR
-		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/linux/x86
-		makefile="make_linux.mak"
-		echo "Building Linux version of SWT"
+		case $MODEL in
+		*) 
+			if [ "${JAVA_HOME}" = "" ]; then
+				JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+			fi
+			if [ "${MOTIF_HOME}" = "" ]; then
+				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
+			fi
+			if [ "${QT_HOME}" = "" ]; then
+				QT_HOME=$QTDIR
+			fi
+			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/linux/x86
+			makefile="make_linux.mak"
+			echo "Building Linux motif x86 version of SWT"
+		esac
 		;;
 	"SunOS")
-		JAVA_HOME=/usr/java
-		MOTIF_HOME=/usr/dt
-		CDE_HOME=/usr/dt		
-		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/solaris/sparc
-		PATH=/opt/SUNWspro/bin:$PATH
-		export PATH
-		makefile="make_solaris.mak"
-		echo "Building Solaris version of SWT"
+		case $MODEL in
+		*) 
+			if [ "${JAVA_HOME}" = "" ]; then
+				JAVA_HOME=/usr/java
+			fi
+			if [ "${MOTIF_HOME}" = "" ]; then
+				MOTIF_HOME=/usr/dt
+			fi
+			if [ "${CDE_HOME}" = "" ]; then
+				CDE_HOME=/usr/dt		
+			fi
+			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/solaris/sparc
+			PATH=/opt/SUNWspro/bin:$PATH
+			export PATH
+			makefile="make_solaris.mak"
+			echo "Building Solaris motif sparc version of SWT"
+		esac
 		;;
 	"HP-UX")
-		JAVA_HOME=/opt/jdk14101
-		MOTIF_HOME=/usr
-		CDE_HOME=/usr/dt
 		case $MODEL in
 			"ia64")
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/opt/jdk14101
+				fi
+				if [ "${MOTIF_HOME}" = "" ]; then
+					MOTIF_HOME=/usr
+				fi
+				if [ "${CDE_HOME}" = "" ]; then
+					CDE_HOME=/usr/dt
+				fi
 				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/ia64
 				makefile="make_hpux_ia64.mak"
-				echo "Building HPUX ia64 version of SWT"
+				echo "Building HPUX motif ia64 version of SWT"
 				;;
 			*)
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/opt/jdk14101
+				fi
+				if [ "${MOTIF_HOME}" = "" ]; then
+					MOTIF_HOME=/usr
+				fi
+				if [ "${CDE_HOME}" = "" ]; then
+					CDE_HOME=/usr/dt
+				fi
 				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/PA_RISC
 				makefile="make_hpux_PA_RISC.mak"
-				echo "Building HPUX risc version of SWT"
+				echo "Building HPUX motif risc version of SWT"
 				;;
 		esac
 		;;

@@ -14,26 +14,52 @@
 
 cd `dirname $0`
 
-makefile="make_linux.mak"
-CC=gcc
-LD=gcc
-GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
-MODEL=`uname -m`
+if [ "${OS}" = "" ]; then
+	OS=`uname -s`
+fi
+if [ "${MODEL}" = "" ]; then
+	MODEL=`uname -m`
+fi
 QT_HOME=$QTDIR
 
-case $MODEL in
-	"x86_64")
-		JAVA_HOME=/bluebird/teamswt/swt-builddir/jdk1.5.0
-		AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
-		XTEST_LIB_PATH=/usr/X11R6/lib64
-		SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
-		OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
+case $OS in
+	"Linux")
+		case $MODEL in
+			"x86_64")
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/bluebird/teamswt/swt-builddir/jdk1.5.0
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
+				XTEST_LIB_PATH=/usr/X11R6/lib64
+				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
+				makefile="make_linux.mak"
+				echo "Building Linux GTK AMD64 version of SWT"
+				;;
+			i?86)
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/bin
+				XTEST_LIB_PATH=/usr/X11R6/lib
+				if [ "${GECKO_SDK}" = "" ]; then
+					GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+				fi
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/linux/x86
+				makefile="make_linux.mak"
+				echo "Building Linux GTK x86 version of SWT"
+				;;
+			*)
+				echo "*** Unknown MODEL <${MODEL}>"
+				;;	
+		esac
 		;;
 	*)
-		JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
-		AWT_LIB_PATH=$JAVA_HOME/jre/bin
-		XTEST_LIB_PATH=/usr/X11R6/lib
-		OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/linux/x86
+		echo "*** Unknown OS <${OS}>"
 		;;
 esac
 
