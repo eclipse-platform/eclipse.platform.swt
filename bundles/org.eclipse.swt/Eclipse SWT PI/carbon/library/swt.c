@@ -132,6 +132,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTex
 }
 #endif /* NO_AppendMenuItemTextWithCFString */
 
+#ifndef NO_ATSFontGetPostScriptName
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSFontGetPostScriptName
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSFontGetPostScriptName\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)ATSFontGetPostScriptName((ATSFontRef)arg0, (ATSOptionFlags)arg1, (CFStringRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUCreateStyle
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUCreateStyle)
 	(JNIEnv *env, jclass that, jintArray arg0)
