@@ -198,8 +198,8 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			POINT pos = new POINT ();
 			OS.GetCursorPos (pos);
 			Event event = new Event ();
-			event.x = pos.x;
-			event.y = pos.y;
+//			event.x = pos.x;
+//			event.y = pos.y;
 			sendEvent (SWT.MenuDetect, event);
 			if (event.doit) {
 				if (menu != null && !menu.isDisposed ()) {
