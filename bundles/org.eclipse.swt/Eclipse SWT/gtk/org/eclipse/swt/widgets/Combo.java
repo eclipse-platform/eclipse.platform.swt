@@ -742,7 +742,7 @@ int gtk_changed (int widget) {
 	String text = new String (Converter.mbcsToWcs (null, buffer));
 	for (int i = 0; i < items.length; i++) {
 		if (items [i].equals (text)) {
-			sendEvent (SWT.Selection);
+			postEvent (SWT.Selection);
 			break;
 		}
 	}
@@ -1128,7 +1128,6 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	String text = keepText ? getText() : "";
 	int selectedIndex = keepSelection ? getSelectionIndex() : -1;
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 	if (items.length == 0) {
 		int itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
@@ -1161,7 +1160,6 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	}
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 }
 
 /**
@@ -1212,9 +1210,9 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
 /**

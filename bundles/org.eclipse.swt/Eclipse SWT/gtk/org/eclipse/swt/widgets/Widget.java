@@ -106,7 +106,6 @@ public abstract class Widget {
 	static final int REALIZE = 40;
 	static final int ROW_ACTIVATED = 27;
 	static final int SELECT = 30;
-	static final int SELECT_CHILD = 31;
 	static final int SHOW = 32;
 	static final int SHOW_HELP = 33;
 	static final int SIZE_ALLOCATE = 34;
@@ -622,10 +621,6 @@ int gtk_row_activated (int tree, int path, int column) {
 }
 
 int gtk_select (int item) {
-	return 0;
-}
-
-int gtk_select_child (int list, int widget) {
 	return 0;
 }
 
@@ -1210,7 +1205,6 @@ int windowProc (int handle, int arg0, int user_data) {
 		case MAP_EVENT: return gtk_map_event (handle, arg0);
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
-		case SELECT_CHILD: return gtk_select_child (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
