@@ -9,10 +9,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-
-/* Start ACCESSIBILITY */
 import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
 
 /**
  * A Label which supports aligned text and/or an image and different border styles.

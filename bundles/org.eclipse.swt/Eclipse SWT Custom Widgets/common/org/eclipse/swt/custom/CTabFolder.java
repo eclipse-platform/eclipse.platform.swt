@@ -10,11 +10,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-
-/* Start ACCESSIBILITY */
 import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
-
 
 /**
  * Instances of this class implement the notebook user interface
@@ -808,33 +804,6 @@ private void initAccessible() {
 				e.width = location.width;
 				e.height = location.height;
 			}
-		}
-		
-		public void navigate(AccessibleControlEvent e) {
-			int childID = ACC.CHILDID_NONE;
-			switch (e.code) {
-				case ACC.NAVDIR_UP:
-				case ACC.NAVDIR_DOWN:
-					if (e.childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					break;
-				case ACC.NAVDIR_FIRSTCHILD:
-					if (items.length > 0) childID = 0;
-					break;
-				case ACC.NAVDIR_LASTCHILD:
-					if (items.length > 0) childID = items.length - 1;
-					break;
-				case ACC.NAVDIR_LEFT:
-				case ACC.NAVDIR_PREVIOUS:
-					if (e.childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && e.childID > 0) childID = e.childID - 1;
-					break;
-				case ACC.NAVDIR_RIGHT:
-				case ACC.NAVDIR_NEXT:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && e.childID < items.length - 1) childID = e.childID + 1;
-					break;
-			}
-			e.childID = childID;
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {

@@ -60,26 +60,33 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * of the control, or the location of a child of the control.
 	 * The default behavior is to do nothing.
 	 * <p>
-	 * Return the identifier of the child at display point (x, y)
-	 * in the <code>childID</code> field of the event object.
-	 * Return CHILDID_SELF if point (x, y) is in the control itself
-	 * and not in any child. Return CHILDID_NONE if point (x, y)
-	 * is not contained in either the control or any of its children.
+	 * Return a rectangle describing the location of the specified
+	 * control or child in the <code>x, y, width, and height</code>
+	 * fields of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>x, y [IN] - the specified point in display coordinates</li>
-	 *    <li>childID [OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE</li>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>x, y, width, height [OUT] - the control or child location in display coordinates</li>
 	 * </ul>
 	 */
 	public void getLocation(AccessibleControlEvent e);
+	
 	public void getChild(AccessibleControlEvent e);
+	
 	public void getChildCount(AccessibleControlEvent e);
+	
 	public void getDefaultAction(AccessibleControlEvent e);
+	
 	public void getFocus(AccessibleControlEvent e);
+	
 	public void getRole(AccessibleControlEvent e);
+	
 	public void getSelection(AccessibleControlEvent e);
+	
 	public void getState(AccessibleControlEvent e);
+	
 	public void getValue(AccessibleControlEvent e);
+	
 	public void getChildren(AccessibleControlEvent e);
 }
