@@ -45,52 +45,8 @@
       </menu>
       <action
             state="false"
-            id="org.eclipse.swt.examples.paint.toolPencil"
-            toolbarPath="Normal/Pencil"
-            class="org.eclipse.swt.examples.paint.PaintViewAction"
-            enablesFor="*"
-            icon="icons/pencil_tool.gif"
-            label="%tool.Pencil.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Pencil"
-            tooltip="%tool.Pencil.tooltip">
-      </action>
-      <action
-            state="false"
-            id="org.eclipse.swt.examples.paint.toolAirbrush"
-            toolbarPath="Normal/Airbrush"
-            class="org.eclipse.swt.examples.paint.PaintViewAction"
-            enablesFor="*"
-            icon="icons/airbrush_tool.gif"
-            label="%tool.Airbrush.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Airbrush"
-            tooltip="%tool.Airbrush.tooltip">
-      </action>
-      <action
-            state="false"
-            id="org.eclipse.swt.examples.paint.toolLine"
-            toolbarPath="Normal/Line"
-            class="org.eclipse.swt.examples.paint.PaintViewAction"
-            enablesFor="*"
-            icon="icons/line_tool.gif"
-            label="%tool.Line.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Line"
-            tooltip="%tool.Line.tooltip">
-      </action>
-      <action
-            state="false"
-            id="org.eclipse.swt.examples.paint.toolPolyLine"
-            toolbarPath="Normal/Polygon"
-            class="org.eclipse.swt.examples.paint.PaintViewAction"
-            enablesFor="*"
-            icon="icons/polyline_tool.gif"
-            label="%tool.PolyLine.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/PolyLine"
-            tooltip="%tool.PolyLine.tooltip">
-      </action>
-      <action
-            state="false"
             id="org.eclipse.swt.examples.paint.toolEllipse"
-            toolbarPath="Normal/Ellipse"
+            toolbarPath="Normal"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
             enablesFor="*"
             icon="icons/ellipse_tool.gif"
@@ -100,8 +56,19 @@
       </action>
       <action
             state="false"
+            id="org.eclipse.swt.examples.paint.toolFilledRectangle"
+            toolbarPath="Normal"
+            class="org.eclipse.swt.examples.paint.PaintViewAction"
+            enablesFor="*"
+            icon="icons/filledrectangle_tool.gif"
+            label="%tool.FilledRectangle.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/FilledRectangle"
+            tooltip="%tool.FilledRectangle.tooltip">
+      </action>
+      <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolRectangle"
-            toolbarPath="Normal/Rectangle"
+            toolbarPath="Normal"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
             enablesFor="*"
             icon="icons/rectangle_tool.gif"
@@ -111,14 +78,47 @@
       </action>
       <action
             state="false"
-            id="org.eclipse.swt.examples.paint.toolFilledRectangle"
-            toolbarPath="Normal/FilledRectangle"
+            id="org.eclipse.swt.examples.paint.toolPolyLine"
+            toolbarPath="Normal"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
             enablesFor="*"
-            icon="icons/filledrectangle_tool.gif"
-            label="%tool.FilledRectangle.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/FilledRectangle"
-            tooltip="%tool.FilledRectangle.tooltip">
+            icon="icons/polyline_tool.gif"
+            label="%tool.PolyLine.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/PolyLine"
+            tooltip="%tool.PolyLine.tooltip">
+      </action>
+      <action
+            state="false"
+            id="org.eclipse.swt.examples.paint.toolLine"
+            toolbarPath="Normal"
+            class="org.eclipse.swt.examples.paint.PaintViewAction"
+            enablesFor="*"
+            icon="icons/line_tool.gif"
+            label="%tool.Line.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Line"
+            tooltip="%tool.Line.tooltip">
+      </action>
+      <action
+            state="false"
+            id="org.eclipse.swt.examples.paint.toolAirbrush"
+            toolbarPath="Normal"
+            class="org.eclipse.swt.examples.paint.PaintViewAction"
+            enablesFor="*"
+            icon="icons/airbrush_tool.gif"
+            label="%tool.Airbrush.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Airbrush"
+            tooltip="%tool.Airbrush.tooltip">
+      </action>
+      <action
+            state="false"
+            id="org.eclipse.swt.examples.paint.toolPencil"
+            toolbarPath="Normal"
+            class="org.eclipse.swt.examples.paint.PaintViewAction"
+            enablesFor="*"
+            icon="icons/pencil_tool.gif"
+            label="%tool.Pencil.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Pencil"
+            tooltip="%tool.Pencil.tooltip">
       </action>
    </viewContribution>
 </extension>

@@ -19,15 +19,10 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	private Point anchorPosition = new Point(-1, -1);
 	
 	/**
-	 * The position of the last drawn temporary point in a segmented selection
-	 */
-	private Point tempPosition = new Point(-1, -1);
-
-	/**
 	 * The position of the first anchor in a segmented selection sequence
 	 */
 	protected Point firstAnchorPosition = new Point(-1, 0);
-	
+
 	/**
 	 * Constructs a SegmentedInteractivePaintSession.
 	 * 
@@ -45,7 +40,6 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 			"session.SegmentedInteractivePaint.message.anchorMode"));
 
 		anchorPosition.x = -1;
-		tempPosition.x = -1;
 		firstAnchorPosition.x = -1;
 	}
 	
@@ -62,15 +56,8 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	public void resetSession() {
 		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
 			"session.SegmentedInteractivePaint.message.anchorMode"));
-
-		if (anchorPosition.x == -1) return; // spurious event
-
-		if (tempPosition.x != -1) { // restore old image
-			final GC gc = getPaintSurface().getGC();
-			eraseTemporary(gc, anchorPosition, tempPosition);
-		}
+		getPaintSurface().clearRubberbandSelection();
 		anchorPosition.x = -1;
-		tempPosition.x = -1;
 		firstAnchorPosition.x = -1;
 	}
 
@@ -82,15 +69,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	public void mouseDown(MouseEvent event) {
 		if (event.button != 1) return;
 
-		if (tempPosition.x != -1) { // restore old image
-			final GC gc = getPaintSurface().getGC();
-			Assert.assert(anchorPosition.x != -1);
-			eraseTemporary(gc, anchorPosition, tempPosition);
-			tempPosition.x = event.x;
-			tempPosition.y = event.y;
-			drawPermanent(gc, anchorPosition, tempPosition);
-			tempPosition.x = -1;
-		}
+		getPaintSurface().commitRubberbandSelection();
 		anchorPosition.x = event.x;
 		anchorPosition.y = event.y;
 		if (firstAnchorPosition.x == -1) {
@@ -111,12 +90,8 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 		if (firstAnchorPosition.x == -1) return; // spurious event
 		Assert.assert(anchorPosition.x != -1);	
 
-		final GC gc = getPaintSurface().getGC();	
-		if (tempPosition.x != -1) { // restore old image
-			eraseTemporary(gc, anchorPosition, tempPosition);
-			tempPosition.x = -1;
-		}
-		drawPermanent(gc, anchorPosition, firstAnchorPosition);
+		getPaintSurface().clearRubberbandSelection();
+		getPaintSurface().drawMeta(createMeta(anchorPosition, firstAnchorPosition));
 		anchorPosition.x = -1;
 		firstAnchorPosition.x = -1;
 
@@ -142,21 +117,16 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	 * @param event the mouse event detail information
 	 */
 	public void mouseMove(MouseEvent event) {
+		final PaintSurface ps = getPaintSurface();
 		if (anchorPosition.x == -1) {
-			getPaintSurface().showCurrentPositionStatus();
+			ps.showCurrentPositionStatus();
 			return; // spurious event
 		} else {
-			getPaintSurface().showCurrentRangeStatus(anchorPosition);
+			ps.showCurrentRangeStatus(anchorPosition);
 		}
 
-		final GC gc = getPaintSurface().getGC();
-		if (tempPosition.x != -1) { // restore old image
-			eraseTemporary(gc, anchorPosition, tempPosition);
-		}
-		// draw temporary entity
-		tempPosition.x = event.x;
-		tempPosition.y = event.y;
-		drawTemporary(gc, anchorPosition, tempPosition);
+		ps.clearRubberbandSelection();
+		ps.addRubberbandSelection(createMeta(anchorPosition, ps.getCurrentPosition()));
 	}	
 
 	/**
@@ -166,27 +136,20 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	 * @param numPoints the number of valid points in the array (n >= 2)
 	 */
 	public void render(final Point[] points, int numPoints) {
+		final PaintSurface ps = getPaintSurface();
 		Assert.assert(numPoints >= 2);
 
-		final GC gc = getPaintSurface().getGC();
 		for (int i = 1; i < numPoints; ++i) {
-			drawPermanent(gc, points[i - 1], points[i]);
+			ps.drawMeta(createMeta(points[i - 1], points[i]));
 		}
-		drawPermanent(gc, points[numPoints - 1], points[0]);
+		ps.drawMeta(createMeta(points[numPoints - 1], points[0]));
 	}
 	
 	/**
-	 * Draws a permanent segment.
+	 * Template Method: Creates a Meta for drawing rubberband entities and the final product
+	 * 
+	 * @param anchor the anchor point
+	 * @param cursor the point marking the current pointer location
 	 */
-	protected abstract void drawPermanent(GC gc, Point a, Point b);
-
-	/**
-	 * Draws a temporary segment.
-	 */
-	protected abstract void drawTemporary(GC gc, Point a, Point b);
-
-	/**
-	 * Erases a temporary segment.
-	 */
-	protected abstract void eraseTemporary(GC gc, Point a, Point b);	
+	protected abstract Meta createMeta(Point anchor, Point cursor);
 }

@@ -11,8 +11,6 @@ import org.eclipse.swt.graphics.*;
  * A rectangle drawing tool.
  */
 public class FilledRectangleTool extends DragInteractivePaintSession implements PaintTool {
-	private Color temporaryFGColor;
-	private Color temporaryBGColor;
 	private Color drawFGColor;
 	private Color drawBGColor;
 
@@ -25,8 +23,6 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	public FilledRectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
-		temporaryFGColor = new Color(null, 255, 255, 255);
-		temporaryBGColor = new Color(null, 127, 127, 127);
 	}
 	
 	/**
@@ -51,36 +47,12 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	/*
 	 * Template methods for drawing
 	 */
-	protected void drawPermanent(GC gc, Point a, Point b) {
-		gc.setForeground(drawFGColor);
-		gc.setBackground(drawBGColor);
-		fillRectangle(gc, a, b);
-	}		
-
-	protected void drawTemporary(GC gc, Point a, Point b) {
-		gc.setForeground(temporaryFGColor);
-		gc.setBackground(temporaryBGColor);
-		gc.setXORMode(true);
-		fillRectangle(gc, a, b);
-		gc.setXORMode(false);
-	}		
-
-	protected void eraseTemporary(GC gc, Point a, Point b) {
-		drawTemporary(gc, a, b);
-	}
-
-	/**
-	 * Draws a filled rectangle.
-	 */
-	protected void fillRectangle(GC gc, Point a, Point b) {
-		final int left = Math.min(a.x, b.x);
-		final int top = Math.min(a.y, b.y);
-		final int width = Math.abs(a.x - b.x) + 1;
-		final int height = Math.abs(a.y - b.y) + 1;
-		
-		gc.drawRectangle(left, top, width, height);
-		if ((width > 2) && (height > 2))
-			gc.fillRectangle(left + 1, top + 1,
-				width - 1/*- 2*/, height - 1/*- 2*/); // BUG in GC
+	protected Meta createMeta(Point a, Point b) {
+		Meta.Container container = new Meta.Container();
+		container.add(new Meta.Rectangle(drawFGColor, a.x, a.y, b.x, b.y));
+		container.add(new Meta.SolidRectangle(drawBGColor,
+			Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
+			Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
+		return container;
 	}
 }

@@ -22,9 +22,9 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	 * The position of the first click in a click-drag
 	 */
 	private Point anchorPosition = new Point(-1, -1);
-	
+
 	/**
-	 * The position of the last drawn temporary point in a click-drag
+	 * A temporary point
 	 */
 	private Point tempPosition = new Point(-1, -1);
 	
@@ -43,9 +43,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	public void beginSession() {
 		getPaintSurface().getPaintStatus().
 			setMessage(PaintPlugin.getResourceString("session.DragInteractivePaint.message"));
-
 		anchorPosition.x = -1;
-		tempPosition.x = -1;
 		dragInProgress = false;
 	}
 	
@@ -60,12 +58,8 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	 * Aborts any operation in progress.
 	 */
 	public void resetSession() {
-		if (tempPosition.x != -1) { // restore old image
-			final GC gc = getPaintSurface().getGC();	
-			eraseTemporary(gc, anchorPosition, tempPosition);
-		}
+		getPaintSurface().clearRubberbandSelection();
 		anchorPosition.x = -1;
-		tempPosition.x = -1;
 		dragInProgress = false;
 	}
 
@@ -81,7 +75,6 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 		
 		anchorPosition.x = event.x;
 		anchorPosition.y = event.y;
-		tempPosition.x = -1;
 	}
 
 	/**
@@ -106,16 +99,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 		dragInProgress = false;
 		if (anchorPosition.x == -1) return; // spurious event
 		
-		final GC gc = getPaintSurface().getGC();		
-		if (tempPosition.x != -1) { // restore old image
-			eraseTemporary(gc, anchorPosition, tempPosition);
-		}
-
-		// draw permanent entiry
-		tempPosition.x = event.x;
-		tempPosition.y = event.y;
-		drawPermanent(gc, anchorPosition, tempPosition);
-		tempPosition.x = -1;
+		getPaintSurface().commitRubberbandSelection();
 	}
 	
 	/**
@@ -124,21 +108,16 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	 * @param event the mouse event detail information
 	 */
 	public void mouseMove(MouseEvent event) {
+		final PaintSurface ps = getPaintSurface();
 		if (! dragInProgress) {
-			getPaintSurface().showCurrentPositionStatus();
+			ps.showCurrentPositionStatus();
 			return;
 		}
-		getPaintSurface().showCurrentRangeStatus(anchorPosition);
-
-		final GC gc = getPaintSurface().getGC();
-		
-		if (tempPosition.x != -1) { // restore old image
-			eraseTemporary(gc, anchorPosition, tempPosition);
-		}
-		// draw temporary entity
+		ps.showCurrentRangeStatus(anchorPosition);
+		ps.clearRubberbandSelection();
 		tempPosition.x = event.x;
 		tempPosition.y = event.y;
-		drawTemporary(gc, anchorPosition, tempPosition);
+		ps.addRubberbandSelection(createMeta(anchorPosition, tempPosition));
 	}
 	
 	/**
@@ -149,22 +128,14 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	 */
 	public void render(final Point[] points, int numPoints) {
 		Assert.assert(numPoints == 2);
-		final GC gc = getPaintSurface().getGC();
-		drawPermanent(gc, points[0], points[1]);
+		getPaintSurface().drawMeta(createMeta(points[0], points[1]));
 	}
 	
 	/**
-	 * Draws a permanent entity.
+	 * Template Method: Creates a Meta for drawing rubberband entities and the final product
+	 * 
+	 * @param anchor the anchor point
+	 * @param cursor the point marking the current pointer location
 	 */
-	protected abstract void drawPermanent(GC gc, Point a, Point b);
-
-	/**
-	 * Draws a temporary entity.
-	 */
-	protected abstract void drawTemporary(GC gc, Point a, Point b);
-
-	/**
-	 * Erases a temporary entity.
-	 */
-	protected abstract void eraseTemporary(GC gc, Point a, Point b);	
+	protected abstract Meta createMeta(Point anchor, Point cursor);
 }
