@@ -42,8 +42,17 @@ public class EventConsole {
 		Menu dropDown = new Menu (bar);
 		consoleItem.setMenu (dropDown);
 
+		MenuItem copy = new MenuItem (dropDown, SWT.NONE);
+		copy.setAccelerator(SWT.MOD1 + 'C');
+		copy.setText ("&Copy\tCtrl+C");
+		copy.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				text.copy();
+			}
+		});
+		
 		MenuItem clear = new MenuItem (dropDown, SWT.NONE);
-		clear.setText ("Clear");
+		clear.setText ("C&lear");
 		clear.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				text.setText("");
@@ -51,7 +60,7 @@ public class EventConsole {
 		});
 		
 		MenuItem close = new MenuItem (dropDown, SWT.NONE);
-		close.setText ("Dismiss");
+		close.setText ("&Dismiss");
 		close.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				shell.dispose ();
