@@ -100,7 +100,10 @@ public Text (Composite parent, int style) {
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
-	if ((style & SWT.WRAP) != 0) style |= SWT.MULTI;
+	if ((style & SWT.WRAP) != 0) {
+		style |= SWT.MULTI;
+		style &= SWT.H_SCROLL;
+	}
 	if ((style & SWT.MULTI) != 0) style &= ~SWT.PASSWORD;
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
@@ -301,18 +304,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int xborder = 0, yborder = 0;
 	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
 		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_get_size (layout, w, h);
-		if ((style & SWT.BORDER) != 0) {
-			int /*long*/ style = OS.gtk_widget_get_style (handle);
-			xborder += OS.gtk_style_get_xthickness (style);
-			yborder += OS.gtk_style_get_ythickness (style);
-		}
-		xborder += INNER_BORDER;
-		yborder += INNER_BORDER;
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
@@ -322,6 +317,28 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.pango_layout_set_width (layout, wHint * OS.PANGO_SCALE);
 		OS.pango_layout_get_size (layout, w, h);
 		OS.g_object_unref (layout);
+	}
+	int width = OS.PANGO_PIXELS (w [0]);
+	int height = OS.PANGO_PIXELS (h [0]);
+	width = wHint == SWT.DEFAULT ? width : wHint;
+	height = hHint == SWT.DEFAULT ? height : hHint;
+	Rectangle trim = computeTrim (0, 0, width, height);
+	return new Point (trim.width, trim.height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+	Rectangle trim = super.computeTrim (x, y, width, height);
+	int xborder = 0, yborder = 0;
+	if ((style & SWT.SINGLE) != 0) {
+		if ((style & SWT.BORDER) != 0) {
+			int /*long*/ style = OS.gtk_widget_get_style (handle);
+			xborder += OS.gtk_style_get_xthickness (style);
+			yborder += OS.gtk_style_get_ythickness (style);
+		}
+		xborder += INNER_BORDER;
+		yborder += INNER_BORDER;
+	} else {
 		int borderWidth = OS.gtk_container_get_border_width (handle);  
 		xborder += borderWidth;
 		yborder += borderWidth;
@@ -333,16 +350,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	int width = OS.PANGO_PIXELS (w [0]);
-	int height = OS.PANGO_PIXELS (h [0]);
-	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? height : hHint;
-	width += 2 * xborder;
-	height += 2 * yborder;
-	Rectangle trim = computeTrim (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	trim.x -= xborder;
+	trim.y -= yborder;
+	trim.width += 2 * xborder;
+	trim.height += 2 * yborder;
+	return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
-
 /**
  * Copies the selected text.
  * <p>
