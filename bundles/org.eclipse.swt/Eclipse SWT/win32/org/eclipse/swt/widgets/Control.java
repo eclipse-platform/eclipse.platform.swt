@@ -3392,7 +3392,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* To avoid the extra SWT.KeyDown, look for a space and
 			* issue the event from WM_CHAR.
 			*/
-			if (asciiKey == 0x32) return null;
+			if (asciiKey == ' ') return null;
 			if (asciiKey != wParam) return null;
 		}
 		
