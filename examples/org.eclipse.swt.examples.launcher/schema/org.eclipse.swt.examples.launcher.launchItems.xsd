@@ -6,20 +6,17 @@
       <meta.schema plugin="org.eclipse.swt.examples.launcher" id="launchItems" name="Launch Items"/>
    </appInfo>
    <documentation>
-      This extension point is used to add 'standalone program' and 'Workbench view'
-      launch items to the Launcher, optionally grouping them into
-      categories so as to form a multi-tiered hierarchy.
-      Standalone programs are executed in new run-time environments.
-      Workbench views are created within the active Workbench Perspective.
+      This extension point is used to add 'standalone program' and
+'Workbench view'
+launch items to the Launcher, optionally grouping them into
+categories so as to form a multi-tiered hierarchy.
+Standalone programs are executed using the platform's event loop.
+Workbench views are created within the active Workbench Perspective.
    </documentation>
 </annotation>
 
    <element name="extension">
       <complexType>
-         <all>
-            <element ref="category" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="item" minOccurs="0" maxOccurs="unbounded"/>
-         </all>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -123,13 +120,6 @@
          </documentation>
       </annotation>
       <complexType>
-         <all>
-            <choice>
-               <element ref="program"/>
-               <element ref="view"/>
-            </choice>
-            <element ref="source" minOccurs="0" maxOccurs="1"/>
-         </all>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
@@ -169,18 +159,6 @@
             <annotation>
                <documentation>
                   The localized plain-text description of this launch item.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="source">
-      <complexType>
-         <attribute name="zip" type="string">
-            <annotation>
-               <documentation>
-                  The declaring plugin relative path of a ZIP file containing source code associated with a launch item.
                </documentation>
             </annotation>
          </attribute>

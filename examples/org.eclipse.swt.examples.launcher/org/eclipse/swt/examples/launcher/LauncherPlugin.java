@@ -26,8 +26,6 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		LAUNCH_ITEMS_XML_PROGRAM_CLASS = "mainClass",
 		LAUNCH_ITEMS_XML_VIEW = "view",
 		LAUNCH_ITEMS_XML_VIEW_VIEWID = "viewId",
-		LAUNCH_ITEMS_XML_SOURCE = "source",
-		LAUNCH_ITEMS_XML_SOURCE_ZIP = "zip",
 		LAUNCH_ITEMS_XML_ATTRIB_ID = "id",
 		LAUNCH_ITEMS_XML_ATTRIB_NAME = "name",
 		LAUNCH_ITEMS_XML_ATTRIB_ENABLED = "enabled",
@@ -265,7 +263,6 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			if (programCE != null) {
 				final String attribPluginId = getItemAttribute(programCE, LAUNCH_ITEMS_XML_PROGRAM_PLUGIN, null);
 				final String attribClass    = getItemAttribute(programCE, LAUNCH_ITEMS_XML_PROGRAM_CLASS, null);
-						
 				if (attribClass == null || attribPluginId == null) {
 					logError(getResourceString("error.IncompleteProgramLaunchItem",
 					new Object[] { attribId } ), null);

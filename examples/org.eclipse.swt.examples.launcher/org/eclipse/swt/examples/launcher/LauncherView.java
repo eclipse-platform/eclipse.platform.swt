@@ -180,13 +180,10 @@ public class LauncherView extends ViewPart {
 		if (workbenchShell == null) return;
 		try {
 			Class cl = Class.forName(itemDescriptor.getMainType());
-			Field displayField = cl.getField("display");
-			displayField.set(cl, workbenchShell.getDisplay());
+			Display display = workbenchShell.getDisplay();
 			Object exampleInstance = cl.newInstance();
-			Method openMethod = cl.getDeclaredMethod("open", new Class[] {});
-			openMethod.invoke(exampleInstance, new Object[] {});
-		} catch (NoSuchFieldException e) {
-			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementField"), null);
+			Method openMethod = cl.getDeclaredMethod("open", new Class[] {Display.class});
+			openMethod.invoke(exampleInstance, new Object[] {display});
 		} catch (NoSuchMethodException e) {
 			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementMethod"), null);
 		} catch (ClassNotFoundException e) {

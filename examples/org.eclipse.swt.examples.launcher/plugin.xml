@@ -72,9 +72,6 @@
          <view
                viewId="org.eclipse.swt.examples.launcher.view">
          </view>
-         <source
-               zip="launchersrc.zip">
-         </source>
       </item>
    </extension>
 

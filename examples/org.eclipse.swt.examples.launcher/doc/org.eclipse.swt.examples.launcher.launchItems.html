@@ -7,11 +7,12 @@
 <H1><CENTER>Launch Items</CENTER></H1>
 <H2>Identifier</H2>
 org.eclipse.swt.examples.launcher.launchItems<H2>Description</H2>
-This extension point is used to add 'standalone program' and 'Workbench view'
-      launch items to the Launcher, optionally grouping them into
-      categories so as to form a multi-tiered hierarchy.
-      Standalone programs are executed in new run-time environments.
-      Workbench views are created within the active Workbench Perspective.<H2>Markup</H2>
+This extension point is used to add 'standalone program' and
+'Workbench view'
+launch items to the Launcher, optionally grouping them into
+categories so as to form a multi-tiered hierarchy.
+Standalone programs are executed using the platform's event loop.
+Workbench views are created within the active Workbench Perspective.<H2>Markup</H2>
 <p><samp>&nbsp;&nbsp; &lt;!ELEMENT extension (EMPTY)&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST extension</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;point&nbsp;CDATA #REQUIRED</samp>
@@ -52,12 +53,6 @@ This extension point is used to add 'standalone program' and 'Workbench view'
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>name</b> - The localized name of this launch item.</li><li><b>id</b> - The unique id of this launch item. Launch items with duplicate id's will be discarded.</li><li><b>category</b> - The unique id of the category this launch item belongs to.</li><li><b>icon</b> - The declaring plugin relative path of an icon to display with this launch item in the Launcher.</li><li><b>enabled</b> - Set to "false" to disable this launch item, or to "true" to enable it (default).</li><li><b>description</b> - The localized plain-text description of this launch item.</li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT source (EMPTY)&gt;</samp>
-<br><samp>&nbsp;&nbsp; &lt;!ATTLIST source</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zip&nbsp;CDATA #IMPLIED</samp>
-<br><samp>&nbsp;&nbsp; &gt;</samp>
-<ul>
-<li><b>zip</b> - The declaring plugin relative path of a ZIP file containing source code associated with a launch item.</li></ul>
 <H2>Example</H2>
 <H2>API Information</H2>
 <H2>Supplied Implementation</H2>

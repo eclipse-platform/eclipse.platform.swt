@@ -36,9 +36,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.addressbook.AddressBook">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.FileViewer.name"
@@ -49,9 +46,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.fileviewer.FileViewer">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HoverHelp.name"
@@ -62,9 +56,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.hoverhelp.HoverHelp">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HelloWorld1.name"
@@ -75,9 +66,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.helloworld.HelloWorld1">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HelloWorld2.name"
@@ -88,9 +76,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.helloworld.HelloWorld2">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HelloWorld3.name"
@@ -101,9 +86,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.helloworld.HelloWorld3">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HelloWorld4.name"
@@ -114,9 +96,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.helloworld.HelloWorld4">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.HelloWorld5.name"
@@ -127,9 +106,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.helloworld.HelloWorld5">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.ImageAnalyzer.name"
@@ -140,9 +116,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.imageanalyzer.ImageAnalyzer">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.JavaViewer.name"
@@ -153,9 +126,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.javaviewer.JavaViewer">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
    <item
          name="%launchitem.TextEditor.name"
@@ -166,9 +136,6 @@
             pluginId="org.eclipse.swt.examples"
             mainClass="org.eclipse.swt.examples.texteditor.TextEditor">
       </program>
-      <source
-            zip="swtexamplessrc.zip">
-      </source>
    </item>
 </extension>
 </plugin>
