@@ -5821,7 +5821,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__II_3
 		case CB_GETEDITSEL: {
 			jint wParam = 0, lParam = 0;
 			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)&wParam, (LPARAM)&lParam);
-			lparg2[0] = wParam;  lparg3[0] = lParam;
+			if (lparg2 != NULL) lparg2[0] = wParam;
+			if (lparg3 != NULL) lparg3[0] = lParam;
+			break;
 		}
 		default:
 			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
