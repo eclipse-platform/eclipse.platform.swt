@@ -20,33 +20,6 @@ import org.eclipse.swt.widgets.*;
  * 1) Set the size of the control that is being scrolled and the ScrolledComposite 
  * will show scrollbars when the contained control can not be fully seen.
  * 
- * <code><pre>
- * public static void main (String [] args) {
- *         Display display = new Display ();
- *         Color red = display.getSystemColor(SWT.COLOR_RED);
- *         Shell shell = new Shell (display);
- *         shell.setLayout(new FillLayout());
- *         ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
- *         Composite c = new Composite(sc, SWT.NONE);
- *         c.setBackground(red);
- *         sc.setContent(c);
- *         GridLayout layout = new GridLayout();
- *         layout.numColumns = 5;
- *         c.setLayout(layout);
- *         for (int i = 0; i < 10; i++) {
- *                 Button b1 = new Button(c, SWT.PUSH);
- *                 b1.setText("button "+i);
- *         }
- *         Point pt = c.computeSize(SWT.DEFAULT, SWT.DEFAULT);
- *         c.setSize(pt);
- *         shell.open ();
- *         while (!shell.isDisposed ()) {
- *             if (!display.readAndDispatch ()) display.sleep ();
- *         }
- *         display.dispose ();
- * }
- * </pre></code>
- * 
  * 2) The second way imitates the way a browser would work.  Set the minimum size of
  * the control and the ScrolledComposite will show scroll bars if the visible area is 
  * less than the minimum size of the control and it will expand the size of the control 
@@ -55,34 +28,66 @@ import org.eclipse.swt.widgets.*;
  * 
  * <code><pre>
  * public static void main (String [] args) {
- *         Display display = new Display ();
- *         Color red = display.getSystemColor(SWT.COLOR_RED);
- *         Shell shell = new Shell (display);
- *         shell.setLayout(new FillLayout());
- *         ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
- *         Composite c = new Composite(sc, SWT.NONE);
- *         c.setBackground(red);
- *         sc.setContent(c);
- *         GridLayout layout = new GridLayout();
- *         layout.numColumns = 5;
- *         c.setLayout(layout);
- *         for (int i = 0; i < 10; i++) {
- *                 Button b1 = new Button(c, SWT.PUSH);
- *                 b1.setText("button "+i);
- *         }
- *         Point pt = c.computeSize(SWT.DEFAULT, SWT.DEFAULT);
- *         sc.setExpandHorizontal(true);
- *         sc.setExpandVertical(true);
- *         sc.setMinWidth(pt.x);
- *         sc.setMinHeight(pt.y);
- *         shell.open ();
- *         while (!shell.isDisposed ()) {
- *             if (!display.readAndDispatch ()) display.sleep ();
- *         }
- *         display.dispose ();
+ *      Display display = new Display ();
+ *      Color red = display.getSystemColor(SWT.COLOR_RED);
+ *      Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+ *      Shell shell = new Shell (display);
+ *      shell.setLayout(new FillLayout());
+ * 	
+ *      // set the size of the scrolled content - method 1
+ *      final ScrolledComposite sc1 = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+ *      final Composite c1 = new Composite(sc1, SWT.NONE);
+ *      sc1.setContent(c1);
+ *      c1.setBackground(red);
+ *      GridLayout layout = new GridLayout();
+ *      layout.numColumns = 4;
+ *      c1.setLayout(layout);
+ *      Button b1 = new Button (c1, SWT.PUSH);
+ *      b1.setText("first button");
+ *      c1.setSize(c1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+ *      
+ *      // set the minimum width and height of the scrolled content - method 2
+ *      final ScrolledComposite sc2 = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+ *      sc2.setExpandHorizontal(true);
+ *      sc2.setExpandVertical(true);
+ *      final Composite c2 = new Composite(sc2, SWT.NONE);
+ *      sc2.setContent(c2);
+ *      c2.setBackground(blue);
+ *      layout = new GridLayout();
+ *      layout.numColumns = 4;
+ *      c2.setLayout(layout);
+ *      Button b2 = new Button (c2, SWT.PUSH);
+ *      b2.setText("first button");
+ *      sc2.setMinSize(c2.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+ *      
+ *      Button add = new Button (shell, SWT.PUSH);
+ *      add.setText("add children");
+ *      final int[] index = new int[]{0};
+ *      add.addListener(SWT.Selection, new Listener() {
+ *          public void handleEvent(Event e) {
+ *              index[0]++;
+ *              Button button = new Button(c1, SWT.PUSH);
+ *              button.setText("button "+index[0]);
+ *              // reset size of content so children can be seen - method 1
+ *              c1.setSize(c1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+ *              c1.layout();
+ *              
+ *              button = new Button(c2, SWT.PUSH);
+ *              button.setText("button "+index[0]);
+ *              // reset the minimum width and height so children can be seen - method 2
+ *              sc2.setMinSize(c2.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+ *              c2.layout();
+ *          }
+ *      });
+ * 
+ *      shell.open ();
+ *      while (!shell.isDisposed ()) {
+ *          if (!display.readAndDispatch ()) display.sleep ();
+ *      }
+ *      display.dispose ();
  * }
  * </pre></code>
- * 
+ *
  * <dl>
  * <dt><b>Styles:</b><dd>H_SCROLL, V_SCROLL
  * </dl>
@@ -165,25 +170,6 @@ private void hScroll() {
 	ScrollBar hBar = getHorizontalBar ();
 	int hSelection = hBar.getSelection ();
 	content.setLocation (-hSelection, location.y);
-}
-
-private void init() {
-	ScrollBar vBar = getVerticalBar ();
-	if (vBar != null) {
-		vBar.setMaximum (0);
-		vBar.setThumb (0);
-		vBar.setSelection(0);
-	}
-	ScrollBar hBar = getHorizontalBar ();
-	if (hBar != null) {
-		hBar.setMaximum (0);
-		hBar.setThumb (0);
-		hBar.setSelection(0);
-	}
-	if (content != null) {
-		content.setLocation(0, 0);
-	}
-	layout();
 }
 
 public void layout(boolean changed) {
@@ -289,7 +275,7 @@ public void setAlwaysShowScrollBars(boolean show) {
 	if (hBar != null && alwaysShowScroll) hBar.setVisible(true);
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null && alwaysShowScroll) vBar.setVisible(true);
-	init();
+	layout();
 }
 
 /**
@@ -302,13 +288,24 @@ public void setContent(Control content) {
 	}
 	
 	this.content = content;
+	ScrollBar vBar = getVerticalBar ();
+	ScrollBar hBar = getHorizontalBar ();
 	if (this.content != null) {
-		init();
+		if (vBar != null) {
+			vBar.setMaximum (0);
+			vBar.setThumb (0);
+			vBar.setSelection(0);
+		}
+		if (hBar != null) {
+			hBar.setMaximum (0);
+			hBar.setThumb (0);
+			hBar.setSelection(0);
+		}
+		content.setLocation(0, 0);
+		layout();
 		this.content.addListener(SWT.Resize, contentListener);
 	} else {
-		ScrollBar hBar = getHorizontalBar ();
 		if (hBar != null) hBar.setVisible(alwaysShowScroll);
-		ScrollBar vBar = getVerticalBar ();
 		if (vBar != null) vBar.setVisible(alwaysShowScroll);
 	}
 }
@@ -323,7 +320,7 @@ public void setContent(Control content) {
 public void setExpandHorizontal(boolean expand) {
 	if (expand == expandHorizontal) return;
 	expandHorizontal = expand;
-	init();
+	layout();
 }
 /**
  * Configure the ScrolledComposite to resize the content object to be as tall as the 
@@ -336,7 +333,7 @@ public void setExpandHorizontal(boolean expand) {
 public void setExpandVertical(boolean expand) {
 	if (expand == expandVertical) return;
 	expandVertical = expand;
-	init();
+	layout();
 }
 public void setLayout (Layout layout) {
 	// do not allow a layout to be set on this class because layout is being handled by the resize listener
@@ -348,9 +345,16 @@ public void setLayout (Layout layout) {
  * setExpandVertical(true) has been set.
  */
 public void setMinHeight(int height) {
-	if (height == minHeight) return;
+	setMinSize(minWidth, height);
+}
+public void setMinSize(Point size) {
+	setMinSize(size.x, size.y);
+}
+public void setMinSize(int width, int height) {
+	if (width == minWidth && height == minHeight) return;
+	minWidth = Math.max(0, width);
 	minHeight = Math.max(0, height);
-	init();
+	layout();
 }
 /**
  * Specify the minimum width at which the ScrolledComposite will begin scrolling the
@@ -359,9 +363,7 @@ public void setMinHeight(int height) {
  */
 
 public void setMinWidth(int width) {
-	if (width == minWidth) return;
-	minWidth = Math.max(0, width);
-	init();
+	setMinSize(width, minHeight);
 }
 
 private void vScroll() {
