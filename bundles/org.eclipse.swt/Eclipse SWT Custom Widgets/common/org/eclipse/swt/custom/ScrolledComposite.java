@@ -211,7 +211,6 @@ private void resize() {
 	ScrollBar hBar = getHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
 	Rectangle contentRect = content.getBounds();
-	contentRect.x = contentRect.y = 0;
 	
 	if (!alwaysShowScroll) {
 		boolean hVisible = needHScroll(contentRect, false);
@@ -261,11 +260,12 @@ private void resize() {
 public void setContent(Control content) {
 	if (this.content != null && !this.content.isDisposed()) {
 		this.content.removeListener(SWT.Resize, contentListener);
-		content.setBounds(new Rectangle(-200, -200, 0, 0));	
+		this.content.setBounds(new Rectangle(-200, -200, 0, 0));	
 	}
 	
 	this.content = content;
 	if (this.content != null) {
+		this.content.setLocation(0, 0);
 		this.content.addListener(SWT.Resize, contentListener);
 		resize();	
 	}
