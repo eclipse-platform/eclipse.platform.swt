@@ -107,6 +107,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
+		case OS.kEventControlBoundsChanged:				return kEventControlBoundsChanged (nextHandler, theEvent, userData);
 		case OS.kEventControlClick:				return kEventControlClick (nextHandler, theEvent, userData);
 		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
@@ -442,6 +443,10 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 }
 	
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+	
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

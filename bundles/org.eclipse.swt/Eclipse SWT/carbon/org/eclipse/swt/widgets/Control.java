@@ -395,6 +395,7 @@ void hookEvents () {
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlActivate,
+		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		OS.kEventClassControl, OS.kEventControlClick,
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlDeactivate,
