@@ -1830,8 +1830,11 @@ private void showToolTip (int x, int y) {
 			Label label = (Label) (tip.getChildren() [0]);
 			label.setText(tooltip);
 			Display display = tip.getDisplay();
-			label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-			label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+			Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
+			label.setForeground (foreground);
+			label.setBackground (background);
+			tip.setBackground(background);
 			tip.pack();
 			Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 			pt = toDisplay(pt);
