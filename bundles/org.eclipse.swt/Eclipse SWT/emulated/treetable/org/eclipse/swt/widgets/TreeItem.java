@@ -1212,17 +1212,28 @@ public void setExpanded (boolean value) {
 
 		int y = parent.getItemY (this) + parent.itemHeight;
 		int startY = y + (descendents.length - 1) * parent.itemHeight;
-		parent.update ();
-		GC gc = new GC (parent);
-		gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
-		gc.dispose ();
-		int redrawY = clientArea.height - startY + y;
-		parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
+		if (y < clientArea.height && 0 < startY) {	/* determine whether any some visual update is actually needed */
+			parent.update ();
+			GC gc = new GC (parent);
+			gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
+			gc.dispose ();
+			int redrawY = clientArea.height - startY + y;
+			parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
+		}
 
 		parent.makeDescendentsUnavailable (this, descendents);
 
+		/* 
+		 * If all collapsed items are above the viewport then adjust topIndex and
+		 * the vertical scrollbar so that the current viewport items will not change.
+		 */
+		int bottomIndex = availableIndex + descendents.length - 1;
+		if (bottomIndex < parent.topIndex) {
+			parent.topIndex = parent.topIndex - descendents.length + 1;
+			parent.getVerticalBar ().setSelection (parent.topIndex);
+		}
+		
 		parent.updateHorizontalBar ();
-		int oldTopIndex = parent.topIndex;
 		parent.updateVerticalBar ();
 
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
@@ -1239,17 +1250,6 @@ public void setExpanded (boolean value) {
 			if (isDisposed ()) return;
 			parent.showItem (this);
 			parent.redrawItem (availableIndex, true);
-		} else {
-			/* 
-			 * If all collapsed items are above the viewport then adjust topIndex and
-			 * the vertical scrollbar so that the current viewport items will not change.
-			 */
-			int bottomIndex = availableIndex + descendents.length - 1;
-			if (bottomIndex < parent.topIndex) {
-				parent.topIndex = oldTopIndex - descendents.length + 1;
-				parent.getVerticalBar ().setSelection (parent.topIndex);
-				return;
-			}
 		}
 	}
 	/* redraw the receiver's expander box */
