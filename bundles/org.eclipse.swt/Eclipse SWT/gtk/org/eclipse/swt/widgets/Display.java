@@ -1950,6 +1950,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 	int /*long*/ root = OS.GDK_ROOT_PARENT ();
 	int /*long*/ gdkGC = OS.gdk_gc_new (root);
 	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.gdk_gc_set_subwindow (gdkGC, OS.GDK_INCLUDE_INFERIORS);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
