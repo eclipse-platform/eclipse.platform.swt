@@ -417,9 +417,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	OS.XDrawLine (data.display, data.drawable, handle, x1, y1, x2, y2);
-	*/
 	try {
 		if (focus(true, null)) {
 			installForeColor(data.foreground);
@@ -2133,7 +2130,7 @@ public String toString () {
 		if ((color & 0xff000000) == 0) {
 			OS.RGBForeColor(color);
 		} else {
-			OS.RGBForeColor(0x000000);	// black
+			OS.RGBForeColor(0xFFFFFF);	// white
 		}
 	}
 	
