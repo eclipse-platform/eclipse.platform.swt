@@ -18,13 +18,12 @@ import junit.textui.*;
  * Suite for running all SWT test cases.
  */
 public class AllTests extends TestSuite {
-	public static int unimplementedMethods;
 
 public static void main(String[] args) {
-	unimplementedMethods = 0;
+	SwtTestCase.unimplementedMethods = 0;
 	TestRunner.run(suite());
-	if (unimplementedMethods > 0) {
-		System.out.println("\nCalls to warnUnimpl: " + unimplementedMethods);
+	if (SwtTestCase.unimplementedMethods > 0) {
+		System.out.println("\nCalls to warnUnimpl: " + SwtTestCase.unimplementedMethods);
 	}
 }
 public static Test suite() {

@@ -14,6 +14,8 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 
+import org.eclipse.swt.layout.FillLayout;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.layout.FillLayout
  *
@@ -46,7 +48,10 @@ public void test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ() {
 }
 
 public void test_layoutLorg_eclipse_swt_widgets_CompositeZ() {
-	warnUnimpl("Test test_layoutLorg_eclipse_swt_widgets_CompositeZ not written");
+	composite.setLayout(new FillLayout());
+	composite.layout(false);
+	composite.layout(true);
+	composite.layout();
 }
 
 public static Test suite() {

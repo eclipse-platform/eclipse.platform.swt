@@ -11,11 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import junit.framework.*;
 import junit.textui.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Composite
@@ -65,7 +65,7 @@ public void test_getChildren() {
 	List c2 = new List(composite, 0);
 	assertEquals(":c:", new Control[]{c1, c2}, composite.getChildren());
 
-	Scale c3 = new Scale(composite, 0);
+	Button c3 = new Button(composite, 0);
 	assertEquals(":d:", new Control[]{c1, c2, c3}, composite.getChildren());
 
 	c2.dispose();
@@ -91,21 +91,11 @@ public void test_layout() {
 }
 
 public void test_layoutZ() {
-	Layout[] layouts = {null, new FillLayout(), new RowLayout(), new GridLayout()};
-	for (int i = 0; i < layouts.length; i++) {
-		composite.setLayout(layouts[i]);
-		composite.layout(false);
-		composite.layout(true);
-		composite.layout();
-	}
+	// tested in specific Layout classes
 }
 
 public void test_setLayoutLorg_eclipse_swt_widgets_Layout() {
-	Layout[] layouts = {null, new FillLayout(), new RowLayout(), new GridLayout()};
-	for (int i = 0; i < layouts.length; i++) {
-		composite.setLayout(layouts[i]);
-		assertEquals(layouts[i], composite.getLayout());
-	}
+	// tested in specific Layout classes
 }
 
 public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {

@@ -49,6 +49,8 @@ public class SwtTestCase extends TestCase {
 	// make dialog open calls, operator must then close them
 	public static boolean fTestDialogOpen = false;
 
+	public static int unimplementedMethods;
+	
 public SwtTestCase(String name) {
 	super(name);
 }
@@ -105,6 +107,6 @@ static private void failNotEquals(String message, Object expected, Object actual
 
 protected void warnUnimpl(String message) {
 	//System.out.println(this.getClass() + ": " + message);
-	AllTests.unimplementedMethods++;
+	unimplementedMethods++;
 }
 }

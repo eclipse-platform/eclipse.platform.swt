@@ -13,13 +13,18 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Layout
  *
  * @see org.eclipse.swt.widgets.Layout
  */
 public class Test_org_eclipse_swt_widgets_Layout extends SwtTestCase {
-
+	Shell shell;
+	Composite composite;
+	
 public Test_org_eclipse_swt_widgets_Layout(String name) {
 	super(name);
 }
@@ -29,9 +34,17 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	shell = new Shell();
+	composite = new Composite(shell, 0);
 }
 
 protected void tearDown() {
+	if (composite != null) {
+		composite.dispose();
+	}
+	if (shell != null) {
+		shell.dispose();
+	}
 }
 
 public void test_Constructor() {
