@@ -476,11 +476,13 @@ void removeItemFromRow(CoolItem item, Vector row) {
 		Rectangle bounds = first.getBounds();
 		int width = bounds.x + bounds.width;
 		first.setBounds(0, bounds.y, width, bounds.height);
+		first.requestedWidth = width;
 	} else {
 		CoolItem previous = (CoolItem) row.elementAt(index - 1);
 		Rectangle bounds = previous.getBounds();
 		int width = bounds.width + item.getSize().x;
 		previous.setBounds(bounds.x, bounds.y, width, bounds.height);
+		previous.requestedWidth = width;
 	}
 }
 /**
