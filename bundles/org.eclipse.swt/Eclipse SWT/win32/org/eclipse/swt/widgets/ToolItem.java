@@ -688,6 +688,7 @@ public void setText (String string) {
 	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
 	info.pszText = pszText;
 	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
+	if (string.length () != 0) info.fsStyle |= OS.BTNS_SHOWTEXT;
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
 	OS.HeapFree (hHeap, 0, pszText);
 	

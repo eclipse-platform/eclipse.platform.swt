@@ -259,7 +259,8 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 
 	/* Set the extended style bits */
-	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, OS.TBSTYLE_EX_DRAWDDARROWS);
+	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS;
+	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
 }
 
 void createItem (ToolItem item, int index) {
