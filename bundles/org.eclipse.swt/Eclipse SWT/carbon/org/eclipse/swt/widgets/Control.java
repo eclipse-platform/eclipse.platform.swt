@@ -1321,7 +1321,7 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
-	sendEvent (SWT.MenuDetect);
+	sendEvent (SWT.MenuDetect, event);
 	if (event.doit) {
 		if (menu != null && !menu.isDisposed ()) {
 			if (event.x != x || event.y != y) {
