@@ -2101,8 +2101,8 @@ void onPaint (Event event) {
 	/* repaint grid lines */
 	if (linesVisible) {
 		Color oldForeground = gc.getForeground ();
+		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		if (numColumns > 0 && startColumn != -1) {
-			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
 				int x = columns [i].getX () + columns [i].width - 1;
