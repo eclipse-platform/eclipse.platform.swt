@@ -384,9 +384,13 @@ public class AccessibleObject {
 
 	int atkText_get_character_at_offset (int offset) {
 		String text = getText ();
-		if (text != null) {
-			return (int)text.charAt (offset); // TODO bogus!
-		}
+		if (text != null) return (int)text.charAt (offset); // TODO bogus!
+		return NO_ANSWER;
+	}
+
+	int atkText_get_character_count () {
+		String text = getText ();
+		if (text != null) return text.length ();
 		return NO_ANSWER;
 	}
 
@@ -398,11 +402,10 @@ public class AccessibleObject {
 			} else {
 				end_offset = Math.min (end_offset + 1, text.length ());	
 			}
-//			TODO gnopernicus bug? seems to give pointers for offsets, not values
-//			text = text.substring (start_offset, end_offset);
+			text = text.substring (start_offset, end_offset);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
 //			TODO gnopernicus bug? freeing previous string can cause gp
-			if (textPtr != -1) OS.g_free (textPtr);
+//			if (textPtr != -1) OS.g_free (textPtr);
 			textPtr = OS.g_malloc (bytes.length);
 			OS.memmove (textPtr, bytes, bytes.length);
 			return textPtr;
@@ -523,7 +526,7 @@ public class AccessibleObject {
 			}
 			OS.memmove (start_offset, new int[] {startBounds}, 4);
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
-//			text = text.substring (start_offset, end_offset);
+			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
 //			TODO gnopernicus bug? freeing previous string can cause gp
 //			if (textPtr != -1) OS.g_free (textPtr);

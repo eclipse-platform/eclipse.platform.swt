@@ -41,7 +41,8 @@ class AccessibleType {
 	Callback atkTextCB_get_text_after_offset = null;
 	Callback atkTextCB_get_text_at_offset = null;
 	Callback atkTextCB_get_text_before_offset = null;
-	Callback atkTextCB_get_character_at_offset = null;	
+	Callback atkTextCB_get_character_at_offset = null;
+	Callback atkTextCB_get_character_count = null;
 	Callback gObjectClass_finalize = null;
 
 	// interface initialization callbacks
@@ -466,6 +467,25 @@ class AccessibleType {
 		return parentResult;
 	}
 
+	int atkText_get_character_count (int atkObject) {
+		if (DEBUG) System.out.println ("-->atkText_get_character_count");
+		int parentResult = 0;
+		if (OS.g_type_is_a (parentType, ATK_TEXT_TYPE)) {
+			int superType = OS.g_type_interface_peek_parent (OS.ATK_TEXT_GET_IFACE (atkObject));
+			AtkTextIface textIface = new AtkTextIface ();
+			OS.memmove (textIface, superType);
+			if (textIface.get_character_count != 0) {
+				parentResult = OS.call (textIface.get_character_count, atkObject);
+			}
+		}
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			int result = object.atkText_get_character_count ();
+			if (result != AccessibleObject.NO_ANSWER) return result;
+		}
+		return parentResult;
+	}
+	
 	int createInstance (Accessible accessible, int widget) {
 		int type = handle;
 		Accessible acc = accessible;
@@ -562,6 +582,7 @@ class AccessibleType {
 //		if (atkTextCB_get_text_at_offset != null) atkTextCB_get_text_at_offset.dispose ();
 //		if (atkTextCB_get_text_before_offset != null) atkTextCB_get_text_before_offset.dispose ();
 //		if (atkTextCB_get_character_at_offset != null) atkTextCB_get_character_at_offset.dispose ();
+//		if (atkTextCB_get_character_count != null) atkTextCB_get_character_count.dispose ();
 //	}
 
 	AccessibleObject getAccessibleObject (int atkObject) {
@@ -661,6 +682,8 @@ class AccessibleType {
 		textInterface.get_text_before_offset = atkTextCB_get_text_before_offset.getAddress ();
 		atkTextCB_get_character_at_offset = new Callback (this, "atkText_get_character_at_offset", 2);
 		textInterface.get_character_at_offset = atkTextCB_get_character_at_offset.getAddress ();
+		atkTextCB_get_character_count = new Callback (this, "atkText_get_character_count", 1);
+		textInterface.get_character_count = atkTextCB_get_character_count.getAddress ();
 		OS.memmove (iface, textInterface);
 		return 0;
 	}
