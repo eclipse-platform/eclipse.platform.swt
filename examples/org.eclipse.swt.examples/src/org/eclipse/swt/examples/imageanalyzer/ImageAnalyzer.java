@@ -1908,7 +1908,14 @@ public class ImageAnalyzer {
 					dump[index++] = lineDelimiter.charAt(1);
 			}
 		}
-		return new String(dump);
+		String result = "";
+		try {
+			result = new String(dump);
+		} catch (OutOfMemoryError e) {
+			/* Too much data to display in the text widget - truncate at 4M. */
+			result = new String(dump, 0, 4 * 1024 * 1024) + "\n ...data dump truncated at 4M...";
+		}
+		return result;
 	}
 	
 	/*
