@@ -398,11 +398,11 @@ void doArrowDown(int keyMask) {
 	if (focusItemIndex < (getVisibleItemCount() - 1)) { 			// - 1 because indices are 0 based
 		focusItemIndex++;
 		newFocus = getVisibleItem(focusItemIndex);
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, focusItemIndex);
 		}		
 		else {
@@ -469,11 +469,11 @@ void doArrowUp(int keyMask) {
 	if (focusItemIndex > 0) {
 		focusItemIndex--;
 		newFocus = getVisibleItem(focusItemIndex);
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, focusItemIndex);
 		}		
 		else {
@@ -530,11 +530,11 @@ void doEnd(int keyMask) {
 		
 	if (focusItemIndex < lastItemIndex) {
 		newFocus = getVisibleItem(lastItemIndex);
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, lastItemIndex);
 		}
 		else {
@@ -560,11 +560,11 @@ void doHome(int keyMask) {
 
 	if (getVisibleIndex(lastFocus) > firstItemIndex) {
 		newFocus = getVisibleItem(firstItemIndex);
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, firstItemIndex);
 		}		
 		else {
@@ -585,8 +585,8 @@ void doHome(int keyMask) {
  * @param button - the mouse button that was pressed
  */
 void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int button) {
-	if (((eventStateMask & SWT.CTRL) != 0) &&
-		((eventStateMask & SWT.SHIFT) != 0) &&
+	if (((eventStateMask & SWT.MOD1) != 0) &&
+		((eventStateMask & SWT.MOD2) != 0) &&
 		(isMultiSelect() == true)) {
 		if (getSelectionVector().size() == 0) {			// no old selection?
 			selectNotify(item);							// do standard CTRL selection
@@ -597,12 +597,12 @@ void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int b
 		setCtrlSelection(true);
 	}
 	else 
-	if (((eventStateMask & SWT.SHIFT) != 0) && (isMultiSelect() == true)) {
+	if (((eventStateMask & SWT.MOD2) != 0) && (isMultiSelect() == true)) {
 		shiftSelect(item, itemIndex);
 		setCtrlSelection(false);
 	}
 	else
-	if (((eventStateMask & SWT.CTRL) != 0) && (isMultiSelect() == true)) {
+	if (((eventStateMask & SWT.MOD1) != 0) && (isMultiSelect() == true)) {
 		toggleSelectionNotify(item);
 		setCtrlSelection(true);
 	}
@@ -643,11 +643,11 @@ void doPageDown(int keyMask) {
 		if (newFocus == null) {
 			return;
 		}
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, focusItemIndex);
 		}		
 		else {
@@ -679,11 +679,11 @@ void doPageUp(int keyMask) {
 			0, 
 			focusItemIndex - (visibleItemCount - 1));
 		newFocus = getVisibleItem(focusItemIndex);
-		if (keyMask == SWT.CTRL && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD1 && isMultiSelect() == true) {
 			setLastFocus(newFocus, true);
 		}
 		else
-		if (keyMask == SWT.SHIFT && isMultiSelect() == true) {
+		if (keyMask == SWT.MOD2 && isMultiSelect() == true) {
 			shiftSelect(newFocus, focusItemIndex);
 		}		
 		else {
@@ -717,16 +717,16 @@ void doSpace(int keyMask) {
 	if (isMultiSelect() == false) {
 		return;
 	}
-	if (keyMask == SWT.CTRL) {
+	if (keyMask == SWT.MOD1) {
 		toggleSelectionNotify(item);
 	}
 	else
-	if (((keyMask & SWT.CTRL) != 0) && ((keyMask & SWT.SHIFT) != 0)) {
+	if (((keyMask & SWT.MOD1) != 0) && ((keyMask & SWT.MOD2) != 0)) {
 		deselectAllExcept(item);
 		selectNotify(item);
 	}
 	else
-	if (keyMask == SWT.SHIFT) {
+	if (keyMask == SWT.MOD2) {
 		shiftSelect(item, itemIndex);
 	}
 }
@@ -1323,7 +1323,7 @@ void itemChanged(SelectableItem changedItem, int repaintStartX, int repaintWidth
 void keyDown(Event event) {
 	boolean isCtrlSelection = isCtrlSelection();
 	
-	if (event.stateMask != SWT.CTRL) {
+	if (event.stateMask != SWT.MOD1) {
 		isCtrlSelection = false;
 	}
 	switch (event.keyCode) {
@@ -1356,7 +1356,7 @@ void keyDown(Event event) {
 	}
 	if (event.character == ' ') {
 		doSpace(event.stateMask);
-		isCtrlSelection = (event.stateMask == SWT.CTRL);
+		isCtrlSelection = (event.stateMask == SWT.MOD1);
 	}
 	//forward the enter key pressed to defaultSelection listenters
 	if(event.character == SWT.CR){

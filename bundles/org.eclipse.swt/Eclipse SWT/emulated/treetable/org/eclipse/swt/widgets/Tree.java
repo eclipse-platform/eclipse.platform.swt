@@ -418,7 +418,7 @@ void doArrowLeft(int keyMask) {
 	if (focusItem == null) {
 		return;
 	}
-	if (keyMask == SWT.CTRL) {
+	if (keyMask == SWT.MOD1) {
 		super.doArrowLeft(keyMask);
 	}
 	else
@@ -448,7 +448,7 @@ void doArrowRight(int keyMask) {
 	if (focusItem == null) {
 		return;
 	}	
-	if (keyMask == SWT.CTRL) {
+	if (keyMask == SWT.MOD1) {
 		super.doArrowRight(keyMask);
 	}
 	else

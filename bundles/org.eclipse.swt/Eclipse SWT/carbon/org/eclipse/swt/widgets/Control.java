@@ -1730,19 +1730,10 @@ void sendHelpEvent (Object callData) {
 }
 final int sendKeyEvent (int type, MacEvent mEvent) {
 	Event event = new Event ();
+	event.type = type;
     event.time = mEvent.getWhen();
 	setKeyState (event, mEvent);
-	return sendKeyEvent (type, mEvent, event);
-//	Control control = this;
-//	if ((state & CANVAS) != 0) {
-//		if ((style & SWT.NO_FOCUS) != 0) {
-//			Display display = getDisplay ();
-//			control = display.getFocusControl ();
-//		}
-//	}
-//	if (control != null) {
-//		control.postEvent (type, event);
-//	}
+	return sendKeyEvent(type, mEvent, event);
 }
 int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 	postEvent (type, event);
@@ -1750,13 +1741,13 @@ int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 }
 final void sendMouseEvent (int type, int button, MacMouseEvent mme) {
 	Event event = new Event ();
+	event.type = type;
     event.time = mme.getWhen();
 	event.button = button;
 	Point ml= MacUtil.toControl(handle, mme.getWhere());
 	event.x = ml.x;  event.y = ml.y;
-	// AW setInputState (event, mEvent);
-	event.stateMask= mme.getState();
-	postEvent (type, event);
+	setInputState (event, mme);
+	postEvent(type, event);
 }
 /**
  * Sets the receiver's background color to the color specified
