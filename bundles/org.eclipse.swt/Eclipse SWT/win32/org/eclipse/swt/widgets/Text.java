@@ -1596,6 +1596,18 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	/*
+	* Feature in WinCE PPC.  Asking the dialog code of a
+	* multiline text control causes it to not handle
+	* return and tab keys anymore.  The fix is to return
+	* the value which is normally returned by the default
+	* window proc.
+	*/
+	if (OS.IsPPC) {
+		if ((style & SWT.MULTI) != 0 && (style & SWT.READ_ONLY) == 0 && lParam == 0) {
+			return new LRESULT (OS.DLGC_HASSETSEL | OS.DLGC_WANTALLKEYS | OS.DLGC_WANTCHARS);
+		}
+	}
+	/*
 	* Feature in Windows.  Despite the fact that the
 	* text control is read only, it still returns a
 	* dialog code indicating that it wants keys.  The
