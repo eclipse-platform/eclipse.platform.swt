@@ -1029,7 +1029,7 @@ void textEvent (Event event) {
 			if (event.character == SWT.ESC) { // escape key cancels popup list
 				dropDown (false);
 			}
-			if (event.character == SWT.CR || event.character == '\t') {
+			if (event.character == SWT.CR) {
 				dropDown (false);
 				Event e = new Event();
 				e.time = event.time;
@@ -1103,10 +1103,10 @@ void textEvent (Event event) {
 		}
 		case SWT.Traverse: {		
 			switch (event.detail) {
-				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
 				case SWT.TRAVERSE_ARROW_NEXT:
-					// The tab key causes default selection and
+					// The enter causes default selection and
 					// the arrow keys are used to manipulate the list contents so
 					// do not use them for traversal.
 					event.doit = false;
