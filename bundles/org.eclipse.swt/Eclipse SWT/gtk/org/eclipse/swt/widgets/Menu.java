@@ -655,8 +655,29 @@ public boolean isVisible () {
 }
 
 int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
-	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
-	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
+	/*
+	* Feature in GTK.  The menu position function sets the position of the
+	* top-left pixel of the menu.  If the menu would be off-screen, GTK will
+	* add a scroll arrow at the bottom and position the first menu entry at
+	* the specified position.  The fix is to flip the menu location to be
+	* completely inside the screen.
+	*/
+    GtkRequisition requisition = new GtkRequisition ();
+    OS.gtk_widget_size_request (menu, requisition);
+    int screenHeight = OS.gdk_screen_height ();
+	int reqy = this.y;
+	if (reqy + requisition.height > screenHeight && reqy - requisition.height >= 0) {
+    	reqy -= requisition.height;
+    }
+    int screenWidth = OS.gdk_screen_width ();
+	int reqx = this.x;
+    if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+    	if (reqx - requisition.width >= 0) reqx -= requisition.width;
+    } else {
+    	if (reqx + requisition.width > screenWidth) reqx -= requisition.width;
+    }
+	if (x != 0) OS.memmove (x, new int [] {reqx}, 4);
+	if (y != 0) OS.memmove (y, new int [] {reqy}, 4);
 	if (push_in != 0) OS.memmove (push_in, new int [] {1}, 4);
 	return 0;
 }
