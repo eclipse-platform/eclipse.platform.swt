@@ -54,6 +54,7 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean addressBar, menuBar, statusBar, toolBar;
+	boolean visible;
 	Shell tip = null;
 
 	/* External Listener management */
@@ -1834,17 +1835,26 @@ int SetVisibility(int aVisibility) {
 	event.display = getDisplay();
 	event.widget = this;
 	if (aVisibility == 1) {
-		event.location = location;
-		event.size = size;
-		event.addressBar = addressBar;
-		event.menuBar = menuBar;
-		event.statusBar = statusBar;
-		event.toolBar = toolBar;
-		for (int i = 0; i < visibilityWindowListeners.length; i++)
-			visibilityWindowListeners[i].show(event);
-		location = null;
-		size = null;
+		/*
+		* Bug in Mozilla.  When the JavaScript window.open is executed, Mozilla
+		* fires multiple SetVisibility 1 notifications.  The workaround is
+		* to ignore subsequent notifications. 
+		*/
+		if (!visible) {
+			visible = true;
+			event.location = location;
+			event.size = size;
+			event.addressBar = addressBar;
+			event.menuBar = menuBar;
+			event.statusBar = statusBar;
+			event.toolBar = toolBar;
+			for (int i = 0; i < visibilityWindowListeners.length; i++)
+				visibilityWindowListeners[i].show(event);
+			location = null;
+			size = null;
+		}
 	} else {
+		visible = false;
 		for (int i = 0; i < visibilityWindowListeners.length; i++)
 			visibilityWindowListeners[i].hide(event);
 	}

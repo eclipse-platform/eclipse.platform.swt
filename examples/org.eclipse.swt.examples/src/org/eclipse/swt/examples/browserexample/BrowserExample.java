@@ -66,25 +66,26 @@ public class BrowserExample {
 				event.browser = app.getBrowser();
 			}
 		});
-		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
-			public void hide(WindowEvent e) {
-			}
-			public void show(WindowEvent e) {
-				Browser browser = (Browser)e.widget;
-				BrowserExample app = (BrowserExample)browser.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
-				app.show(true, e.location, e.size, e.addressBar, e.menuBar, e.statusBar, e.toolBar);
-			}
-		});
-		browser.addCloseWindowListener(new CloseWindowListener() {
-			public void close(WindowEvent event) {
-				Browser browser = (Browser)event.widget;
-				Shell shell = browser.getShell();
-				shell.close();
-			}
-		});
 		if (top) {
-			browser.setUrl(getResourceString("Startup"));
+			browser.setUrl("/bluebird/teamswt/chrisx/workspace/java_chris/src/html/58103.html");
 			show(false, null, null, true, true, true, true);
+		} else {
+			browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+				public void hide(WindowEvent e) {
+				}
+				public void show(WindowEvent e) {
+					Browser browser = (Browser)e.widget;
+					BrowserExample app = (BrowserExample)browser.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
+					app.show(true, e.location, e.size, e.addressBar, e.menuBar, e.statusBar, e.toolBar);
+				}
+			});
+			browser.addCloseWindowListener(new CloseWindowListener() {
+				public void close(WindowEvent event) {
+					Browser browser = (Browser)event.widget;
+					Shell shell = browser.getShell();
+					shell.close();
+				}
+			});
 		}
 	}
 
@@ -287,7 +288,6 @@ public class BrowserExample {
 			});
 		}
 		parent.layout(true);
-		if (size != null) parent.pack();
 		if (owned) shell.open();
 	}
 
