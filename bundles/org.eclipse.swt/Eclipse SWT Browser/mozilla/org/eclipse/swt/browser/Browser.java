@@ -792,13 +792,24 @@ public void removeStatusTextListener(StatusTextListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.html = html;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+	/*
+	* Note.  Stop any pending request that uses the html content.  This is required
+	* to avoid displaying a blank page as a result of consecutive calls to
+	* setText.  The previous request would otherwise render the new html content
+	* and reset the html field before the browser actually navigates to the blank
+	* page as requested below.
+	*/
+	if (this.html != null) {
+		rc = webNavigation.Stop(nsIWebNavigation.STOP_ALL);
+		if (rc != XPCOM.NS_OK) error(rc);
+	}
+	this.html = html;
 	char[] arg = "about:blank".toCharArray(); //$NON-NLS-1$
 	char[] c = new char[arg.length+1];
 	System.arraycopy(arg,0,c,0,arg.length);
