@@ -14,7 +14,13 @@ import java.lang.reflect.*;
 
 public class StatsGenerator extends JNIGenerator {
 	
+	boolean isCPP;
+
 public StatsGenerator() {
+}
+
+public boolean getCPP() {
+	return isCPP;
 }
 
 public void generate(Class clazz) {
@@ -103,6 +109,7 @@ public void generateSourceFile(Class[] classes) {
 		Class clazz = classes[i];
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
+		isCPP |= classData.getFlag("cpp");
 		generateSourceFile(clazz);
 	}
 	outputDelimiter();

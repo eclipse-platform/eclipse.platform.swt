@@ -62,7 +62,8 @@ void generateSTATS_C() {
 		gen.setOutput(print);
 		gen.generateSourceFile(getNativesClasses());
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats.c");
+		String extension = gen.getCPP() ? ".cpp" : ".c";
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats" + extension);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
