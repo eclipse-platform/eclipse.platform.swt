@@ -197,6 +197,10 @@ public class OS {
 	public static final int GTK_TREE_VIEW_COLUMN_GROW_ONLY = 0;
 	public static final int GTK_TREE_VIEW_COLUMN_AUTOSIZE = 1;
 	public static final int GTK_TREE_VIEW_COLUMN_FIXED = 2;
+	public static final int GTK_TREE_VIEW_DROP_AFTER = 1;
+	public static final int GTK_TREE_VIEW_DROP_BEFORE = 0;
+	public static final int GTK_TREE_VIEW_DROP_INTO_OR_AFTER = 3;
+	public static final int GTK_TREE_VIEW_DROP_INTO_OR_BEFORE = 2;
 	public static final int GTK_VISIBILITY_FULL = 0x2;
 	public static final int GTK_VISIBILITY_NONE = 0x0;
 	public static final int GTK_VISIBLE = 0x100;
@@ -735,6 +739,7 @@ public static final synchronized native void gtk_tree_view_column_set_resizable(
 public static final synchronized native void gtk_tree_view_column_set_sizing(int column, int type);
 public static final synchronized native void gtk_tree_view_column_set_title(int tree_column, byte[] title);
 public static final synchronized native void gtk_tree_view_column_set_widget(int tree_column, int widget);
+public static final synchronized native void gtk_tree_view_set_drag_dest_row(int view, int path, int pos);
 public static final synchronized native boolean gtk_tree_view_expand_row(int view, int path, boolean open_all);
 public static final synchronized native int gtk_tree_view_get_bin_window(int tree_view);
 public static final synchronized native void gtk_tree_view_get_cell_area(int tree_view, int path, int column, GdkRectangle rect);
@@ -754,6 +759,7 @@ public static final synchronized native void gtk_tree_view_set_cursor(int tree_v
 public static final synchronized native void gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final synchronized native void gtk_tree_view_set_model(int tree_view, int model);
 public static final synchronized native void gtk_tree_view_set_rules_hint(int tree_view, boolean setting);
+public static final synchronized native void gtk_tree_view_unset_rows_drag_dest(int tree_view);
 public static final synchronized native void gtk_tree_view_widget_to_tree_coords(int tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final synchronized native int gtk_vbox_new(boolean homogeneous, int spacing);
 public static final synchronized native int gtk_vscale_new(int adjustment);

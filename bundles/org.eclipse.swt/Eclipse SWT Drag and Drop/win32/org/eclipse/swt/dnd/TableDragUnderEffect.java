@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.win32.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	private TableItem[] selection = new TableItem[0];
+	private int[] selection = new int[0];
 	int currentEffect = DND.FEEDBACK_NONE;
 //	private TableItem dropSelection
 	private TableItem scrollItem;
@@ -33,14 +33,14 @@ void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = table.getSelection();
+		selection = table.getSelectionIndices();
 		table.deselectAll();
 	}
 	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
 	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.setSelection(selection);
-		selection = new TableItem[0];
+		table.select(selection);
+		selection = new int[0];
 	}
 	currentEffect = effect;
 }

@@ -13,6 +13,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.gtk.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
@@ -30,16 +31,8 @@ TableDragUnderEffect(Table table) {
 void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = table.getSelection();
-		table.deselectAll();
-	}
 	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.setSelection(selection);
-		selection = new TableItem[0];
-	}
 	currentEffect = effect;
 }
 private TableItem findItem(int x, int y){
@@ -66,10 +59,16 @@ private void setDragUnderEffect(int effect, TableItem item) {
 	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) setDropSelection(null);
 }
 private void setDropSelection (TableItem item) {
-	if (item == dropSelection) return;
-	if (dropSelection != null) table.deselectAll();
-	dropSelection = item;
-	if (dropSelection != null) table.setSelection(new TableItem[]{dropSelection});
+	if (item == null) {
+		OS.gtk_tree_view_unset_rows_drag_dest(table.handle);
+		return;
+	}
+	Rectangle rect = item.getBounds(0);
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos(table.handle, rect.x, rect.y, path, null, null, null)) return;
+	if (path [0] == 0) return;
+	OS.gtk_tree_view_set_drag_dest_row(table.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+	OS.gtk_tree_path_free (path [0]);
 }
 private void scrollHover (int effect, TableItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {

@@ -5226,6 +5226,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1set_1drag_1dest_1row
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set_1drag_1dest_1row
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1view_1set_1drag_1dest_1row\n")
+
+	gtk_tree_view_set_drag_dest_row((GtkTreeView *)arg0, (GtkTreePath *)arg1, arg2);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1expand_1row
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1expand_1row
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
@@ -5443,6 +5453,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set
 	DEBUG_CALL("gtk_1tree_1view_1set_1rules_1hint\n")
 
 	gtk_tree_view_set_rules_hint((GtkTreeView *)arg0, (gboolean)arg1);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1unset_1rows_1drag_1dest
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1unset_1rows_1drag_1dest
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1unset_1rows_1drag_1dest\n")
+
+	gtk_tree_view_unset_rows_drag_dest((GtkTreeView *)arg0);
 }
 #endif
 

@@ -13,6 +13,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
@@ -22,6 +23,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	private TreeItem dropSelection = null;
 	private TreeItem insertMark = null;
 	private boolean insertBefore = false;
+	private PaintListener paintListener;
 	
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
@@ -34,21 +36,31 @@ class TreeDragUnderEffect extends DragUnderEffect {
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
+	paintListener = new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				if (dropSelection == null || dropSelection.isDisposed()) return;
+				Display display = e.widget.getDisplay();
+				Rectangle bounds = dropSelection.getBounds();
+				GC gc = e.gc;
+				Color foreground = gc.getForeground();
+				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
+				gc.drawRectangle(bounds.x + 1, bounds.y + 1, bounds.width - 3, bounds.height - 3);
+				gc.setForeground(foreground);
+			}
+		};
 }
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
+		tree.addPaintListener(paintListener);
 	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
 	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
+		tree.removePaintListener(paintListener);
 	}
 	currentEffect = effect;
 }
@@ -116,9 +128,15 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 }
 private void setDropSelection (TreeItem item) {	
 	if (item == dropSelection) return;
-	if (dropSelection != null) tree.deselectAll();
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds();
+		tree.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 	dropSelection = item;
-	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds();
+		tree.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 }
 private void setInsertMark(TreeItem item, boolean before) {
 	if (item == insertMark && before == insertBefore) return;

@@ -13,6 +13,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.gtk.OS;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
@@ -39,17 +40,9 @@ void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
-	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
-	}
 	currentEffect = effect;
 }
 private int checkEffect(int effect) {
@@ -115,10 +108,16 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 	setDropSelection(null);
 }
 private void setDropSelection (TreeItem item) {	
-	if (item == dropSelection) return;
-	if (dropSelection != null) tree.deselectAll();
-	dropSelection = item;
-	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
+	if (item == null) {
+		OS.gtk_tree_view_unset_rows_drag_dest(tree.handle);
+		return;
+	}
+	Rectangle rect = item.getBounds();
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
+	if (path [0] == 0) return;
+	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+	OS.gtk_tree_path_free (path [0]);
 }
 private void setInsertMark(TreeItem item, boolean before) {
 	if (item == insertMark && before == insertBefore) return;

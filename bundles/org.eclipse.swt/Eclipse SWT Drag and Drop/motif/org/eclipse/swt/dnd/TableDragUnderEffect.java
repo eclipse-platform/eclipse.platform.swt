@@ -13,10 +13,13 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
 	private TableItem[] selection = new TableItem[0];
+	private PaintListener paintListener;
 	private int currentEffect = DND.FEEDBACK_NONE;
 	private TableItem dropSelection;
 	private TableItem scrollItem;
@@ -26,19 +29,29 @@ class TableDragUnderEffect extends DragUnderEffect {
 
 TableDragUnderEffect(Table table) {
 	this.table = table;
+	paintListener = new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				if (dropSelection == null || dropSelection.isDisposed()) return;
+				Display display = e.widget.getDisplay();
+				Rectangle bounds = dropSelection.getBounds(0);
+				GC gc = e.gc;
+				Color foreground = gc.getForeground();
+				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
+				gc.drawRectangle(bounds.x + 1, bounds.y + 1, bounds.width - 3, bounds.height - 3);
+				gc.setForeground(foreground);
+			}
+		};
 }
 void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = table.getSelection();
-		table.deselectAll();
+		table.addPaintListener(paintListener);
 	}
 	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
 	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.setSelection(selection);
-		selection = new TableItem[0];
+		table.removePaintListener(paintListener);
 	}
 	currentEffect = effect;
 }
@@ -67,9 +80,15 @@ private void setDragUnderEffect(int effect, TableItem item) {
 }
 private void setDropSelection (TableItem item) {
 	if (item == dropSelection) return;
-	if (dropSelection != null) table.deselectAll();
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds(0);
+		table.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 	dropSelection = item;
-	if (dropSelection != null) table.setSelection(new TableItem[]{dropSelection});
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds(0);
+		table.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 }
 private void scrollHover (int effect, TableItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {

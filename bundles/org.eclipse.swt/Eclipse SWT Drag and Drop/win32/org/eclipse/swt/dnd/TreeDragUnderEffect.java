@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.TVITEM;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
@@ -44,7 +45,16 @@ void show(int effect, int x, int y) {
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
 	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
+		for (int i = 0; i < selection.length; i++) {
+			if (!selection[i].isDisposed()){
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_STATE;
+				tvItem.state = OS.TVIS_SELECTED;
+				tvItem.stateMask = OS.TVIS_SELECTED;
+				tvItem.hItem = selection[i].handle;
+				OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+			}
+		}
 		selection = new TreeItem[0];
 	}
 	currentEffect = effect;
