@@ -16,8 +16,9 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
- * Instances of this class represent a user interface 
- * object that displays a text with hyperlinks.
+ * Instances of this class represent a selectable
+ * user interface object that displays a text with 
+ * links.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
