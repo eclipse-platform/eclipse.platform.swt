@@ -91,7 +91,11 @@ public static Frame new_Frame (final Composite parent) {
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
-			frame.dispose ();
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.dispose ();
+				}
+			});
 		}
 	});
 	return frame;
