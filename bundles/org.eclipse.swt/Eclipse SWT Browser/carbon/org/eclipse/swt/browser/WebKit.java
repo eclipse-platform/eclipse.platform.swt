@@ -60,6 +60,7 @@ static final int S_setPolicyDelegate = WebKit.sel_registerName("setPolicyDelegat
 static final int S_setResourceLoadDelegate = WebKit.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
 static final int S_setUIDelegate = WebKit.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
 static final int S_stopLoading = WebKit.sel_registerName("stopLoading:"); //$NON-NLS-1$
+static final int S_stringByEvaluatingJavaScriptFromString = WebKit.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 static final int S_takeStringURLFrom = WebKit.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
 static final int S_use = WebKit.sel_registerName("use"); //$NON-NLS-1$
 static final int S_webFrame = WebKit.sel_registerName("webFrame"); //$NON-NLS-1$

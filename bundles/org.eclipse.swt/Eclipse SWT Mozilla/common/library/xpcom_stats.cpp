@@ -31,8 +31,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 163;
-int XPCOM_nativeFunctionCallCount[163];
+int XPCOM_nativeFunctionCount = 164;
+int XPCOM_nativeFunctionCallCount[164];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call", 
 	"NS_1GetComponentManager", 
@@ -53,6 +53,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"VtblCall__IIIIIII", 
 	"VtblCall__IIIIIIII", 
 	"VtblCall__IIIIIIIII", 
+	"VtblCall__IIIIIIIII_3Z", 
 	"VtblCall__IIIIIIZ", 
 	"VtblCall__IIIIII_3I", 
 	"VtblCall__IIIIIZ", 

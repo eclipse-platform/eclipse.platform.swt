@@ -535,6 +535,21 @@ protected void checkSubclass () {
 	}
 }
 
+public boolean execute(String script) {
+	checkWidget();
+	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	int length = script.length();
+	char[] buffer = new char[length];
+	script.getChars(0, length, buffer, 0);
+	int string = OS.CFStringCreateWithCharacters(0, buffer, length);
+
+	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
+	int value = WebKit.objc_msgSend(webView, WebKit.S_stringByEvaluatingJavaScriptFromString, string);
+	OS.CFRelease(string);
+	return value != 0;
+}
+
 /**
  * Navigate to the next session history item.
  *

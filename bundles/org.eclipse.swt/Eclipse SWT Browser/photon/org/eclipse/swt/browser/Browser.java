@@ -407,6 +407,10 @@ protected void checkSubclass() {
 	}
 }
 
+public boolean execute(String script) {
+	return false;
+}
+
 /**
  * Navigate to the next session history item.
  *

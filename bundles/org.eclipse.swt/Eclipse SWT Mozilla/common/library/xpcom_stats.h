@@ -57,6 +57,7 @@ typedef enum {
 	VtblCall__IIIIIII_FUNC,
 	VtblCall__IIIIIIII_FUNC,
 	VtblCall__IIIIIIIII_FUNC,
+	VtblCall__IIIIIIIII_3Z_FUNC,
 	VtblCall__IIIIIIZ_FUNC,
 	VtblCall__IIIIII_3I_FUNC,
 	VtblCall__IIIIIZ_FUNC,
