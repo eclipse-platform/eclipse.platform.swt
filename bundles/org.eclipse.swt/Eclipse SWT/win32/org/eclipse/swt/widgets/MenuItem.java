@@ -582,7 +582,14 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		setSelection (!getSelection ());
 	}
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
+	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
+	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	postEvent (SWT.Selection, event);
 	return null;
 }
 
