@@ -11,7 +11,7 @@
 package org.eclipse.swt.custom;
 
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -56,9 +56,27 @@ StyledTextRenderer(Device device, Font regularFont, boolean isBidi, int leftMarg
  */
 void calculateLineHeight() {
 	GC gc = getGC();
+	Font originalFont = gc.getFont();
+	FontData[] fontData = originalFont.getFontData();
+	Font font;
 	
 	lineHeight = gc.getFontMetrics().getHeight();	
 	lineEndSpaceWidth = gc.stringExtent(" ").x;
+	// don't assume that bold and normal fonts have the same height
+	// fixes bug 41773
+	for (int i = 0; i < fontData.length; i++) {
+		int fontStyle = fontData[i].getStyle(); 
+		if ((fontStyle & SWT.BOLD) == SWT.BOLD) {
+			fontData[i].setStyle(fontStyle ^ SWT.BOLD);
+		} else {
+			fontData[i].setStyle(fontStyle | SWT.BOLD);
+		} 
+	}
+	font = new Font(getDevice(), fontData);
+	gc.setFont(font);
+	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	gc.setFont(originalFont);
+	font.dispose();	
 	disposeGC(gc);
 }
 /**
