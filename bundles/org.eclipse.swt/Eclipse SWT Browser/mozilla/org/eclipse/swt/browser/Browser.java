@@ -1250,16 +1250,14 @@ public boolean setText(String html) {
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
 	/*
-	* Note.  Stop any pending request that uses the html content.  This is required
-	* to avoid displaying a blank page as a result of consecutive calls to
-	* setText.  The previous request would otherwise render the new html content
-	* and reset the html field before the browser actually navigates to the blank
+	* Note.  Stop any pending request.  This is required to avoid displaying a 
+	* blank page as a result of consecutive calls to setUrl and/or setText.
+	* The previous request would otherwise render the new html content and 
+	* reset the html field before the browser actually navigates to the blank
 	* page as requested below.
 	*/
-	if (this.html != null) {
-		rc = webNavigation.Stop(nsIWebNavigation.STOP_ALL);
-		if (rc != XPCOM.NS_OK) error(rc);
-	}
+	rc = webNavigation.Stop(nsIWebNavigation.STOP_ALL);
+	if (rc != XPCOM.NS_OK) error(rc);
 	this.html = html;
 	char[] arg = "about:blank".toCharArray(); //$NON-NLS-1$
 	char[] c = new char[arg.length+1];
