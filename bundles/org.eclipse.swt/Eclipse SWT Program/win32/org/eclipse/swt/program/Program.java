@@ -27,6 +27,7 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	String openVerb;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -135,25 +136,29 @@ static String getKeyValue (String string, boolean expand) {
 }
 
 static Program getProgram (String key) {
-	
+
 	/* Name */
 	String name = getKeyValue (key, false);
 	if (name == null || name.length () == 0) return null;
 
 	/* Command */
-	String COMMAND = "\\shell\\open\\command"; //$NON-NLS-1$
+	String DEFAULT_COMMAND = "\\shell"; //$NON-NLS-1$
+	String defaultCommand = getKeyValue (key + DEFAULT_COMMAND, true);
+	if (defaultCommand == null) defaultCommand = "open"; //$NON-NLS-1$
+	String COMMAND = "\\shell\\" + defaultCommand + "\\command"; //$NON-NLS-1$
 	String command = getKeyValue (key + COMMAND, true);
 	if (command == null || command.length () == 0) return null;
-	
+
 	/* Icon */
 	String DEFAULT_ICON = "\\DefaultIcon"; //$NON-NLS-1$
 	String iconName = getKeyValue (key + DEFAULT_ICON, true);
 	if (iconName == null || iconName.length () == 0) return null;
-	
+
 	Program program = new Program ();
 	program.name = name;
 	program.command = command;
 	program.iconName = iconName;
+	program.openVerb = defaultCommand;
 	return program;
 }
 
@@ -210,9 +215,22 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
+	Program program = null;
+	int separatorIndex = fileName.lastIndexOf ('.');
+	if (separatorIndex >= 0) {
+		String extension = fileName.substring (separatorIndex);
+		program = findProgram (extension);
+	}
+	String verb;
+	if (program != null) {
+		verb = program.openVerb;
+	} else {
+		verb = "open"; //$NON-NLS-1$
+	}
+
 	/* Use the character encoding for the default locale */
 	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer1 = new TCHAR (0, "open", true); //$NON-NLS-1$
+	TCHAR buffer1 = new TCHAR (0, verb, true); //$NON-NLS-1$
 	int byteCount1 = buffer1.length () * TCHAR.sizeof;
 	int lpVerb = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount1);
 	OS.MoveMemory (lpVerb, buffer1, byteCount1);
