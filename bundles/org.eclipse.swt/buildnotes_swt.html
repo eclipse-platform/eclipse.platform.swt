@@ -12,10 +12,25 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
-<h2> SWT Build 3.1 027 - Tuesday March 22nd, 2005 </h2>
+<h2> SWT Build 3.1 027c - Thursday March 24nd, 2005 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<p>New API has been added to Tree and TableTree</p>
+<blockquote>
+int Tree.indexOf(TreeItem)
+<br>int TreeItem.indexOf(TreeItem)
+<br>TreeItem Tree.getItem(int)
+<br>TreeItem TreeItem.getItem(int)
+</blockquote>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
-82336: TreeView: setting gray gives free check mark  
+26625:  Combo cursor and copy/paste are not working right  
+<br>87554:  Need bounding rectangle for a Path  
+<br>87820:  GC.drawString uses BG color for font when alpha value < 255  
+<br>87824:  GC setRegion and getRegion are not symmetric  
+<br>88122:  switch org.eclipse.swt plugin and fragments to new eclipse jar format  
+<br>88409:  Device.getFontList should have better performance  
+<br>88582:  Computed width of link widget is too large  
+<br>82336: TreeView: setting gray gives free check mark  
 <br>83432: iFrame does not render border when in SWT Browser  
 <br>87534: TVT3.1 #33 - SWT Browser View cannot be found  
 <br>87726: Removing libXm links from motif drops  
