@@ -24,14 +24,36 @@ class TreeTab extends ScrollableTab {
 	Group treeGroup, imageTreeGroup, itemGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button checkButton;
+	Button checkButton, fullSelectionButton;
 
+	/* Other widgets added to the "Other" group */
+	Button multipleColumns, headerVisibleButton, linesVisibleButton;
+	
 	/* Controls and resources added to the "Colors" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
 	Color itemForegroundColor, itemBackgroundColor;
 	Image itemForegroundImage, itemBackgroundImage;
 	Font itemFont;
 	
+	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
+		   ControlExample.getResourceString("TableTitle_1"),
+		   ControlExample.getResourceString("TableTitle_2"),
+		   ControlExample.getResourceString("TableTitle_3")};
+		   
+	static String[][] tableData = {
+			{ ControlExample.getResourceString("TableLine0_0"),
+					ControlExample.getResourceString("TableLine0_1"),
+					ControlExample.getResourceString("TableLine0_2"),
+					ControlExample.getResourceString("TableLine0_3") },
+			{ ControlExample.getResourceString("TableLine1_0"),
+					ControlExample.getResourceString("TableLine1_1"),
+					ControlExample.getResourceString("TableLine1_2"),
+					ControlExample.getResourceString("TableLine1_3") },
+			{ ControlExample.getResourceString("TableLine2_0"),
+					ControlExample.getResourceString("TableLine2_1"),
+					ControlExample.getResourceString("TableLine2_2"),
+					ControlExample.getResourceString("TableLine2_3") } };
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -127,6 +149,38 @@ class TreeTab extends ScrollableTab {
 	}
 
 	/**
+	 * Creates the "Other" group.
+	 */
+	void createOtherGroup () {
+		super.createOtherGroup ();
+	
+		/* Create display controls specific to this example */
+		multipleColumns = new Button (otherGroup, SWT.CHECK);
+		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
+		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
+		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
+		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
+	
+		/* Add the listeners */
+		multipleColumns.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			}
+		});
+		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetHeaderVisible ();
+			}
+		});
+		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetLinesVisible ();
+			};
+		});
+	}
+	
+	/**
 	 * Creates the "Example" group.
 	 */
 	void createExampleGroup () {
@@ -154,58 +208,71 @@ class TreeTab extends ScrollableTab {
 		if (singleButton.getSelection()) style |= SWT.SINGLE;
 		if (multiButton.getSelection()) style |= SWT.MULTI;
 		if (checkButton.getSelection()) style |= SWT.CHECK;
+		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 	
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
-		textNode1 = new TreeItem (tree1, SWT.NONE);
-		textNode1.setText (ControlExample.getResourceString("Node_1"));
-		TreeItem node2 = new TreeItem (tree1, SWT.NONE);
-		node2.setText (ControlExample.getResourceString("Node_2"));
-		TreeItem node3 = new TreeItem (tree1, SWT.NONE);
-		node3.setText (ControlExample.getResourceString("Node_3"));
-		TreeItem node4 = new TreeItem (tree1, SWT.NONE);
-		node4.setText (ControlExample.getResourceString("Node_4"));
-		TreeItem node1_1 = new TreeItem (textNode1, SWT.NONE);
-		node1_1.setText (ControlExample.getResourceString("Node_1_1"));
-		TreeItem node2_1 = new TreeItem (node2, SWT.NONE);
-		node2_1.setText (ControlExample.getResourceString("Node_2_1"));
-		TreeItem node3_1 = new TreeItem (node3, SWT.NONE);
-		node3_1.setText (ControlExample.getResourceString("Node_3_1"));
-		TreeItem node2_2 = new TreeItem (node2, SWT.NONE);
-		node2_2.setText (ControlExample.getResourceString("Node_2_2"));
-		TreeItem node2_2_1 = new TreeItem (node2_2, SWT.NONE);
-		node2_2_1.setText (ControlExample.getResourceString("Node_2_2_1"));
-	
+		if (multipleColumns.getSelection()) {
+			for (int i = 0; i < columnTitles.length; i++) {
+				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
+				treeColumn.setText(columnTitles[i]);
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			TreeItem item = new TreeItem (tree1, SWT.NONE);
+			setItemText(item, i, ControlExample.getResourceString("Node_" + (i + 1)));
+			if (i < 3) {
+				TreeItem subitem = new TreeItem (item, SWT.NONE);
+				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
+			}
+		}
+		TreeItem treeRoots[] = tree1.getItems ();
+		TreeItem item = new TreeItem (treeRoots[1], SWT.NONE);
+		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
+		item = new TreeItem (item, SWT.NONE);
+		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));					
+		textNode1 = treeRoots[0];
+		packColumns(tree1);
+
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
-		imageNode1 = new TreeItem (tree2, SWT.NONE);
-		imageNode1.setText (ControlExample.getResourceString("Node_1"));
-		imageNode1.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node2 = new TreeItem (tree2, SWT.NONE);
-		node2.setText (ControlExample.getResourceString("Node_2"));
-		node2.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node3 = new TreeItem (tree2, SWT.NONE);
-		node3.setText (ControlExample.getResourceString("Node_3"));
-		node3.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node4 = new TreeItem (tree2, SWT.NONE);
-		node4.setText (ControlExample.getResourceString("Node_4"));
-		node4.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node1_1 = new TreeItem (imageNode1, SWT.NONE);
-		node1_1.setText (ControlExample.getResourceString("Node_1_1"));
-		node1_1.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node2_1 = new TreeItem (node2, SWT.NONE);
-		node2_1.setText (ControlExample.getResourceString("Node_2_1"));
-		node2_1.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node3_1 = new TreeItem (node3, SWT.NONE);
-		node3_1.setText (ControlExample.getResourceString("Node_3_1"));
-		node3_1.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node2_2 = new TreeItem(node2, SWT.NONE);
-		node2_2.setText (ControlExample.getResourceString("Node_2_2"));
-		node2_2.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node2_2_1 = new TreeItem (node2_2, SWT.NONE);
-		node2_2_1.setText (ControlExample.getResourceString("Node_2_2_1"));
-		node2_2_1.setImage (instance.images[ControlExample.ciClosedFolder]);
+		Image image = instance.images[ControlExample.ciClosedFolder];
+		if (multipleColumns.getSelection()) {
+			for (int i = 0; i < columnTitles.length; i++) {
+				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
+				treeColumn.setText(columnTitles[i]);
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			item = new TreeItem (tree2, SWT.NONE);
+			setItemText(item, i, ControlExample.getResourceString("Node_" + (i + 1)));
+			item.setImage(image);
+			if (i < 3) {
+				TreeItem subitem = new TreeItem (item, SWT.NONE);
+				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
+				subitem.setImage(image);
+			}
+		}
+		treeRoots = tree2.getItems ();
+		item = new TreeItem (treeRoots[1], SWT.NONE);
+		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
+		item.setImage(image);
+		item = new TreeItem (item, SWT.NONE);
+		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));
+		item.setImage(image);
+		imageNode1 = treeRoots[0];
+		packColumns(tree2);
+	}
+	
+	void setItemText(TreeItem item, int i, String node) {
+		int index = i % 3;
+		if (multipleColumns.getSelection()) {
+			tableData [index][0] = node;
+			item.setText (tableData [index]);
+		} else {
+			item.setText (node);
+		}		
 	}
 	
 	/**
@@ -217,6 +284,26 @@ class TreeTab extends ScrollableTab {
 		/* Create the extra widgets */
 		checkButton = new Button (styleGroup, SWT.CHECK);
 		checkButton.setText ("SWT.CHECK");
+		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
+		fullSelectionButton.setText ("SWT.FULL_SELECTION");
+	}
+	
+	/**
+	 * Gets the "Example" widget children's items, if any.
+	 *
+	 * @return an array containing the example widget children's items
+	 */
+	Item [] getExampleWidgetItems () {
+		/* Note: We do not bother collecting the tree items
+		 * because tree items don't have any events. If events
+		 * are ever added to TreeItem, then this needs to change.
+		 */
+		Item [] columns1 = tree1.getColumns();
+		Item [] columns2 = tree2.getColumns();
+		Item [] allItems = new Item [columns1.length + columns2.length];
+		System.arraycopy(columns1, 0, allItems, 0, columns1.length);
+		System.arraycopy(columns2, 0, allItems, columns1.length, columns2.length);
+		return allItems;
 	}
 	
 	/**
@@ -231,6 +318,15 @@ class TreeTab extends ScrollableTab {
 	 */
 	String getTabText () {
 		return "Tree";
+	}
+
+	void packColumns (Tree tree) {
+		if (multipleColumns.getSelection()) {
+			for (int i = 0; i < columnTitles.length; i++) {
+				TreeColumn treeColumn = tree.getColumn(i);
+				treeColumn.pack();
+			}
+		}
 	}
 
 	/**
@@ -265,7 +361,12 @@ class TreeTab extends ScrollableTab {
 		setItemForeground ();
 		setItemFont ();
 		setExampleWidgetSize ();
+		setWidgetHeaderVisible ();
+		setWidgetLinesVisible ();
 		checkButton.setSelection ((tree1.getStyle () & SWT.CHECK) != 0);
+		checkButton.setSelection ((tree2.getStyle () & SWT.CHECK) != 0);
+		fullSelectionButton.setSelection ((tree1.getStyle () & SWT.FULL_SELECTION) != 0);
+		fullSelectionButton.setSelection ((tree2.getStyle () & SWT.FULL_SELECTION) != 0);
 	}
 	
 	/**
@@ -301,5 +402,21 @@ class TreeTab extends ScrollableTab {
 		if (instance.startup) return;
 		textNode1.setFont (itemFont);
 		imageNode1.setFont (itemFont);
+	}
+
+	/**
+	 * Sets the header visible state of the "Example" widgets.
+	 */
+	void setWidgetHeaderVisible () {
+		tree1.setHeaderVisible (headerVisibleButton.getSelection ());
+		tree2.setHeaderVisible (headerVisibleButton.getSelection ());
+	}
+	
+	/**
+	 * Sets the lines visible state of the "Example" widgets.
+	 */
+	void setWidgetLinesVisible () {
+		tree1.setLinesVisible (linesVisibleButton.getSelection ());
+		tree2.setLinesVisible (linesVisibleButton.getSelection ());
 	}
 }
