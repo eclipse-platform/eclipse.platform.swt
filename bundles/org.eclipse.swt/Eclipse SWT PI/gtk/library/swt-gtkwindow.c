@@ -122,6 +122,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1add_1ac
  *  DIALOGS
  */
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1run
+  (JNIEnv *env, jclass that, jint dialog)
+{
+	return (jint)gtk_dialog_run((GtkDialog*)dialog);
+}
+
 /*
  *  Color selection
  */
