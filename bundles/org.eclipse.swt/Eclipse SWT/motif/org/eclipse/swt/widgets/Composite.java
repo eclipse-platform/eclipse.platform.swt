@@ -625,13 +625,18 @@ boolean setTabItemFocus () {
 }
 void setScrollbarVisible (ScrollBar bar, boolean visible) {
 	/*
-	* Bug in Motif.  When XtDestroyWidget() is called from
-	* within a FocusOut event handler, Motif GP's.  The fix
-	* is to post focus events and run them when the handler
-	* has returned.
+	* Feature in Motif.  When XtManageChild() is used to
+	* show or hide a scroll bar and the composite that
+	* owns the scroll bars has focus and also has a child
+	* that would take focus, Motif assigns focus to the
+	* child.  The fix is to detect the case and temporarily
+	* turn traversal off for the children of the composite
+	* so that Motif will leave focus on the composite.
 	*/
-	Display display = getDisplay ();
-	boolean oldFocusOut = display.postFocusOut;
+	if (!hasFocus ()) {
+		super.setScrollbarVisible (bar, visible);
+		return;
+	}
 	Control [] children = _getChildren ();
 	int [] traversals = new int [children.length];
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
@@ -639,11 +644,8 @@ void setScrollbarVisible (ScrollBar bar, boolean visible) {
 		int childHandle = children [i].topHandle ();
 		OS.XtGetValues (childHandle, argList, argList.length / 2);
 		if ((traversals [i] = argList [1]) != 0) {
-			if (!children[i].hasFocus ()) {
-				argList [1] = 0;
-				display.postFocusOut = true;
-				OS.XtSetValues (children [i].handle, argList, argList.length / 2);
-			}
+			argList [1] = 0;
+			OS.XtSetValues (children [i].handle, argList, argList.length / 2);
 		}
 	}
 	super.setScrollbarVisible (bar, visible);
@@ -656,8 +658,6 @@ void setScrollbarVisible (ScrollBar bar, boolean visible) {
 			if (argList [1] != 0) control.overrideTranslations ();
 		}
 	}
-	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runFocusOutEvents ();
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {
