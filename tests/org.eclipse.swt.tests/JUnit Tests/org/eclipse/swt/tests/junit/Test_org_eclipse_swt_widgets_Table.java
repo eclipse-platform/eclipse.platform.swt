@@ -1221,7 +1221,8 @@ public void test_setSelection$I() {
 	assertSame(new int[]{1, 2, 3}, table.getSelectionIndices());
 
 	table.setSelection(new int[]{1, 4, 0});
-	assertSame(new int[]{0, 1, 4}, table.getSelectionIndices());	
+	assertSame(new int[]{0, 1, 4}, table.getSelectionIndices());
+	
 	table.setSelection(new int[]{0, 4, 0});
 	assertSame(new int[]{0, 4}, table.getSelectionIndices());	
 
