@@ -303,9 +303,7 @@ public void setFont(Font font) {
  * Calculate and store the height of the receiver.
  */
 void setHeaderHeight() {
-	GC gc = new GC(this);
-	int textHeight = gc.stringExtent("").y + VERTICAL_MARGIN; 
-	gc.dispose();	
+	int textHeight = parent.getFontHeight() + VERTICAL_MARGIN; 
 	int imageHeight = getImageExtent().y + VERTICAL_MARGIN;		
 	Rectangle bounds = getBounds();
 	bounds.height = Math.max(textHeight,imageHeight);
