@@ -85,9 +85,9 @@ public class TableTreeEditor extends ControlEditor {
 	ControlListener columnListener;
 	TreeListener treeListener;
 /**
-* Creates a TableEditor for the specified Table.
+* Creates a TableTreeEditor for the specified TableTree.
 *
-* @param tableTree the Table Control above which this editor will be displayed
+* @param tableTree the TableTree Control above which this editor will be displayed
 *
 */
 public TableTreeEditor (TableTree tableTree) {
