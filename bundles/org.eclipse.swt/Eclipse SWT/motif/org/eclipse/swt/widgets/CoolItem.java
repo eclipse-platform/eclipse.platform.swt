@@ -35,7 +35,6 @@ public /*final*/ class CoolItem extends Item {
 	
 	static final int MARGIN_WIDTH = 4;
 	static final int MARGIN_HEIGHT = 2;
-	static final int DEFAULT_HEIGHT = (2 * MARGIN_HEIGHT) + 28;
 	static final int GRABBER_WIDTH = 2;
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 		
@@ -149,7 +148,7 @@ void createHandle (int index) {
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNwidth, MINIMUM_WIDTH,
-		OS.XmNheight, DEFAULT_HEIGHT,
+		OS.XmNheight, 1,
 		OS.XmNpositionIndex, index,
 		OS.XmNtraversalOn, 0,
 	};
@@ -294,8 +293,10 @@ int processMouseMove (int callData) {
 	return 0;
 }
 int processMouseUp (int callData) {
-	dragging = false;
-	parent.setCursor(parent.hoverCursor);
+	if (dragging) {
+		dragging = false;
+		parent.setCursor(parent.hoverCursor);
+	}
 	return 0;
 }
 int processPaint (int callData) {
@@ -391,8 +392,8 @@ public void setControl (Control control) {
 public void setSize (int width, int height) {
 	checkWidget();
 	width = Math.max (width, MINIMUM_WIDTH);
-	requestedWidth = width;
-	height = Math.max (height, DEFAULT_HEIGHT);
+	preferredWidth = requestedWidth = width;
+	height = Math.max (height, 1);
 	OS.XtResizeWidget (handle, width, height, 0);			
 	if (control != null) {
 		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;

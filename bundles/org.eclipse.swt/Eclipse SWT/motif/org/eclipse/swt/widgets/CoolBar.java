@@ -239,24 +239,24 @@ public int indexOf (CoolItem item) {
  * appropriately.
  */
 void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
+	int barWidth = getSize().x;
+	int height = item.getSize().y;
 	if (row.size() == 0) {
-		Point size = item.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		item.setBounds(0, rowY, getSize().x, size.y);		
+		item.setBounds(0, rowY, barWidth, height);		
 		row.addElement(item);
 		return;
 	}
 	
-	int x = x_root - toDisplay(new Point(0, 0)).x;
+	int x = Math.max(0, x_root - toDisplay(new Point(0, 0)).x);
 	
 	/* Find the insertion index and add the item. */
-	int index = 0;
-	for (int i = 0; i < row.size(); i++) {
-		CoolItem next = (CoolItem) row.elementAt(i);
-		if (x < next.getBounds().x) break;	
-		index++;
+	int index;
+	for (index = 0; index < row.size(); index++) {
+		CoolItem next = (CoolItem) row.elementAt(index);
+		if (x < next.getBounds().x) break;
 	}
 	row.insertElementAt(item, index);
-	
+
 	/* Adjust the width of the item to the left. */
 	if (index > 0) {
 		CoolItem left = (CoolItem) row.elementAt(index - 1);
@@ -277,12 +277,15 @@ void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
 		width = right.getBounds().x - x;
 		if (width < CoolItem.MINIMUM_WIDTH) {
 			moveRight(right, CoolItem.MINIMUM_WIDTH - width);
-			width = CoolItem.MINIMUM_WIDTH;
+			width = right.getBounds().x - x;
 		}
+		item.setBounds(x, rowY, width, height);
+		if (width < CoolItem.MINIMUM_WIDTH) moveLeft(item, CoolItem.MINIMUM_WIDTH - width);
 	} else {
-		width = getBounds().width - x;
+		width = Math.max(CoolItem.MINIMUM_WIDTH, barWidth - x);
+		item.setBounds(x, rowY, width, height);
+		if (x + width > barWidth) moveLeft(item, x + width - barWidth); 
 	}
-	item.setBounds(x, rowY, width, item.getBounds().height);
 	item.requestedWidth = width;
 }
 void createItem (CoolItem item, int index) {

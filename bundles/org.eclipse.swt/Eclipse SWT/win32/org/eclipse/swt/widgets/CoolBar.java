@@ -104,7 +104,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	RECT rect = new RECT ();
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_SIZE | OS.RBBIM_CHILDSIZE | OS.RBBIM_STYLE;
+	rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_CHILDSIZE | OS.RBBIM_STYLE;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
@@ -116,7 +116,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else if (i != 0) {
 			rowWidth += 2;
 		}
-		rowWidth += rbBand.cx;
+		rowWidth += rbBand.cxIdeal + rect.left + rect.right;
 		rowHeight = Math.max (rowHeight, rbBand.cyMinChild + rect.top + rect.bottom);
 	}
 	width = Math.max (width, rowWidth);

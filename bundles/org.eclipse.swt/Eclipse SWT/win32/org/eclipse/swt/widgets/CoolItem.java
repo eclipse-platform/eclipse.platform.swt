@@ -338,10 +338,13 @@ public void setSize (int width, int height) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;
+	RECT rect = new RECT ();
+	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cx = width;
+	rbBand.cxIdeal = width - rect.left - rect.right;
 	rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
