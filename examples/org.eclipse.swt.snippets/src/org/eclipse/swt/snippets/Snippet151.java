@@ -23,11 +23,11 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet151 {
 
-static int[] values;
+static int[] values = new int[0];
 
 public static void main (String [] args) {
-	final Display display = new Display();
-	Shell shell = new Shell(display);
+	final Display display = new Display ();
+	Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.BORDER | SWT.VIRTUAL);
 	table.addListener(SWT.SetData, new Listener() {
@@ -41,20 +41,22 @@ public static void main (String [] args) {
 		public void run() {
 			int count = 0;
 			Random random = new Random();
-			while (count++ < 2000) {
+			while (count++ < 500) {
 				if (table.isDisposed()) return;
-				final int[] newValues = new int[1000];
-				for (int i = 0; i < newValues.length; i++) {
-					newValues[i] = random.nextInt();
+				// add 10 random numbers to array and sort
+				int grow = 10;
+				int[] newValues = new int[values.length + grow];
+				System.arraycopy(values, 0, newValues, 0, values.length);
+				int index = values.length;
+				values = newValues;
+				for (int j = 0; j < grow; j++) {
+					values[index++] = random.nextInt();
 				}
-				Arrays.sort(newValues);
+				Arrays.sort(values);
 				display.syncExec(new Runnable() {
 					public void run() {
 						if (table.isDisposed()) return;
-						if (values == null) {
-							table.setItemCount(1000);
-						}
-						values = newValues;
+						table.setItemCount(values.length);
 						table.clearAll();
 					}
 				});
@@ -63,9 +65,9 @@ public static void main (String [] args) {
 		}
 	};
 	thread.start();
-	shell.open();
+	shell.open ();
 	while (!shell.isDisposed() || thread.isAlive()) {
-		if (!display.readAndDispatch()) display.sleep();
+		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
