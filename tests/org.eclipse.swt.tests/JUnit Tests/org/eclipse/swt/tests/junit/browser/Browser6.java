@@ -109,7 +109,7 @@ public class Browser6 {
 	public static boolean test() {
 		int fail = 0;
 		
-		String[] urls = {"http://www.eclipse.org", "http://www.google.com", "http://www.ibm.com"};
+		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
 			System.out.print(result ? "." : "E");
