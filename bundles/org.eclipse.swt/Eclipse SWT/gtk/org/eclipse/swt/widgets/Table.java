@@ -963,16 +963,33 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	int length = OS.g_list_length (list);
-	int /*long*/ renderer = OS.g_list_nth_data (list, length - 1);
-	OS.g_list_free (list);
-	int [] h = new int [1];
-	OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, null, h);
-	int[] separator = new int [1];
-	OS.gtk_widget_style_get (handle, OS.horizontal_separator, separator, 0);
-	return h [0] + separator [0];
+	if (itemCount == 0) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
+		int [] w = new int [1], h = new int [1];
+		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		return h [0];
+	} else {
+		int height = 0;
+		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
+		int columnColumn = Math.max (1, columnCount);
+		for (int i=0; i<columnCount; i++) {
+			int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+			int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int /*long*/ list = renderers;
+			while (list != 0) {
+				int /*long*/ renderer = OS.g_list_data (list);
+				OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
+				list = OS.g_list_next (list);
+			}
+			if (renderers != 0) OS.g_list_free (renderers);
+			int [] w = new int [1], h = new int [1];
+			OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+			height = Math.max (height, h [0]);
+		}
+		OS.g_free (iter);
+		return height;
+	}
 }
 
 /**
