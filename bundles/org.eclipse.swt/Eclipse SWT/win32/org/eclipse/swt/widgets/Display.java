@@ -95,6 +95,7 @@ public class Display extends Device {
 	TCHAR windowClass;
 	static int windowClassCount = 0;
 	static final String WindowName = "SWT_Window";
+	EventTable eventTable;
 
 	/* Widnows Message Filter */
 	Callback messageCallback;
@@ -289,6 +290,34 @@ int asciiKey (int key) {
 }
 
 /**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs. When the
+ * event does occur in the display, the listener is notified by
+ * sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeListener
+ * 
+ * @since 2.0 
+ */
+public void addListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
+/**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
@@ -363,6 +392,23 @@ int controlKey (int key) {
 	int upper = OS.CharUpper ((short) key);
 	if (64 <= upper && upper <= 95) return upper & 0xBF;
 	return key;
+}
+
+/**
+ * Requests that the connection between SWT and the underlying
+ * operating system be closed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ */
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
 }
 
 /**
@@ -1262,6 +1308,7 @@ static synchronized void register (Display display) {
  * @see #destroy
  */
 protected void release () {
+	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1405,6 +1452,32 @@ void releaseToolDisabledImageList (ImageList list) {
 	}
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ * 
+ * @since 2.0 
+ */
+public void removeListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
@@ -1413,7 +1486,7 @@ boolean runDeferredEvents () {
 	/*
 	* Run deferred events.  This code is always
 	* called in the Display's thread so it must
-	* be re-enterant need not be synchronized.
+	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
 		
@@ -1429,7 +1502,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
-				widget.notifyListeners (event.type, event);
+				widget.sendEvent (event);
 			}
 		}
 
@@ -1461,6 +1534,22 @@ void runTimer (int id) {
 		}
 	}
 }
+
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
+	event.display = this;
+	event.type = eventType;
+	if (event.time == 0) {
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
+	}
+	eventTable.sendEvent (event);
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1874,8 +1963,13 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	}
 	if (hwnd == hwndShell) {
 		switch (msg) {
+			case OS.WM_ENDSESSION:
+				if (wParam != 0) dispose ();
+				break;
 			case OS.WM_QUERYENDSESSION:
-				dispose ();
+				Event event = new Event ();
+				sendEvent (SWT.Close, event);
+				if (!event.doit) return 0;
 				break;
 			case OS.WM_SETTINGCHANGE:
 				updateFont ();
