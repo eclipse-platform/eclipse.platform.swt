@@ -33,8 +33,6 @@ public class TableColumn extends Item {
 	static final int FIRST = 0;							// index of the first column
 	static final int FILL = -1;							// index that identifies the column used to 
 														// fill space not used by other columns.
-	private static final int DEFAULT_WIDTH = 10;
-
 	private Table parent;
 	private int index;									// 0-based column index
 	private Rectangle bounds = new Rectangle(0, 0, 0, 0);
@@ -131,7 +129,6 @@ public TableColumn(Table parent, int style, int index) {
 	}
 	setIndex(index);	
 	parent.addColumn(this);
-	setWidth(DEFAULT_WIDTH);
 	setDefaultWidth(true);
 	addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {disposeColumn();}
@@ -217,7 +214,6 @@ static TableColumn createDefaultColumn(Table parent) {
 	TableColumn defaultColumn = new TableColumn(parent);
 	
 	defaultColumn.setIndex(FIRST);
-	defaultColumn.setWidth(DEFAULT_WIDTH);
 	defaultColumn.setDefaultWidth(true);
 	return defaultColumn;
 }
