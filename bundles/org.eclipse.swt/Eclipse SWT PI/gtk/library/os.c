@@ -3201,6 +3201,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1get_1current_1event)
 }
 #endif
 
+#ifndef NO_gtk_1get_1current_1event_1state
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1get_1current_1event_1state)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1get_1current_1event_1state\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jboolean)gtk_get_current_event_state((GdkModifierType*)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "gtk_1get_1current_1event_1state\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1get_1current_1event_1time
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1get_1current_1event_1time)
 	(JNIEnv *env, jclass that)

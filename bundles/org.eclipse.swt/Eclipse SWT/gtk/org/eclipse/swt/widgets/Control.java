@@ -2164,16 +2164,23 @@ boolean sendHelpEvent (int helpType) {
 }
 
 char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
-	int index = 0, count = 0;
+	int index = 0, count = 0, stateMask = 0, time = 0;
+	if (keyEvent != null) {
+		stateMask = keyEvent.state;
+		time = keyEvent.time;
+	} else {
+		int [] state = new int [1];
+		if (OS.gtk_get_current_event_state (state)) {
+			stateMask = state [0];
+		}
+		time = OS.gtk_get_current_event_time ();
+	}
 	while (index < chars.length) {
 		Event event = new Event ();
 		event.character = chars [index];
-		if (keyEvent != null) {
-			event.time = keyEvent.time;
-			setInputState (event, keyEvent.state);
-		}
+		setInputState (event, stateMask);
+		event.time = time;
 		sendEvent (type, event);
-		// widget could be disposed at this point
 	
 		/*
 		* It is possible (but unlikely), that application

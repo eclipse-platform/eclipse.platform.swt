@@ -580,6 +580,7 @@ public static final synchronized native void gtk_frame_set_label(int frame, byte
 public static final synchronized native void gtk_frame_set_label_widget(int frame, int label_widget);
 public static final synchronized native void gtk_frame_set_shadow_type(int frame, int type);
 public static final synchronized native int gtk_get_current_event();
+public static final synchronized native boolean gtk_get_current_event_state (int[] state);
 public static final synchronized native int gtk_get_current_event_time();
 public static final synchronized native int gtk_get_default_language();
 public static final synchronized native int gtk_grab_get_current();
