@@ -28,9 +28,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL) != 0) {
-			width += DEFAULT_WIDTH;  height += 3;
+			width += DEFAULT_WIDTH;  height += 1;
 		} else {
-			width += 3; height += DEFAULT_HEIGHT;
+			width += 1; height += DEFAULT_HEIGHT;
 		}
 		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
