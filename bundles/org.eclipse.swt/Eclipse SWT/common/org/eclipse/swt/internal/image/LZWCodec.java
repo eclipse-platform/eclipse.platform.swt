@@ -1,16 +1,13 @@
 package org.eclipse.swt.internal.image;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-/* Class Definition */
 final class LZWCodec {
 	int bitsPerPixel, blockSize, blockIndex, currentByte, bitsLeft,
 		codeSize, clearCode, endCode, newCodes, topSlot, currentSlot,

@@ -10,11 +10,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
-/*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
- */
 /**
  * OleAutomation provides a generic mechanism for accessing functionality that is 
  * specific to a particular ActiveX Control or OLE Document.
