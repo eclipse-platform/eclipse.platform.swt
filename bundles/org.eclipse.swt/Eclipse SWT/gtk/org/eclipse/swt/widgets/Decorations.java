@@ -519,7 +519,7 @@ void setImages (Image image, Image [] images) {
 		OS.g_object_unref (data [0]);
 		temp = OS.g_list_next (temp);
 	}
-	OS.g_list_free (pixbufs);
+	if (pixbufs != 0) OS.g_list_free (pixbufs);
 }
 
 /**
