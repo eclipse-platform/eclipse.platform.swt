@@ -276,7 +276,10 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	//NOT DONE
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) return;
+	int imageHandle = image != null ? image.handle : 0;
+	OS.SetMenuItemIconHandle (parent.handle, outIndex [0], (byte)OS.kMenuCGImageRefType, imageHandle);
 }
 
 public void setMenu (Menu menu) {

@@ -228,6 +228,7 @@ public class OS {
 	public static final int kInvalidFontFamily = -1;
 	public static final int kMenuBlankGlyph = 97;
 	public static final int kMenuCapsLockGlyph = 99;
+	public static final int kMenuCGImageRefType = 7;
 	public static final int kMenuCheckmarkGlyph = 18;
 	public static final int kMenuClearGlyph = 28;
 	public static final int kMenuCommandGlyph = 17;
