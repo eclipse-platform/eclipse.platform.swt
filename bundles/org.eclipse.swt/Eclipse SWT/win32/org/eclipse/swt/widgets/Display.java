@@ -68,10 +68,16 @@ import org.eclipse.swt.graphics.*;
  * thread are distinguished in their documentation by indicating that
  * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
  * SWT exception.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose</dd>
+ * </dl>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
  * @see #syncExec
  * @see #asyncExec
  * @see #wake
@@ -402,6 +408,8 @@ int controlKey (int key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see #dispose
+ * 
  * @since 2.0
  */
 public void close () {

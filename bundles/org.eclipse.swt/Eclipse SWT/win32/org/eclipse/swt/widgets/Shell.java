@@ -338,6 +338,8 @@ public void addShellListener (ShellListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #dispose
  */
 public void close () {
 	checkWidget ();
@@ -1117,7 +1119,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	if (!isEnabled () || !isActive ()) {
-		if (!display.TrimEnabled) return new LRESULT(OS.HTNOWHERE);
+		if (!display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
 		int hittest = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTCLIENT || hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
