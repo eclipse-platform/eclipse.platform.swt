@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class ToolItem extends Item {
-	int boxHandle, arrowHandle, separatorHandle, labelHandle, imageHandle;
+	int /*long*/ boxHandle, arrowHandle, separatorHandle, labelHandle, imageHandle;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -187,7 +187,7 @@ void createHandle (int index) {
 		case SWT.DROP_DOWN:
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			int arrowBoxHandle = OS.gtk_hbox_new (false, 0);
+			int /*long*/ arrowBoxHandle = OS.gtk_hbox_new (false, 0);
 			if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -254,7 +254,7 @@ void deregister() {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	int topHandle = topHandle ();
+	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int y = OS.GTK_WIDGET_Y (topHandle);
 	int width = OS.GTK_WIDGET_WIDTH (topHandle);
@@ -314,7 +314,7 @@ public Image getDisabledImage () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	int topHandle = topHandle ();
+	int /*long*/ topHandle = topHandle ();
 	return OS.GTK_WIDGET_SENSITIVE (topHandle);
 }
 
@@ -403,11 +403,11 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	int topHandle = topHandle ();
+	int /*long*/ topHandle = topHandle ();
 	return OS.GTK_WIDGET_WIDTH (topHandle);
 }
 
-int gtk_button_press_event (int widget, int event) {
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton();
 	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
@@ -422,7 +422,7 @@ int gtk_button_press_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_button_release_event (int widget, int event) {
+int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton();
 	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
@@ -437,10 +437,10 @@ int gtk_button_release_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_clicked (int widget) {
+int /*long*/ gtk_clicked (int /*long*/ widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
-		int eventPtr = OS.gtk_get_current_event ();
+		int /*long*/ eventPtr = OS.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			GdkEvent gdkEvent = new GdkEvent ();
 			OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
@@ -453,7 +453,7 @@ int gtk_clicked (int widget) {
 					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
 					if ((int) x_win [0] > OS.GTK_WIDGET_WIDTH (boxHandle)) {
 						event.detail = SWT.ARROW;
-						int topHandle = topHandle ();
+						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
 						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
 					}
@@ -472,7 +472,7 @@ int gtk_clicked (int widget) {
 	return 0;
 }
 
-int gtk_enter_notify_event (int widget, int event) {
+int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage && imageHandle != 0) {
 		OS.gtk_image_set_from_pixmap (imageHandle, hotImage.pixmap, hotImage.mask);
@@ -480,7 +480,7 @@ int gtk_enter_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_event_after (int widget, int gdkEvent) {
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
@@ -496,7 +496,7 @@ int gtk_event_after (int widget, int gdkEvent) {
 	return 0;
 }
 
-int gtk_leave_notify_event (int widget, int event) {
+int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (drawHotImage) {
 		drawHotImage = false;
 		if (imageHandle != 0 && image != null) {
@@ -506,15 +506,15 @@ int gtk_leave_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_mnemonic_activate (int widget, int arg1) {
+int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int windowProc2 = display.windowProc2;
-	int windowProc3 = display.windowProc3;
+	int /*long*/ windowProc2 = display.windowProc2;
+	int /*long*/ windowProc3 = display.windowProc3;
 	OS.g_signal_connect (handle, OS.clicked, windowProc2, CLICKED);
 	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
@@ -642,7 +642,7 @@ public void setControl (Control control) {
 	Control oldControl = this.control;
 	if (oldControl == newControl) return;
 	this.control = newControl;
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	if (oldControl != null) {
 		OS.gtk_widget_reparent (oldControl.topHandle(), parentHandle);
 	}
@@ -697,11 +697,11 @@ public void setDisabledImage (Image image) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	int topHandle = topHandle ();
+	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	OS.gtk_widget_modify_font (handle, font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
@@ -862,7 +862,7 @@ public void setWidth (int width) {
 	/*
 	* Force the container to allocate the size of its children.
 	*/
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_resize_children (parentHandle);
 	if (control != null && !control.isDisposed ()) {
 		OS.gtk_widget_reparent (control.topHandle(), parentHandle);

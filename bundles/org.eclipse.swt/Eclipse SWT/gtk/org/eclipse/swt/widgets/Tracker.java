@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Composite parent;
-	int cursor, lastCursor;
+	int /*long*/ cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
 	Rectangle bounds;
@@ -221,14 +221,14 @@ void drawRectangles (Rectangle [] rects) {
 	} else {
 		display.update ();
 	}	
-	int window = OS.GDK_ROOT_PARENT ();
+	int /*long*/ window = OS.GDK_ROOT_PARENT ();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	} 
 	if (window == 0) return;
-	int gc = OS.gdk_gc_new (window);
+	int /*long*/ gc = OS.gdk_gc_new (window);
 	if (gc == 0) return;
-	int colormap = OS.gdk_colormap_get_system ();
+	int /*long*/ colormap = OS.gdk_colormap_get_system ();
 	GdkColor color = new GdkColor ();
 	OS.gdk_color_white (colormap, color);
 	OS.gdk_gc_set_foreground (gc, color);
@@ -306,7 +306,7 @@ void moveRectangles (int xChange, int yChange) {
 public boolean open () {
 	checkWidget();
 	if (rectangles == null) return false;
-	int window = OS.GDK_ROOT_PARENT ();
+	int /*long*/ window = OS.GDK_ROOT_PARENT ();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	} 
@@ -360,7 +360,7 @@ public boolean open () {
 	 */
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
-		int eventPtr;
+		int /*long*/ eventPtr;
 		while (true) {
 			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {

@@ -222,10 +222,10 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	int parentHandle = parent.handle;
+	int /*long*/ parentHandle = parent.handle;
 	GdkRectangle rect = new GdkRectangle ();
-	int column = OS.gtk_tree_view_get_column (parentHandle, 0);
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
@@ -279,7 +279,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	boolean answer = OS.gtk_tree_view_row_expanded (parent.handle, path);
 	OS.gtk_tree_path_free (path);
 	return answer;
@@ -416,11 +416,11 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	TreeItem item = null;
 	if (OS.gtk_tree_path_get_depth (path) > 1) {
 		OS.gtk_tree_path_up (path);
-		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (OS.gtk_tree_model_get_iter (parent.modelHandle, iter, path)) {
 			int [] index = new int [1];
 			OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
@@ -518,7 +518,7 @@ public void setGrayed (boolean grayed) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	if (expanded) {
 		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 		OS.gtk_tree_view_expand_row (parent.handle, path, false);
@@ -555,7 +555,7 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int fontHandle  = font != null ? font.handle : 0;
+	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
 }
 
@@ -594,7 +594,7 @@ public void setImage (Image image) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	int pixbuf = 0;
+	int /*long*/ pixbuf = 0;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();

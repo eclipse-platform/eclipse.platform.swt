@@ -129,13 +129,13 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 	if ((style & SWT.FLAT) != 0) {
-		int style = OS.gtk_widget_get_modifier_style (handle);
+		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
 		OS.gtk_rc_style_set_xthickness (style, 0);
 		OS.gtk_rc_style_set_ythickness (style, 0);
 		OS.gtk_widget_modify_style (handle, style);
@@ -154,7 +154,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return computeNativeSize(handle, wHint, hHint, changed);
 }
 
-int eventHandle () {
+int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
@@ -247,7 +247,7 @@ public ToolItem [] getItems () {
 	int count = OS.g_list_length (list);
 	ToolItem [] result = new ToolItem [count];
 	for (int i=0; i<count; i++) {
-		int data = OS.g_list_nth_data (list, i);
+		int /*long*/ data = OS.g_list_nth_data (list, i);
 		Widget widget = display.getWidget (data);
 		result [i] = (ToolItem) widget;
 	}
@@ -306,7 +306,7 @@ public int indexOf (ToolItem item) {
 boolean mnemonicHit (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		int labelHandle = items [i].labelHandle;
+		int /*long*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
 	}
 	return false;
@@ -315,7 +315,7 @@ boolean mnemonicHit (char key) {
 boolean mnemonicMatch (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		int labelHandle = items [i].labelHandle;
+		int /*long*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
 	}
 	return false;
