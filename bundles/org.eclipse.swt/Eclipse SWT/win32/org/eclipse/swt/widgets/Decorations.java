@@ -331,7 +331,7 @@ void createAccelerators () {
 		* IDOK represents the "Done Button" which also closes the shell.
 		*/
 		accel.fVirt = OS.FVIRTKEY | OS.FCONTROL;
-		accel.key = 'Q';
+		accel.key = (byte)'Q';
 		accel.cmd = OS.IDOK;
 		OS.MoveMemory (buffer1, accel, size);
 		System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);

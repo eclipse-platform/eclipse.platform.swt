@@ -386,19 +386,4 @@ public static boolean equalsIgnoreCase(String s1, String s2) {
 	return true;
 }
 
-/**
- * Copies a range of characters into a new String.
- *
- * @param buffer the StringBuffer we want to copy from
- * @param start the offset of the first character
- * @param end the offset one past the last character
- * @return a new String containing the characters from start to end - 1
- *
- * @exception	IndexOutOfBoundsException 
- *   when <code>start < 0, start > end</code> or <code>end > length()</code>
- */
-public static String substring(StringBuffer buffer, int start, int end) {
-	return buffer.toString().substring(start, end);
-}
-
 }
