@@ -4623,7 +4623,7 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	// redraw line break marker (either space or full client area width)
 	// if redraw range extends over more than one line and background should be redrawn
 	if (lastLine > firstLine && clearBackground) {
-		int lineBreakStartX = bidi.getTextWidth() - horizontalScrollOffset;
+		int lineBreakStartX = bidi.getTextWidth() - horizontalScrollOffset + xInset;
 		int lineBreakWidth;		
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
 			lineBreakWidth = clientArea.width - lineBreakStartX;
