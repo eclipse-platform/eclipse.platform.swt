@@ -1596,6 +1596,18 @@ public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
 	setScrollWidth ();
+	/*
+	 * Feature in Windows.  Setting the font will cause the 
+	 * table area to be redrawn but not the column headers.
+	 * Fix is to force a redraw on the column headers.
+	 */
+	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (hwndHeader, null, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (hwndHeader, null, 0, flags);
+	}
 	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
 	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
