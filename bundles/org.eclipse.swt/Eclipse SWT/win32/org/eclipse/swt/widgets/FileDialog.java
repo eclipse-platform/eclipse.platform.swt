@@ -284,13 +284,16 @@ public String open () {
 		OS.MoveMemory (buffer, lpstrFile, byteCount1);
 		
 		/*
-		* Bug in WinCE HPC.  For some reason, nFileOffset and
-		* nFileExtension are always zero.  The fix is to parse
-		* lpstrFile to calculate nFileOffset.  Note: WinCE does
-		* not support multiple selection.
+		* Bug in WinCE.  For some reason, nFileOffset and nFileExtension
+		* are always zero on WinCE HPC. nFileOffset is always zero on
+		* WinCE PPC when using GetSaveFileName.  nFileOffset is correctly
+		* set on WinCE PPC when using OpenFileName.  The fix is to parse
+		* lpstrFile to calculate nFileOffset.
+		* 
+		* Note: WinCE does not support multi-select file dialogs.
 		*/
 		int nFileOffset = struct.nFileOffset;
-		if (OS.IsHPC && nFileOffset == 0) {
+		if (OS.IsWinCE && nFileOffset == 0) {
 			int index = 0; 
 			while (index < buffer.length ()) {
 				int ch = buffer.tcharAt (index);
