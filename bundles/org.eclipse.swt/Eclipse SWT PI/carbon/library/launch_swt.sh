@@ -1,5 +1,35 @@
 #!/bin/sh
 
+# 
+# This script wrappers a SWT based Java application on the fly as an
+# application bundle and launches it.
+#
+# Why is it necessary?
+# When using Carbon via JNI some magic is necessary to make MacOS X
+# recognize the Java program as a 'real Mac application' with its own menu bar 
+# and an entry in the Dock. Since this 'magic' does not seem to be public and
+# documented API I don't know how to call it from the SWT startup code.
+# As a workaround I've tried to simulate what ProjectBuilder or MRJAppBuilder
+# do if they launch a SWT based Java application.
+#
+# How is it used?
+# Basically by replacing the standard Java VM ('/usr/bin/java') with this script.
+# Since this script is a replacement for the VM it takes roughly the same arguments.
+# 
+# Detailled steps:
+# - adapt the value of the shell variable SWT_DLL below. (I have it point to the
+#   folder where the Ant export script 'make_carbon.xml' places it).
+# - create a "fake" jdk by creating a folder 'swt_jdk' somewhere on your disk
+# - inside swt_jdk create a folder 'bin'
+# - copy this script into 'bin' and rename it to 'java' (or make a symbolic link 'java'
+#   from this file in your workspace)
+# - make sure the script 'java' is executable
+# - within Eclipse create a new JRE 'SWT VM' in 'Preferences/Java/Installed JREs'
+# - When creating a new Launch or Debug Configuration on the JRE tab select your
+#   new 'SWT VM' instead of the standard one
+# - Now you can run or debug your application (however you will have to bring it
+#   to front manually).
+
 #
 # Place of the SWT dll. 
 #
@@ -129,4 +159,6 @@ End_Of_Input
 #
 exec $TMP_APP_DIR/$APP_NAME.app/Contents/MacOS/$APP_NAME
 
-echo "never reached unless there is an error"
+#
+# not reached (as long as the exec from above succeeds).
+#
