@@ -73,14 +73,37 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	//NOT DONE
-	Rectangle rect = computeTrim (0, 0, Math.max (wHint, 100), Math.max (hHint, 100));
+	int width = 0;
+	if (wHint == SWT.DEFAULT) {
+		GC gc = new GC (this);
+		for (int i=0; i<itemCount; i++) {
+			Point extent = gc.stringExtent (items [i]);
+			width = Math.max (width, extent.x);
+		}
+		gc.dispose ();
+	} else {
+		width = wHint;
+	}
+	if (width <= 0) width = DEFAULT_WIDTH;
+	int height = 0;
+	if (hHint == SWT.DEFAULT) {
+		height = itemCount * getItemHeight ();
+	} else {
+		height = hHint;
+	}
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	Rectangle rect = computeTrim (0, 0, width, height);
 	return new Point (rect.width, rect.height);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	//NOT DONE
+	Rect rect = new Rect ();
+	OS.GetDataBrowserScrollBarInset (handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	width += (rect.left + rect.right) * 3;
+	height += rect.top + rect.bottom;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -174,6 +197,14 @@ public void deselectAll () {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsRemove);
 	ignoreSelect = false;
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	Rect rect = new Rect (), inset = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	OS.GetDataBrowserScrollBarInset (handle, inset);
+	return new Rectangle (inset.left, inset.top, rect.right - rect.left + inset.right, rect.bottom - rect.top + inset.bottom);
 }
 
 public int getFocusIndex () {
