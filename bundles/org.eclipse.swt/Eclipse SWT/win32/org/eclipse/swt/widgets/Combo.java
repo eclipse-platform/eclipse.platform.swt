@@ -310,43 +310,54 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-	int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
-	int width = 0, height = 0;
-	if ((style & SWT.SIMPLE) != 0) height = count * itemHeight;
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
-	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	RECT rect = new RECT ();
-	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-	if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
-	int length = OS.GetWindowTextLength (handle);
-	int cp = getCodePage ();
-	TCHAR buffer = new TCHAR (cp, length + 1);
-	OS.GetWindowText (handle, buffer, length + 1);
-	OS.DrawText (hDC, buffer, length, rect, flags);
-	width = Math.max (width, rect.right - rect.left);
-	for (int i=0; i<count; i++) {
-		length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
-		if (length != OS.CB_ERR) {
-			if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
-			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
-			if (result != OS.CB_ERR) {
-				OS.DrawText (hDC, buffer, length, rect, flags);
-				width = Math.max (width, rect.right - rect.left);
+	int width = 0, height = 0, tmInternalLeading = 0;
+	if (wHint == SWT.DEFAULT) {
+		int newFont, oldFont = 0;
+		int hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+		if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
+		int length = OS.GetWindowTextLength (handle);
+		int cp = getCodePage ();
+		TCHAR buffer = new TCHAR (cp, length + 1);
+		OS.GetWindowText (handle, buffer, length + 1);
+		OS.DrawText (hDC, buffer, length, rect, flags);
+		width = Math.max (width, rect.right - rect.left);
+		for (int i=0; i<count; i++) {
+			length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
+			if (length != OS.CB_ERR) {
+				if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
+				int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
+				if (result != OS.CB_ERR) {
+					OS.DrawText (hDC, buffer, length, rect, flags);
+					width = Math.max (width, rect.right - rect.left);
+				}
 			}
+		}
+		if ((style & SWT.READ_ONLY) != 0) {
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, tm);
+			tmInternalLeading = tm.tmInternalLeading;
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+	}
+	if (hHint == SWT.DEFAULT) {
+		if ((style & SWT.SIMPLE) != 0) {
+			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
+			height = count * itemHeight;
 		}
 	}	
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 	if ((style & SWT.READ_ONLY) != 0) {
-		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-		OS.GetTextMetrics (hDC, tm);
-		width += tm.tmInternalLeading * 2;
+		width += tmInternalLeading * 2;
 	} else {
 		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 		if (hwndText != 0) {
@@ -355,9 +366,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += marginWidth + 3;
 		}
 	}
+	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
 	int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = textHeight + 6;

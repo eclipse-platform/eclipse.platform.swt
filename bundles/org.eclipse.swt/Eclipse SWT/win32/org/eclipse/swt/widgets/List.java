@@ -189,35 +189,41 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-	int itemHeight = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
-	int width = 0, height = count * itemHeight;
-	if ((style & SWT.H_SCROLL) != 0) {
-		width = OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
-	} else {
-		int newFont, oldFont = 0;
-		int hDC = OS.GetDC (handle);
-		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-		int cp = getCodePage ();
-		TCHAR buffer = new TCHAR (cp, 64 + 1);
-		for (int i=0; i<count; i++) {
-			int length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, i, 0);
-			if (length != OS.LB_ERR) {
-				if (length + 1 > buffer.length ()) {
-					buffer = new TCHAR (cp, length + 1);
+	int width = 0, height = 0;
+	if (wHint == SWT.DEFAULT) {
+		if ((style & SWT.H_SCROLL) != 0) {
+			width = OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
+		} else {
+			int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+			int newFont, oldFont = 0;
+			int hDC = OS.GetDC (handle);
+			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+			RECT rect = new RECT ();
+			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+			int cp = getCodePage ();
+			TCHAR buffer = new TCHAR (cp, 64 + 1);
+			for (int i=0; i<count; i++) {
+				int length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, i, 0);
+				if (length != OS.LB_ERR) {
+					if (length + 1 > buffer.length ()) {
+						buffer = new TCHAR (cp, length + 1);
+					}
+					int result = OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer);
+					if (result != OS.LB_ERR) {
+						OS.DrawText (hDC, buffer, length, rect, flags);
+						width = Math.max (width, rect.right - rect.left);
+					}
 				}
-				int result = OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer);
-				if (result != OS.LB_ERR) {
-					OS.DrawText (hDC, buffer, length, rect, flags);
-					width = Math.max (width, rect.right - rect.left);
-				}
-			}
-		}	
-		if (newFont != 0) OS.SelectObject (hDC, oldFont);
-		OS.ReleaseDC (handle, hDC);
+			}	
+			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+			OS.ReleaseDC (handle, hDC);
+		}
+	}
+	if (hHint == SWT.DEFAULT) {
+		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+		int itemHeight = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
+	 	height = count * itemHeight;
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;

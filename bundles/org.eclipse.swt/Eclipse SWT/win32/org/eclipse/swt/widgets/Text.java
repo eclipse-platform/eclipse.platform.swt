@@ -286,34 +286,37 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
-	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-	OS.GetTextMetrics (hDC, tm);
-	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
-	int height = count * tm.tmHeight, width = 0;
-	RECT rect = new RECT ();
-	int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
-	boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
-	if (wrap && wHint != SWT.DEFAULT) {
-		flags |= OS.DT_WORDBREAK;
-		rect.right = wHint;
+	int height = 0, width = 0;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		int newFont, oldFont = 0;
+		int hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+		OS.GetTextMetrics (hDC, tm);
+		int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
+		height = count * tm.tmHeight;
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
+		boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
+		if (wrap && wHint != SWT.DEFAULT) {
+			flags |= OS.DT_WORDBREAK;
+			rect.right = wHint;
+		}
+		String text = getText ();
+		TCHAR buffer = new TCHAR (getCodePage (), text, false);
+		int length = buffer.length ();
+		if (length != 0) {
+			OS.DrawText (hDC, buffer, length, rect, flags); 
+			width = rect.right - rect.left;
+		}
+		if (wrap && hHint == SWT.DEFAULT) {
+			int newHeight = rect.bottom - rect.top;
+			if (newHeight != 0) height = newHeight;
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
 	}
-	String text = getText ();
-	TCHAR buffer = new TCHAR (getCodePage (), text, false);
-	int length = buffer.length ();
-	if (length != 0) {
-		OS.DrawText (hDC, buffer, length, rect, flags); 
-		width = rect.right - rect.left;
-	}
-	if (wrap && hHint == SWT.DEFAULT) {
-		int newHeight = rect.bottom - rect.top;
-		if (newHeight != 0) height = newHeight;
-	}
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
