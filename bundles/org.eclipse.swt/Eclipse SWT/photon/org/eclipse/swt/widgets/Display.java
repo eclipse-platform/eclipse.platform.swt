@@ -826,6 +826,11 @@ int getLastEventTime () {
 	return (int) System.currentTimeMillis ();
 }
 
+public boolean getHighContrast () {
+	checkDevice ();
+	return false;
+}
+
 /**
  * Returns the maximum allowed depth of icons on this display.
  * On some platforms, this may be different than the actual
@@ -1019,6 +1024,12 @@ public Font getSystemFont () {
 	checkDevice ();
 	byte [] font = defaultFont != null ? defaultFont : TEXT_FONT;
 	return Font.photon_new (this, font);
+}
+
+public Tray getSystemTray () {
+	checkDevice ();
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NONE);
 }
 
 /**

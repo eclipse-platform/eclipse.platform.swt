@@ -1096,6 +1096,8 @@ public Control getFocusControl () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @since 3.0
  */
 public boolean getHighContrast () {
 	checkDevice ();
@@ -1549,9 +1551,9 @@ public Font getSystemFont () {
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  *
  * @since 3.0
- * </ul>
  */
 public Tray getSystemTray () {
 	checkDevice ();
