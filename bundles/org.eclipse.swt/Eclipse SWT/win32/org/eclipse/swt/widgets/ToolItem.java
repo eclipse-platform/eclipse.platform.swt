@@ -756,6 +756,8 @@ void updateImages () {
 		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
+			if (disabledImage2 != null) disabledImage2.dispose ();
+			disabledImage2 = null;
 			disabled = image;
 			if (!getEnabled ()) {
 				Color color = parent.getBackground ();
