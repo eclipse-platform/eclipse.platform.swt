@@ -1092,7 +1092,12 @@ public TreeColumn[] getColumns() {
 	System.arraycopy(columns, 0, result, 0, columns.length);
 	return result;
 }
-int getHeaderHeight() {
+public int getGridLineWidth() {
+	checkWidget();
+	return 1;
+}
+public int getHeaderHeight() {
+	checkWidget();
 	if (!header.getVisible()) return 0;
 	return header.getSize().y;
 }
@@ -1382,6 +1387,10 @@ void headerPaintShadow(GC gc, Rectangle bounds, boolean paintHorizontalLines, bo
 	
 	gc.setForeground(oldForeground);
 }
+int indexOf(TreeColumn column) {
+	checkWidget();
+	return column.getIndex();
+}
 /*
  * Allows the Tree to update internal structures it has that may contain the
  * item that is about to be disposed.  The argument is not necessarily a root-level
@@ -1506,7 +1515,11 @@ void makeDescendentsUnavailable(TreeItem2 item, TreeItem2[] removedDescendents) 
 			availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
-	/* update availableIndex as needed */
+	/* update availableIndexes */
+	for (int i = 1; i < removedDescendents.length; i++) {
+		/* skip the first descendent since this is the item being collapsed */
+		removedDescendents[i].availableIndex = -1;
+	}
 	for (int i = item.availableIndex; i < availableItems.length; i++) {
 		availableItems[i].availableIndex = i;
 	}
@@ -1803,6 +1816,10 @@ public void setTopItem(TreeItem2 item) {
 	topIndex = index;
 	getVerticalBar().setSelection(topIndex);
 	redraw();
+}
+public void showColumn(TreeColumn column) {
+	checkWidget();
+	// TODO
 }
 public void showItem(TreeItem2 item) {
 	checkWidget();

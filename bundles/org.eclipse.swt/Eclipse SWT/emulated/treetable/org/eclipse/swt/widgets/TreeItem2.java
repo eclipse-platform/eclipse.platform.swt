@@ -17,7 +17,9 @@ public class TreeItem2 extends Item {
 	int fontHeight;						/* cached item font height */
 	Image[] images = new Image [0];
 	Color foreground, background;
+	Color[] cellForeground, cellBackground;
 	Font font;
+	Font[] cellFont;
 
 	// TODO these cannot be static
 	static Color LinesColor, SelectionBackgroundColor, SelectionForegroundColor;
@@ -78,6 +80,8 @@ public TreeItem2(Tree2 parent, int style) {
 }
 public TreeItem2(Tree2 parent, int style, int index) {
 	super(parent, style);
+	int validItemIndex = parent.getItemCount();
+	if (!(0 <= index && index <= validItemIndex)) error(SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	initialize();
 	parent.addItem(this, index);
@@ -89,6 +93,8 @@ public TreeItem2(TreeItem2 parentItem, int style, int index) {
 	super(checkNull(parentItem).parent, style);
 	this.parentItem = parentItem;
 	parent = parentItem.getParent();
+	int validItemIndex = parentItem.getItemCount();
+	if (!(0 <= index && index <= validItemIndex)) error(SWT.ERROR_INVALID_RANGE);
 	parentItem.addItem(this, index);
 }
 void addItem(TreeItem2 item, int index) {
@@ -202,6 +208,7 @@ public void dispose() {
 	if (focusItem != null && focusItem.hasAncestor(this)) {
 		parent.setFocusItem(this, false);
 		parent.reassignFocus();
+		parent.redrawItem(parent.focusItem.availableIndex);
 	}
 	if (parentItem != null) {
 		parentItem.removeItem(this, index);
@@ -238,6 +245,13 @@ public Color getBackground () {
 	if (background != null) return background;
 	return parent.getBackground();
 }
+public Color getBackground (int columnIndex) {
+	checkWidget ();
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getBackground ();
+	if (cellBackground == null || cellBackground [columnIndex] == null) return getBackground ();
+	return cellBackground [columnIndex];
+}
 public Rectangle getBounds () {
 	int columnCount = parent.getColumnCount();
 	int focusX = getFocusX();
@@ -264,8 +278,14 @@ public Rectangle getBounds () {
 		lastColumn.getX() + lastColumn.getWidth() - focusX,
 		parent.getItemHeight());
 }
-Rectangle getCellBounds(int columnIndex) {
+public Rectangle getBounds(int columnIndex) {
+	checkWidget();
 	int columnCount = parent.getColumnCount();
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	
 	/*
 	 * If there are no columns then this is the bounds of the receiver from the
 	 * beginning of its expander to the end of its text.
@@ -293,12 +313,28 @@ public boolean getChecked () {
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
- * for the specified column.  For columns > 0 this is trivial, but for column 0
- * this is dependent upon the receiver's depth and the presence/absence of a checkbox.
+ * for the specified column.  For columns > 0 this must consider column alignment, and
+ * for column 0 this is dependent upon the receiver's depth in the tree item hierarchy
+ * and the presence/absence of a checkbox.
  */
 int getContentX (int columnIndex) {
 	if (columnIndex > 0) {
-		return parent.getColumn(columnIndex).getX() + Tree2.MARGIN_IMAGE;
+		TreeColumn column = parent.getColumn(columnIndex);
+		int contentX = column.getX() + MARGIN_TEXT;
+		if ((column.style & SWT.LEFT) != 0) return contentX;
+		
+		int contentWidth = internalGetTextWidth(columnIndex);
+		Image image = internalGetImage(columnIndex);
+		if (image != null) {
+			contentWidth += Tree2.MARGIN_IMAGE + image.getBounds().width;
+		}
+		if ((column.style & SWT.RIGHT) != 0) {
+			int padding = parent.getCellPadding();
+			contentX = Math.max(contentX, column.getX() + column.getWidth() - padding - contentWidth);	
+		} else {	/* SWT.CENTER */
+			contentX = Math.max(contentX, column.getX() + (column.getWidth() - contentWidth) / 2);
+		}
+		return contentX;
 	}
 	/* column 0 */
 	if ((parent.style & SWT.CHECK) != 0) {
@@ -361,10 +397,24 @@ public Font getFont () {
 	if (font != null) return font;
 	return parent.getFont ();
 }
+public Font getFont (int columnIndex) {
+	checkWidget ();
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getFont ();
+	if (cellFont == null || cellFont [columnIndex] == null) return getFont ();
+	return cellFont [columnIndex];
+}
 public Color getForeground () {
 	checkWidget ();
 	if (foreground != null) return foreground;
 	return parent.getForeground();
+}
+public Color getForeground (int columnIndex) {
+	checkWidget ();
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getForeground ();
+	if (cellForeground == null || cellForeground [columnIndex] == null) return getForeground ();
+	return cellForeground [columnIndex];
 }
 public boolean getGrayed() {
 	checkWidget();
@@ -408,11 +458,44 @@ public Image getImage () {
 	checkWidget ();
 	return getImage (0);
 }
-public Image getImage (int index) {
+public Image getImage (int columnIndex) {
 	checkWidget ();
 	int validColumnCount = Math.max(1, parent.getColumnCount());
-	if (!(0 <= index && index < validColumnCount)) return null;
-	return internalGetImage(index);
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
+	return internalGetImage(columnIndex);
+}
+public Rectangle getImageBounds(int columnIndex) {
+	checkWidget();
+	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return new Rectangle (0,0,0,0);
+
+	int padding = parent.getCellPadding();
+	int startX = getContentX(columnIndex);
+	int itemHeight = parent.getItemHeight();
+	int y = parent.getItemY(this);
+	Image image = internalGetImage(columnIndex); 
+	if (image == null) {
+		return new Rectangle (startX, y + padding, 0, itemHeight - 2 * padding);
+	}
+	
+	Rectangle imageBounds = image.getBounds();
+	/* 
+	 * For column 0 all images have the same width, which may be larger or smaller
+	 * than the image to be drawn here.  Therefore the image bounds to draw must be
+	 * specified.
+	 */
+	int drawWidth;
+	if (columnIndex == 0) {
+		int imageSpaceX = parent.col0ImageWidth;
+		drawWidth = Math.min (imageSpaceX, imageBounds.width);
+	} else {
+		drawWidth = imageBounds.width;
+	}
+	int imageSpaceY = itemHeight - (2 * padding);
+	int drawHeight = Math.min (imageSpaceY, imageBounds.height);
+	return new Rectangle(
+		startX, y + (itemHeight - drawHeight) / 2,
+		drawWidth, drawHeight);
 }
 int getIndex() {
 	TreeItem2[] items;
@@ -457,11 +540,11 @@ public String getText () {
 	checkWidget ();
 	return getText (0);
 }
-public String getText (int index) {
+public String getText (int columnIndex) {
 	checkWidget ();
 	int validColumnCount = Math.max(1, parent.getColumnCount());
-	if (!(0 <= index && index < validColumnCount)) return "";
-	return internalGetText(index);
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";
+	return internalGetText(columnIndex);
 }
 /*
  * Returns the full width required for painting the receiver's text for the specified
@@ -477,12 +560,12 @@ int getTextPaintWidth(int columnIndex) {
  */
 int getTextX (int columnIndex) {
 	if (columnIndex > 0) {
-		int contentX = getContentX(columnIndex);
+		int textX = getContentX(columnIndex);
 		Image image = internalGetImage(columnIndex);
 		if (image != null) {
-			contentX += image.getBounds().width + Tree2.MARGIN_IMAGE;
+			textX += Tree2.MARGIN_IMAGE + image.getBounds().width;
 		}
-		return contentX + MARGIN_TEXT;
+		return textX;
 	}
 	/* column 0 */
 	return getFocusX() + MARGIN_TEXT;
@@ -579,7 +662,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 	int y = parent.getItemY(this);
 	int padding = parent.getCellPadding();
 	int itemHeight = parent.getItemHeight();
-	Rectangle cellBounds = getCellBounds(columnIndex);
+	Rectangle cellBounds = getBounds(columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
 		cellRightX = column.getX() + column.getWidth();
@@ -685,53 +768,28 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 			}
 		}
 	}
+
+	Image image = internalGetImage(columnIndex);
+	String text = internalGetText(columnIndex);
+	Rectangle imageArea = getImageBounds(columnIndex);
+	int startX = imageArea.x;
 	
-	int startX = getContentX(columnIndex);
 	/* while painting the cell's contents restrict the clipping region */
 	gc.setClipping(
 		startX,
 		cellBounds.y + padding,
 		Math.max (0, cellRightX - startX - padding),
 		Math.max (0, cellBounds.height - (2 * padding)));
-	
-	Image image = internalGetImage(columnIndex);
-	String text = internalGetText(columnIndex);
-
-	if (columnIndex > 0) {		/* column 0 can only be left-aligned */
-		int contentWidth = internalGetTextWidth(columnIndex);
-		if (image != null) {
-			contentWidth += image.getBounds().width + Tree2.MARGIN_IMAGE;
-		}
-		if ((column.style & SWT.RIGHT) != 0) {
-			startX = Math.max(startX, x + column.getWidth() - padding - contentWidth);	
-		} else {	/* SWT.CENTER */
-			startX = Math.max(startX, x + (column.getWidth() - contentWidth) / 2);	
-		}
-	}
 
 	/* draw the image */
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
-		/* 
-		 * For column 0 all images have the same width, which may be larger or smaller
-		 * than the image to be drawn here.  Therefore the image bounds to draw must be
-		 * specified.
-		 */
-		int drawWidth;
-		if (columnIndex == 0) {
-			int imageSpaceX = parent.col0ImageWidth;
-			drawWidth = Math.min (imageSpaceX, imageBounds.width);
-		} else {
-			drawWidth = imageBounds.width;
-		}
-		int imageSpaceY = itemHeight - (2 * padding);
-		int drawHeight = Math.min (imageSpaceY, imageBounds.height);
 		gc.drawImage(
 			image,
 			0, 0,									/* source x, y */
 			imageBounds.width, imageBounds.height,	/* source width, height */
-			startX, y + (itemHeight - drawHeight) / 2,	/* dest x, y */
-			drawWidth, drawHeight);					/* dest width, height */
+			imageArea.x, imageArea.y,	/* dest x, y */
+			imageArea.width, imageArea.height);					/* dest width, height */
 	}
 	
 	/* draw the text */
@@ -801,6 +859,21 @@ public void setBackground (Color value) {
 	background = value;
 	redrawItem();
 }
+public void setBackground (int columnIndex, Color value) {
+	checkWidget ();
+	if (value != null && value.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
+	if (cellBackground == null) {
+		cellBackground = new Color [validColumnCount];
+	}
+	if (cellBackground [columnIndex] == value) return;
+	if (cellBackground [columnIndex] != null && cellBackground [columnIndex].equals (value)) return;
+	cellBackground [columnIndex] = value;
+	redrawItem();
+}
 public void setChecked (boolean value) {
 	checkWidget();
 	if ((parent.getStyle() & SWT.CHECK) == 0) return;
@@ -859,6 +932,22 @@ public void setFont (Font value) {
 
 	redrawItem();
 }
+public void setFont (int columnIndex, Font value) {
+	checkWidget ();
+	if (value != null && value.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
+	if (cellFont == null) {
+		cellFont = new Font [validColumnCount];
+	}
+	if (cellFont [columnIndex] == value) return;
+	if (cellFont [columnIndex] != null && cellFont [columnIndex].equals (value)) return;
+	cellFont [columnIndex] = value;
+	redrawItem();
+}
+
 public void setForeground (Color value) {
 	checkWidget ();
 	if (value != null && value.isDisposed ()) {
@@ -867,6 +956,21 @@ public void setForeground (Color value) {
 	if (foreground == value) return;
 	if (foreground != null && foreground.equals (value)) return;
 	foreground = value;
+	redrawItem();
+}
+public void setForeground (int columnIndex, Color value) {
+	checkWidget ();
+	if (value != null && value.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
+	if (cellForeground == null) {
+		cellForeground = new Color [validColumnCount];
+	}
+	if (cellForeground [columnIndex] == value) return;
+	if (cellForeground [columnIndex] != null && cellForeground [columnIndex].equals (value)) return;
+	cellForeground [columnIndex] = value;
 	redrawItem();
 }
 public void setGrayed(boolean value) {
@@ -880,23 +984,32 @@ public void setImage (Image value) {
 	checkWidget ();
 	setImage (0, value);
 }
-public void setImage (int index, Image value) {
+public void setImage(Image[] value) {
+	checkWidget();
+	if (value == null) error(SWT.ERROR_NULL_ARGUMENT);
+	
+	// TODO make a smarter implementation of this
+	for (int i = 0; i < value.length; i++) {
+		if (value[i] != null) setImage(i, value[i]);
+	}
+}
+public void setImage (int columnIndex, Image value) {
 	checkWidget ();
 	if (value != null && value.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int validColumnCount = Math.max(1, parent.getColumnCount());
-	if (!(0 <= index && index < validColumnCount)) return;
-	if (images.length < index + 1) {
-		Image[] newImages = new Image[index + 1];
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
+	if (images.length < columnIndex + 1) {
+		Image[] newImages = new Image[columnIndex + 1];
 		System.arraycopy(images, 0, newImages, 0, images.length);
 		images = newImages;
 	} else {
-		Image current = internalGetImage(index);
+		Image current = internalGetImage(columnIndex);
 		if (current == value) return;				/* same value */
 		if (current != null && current.equals (value)) return;
 	}
-	images[index] = value;
+	images[columnIndex] = value;
 
 	/*
 	 * If this is the first image being put into the table then its item height
@@ -906,7 +1019,7 @@ public void setImage (int index, Image value) {
 		int oldItemHeight = parent.getItemHeight();
 		parent.setImageHeight(value.getBounds().height);
 		if (oldItemHeight != parent.getItemHeight()) {
-			if (index == 0) {
+			if (columnIndex == 0) {
 				parent.col0ImageWidth = value.getBounds().width;
 			}
 			parent.redraw();
@@ -918,7 +1031,7 @@ public void setImage (int index, Image value) {
 	 * If this is the first image being put into column 0 then all cells
 	 * in the column should also indent accordingly. 
 	 */
-	if (index == 0 && parent.col0ImageWidth == 0) {
+	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
 		parent.col0ImageWidth = value.getBounds().width;
 		/* redraw the column */
 		if (parent.getColumnCount() == 0) {
@@ -937,25 +1050,34 @@ public void setText (String value) {
 	checkWidget ();
 	setText (0, value);
 }
-public void setText (int index, String value) {
+public void setText(String[] value) {
+	checkWidget();
+	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
+
+	// TODO make a smarter implementation of this
+	for (int i = 0; i < value.length; i++) {
+		if (value[i] != null) setText(i, value[i]);
+	}
+}
+public void setText (int columnIndex, String value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int validColumnCount = Math.max(1, parent.getColumnCount());
-	if (!(0 <= index && index < validColumnCount)) return;
-	if (index == 0) super.setText(value);	// TODO can remove this
-	if (texts.length < index + 1) {
-		String[] newTexts = new String[index + 1];
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
+	if (columnIndex == 0) super.setText(value);	// TODO can remove this
+	if (texts.length < columnIndex + 1) {
+		String[] newTexts = new String[columnIndex + 1];
 		System.arraycopy(texts, 0, newTexts, 0, texts.length);
 		texts = newTexts;
-		int[] newTextWidths = new int[index + 1];
+		int[] newTextWidths = new int[columnIndex + 1];
 		System.arraycopy(textWidths, 0, newTextWidths, 0, textWidths.length);
 		textWidths = newTextWidths;
 	} else {
-		if (value.equals(internalGetText(index))) return;	/* same value */
+		if (value.equals(internalGetText(columnIndex))) return;	/* same value */
 	}
-	texts[index] = value;
+	texts[columnIndex] = value;
 	GC gc = new GC (parent);
-	textWidths[index] = gc.textExtent(value).x;
+	textWidths[columnIndex] = gc.textExtent(value).x;
 	gc.dispose();
 	redrawItem();
 }
