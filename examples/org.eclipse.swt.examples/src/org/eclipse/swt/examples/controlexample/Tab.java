@@ -790,13 +790,19 @@ abstract class Tab {
 	 * and fonts to default settings as well.
 	 */
 	void resetColorsAndFonts () {
+		Color oldColor = foregroundColor;
 		foregroundColor = null;
 		setExampleWidgetForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = backgroundColor;
 		backgroundColor = null;
 		setExampleWidgetBackground ();
+		if (oldColor != null) oldColor.dispose();
+		Font oldFont = font;
 		font = null;
 		setExampleWidgetFont ();
 		setExampleWidgetSize ();
+		if (oldFont != null) oldFont.dispose();
 	}
 	
 	/**

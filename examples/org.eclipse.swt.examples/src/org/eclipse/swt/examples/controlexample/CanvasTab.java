@@ -269,22 +269,24 @@ class CanvasTab extends Tab {
 	}
 
 	/**
-	 * Sets the caret into the "Example" widget.
+	 * Sets or clears the caret in the "Example" widget.
 	 */
 	void setCaret () {
+		Caret oldCaret = canvas.getCaret ();
 		if (caretButton.getSelection ()) {
-			Caret caret = new Caret(canvas, SWT.NONE);
+			Caret newCaret = new Caret(canvas, SWT.NONE);
 			Font font = canvas.getFont();
-			caret.setFont(font);
+			newCaret.setFont(font);
 			GC gc = new GC(canvas);
 			gc.setFont(font);
-			caret.setBounds(1, 1, 1, gc.getFontMetrics().getHeight());
+			newCaret.setBounds(1, 1, 1, gc.getFontMetrics().getHeight());
 			gc.dispose();
-			canvas.setCaret (caret);
+			canvas.setCaret (newCaret);
 			canvas.setFocus();
 		} else {
 			canvas.setCaret (null);
 		}
+		if (oldCaret != null) oldCaret.dispose ();
 	}
 	
 	/**
