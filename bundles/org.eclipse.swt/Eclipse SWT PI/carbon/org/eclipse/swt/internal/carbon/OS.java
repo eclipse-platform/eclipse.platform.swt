@@ -195,6 +195,7 @@ public class OS {
 	public static final int kEventControlDraw = 4;
 	public static final int kControlFocusNextPart = -1;
 	public static final int kEventControlHit = 1;
+	public static final int kEventControlSetCursor = 11;
 	public static final int kEventControlSetFocusPart = 7;
 	public static final int kEventControlRemovingSubControl = 153;
 	public static final int kEventPriorityStandard = 1;
@@ -760,6 +761,7 @@ public static final native int GetWindowFromPort(int pHandle);
 public static final native int GetWindowModality(int wHandle, int[] modalityKind, int[] unavailableWindowHandle);
 public static final native int GetWindowPort(int wHandle);
 public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
+public static final native int HandleControlSetCursor(int control, Point localPoint, int modifiers, boolean[] cursorWasSet);  
 public static final native int HIComboBoxAppendTextItem(int inComboBox, int inText, int[] outIndex);
 public static final native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);
 public static final native int HIComboBoxCreate(CGRect boundsRect, int text, ControlFontStyleRec style, int list, int inAttributes, int[] outComboBox);

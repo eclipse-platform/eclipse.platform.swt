@@ -3826,6 +3826,25 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowStructur
 }
 #endif /* NO_GetWindowStructureWidths */
 
+#ifndef NO_HandleControlSetCursor
+JNIEXPORT jint JNICALL OS_NATIVE(HandleControlSetCursor)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jbooleanArray arg3)
+{
+	Point _arg1, *lparg1=NULL;
+	jboolean *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("HandleControlSetCursor\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = (*env)->GetBooleanArrayElements(env, arg3, NULL);
+	rc = (jint)HandleControlSetCursor((ControlRef)arg0, *(Point *)lparg1, (EventModifiers)arg2, (Boolean *)lparg3);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	if (arg3) (*env)->ReleaseBooleanArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIComboBoxAppendTextItem
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxAppendTextItem
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)

@@ -110,6 +110,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
 		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
 		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
+		case OS.kEventControlSetCursor:			return kEventControlSetCursor (nextHandler, theEvent, userData);
 		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
@@ -446,6 +447,10 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

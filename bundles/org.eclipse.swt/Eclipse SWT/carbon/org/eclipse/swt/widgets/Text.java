@@ -427,7 +427,6 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	// Check for not enabled
 	int window = OS.GetControlOwner (handle);
 	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	EventRecord iEvent = new EventRecord ();
@@ -442,6 +441,13 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	OS.TXNFocus (txnObject, hasFocus());
 	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
 	return result;
+}
+
+int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	OS.TXNAdjustCursor (txnObject, 0);
+	return OS.noErr;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
@@ -565,10 +571,6 @@ boolean sendKeyEvent (int type, Event event) {
 	*/
 	postEvent (SWT.Modify);
 	return newText == oldText;
-}
-
-void setDefaultCursor () {
-	OS.TXNAdjustCursor (txnObject, 0);
 }
 
 public void setDoubleClickEnabled (boolean doubleClick) {

@@ -856,10 +856,18 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			//TEMPOARY CODE
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
-			if (widget != null) {
-				switch (eventKind) {
-					case OS.kEventMouseDragged:
-					case OS.kEventMouseMoved: {
+			switch (eventKind) {
+				case OS.kEventMouseDragged:
+				case OS.kEventMouseMoved: {
+					org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
+					localPoint.h = (short) inPoint.x;
+					localPoint.v = (short) inPoint.y;
+					int [] modifiers = new int [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+					boolean [] cursorWasSet = new boolean [1];
+					OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers [0], cursorWasSet);
+					if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+					if (widget != null) {
 						if (widget == hoverControl) {
 							int [] outDelay = new int [1];
 							OS.HMGetTagDelay (outDelay);
@@ -881,8 +889,8 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 						}
 					}
 				}
-				return widget.mouseProc (nextHandler, theEvent, userData);
 			}
+			if (widget != null) return widget.mouseProc (nextHandler, theEvent, userData);
 			break;
 		}
 	}

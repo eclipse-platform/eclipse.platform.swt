@@ -59,6 +59,13 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	setCursor (sizeCursor.handle);
+	return OS.noErr;
+}
+
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -139,9 +146,5 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
-}
-
-void setDefaultCursor () {
-	setCursor (sizeCursor.handle);
 }
 }

@@ -400,6 +400,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlDeactivate,
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
 		//MUST BE LAST
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
@@ -598,6 +599,15 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
+	Cursor cursor = findCursor ();
+	if (cursor != null) {
+		setCursor (cursor.handle);
+		return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	Display display = getDisplay ();
 	if (!display.ignoreFocus) {
@@ -627,7 +637,6 @@ int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	updateCursor ();
 	sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
@@ -917,8 +926,32 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	Display display = getDisplay ();
-	if (display.getCursorControl () == this) updateCursor ();
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (where);
+	int [] theWindow = new int [1];
+	if (OS.FindWindow (where, theWindow) != OS.inContent) return;
+	if (theWindow [0] == 0) return;
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+	CGPoint inPoint = new CGPoint ();
+	inPoint.x = where.h - rect.left;
+	inPoint.y = where.v - rect.top;
+	int [] theRoot = new int [1];
+	OS.GetRootControl (theWindow [0], theRoot);
+	int [] theControl = new int [1];
+	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	int cursorControl = theControl [0];
+	while (theControl [0] != 0 && theControl [0] != handle) {
+		OS.GetSuperControl (theControl [0], theControl);
+	}
+	if (theControl [0] == 0) return;
+	org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
+	localPoint.h = (short) inPoint.x;
+	localPoint.v = (short) inPoint.y;
+	int modifiers = OS.GetCurrentEventKeyModifiers ();
+	boolean [] cursorWasSet = new boolean [1];
+	OS.HandleControlSetCursor (cursorControl, localPoint, (short) modifiers, cursorWasSet);
+	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 }
 
 void setCursor (int cursor) {
@@ -936,10 +969,6 @@ void setCursor (int cursor) {
 		default:
 			OS.SetCursor (cursor);
 	}
-}
-
-void setDefaultCursor () {
-	OS.SetThemeCursor (OS.kThemeArrowCursor);
 }
 
 public void setEnabled (boolean enabled) {
@@ -1196,15 +1225,6 @@ public void update () {
 	checkWidget();
 	Display display = getDisplay ();
 	display.update ();
-}
-
-void updateCursor () {
-	Cursor cursor = findCursor ();
-	if (cursor != null) {
-		setCursor (cursor.handle);
-	} else {
-		setDefaultCursor ();
-	}
 }
 
 }
