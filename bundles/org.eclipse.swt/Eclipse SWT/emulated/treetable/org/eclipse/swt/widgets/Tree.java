@@ -341,6 +341,7 @@ void destroyItem (TreeItem item) {
 }
 void doArrowDown (int stateMask) {
 	if ((stateMask & (SWT.SHIFT | SWT.CTRL)) == 0) {
+		/* Down Arrow with no modifiers */
 		int newFocusIndex = focusItem.availableIndex + 1;
 		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 		selectItem (availableItems [newFocusIndex], false);
@@ -354,6 +355,7 @@ void doArrowDown (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
+			/* CTRL+Down Arrow, CTRL+Shift+Down Arrow */
 			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
@@ -368,6 +370,7 @@ void doArrowDown (int stateMask) {
 			gc.dispose ();
 			return;
 		}
+		/* Shift+Down Arrow */
 		int newFocusIndex = focusItem.availableIndex + 1;
 		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 		selectItem (availableItems [newFocusIndex], false);
@@ -382,6 +385,7 @@ void doArrowDown (int stateMask) {
 	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* CTRL+Shift+Down Arrow */
 			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
@@ -396,6 +400,7 @@ void doArrowDown (int stateMask) {
 			gc.dispose ();
 			return;
 		}
+		/* CTRL+Down Arrow */
 		int focusIndex = focusItem.availableIndex; 
 		if (focusIndex == availableItems.length - 1) return;	/* at bottom */
 		TreeItem newFocusItem = availableItems [focusIndex + 1];
@@ -404,6 +409,7 @@ void doArrowDown (int stateMask) {
 		showItem (newFocusItem);
 		return;
 	}
+	/* Shift+Down Arrow */
 	int newFocusIndex = focusItem.availableIndex + 1;
 	if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 	if (anchorItem == null) anchorItem = focusItem;
@@ -417,6 +423,7 @@ void doArrowDown (int stateMask) {
 }
 void doArrowLeft (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
+		/* CTRL+Left Arrow, CTRL+Shift+Left Arrow */
 		if (horizontalOffset == 0) return;
 		int newSelection = Math.max (0, horizontalOffset - SIZE_HORIZONTALSCROLL);
 		Rectangle clientArea = getClientArea ();
@@ -441,6 +448,7 @@ void doArrowLeft (int stateMask) {
 		getHorizontalBar ().setSelection (horizontalOffset);
 		return;
 	}
+	/* Left Arrow with no modifiers, Shift+Left Arrow */
 	if (focusItem.expanded) {
 		focusItem.setExpanded (false);
 		Event newEvent = new Event ();
@@ -461,6 +469,7 @@ void doArrowLeft (int stateMask) {
 }
 void doArrowRight (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
+		/* CTRL+Right Arrow, CTRL+Shift+Right Arrow */
 		ScrollBar hBar = getHorizontalBar ();
 		int maximum = hBar.getMaximum ();
 		int clientWidth = getClientArea ().width;
@@ -488,6 +497,7 @@ void doArrowRight (int stateMask) {
 		hBar.setSelection (horizontalOffset);
 		return;
 	}
+	/* Right Arrow with no modifiers, Shift+Right Arrow */
 	TreeItem[] children = focusItem.items;
 	if (children.length == 0) return;
 	if (!focusItem.expanded) {
@@ -513,6 +523,7 @@ void doArrowRight (int stateMask) {
 }
 void doArrowUp (int stateMask) {
 	if ((stateMask & (SWT.SHIFT | SWT.CTRL)) == 0) {
+		/* Up Arrow with no modifiers */
 		int newFocusIndex = focusItem.availableIndex - 1;
 		if (newFocusIndex < 0) return; 		/* at top */
 		TreeItem item = availableItems [newFocusIndex];
@@ -527,6 +538,7 @@ void doArrowUp (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
+			/* CTRL+Up Arrow, CTRL+Shift+Up Arrow */
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
@@ -540,6 +552,7 @@ void doArrowUp (int stateMask) {
 			gc.dispose ();
 			return;
 		}
+		/* Shift+Up Arrow */
 		int newFocusIndex = focusItem.availableIndex - 1;
 		if (newFocusIndex < 0) return; 	/* at top */
 		TreeItem item = availableItems [newFocusIndex];
@@ -555,6 +568,7 @@ void doArrowUp (int stateMask) {
 	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* CTRL+Shift+Up Arrow */
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
@@ -568,6 +582,7 @@ void doArrowUp (int stateMask) {
 			gc.dispose ();
 			return;
 		}
+		/* CTRL+Up Arrow */
 		int focusIndex = focusItem.availableIndex; 
 		if (focusIndex == 0) return;	/* at top */
 		TreeItem newFocusItem = availableItems [focusIndex - 1];
@@ -576,6 +591,7 @@ void doArrowUp (int stateMask) {
 		redrawItem (newFocusItem.availableIndex, true);
 		return;
 	}
+	/* Shift+Up Arrow */
 	int newFocusIndex = focusItem.availableIndex - 1;
 	if (newFocusIndex < 0) return; 		/* at top */
 	if (anchorItem == null) anchorItem = focusItem;
@@ -624,6 +640,7 @@ void doDispose () {
 void doEnd (int stateMask) {
 	int lastAvailableIndex = availableItems.length - 1;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		/* End with no modifiers */
 		if (focusItem.availableIndex == lastAvailableIndex) return; 	/* at bottom */
 		TreeItem item = availableItems [lastAvailableIndex]; 
 		selectItem (item, false);
@@ -637,10 +654,12 @@ void doEnd (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
+			/* CTRL+End, CTRL+Shift+End */
 			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 			setTopItem (availableItems [availableItems.length - visibleItemCount]);
 			return;
 		}
+		/* Shift+End */
 		if (focusItem.availableIndex == lastAvailableIndex) return; /* at bottom */
 		TreeItem item = availableItems [lastAvailableIndex]; 
 		selectItem (item, false);
@@ -655,9 +674,11 @@ void doEnd (int stateMask) {
 	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* CTRL+Shift+End */
 			showItem (availableItems [lastAvailableIndex]);
 			return;
 		}
+		/* CTRL+End */
 		if (focusItem.availableIndex == lastAvailableIndex) return; /* at bottom */
 		TreeItem item = availableItems [lastAvailableIndex];
 		setFocusItem (item, true);
@@ -665,6 +686,7 @@ void doEnd (int stateMask) {
 		redrawItem (item.availableIndex, true);
 		return;
 	}
+	/* Shift+End */
 	if (anchorItem == null) anchorItem = focusItem;
 	TreeItem selectedItem = availableItems [lastAvailableIndex];
 	int anchorIndex = anchorItem.availableIndex;
@@ -710,6 +732,7 @@ void doFocusOut () {
 }
 void doHome (int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		/* Home with no modifiers */
 		if (focusItem.availableIndex == 0) return; 		/* at top */
 		TreeItem item = availableItems [0];
 		selectItem (item, false);
@@ -723,9 +746,11 @@ void doHome (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
+			/* CTRL+Home, CTRL+Shift+Home */
 			setTopItem (availableItems [0]);
 			return;
 		}
+		/* Shift+Home */
 		if (focusItem.availableIndex == 0) return; 		/* at top */
 		TreeItem item = availableItems [0];
 		selectItem (item, false);
@@ -740,9 +765,11 @@ void doHome (int stateMask) {
 	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* CTRL+Shift+Home */
 			setTopItem (availableItems [0]);
 			return;
 		}
+		/* CTRL+Home */
 		if (focusItem.availableIndex == 0) return; /* at top */
 		TreeItem item = availableItems [0];
 		setFocusItem (item, true);
@@ -750,6 +777,7 @@ void doHome (int stateMask) {
 		redrawItem (item.availableIndex, true);
 		return;
 	}
+	/* Shift+Home */
 	if (anchorItem == null) anchorItem = focusItem;
 	TreeItem selectedItem = availableItems [0];
 	int anchorIndex = anchorItem.availableIndex;
@@ -987,6 +1015,7 @@ void doMouseUp (Event event) {
 void doPageDown (int stateMask) {
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		/* PageDown with no modifiers */
 		int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
 		newFocusIndex = Math.min (newFocusIndex, availableItems.length - 1);
 		TreeItem item = availableItems [newFocusIndex];
@@ -997,6 +1026,7 @@ void doPageDown (int stateMask) {
 		return;
 	}
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == (SWT.CTRL | SWT.SHIFT)) {
+		/* CTRL+Shift+PageDown */
 		int newTopIndex = topIndex + visibleItemCount;
 		newTopIndex = Math.min (newTopIndex, availableItems.length - visibleItemCount);
 		if (newTopIndex == topIndex) return;
@@ -1005,6 +1035,7 @@ void doPageDown (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* Shift+PageDown */
 			int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
 			newFocusIndex = Math.min (newFocusIndex, availableItems.length - 1);
 			TreeItem item = availableItems [newFocusIndex];
@@ -1014,26 +1045,24 @@ void doPageDown (int stateMask) {
 			redrawItem (item.availableIndex, true);
 			return;
 		}
+		/* CTRL+PageDown */
 		int newTopIndex = topIndex + visibleItemCount;
 		newTopIndex = Math.min (newTopIndex, availableItems.length - visibleItemCount);
 		if (newTopIndex == topIndex) return;
 		setTopItem (availableItems [newTopIndex]);
 		return;
 	}
+	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
+		/* CTRL+PageDown */
 		int bottomIndex = Math.min (topIndex + visibleItemCount - 1, availableItems.length - 1);
 		if (focusItem.availableIndex != bottomIndex) {
 			setFocusItem (availableItems [bottomIndex], true);
 			redrawItem (bottomIndex, true);
 			return;
 		}
-		if (focusItem.availableIndex == availableItems.length - 1) return;	/* at bottom */
-		bottomIndex = Math.min (bottomIndex + visibleItemCount - 1, availableItems.length - 1);
-		setFocusItem (availableItems [bottomIndex], false);
-		showItem (availableItems [bottomIndex]);
-		return;
 	}
-	/* SWT.SHIFT */
+	/* Shift+PageDown */
 	if (anchorItem == null) anchorItem = focusItem;
 	int anchorIndex = anchorItem.availableIndex;
 	int selectIndex = focusItem.availableIndex + visibleItemCount - 1;
@@ -1056,6 +1085,7 @@ void doPageDown (int stateMask) {
 void doPageUp (int stateMask) {
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
+		/* PageUp with no modifiers */
 		int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
 		newFocusIndex = Math.max (newFocusIndex, 0);
 		TreeItem item = availableItems [newFocusIndex];
@@ -1066,6 +1096,7 @@ void doPageUp (int stateMask) {
 		return;
 	}
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == (SWT.CTRL | SWT.SHIFT)) {
+		/* CTRL+Shift+PageUp */
 		int newTopIndex = Math.max (0, topIndex - visibleItemCount);
 		if (newTopIndex == topIndex) return;
 		setTopItem (availableItems [newTopIndex]);
@@ -1073,6 +1104,7 @@ void doPageUp (int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
+			/* Shift+PageUp */
 			int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
 			newFocusIndex = Math.max (newFocusIndex, 0);
 			TreeItem item = availableItems [newFocusIndex];
@@ -1082,24 +1114,22 @@ void doPageUp (int stateMask) {
 			redrawItem (item.availableIndex, true);
 			return;
 		}
+		/* CTRL+PageUp */
 		int newTopIndex = Math.max (0, topIndex - visibleItemCount);
 		if (newTopIndex == topIndex) return;
 		setTopItem (availableItems [newTopIndex]);
 		return;
 	}
+	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
+		/* CTRL+PageUp */
 		if (focusItem.availableIndex != topIndex) {
 			setFocusItem (availableItems [topIndex], true);
 			redrawItem (topIndex, true);
 			return;
 		}
-		if (focusItem.availableIndex == 0) return;		/* at top */
-		int newTopIndex = Math.max (0, topIndex - visibleItemCount + 1);
-		setFocusItem (availableItems [newTopIndex], false);
-		setTopItem (availableItems [newTopIndex]);
-		return;
 	}
-	/* SWT.SHIFT */
+	/* Shift+PageUp */
 	if (anchorItem == null) anchorItem = focusItem;
 	int anchorIndex = anchorItem.availableIndex;
 	int selectIndex = Math.max (0,focusItem.availableIndex - visibleItemCount + 1);
