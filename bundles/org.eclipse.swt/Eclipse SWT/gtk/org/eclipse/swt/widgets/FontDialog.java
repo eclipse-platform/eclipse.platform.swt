@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class FontDialog extends Dialog {
 	FontData fontData;
+	RGB rgb;
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -93,6 +94,17 @@ public FontData getFontData() {
 }
 
 /**
+ * Returns the currently selected color in the receiver.
+ *
+ * @return the RGB value for the selected color, may be null
+ *
+ * @see PaletteData#getRGBs
+ */
+public RGB getRGB () {
+	return rgb;
+}
+
+/**
  * Makes the dialog visible and brings it to the front
  * of the display.
  *
@@ -148,5 +160,17 @@ public FontData open () {
  */
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
+}
+/**
+ * Returns the receiver's selected color to be the argument.
+ *
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
+ *
+ * @see PaletteData#getRGBs
+ */
+public void setRGB (RGB rgb) {
+	this.rgb = rgb;
 }
 }

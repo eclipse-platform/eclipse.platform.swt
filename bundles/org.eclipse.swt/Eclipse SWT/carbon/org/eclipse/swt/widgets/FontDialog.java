@@ -81,6 +81,7 @@ public class FontDialog extends Dialog {
 		SWT.getMessage ("SWT_Charset_Euro")
 	};
 
+	RGB rgb;
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -375,6 +376,17 @@ FontData getFontData (String charsetName, String faceName, String extStyle, int 
  */
 Hashtable getFonts () {
 	return characterSets;
+}
+
+/**
+ * Returns the currently selected color in the receiver.
+ *
+ * @return the RGB value for the selected color, may be null
+ *
+ * @see PaletteData#getRGBs
+ */
+public RGB getRGB () {
+	return rgb;
 }
 
 /**
@@ -820,6 +832,19 @@ void setFontCombos (FontData fontData) {
  */
 public void setFontData (FontData fontData) {
 	initialFontData = fontData;
+}
+
+/**
+ * Returns the receiver's selected color to be the argument.
+ *
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
+ *
+ * @see PaletteData#getRGBs
+ */
+public void setRGB (RGB rgb) {
+	this.rgb = rgb;
 }
 
 /**

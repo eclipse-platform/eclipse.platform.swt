@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class FontDialog extends Dialog {
 	FontData fontData;
+	RGB rgb;
 	
 /**
  * Constructs a new instance of this class given only its
@@ -96,6 +97,17 @@ public FontData getFontData() {
 }
 
 /**
+ * Returns the currently selected color in the receiver.
+ *
+ * @return the RGB value for the selected color, may be null
+ *
+ * @see PaletteData#getRGBs
+ */
+public RGB getRGB () {
+	return rgb;
+}
+
+/**
  * Makes the dialog visible and brings it to the front
  * of the display.
  *
@@ -133,6 +145,12 @@ public FontData open () {
 		logFont.lfHeight = lfHeight;
 	}
 	lpcf.lpLogFont = lpLogFont;
+	if (rgb != null) {
+		int red = rgb.red & 0xFF;
+		int green = (rgb.green << 8) & 0xFF00;
+		int blue = (rgb.blue << 16) & 0xFF0000;
+		lpcf.rgbColors = red | green | blue;
+	}
 	fontData = null;
 	if (OS.ChooseFont (lpcf)) {
 		LOGFONT logFont = new LOGFONT ();
@@ -168,6 +186,10 @@ public FontData open () {
 
 		int points = Compatibility.round(pixels * 72, logPixelsY);
 		fontData = FontData.win32_new (logFont, points);
+		int red = lpcf.rgbColors & 0xFF;
+		int green = (lpcf.rgbColors >> 8) & 0xFF;
+		int blue = (lpcf.rgbColors >> 16) & 0xFF;
+		rgb = new RGB (red, green, blue);
 	}
 		
 	/* Free the OS memory */
@@ -193,6 +215,19 @@ public FontData open () {
  */
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
+}
+
+/**
+ * Returns the receiver's selected color to be the argument.
+ *
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
+ *
+ * @see PaletteData#getRGBs
+ */
+public void setRGB (RGB rgb) {
+	this.rgb = rgb;
 }
 
 }
