@@ -207,7 +207,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 			break;
 		}
 	}
-	if (!colorTypeIsValid) SWT.error(SWT.ERROR_INVALID_IMAGE);;
+	if (!colorTypeIsValid) SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 	boolean bitDepthIsValid = false;
 	byte bitDepth = getBitDepth();

@@ -48,7 +48,7 @@ void decode() {
 			codeMask = MASK_TABLE[bitsPerPixel];
 			currentSlot = newCodes;
 			topSlot = 1 << codeSize;
-			while ((c = nextCode()) == clearCode) {};
+			while ((c = nextCode()) == clearCode) {}
 			if (c != endCode) {
 				oc = fc = c;
 				buf[bufIndex] = (byte)c;

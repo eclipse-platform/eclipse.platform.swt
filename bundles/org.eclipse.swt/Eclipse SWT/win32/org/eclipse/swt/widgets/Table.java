@@ -2527,7 +2527,6 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	Rectangle clientArea = getClientArea ();
 	int i = getTopIndex ();
 	while (i < itemCount) {
-		TableItem item = getItem (i);
 		int j = 0;
 		while (j < columnCount) {
 			if (j != 0 || (!isSelected (i) && i != getFocusIndex ())) {

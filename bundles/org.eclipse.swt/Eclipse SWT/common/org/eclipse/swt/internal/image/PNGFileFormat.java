@@ -63,7 +63,7 @@ ImageData[] loadFromByteStream() {
 			
 		if (headerChunk.usesDirectColor()) {
 			imageData.palette = headerChunk.getPaletteData();
-		};
+		}
 		
 		// Read and process chunks until the IEND chunk is encountered.
 		while (chunkReader.hasMoreChunks()) {
@@ -89,7 +89,7 @@ void readNextChunk(PngChunkReader chunkReader) {
 			if (!headerChunk.usesDirectColor()) {
 				paletteChunk = (PngPlteChunk) chunk;
 				imageData.palette = paletteChunk.getPaletteData();						
-			};					
+			}			
 			break;
 		case PngChunk.CHUNK_tRNS:
 			PngTrnsChunk trnsChunk = (PngTrnsChunk) chunk;
