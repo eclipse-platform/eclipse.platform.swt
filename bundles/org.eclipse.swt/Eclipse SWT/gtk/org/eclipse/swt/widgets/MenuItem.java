@@ -144,8 +144,7 @@ void addAccelerator (int accel_group) {
  * @see #removeArmListener
  */
 public void addArmListener (ArmListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Arm, typedListener);
@@ -171,8 +170,7 @@ public void addArmListener (ArmListener listener) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
@@ -203,8 +201,7 @@ public void addHelpListener (HelpListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener (SWT.Selection,typedListener);
@@ -229,7 +226,7 @@ void createHandle (int index) {
 			break;
 		case SWT.PUSH:
 		default:
-			handle = OS.gtk_menu_item_new_with_label (buffer);
+			handle = OS.gtk_image_menu_item_new_with_label (buffer);
 			break;
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -257,8 +254,7 @@ void createHandle (int index) {
  * </ul>
  */
 public int getAccelerator () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return accelerator;
 }
 public Display getDisplay () {
@@ -298,8 +294,7 @@ public boolean getEnabled () {
  * </ul>
  */
 public Menu getMenu () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return menu;
 }
 /**
@@ -313,8 +308,7 @@ public Menu getMenu () {
  * </ul>
  */
 public Menu getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 /**
@@ -415,8 +409,7 @@ void removeAccelerator (int accel_group) {
  * @see #addArmListener
  */
 public void removeArmListener (ArmListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Arm, listener);
@@ -440,8 +433,7 @@ public void removeArmListener (ArmListener listener) {
  * @see #addHelpListener
  */
 public void removeHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
@@ -465,8 +457,7 @@ public void removeHelpListener (HelpListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -486,8 +477,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void setAccelerator (int accelerator) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int accel_group = parent.getShell ().accelGroup;
 	if (this.accelerator != 0) removeAccelerator (accel_group);
 	this.accelerator = accelerator;
@@ -507,12 +497,34 @@ public void setAccelerator (int accelerator) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
-
+public void setImage (Image image) {
+	if ((style & SWT.SEPARATOR) != 0) {
+		checkWidget();
+		return;
+	}
+	super.setImage (image);
+	if ((style & SWT.PUSH) == 0) return;
+	if (image != null) {
+		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
+		if (oldPixmap != 0) WidgetTable.remove(oldPixmap);
+		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
+		WidgetTable.put(pixmap, this);
+		OS.gtk_image_menu_item_set_image(handle, pixmap);
+		OS.gtk_widget_show(pixmap);
+		if (oldPixmap != 0) OS.gtk_widget_destroy(oldPixmap);
+	} else {  // null image
+		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
+		if (oldPixmap != 0) {
+			WidgetTable.remove(oldPixmap);
+			OS.gtk_image_menu_item_set_image(handle, 0);
+			OS.gtk_widget_destroy(oldPixmap);
+		}
+	}
+}
 
 /**
  * Sets the receiver's pull down menu to the argument.
