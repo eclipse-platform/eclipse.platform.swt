@@ -34,7 +34,7 @@ public class FileDialog extends Dialog {
 	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
-	String [] fileNames;
+	String [] fileNames = new String [0];
 	String fileName = "";
 	String filterPath = "";
 	String fullPath;
@@ -361,7 +361,7 @@ public String open () {
 		0);
 
 	fullPath = null;
-	fileNames = null;
+	fileNames = new String [0];
 	
 	/* Compute the filter */
 	String mask = FILTER;
