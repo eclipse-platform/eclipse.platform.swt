@@ -41,7 +41,6 @@ import org.eclipse.swt.graphics.*;
 public class Menu extends Widget {
 	/**
 	 * the handle to the OS resource 
-	 * (Warning: This field is platform dependent)
 	 */
 	int handle;
 	short id;

@@ -23,9 +23,8 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class Device implements Drawable {
 	/**
-	* the handle to the X Display
-	* (Warning: This field is platform dependent)
-	*/
+	 * the handle to the X Display
+	 */
 	int /*long*/ xDisplay;
 
 	/* Debugging */

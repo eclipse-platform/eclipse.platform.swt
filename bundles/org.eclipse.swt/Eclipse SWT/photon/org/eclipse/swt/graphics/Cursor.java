@@ -50,7 +50,7 @@ public final class Cursor {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	 public int type;
+	public int type;
 
 	/**
 	 * the handle to the OS cursor resource

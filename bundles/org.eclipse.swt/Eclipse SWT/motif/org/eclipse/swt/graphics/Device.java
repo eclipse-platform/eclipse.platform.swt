@@ -23,28 +23,28 @@ import org.eclipse.swt.internal.motif.*;
  */
 public abstract class Device implements Drawable {
 	/**
-	* the handle to the X Display
-	* (Warning: This field is platform dependent)
+	 * the handle to the X Display
+	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
 	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	*/
+	 */
 	public int xDisplay;
 	
 	/**
-	* whether the XLFD resolution should match the
-	* resolution of the device when fonts are created
-	* (Warning: This field is platform dependent)
+	 * whether the XLFD resolution should match the
+	 * resolution of the device when fonts are created
+	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
 	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	*/
+	 */
 	// TEMPORARY CODE
 	public boolean setDPI;
 	

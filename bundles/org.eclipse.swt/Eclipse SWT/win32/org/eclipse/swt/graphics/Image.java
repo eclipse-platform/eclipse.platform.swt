@@ -90,38 +90,32 @@ public final class Image implements Drawable {
 	
 	/**
 	 * specifies the transparent pixel
-	 * (Warning: This field is platform dependent)
 	 */
 	int transparentPixel = -1;
 	
 	/**
 	 * the GC which is drawing on the image
-	 * (Warning: This field is platform dependent)
 	 */
 	GC memGC;
 	
 	/**
 	 * the alpha data for the image
-	 * (Warning: This field is platform dependent)
 	 */
 	byte[] alphaData;
 	
 	/**
 	 * the global alpha value to be used for every pixel
-	 * (Warning: This field is platform dependent)
 	 */
 	int alpha = -1;
 	
 	/**
 	 * the image data used to create this image if it is a
 	 * icon. Used only in WinCE
-	 * (Warning: This field is platform dependent)
 	 */
 	ImageData data;
 	
 	/**
 	 * specifies the default scanline padding
-	 * (Warning: This field is platform dependent)
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 

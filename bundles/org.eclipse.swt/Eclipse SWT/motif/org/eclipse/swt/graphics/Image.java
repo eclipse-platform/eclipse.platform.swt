@@ -100,31 +100,26 @@ public final class Image implements Drawable {
 	
 	/**
 	 * specifies the transparent pixel
-	 * (Warning: This field is platform dependent)
 	 */
 	int transparentPixel = -1;
 	
 	/**
 	 * The GC the image is currently selected in.
-	 * (Warning: This field is platform dependent)
 	 */
 	GC memGC;
 
 	/**
 	 * The alpha data of the image.
-	 * (Warning: This field is platform dependent)
 	 */
 	byte[] alphaData;
 	
 	/**
 	 * The global alpha value to be used for every pixel.
-	 * (Warning: This field is platform dependent)
 	 */
 	int alpha = -1;
 	
 	/**
 	 * Specifies the default scanline padding.
-	 * (Warning: This field is platform dependent)
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 	

@@ -60,7 +60,6 @@ public final class Printer extends Device {
 
 	/**
 	 * strings used to access the Windows registry
-	 * (Warning: These fields are platform dependent)
 	 */
 	static TCHAR profile;
 	static TCHAR appName;

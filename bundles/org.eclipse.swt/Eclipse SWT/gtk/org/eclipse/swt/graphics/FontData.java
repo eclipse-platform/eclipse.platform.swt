@@ -88,7 +88,6 @@ public final class FontData {
 
 	/**
 	 * The locales of the font
-	 * (Warning: These fields are platform dependent)
 	 */
 	String lang, country, variant;
 	

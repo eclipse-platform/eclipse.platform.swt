@@ -89,19 +89,16 @@ public final class Image implements Drawable {
 	
 	/**
 	 * specifies the transparent pixel
-	 * (Warning: This field is platform dependent)
 	 */
 	int transparentPixel = -1;
 	
 	/**
 	 * the GC which is drawing on the image
-	 * (Warning: This field is platform dependent)
 	 */
 	GC memGC;
 
 	/**
 	 * specifies the default scanline padding
-	 * (Warning: This field is platform dependent)
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
