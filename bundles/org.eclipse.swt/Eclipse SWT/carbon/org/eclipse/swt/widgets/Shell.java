@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, activate, disposed;
+	boolean resized, moved, drawing, reshape, update, activate, disposed, opened;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -369,6 +369,10 @@ void bringToTop (boolean force) {
 	} else {
 		setActive ();
 	}
+}
+
+void checkOpen () {
+	if (!opened) resized = false;
 }
 
 /**
@@ -1373,6 +1377,9 @@ public void setVisible (boolean visible) {
 void setWindowVisible (boolean visible) {
 	if (OS.IsWindowVisible (shellHandle) == visible) return;
 	if (visible) {
+		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
+		opened = true;
 		if (!moved) {
 			moved = true;
 			sendEvent (SWT.Move);
@@ -1387,8 +1394,6 @@ void setWindowVisible (boolean visible) {
 				updateLayout (false);
 			}
 		}
-		sendEvent (SWT.Show);
-		if (isDisposed ()) return;
 		int inModalKind = OS.kWindowModalityNone;
 		if ((style & SWT.PRIMARY_MODAL) != 0) inModalKind = OS.kWindowModalityWindowModal;
 		if ((style & SWT.APPLICATION_MODAL) != 0) inModalKind = OS.kWindowModalityAppModal;
