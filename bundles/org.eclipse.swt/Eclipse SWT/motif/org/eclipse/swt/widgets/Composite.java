@@ -643,7 +643,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return changed;
 }
 void setClientWindow (int window) {
-	if (window == OS.XtWindow (focusHandle)) return;
+	if (focusHandle != 0) {
+		if (window == OS.XtWindow (focusHandle)) return;
+	}
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	int xDisplay = OS.XtDisplay (handle);
