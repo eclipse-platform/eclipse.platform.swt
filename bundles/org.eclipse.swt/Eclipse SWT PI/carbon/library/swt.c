@@ -952,6 +952,44 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountSubControls
 }
 #endif /* NO_CountSubControls */
 
+#ifndef NO_CreateBevelButtonControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateBevelButtonControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jshort arg3, jshort arg4, jint arg5, jshort arg6, jshort arg7, jshort arg8, jintArray arg9)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg9=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateBevelButtonControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	rc = (jint)CreateBevelButtonControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (ControlBevelThickness)arg3, (ControlBevelButtonBehavior)arg4, (ControlButtonContentInfoPtr)arg5, (SInt16)arg6, (ControlBevelButtonMenuBehavior)arg7, (ControlBevelButtonMenuPlacement)arg8, (ControlRef *)lparg9);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateCheckBoxControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateCheckBoxControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jboolean arg4, jintArray arg5)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateCheckBoxControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)CreateCheckBoxControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (SInt32)arg3, (Boolean)arg4, (ControlRef *)lparg5);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateDataBrowserControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateDataBrowserControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -1022,6 +1060,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewWindow
 }
 #endif /* NO_CreateNewWindow */
 
+#ifndef NO_CreatePopupArrowControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePopupArrowControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshort arg2, jshort arg3, jintArray arg4)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreatePopupArrowControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CreatePopupArrowControl((WindowRef)arg0, (const Rect *)lparg1, (ControlPopupArrowOrientation)arg2, (ControlPopupArrowSize)arg3, (ControlRef *)lparg4);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreatePushButtonControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -1040,6 +1097,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonC
 	return rc;
 }
 #endif /* NO_CreatePushButtonControl */
+
+#ifndef NO_CreateRadioButtonControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRadioButtonControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jboolean arg4, jintArray arg5)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateRadioButtonControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)CreateRadioButtonControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (SInt32)arg3, (Boolean)arg4, (ControlRef *)lparg5);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
 
 #ifndef NO_CreateRootControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl

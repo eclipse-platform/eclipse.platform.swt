@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -45,18 +46,72 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	if (false) return new Point (100, 50);
+	if ((style & SWT.ARROW) != 0) {
+		return new Point (25, 25);
+	}
 	Rect rect = new Rect();
-	short [] base= new short [1];
+	short [] base = new short [1];
 	OS.GetBestControlRect (handle, rect, base);
-	return new Point (rect.right - rect.left, rect.bottom - rect.top);
+	int width = rect.right - rect.left + 1;
+	int height = rect.bottom - rect.top;
+	if ((style & SWT.TOGGLE) == 0) height -= 12;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width, height);
 }
 
 void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	OS.CreatePushButtonControl (window, null, 0, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
+				
+	if ((style & SWT.ARROW) != 0) {
+//		short orientation = OS.kControlPopupArrowOrientationEast;
+//		if ((style & SWT.UP) != 0) orientation = (short) OS.kControlPopupArrowOrientationNorth;
+//		if ((style & SWT.DOWN) != 0) orientation = (short) OS.kControlPopupArrowOrientationSouth;
+//		if ((style & SWT.LEFT) != 0) orientation = (short) OS.kControlPopupArrowOrientationWest;
+//		OS.CreatePopupArrowControl (window, null, orientation, (short)OS.kControlPopupArrowSizeNormal, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)0, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeArrowButton});
+	}
+	
+	if ((style & SWT.CHECK) != 0) {
+		//OS.CreateCheckBoxControl (window, null, 0, 0 /*initially off*/, true, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeCheckBox});
+	}
+	
+	if ((style & SWT.RADIO) != 0) {
+		//OS.CreateRadioButtonControl(window, null, 0, 0 /*initially off*/, true, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRadioButton});
+	}
+	
+	if ((style & SWT.TOGGLE) != 0) {
+		OS.CreateBevelButtonControl(window, null, 0, (short)OS.kControlBevelButtonNormalBevel, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRoundedBevelButton});
+	}
+	
+	if (outControl [0] == 0) {
+		//OS.CreatePushButtonControl (window, null, 0, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemePushButton});
+	}
+
+	ControlFontStyleRec fontRec = new ControlFontStyleRec();
+	fontRec.flags = (short)OS.kControlUseFontMask;
+	fontRec.font = 0;
+	OS.SetControlFontStyle (handle, fontRec);
 	OS.HIViewAddSubview (parent.handle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
@@ -82,7 +137,7 @@ public boolean getSelection () {
 
 public String getText () {
 	checkWidget();
-	return "text";
+	return text;
 }
 
 public void removeSelectionListener(SelectionListener listener) {
