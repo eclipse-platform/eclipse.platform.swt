@@ -1030,6 +1030,7 @@ public class OS {
 	public static final int TBS_HORZ = 0x0;
 	public static final int TBS_VERT = 0x2;
 	public static final int TB_ADDSTRING = IsUnicode ? 0x44d : 0x41c;
+	public static final int TB_AUTOSIZE = 0x421;
 	public static final int TB_BUTTONCOUNT = 0x418;
 	public static final int TB_BUTTONSTRUCTSIZE = 0x41e;
 	public static final int TB_COMMANDTOINDEX = 0x419;

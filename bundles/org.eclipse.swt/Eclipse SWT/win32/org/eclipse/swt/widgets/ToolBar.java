@@ -510,6 +510,9 @@ public int indexOf (ToolItem item) {
 }
 
 void layoutItems () {
+	if ((style & SWT.WRAP) != 0) {
+		OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
+	}
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) item.resizeControl ();
