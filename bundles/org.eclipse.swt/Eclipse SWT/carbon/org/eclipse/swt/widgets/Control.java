@@ -667,7 +667,7 @@ public void moveAbove (Control control) {
 		if (parent != control.parent) return;
 		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderBelow, inOther);
+	setZOrder (control, true);
 }
 
 public void moveBelow (Control control) {
@@ -678,7 +678,7 @@ public void moveBelow (Control control) {
 		if (parent != control.parent) return;
 		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderAbove, inOther);
+	setZOrder (control, false);
 }
 
 public void pack () {
@@ -1105,6 +1105,12 @@ void setZOrder () {
 	rect.right = rect.left;
 	rect.bottom = rect.top;
 	OS.SetControlBounds (topHandle, rect);
+}
+
+void setZOrder (Control control, boolean above) {
+	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
+	int inOther = control == null ? 0 : control.topHandle ();
+	OS.HIViewSetZOrder (topHandle (), inOp, inOther);
 }
 
 void sort (int [] items) {

@@ -692,6 +692,58 @@ void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCal
 }
 #endif /* NO_DataBrowserCallbacks */
 
+#ifndef NO_DataBrowserCustomCallbacks
+typedef struct DataBrowserCustomCallbacks_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, v1_drawItemCallback, v1_editTextCallback, v1_hitTestCallback, v1_trackingCallback, v1_dragRegionCallback, v1_acceptDragCallback, v1_receiveDragCallback;
+} DataBrowserCustomCallbacks_FID_CACHE;
+
+DataBrowserCustomCallbacks_FID_CACHE DataBrowserCustomCallbacksFc;
+
+void cacheDataBrowserCustomCallbacksFids(JNIEnv *env, jobject lpObject)
+{
+	if (DataBrowserCustomCallbacksFc.cached) return;
+	DataBrowserCustomCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DataBrowserCustomCallbacksFc.version = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "version", "I");
+	DataBrowserCustomCallbacksFc.v1_drawItemCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_drawItemCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_editTextCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_editTextCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_hitTestCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_hitTestCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_trackingCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_trackingCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_dragRegionCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_dragRegionCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_acceptDragCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_acceptDragCallback", "I");
+	DataBrowserCustomCallbacksFc.v1_receiveDragCallback = (*env)->GetFieldID(env, DataBrowserCustomCallbacksFc.clazz, "v1_receiveDragCallback", "I");
+	DataBrowserCustomCallbacksFc.cached = 1;
+}
+
+DataBrowserCustomCallbacks *getDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct)
+{
+	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFids(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.version);
+	lpStruct->u.v1.drawItemCallback = (DataBrowserDrawItemUPP) (*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_drawItemCallback);
+	lpStruct->u.v1.editTextCallback = (DataBrowserEditItemUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_editTextCallback);
+	lpStruct->u.v1.hitTestCallback = (DataBrowserHitTestUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_hitTestCallback);
+	lpStruct->u.v1.trackingCallback = (DataBrowserTrackingUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_trackingCallback);
+	lpStruct->u.v1.dragRegionCallback = (DataBrowserItemDragRgnUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_dragRegionCallback);
+	lpStruct->u.v1.acceptDragCallback = (DataBrowserItemAcceptDragUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_acceptDragCallback);
+	lpStruct->u.v1.receiveDragCallback = (DataBrowserItemReceiveDragUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_receiveDragCallback);
+	return lpStruct;
+}
+
+void setDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct)
+{
+	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_drawItemCallback, (jint)lpStruct->u.v1.drawItemCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_editTextCallback, (jint)lpStruct->u.v1.editTextCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_hitTestCallback, (jint)lpStruct->u.v1.hitTestCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_trackingCallback, (jint)lpStruct->u.v1.trackingCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_dragRegionCallback, (jint)lpStruct->u.v1.dragRegionCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_acceptDragCallback, (jint)lpStruct->u.v1.acceptDragCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_receiveDragCallback, (jint)lpStruct->u.v1.receiveDragCallback);
+}
+#endif /* NO_DataBrowserCustomCallbacks */
+
 #ifndef NO_DataBrowserListViewColumnDesc
 typedef struct DataBrowserListViewColumnDesc_FID_CACHE {
 	int cached;

@@ -23,13 +23,13 @@ public class Display extends Device {
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback actionCallback, commandCallback, controlCallback;
-	Callback itemDataCallback, itemNotificationCallback, helpCallback;
-	Callback keyboardCallback, menuCallback, mouseHoverCallback;
-	Callback mouseCallback, windowCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
+	Callback mouseCallback, trackingCallback, windowCallback;
 	int actionProc, commandProc, controlProc;
-	int itemDataProc, itemNotificationProc, helpProc;
-	int keyboardProc, menuProc, mouseHoverProc;
-	int mouseProc, windowProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
+	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
+	int mouseProc, trackingProc, windowProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -408,6 +408,12 @@ public void disposeExec (Runnable runnable) {
 	disposeList = newDisposeList;
 }
 
+int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.drawItemProc (browser, item, property, itemState, theRect, gdDepth, colorDevice);
+	return OS.noErr;
+}
+
 void error (int code) {
 	SWT.error(code);
 }
@@ -646,13 +652,19 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 	return OS.eventNotHandledErr;
 }
 
+int hitTestProc (int browser, int item, int property, int theRect, int mouseRect) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.hitTestProc (browser, item, property, theRect, mouseRect);
+	return OS.noErr;
+}
+
 protected void init () {
 	super.init ();
-	initializeCallback ();
+	initializeCallbacks ();
 	initializeInsets ();	
 }
 	
-void initializeCallback () {
+void initializeCallbacks () {
 	/* Create Callbacks */
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
@@ -666,6 +678,9 @@ void initializeCallback () {
 	controlCallback = new Callback (this, "controlProc", 3);
 	controlProc = controlCallback.getAddress ();
 	if (controlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	drawItemCallback = new Callback (this, "drawItemProc", 7);
+	drawItemProc = drawItemCallback.getAddress ();
+	if (drawItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	itemDataCallback = new Callback (this, "itemDataProc", 5);
 	itemDataProc = itemDataCallback.getAddress ();
 	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -675,6 +690,9 @@ void initializeCallback () {
 	helpCallback = new Callback (this, "helpProc", 5);
 	helpProc = helpCallback.getAddress ();
 	if (helpProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	hitTestCallback = new Callback (this, "hitTestProc", 5);
+	hitTestProc = hitTestCallback.getAddress ();
+	if (hitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	keyboardCallback = new Callback (this, "keyboardProc", 3);
 	keyboardProc = keyboardCallback.getAddress ();
 	if (keyboardProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -690,6 +708,9 @@ void initializeCallback () {
 	timerCallback = new Callback (this, "timerProc", 2);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	trackingCallback = new Callback (this, "trackingProc", 6);
+	trackingProc = trackingCallback.getAddress ();
+	if (trackingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback = new Callback (this, "windowProc", 3);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -968,22 +989,25 @@ void releaseDisplay () {
 	caretCallback.dispose ();
 	commandCallback.dispose ();
 	controlCallback.dispose ();
+	drawItemCallback.dispose ();
 	itemDataCallback.dispose ();
 	itemNotificationCallback.dispose ();
 	helpCallback.dispose ();
+	hitTestCallback.dispose ();
 	keyboardCallback.dispose ();
 	menuCallback.dispose ();
 	mouseHoverCallback.dispose ();
 	mouseCallback.dispose ();
+	trackingCallback.dispose ();
 	windowCallback.dispose ();
 	actionCallback = caretCallback = commandCallback = null;
-	controlCallback = itemDataCallback = itemNotificationCallback = null;
-	helpCallback = keyboardCallback = menuCallback = null;
-	mouseHoverCallback = mouseCallback = windowCallback = null;
+	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
+	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = null;
 	actionProc = caretProc = commandProc = 0;
-	controlProc = itemDataProc = itemNotificationProc = 0;
-	helpProc = keyboardProc = menuProc = 0;
-	mouseHoverProc = mouseProc = windowProc = 0;
+	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
+	helpProc = hitTestProc = keyboardProc = menuProc = 0;
+	mouseHoverProc = mouseProc = trackingProc = windowProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
@@ -1359,6 +1383,12 @@ int timerProc (int id, int index) {
 		if (runnable != null) runnable.run ();
 	}
 	return 0;
+}
+
+int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.trackingProc (browser, itemID, property, theRect, startPt, modifiers);
+	return OS.noErr;
 }
 
 public void update () {

@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Shell extends Decorations {
 	Display display;
-	int shellHandle;
+	int shellHandle, windowGroup;
 	boolean resized;
 	Control lastActive;
 
@@ -104,9 +104,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS | GRAB;
-	int attributes = OS.kWindowStandardHandlerAttribute;
-//	attributes |= OS.kWindowCompositingAttribute;
+	state |= CANVAS | GRAB | HIDDEN;
+	int attributes = OS.kWindowStandardHandlerAttribute; // | OS.kWindowCompositingAttribute;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) attributes |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) attributes |= OS.kWindowCollapseBoxAttribute;
@@ -115,65 +114,26 @@ void createHandle () {
 			attributes |= OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute;
 		}
 	}
-	int windowActivationScope= -1;
-	int windowClass= 0;
-	if ((style & SWT.ON_TOP) == 0) {
-		if ((style & SWT.NO_TRIM) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-		} else {
-			windowClass= OS.kDocumentWindowClass;
-		}
-	} else {
-		if (style == SWT.NONE) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-		} else if ((style & SWT.NO_TRIM) != 0 && (style & SWT.ON_TOP) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-		} else if ((style & SWT.NO_TRIM) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-		} else if ((style & SWT.APPLICATION_MODAL) != 0) {
-			windowClass= OS.kMovableModalWindowClass;
-		} else if ((style & SWT.SYSTEM_MODAL) != 0) {
-			windowClass= OS.kModalWindowClass;
-		} else if ((style & SWT.ON_TOP) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-			attributes= 0;
-		} else {
-			windowClass= OS.kDocumentWindowClass;
-		}
-	}
-
-	Rectangle bounds = display.getBounds ();
+	int windowClass = OS.kDocumentWindowClass;
+	if ((style & (SWT.CLOSE | SWT.TITLE)) == 0) windowClass = OS.kSheetWindowClass;
+//	int windowClass = parent == null ? OS.kDocumentWindowClass : OS.kSheetWindowClass;
+//	if ((style & SWT.APPLICATION_MODAL) != 0) windowClass = OS.kMovableModalWindowClass;
+//	if ((style & SWT.SYSTEM_MODAL) != 0) windowClass = OS.kModalWindowClass;
 	Rect rect = new Rect ();
-	OS.SetRect (rect, (short)0, (short)0, (short) (bounds.width * 5 / 8), (short) (bounds.height * 5 / 8));
-	OS.OffsetRect(rect, (short) 60, (short) 60);
-
-//	int kWindowStandardDocumentAttributes = OS.kWindowCloseBoxAttribute | OS.kWindowFullZoomAttribute | OS.kWindowCollapseBoxAttribute | OS.kWindowResizableAttribute;
-//	int windowAttrs = kWindowStandardDocumentAttributes | OS.kWindowStandardHandlerAttribute;
-//	OS.CreateNewWindow (OS.kDocumentWindowClass, attributes, rect, outWindow);
-	int [] outWindow = new int[1];
+	OS.GetAvailableWindowPositioningBounds (OS.GetMainDevice (), rect);
+	int width = (rect.right - rect.left) * 5 / 8;
+	int height = (rect.bottom - rect.top) * 5 / 8;
+	OS.SetRect (rect, (short) 0, (short) 0, (short) width, (short) height);
+	int [] outWindow = new int [1];
+	attributes &= OS.GetAvailableWindowAttributes (windowClass);
 	OS.CreateNewWindow (windowClass, attributes, rect, outWindow);
-
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
-
+	if ((style & SWT.ON_TOP) != 0) {
+		OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
+	}
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
-
-	int inputMode = OS.kWindowModalityNone;
-	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
-	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;
-	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.kWindowModalitySystemModal;
-	if (inputMode != OS.kWindowModalityNone) {
-		int parentHandle = 0;
-		if (parent != null) parentHandle = parent.getShell ().shellHandle;
-		OS.SetWindowModality (shellHandle, inputMode, parentHandle);
-	}
-	
 	int [] theRoot = new int [1];
 	OS.CreateRootControl (shellHandle, theRoot);
 	OS.GetRootControl (shellHandle, theRoot);
@@ -183,6 +143,20 @@ void createHandle () {
 	} else {
 		createHandle (theRoot [0]);
 	}
+	int [] outGroup = new int [1];
+	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
+	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	windowGroup = outGroup [0];
+	if (parent != null) {
+		Shell shell = parent.getShell ();
+		int parentGroup = shell.windowGroup;
+		OS.SetWindowGroup (shellHandle, parentGroup);
+		OS.SetWindowGroupParent (windowGroup, parentGroup);
+	} else {
+		int parentGroup = OS.GetWindowGroupOfClass (windowClass);
+		OS.SetWindowGroupParent (windowGroup, parentGroup);
+	}
+	OS.SetWindowGroupOwner (windowGroup, shellHandle);
 }
 
 void createWidget () {
@@ -250,6 +224,17 @@ public Point getLocation () {
 	return new Point (rect.left, rect.top);
 }
 
+public boolean getMaximized () {
+	checkWidget();
+	//NOT DONE
+	return super.getMaximized ();
+}
+
+public boolean getMinimized () {
+	checkWidget();
+	return OS.IsWindowCollapsed (shellHandle);
+}
+
 public Shell getShell () {
 	checkWidget();
 	return this;
@@ -303,6 +288,8 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
+		OS.kEventClassWindow, OS.kEventWindowHidden,
+		OS.kEventClassWindow, OS.kEventWindowShown,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -319,7 +306,8 @@ public boolean isEnabled () {
 
 public boolean isVisible () {
 	checkWidget();
-	return getVisible ();
+	if (getVisible ()) return true;
+	return parent != null && parent.isVisible ();
 }
 
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
@@ -348,6 +336,13 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		if (layout != null) layout.layout (this, false);
 	}
 	return result;
+}
+
+int kEventWindowClose (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowClose (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	closeWidget ();
+	return OS.noErr;
 }
 
 int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
@@ -383,11 +378,28 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventWindowClose (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowClose (nextHandler, theEvent, userData);
+int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowHidden (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	closeWidget ();
-	return OS.noErr;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) shell.setWindowVisible (false);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowShown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowShown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed () && shell.getVisible ()) {
+			shell.setWindowVisible (true);
+		}
+	}
+	return OS.eventNotHandledErr;
 }
 
 void layoutControl () {
@@ -400,8 +412,8 @@ void layoutControl () {
 
 public void open () {
 	checkWidget();
+	OS.SelectWindow (shellHandle);
 	setVisible (true);
-	OS.BringToFront (shellHandle);
 	if (!restoreFocus ()) traverseGroup (true);
 }
 
@@ -417,8 +429,19 @@ void releaseHandle () {
 	shellHandle = 0;
 }
 
+void releaseShells () {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) shell.dispose ();
+	}
+}
+
 void releaseWidget () {
+	releaseShells ();
 	super.releaseWidget ();
+	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
+	windowGroup = 0;
 	lastActive = null;
 }
 
@@ -533,7 +556,19 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
-	if (OS.IsWindowVisible (shellHandle) == visible) return;
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
+	if (parent != null && !parent.isVisible ()) return;
+	setWindowVisible (visible);
+}
+
+void setWindowVisible (boolean visible) {
+	if (OS.IsWindowVisible (shellHandle) == visible) return;	
 	if (visible) {
 		if (!resized) {
 			sendEvent (SWT.Resize);
@@ -541,17 +576,34 @@ public void setVisible (boolean visible) {
 		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
+		int inputMode = OS.kWindowModalityNone;
+		if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
+		if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;
+		if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.kWindowModalitySystemModal;
+		if (inputMode != OS.kWindowModalityNone) {
+			int parentHandle = 0;
+			if (parent != null) parentHandle = parent.getShell ().shellHandle;
+			OS.SetWindowModality (shellHandle, inputMode, parentHandle);
+		}
 		OS.ShowWindow (shellHandle);
-		//WRONG
-		OS.BringToFront (shellHandle);
 	} else {
-    	OS.HideWindow(shellHandle);
+    	OS.HideWindow (shellHandle);
 		sendEvent (SWT.Hide);
 	}
 }
 
 void setZOrder () {
 	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+}
+
+void setZOrder (Control control, boolean above) {
+	if (above) {
+		//NOT DONE - move one window above another
+	 	OS.BringToFront (shellHandle);
+	 } else {
+		int window = control == null ? 0 : OS.GetControlOwner (control.handle);
+		OS.SendBehind (shellHandle, window);
+	}
 }
 
 }

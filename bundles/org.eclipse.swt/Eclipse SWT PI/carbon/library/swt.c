@@ -1646,6 +1646,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneCon
 }
 #endif /* NO_CreateUserPaneControl */
 
+#ifndef NO_CreateWindowGroup
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateWindowGroup
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateWindowGroup\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateWindowGroup((WindowGroupAttributes)arg0, (WindowGroupRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_DeleteMenu
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenu
 	(JNIEnv *env, jclass that, jshort arg0)
@@ -3802,6 +3818,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowFromPort
 }
 #endif /* NO_GetWindowFromPort */
 
+#ifndef NO_GetWindowGroupOfClass
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowGroupOfClass
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowGroupOfClass\n")
+
+	return (jint)GetWindowGroupOfClass((WindowClass)arg0);
+}
+#endif
+
 #ifndef NO_GetWindowModality
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowModality
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -4416,6 +4442,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitDataBrowserCa
 }
 #endif /* NO_InitDataBrowserCallbacks */
 
+#ifndef NO_InitDataBrowserCustomCallbacks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitDataBrowserCustomCallbacks
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DataBrowserCustomCallbacks _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("InitDataBrowserCustomCallbacks\n")
+
+	if (arg0) lparg0 = getDataBrowserCustomCallbacksFields(env, arg0, &_arg0);
+	rc = (jint)InitDataBrowserCustomCallbacks(lparg0);
+	if (arg0) setDataBrowserCustomCallbacksFields(env, arg0, lparg0);
+	return rc;
+}
+#endif
+
 #ifndef NO_InsertMenu
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenu
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
@@ -4618,6 +4660,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowActiv
 	return (jboolean)IsWindowActive((WindowRef)arg0);
 }
 #endif /* NO_IsWindowActive */
+
+#ifndef NO_IsWindowCollapsed
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowCollapsed
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsWindowCollapsed\n")
+
+	return (jboolean)IsWindowCollapsed((WindowRef)arg0);
+}
+#endif /* NO_IsWindowCollapsed */
 
 #ifndef NO_IsWindowVisible
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowVisible
@@ -5346,6 +5398,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseMenu
 }
 #endif /* NO_ReleaseMenu */
 
+#ifndef NO_ReleaseWindowGroup
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseWindowGroup
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ReleaseWindowGroup\n")
+
+	return (jint)ReleaseWindowGroup((WindowGroupRef)arg0);
+}
+#endif
+
 #ifndef NO_RemoveControlProperty
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveControlProperty
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -5504,6 +5566,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SelectWindow
 	SelectWindow((WindowRef)arg0);
 }
 #endif /* NO_SelectWindow */
+
+#ifndef NO_SendBehind
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SendBehind
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SendBehind\n")
+
+	SendBehind((WindowRef)arg0, (WindowRef)arg1);
+}
+#endif
 
 #ifndef NO_SendEventToEventTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SendEventToEventTarget
@@ -5798,6 +5870,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserCal
 	return rc;
 }
 #endif /* NO_SetDataBrowserCallbacks */
+
+#ifndef NO_SetDataBrowserCustomCallbacks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserCustomCallbacks
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DataBrowserCustomCallbacks _arg1={0}, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetDataBrowserCustomCallbacks\n")
+
+	if (arg1) lparg1 = getDataBrowserCustomCallbacksFields(env, arg1, &_arg1);
+	rc = (jint)SetDataBrowserCustomCallbacks((ControlRef)arg0, (const DataBrowserCustomCallbacks *)lparg1);
+	if (arg1) setDataBrowserCustomCallbacksFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_SetDataBrowserCustomCallbacks */
 
 #ifndef NO_SetDataBrowserTableViewNamedColumnWidth
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewNamedColumnWidth
@@ -6333,6 +6421,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowDefaultB
 	return (jint)SetWindowDefaultButton((WindowRef)arg0, (ControlRef)arg1);
 }
 #endif /* NO_SetWindowDefaultButton */
+
+#ifndef NO_SetWindowGroup
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowGroup
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowGroup\n")
+
+	return (jint)SetWindowGroup((WindowRef)arg0, (WindowGroupRef)arg1);
+}
+#endif
+
+#ifndef NO_SetWindowGroupOwner
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowGroupOwner
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowGroupOwner\n")
+
+	return (jint)SetWindowGroupOwner((WindowGroupRef)arg0, (WindowRef)arg1);
+}
+#endif
+
+#ifndef NO_SetWindowGroupParent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowGroupParent
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowGroupParent\n")
+
+	return (jint)SetWindowGroupParent((WindowGroupRef)arg0, (WindowGroupRef)arg1);
+}
+#endif
 
 #ifndef NO_SetWindowModality
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowModality

@@ -242,6 +242,10 @@ void destroyCIcon (int iconHandle) {
 	OS.DisposeHandle(iconHandle);
 }
 
+int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
+	return OS.noErr;
+}
+
 public void dispose () {
 	/*
 	* Note:  It is valid to attempt to dispose a widget
@@ -401,6 +405,11 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 	return OS.eventNotHandledErr;
 }
 
+int hitTestProc (int browser, int item, int property, int theRect, int mouseRect) {
+	/* Return true to indicate that the item can be selected */
+	return 1;
+}
+
 void hookEvents () {
 }
 
@@ -445,7 +454,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
-	
+
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -543,6 +552,14 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -904,6 +921,11 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
+int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
+	/* Return one to indicate that the data browser should process the click */
+	return 1;
+}
+
 int windowProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
@@ -913,6 +935,8 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
 		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
 		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
+		case OS.kEventWindowHidden:			return kEventWindowHidden (nextHandler, theEvent, userData);
+		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

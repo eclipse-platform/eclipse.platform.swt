@@ -123,6 +123,14 @@ void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCal
 #define setDataBrowserCallbacksFields(a,b,c)
 #endif /* NO_DataBrowserCallbacks */
 
+#ifndef NO_DataBrowserCustomCallbacks
+DataBrowserCustomCallbacks *getDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct);
+void setDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct);
+#else
+#define getDataBrowserCustomCallbacksFields(a,b,c) NULL
+#define setDataBrowserCustomCallbacksFields(a,b,c)
+#endif /* NO_DataBrowserCustomCallbacks */
+
 #ifndef NO_DataBrowserListViewColumnDesc
 DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);
 void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);
