@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -177,9 +178,9 @@ public FormLayout () {
  * 		to CX. We can find the height of the entire form by setting 
  * 		CX = -B. Solving in terms of U and V gives us X = (-B * V) / U.
  */
-int computeHeight (FormData data) {
-	FormAttachment top = data.getTopAttachment (spacing);
-	FormAttachment bottom = data.getBottomAttachment (spacing);
+int computeHeight (Control control, FormData data, boolean flushCache) {
+	FormAttachment top = data.getTopAttachment (control, spacing, flushCache);
+	FormAttachment bottom = data.getBottomAttachment (control, spacing, flushCache);
 	FormAttachment height = bottom.minus (top);
 	if (height.numerator == 0) {
 		if (bottom.numerator == 0) return bottom.offset;
@@ -190,7 +191,7 @@ int computeHeight (FormData data) {
 		int divider = bottom.denominator - bottom.numerator; 
 		return bottom.denominator * bottom.offset / divider;
 	}
-	return height.solveY (data.cacheHeight);
+	return height.solveY (data.getHeight (control, flushCache));
 }
 
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
@@ -198,12 +199,6 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	size.x += marginWidth * 2;
 	size.y += marginHeight * 2;
 	return size;
-}
-
-Point computeSize (Control control, boolean flushCache) {
-	FormData data = (FormData) control.getLayoutData ();
-	if (data == null) control.setLayoutData (data = new FormData ());
-	return control.computeSize (data.width, data.height, flushCache);
 }
 
 String getName () {
@@ -217,9 +212,9 @@ String getName () {
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
  */
-int computeWidth (FormData data) {
-	FormAttachment left = data.getLeftAttachment (spacing);
-	FormAttachment right = data.getRightAttachment (spacing);
+int computeWidth (Control control, FormData data, boolean flushCache) {
+	FormAttachment left = data.getLeftAttachment (control, spacing, flushCache);
+	FormAttachment right = data.getRightAttachment (control, spacing, flushCache);
 	FormAttachment width = right.minus (left);
 	if (width.numerator == 0) {
 		if (right.numerator == 0) return right.offset;
@@ -230,7 +225,7 @@ int computeWidth (FormData data) {
 		int divider = right.denominator - right.numerator; 
 		return right.denominator * right.offset / divider;
 	}
-	return width.solveY (data.cacheWidth);
+	return width.solveY (data.getWidth (control, flushCache));
 }
 
 protected void layout (Composite composite, boolean flushCache) {
@@ -246,33 +241,43 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	Control [] children = composite.getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		Point size = computeSize (child, flushCache);
 		FormData data = (FormData) child.getLayoutData ();
-		data.cacheWidth = size.x;
-		data.cacheHeight = size.y;
-		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
+		if (data == null) child.setLayoutData (data = new FormData ());
+		data.flushCache ();
 	}
 	Rectangle [] bounds = null;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
 		if (move) {
-			int x1 = data.getLeftAttachment (spacing).solveX (width);
-			int y1 = data.getTopAttachment (spacing).solveX (height);
-			int x2 = data.getRightAttachment (spacing).solveX (width);
-			int y2 = data.getBottomAttachment (spacing).solveX (height);
+			FormAttachment left = data.getLeftAttachment (child, spacing, flushCache);
+			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
+			int x1 = left.solveX (width);
+			int x2 = right.solveX (width);
+//			if ((child.getStyle () & SWT.WRAP) != 0) {
+//				if (data.width == SWT.DEFAULT && data.cacheWidth == -1) {
+//					//width favoured over height (calling getLeftAttachment() does this)
+//					//this means that when y1 and y2 are computed, the cached height values
+//					//reflect the desired height wrt "x2 - x1" rather than "width".  This
+//					//means that the cache is wrong wrt "width" and should be cleared
+//					//bug (x2 - x1) needs to get rid of trim
+//					int border = child.getBorderWidth ();
+//					data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
+//				}
+//			}
+			int y1 = data.getTopAttachment (child, spacing, flushCache).solveX (height);
+			int y2 = data.getBottomAttachment (child, spacing, flushCache).solveX (height);
 			if (bounds == null) bounds = new Rectangle [children.length];
 			bounds [i] = new Rectangle (x + x1, y + y1, x2 - x1, y2 - y1);
 		} else {
-			width = Math.max (computeWidth (data), width);
-			height = Math.max (computeHeight (data), height);
+			width = Math.max (computeWidth (child, data, flushCache), width);
+			height = Math.max (computeHeight (child, data, flushCache), height);
 		}
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
-		data.cacheWidth = data.cacheHeight = 0;
-		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
+		data.flushCache ();
 	}
 	if (move) {
 		for (int i=0; i<children.length; i++) {
