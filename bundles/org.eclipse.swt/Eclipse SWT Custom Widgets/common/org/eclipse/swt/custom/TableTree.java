@@ -193,9 +193,9 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
 }  
-public Point computeSize (int wHint, int hHint) {
+public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	return table.computeSize (wHint, hHint, true);
+	return table.computeSize (wHint, hHint, changed);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
