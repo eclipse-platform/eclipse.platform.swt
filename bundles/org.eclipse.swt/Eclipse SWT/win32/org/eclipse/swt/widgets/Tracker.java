@@ -272,10 +272,14 @@ public boolean open () {
 				int newY = (short) (newPos >> 16);	
 				if (newX != oldX || newY != oldY) {
 					drawRectangles ();
+					event.x = newX;
+					event.y = newY;
 					if ((style & SWT.RESIZE) != 0) {
 						resizeRectangles (newX - oldX, newY - oldY);
+						sendEvent (SWT.Resize, event);
 					} else {
 						moveRectangles (newX - oldX, newY - oldY);
+						sendEvent (SWT.Move, event);
 					}
 					/*
 					* It is possible (but unlikely), that application
@@ -283,13 +287,6 @@ public boolean open () {
 					* event.  If this happens, return false to indicate
 					* that the tracking has failed.
 					*/
-					event.x = newX;
-					event.y = newY;
-					if ((style & SWT.RESIZE) != 0) {
-						sendEvent (SWT.Resize, event);
-					} else {
-						sendEvent (SWT.Move, event);
-					}
 					if (isDisposed ()) return false;
 					drawRectangles ();
 					oldX = newX;
@@ -309,32 +306,37 @@ public boolean open () {
 						tracking = false;
 						break;
 					case OS.VK_LEFT:
-						xChange = -stepSize;
+						if (useAllDirections() || ((style & SWT.LEFT) != 0)) {
+							xChange = -stepSize;
+						}
 						break;
 					case OS.VK_RIGHT:
-						xChange = stepSize;
+						if (useAllDirections() || ((style & SWT.RIGHT) != 0)) {
+							xChange = stepSize;
+						}
 						break;
 					case OS.VK_UP:
-						yChange = -stepSize;
+						if (useAllDirections() || ((style & SWT.UP) != 0)) {
+							yChange = -stepSize;
+						}
 						break;
 					case OS.VK_DOWN:
-						yChange = stepSize;
+						if (useAllDirections() || ((style & SWT.DOWN) != 0)) {
+							yChange = stepSize;
+						}
 						break;
 				}
 				if (xChange != 0 || yChange != 0) {
 					drawRectangles ();
-					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (xChange, yChange);
-					} else {
-						moveRectangles (xChange, yChange);
-					}
 					newX = oldX + xChange;
 					newY = oldY + yChange;
 					event.x = newX;
 					event.y = newY;
 					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles (xChange, yChange);
 						sendEvent (SWT.Resize, event);
 					} else {
+						moveRectangles (xChange, yChange);
 						sendEvent (SWT.Move, event);
 					}
 					/*
@@ -443,5 +445,7 @@ public void setStippled (boolean stippled) {
 	checkWidget ();
 	this.stippled = stippled;
 }
-
+boolean useAllDirections() {
+	return ((SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN) & style) == 0;
+}
 }
