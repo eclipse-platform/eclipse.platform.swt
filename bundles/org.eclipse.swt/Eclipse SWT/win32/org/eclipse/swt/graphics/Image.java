@@ -1486,7 +1486,7 @@ public int internal_new_GC (GCData data) {
 		/* Set the GCData fields */
 		data.device = device;
 		data.image = this;
-		data.hFont = device.getSystemFont().handle;
+		data.hFont = device.systemFont;
 	}
 	return imageDC;
 }

@@ -98,7 +98,7 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	Thread thread = Thread.currentThread ();
+	Thread thread;
 
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -328,6 +328,7 @@ int controlKey (int key) {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay ();
+	thread = Thread.currentThread ();
 	createDisplay (data);
 	register ();
 	if (Default == null) Default = this;

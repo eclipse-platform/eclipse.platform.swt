@@ -1292,9 +1292,8 @@ public void setClipping (Region region) {
 	}
 }
 public void setFont (Font font) {
-	if (font == null) font = data.device.getSystemFont ();
-	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.fontList = font.handle;
+	if (font == null || font.isDisposed()) data.fontList = data.device.systemFont;
+	else data.fontList = font.handle;
 	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
 	data.renderTable = 0;
 }

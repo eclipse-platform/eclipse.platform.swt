@@ -21,6 +21,9 @@ public abstract class Device implements Drawable {
 	/* Palette */
 	public int hPalette = 0;
 	int [] colorRefCount;
+	
+	/* System Font */
+	int systemFont;
 
 	/* Font Enumeration */
 	int nFonts = 256;
@@ -51,6 +54,9 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
+	
+	/* Initialize the system font slot */
+	systemFont = getSystemFont().handle;
 }
 
 /*

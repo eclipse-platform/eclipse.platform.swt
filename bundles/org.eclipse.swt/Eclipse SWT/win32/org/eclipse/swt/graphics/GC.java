@@ -1487,13 +1487,10 @@ public void setClipping (Region region) {
  */
 
 public void setFont (Font font) {
-	if (font == null) {
-		int hFont = OS.GetStockObject(OS.DEFAULT_GUI_FONT);
-		if (hFont == 0) hFont = OS.GetStockObject(OS.SYSTEM_FONT);
-		OS.SelectObject(handle, hFont);
-	} else  {
-		OS.SelectObject(handle, font.handle);
-	}
+	int hFont;
+	if (font == null || font.isDisposed()) hFont = data.device.systemFont;
+	else hFont = font.handle;
+	OS.SelectObject(handle, hFont);
 }
 
 /**

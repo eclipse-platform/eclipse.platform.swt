@@ -31,6 +31,9 @@ public abstract class Device implements Drawable {
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
+	
+	/* System Font */
+	int systemFont;
 
 	/* Warning and Error Handlers */
 	boolean warnings = true;
@@ -61,6 +64,9 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
+	
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ().handle;
 }
 
 /**
@@ -239,21 +245,7 @@ public Color getSystemColor (int id) {
 
 public Font getSystemFont () {
 	checkDevice ();
-	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
-	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateLabel (shellHandle, null, null, 0);
-	int [] argList = {OS.XmNfontList, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	/**
-	 * Feature in Motif. Querying the font list from the widget and
-	 * then destroying the shell (and the widget) could cause the
-	 * font list to be freed as well. The fix is to make a copy of
-	 * the font list, then to free it when the display is disposed.
-	 */ 
-	int labelFont = OS.XmFontListCopy (argList [1]);
-	OS.XtDestroyWidget (shellHandle);
-	return Font.motif_new (this, labelFont);
+	return Font.motif_new (this, systemFont);
 }
 
 public boolean getWarnings () {
