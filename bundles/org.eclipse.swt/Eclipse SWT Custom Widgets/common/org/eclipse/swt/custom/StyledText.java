@@ -6626,6 +6626,47 @@ public void setHorizontalIndex(int offset) {
 	}
 	scrollHorizontalBar(offset - horizontalScrollOffset);
 }
+/** 
+ * Sets the horizontal pixel offset relative to the start of the line.
+ * Do nothing if there is no text set.
+ * <p>
+ * <b>NOTE:</b> The horizontal pixel offset is reset to 0 when new text 
+ * is set in the widget.
+ * </p>
+ *
+ * @param pixel horizontal pixel offset relative to the start 
+ * 	of the line.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.0
+ */
+public void setHorizontalPixel(int pixel) {
+	checkWidget();
+	int clientAreaWidth = getClientArea().width;
+
+	if (getCharCount() == 0) {
+		return;
+	}	
+	if (pixel < 0) {
+		pixel = 0;
+	}
+	// allow any value if client area width is unknown or 0. 
+	// offset will be checked in resize handler.
+	// don't use isVisible since width is known even if widget 
+	// is temporarily invisible
+	if (clientAreaWidth > 0) {
+		int width = lineCache.getWidth();
+		// prevent scrolling if the content fits in the client area.
+		// align end of longest line with right border of client area
+		// if offset is out of range.
+		if (pixel > width - clientAreaWidth) {
+			pixel = Math.max(0, width - clientAreaWidth);
+		}
+	}
+	scrollHorizontalBar(pixel - horizontalScrollOffset);
+}
 /**
  * Adjusts the maximum and the page size of the horizontal scroll bar 
  * to reflect content width changes.
@@ -7270,9 +7311,42 @@ public void setTopIndex(int topIndex) {
 		topIndex = content.getLineAtOffset(logicalLineOffset);
 	}
 	setVerticalScrollOffset(topIndex * getVerticalIncrement(), true);
-	// set the top index directly in case setVerticalScrollOffset didn't 
-	// (ie. because the widget is not yet visible)
-	this.topIndex = topIndex;
+}
+/**
+ * Sets the top pixel offset. Do nothing if there is no text set.
+ * <p>
+ * The top pixel offset is the vertical pixel offset of the widget. The
+ * widget is scrolled so that the given pixel position is at the top.
+ * The top index is adjusted to the corresponding top line.
+ * Note: The top pixel is reset to 0 when new text is set in the widget.
+ * </p>
+ *
+ * @param pixel new top pixel offset. Must be between 0 and 
+ * 	(getLineCount() - visible lines per page) / getLineHeight()). An out
+ * 	of range offset will be adjusted accordingly.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.0
+ */
+public void setTopPixel(int pixel) {
+	checkWidget();
+	int lineCount = logicalContent.getLineCount();
+	int height = getClientArea().height;
+	int maxTopPixel = Math.max(0, lineCount * getVerticalIncrement() - height);
+	
+	if (getCharCount() == 0) {
+		return;
+	}	
+	if (pixel < 0) {
+		pixel = 0;
+	}
+	else 
+	if (pixel > maxTopPixel) {
+		pixel = maxTopPixel;
+	}
+	setVerticalScrollOffset(pixel, true);
 }
 /**
  * Scrolls the widget vertically.
