@@ -698,7 +698,7 @@ void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int
 }
 static void createMask(int image, int type, int transparent) {
 	if ((type & OS.Pg_IMAGE_CLASS_MASK) == OS.Pg_IMAGE_CLASS_PALETTE) {
-		transparent = (transparent & 0xFF) | OS.Pt_INDEX_COLOR;
+		transparent = (transparent & 0xFF) | OS.Pg_INDEX_COLOR;
 	} else {
  		switch (type) {
  			case OS.Pg_IMAGE_DIRECT_888:
@@ -798,7 +798,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		OS.free(palettePtr);
 		
 		/* Transfer the mask to the scaled image */
-		OS.PhMakeTransBitmap(maskImage, 0 | OS.Pt_INDEX_COLOR);			
+		OS.PhMakeTransBitmap(maskImage, 0 | OS.Pg_INDEX_COLOR);			
 		PhImage_t phMaskImage = new PhImage_t();
 		OS.memmove(phMaskImage, maskImage, PhImage_t.sizeof);
 		phMemImage.mask_bm = phMaskImage.mask_bm;
