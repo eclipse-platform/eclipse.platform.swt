@@ -153,7 +153,7 @@ void createHandle (int index) {
 	* necessary.    
 	*/
 	if ((style & SWT.MULTI) != 0) {
-		int window = OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
+		int /*long*/ window = OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
 		if (window != 0) {
 			int mask = OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
 			OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) | mask);
