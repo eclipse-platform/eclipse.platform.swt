@@ -916,6 +916,10 @@ public Point getCursorLocation () {
 	return new Point (pt.x, pt.y);
 }
 
+public Point getCursorSize () {
+	return new Point (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR));
+}
+
 /**
  * Returns the default display. One is created (making the
  * thread that invokes this method its user-interface thread)
