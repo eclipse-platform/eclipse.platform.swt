@@ -11,6 +11,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -107,6 +108,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += 6;
 		}
 	}
+	
+	Rect inset = getInset ();
+	width += inset.left + inset.right;
+	height += inset.top + inset.bottom;
 	
 	/*
 	 * Feature in Mac OS X. Setting the width of a bevel button
@@ -242,6 +247,12 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget ();
 	return text;
+}
+
+Rect getInset () {
+	if ((style & SWT.PUSH) == 0) return super.getInset();
+	Display display = getDisplay ();
+	return display.buttonInset;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {

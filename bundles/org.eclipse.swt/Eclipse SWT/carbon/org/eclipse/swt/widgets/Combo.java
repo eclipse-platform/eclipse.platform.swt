@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.Rect;
 
 public class Combo extends Composite {
 
@@ -141,6 +142,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	// NEEDS WORK
 	int width = 100;
 	int height = 30;
+	Rect inset = getInset ();
+	width += inset.left + inset.right;
+	height += inset.top + inset.bottom;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
@@ -415,6 +419,11 @@ public int indexOf (String string, int start) {
 		}
 	}
 	return -1;
+}
+
+Rect getInset () {
+	Display display = getDisplay ();
+	return display.comboInset;
 }
 	
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {

@@ -99,13 +99,32 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height <= 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, width, height);
+	width = trim.width;  height = trim.height;
+	return new Point (width, height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+	int ptr = OS.NewPtr (Rect.sizeof);
+	OS.TXNGetTXNObjectControls (txnObject, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
+	Rect rect = new Rect ();
+	OS.memcpy (rect, ptr, Rect.sizeof);
+	OS.DisposePtr (ptr);
+	width += rect.left + rect.right;
+	height += rect.top + rect.bottom;
 	int [] size = new int [1];
 	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
 	//if (horizontalBar != null) height += size [0];
 	if ((style & SWT.H_SCROLL) != 0) height += size [0];
 	//if (verticalBar != null) width += size [0];
 	if ((style & SWT.V_SCROLL) != 0) width += size [0];
-	return new Point(width, height);
+	Rect inset = inset ();
+	x -= inset.left;
+	y -= inset.top;
+	width += inset.left + inset.right;
+	height += inset.top + inset.bottom;
+	return new Rectangle (x, y, width, height);
 }
 
 public void copy () {
@@ -120,35 +139,49 @@ void createHandle () {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	
+	/*
+	* Feature in the Macintosh.  The TXNObject is not a control but creates scroll
+	* bar controls to scroll the text.  These are created in the root and are not
+	* children of the user pane that is used to represent the TNXObject.  The fix
+	* is to embed the scroll bars in the user pane.	*/
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	short [] oldCount = new short [1];
+	OS.CountSubControls (theRoot [0], oldCount);	
+	
+	/* Create the TXNObject */
 	int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
 	if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
 	if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
 	if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
 	if ((style & SWT.READ_ONLY) != 0) iFrameOptions |= OS.kTXNReadOnlyMask;
 	if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
-	
-	int [] theRoot = new int [1];
-	OS.GetRootControl (window, theRoot);
-	short [] count = new short [1];
-	OS.CountSubControls (theRoot [0], count);	
-	
 	int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
 	OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
 	if (oTXNObject [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	short [] newCount = new short [1];
-	OS.CountSubControls (theRoot [0], newCount);
-	int [] child= new int [1];
-	for (short i= newCount [0]; i > count [0]; i--) {
-		OS.GetIndexedSubControl (theRoot [0], i, child);
-		OS.HIViewRemoveFromSuperview (child [0]);
-		OS.HIViewAddSubview (handle, child [0]);	
-	}	
-	
 	txnObject = oTXNObject [0];
 	txnFrameID = oTXNFrameID [0];
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNDisableDragAndDropTag}, new int[] {1});
+	
+	/* Embed the scroll bars in the user pane */
+	short [] newCount = new short [1];
+	OS.CountSubControls (theRoot [0], newCount);
+	int [] scrollBar = new int [1];
+	for (int i=newCount [0]; i>oldCount [0]; --i) {
+		OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
+		OS.HIViewRemoveFromSuperview (scrollBar [0]);
+		OS.HIViewAddSubview (handle, scrollBar [0]);
+	}	
+	
+	/* Configure the TXNOBject */
+	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNDisableDragAndDropTag}, new int [] {1});
 	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
+	int ptr = OS.NewPtr (Rect.sizeof);
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
+	OS.memcpy (ptr, rect, Rect.sizeof);
+	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
+	OS.DisposePtr (ptr);
 }
 
 ScrollBar createScrollBar (int type) {
@@ -182,6 +215,25 @@ void destroyWidget () {
 void draw (int control) {
 	if (control != handle) return;
 	OS.TXNDraw (txnObject, 0);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	Rect inset = inset ();
+	rect.left += inset.left;
+	rect.top += inset.top;
+	rect.right -= inset.right;
+	rect.bottom -= inset.bottom;
+	if ((style & SWT.BORDER) != 0) {
+		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		if (hasFocus ()) {
+			OS.DrawThemeEditTextFrame (rect, state);
+			OS.DrawThemeFocusRect (rect, true);
+		} else {
+			OS.DrawThemeFocusRect (rect, false);
+			OS.DrawThemeEditTextFrame (rect, state);
+		}
+	} else {
+		OS.DrawThemeFocusRect (rect, hasFocus ());
+	}
 }
 
 public int getCaretLineNumber () {
@@ -321,6 +373,24 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 	return new String (buffer);
 }
 
+Rect inset () {
+	Rect rect = new Rect ();
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	rect.left += outMetric [0];
+	rect.top += outMetric [0];
+	rect.right += outMetric [0];
+	rect.bottom += outMetric [0];
+	if ((style & SWT.BORDER) != 0) {
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		rect.left += outMetric [0];
+		rect.top += outMetric [0];
+		rect.right += outMetric [0];
+		rect.bottom += outMetric [0];
+	}
+	return rect;	
+} 
+
 public void insert (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -338,7 +408,7 @@ int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
@@ -348,10 +418,15 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
 	if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) {
 		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);	
+		OS.GetControlBounds (handle, rect);
+		Rect inset = inset ();
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
 		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
 	}
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
@@ -369,7 +444,7 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
@@ -378,6 +453,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 	OS.TXNFocus (txnObject, part [0] != 0);
+	redraw ();
 	return OS.noErr;
 }
 

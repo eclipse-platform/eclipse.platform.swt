@@ -42,6 +42,8 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
+	
+	static final Rect EMPTY_RECT = new Rect ();
 
 Widget () {
 	/* Do nothing */
@@ -270,6 +272,11 @@ Rectangle getBounds (int control) {
 		OS.GetControlBounds (parentHandle [0], parentRect);
 		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
 	}
+	Rect inset = getInset ();
+	rect.left -= inset.left;
+	rect.top -= inset.top;
+	rect.right += inset.right;
+	rect.bottom += inset.bottom;
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
@@ -342,12 +349,26 @@ Point getLocation (int control) {
 		OS.GetControlBounds (parentHandle [0], parentRect);
 		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
 	}
+	Rect inset = getInset ();
+	rect.left -= inset.left;
+	rect.top -= inset.top;
 	return new Point (rect.left, rect.top);
 }
 
 
 String getNameText () {
 	return "";
+}
+
+public Point getSize (int control) {
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	Rect inset = getInset ();
+	rect.left -= inset.left;
+	rect.top -= inset.top;
+	rect.right += inset.right;
+	rect.bottom += inset.bottom;
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public int getStyle () {
@@ -365,6 +386,10 @@ void hookEvents () {
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
+}
+
+Rect getInset () {
+	return EMPTY_RECT;
 }
 
 public boolean isDisposed () {
@@ -636,6 +661,11 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 void setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	Rect inset = getInset ();
+	x += inset.left;
+	y += inset.top;
+	width -= (inset.left + inset.right);
+	height -= (inset.top + inset.bottom);
 	if (move) {
 		int window = OS.GetControlOwner (control);
 		int [] theRoot = new int [1];
@@ -650,7 +680,11 @@ void setBounds (int control, int x, int y, int width, int height, boolean move, 
 		}
 		OS.MoveControl (control, (short) x, (short) y);	
 	}
-	if (resize) OS.SizeControl (control, (short) width, (short) height);
+	if (resize) {
+		width = Math.max (0, width);
+		height = Math.max (0, height);
+		OS.SizeControl (control, (short) width, (short) height);
+	}
 }
 
 public void setData (Object data) {

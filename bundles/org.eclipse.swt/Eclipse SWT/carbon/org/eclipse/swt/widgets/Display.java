@@ -11,6 +11,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.HICommand;
 
@@ -70,6 +71,8 @@ public class Display extends Device {
 	Menu [] menus, popups;
 	MenuItem [] items;
 	static final int ID_START = 1000;
+	
+	Rect buttonInset, tabFolderInset, comboInset;
 	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -328,6 +331,21 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+Rect computeInset (int control) {
+	int tempRgn = OS.NewRgn ();
+	Rect rect = new Rect ();
+	OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+	OS.GetControlBounds (control, rect);
+	Rect rgnRect = new Rect ();
+	OS.GetRegionBounds (tempRgn, rgnRect);
+	OS.DisposeRgn (tempRgn);
+	rect.left -= rgnRect.left;
+	rect.top -= rgnRect.top;
+	rect.right = (short) (rgnRect.right - rect.right);
+	rect.bottom = (short) (rgnRect.bottom - rect.bottom);
+	return rect; 
 }
 
 int controlProc (int nextHandler, int theEvent, int userData) {
@@ -619,7 +637,11 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 protected void init () {
 	super.init ();
+	initializeCallback ();
+	initializeInsets ();	
+}
 	
+void initializeCallback () {
 	/* Create Callbacks */
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
@@ -685,6 +707,29 @@ protected void init () {
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
 	OS.InstallEventHandler (focusTarget, keyboardProc, mask3.length / 2, mask3, 0, null);
+}
+
+void initializeInsets () {
+	int [] outControl = new int [1];
+	Rect rect = new Rect ();
+	rect.right = rect.bottom = (short) 200;
+	
+	OS.CreatePushButtonControl (0, rect, 0, outControl);
+	buttonInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+	
+	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionNorth, (short) 0, 0, outControl);
+	tabFolderInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+
+	CGRect cgRect = new CGRect ();
+	cgRect.width = cgRect.height = 200;
+	int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
+	OS.HIComboBoxCreate (cgRect, 0, null, 0, inAttributes, outControl);
+	comboInset = computeInset (outControl [0]);
+	 //FIXME - 
+	comboInset.bottom = comboInset.top;
+	OS.DisposeControl (outControl [0]);
 }
 
 public int internal_new_GC (GCData data) {

@@ -299,10 +299,7 @@ public Shell getShell () {
 
 public Point getSize () {
 	checkWidget();
-	Rect rect = new Rect ();
-	int topHandle = topHandle ();
-	OS.GetControlBounds (topHandle, rect);
-	return new Point (rect.right - rect.left, rect.bottom - rect.top);
+	return getSize (topHandle ());
 }
 
 public String getToolTipText () {

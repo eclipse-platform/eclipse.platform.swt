@@ -151,6 +151,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	y -= Math.max (34, client.top - bounds.top);
 	width += Math.max (6, (bounds.right - bounds.left) - (client.right - client.left));
 	height += Math.max (37, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	Rect inset = getInset ();
+	width += inset.left + inset.right;
+	height += inset.top + inset.bottom;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -360,6 +363,11 @@ public int indexOf (TabItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+Rect getInset () {
+	Display display = getDisplay ();
+	return display.tabFolderInset;
 }
 
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {

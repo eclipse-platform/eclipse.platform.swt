@@ -25,20 +25,14 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	boolean horizontal = width > height;
-	short [] base = new short [1];
-	OS.GetBestControlRect (handle, rect, base);
-	width = rect.right - rect.left;
-	height = rect.bottom - rect.top;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricNormalProgressBarThickness, outMetric);
+	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		if (!horizontal) height = width;
+		height = outMetric [0];
 		width = height * 10;
 	} else {
-		if (horizontal) width = height;
+		width = outMetric [0];
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;

@@ -159,9 +159,7 @@ public int getSelection () {
 
 public Point getSize () {
 	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	return new Point (rect.bottom - rect.top, rect.right - rect.left);
+	return getSize (handle);
 }
 
 public int getThumb () {
