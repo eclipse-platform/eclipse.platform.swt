@@ -1325,14 +1325,18 @@ int processIMEFocusIn () {
 	
 	/*
 	* Bug in Motif. On Linux Japanese only, XmImSetFocusValues will cause
-	* a GPF. The fix is to call XmImVaSetFocusValues instead.
+	* a GPF when the XmNfontList value does not containt a FontSet. The fix
+	* is to call XmImSetValues to set the values and then call
+	* XmImSetFocusValues.
 	*/
-	OS.XmImVaSetFocusValues (handle, 
-		OS.XmNforeground, getForegroundPixel(),
-		OS.XmNbackground, getBackgroundPixel(),
-		OS.XmNspotLocation, ptr,
-		OS.XmNfontList, font.handle,
-		0);
+	int[] argList = {
+        OS.XmNforeground, getForegroundPixel(),
+        OS.XmNbackground, getBackgroundPixel(),
+        OS.XmNspotLocation, ptr,
+        OS.XmNfontList, font.handle,
+	};
+	OS.XmImSetValues(handle, argList, argList.length / 2);
+	OS.XmImSetFocusValues (handle, null, 0);
 	
 	if (ptr != 0) OS.XtFree (ptr);
 	return 0;
