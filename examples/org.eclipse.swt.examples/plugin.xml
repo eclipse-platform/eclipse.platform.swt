@@ -31,6 +31,7 @@
          name="%launchitem.AddressBook.name"
          description="%launchitem.AddressBook.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.addressbook.standalonelauncher">
    </programItem>
    <programItem
@@ -39,6 +40,7 @@
          name="%launchitem.FileViewer.name"
          description="%launchitem.FileViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.explorer.standalonelauncher">
    </programItem>
    <programItem
@@ -47,6 +49,7 @@
          name="%launchitem.HoverHelp.name"
          description="%launchitem.HoverHelp.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.hoverhelp.standalonelauncher">
    </programItem>
    <programItem
@@ -55,6 +58,7 @@
          name="%launchitem.HelloWorld1.name"
          description="%launchitem.HelloWorld1.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld1.standalonelauncher">
    </programItem>
    <programItem
@@ -63,6 +67,7 @@
          name="%launchitem.HelloWorld2.name"
          description="%launchitem.HelloWorld2.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld2.standalonelauncher">
    </programItem>
    <programItem
@@ -71,6 +76,7 @@
          name="%launchitem.HelloWorld3.name"
          description="%launchitem.HelloWorld3.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld3.standalonelauncher">
    </programItem>
    <programItem
@@ -79,6 +85,7 @@
          name="%launchitem.HelloWorld4.name"
          description="%launchitem.HelloWorld4.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld4.standalonelauncher">
    </programItem>
    <programItem
@@ -87,6 +94,7 @@
          name="%launchitem.HelloWorld5.name"
          description="%launchitem.HelloWorld5.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld5.standalonelauncher">
    </programItem>
    <programItem
@@ -95,6 +103,7 @@
          name="%launchitem.ImageAnalyzer.name"
          description="%launchitem.ImageAnalyzer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.imageanalyzer.standalonelauncher">
    </programItem>
    <programItem
@@ -103,6 +112,7 @@
          name="%launchitem.JavaViewer.name"
          description="%launchitem.JavaViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.javaviewer.standalonelauncher">
    </programItem>
    <programItem
@@ -111,6 +121,7 @@
          name="%launchitem.TextEditor.name"
          description="%launchitem.TextEditor.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
+         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.texteditor.standalonelauncher">
    </programItem>
 </extension>
