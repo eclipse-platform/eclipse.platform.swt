@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build_dll" basedir="../../..">
+
+<target name="init">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.win32" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/win32" />
+    <property name="dll_destdir" value="${fragment_dir}/os/win32/x86" />
+    <property name="dll_ce_destdir" value="${fragment_dir}/os/win32-ce/arm" />
+	<property name="log_dir" value="${basedir}"/>
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+    <mkdir dir="${dll_ce_destdir}" />
+</target>
+
+<!-- Build swt.dll for Windows -->
+<target name="build_win32_dll" depends="init">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
+	<arg line="clean"/>
+	</exec>
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
+	</exec>
+	<copy todir="${dll_destdir}">
+		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
+	</copy>
+</target>
+
+<!-- Build swt.dll for Pocket PC -->
+<target name="build_win32_ce_dll" depends="init">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat" output="${log_dir}/build_ce_log.txt">
+	<arg line="clean"/>
+	</exec>
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat" output="${log_dir}/build_ce_log.txt">
+	</exec>
+	<copy todir="${dll_ce_destdir}">
+		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
+	</copy>
+</target>
+
+<!-- Build Windows and Pocket PC swt dlls -->
+<!-- Output .dlls for these platforms into the org.eclipse.swt.win32/os directory -->
+<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
+<target name="build_dll" depends="build_win32_dll,build_win32_ce_dll">
+</target>
+	
+</project>
