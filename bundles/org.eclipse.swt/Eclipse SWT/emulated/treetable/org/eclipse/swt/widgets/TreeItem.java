@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
 
@@ -1040,6 +1040,26 @@ int getIndex () {
 	return -1;
 }
 /**
+ * Returns the child item with the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of child elements minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public TreeItem getItem (int index) {
+	checkWidget ();
+	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
+}
+/**
  * Returns the number of items contained in the receiver
  * that are direct item children of the receiver.
  *
@@ -1167,6 +1187,13 @@ boolean hasAncestor (TreeItem item) {
 	if (this == item) return true;
 	if (parentItem == null) return false;
 	return parentItem.hasAncestor (item);
+}
+public int indexOf (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parentItem != this) return -1;
+	return item.getIndex ();
 }
 /*
  * Returns true if the receiver is currently available (though not necessary in the viewport).
