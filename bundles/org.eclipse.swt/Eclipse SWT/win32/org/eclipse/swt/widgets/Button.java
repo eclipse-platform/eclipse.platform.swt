@@ -196,6 +196,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+int defaultBackground () {
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+		return OS.GetSysColor (OS.COLOR_BTNFACE);
+	}
+	return super.defaultBackground ();
+}
+
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNTEXT);
 }
