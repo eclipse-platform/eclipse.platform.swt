@@ -275,8 +275,12 @@ public boolean getVisible () {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	//TEMPORARY CODE - shell draws on top of TXNObject
-	return OS.noErr;
+
+	//BUG - shell draws on top of TXNObject
+	return super.kEventControlDraw (nextHandler, theEvent, userData);
+
+	//FIX? = causes pixerl corruption but stops shell drawing on top of TXNObject
+//	return OS.noErr;
 }
 
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
@@ -378,7 +382,7 @@ public void open () {
 	checkWidget();
 	OS.ShowWindow (shellHandle);
 	OS.BringToFront (shellHandle);
-//	OS.SetKeyboardFocus (shellHandle, handle, (short)-1 /*???OS.kControlFocusNoPart*/)));
+	if (!restoreFocus ()) traverseGroup (true);
 }
 
 public void removeShellListener(ShellListener listener) {

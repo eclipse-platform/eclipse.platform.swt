@@ -155,7 +155,7 @@ int getChildrenCount () {
 	* NOTE:  The current implementation will count
 	* non-registered children.
 	*/
-	short [] count = new short[1];
+	short [] count = new short [1];
 	OS.CountSubControls (handle, count);
 	return count [0];
 }
@@ -198,6 +198,28 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+int kEventControlClick (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlClick (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+		short [] count = new short [1];
+		OS.CountSubControls (handle, count);
+		if (count [0] == 0) {
+			int window = OS.GetControlOwner (handle);
+			if (OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr) {
+				return OS.noErr;
+			}
+		}
+	}
+	return result;
+}
+
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	return ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) ? OS.noErr : result;
 }
 
 boolean hooksKeys () {
@@ -243,13 +265,12 @@ void releaseWidget () {
 	tabList = null;
 }
 
-public boolean setFocus() {
+public boolean setFocus () {
 	checkWidget ();
 	if ((style & SWT.NO_FOCUS) != 0) return false;
 	Control [] children = _getChildren ();
 	for (int i= 0; i < children.length; i++) {
-		Control child = children [i];
-		if (child.setFocus ()) return true;
+		if (children [i].setFocus ()) return true;
 	}
 	return super.setFocus ();
 }

@@ -182,8 +182,7 @@ void destroyWidget () {
 public boolean forceFocus () {
 	checkWidget();
 	int window = OS.GetControlOwner (handle);
-	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
-	return isFocusControl ();
+	return OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr;
 }
 
 public Color getBackground () {
@@ -475,7 +474,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		Display display = getDisplay ();
 		display.grabControl = this;
 	}
-	if ((state & CANVAS) != 0 && userData != 0) return OS.noErr;
+//	if ((state & CANVAS) != 0 && userData != 0) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -499,12 +498,12 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
-	sendKeyEvent (SWT.KeyUp, theEvent);
+	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	sendKeyEvent (SWT.KeyDown, theEvent);
+	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -518,19 +517,18 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
-	sendKeyEvent (type, theEvent);
+	boolean result = sendKeyEvent (SWT.KeyDown, theEvent);
 	display.lastModifiers = modifiers [0];
-	return OS.eventNotHandledErr;
+	return result ? OS.eventNotHandledErr : OS.noErr;
 }
 
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (keyCode [0] == 114) {	// help key
-//		windowProc(focus.handle, SWT.Help);
-//		return OS.noErr;
+	if (keyCode [0] == 114) {
+		//HELP KEY
 	}
-	sendKeyEvent (SWT.KeyDown, theEvent);
+	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -707,6 +705,11 @@ boolean sendKeyEvent (int type, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
 	setKeyState (event, theEvent);
+	postEvent (type, event);
+	return sendKeyEvent (type, event);
+}
+
+boolean sendKeyEvent (int type, Event event) {
 	postEvent (type, event);
 	return true;
 }

@@ -5657,6 +5657,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNActivate
 }
 #endif /* NO_TXNActivate */
 
+#ifndef NO_TXNAdjustCursor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNAdjustCursor
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("TXNActivate\n")
+
+	TXNAdjustCursor((TXNObject)arg0, (RgnHandle)arg1);
+}
+#endif /* NO_TXNAdjustCursor */
+
 #ifndef NO_TXNClick
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNClick
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -5741,6 +5751,28 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNFocus
 }
 #endif /* NO_TXNFocus */
 
+#ifndef NO_TXNGetRectBounds
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetRectBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jobject arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	TXNLongRect _arg2, *lparg2=NULL;
+	TXNLongRect _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNGetRectBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getTXNLongRectFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getTXNLongRectFields(env, arg3, &_arg3);
+	rc = (jint)TXNGetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (TXNLongRect *)lparg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) setTXNLongRectFields(env, arg2, lparg2);
+	if (arg3) setTXNLongRectFields(env, arg3, lparg3);
+	return rc;
+}
+#endif /* NO_TXNGetRectBounds */
+
 #ifndef NO_TXNGetData
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetData
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
@@ -5791,6 +5823,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineMetrics
 	return rc;
 }
 #endif /* NO_TXNGetLineMetrics*/
+
+#ifndef NO_TXNGetViewRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetViewRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("TXNGetViewRect\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	TXNGetViewRect((TXNObject)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif /* NO_TXNGetViewRect */
 
 #ifndef NO_TXNGetTXNObjectControls
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetTXNObjectControls
@@ -5921,6 +5967,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetFrameBounds
 	TXNSetFrameBounds((TXNObject)arg0, (SInt32)arg1, (SInt32)arg2, (SInt32)arg3, (SInt32)arg4, (TXNFrameID)arg5);
 }
 #endif /* NO_TXNSetFrameBounds */
+
+#ifndef NO_TXNSetRectBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetRectBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jboolean arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	TXNLongRect _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("TXNSetRectBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getTXNLongRectFields(env, arg2, &_arg2);
+	TXNSetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (Boolean)arg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) setTXNLongRectFields(env, arg2, lparg2);
+}
+#endif /* NO_TXNSetRectBounds */
 
 #ifndef NO_TXNSetSelection
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetSelection
@@ -6285,28 +6348,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
 	memset((void *)arg0, arg1, arg2);
 }
 #endif /* NO_memset */
-
-#ifndef NO_TXNGetRectBounds
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetRectBounds
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jobject arg3)
-{
-	Rect _arg1, *lparg1=NULL;
-	TXNLongRect _arg2, *lparg2=NULL;
-	TXNLongRect _arg3, *lparg3=NULL;
-	jint rc;
-
-	DEBUG_CALL("TXNGetRectBounds\n")
-
-	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = getTXNLongRectFields(env, arg2, &_arg2);
-	if (arg3) lparg3 = getTXNLongRectFields(env, arg3, &_arg3);
-	rc = (jint)TXNGetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (TXNLongRect *)lparg3);
-	if (arg1) setRectFields(env, arg1, lparg1);
-	if (arg2) setTXNLongRectFields(env, arg2, lparg2);
-	if (arg3) setTXNLongRectFields(env, arg3, lparg3);
-	return rc;
-}
-#endif /* NO_TXNGetRectBounds */
 
 #ifndef NO_ZoomWindowIdeal
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal

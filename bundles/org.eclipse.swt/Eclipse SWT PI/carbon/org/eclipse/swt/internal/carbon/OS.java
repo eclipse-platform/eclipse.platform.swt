@@ -323,6 +323,7 @@ public class OS {
 	public static final int kSheetWindowClass = 11;
 	public static final int kControlSliderDoesNotPoint = 2;
 	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
+	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
 	public static final int kTXNEndOffset = 2147483647;
@@ -856,6 +857,7 @@ public static final native void SizeWindow(int wHandle, short w, short h, boolea
 public static final native boolean StillDown();
 public static final native void SysBeep(short duration);
 public static final native int TXNActivate(int txHandle, int frameID, boolean scrollBarState);
+public static final native int TXNAdjustCursor (int iTXNObject, int ioCursorRgn);
 public static final native void TXNClick(int iTXNObject, EventRecord iEvent);
 public static final native int TXNCopy(int txHandle);
 public static final native int TXNCut(int txHandle);
@@ -870,11 +872,13 @@ public static final native int TXNGetLineMetrics(int iTXNObject, int iLineNumber
 public static final native int TXNGetTXNObjectControls(int iTXNObject, int iControlCount, int [] iControlTags, int [] oControlData);
 public static final native int TXNGetRectBounds(int iTXNObject, Rect oViewRect, TXNLongRect oDestinationRect, TXNLongRect oTextRect);
 public static final native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
+public static final native void TXNGetViewRect (int iTXNObject, Rect oViewRect);
 public static final native int TXNInitTextension(int iDefaultFonts, int iCountDefaultFonts, int iUsageFlags);
 public static final native int TXNNewObject(int iFileSpec, int iWindw, Rect iFrame, int iFrameOptions, int iFrameType, int iFileType, int iPermanentEncoding, int [] oTXNObject, int[] oTXNFrameID, int iRefCpm);
 public static final native int TXNOffsetToPoint(int txHandle, int offset, Point point);
 public static final native int TXNPaste(int txHandle);
 public static final native void TXNSelectAll(int txHandle);
+public static final native void TXNSetRectBounds(int iTXNObject, Rect iViewRect, TXNLongRect iDestinationRect, boolean iUpdate);
 public static final native int TXNSetData(int iTXNObject, int iDataType, char[] iDataPtr, int iDataSize, int iStartOffset, int iEndOffset);
 public static final native void TXNSetFrameBounds(int txHandle, int top, int left, int bottom, int right, int frameID);
 public static final native int TXNSetSelection(int txHandle, int startOffset, int endOffset);
