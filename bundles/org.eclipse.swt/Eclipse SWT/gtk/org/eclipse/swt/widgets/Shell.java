@@ -828,29 +828,21 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	
-	/*
-	* Feature in GTK.  It is not possible to set a shell
-	* title to an empty string.  The fix is to set the title
-	* to be a single space.
-	*/
-	if (string.length () == 0) string = " ";
-	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
-	int length = buffer1.length - 1;
-	
+
 	/* 
 	* Bug in GTK.  For some reason, if the title string
-	* length is not a multiple of 4, some window managers
-	* occasionally draw garbage after the last character in
-	* the title.  The fix is to pad the title.
+	* is less that 7 bytes long and is not terminated by
+	* a space, some window managers occasionally draw
+	* garbage after the last character in  the title.
+	* The fix is to pad the title.
 	*/
-	byte [] buffer2 = buffer1;
-	if ((length % 4) != 0) {
-		buffer2 = new byte [(length + 3) / 4 * 4];
-		System.arraycopy (buffer1, 0, buffer2, 0, length);
-	}
-
-	OS.gtk_window_set_title (shellHandle, buffer2);
+	int length = string.length ();
+	char [] chars = new char [Math.max (6, length) + 1];
+	string.getChars (0, length , chars, 0);
+	for (int i=length; i<chars.length; i++)  chars [i] = ' ';
+	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	OS.gtk_window_set_title (shellHandle, buffer);
+	
 }
 
 public void setVisible (boolean visible) {
