@@ -11,7 +11,10 @@ import org.eclipse.swt.internal.ole.win32.FORMATETC;
 import org.eclipse.swt.internal.ole.win32.IDataObject;
 
 /**
- * The <code>TextTransfer</code> class is used to transfer text in a drag and drop operation.
+ * The class <code>TextTransfer</code> provides a platform specific mechanism 
+ * for converting plain text represented as a java <code>String</code> 
+ * to a platform specific representation of the data and vice versa.  See 
+ * <code>Transfer</code> for additional information.
  */
 public class TextTransfer extends ByteArrayTransfer {
 
@@ -26,24 +29,15 @@ private TextTransfer() {}
 public static TextTransfer getInstance () {
 	return _instance;
 }
+
 /**
- * Converts a plain text Java String to a platform specific representation. 
- * <p>
- * On a successful conversion, the transferData.result field will be set as follows:
- * <ul>
- * <li>Windows: OLE.S_OK
- * <li>Motif: 0
- * </ul>
- * If this transfer agent is unable to perform the conversion,
- * the transferData.result field will be set to a failure value as follows:
- * <ul>
- * <li>Windows: OLE.DV_E_TYMED
- * <li>Motif: 1
- * </ul></p>
- *
- * @param object a Java String containing the data to be transferred
- * @param transferData an empty TransferData object; this object will be filled in on return
- *        with the platform specific format of the data
+ * This implementation of <code>javaToNative</code> converts plain text
+ * represented by a java <code>String</code> to a platform specific representation.
+ * For additional information see <code>Transfer#javaToNative</code>.
+ * 
+ * @param object a java <code>String</code> containing text
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) {
@@ -70,12 +64,16 @@ public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.DV_E_TYMED;
 	
 }
+
 /**
- * Converts a platform specific representation of a string to a Java String.
- *
- * @param transferData the platform specific representation of the data that has been transferred
- * @return a Java String containing the transferred data if the conversion was successful;
- *         otherwise null
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of plain text to a java <code>String</code>.
+ * For additional information see <code>Transfer#nativeToJava</code>.
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>String</code> containing text if the 
+ * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) {

@@ -7,45 +7,51 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.internal.ole.win32.*;
 
 /**
- * The <code>TransferData</code> class is a platform specific data structure for describing the type and the
- * contents of data being transferred in a Drag and Drop operation.
+ * The <code>TransferData</code> class is a platform specific data structure for
+ * describing the type and the contents of data being converted by a transfer agent.
  *
- * <p>As an application writer, you do not need to know anything about the specifics of TransferData.  You
- * should just pass the TransferData instances to subclass of Transfer and let the Transfer objects deal 
- * with the platform specific issues.  You can ask a Transfer subclass if it can handle this data by calling 
- * TextTransfer.isSupportedType(transferData).  You can get a list of the types of TransferData supported by a 
- * Transfer object by calling TextTransfer.getSupportedTypes().</p>
+ * <p>As an application writer, you do not need to know the specifics of 
+ * TransferData.  TransferData instances are passed to a subclass of Transfer 
+ * and the Transfer object manages the platform specific issues.  
+ * You can ask a Transfer subclass if it can handle this data by calling 
+ * Transfer.isSupportedType(transferData).</p>
  *
- * <p>You should only need to become familiar with the fields in this class if you are implementing
- * a Transfer subclass and you are unable to subclass the ByteArrayTransfer class.</p>
+ * <p>You should only need to become familiar with the fields in this class if you 
+ * are implementing a Transfer subclass and you are unable to subclass the 
+ * ByteArrayTransfer class.</p>
  */
 public class TransferData {
 	/**
-	 * Data Type - a pre-defined clipboard format <b>or</b> the unique identifier of a user defined format
+	 * The type is a unique identifier of a system format or user defined format.
 	 * (Warning: This field is platform dependent)
 	 */
 	public int type;
 	
-	/* Not Javadoc
-	 * Data Type - a Windows format structure which describes additional aspects of the type
+	/**
+	 * The formatetc structure is a generalized data transfer format, enhanced to 
+	 * encompass a target device, the aspect, or view of the data, and 
+	 * a storage medium.
 	 * (Warning: This field is platform dependent)
 	 */
 	public FORMATETC formatetc;
 	
-	/* Not Javadoc
-	 * Set Data - a data storage structure which you update to contain the data to be transferred in the 
+	/**
+	 * The stgmedium structure is a generalized global memory handle used for 
+	 * data transfer operations.
 	 * (Warning: This field is platform dependent)
 	 */
 	public STGMEDIUM stgmedium;
 
-	/* Not Javadoc
-	 * Set Data - the result of converting a Java object into an stgmedium value
+	/**
+	 * The result field contains the result of converting a java data type into a
+	 * stgmedium value.
 	 * (Warning: This field is platform dependent)
 	 */
 	public int result = COM.E_FAIL;
 
-	/* Not Javadoc
-	 * Get Data - the address of an IDataObject OLE Interface which contains the data that was transferred
+	/**
+	 * The pIDataObject is the address of an IDataObject OLE Interface which 
+	 * provides access to the data associated with the transfer.
 	 * (Warning: This field is platform dependent)
 	 */
 	public int pIDataObject;
