@@ -187,8 +187,7 @@ void extractValues() {
 			 */
 			int index = fullPath.lastIndexOf ('/');
 			fileName = fullPath.substring (index + 1, fullPath.length ());
-			fileNames = new String [1];
-			fileNames [0] = fileName;
+			fileNames = new String [] {fileName};
 		}
 	} else {
 		int index = fullPath.lastIndexOf ('/');
@@ -204,8 +203,7 @@ void extractValues() {
  */
 public String getFileName () {
 	if (cancel) return "";
-	int index = fullPath.lastIndexOf ('/');
-	return fullPath.substring (index + 1, fullPath.length ());
+	return fileName;
 }
 
 /**
@@ -217,9 +215,7 @@ public String getFileName () {
  */
 public String [] getFileNames () {
 	if ((style & SWT.MULTI) != 0) return fileNames;
-	String [] result = new String [1];
-	result [0] = fileName;
-	return result;
+	return new String [] {fileName};
 }
 
 /**
