@@ -46,6 +46,10 @@ public class CBanner extends Composite {
 	int[] curve;
 	int curveStart;
 	int rightWidth = SWT.DEFAULT;
+	Region curveRegion = new Region();
+	Cursor resizeCursor;
+	boolean dragging = false;
+	int rightDragDisplacement = 0;
 	
 	static final int OFFSCREEN = -200;
 	static final int CURVE_WIDTH = 50;
@@ -73,8 +77,9 @@ public class CBanner extends Composite {
  */
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	
 	if (BORDER1 == null) BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB();
+	resizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
+	
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event.gc);
@@ -85,12 +90,31 @@ public CBanner(Composite parent, int style) {
 			onResize();
 		}
 	});
-	
 	addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			onDispose();
 		}
-	});	
+	});
+	addListener(SWT.MouseMove, new Listener() {
+		public void handleEvent(Event event) {
+			onMouseMove(event.x, event.y);
+		}
+	});
+	addListener(SWT.MouseExit, new Listener() {
+		public void handleEvent(Event event) {
+			onMouseExit();
+		}
+	});
+	addListener(SWT.MouseDown, new Listener() {
+		public void handleEvent(Event event) {
+			onMouseDown (event.x, event.y);
+		}
+	});
+	addListener(SWT.MouseUp, new Listener() {
+		public void handleEvent(Event event) {
+			onMouseUp ();
+		}
+	});
 }
 static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int count) {
 	// The parametric equations for a Bezier curve for x[t] and y[t] where  0 <= t <=1 are:
@@ -221,15 +245,48 @@ public void layout (boolean changed) {
 	if (curveStart > oldStart) {
 		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL, size.y, false);
 	}
+	curveRegion.dispose();
+	curveRegion = new Region();
+	curveRegion.add(new Rectangle(curveStart, 0, CURVE_WIDTH, size.y));
 	update();
 	if (leftRect != null) left.setBounds(leftRect);
 	if (rightRect != null) right.setBounds(rightRect);
 }
 void onDispose() {
+	resizeCursor.dispose();
+	curveRegion.dispose();
+	resizeCursor = null;
+	curveRegion = null;
 	left = null;
 	right = null;
 }
-
+void onMouseDown (int x, int y) {
+	if (curveRegion.contains(x, y)) {
+		dragging = true;
+		rightDragDisplacement = right.getLocation().x - x;
+	}
+}
+void onMouseExit() {
+	if (!dragging) setCursor(null);
+}
+void onMouseMove(int x, int y) {
+	if (dragging) {
+		Point size = getSize();
+		if (!(0 < x && x < size.x)) return;
+		rightWidth = size.x - x - rightDragDisplacement;
+		rightWidth = Math.max(0, rightWidth);
+		layout();
+		return;
+	}
+	if (curveRegion.contains(x, y)) {
+		setCursor(resizeCursor); 
+	} else {
+		setCursor(null);
+	}
+}
+void onMouseUp () {
+	dragging = false;
+}
 void onPaint(GC gc) {
 	if (curve == null) updateCurve();
 	Point size = getSize();
