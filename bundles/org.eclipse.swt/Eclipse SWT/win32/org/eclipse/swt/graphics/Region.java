@@ -137,7 +137,10 @@ public void add (Rectangle rect) {
  * Adds the given rectangle to the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to merge with the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
@@ -309,7 +312,10 @@ public void intersect (Rectangle rect) {
  * Intersects the given rectangle to the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to intersect with the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
@@ -482,7 +488,10 @@ public void subtract (Rectangle rect) {
  * Subtracts the given rectangle from the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to subtract from the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
