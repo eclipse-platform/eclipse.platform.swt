@@ -537,12 +537,14 @@ int topHandle () {
 }
 
 public Point getLocation () {
+	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x,y);
 	return new Point (x [0], y [0]);
 }
 
 public Point getSize () {
+	checkWidget ();
 	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
 	if (menuBar != null)  {
@@ -1047,6 +1049,7 @@ public void forceActive () {
 }
 
 public Rectangle getBounds () {
+	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
 	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
