@@ -3,7 +3,7 @@ package org.eclipse.swt.custom;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.printing.*;
 import java.util.*;
-
+
 /**
  * A StyledText is an editable user interface object that displays lines 
  * of text.  The following style attributes can be defined for the text: 
@@ -65,12 +65,10 @@ import java.util.*;
  * </dl>
  */
 public class StyledText extends Canvas {
-	static final int CARET_WIDTH = 1;	// width of the caret. Used during content width calculation since 
-										// Caret.getSize() does not return its width until it is made visible.
 	static final char TAB = '\t';
-
+
 	private final static String PlatformLineDelimiter = System.getProperty("line.separator");
-
+
 	StyledTextContent content;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
@@ -82,11 +80,9 @@ public class StyledText extends Canvas {
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new 
 										// visible lines during Resize callback
 	int contentWidth = 0;				// width of widest known (already visible) line
-	int contentWidthIndex = 0;			// line up to which the content width has been calculated
 	int lineHeight;						// line height=font height
 	int tabLength = 4;					// number of characters in a tab
 	int tabWidth;						// width of a tab character in the current GC
-	Caret caret; 						// caret SWT widget
 	Cursor ibeamCursor;		
 	int caretOffset = 0;
 	Point selection = new Point(0, 0);	// x is character offset, y is length
@@ -102,11 +98,12 @@ public class StyledText extends Canvas {
 	Clipboard clipboard;
 	boolean mouseDoubleClick = false;			// true=a double click ocurred. Don't do mouse swipe selection.
 	int autoScrollDirection = SWT.NULL;			// the direction of autoscrolling (up, down, right, left)
-	int lastTextChangeStart;				// cache data of the 
-	int lastTextChangeNewLineCount;			// last text changing 
-	int lastTextChangeNewCharCount;			// event for use in the 
-	int lastTextChangeReplaceCharCount;			// text changed handler
-
+	int lastTextChangeStart;					// cache data of the 
+	int lastTextChangeNewLineCount;				// last text changing 
+	int lastTextChangeNewCharCount;				// event for use in the 
+	int lastTextChangeReplaceLineCount;			// text changed handler
+	int lastTextChangeReplaceCharCount;			
+
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
 	
@@ -195,8 +192,16 @@ public class StyledText extends Canvas {
 	void writeHeader() {
 		StringBuffer header = new StringBuffer();
 		FontData fontData = getFont().getFontData()[0];
-		
-		header.append("{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil ");
+		header.append("{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil");
+		// specify code page, necessary for copy to work in bidi 
+		// systems
+		String cpg = System.getProperty("file.encoding");
+		if (cpg.startsWith("Cp") || cpg.startsWith("MS")) {
+			cpg = cpg.substring(2, cpg.length());
+			header.append("\\cpg");
+			header.append(cpg);
+		}
+		header.append(" ");
 		header.append(fontData.getName());
 		header.append(";}}\n{\\colortbl");
 		for (int i = 0; i < colorTable.size(); i++) {
@@ -566,16 +571,17 @@ public StyledText(Composite parent, int style) {
 	// always need to draw background in drawLine when using NO_BACKGROUND!
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	Display display = getDisplay();
-
+
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
 	clipboard = new Clipboard(display);
 	calculateLineHeight();
 	calculateTabWidth();	
-	caret = new Caret(this, SWT.NULL);	
-	caret.setBounds(0, 0, CARET_WIDTH, lineHeight);
 	installDefaultContent();
+	Caret caret = new Caret(this, SWT.NULL);
+	// set the caret width, the height of the caret will default to the line height
+	caret.setSize(1, caret.getSize().y);
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
@@ -587,7 +593,6 @@ public StyledText(Composite parent, int style) {
 	installListeners();
 	installDefaultLineStyler();
 }
-
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
  * widget when the widget text has changed.
@@ -608,7 +613,6 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 	StyledTextListener typedListener = new StyledTextListener(extendedModifyListener);
 	addListener(ExtendedModify, typedListener);
 }
-
 /** 
  * Maps a key to an action.
  * One action can be associated with N keys. However, each key can only 
@@ -707,7 +711,6 @@ public void addModifyListener(ModifyListener modifyListener) {
 	TypedListener typedListener = new TypedListener(modifyListener);
 	addListener(SWT.Modify, typedListener);
 }
-
 /**	 
  * Adds a selection listener. A Selection event is sent by the widget when the 
  * selection has changed.
@@ -730,7 +733,6 @@ public void addSelectionListener(SelectionListener listener) {
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection, typedListener);	
 }
-
 /**	 
  * Adds a verify key listener. A VerifyKey event is sent by the widget when a key 
  * is pressed. The widget ignores the key press if the listener sets the doit field 
@@ -754,7 +756,6 @@ public void addVerifyKeyListener(VerifyKeyListener listener) {
 	StyledTextListener typedListener = new StyledTextListener(listener);
 	addListener(VerifyKey, typedListener);	
 }
-
 /**	 
  * Adds a verify listener. A Verify event is sent by the widget when the widget text 
  * is about to change. The listener can set the event text and the doit field to 
@@ -805,19 +806,19 @@ public void append(String string) {
  * Calculates the width of the widest visible line.
  */
 void calculateContentWidth() {
+	int lineHeight = getLineHeight();
+	
 	if (lineHeight != 0) {
 		int itemCount = (int) Math.ceil((float) getClientArea().height / lineHeight);
 		calculateContentWidth(topIndex, Math.min(itemCount, content.getLineCount() - topIndex));
 	}
 }
-
 /**
  * Calculates the width of the widget text in the specified line range.
  * <p>
  *
  * @param startline the first line
  * @param lineCount number of lines to consider for the calculation
- * @param skipCalculated true=don't recalculated lines that have already been calculated
  */
 void calculateContentWidth(int startLine, int lineCount) {
 	String line;
@@ -833,11 +834,10 @@ void calculateContentWidth(int startLine, int lineCount) {
 	setLineFont(gc, fontData, SWT.BOLD);	
 	for (int i = startLine; i < stopLine; i++) {
 		line = content.getLine(i);
-		contentWidth = Math.max(contentWidth(line, i, gc) + CARET_WIDTH, contentWidth);
+		contentWidth = Math.max(contentWidth(line, i, gc) + getCaretWidth(), contentWidth);
 	}
 	gc.dispose();
 }
-
 /**
  * Calculates the line height
  */
@@ -846,7 +846,6 @@ void calculateLineHeight() {
 	lineHeight = gc.getFontMetrics().getHeight();
 	gc.dispose();	
 }
-
 /**
  * Calculates the width in pixel of a tab character
  */
@@ -860,7 +859,6 @@ void calculateTabWidth() {
 	tabWidth = gc.stringExtent(tabBuffer.toString()).x;
 	gc.dispose();	
 }
-
 /**
  * Calculates the scroll bars
  */
@@ -876,7 +874,6 @@ void calculateScrollBars() {
 		horizontalBar.setIncrement(getHorizontalIncrement());
 	}
 }
-
 /**
  * Hides the scroll bars if widget is created in single line mode.
  */
@@ -886,25 +883,19 @@ static int checkStyle(int style) {
 	}
 	return style;
 }
-
 /**
  * Scrolls down the text to use new space made available by a resize or by 
  * deleted lines.
  */
 void claimBottomFreeSpace() {
-	int clientAreaItemCount = getLineCountWhole();
-	int topIndex = getTopIndex();
-	int newTopIndex;
-	int lastItemIndex = content.getLineCount() - topIndex;
-
-	if (topIndex > 0 && 
-		lastItemIndex > 0 &&
-		lastItemIndex < clientAreaItemCount) {
-		newTopIndex = Math.max(0, topIndex - (clientAreaItemCount - lastItemIndex));
-		setTopIndex(newTopIndex);
+	int newVerticalOffset = Math.max(0, content.getLineCount() * getLineHeight() - getClientArea().height);
+	
+	if (newVerticalOffset < verticalScrollOffset) {
+		// Scroll up so that empty lines below last text line are used.
+		// Fixes 1GEYJM0
+		setVerticalScrollOffset(newVerticalOffset, true);
 	}
 }
-
 /**
  * Scrolls text to the right to use new space made available by a resize.
  */
@@ -918,7 +909,6 @@ void claimRightFreeSpace() {
 		scrollHorizontalBar(newHorizontalOffset - horizontalScrollOffset);					
 	}
 }
-
 /**
  * Removes the widget selection.
  * <p>
@@ -938,14 +928,13 @@ void clearSelection(boolean sendEvent) {
 		int redrawStart = Math.min(selectionStart, length);
 		int redrawEnd = Math.min(selectionEnd, length);
 		if (redrawEnd - redrawStart > 0) {
-			redrawRange(redrawStart, redrawEnd - redrawStart, true);
+			internalRedrawRange(redrawStart, redrawEnd - redrawStart, true);
 		}
 		if (sendEvent == true) {
 			sendSelectionEvent();
 		}
 	}
 }
-
 /**
  * Computes the preferred size.
  *
@@ -980,14 +969,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		calculateContentWidth(0, visibleCount);
 		width = contentWidth;
 	}
-
+
 	// Use default values if no text is defined.
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) {
 		if (singleLine) height = getLineHeight();
 		else height = DEFAULT_HEIGHT;
 	}
-
+
 	// Hardcode the inset margins.  Assume text is inset
 	// 1 pixel on each side. 
 	width += 2;
@@ -1012,7 +1001,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 int contentWidth(String text, int lineIndex, GC gc) {
 	int paintX = 0;
 	int textLength = text.length();
-
+
 	for (int i = 0; i < textLength; i++) {
 		int tabIndex = text.indexOf(TAB, i);
 		// is tab not present or past the rendering range?
@@ -1056,7 +1045,7 @@ public void copy(){
 		TextWriter plainTextWriter = new TextWriter(selection.x, length);
 		String rtfText = getPlatformDelimitedText(rtfWriter);
 		String plainText = getPlatformDelimitedText(plainTextWriter);
-
+
 		try {
 			clipboard.setContents(
 				new String[]{rtfText, plainText}, 
@@ -1069,7 +1058,6 @@ public void copy(){
 		}
 	}
 }
-
 /**
  * Returns a string that uses only the line delimiter specified by the 
  * StyledTextContent implementation.
@@ -1131,7 +1119,6 @@ String getModelDelimitedText(String text) {
 	}
 	return convertedText.toString();
 }
-
 /**
  * Creates default key bindings.
  */
@@ -1151,7 +1138,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.CTRL, ST.TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.CTRL, ST.WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.CTRL, ST.WINDOW_END);
-
+
 	// Selection
 	setKeyBinding(SWT.ARROW_UP | SWT.SHIFT, ST.SELECT_LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN | SWT.SHIFT, ST.SELECT_LINE_DOWN);
@@ -1167,7 +1154,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.CTRL | SWT.SHIFT, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.CTRL | SWT.SHIFT, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.CTRL | SWT.SHIFT, ST.SELECT_WINDOW_END);
-
+
 	// Modification
 	// Cut, Copy, Paste
 	// CUA style
@@ -1178,7 +1165,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.DEL | SWT.SHIFT, ST.CUT);
 	setKeyBinding(SWT.INSERT | SWT.CTRL, ST.COPY);
 	setKeyBinding(SWT.INSERT | SWT.SHIFT, ST.PASTE);
-
+
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
 	
@@ -1202,7 +1189,6 @@ public void cut(){
 		doDelete();
 	}
 }
-
 /** 
  * A mouse move event has occurred.  See if we should start autoscrolling.  If
  * the move position is outside of the client area, initiate autoscrolling.  
@@ -1280,15 +1266,13 @@ void doAutoScroll(int direction) {
 		display.timerExec(TIMER_INTERVAL, timer);
 	}
 }
-
 /**
  * Deletes the character to the left of the caret. Delete the selected text if any.
  * Move the caret in front of the deleted text.
  */
 void doBackspace() {
 	Event event = new Event();
-
-	event.text = "";
+	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
 		event.end = selection.y;
@@ -1309,43 +1293,6 @@ void doBackspace() {
 			event.end = caretOffset;
 		}
 		sendKeyEvent(event);
-	}
-	claimBottomFreeSpace();
-}
-
-/**
- * Moves the caret to the start of the selection if a selection exists.
- * Otherwise, if no selection exists move the cursor according to the 
- * cursor selection rules.
- * <p>
- *
- * @see #doSelectionCursorLeft
- */
-void doCursorLeft() {
-	if (selection.y - selection.x > 0) {
-		caretOffset = selection.x;
-		showCaret();
-	}
-	else {
-		doSelectionCursorLeft();
-	}
-}
-
-/**
- * Moves the caret to the end of the selection if a selection exists.
- * Otherwise, if no selection exists move the cursor according to the 
- * cursor selection rules.
- * <p>
- *
- * @see #doSelectionCursorRight
- */
-void doCursorRight() {
-	if (selection.y - selection.x > 0) {
-		caretOffset = selection.y;
-		showCaret();
-	}
-	else {
-		doSelectionCursorRight();
 	}
 }
 /**
@@ -1374,7 +1321,6 @@ void doColumnRight() {
 		showCaret();
 	}
 }
-
 /**
  * Replaces the selection with the character or insert the character at the 
  * current caret position if no selection exists.
@@ -1422,7 +1368,6 @@ void doContent(char key) {
 		sendKeyEvent(event);
 	}
 }
-
 /**
  * Moves the caret after the last character of the widget content.
  */
@@ -1434,7 +1379,6 @@ void doContentEnd() {
 		showCaret();
 	}
 }
-
 /**
  * Moves the caret in front of the first character of the widget content.
  */
@@ -1444,13 +1388,46 @@ void doContentStart() {
 		showCaret();
 	}
 }
-
+/**
+ * Moves the caret to the start of the selection if a selection exists.
+ * Otherwise, if no selection exists move the cursor according to the 
+ * cursor selection rules.
+ * <p>
+ *
+ * @see #doSelectionCursorLeft
+ */
+void doCursorLeft() {
+	if (selection.y - selection.x > 0) {
+		caretOffset = selection.x;
+		showCaret();
+	}
+	else {
+		doSelectionCursorLeft();
+	}
+}
+/**
+ * Moves the caret to the end of the selection if a selection exists.
+ * Otherwise, if no selection exists move the cursor according to the 
+ * cursor selection rules.
+ * <p>
+ *
+ * @see #doSelectionCursorRight
+ */
+void doCursorRight() {
+	if (selection.y - selection.x > 0) {
+		caretOffset = selection.y;
+		showCaret();
+	}
+	else {
+		doSelectionCursorRight();
+	}
+}
 /**
  * Deletes the character to the right of the caret. Delete the selected text if any.
  */
 void doDelete() {
 	Event event = new Event();
-
+
 	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
@@ -1473,9 +1450,7 @@ void doDelete() {
 		}
 		sendKeyEvent(event);
 	}
-	claimBottomFreeSpace();
 }
-
 /**
  * Moves the caret one line down and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
@@ -1486,7 +1461,6 @@ void doLineDown() {
 	doSelectionLineDown();
 	showCaret();
 }
-
 /**
  * Moves the caret to the end of the line.
  */
@@ -1501,7 +1475,6 @@ void doLineEnd() {
 		showCaret();
 	}
 }
-
 /**
  * Moves the caret to the beginning of the line.
  */
@@ -1513,14 +1486,7 @@ void doLineStart() {
 		caretOffset = lineOffset;
 		showCaret();
 	}
-	else // move up one line to remove line selection
-	if (line > 0 && selection.x < caretOffset) {
-		line--;
-		caretOffset = content.getOffsetAtLine(line);
-		showCaret();
-	}
 }
-
 /**
  * Moves the caret one line up and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
@@ -1542,7 +1508,6 @@ void doLineUp() {
 		showCaret();
 	}
 }
-
 /**
  * Moves the caret to the specified location.
  * <p>
@@ -1578,7 +1543,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 			gc.dispose();
 		}
 		if (offsetInLine == -1) {
-			offsetInLine = getOffsetAtX(lineText, lineOffset, x);
+			offsetInLine = getMouseOffsetAtX(lineText, lineOffset, x);
 		}
 		newCaretOffset = lineOffset + offsetInLine;
 		if (newCaretOffset != caretOffset) {
@@ -1593,7 +1558,6 @@ void doMouseLocationChange(int x, int y, boolean select) {
 		}
 	}
 }
-
 /**
  * Updates the selection based on the caret position
  */
@@ -1605,7 +1569,6 @@ void doMouseSelection() {
 		doSelection(SWT.RIGHT);
 	}
 }
-
 /**
  * Scrolls one page down so that the last line (truncated or whole)
  * of the current page becomes the fully visible top line.
@@ -1687,7 +1650,7 @@ void doPageStart() {
  */
 void doPageUp() {
 	int line = content.getLineAtOffset(caretOffset);
-
+
 	if (line > 0) {	
 		int lineOffset = content.getOffsetAtLine(line);	
 		int offsetInLine = caretOffset - lineOffset;
@@ -1786,11 +1749,11 @@ void doSelection(int direction) {
 		}
 	}
 	if (redrawStart != -1 && redrawEnd != -1) {
-		redrawRange(redrawStart, redrawEnd - redrawStart, true);
+		internalRedrawRange(redrawStart, redrawEnd - redrawStart, true);
 		sendSelectionEvent();
 	}
 }
-
+
 /**
  * Moves the caret one character to the left or to the end of the previous 
  * line if the cursor is at the beginning of a line.
@@ -1812,7 +1775,7 @@ void doSelectionCursorLeft() {
 		showCaret();
 	}
 }
-
+
 /**
  * Moves the caret one character to the right or to the beginning of the 
  * next line if the cursor is at the end of a line.
@@ -1833,26 +1796,7 @@ void doSelectionCursorRight() {
 		showCaret();
 	}
 }
-
-/**
- * Moves the caret to the beginning of the next line, selecting to the end 
- * of the line plus one whitespace to represent the line break.
- * Do the regular line selection, if the selection does not start at the 
- * line start or if the last line is being selected.
- */
-void doSelectionLineEnd() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);
-		
-	if (selection.x == lineOffset && line < content.getLineCount() - 1) {
-		line++;
-		caretOffset = content.getOffsetAtLine(line);
-		showCaret();
-	}
-	else {
-		doLineEnd();
-	}
-}
+
 /**
  * Moves the caret to the start of the word that is to the left of
  * the current caret position.
@@ -1868,7 +1812,7 @@ void doWordLeft() {
 		doSelectionWordLeft();
 	}
 }
-
+
 /**
  * Moves the caret to the end of the word that is to the right of
  * the current caret position.
@@ -1884,7 +1828,7 @@ void doWordRight() {
 		doSelectionWordRight();
 	}
 }
-
+
 /**
  * Moves the caret to the start of the word that is to the left of
  * the current caret position.
@@ -1893,7 +1837,7 @@ void doSelectionWordLeft() {
 	caretOffset = getWordStart(caretOffset);
 	showCaret();
 }
-
+
 /**
  * Moves the caret to the end of the word that is to the right of
  * the current caret position.
@@ -1902,7 +1846,7 @@ void doSelectionWordRight() {
 	caretOffset = getWordEnd(caretOffset);
 	showCaret();
 }
-
+
 /**
  * Draws the specified rectangle.
  * Draw directly without invalidating the affected area when a gc is 
@@ -1913,13 +1857,11 @@ void doSelectionWordRight() {
  * @param y the y position
  * @param width the width
  * @param height the height
- * @param gc GC to use for direct drawing. If null the specified area 
- * 	is invalidated only.
  * @param clearBackground true=clear the background, false=only draw the foregorund
  */
-void draw(int x, int y, int width, int height, GC gc, boolean clearBackground) {
-	if (gc == null) {
-		redraw(x, y, width, height, false);
+void draw(int x, int y, int width, int height, boolean clearBackground) {
+	if (clearBackground) {
+		redraw(x, y, width, height, true);
 	}
 	else {
 		int lineHeight = getLineHeight();
@@ -1931,6 +1873,7 @@ void draw(int x, int y, int width, int height, GC gc, boolean clearBackground) {
 		int lineCount = content.getLineCount();
 		Color background = getBackground();
 		Color foreground = getForeground();
+		GC gc = new GC(this);
 	
 		if (isSingleLine()) {
 			lineCount = 1;
@@ -1942,11 +1885,7 @@ void draw(int x, int y, int width, int height, GC gc, boolean clearBackground) {
 			String line = content.getLine(i);
 			drawLine(line, i, paintY, gc, background, foreground, clearBackground);
 		}
-		if (clearBackground && paintY < endY) {
-			gc.setBackground(background);
-			gc.setForeground(background);
-			gc.fillRectangle(0, paintY, getClientArea().width, endY - paintY);
-		}
+		gc.dispose();	
 	}
 }
 /** 
@@ -2051,7 +1990,7 @@ int drawLineSelection(String line, int lineOffset, int selectionStartOffset, int
 	int lineLength = line.length();
 	int paintX;
 	int selectionBackgroundWidth;
-
+
 	styles = filterLineStyles(styles);
 	paintX = textWidth(line, lineOffset, 0, selectionStartOffset, styles, 0, gc);
 	if (selectionStartOffset + selectionLength > lineLength) {
@@ -2159,7 +2098,6 @@ void drawStyledLine(String line, int lineOffset, int renderOffset, StyleRange[] 
 		drawText(line, lineOffset, renderOffset, lineLength - renderOffset, filteredStyles, paintX, paintY, gc);
 	}	
 }
-
 /**
  * Draws the text at the specified location. Expands tabs to tab stops using
  * the widget tab width.
@@ -2180,7 +2118,6 @@ void drawStyledLine(String line, int lineOffset, int renderOffset, StyleRange[] 
 int drawText(String text, int lineOffset, int startOffset, int length, StyleRange[] lineStyles, int paintX, int paintY, GC gc) {
 	int endOffset = startOffset + length;
 	int textLength = text.length();
-	StyleRange[] styles;
 	FontData fontData = gc.getFont().getFontData()[0];
 	
 	if (startOffset < 0 || startOffset >= textLength || startOffset + length > textLength) {
@@ -2195,10 +2132,10 @@ int drawText(String text, int lineOffset, int startOffset, int length, StyleRang
 		if (tabIndex != i) {
 			String tabSegment = text.substring(i, tabIndex);
 			if (lineStyles != null) {
-				paintX = styledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, paintY, gc, true);
+				paintX = styledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, paintY, gc, fontData, true);
 			}
 			else {
-				fontData = setLineFont(gc, fontData, SWT.NORMAL);
+				setLineFont(gc, fontData, SWT.NORMAL);
 				gc.drawString(tabSegment, paintX - horizontalScrollOffset, paintY, true);
 				paintX += gc.stringExtent(tabSegment).x;
 			}
@@ -2216,14 +2153,12 @@ int drawText(String text, int lineOffset, int startOffset, int length, StyleRang
 	}
 	return paintX;
 }
-
 /** 
  * Ends the autoscroll process.
  */
 void endAutoScroll() {
 	autoScrollDirection = SWT.NULL;
 }
-
 /** 
  * @param styles styles that may contain font styles.
  * @return null if the styles contain only regular font styles, the 
@@ -2250,8 +2185,6 @@ StyleRange[] filterLineStyles(StyleRange[] styles) {
 int getBottomIndex() {
 	return Math.min(content.getLineCount(), topIndex + getLineCountWhole()) - 1;
 }
-
-
 /**
  * Returns the caret position relative to the start of the text.
  * <p>
@@ -2267,7 +2200,17 @@ public int getCaretOffset() {
 	
 	return caretOffset;
 }
-
+/**
+ * Returns the caret width.
+ * <p>
+ *
+ * @return the caret width, 0 if caret is null.
+ */
+int getCaretWidth() {
+	Caret caret = getCaret();
+	if (caret == null) return 0;
+	return caret.getSize().x;
+}
 /**
  * Returns the content implementation that is used for text storage
  * or null if no user defined content implementation has been set.
@@ -2285,7 +2228,6 @@ public StyledTextContent getContent() {
 	
 	return content;
 }
-
 /** 
  * Returns whether the widget implements double click mouse behavior.
  * <p>
@@ -2313,11 +2255,9 @@ public boolean getDoubleClickEnabled() {
  * </ul>
  */
 public boolean getEditable() {
-	checkWidget();
-
+	checkWidget();
 	return editable;
 }
-
 /** 
  * Returns the horizontal scroll increment.
  * <p>
@@ -2331,7 +2271,6 @@ int getHorizontalIncrement() {
 	gc.dispose();
 	return increment;
 }
-
 /** 
  * Returns the horizontal scroll offset relative to the start of the line.
  * <p>
@@ -2348,7 +2287,6 @@ public int getHorizontalIndex() {
 
 	return horizontalScrollOffset / getHorizontalIncrement();
 }
-
 /** 
  * Returns the horizontal scroll offset relative to the start of the line.
  * <p>
@@ -2392,7 +2330,6 @@ public int getKeyBinding(int key) {
 	}
 	return intAction;
 }
-
 /**
  * Gets the number of characters.
  * <p>
@@ -2469,7 +2406,7 @@ int getLineCountTruncated() {
 	}
 	return lineCount;
 }
-
+
 /**
  * Returns the number of lines that are completely displayed in the widget client area.
  * <p>
@@ -2488,7 +2425,7 @@ int getLineCountWhole() {
 	}
 	return lineCount;
 }
-
+
 /**
  * Returns the line at the specified offset in the text.
  * 0 <= offset <= getCharCount() so that getLineAtOffset(getCharCount())
@@ -2513,7 +2450,7 @@ public int getLineAtOffset(int offset) {
 	}
 	return content.getLineAtOffset(offset);
 }
-
+
 /**
  * Returns the line delimiter used for entering new lines by key down
  * or paste operation.
@@ -2543,8 +2480,7 @@ public String getLineDelimiter() {
  */
 public int getLineHeight() {
 	checkWidget();
-
-	if (lineHeight == 0) {
+	if (lineHeight == 0) {
 		calculateLineHeight();
 	}
 	return lineHeight;
@@ -2612,7 +2548,11 @@ public Point getLocationAtOffset(int offset) {
 	return new Point(x, y);
 }
 /**
- * Returns the offset at the given x location in the line.
+ * Returns the caret offset at the given x location in the line.
+ * The caret offset is the offset of the character where the caret will be
+ * placed when a mouse click occurs. The caret offset will be the offset of 
+ * the character after the clicked one if the mouse click occurs at the second 
+ * half of a character.
  * Doesn't properly handle ligatures and other context dependent characters or 
  * bidi. Ligatures are handled properly as long as they don't occur at lineXOffset.
  * <p>
@@ -2621,10 +2561,9 @@ public Point getLocationAtOffset(int offset) {
  * @param lineOffset offset of the first character in the line. 
  * 	0 based from the beginning of the document.
  * @param lineXOffset x location in the line
- * @return offset of the character at the x location relative to the start of the 
- * 	line.
+ * @return caret offset at the x location relative to the start of the line.
  */
-int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
+int getMouseOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	int x = 0;
 	GC gc = new GC(this);	
 	int low = -1;
@@ -2643,6 +2582,98 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 		int charWidth = textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc) - x;
 		if (lineXOffset <= x + charWidth / 2) {
 			high = offset;			
+		}
+		else {
+			low = offset;
+		}
+	}
+	offset = high;
+	gc.dispose();
+	return offset;	
+}
+/**
+ * Returns the offset of the character at the given location relative 
+ * to the first character in the document.
+ * The return value reflects the character offset that the caret will
+ * be placed at if a mouse click occurred at the specified location.
+ * If the x coordinate of the location is beyond the center of a character
+ * the returned offset will be behind the character.
+ * <p>
+ *
+ * @param point the origin of character bounding box relative to 
+ * 	the origin of the widget client area.
+ * @return offset of the character at the given location relative 
+ * 	to the first character in the document.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when point is null</li>
+ *   <li>ERROR_INVALID_ARGUMENT when there is no character at the specified location</li>
+ * </ul>
+ */
+public int getOffsetAtLocation(Point point) {
+	checkWidget();
+	int line;
+	int lineOffset;
+	int offsetInLine;
+	String lineText;
+	
+	if (point == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	// is y above first line or is x before first column?
+	if (point.y + verticalScrollOffset < 0 || point.x + horizontalScrollOffset < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}	
+	line = (getTopPixel() + point.y) / getLineHeight();	
+	// does the referenced line exist?
+	if (line >= content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}	
+	lineText = content.getLine(line);
+	lineOffset = content.getOffsetAtLine(line);	
+	offsetInLine = getOffsetAtX(lineText, lineOffset, point.x);
+	// is the x position within the line?
+	if (offsetInLine == -1) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return lineOffset + offsetInLine;
+}
+/**
+ * Returns the offset of the character at the given x location in the line.
+ * <p>
+ *
+ * @param line text of the line to calculate the offset in
+ * @param lineOffset offset of the first character in the line. 
+ * 	0 based from the beginning of the document.
+ * @param lineXOffset x location in the line
+ * @return offset of the character at the x location relative to the start 
+ * 	of the line. -1 if the x location is past the end if the line.
+ */
+int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
+	int x = 0;
+	GC gc = new GC(this);	
+	int low = -1;
+	int high = line.length();
+	int offset;
+	StyleRange[] styles = null;
+	StyledTextEvent event = getLineStyleData(lineOffset, line);
+	
+	if (event != null) {
+		styles = filterLineStyles(event.styles);
+	}
+	lineXOffset += horizontalScrollOffset;
+	while (high - low > 1) {
+		offset = (high + low) / 2;
+		if (lineXOffset <= textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc)) {
+			high = offset;			
+		}
+		else 
+		if (high == line.length() && high - offset == 1) {
+			// requested x location is past end of line
+			high = -1;
 		}
 		else {
 			low = offset;
@@ -2723,10 +2754,9 @@ public Point getSelection() {
  */
 public Point getSelectionRange() {
 	checkWidget();
-
-	return new Point(selection.x, selection.y - selection.x);
+	return new Point(selection.x, selection.y - selection.x);
 }
-
+
 /**
  * Returns the background color to be used for rendering selected text.
  * <p>
@@ -2759,7 +2789,7 @@ public int getSelectionCount() {
 Color getSelectionForeground() {
 	return getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 }
-
+
 /**
  * Returns the selected text.
  * <p>
@@ -2775,7 +2805,7 @@ public String getSelectionText() {
 
 	return content.getTextRange(selection.x, selection.y - selection.x);
 }
-
+
 /**
  * Returns the style range at the given offset.
  * Returns null if a LineStyleListener has been set or if a style is not set
@@ -2859,7 +2889,7 @@ public String getText() {
 
 	return content.getTextRange(0, getCharCount());
 }	
-
+
 /**
  * Returns the widget content between the two offsets.
  * <p>
@@ -2910,7 +2940,7 @@ public String getTextRange(int start, int length) {
 	}	
 	return content.getTextRange(start, length);
 }
-
+
 /**
  * Gets the text limit.  The text limit specifies the amount of text that the user 
  * can type into the widget.
@@ -2926,7 +2956,7 @@ public int getTextLimit() {
 	
 	return textLimit;
 }
-
+
 /**
  * Gets the top index.  The top index is the index of the fully visible line that
  * is currently at the top of the widget.  The top index changes when the widget 
@@ -2944,7 +2974,7 @@ public int getTopIndex() {
 
 	return topIndex;
 }
-
+
 /**
  * Gets the top pixel.  The top pixel is the pixel position of the line that is 
  * currently at the top of the widget.The text widget can be scrolled by pixels 
@@ -2964,7 +2994,7 @@ public int getTopPixel() {
 
 	return verticalScrollOffset;
 }
-
+
 /** 
  * Returns the vertical scroll increment.
  * <p>
@@ -2974,7 +3004,7 @@ public int getTopPixel() {
 int getVerticalIncrement() {
 	return getLineHeight();
 }
-
+
 /**
  * Returns the offset of the character after the word at the specified
  * offset.
@@ -3024,7 +3054,7 @@ int getWordEnd(int offset) {
 	}
 	return offset;
 }
-
+
 /**
  * Returns the offset of the character after the word at the specified
  * offset.
@@ -3069,7 +3099,7 @@ int getWordEndNoSpaces(int offset) {
 	}
 	return offset;
 }
-
+
 /**
  * Returns the start offset of the word at the specified offset.
  * There are two classes of words formed by a sequence of characters:
@@ -3120,7 +3150,7 @@ int getWordStart(int offset) {
 	}
 	return offset;
 }
-
+
 /** 
  * Returns the x location of the character at the give offset in the line.
  * <b>NOTE:</b> Does not return correct values for true italic fonts (vs. slanted fonts).
@@ -3130,7 +3160,7 @@ int getWordStart(int offset) {
  */
 int getXAtOffset(String line, int lineIndex, int lineOffset) {
 	int x;
-
+
 	if (lineOffset == 0) {
 		x = 0;
 	}
@@ -3158,7 +3188,7 @@ int getXAtOffset(String line, int lineIndex, int lineOffset) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT when string is null</li>
  * </ul>
  */
 public void insert(String string) {
@@ -3308,7 +3338,7 @@ void handleDispose() {
 		content.removeTextChangeListener(textChangeListener);
 	}	
 }
-
+
 /** 
  * Updates the caret location and selection if mouse button 1 has been 
  * pressed.
@@ -3324,7 +3354,7 @@ void handleMouseDoubleClick(Event event) {
 	showCaret();
 	doMouseSelection();
 }
-
+
 /** 
  * Updates the caret location and selection if mouse button 1 has been 
  * pressed.
@@ -3353,7 +3383,7 @@ void handleMouseMove(Event event) {
 	doMouseLocationChange(event.x, event.y, true);
 	doAutoScroll(event);
 }
-
+
 /** 
  * Replaces the selection with the clipboard text or insert the text at 
  * the current caret offset if there is no selection. 
@@ -3371,7 +3401,7 @@ public void paste(){
 	checkWidget();	
 	TextTransfer transfer = TextTransfer.getInstance();
 	String text;
-
+
 	text = (String) clipboard.getContents(transfer);
 	if (text != null && text.length() > 0) {
 		Event event = new Event();
@@ -3379,8 +3409,6 @@ public void paste(){
 		event.end = selection.y;
 		event.text = getModelDelimitedText(text);
 		sendKeyEvent(event);
-		// fixes 1GBKN67
-		claimBottomFreeSpace();
 	}
 }
 /** 
@@ -3393,12 +3421,11 @@ public void paste(){
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void print() {
+public void print()  {
 	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	new StyledTextPrinter(this).print();
 }
-
-/** 
+/** 
  * Prints the widget's text to the specified printer.
  * <p>
  * This method may be called from a non-UI thread.
@@ -3421,7 +3448,7 @@ void handleHorizontalScroll(Event event) {
 	int scrollPixel = getHorizontalBar().getSelection() - horizontalScrollOffset;
 	scrollHorizontal(scrollPixel);
 }
-
+
 /**
  * If a VerifyKey listener exists, verify that the key that was entered
  * should be processed.
@@ -3441,7 +3468,7 @@ void handleKeyDown(Event event) {
 		handleKey(event);
 	}
 }
-
+
 /**
  * If an action has been registered for the key stroke execute the action.
  * Otherwise, if a character has been entered treat it as new content.
@@ -3477,7 +3504,50 @@ void handleKey(Event event) {
  * @param event paint event
  */
 void handlePaint(Event event) {
-	draw(event.x, event.y, event.width, event.height, event.gc, true);
+	int lineHeight = getLineHeight();
+	int startLine = (event.y + verticalScrollOffset) / lineHeight;
+	int paintYFromTopLine = (startLine - topIndex) * lineHeight;
+	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
+	int startY = paintYFromTopLine + topLineOffset;	// adjust y position for pixel based scrolling
+	int renderHeight = event.y + event.height - startY;
+	int paintY = 0;
+	int lineCount = content.getLineCount();
+	Rectangle clientArea = getClientArea();
+	Color background = getBackground();
+	Color foreground = getForeground();
+	Image lineBuffer;
+	GC lineGC;
+		
+	// Check if there is work to do. clientArea.width should never be 0
+	// if we receive a paint event but we never want to try and create 
+	// an Image with 0 width.
+	if (clientArea.width == 0 || event.height == 0) {		
+		return;
+	}
+	if (isSingleLine()) {
+		lineCount = 1;
+		if (startLine > 1) {
+			startLine = 1;
+		}
+	}
+	lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+	lineGC = new GC(lineBuffer);
+	lineGC.setFont(event.gc.getFont());
+	lineGC.setForeground(foreground);
+	lineGC.setBackground(background);
+	
+	for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+		String line = content.getLine(i);
+		drawLine(line, i, paintY, lineGC, background, foreground, true);
+	}
+	if (paintY < renderHeight) {
+		lineGC.setBackground(background);
+		lineGC.setForeground(background);
+		lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+	}
+	event.gc.drawImage(lineBuffer, 0, startY);
+	lineGC.dispose();
+	lineBuffer.dispose();
 }
 /**
  * Recalculates the scroll bars.
@@ -3502,14 +3572,15 @@ void handleResize(Event event) {
 	claimBottomFreeSpace();
 	claimRightFreeSpace();	
 }
-
 /**
  * Updates the caret position and selection and the scroll bars to reflect 
  * the content change.
  * <p>
  */
 void handleTextChanged(TextChangedEvent event) {
-	int visibleItemCount = (int) Math.ceil((float) getClientArea().height / lineHeight);
+	int clientAreaHeight = getClientArea().height;
+	int lineHeight = getLineHeight();
+	int visibleItemCount = (int) Math.ceil((float) clientAreaHeight / lineHeight);
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	int stopLine;
 			
@@ -3535,11 +3606,12 @@ void handleTextChanged(TextChangedEvent event) {
 		lastTextChangeReplaceCharCount, 
 		lastTextChangeNewCharCount);
 		
-	int newVerticalOffset = getLineCount() * getLineHeight() - getClientArea().height;
-	if (newVerticalOffset < verticalScrollOffset) {
+	if (lastTextChangeReplaceLineCount > 0) {
+		// Only check for unused space when lines are deleted.
+		// Fixes 1GFL4LY
 		// Scroll up so that empty lines below last text line are used.
 		// Fixes 1GEYJM0
-		setVerticalScrollOffset(Math.max(0, newVerticalOffset), true);
+		claimBottomFreeSpace();
 	}
 }
 /**
@@ -3556,16 +3628,9 @@ void handleTextChanged(TextChangedEvent event) {
  */
 void handleTextChanging(TextChangingEvent event) {
 	int firstLine;	
-	int firstLineOffset;
-	int offsetInLine;
-	String firstLineText;
-	int stopLine;
-	boolean isMultiLineChange = event.replaceLineCount > 0 || event.newLineCount > 0;
-	int textChangeX = -1;
 	int textChangeY;
-	int oldTabX = 0;
-	int textChangeStopX = -1;
-	int visibleItemCount = (int) Math.ceil((float) getClientArea().height / lineHeight);
+	int lineHeight = getLineHeight();
+	boolean isMultiLineChange = event.replaceLineCount > 0 || event.newLineCount > 0;
 			
 	if (event.replaceCharCount < 0) {
 		event.start += event.replaceCharCount;
@@ -3574,91 +3639,19 @@ void handleTextChanging(TextChangingEvent event) {
 	lastTextChangeStart = event.start;
 	lastTextChangeNewLineCount = event.newLineCount;
 	lastTextChangeNewCharCount = event.newCharCount;
+	lastTextChangeReplaceLineCount = event.replaceLineCount;
 	lastTextChangeReplaceCharCount = event.replaceCharCount;
 	firstLine = content.getLineAtOffset(event.start);
-	firstLineText = content.getLine(firstLine);
-	firstLineOffset = content.getOffsetAtLine(firstLine);
-	offsetInLine = event.start - firstLineOffset;
-	if (isMultiLineChange == false) {
-		// get location of nearest tab and replace stop offset in old text
-		int oldTabIndex = firstLineText.indexOf(TAB, offsetInLine + event.replaceCharCount);
-		oldTabX = getXAtOffset(firstLineText, firstLine, oldTabIndex + 1);
-		if (event.newCharCount == 0) {
-			// characters are going to be deleted. find out where the last deleted
-			// character stops drawing.
-			// This will be used in redrawSingleLineChange as the bit blit source
-			// x position. It has to be calculated before the styles are updated
-			// because the deleted text may be bold. If the styles are deleted
-			// before the calculation, the resulting x position would not reflect 
-			// the bold style thus causing incorrect blitting to occur.
-			textChangeStopX = getXAtOffset(
-				firstLineText, 
-				firstLine, 
-				offsetInLine + event.replaceCharCount);
-		}
-	}
 	textChangeY = firstLine * lineHeight - verticalScrollOffset;
 	if (isMultiLineChange) {
-		textChangeX = getXAtOffset(firstLineText, firstLine, offsetInLine);
-		redrawMultiLineChange(
-			textChangeX, 
-			textChangeY, 
-			event.newLineCount, 
-			event.replaceLineCount);
-		// notify default line styler about text change
-		if (defaultLineStyler != null) {
-			defaultLineStyler.textChanging(event);
-		}
+		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
 	}
 	else {
-		// get location of nearest tab and replace stop offset in new text
-		int newTabIndex;
-		String newLine;
-		StringBuffer newLineText = new StringBuffer(firstLineText);		
-		newLineText.delete(offsetInLine, offsetInLine + event.replaceCharCount);
-		if (event.newText != null && event.newText.length() > 0) {
-			newLineText.insert(offsetInLine, event.newText);
-		}
-		newLine = newLineText.toString();
-		newTabIndex = newLine.indexOf(TAB, offsetInLine + event.newCharCount);
-
-		// flush pending redraws before changing the line styles to reflect
-		// the pending text change
-		update();		
-		// notify default line styler about text change
-		if (defaultLineStyler != null) {
-			defaultLineStyler.textChanging(event);
-		}
-		// it is safe to calculate the change start x position after the
-		// styles have been updated since the styles only change behind the
-		// change start offset, not before.
-		textChangeX = getXAtOffset(firstLineText, firstLine, offsetInLine);		
-		if (newTabIndex != -1) {
-			// there is at least one tab character after the text change
-			int newTabX = getXAtOffset(newLine, firstLine, newTabIndex + 1);
-			redrawSingleLineTabChange(textChangeX, textChangeY, newTabX, oldTabX);
-		}
-		else {
-			if (textChangeStopX == -1) {
-				// text change stop x position has not been calculated yet.
-				// This means that text is going to be inserted. Calculate 
-				// the x position behind the inserted text. It will be used 
-				// in redrawSingleLineChange as the bit blit destination x 
-				// position. The x position has to be calculated after the 
-				// styles have been updated because the calculation uses the 
-				// styles of the new text which otherwise may not exist yet.
-				textChangeStopX = getXAtOffset(
-					newLine, 
-					firstLine, 
-					offsetInLine + event.newCharCount);
-			}
-			redrawSingleLineChange(
-				textChangeX, 
-				textChangeY, 
-				event.newCharCount, 
-				event.replaceCharCount, 
-				textChangeStopX);
-		}
+		redraw(0, textChangeY, getClientArea().width, lineHeight, true);	
+	}
+	// notify default line styler about text change
+	if (defaultLineStyler != null) {
+		defaultLineStyler.textChanging(event);
 	}
 }
 /**
@@ -3697,6 +3690,7 @@ void initializeFonts() {
  * @param action one of the actions defined in ST.java
  */
 public void invokeAction(int action) {
+	checkWidget();	
 	switch (action) {
 		// Navigation
 		case ST.LINE_UP:
@@ -3770,7 +3764,7 @@ public void invokeAction(int action) {
 			doSelection(SWT.LEFT);
 			break;
 		case ST.SELECT_LINE_END:
-			doSelectionLineEnd();
+			doLineEnd();
 			doSelection(SWT.RIGHT);
 			break;
 		case ST.SELECT_COLUMN_PREVIOUS:
@@ -3836,6 +3830,25 @@ public void invokeAction(int action) {
 			break;
 	}
 }
+/**
+ * Returns whether the given offset is inside a multi byte line delimiter.
+ * Example: 
+ * "Line1\r\n" isLineDelimiter(5) == false but isLineDelimiter(6) == true
+ * 
+ * @return true if the given offset is inside a multi byte line delimiter.
+ * false if the given offset is before or after a line delimiter.
+ */
+boolean isLineDelimiter(int offset) {
+	return false;
+//	int line = content.getLineAtOffset(offset);
+//	int lineOffset = content.getOffsetAtLine(line);	
+//	int offsetInLine = offset - lineOffset;
+
+	// offsetInLine will be greater than line length if the line 
+	// delimiter is longer than one character and the offset is set
+	// in between parts of the line delimiter.
+//	return offsetInLine > content.getLine(line).length();
+}
 /** 
  * Returns whether the font style in the given style range is changing 
  * from SWT.NORMAL to SWT.BOLD or vice versa.
@@ -3853,12 +3866,13 @@ public void invokeAction(int action) {
  */
 boolean isStyleChanging(StyleRange range, int start, int end) {
 	checkWidget();
-	int styleChangeOffset = -1;
-	
-	for (int i = start; i < end; i++) {
-		StyleRange style = defaultLineStyler.getStyleRangeAtOffset(i);
-		if ((style != null && style.fontStyle != range.fontStyle) ||
-			(style == null && range.fontStyle != SWT.NORMAL)) {
+	StyleRange[] styles = defaultLineStyler.getStyleRangesFor(start, end - start);
+	if (styles == null) {
+		return (range.fontStyle != SWT.NORMAL);
+	}
+	for (int i = 0; i < styles.length; i++) {
+		StyleRange newStyle = styles[i];
+		if (newStyle.fontStyle != range.fontStyle) {
 			return true;
 		}
 	}
@@ -3919,91 +3933,19 @@ void modifyContent(Event event, boolean updateCaret) {
  *	have changed for the redraw area, clearBackground can be set to false. 
  */
 public void redrawRange(int start, int length, boolean clearBackground) {
-	Rectangle clientArea = getClientArea();
-	int lineHeight = getLineHeight();
-	int end = start + length;
-	int firstLine = content.getLineAtOffset(start);
-	int lastLine = content.getLineAtOffset(end);
-	int lineCount = lastLine - firstLine + 1;
-	int redrawX;
-	int redrawStopX;
-	int redrawY;
-	int firstLineOffset;
-	int offsetInFirstLine;
-	int partialBottomIndex = getPartialBottomIndex();
-	int partialTopIndex = verticalScrollOffset / lineHeight;
-	String line;
-	GC gc = null;
-
-	// do nothing if redraw range is completely invisible	
-	if (firstLine > partialBottomIndex || lastLine < partialTopIndex) {
-		return;
-	}
-	if (clearBackground == false) {
-		gc = new GC(this);
-	}
-	// only redraw visible lines
-	if (partialTopIndex > firstLine) {
-		firstLine = partialTopIndex;
-		firstLineOffset = start = content.getOffsetAtLine(firstLine);
-		offsetInFirstLine = 0;
-	}
-	else {
-		firstLineOffset = content.getOffsetAtLine(firstLine);
-		offsetInFirstLine = start - firstLineOffset;
-	}
-	if (partialBottomIndex + 1 < lastLine) {
-		lastLine = partialBottomIndex + 1;	// + 1 to redraw whole bottom line, including line break
-		end = content.getOffsetAtLine(lastLine);
-	}
-	// redraw first line
-	line = content.getLine(firstLine);
-	// calculate redraw start location
-	redrawX = getXAtOffset(line, firstLine, offsetInFirstLine);
-	redrawY = firstLine * lineHeight - verticalScrollOffset;		
-	// calculate redraw stop location
-	if ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine) {
-		redrawStopX = clientArea.width;
-	}
-	else {
-		redrawStopX = getXAtOffset(line, firstLine, end - firstLineOffset);
-	}
-	draw(redrawX, redrawY, redrawStopX - redrawX, lineHeight, gc, clearBackground);
-	firstLine++;		// first line has been redrawn.
-
-	// redraw last line if more than line needs redrawing 
-	if (lineCount > 1) {
-		int offsetInLastLine = end - content.getOffsetAtLine(lastLine);	
-		// no redraw necessary if redraw offset is 0
-		if (offsetInLastLine > 0) {
-			line = content.getLine(lastLine);
-			redrawStopX = getXAtOffset(line, lastLine, offsetInLastLine);
-			redrawY = lastLine * lineHeight - verticalScrollOffset;
-			draw(0, redrawY, redrawStopX, lineHeight, gc, clearBackground);
-		}
-		lastLine--;			// last line has been redrawn.
-	}
-	// redraw entire center lines if redraw range includes more than two lines
-	if (lastLine >= firstLine) {
-		int redrawStopY = (lastLine + 1) * lineHeight - verticalScrollOffset;		
-		redrawY = firstLine * lineHeight - verticalScrollOffset;				
-		draw(0, redrawY, clientArea.width, redrawStopY - redrawY, gc, clearBackground);
-	}
-	if (gc != null) {
-		gc.dispose();
-	}
+	checkWidget();
+	internalRedrawRange(start, length, clearBackground);
 }
 /**
  * Fixes the widget to display a text change.
  * Bit blitting and redrawing is done as necessary.
  * <p>
  *
- * @param x x location of the text change
  * @param y y location of the text change
  * @param newLineCount number of new lines.
  * @param replacedLineCount number of replaced lines.
  */
-void redrawMultiLineChange(int x, int y, int newLineCount, int replacedLineCount) {
+void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
 	Rectangle clientArea = getClientArea();
 	int lineHeight = getLineHeight();
 	int lineCount = newLineCount - replacedLineCount;
@@ -4036,7 +3978,7 @@ void redrawMultiLineChange(int x, int y, int newLineCount, int replacedLineCount
 	// redraw but could cause flash/slowness elsewhere.
 	if (y + lineHeight > 0 && y <= clientArea.height) {
 		// redraw first changed line in case a line was split/joined
-		redraw(x, y, clientArea.width, lineHeight, true);
+		redraw(0, y, clientArea.width, lineHeight, true);
 	}
 	if (newLineCount > 0) {
 		int redrawStartY = y + lineHeight;
@@ -4047,79 +3989,6 @@ void redrawMultiLineChange(int x, int y, int newLineCount, int replacedLineCount
 			redraw(0, redrawStartY, clientArea.width, redrawHeight, true);
 		}
 	}
-}
-/**
- * Fixes the widget after a text change local to one line ocurred.
- * Bit blitting and/or redrawing is done as necessary.
- * <p>
- *
- * @param textChangeX x location of the text change
- * @param textChangeY y location of the text change
- * @param newCharCount number of new characters
- * @param replacedCharCount	number of replaced characters
- * @param textChangeStopX the x location of the character after last 
- * 	changed character
- */
-void redrawSingleLineChange(int textChangeX, int textChangeY, int newCharCount, int replacedCharCount, int textChangeStopX) {
-	Rectangle clientArea = getClientArea();
-	int lineHeight = getLineHeight();
-		
-	if (newCharCount == 0) {
-		// characters were deleted
-		scroll(
-			textChangeX, textChangeY,					// destination x, y
-			textChangeStopX, textChangeY,				// source x, y
-			clientArea.width, lineHeight, true);
-	}
-	else
-	if (replacedCharCount == 0) {
-		// characters were added
-		scroll(
-			textChangeStopX, textChangeY,					// destination x, y
-			textChangeX, textChangeY,					// source x, y
-			clientArea.width, lineHeight, true);
-	}
-	else {
-		// simple redraw if text has been replaced with other text
-		redraw(textChangeX, textChangeY, clientArea.width, lineHeight, true);
-	}
-}
-/**
- * Fixes the widget after a text change local to one line ocurred.
- * The line has a tab after the text change offset. Bit blitting 
- * and/or redrawing is done as necessary.
- * <p>
- *
- * @param textChangeX x location of the text change
- * @param textChangeY y location of the text change
- * @param newTabX the x location of the tab closest to the insert 
- * 	location as measured with the text change.
- * @param oldTabX the x location of the tab closest to the insert 
- * 	location as measured without the text change.
- */
-void redrawSingleLineTabChange(int textChangeX, int textChangeY, int newTabX, int oldTabX) {
-	Rectangle clientArea = getClientArea();
-	int lineHeight = getLineHeight();
-
-	if (newTabX > oldTabX) {
-		scroll(
-			newTabX, textChangeY,					// destination x, y
-			oldTabX, textChangeY,					// source x, y
-			clientArea.width, lineHeight, true);
-		redraw(textChangeX, textChangeY, oldTabX - textChangeX, lineHeight, true);
-	}
-	else 
-	if (newTabX < oldTabX) {
-		scroll(
-			newTabX, textChangeY,					// destination x, y
-			oldTabX, textChangeY,					// source x, y
-			clientArea.width, lineHeight, true);
-		redraw(textChangeX, textChangeY, newTabX - textChangeX, lineHeight, true);
-	}
-	else {
-		// tab location unchanged. redraw text between change offset and tab
-		redraw(textChangeX, textChangeY, newTabX - textChangeX, lineHeight, true);
-	}		
 }
 /**
  * Removes the specified extended modify listener.
@@ -4209,7 +4078,7 @@ public void removeModifyListener(ModifyListener modifyListener) {
 	}
 	removeListener(SWT.Modify, modifyListener);	
 }
-
+
 /**
  * Removes the specified selection listener.
  * <p>
@@ -4230,7 +4099,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	}
 	removeListener(SWT.Selection, listener);	
 }
-
+
 /**
  * Removes the specified verify listener.
  * <p>
@@ -4251,7 +4120,7 @@ public void removeVerifyListener(VerifyListener verifyListener) {
 	}
 	removeListener(SWT.Verify, verifyListener);	
 }
-
+
 /**
  * Removes the specified key verify listener.
  * <p>
@@ -4269,7 +4138,7 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(VerifyKey, listener);	
 }
-
+
 /**
  * Replaces the given text range with new text.
  * If the widget has the SWT.SINGLE style and "text" contains more than 
@@ -4298,6 +4167,8 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li> 
+ *   <li>ERROR_INVALID_ARGUMENT when either start or end is inside a multi byte line delimiter. 
+ * 		Splitting a line delimiter for example by inserting text in between the CR and LF and deleting part of a line delimiter is not supported</li>  
  * </ul>
  */
 public void replaceTextRange(int start, int length, String text) {
@@ -4314,7 +4185,6 @@ public void replaceTextRange(int start, int length, String text) {
 	event.text = text;
 	modifyContent(event, false);
 }
-
 /**
  * Resets the caret position, selection and scroll offsets. Recalculate
  * the content width and scroll bars. Redraw the widget.
@@ -4328,7 +4198,6 @@ void reset() {
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;	
 	contentWidth = 0;
-	contentWidthIndex = 0;
 	resetSelection();
 	// discard any styles that may have been set by creating a 
 	// new default line styler
@@ -4348,7 +4217,6 @@ void reset() {
 	setCaretLocation();
 	redraw();
 }
-
 /**
  * Resets the selection.
  */
@@ -4356,9 +4224,6 @@ void resetSelection() {
 	selection.x = selection.y = caretOffset;
 	selectionAnchor = -1;
 }
-
-
-
 /**
  * Scrolls the widget horizontally.
  * <p>
@@ -4379,7 +4244,6 @@ void scrollHorizontal(int pixels) {
 	horizontalScrollOffset += pixels;
 	setCaretLocation();
 }
-
 /**
  * Scrolls the widget horizontally and adjust the horizontal scroll bar to 
  * reflect the new horizontal offset..
@@ -4427,18 +4291,35 @@ void sendKeyEvent(Event event) {
 	}
 	modifyContent(event, true);
 }
-
 /**
  * Sends the specified selection event.
  */
 void sendSelectionEvent() {
 	Event event = new Event();
-
+
 	event.x = selection.x;
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
 }
-
+/**
+ * Sets the receiver's caret.  Set the caret's height and location.
+ * 
+ * </p>
+ * @param caret the new caret for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setCaret (Caret caret) {
+	checkWidget ();
+	super.setCaret(caret);
+	if (caret != null) {
+		caret.setSize(caret.getSize().x, lineHeight);
+		setCaretLocation();
+	}		
+}
 /**
  * Moves the Caret to the current caret offset.
  */
@@ -4448,7 +4329,8 @@ void setCaretLocation() {
 	int lineX = getXAtOffset(content.getLine(line), line, caretOffset - lineStartOffset);
 	int lineHeight = getLineHeight();
 	
-	caret.setLocation(lineX, line * lineHeight - verticalScrollOffset);
+	Caret caret = getCaret();
+	if (caret != null) caret.setLocation(lineX, line * lineHeight - verticalScrollOffset);
 }
 /**
  * Sets the caret offset.
@@ -4462,11 +4344,15 @@ void setCaretLocation() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
+ * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
+ * </ul>
  */
 public void setCaretOffset(int offset) {
 	checkWidget();
 	int length = getCharCount();
-	
+				
 	if (length > 0 && offset != caretOffset) {
 		if (offset < 0) {
 			caretOffset = 0;
@@ -4476,6 +4362,11 @@ public void setCaretOffset(int offset) {
 			caretOffset = length;
 		}
 		else {
+			if (isLineDelimiter(offset)) {
+				// offset is inside a multi byte line delimiter. This is an 
+				// illegal operation and an exception is thrown. Fixes 1GDKK3R
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
 			caretOffset = offset;
 		}
 		// clear the selection if the caret is moved.
@@ -4485,7 +4376,6 @@ public void setCaretOffset(int offset) {
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
 }	
-	
 /**
  * Sets the content implementation to use for text storage.
  * <p>
@@ -4511,8 +4401,6 @@ public void setContent(StyledTextContent content) {
 	content.addTextChangeListener(textChangeListener);
 	reset();
 }
-
-
 /** 
  * Sets whether the widget implements double click mouse behavior.
  * </p>
@@ -4526,7 +4414,7 @@ public void setContent(StyledTextContent content) {
  */
 public void setDoubleClickEnabled(boolean enable) {
 	checkWidget();
-
+
 	doubleClickEnabled = enable;
 }
 /**
@@ -4542,10 +4430,9 @@ public void setDoubleClickEnabled(boolean enable) {
  */
 public void setEditable(boolean editable) {
 	checkWidget();
-
+
 	this.editable = editable;
 }
-
 /**
  * Sets a new font to render text with.
  * <p>
@@ -4561,6 +4448,8 @@ public void setEditable(boolean editable) {
  */
 public void setFont(Font font) {
 	checkWidget();
+	Caret caret = getCaret();
+
 	super.setFont(font);	
 	if (boldFont != null) {
 		boldFont.dispose();
@@ -4568,15 +4457,14 @@ public void setFont(Font font) {
 	initializeFonts();
 	lineHeight = 0;
 	contentWidth = 0;		
-	contentWidthIndex = 0;		
-	setTabs(getTabs());
 	calculateContentWidth();
 	calculateScrollBars();
-	setTabs(tabLength);
-	caret.setSize(0, getLineHeight());
+	setTabs(getTabs());
+	if (caret != null) {
+		caret.setSize(caret.getSize().x, getLineHeight());
+	}
 	redraw();
 }
-
 /** 
  * Sets the horizontal scroll offset relative to the start of the line.
  * Do nothing if there is no text set.
@@ -4596,7 +4484,7 @@ public void setFont(Font font) {
 public void setHorizontalIndex(int offset) {
 	checkWidget();
 	int clientAreaWidth = getClientArea().width;
-
+
 	if (getCharCount() == 0) {
 		return;
 	}	
@@ -4688,7 +4576,7 @@ Color setLineBackground(GC gc, Color currentBackground, Color newBackground) {
 	}
 	return newBackground;	
 }
-
+
 /** 
  * Sets the font of the specified GC if it is not already set.
  * </p>
@@ -4697,10 +4585,8 @@ Color setLineBackground(GC gc, Color currentBackground, Color newBackground) {
  * @param currentFont font data of font currently set in gc
  * @param style desired style of the font in gc. Can be one of 
  * 	SWT.NORMAL, SWT.ITALIC, SWT.BOLD
- * @return the font data of the font set in "gc". Same as "currentFont" if
- * 	currentFont.getStyle() == "style".
  */
-FontData setLineFont(GC gc, FontData currentFont, int style) {
+void setLineFont(GC gc, FontData currentFont, int style) {
 	if (currentFont.getStyle() != style) {
 		if (style == SWT.BOLD) {
 			currentFont.setStyle(style);
@@ -4712,9 +4598,7 @@ FontData setLineFont(GC gc, FontData currentFont, int style) {
 			gc.setFont(regularFont);
 		}
 	}
-	return currentFont;	
 }
-
 /** 
  * Sets the foreground of the specified GC for a line rendering operation,
  * if it is not already set.
@@ -4730,8 +4614,6 @@ Color setLineForeground(GC gc, Color currentForeground, Color newForeground) {
 	}
 	return newForeground;
 }
-
-
 /**
  * Adjusts the scroll bar maximum and page size to reflect content 
  * width/length changes.
@@ -4804,6 +4686,8 @@ void setScrollBars() {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when start is outside the widget content
+ *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
+ * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul> 
  */
 public void setSelection(int start) {
@@ -4826,6 +4710,8 @@ public void setSelection(int start) {
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT when point is null</li>
  *   <li>ERROR_INVALID_RANGE when start and end is outside the widget content
+ *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
+ * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul> 
  */
 public void setSelection(Point point) {
@@ -4850,6 +4736,8 @@ public void setSelection(Point point) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when start and end is outside the widget content
+ *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
+ * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul>
  */
 public void setSelection(int start, int end) {
@@ -4859,6 +4747,12 @@ public void setSelection(int start, int end) {
 	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
+	if (isLineDelimiter(start) || isLineDelimiter(end)) {
+		// the start offset or end offset of the selection range is inside a 
+		// multi byte line delimiter. This is an illegal operation and an exception 
+		// is thrown. Fixes 1GDKK3R
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}				
 	internalSetSelection(start, end - start);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
@@ -4878,6 +4772,8 @@ public void setSelection(int start, int end) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when the range specified by start and length is outside the widget content
+ *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
+ * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul>
  */
 public void setSelectionRange(int start, int length) {
@@ -4888,9 +4784,98 @@ public void setSelectionRange(int start, int length) {
 	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
+	if (isLineDelimiter(start) || isLineDelimiter(end)) {
+		// the start offset or end offset of the selection range is inside a 
+		// multi byte line delimiter. This is an illegal operation and an exception 
+		// is thrown. Fixes 1GDKK3R
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}					
 	internalSetSelection(start, length);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
+}
+/** 
+ * Redraws the specified text range.
+ * <p>
+ *
+ * @param start offset of the first character to redraw
+ * @param length number of characters to redraw
+ * @param clearBackground true if the background should be cleared as part of the
+ *	redraw operation.  If true, the entire redraw area will be cleared before anything
+ *	is redrawn.  The redraw operation will be faster and smoother if clearBackground
+ * 	is set to false.  Whether or not the flag can be set to false depends on the type
+ *	of change that has taken place.  If font styles or background colors for the redraw
+ *	area have changed, clearBackground should be set to true.  If only foreground colors 
+ *	have changed for the redraw area, clearBackground can be set to false. 
+ */
+void internalRedrawRange(int start, int length, boolean clearBackground) {
+	Rectangle clientArea = getClientArea();
+	int lineHeight = getLineHeight();
+	int end = start + length;
+	int firstLine = content.getLineAtOffset(start);
+	int lastLine = content.getLineAtOffset(end);
+	int lineCount = lastLine - firstLine + 1;
+	int redrawX;
+	int redrawStopX;
+	int redrawY;
+	int firstLineOffset;
+	int offsetInFirstLine;
+	int partialBottomIndex = getPartialBottomIndex();
+	int partialTopIndex = verticalScrollOffset / lineHeight;
+	String line;
+
+	// do nothing if redraw range is completely invisible	
+	if (firstLine > partialBottomIndex || lastLine < partialTopIndex) {
+		return;
+	}
+	// only redraw visible lines
+	if (partialTopIndex > firstLine) {
+		firstLine = partialTopIndex;
+		firstLineOffset = start = content.getOffsetAtLine(firstLine);
+		offsetInFirstLine = 0;
+	}
+	else {
+		firstLineOffset = content.getOffsetAtLine(firstLine);
+		offsetInFirstLine = start - firstLineOffset;
+	}
+	if (partialBottomIndex + 1 < lastLine) {
+		lastLine = partialBottomIndex + 1;	// + 1 to redraw whole bottom line, including line break
+		end = content.getOffsetAtLine(lastLine);
+	}
+	// redraw first line
+	line = content.getLine(firstLine);
+	// calculate redraw start location
+	redrawX = getXAtOffset(line, firstLine, offsetInFirstLine);
+	redrawY = firstLine * lineHeight - verticalScrollOffset;		
+	// calculate redraw stop location
+	if ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine) {
+		redrawStopX = clientArea.width;
+	}
+	else {
+		redrawStopX = getXAtOffset(line, firstLine, end - firstLineOffset);
+	}
+	draw(redrawX, redrawY, redrawStopX - redrawX, lineHeight, clearBackground);
+	firstLine++;		// first line has been redrawn.
+
+
+	// redraw last line if more than line needs redrawing 
+	if (lineCount > 1) {
+		int offsetInLastLine = end - content.getOffsetAtLine(lastLine);	
+		// no redraw necessary if redraw offset is 0
+		if (offsetInLastLine > 0) {
+			line = content.getLine(lastLine);
+			redrawStopX = getXAtOffset(line, lastLine, offsetInLastLine);
+			redrawY = lastLine * lineHeight - verticalScrollOffset;
+			draw(0, redrawY, redrawStopX, lineHeight, clearBackground);
+		}
+		lastLine--;			// last line has been redrawn.
+	}
+	// redraw entire center lines if redraw range includes more than two lines
+	if (lastLine >= firstLine) {
+		int redrawStopY = (lastLine + 1) * lineHeight - verticalScrollOffset;		
+		redrawY = firstLine * lineHeight - verticalScrollOffset;				
+		draw(0, redrawY, clientArea.width, redrawStopY - redrawY, clearBackground);
+	}
 }
 /** 
  * Sets the selection. 
@@ -4910,7 +4895,7 @@ void internalSetSelection(int start, int length) {
 		selectionAnchor = selection.x = start;
 		caretOffset = selection.y = end;
 		if (length > 0) {
-			redrawRange(selection.x, selection.y - selection.x, true);
+			internalRedrawRange(selection.x, selection.y - selection.x, true);
 		}
 	}
 }
@@ -4971,7 +4956,7 @@ public void setStyleRange(StyleRange range) {
 	if (range != null) {
 		int lineHeight = getLineHeight();
 		
-		redrawRange(range.start, range.length, true);
+		internalRedrawRange(range.start, range.length, true);
 		if (redrawFirstLine) {
 			// redraw starting at the style change start offset since
 			// single line text changes, followed by style changes will
@@ -4998,7 +4983,7 @@ public void setStyleRange(StyleRange range) {
 	// fixes 1G8FODP
 	setCaretLocation();
 }
-
+
 /** 
  * Sets styles to be used for rendering the widget content. All styles 
  * will be replaced with the given set of styles.
@@ -5043,7 +5028,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 	// fixes 1G8FODP
 	setCaretLocation();
 }
-
+
 /** 
  * Sets the tab width. 
  * <p>
@@ -5065,7 +5050,7 @@ public void setTabs(int tabs) {
 	}
 	redraw();
 }
-
+
 /** 
  * Sets the widget content. 
  * If the widget has the SWT.SINGLE style and "text" contains more than 
@@ -5102,7 +5087,7 @@ public void setText(String text) {
 		notifyListeners(SWT.Modify, event);		
 	}	
 }
-
+
 /**
  * Sets the text limit.
  * <p>
@@ -5126,8 +5111,8 @@ public void setTextLimit(int limit) {
 	}
 	textLimit = limit;
 }
-
-
+
+
 /**
  * Sets the top index. Do nothing if there is no text set.
  * <p>
@@ -5195,7 +5180,7 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 			int visibleItemCount = (int) Math.ceil((float) clientArea.height / verticalIncrement);
 			int oldBottomIndex = Math.min(oldTopIndex + visibleItemCount, lineCount);
 			int newItemCount = topIndex - oldTopIndex;
-
+
 			if (Math.abs(newItemCount) > visibleItemCount) {
 				calculateContentWidth();
 			}
@@ -5254,7 +5239,8 @@ void showCaret() {
 		scrolled = true;
 	}
 	if (scrolled == false) {
-		caret.setLocation(xAtOffset, line * getLineHeight() - verticalScrollOffset);
+		Caret caret = getCaret();
+		if (caret != null) caret.setLocation(xAtOffset, line * getLineHeight() - verticalScrollOffset);
 	}
 }
 /**
@@ -5292,7 +5278,6 @@ void showOffset(int offset) {
 		setVerticalScrollOffset((line - getBottomIndex()) * verticalIncrement + verticalScrollOffset, true);
 	}
 }
-
 /**
  * Scrolls the selection into view.
  * <p>
@@ -5307,7 +5292,6 @@ public void showSelection() {
 	showOffset(selection.x);
 	showOffset(selection.y);
 }
-
 /**
  * Returns the width of the specified text. Expand tabs to tab stops using
  * the widget tab width.
@@ -5332,7 +5316,6 @@ int textWidth(String line, int lineIndex, int length, GC gc) {
 	}
 	return textWidth(line, lineOffset, 0, length, styles, 0, gc);
 }
-
 /**
  * Returns the width of the specified text. Expand tabs to tab stops using
  * the widget tab width.
@@ -5369,10 +5352,10 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 		if (tabIndex != i) {
 			String tabSegment = text.substring(i, tabIndex);
 			if (lineStyles != null) {
-				paintX = styledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, 0, gc, false);
+				paintX = styledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, 0, gc, fontData, false);
 			}
 			else {
-				fontData = setLineFont(gc, fontData, SWT.NORMAL);
+				setLineFont(gc, fontData, SWT.NORMAL);
 				paintX += gc.stringExtent(tabSegment).x;
 			}
 			if (tabIndex != endOffset && tabWidth > 0) {
@@ -5389,7 +5372,6 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 	}
 	return paintX;
 }
-
 /**
  * Measures the text as rendered at the specified location. Expand tabs to tab stops using
  * the widget tab width.
@@ -5402,20 +5384,20 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
  * @param paintX x location to start drawing at
  * @param paintY y location to draw at
  * @param gc GC to draw on
+ * @param fontData the font data of the font currently set in gc
  * @param drawText true=measure and draw text, false=measure text only
  * @return x location where drawing stopped or 0 if the startOffset or 
  * 	length is outside the specified text.
  */
-int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, int paintY, GC gc, boolean drawText) {
-	FontData fontData = gc.getFont().getFontData()[0];
+int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, int paintY, GC gc, FontData fontData, boolean drawText) {
 	String textSegment;
 	int textLength = text.length();
 	int textIndex = 0;
 
 	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
 		StyleRange style = lineStyles[styleIndex];
-		int styleSegmentStart = style.start - textStartOffset;
 		int textEnd;
+		int styleSegmentStart = style.start - textStartOffset;
 		if (styleSegmentStart + style.length < 0) {
 			continue;
 		}
@@ -5424,7 +5406,7 @@ int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, i
 		}
 		// is there a style for the current string position?
 		if (textIndex < styleSegmentStart) {
-			fontData = setLineFont(gc, fontData, SWT.NORMAL);
+			setLineFont(gc, fontData, SWT.NORMAL);
 			textSegment = text.substring(textIndex, styleSegmentStart);
 			if (drawText) {
 				gc.drawString(textSegment, paintX - horizontalScrollOffset, paintY, true);
@@ -5433,7 +5415,7 @@ int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, i
 			textIndex = styleSegmentStart;
 		}
 		textEnd = Math.min(textLength, styleSegmentStart + style.length);
-		fontData = setLineFont(gc, fontData, style.fontStyle);
+		setLineFont(gc, fontData, style.fontStyle);
 		textSegment = text.substring(textIndex, textEnd);
 		if (drawText) {
 			gc.drawString(textSegment, paintX - horizontalScrollOffset, paintY, true);
@@ -5443,7 +5425,7 @@ int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, i
 	}
 	// is there unmeasured and unstyled text?
 	if (textIndex < textLength) {
-		fontData = setLineFont(gc, fontData, SWT.NORMAL);
+		setLineFont(gc, fontData, SWT.NORMAL);
 		textSegment = text.substring(textIndex, textLength);
 		if (drawText) {
 			gc.drawString(textSegment, paintX - horizontalScrollOffset, paintY, true);
@@ -5452,7 +5434,6 @@ int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, i
 	}
 	return paintX;
 }
-
 /**
  * Updates the selection and caret position depending on the text change.
  * If the selection intersects with the replaced text, the selection is 
@@ -5473,7 +5454,7 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	}
 	if (selection.x < startOffset) {
 		// clear selection fragment before text change
-		redrawRange(selection.x, startOffset - selection.x, true);
+		internalRedrawRange(selection.x, startOffset - selection.x, true);
 	}
 	if (selection.y > startOffset + replacedLength && selection.x < startOffset + replacedLength) {
 		// clear selection fragment after text change.
@@ -5481,7 +5462,7 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		// change. Selection is only affected if it intersects the change (1GDY217).
 		int netNewLength = newLength - replacedLength;
 		int redrawStart = startOffset + newLength;
-		redrawRange(redrawStart, selection.y + netNewLength - redrawStart, true);
+		internalRedrawRange(redrawStart, selection.y + netNewLength - redrawStart, true);
 	}
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change

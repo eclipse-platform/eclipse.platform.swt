@@ -162,6 +162,46 @@ boolean isDelimiter(char ch) {
 	return false;
 }	
 /**
+ * Determine whether or not the replace operation is valid.  DefaultContent will not allow
+ * the /r/n line delimiter to be split or partially deleted.
+ * <p>
+ *
+ * @param start	start offset of text to replace
+ * @param replaceLength start offset of text to replace
+ * @param newText start offset of text to replace
+ */
+protected boolean isValidReplace(int start, int replaceLength, String newText){
+	if (replaceLength == 0) {
+		// inserting text, see if the \r\n line delimiter is being split
+		if (start == 0) return true;
+		if (start == getCharCount()) return true;
+		char before = getTextRange(start - 1, 1).charAt(0);
+		if (before == '\r') {
+			char after = getTextRange(start, 1).charAt(0);
+			if (after == '\n') return false;
+		}
+	} else {
+		// deleting text, see if part of a \r\n line delimiter is being deleted
+		char startChar = getTextRange(start, 1).charAt(0);
+		if (startChar == '\n') {
+			// see if char before delete position is \r
+			if (start != 0) {
+				char before = getTextRange(start - 1, 1).charAt(0);
+				if (before == '\r') return false;
+			}
+		}
+		char endChar = getTextRange(start + replaceLength - 1, 1).charAt(0);
+		if (endChar == '\r') {
+			// see if char after delete position is \n
+			if (start + replaceLength != getCharCount()) {
+				char after = getTextRange(start + replaceLength, 1).charAt(0);
+				if (after == '\n') return false;
+			}
+		}
+	} 
+	return true;
+}
+/**
  * Calculates the indexes of each line of text in the given range.
  * <p>
  *
@@ -713,8 +753,18 @@ public void removeTextChangeListener(TextChangeListener listener){
  * @param start	start offset of text to replace
  * @param replaceLength start offset of text to replace
  * @param newText start offset of text to replace
+ * 
+ * @exception SWTException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the text change results in a multi byte
+ *      line delimiter being split or partially deleted.  Splitting a line 
+ *      delimiter by inserting text between the CR and LF characters of the 
+ *      \r\n delimiter or deleting part of this line delimiter is not supported</li>
+ * </ul>
  */
 public void replaceTextRange(int start, int replaceLength, String newText){
+	// check for invalid replace operations
+	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
+
 	// inform listeners
 	StyledTextEvent event = new StyledTextEvent(this);
 	event.type = StyledText.TextChanging;
