@@ -143,7 +143,7 @@ public final class PrinterData extends DeviceData {
 	 * @param name the name of the printer
 	 *
 	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+	 *    <li>ERROR_NO_HANDLES - if there are no valid printers
 	 * </ul>
 	 *
 	 * @see #driver
