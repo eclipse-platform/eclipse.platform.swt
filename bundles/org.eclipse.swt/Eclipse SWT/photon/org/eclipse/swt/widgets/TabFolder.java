@@ -160,7 +160,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	};
 	OS.PtGetResources(handle, args.length / 3, args);
 	int trimX = x - args [10];
-	int trimY = y - (dim.h - args [1]);
+	int trimY;
+	if ((style & SWT.BOTTOM) != 0) {
+		trimY = y - args [4];
+	} else {
+		trimY = y - (dim.h - args [1]);
+	}
 	int trimWidth = width + args [7] + args [10];
 	int trimHeight = height + dim.h;
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
@@ -177,6 +182,7 @@ void createHandle (int index) {
 	int clazz = display.PtPanelGroup;
 	args = new int []{
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+		OS.Pt_ARG_PG_FLAGS,  (style & SWT.BOTTOM) != 0 ? OS.Pt_PG_SELECTOR_ON_BOTTOM : 0, OS.Pt_PG_SELECTOR_ON_BOTTOM,  
 	};
 	handle = OS.PtCreateWidget (clazz, parentingHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
