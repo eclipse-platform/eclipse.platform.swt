@@ -1090,29 +1090,26 @@ void traversal(Event event) {
 			break;
 		case SWT.TRAVERSE_MNEMONIC:
 			event.doit = mnemonicTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_MNEMONIC;
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
 			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
-			event.doit = pageTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_PAGE_NEXT;
-			break;
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
 			event.doit = pageTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_PAGE_PREVIOUS;
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
 			break;
 		case SWT.TRAVERSE_ARROW_NEXT:
 			if (selectedIndex < items.length - 1) {
 				setSelection(selectedIndex + 1, true);
 			}
 			event.doit = true;
-			event.detail = SWT.TRAVERSE_ARROW_NEXT;
+			event.detail = SWT.TRAVERSE_NONE;
 			break;
 		case SWT.TRAVERSE_ARROW_PREVIOUS: 
 			if (selectedIndex > 0) {
 				setSelection(selectedIndex - 1, true);
 			}
 			event.doit = true;
-			event.detail = SWT.TRAVERSE_ARROW_PREVIOUS;
+			event.detail = SWT.TRAVERSE_NONE;
 			break;
 	}
 }
