@@ -192,7 +192,7 @@ public FontData[] getFontData() {
 	String name = new String(chars);
 	int style = SWT.NORMAL;
 	if ((this.style & OS.italic) != 0) style |= SWT.ITALIC;
-	if ((this.style & OS.italic) != 0) style |= SWT.BOLD;
+	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;
 	FontData data = new FontData(name, size, style);
 	return new FontData[]{data};
 }

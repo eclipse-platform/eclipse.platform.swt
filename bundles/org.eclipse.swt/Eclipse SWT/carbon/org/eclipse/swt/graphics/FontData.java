@@ -130,7 +130,7 @@ public FontData(String string) {
 	if (end == -1) return;
 	String version2 = string.substring(start, end);
 
-	if (platform.equals("GTK") && version2.equals("1")) {
+	if (platform.equals("CARBON") && version2.equals("1")) {
 		return;
 	}
 }
