@@ -293,6 +293,10 @@ public void dispose () {
 	releaseWidget ();
 	destroyWidget ();
 }
+void enableHandle (boolean enabled, int widgetHandle) {
+	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
+	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+}
 void error (int code) {
 	SWT.error(code);
 }
@@ -631,6 +635,19 @@ void propagateHandle (boolean enabled, int widgetHandle) {
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWDontPropagate | OS.CWEventMask, attributes);
 	int [] argList = {OS.XmNtraversalOn, enabled ? 1 : 0};
 	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+}
+void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
+	int display = OS.XtDisplay (widgetHandle);
+	if (display == 0) return;
+	int window = OS.XtWindow (widgetHandle);
+	if (window == 0) return;
+	int [] argList = {OS.XmNborderWidth, 0, OS.XmNborderColor, 0};
+	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
+	if (argList [1] != 0) {
+		/* Force the border to repaint by setting the color */
+		OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+	}
+	OS.XClearArea (display, window, x, y, width, height, true);
 }
 void register () {
 	if (handle == 0) return;
