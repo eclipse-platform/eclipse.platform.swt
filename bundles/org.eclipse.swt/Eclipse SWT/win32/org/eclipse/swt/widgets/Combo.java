@@ -1866,7 +1866,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
-	boolean call = false, select = false;
+	boolean call = false;
 	int [] start = new int [1], end = new int [1];
 	String oldText = null, newText = null;
 	switch (msg) {
@@ -1894,7 +1894,6 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			}
 			break;
 		case OS.WM_SETTEXT:
-			select = true;
 			end [0] = OS.GetWindowTextLength (hwndText);
 			oldText = getText ();
 			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
@@ -1912,12 +1911,19 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			if (call) {
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 			}
-			if (select) {
-				OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
-			}
 			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, buffer);
-			return LRESULT.ZERO;
+			if (msg == OS.WM_SETTEXT) {
+				int hHeap = OS.GetProcessHeap ();
+				int byteCount = buffer.length () * TCHAR.sizeof;
+				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				OS.MoveMemory (pszText, buffer, byteCount); 
+				int code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
+				OS.HeapFree (hHeap, 0, pszText);
+				return new LRESULT (code);
+			} else {
+				OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, buffer);
+				return LRESULT.ZERO;
+			}
 		}
 	}
 	return null;
