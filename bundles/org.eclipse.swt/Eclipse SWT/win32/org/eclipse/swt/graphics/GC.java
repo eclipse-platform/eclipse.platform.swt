@@ -179,62 +179,37 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 }
 
 int createDIB(int width, int height) {
-	int depth = 32;
-	byte[]	bmi = new byte[40 + (OS.IsWinCE ? 12 : 0)];
-		
-	/* DWORD biSize = 40 */
-	bmi[0] = 40; bmi[1] = 0; bmi[2] = 0; bmi[3] = 0;
-	/* LONG biWidth = width */
-	bmi[4] = (byte)(width & 0xFF);
-	bmi[5] = (byte)((width >> 8) & 0xFF);
-	bmi[6] = (byte)((width >> 16) & 0xFF);
-	bmi[7] = (byte)((width >> 24) & 0xFF);
-	/* LONG biHeight = height */
-	bmi[8] = (byte)(-height & 0xFF);
-	bmi[9] = (byte)((-height >> 8) & 0xFF);
-	bmi[10] = (byte)((-height >> 16) & 0xFF);
-	bmi[11] = (byte)((-height >> 24) & 0xFF);
-	/* WORD biPlanes = 1 */
-	bmi[12] = 1;
-	bmi[13] = 0;
-	/* WORD biBitCount = depth */
-	bmi[14] = (byte)(depth & 0xFF);
-	bmi[15] = (byte)((depth >> 8) & 0xFF);
-	if (OS.IsWinCE) {
-		/* DWORD biCompression = BI_BITFIELDS = 3 */
-		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
-	} else {
-		/* DWORD biCompression = BI_RGB = 0 */
-		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-	}
-	/* DWORD biSizeImage = 0 (default) */
-	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-	/* LONG biXPelsPerMeter = 0 */
-	bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-	/* LONG biYPelsPerMeter = 0 */
-	bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-	/* DWORD biClrUsed */
-	bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-	/* DWORD biClrImportant = 0 */
-	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
+	short depth = 32;
+
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = width;
+	bmiHeader.biHeight = -height;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = depth;
+	if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
+	else bmiHeader.biCompression = OS.BI_RGB;
+	byte[]	bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
+	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 	/* Set the rgb colors into the bitmap info */
 	if (OS.IsWinCE) {
 		int redMask = 0xFF00;
 		int greenMask = 0xFF0000;
 		int blueMask = 0xFF000000;
 		/* big endian */
-		bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
-		bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
-		bmi[42] = (byte)((redMask & 0xFF00) >> 8);
-		bmi[43] = (byte)((redMask & 0xFF) >> 0);
-		bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
-		bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
-		bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
-		bmi[47] = (byte)((greenMask & 0xFF) >> 0);
-		bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
-		bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
-		bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
-		bmi[51] = (byte)((blueMask & 0xFF) >> 0);
+		int offset = BITMAPINFOHEADER.sizeof;
+		bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
+		bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
+		bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
+		bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
+		bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
+		bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
+		bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
+		bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
+		bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
+		bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
+		bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
+		bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
 	}
 
 	int[] pBits = new int[1];
@@ -801,16 +776,16 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		} else {
 			/* Palette-based bitmap */
 			int numColors = 1 << bm.bmBitsPixel;
-			byte[] bmi = new byte[40 + numColors * 4];
 			/* Set the few fields necessary to get the RGB data out */
-			bmi[0] = 40;
-			bmi[12] = (byte)(bm.bmPlanes & 0xFF);
-			bmi[13] = (byte)((bm.bmPlanes >> 8) & 0xFF);
-			bmi[14] = (byte)(bm.bmBitsPixel & 0xFF);
-			bmi[15] = (byte)((bm.bmBitsPixel >> 8) & 0xFF);
+			BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+			bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+			bmiHeader.biPlanes = bm.bmPlanes;
+			bmiHeader.biBitCount = bm.bmBitsPixel;
+			byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
+			OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(srcHdc, srcImage.handle, 0, 0, 0, bmi, OS.DIB_RGB_COLORS);
-			int offset = 40 + 4 * srcImage.transparentPixel;
+			int offset = BITMAPINFOHEADER.sizeof + 4 * srcImage.transparentPixel;
 			transRed = bmi[offset + 2] & 0xFF;
 			transGreen = bmi[offset + 1] & 0xFF;
 			transBlue = bmi[offset] & 0xFF;

@@ -115,6 +115,14 @@ void setBITMAPFields(JNIEnv *env, jobject lpObject, BITMAP *lpStruct);
 #define setBITMAPFields(a,b,c)
 #endif /* NO_BITMAP */
 
+#ifndef NO_BITMAPINFOHEADER
+BITMAPINFOHEADER *getBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *lpStruct);
+void setBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *lpStruct);
+#else
+#define getBITMAPINFOHEADERFields(a,b,c) NULL
+#define setBITMAPINFOHEADERFields(a,b,c)
+#endif /* NO_BITMAPINFOHEADER */
+
 #ifndef NO_BROWSEINFO
 BROWSEINFO *getBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);
 void setBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);

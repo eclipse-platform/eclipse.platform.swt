@@ -69,6 +69,8 @@
 #define NO_GetKeyboardLayout
 #define NO_GetKeyboardLayoutList
 #define NO_GetKeyboardState
+#define NO_GetKeyNameTextA
+#define NO_GetKeyNameTextW
 #define NO_GetLastActivePopup
 #define NO_GetLocaleInfoA
 #define NO_GetMenu
@@ -4631,6 +4633,39 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 }
 #endif /* NO_MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I */
+
+#ifndef NO_MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	BITMAPINFOHEADER _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = getBITMAPINFOHEADERFields(env, arg1, &_arg1);
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+}
+#endif /* NO_MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I */
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI)
+	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2)
+{
+	BITMAPINFOHEADER _arg0={0}, *lparg0=NULL; /* SPECIAL */
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI\n")
+
+	if (arg0) lparg0 = &_arg0;
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+	if (arg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI */
 
 #ifndef NO_MoveMemory___3III
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3III)

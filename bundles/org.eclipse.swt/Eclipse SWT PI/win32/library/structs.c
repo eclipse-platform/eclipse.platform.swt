@@ -98,6 +98,67 @@ void setBITMAPFields(JNIEnv *env, jobject lpObject, BITMAP *lpStruct)
 }
 #endif /* NO_BITMAP */
 
+#ifndef NO_BITMAPINFOHEADER
+typedef struct BITMAPINFOHEADER_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID biClrImportant, biClrUsed, biYPelsPerMeter, biXPelsPerMeter, biSizeImage, biCompression, biBitCount, biPlanes, biHeight, biWidth, biSize;
+} BITMAPINFOHEADER_FID_CACHE;
+
+BITMAPINFOHEADER_FID_CACHE BITMAPINFOHEADERFc;
+
+void cacheBITMAPINFOHEADERFids(JNIEnv *env, jobject lpObject)
+{
+	if (BITMAPINFOHEADERFc.cached) return;
+	BITMAPINFOHEADERFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	BITMAPINFOHEADERFc.biClrImportant = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biClrImportant", "I");
+	BITMAPINFOHEADERFc.biClrUsed = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biClrUsed", "I");
+	BITMAPINFOHEADERFc.biYPelsPerMeter = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biYPelsPerMeter", "I");
+	BITMAPINFOHEADERFc.biXPelsPerMeter = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biXPelsPerMeter", "I");
+	BITMAPINFOHEADERFc.biSizeImage = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biSizeImage", "I");
+	BITMAPINFOHEADERFc.biCompression = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biCompression", "I");
+	BITMAPINFOHEADERFc.biBitCount = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biBitCount", "S");
+	BITMAPINFOHEADERFc.biPlanes = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biPlanes", "S");
+	BITMAPINFOHEADERFc.biHeight = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biHeight", "I");
+	BITMAPINFOHEADERFc.biWidth = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biWidth", "I");
+	BITMAPINFOHEADERFc.biSize = (*env)->GetFieldID(env, BITMAPINFOHEADERFc.clazz, "biSize", "I");
+	BITMAPINFOHEADERFc.cached = 1;
+}
+
+BITMAPINFOHEADER *getBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *lpStruct)
+{
+	if (!BITMAPINFOHEADERFc.cached) cacheBITMAPINFOHEADERFids(env, lpObject);
+	lpStruct->biClrImportant = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biClrImportant);
+	lpStruct->biClrUsed = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biClrUsed);
+	lpStruct->biYPelsPerMeter = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biYPelsPerMeter);
+	lpStruct->biXPelsPerMeter = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biXPelsPerMeter);
+	lpStruct->biSizeImage = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biSizeImage);
+	lpStruct->biCompression = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biCompression);
+	lpStruct->biBitCount = (*env)->GetShortField(env, lpObject, BITMAPINFOHEADERFc.biBitCount);
+	lpStruct->biPlanes = (*env)->GetShortField(env, lpObject, BITMAPINFOHEADERFc.biPlanes);
+	lpStruct->biHeight = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biHeight);
+	lpStruct->biWidth = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biWidth);
+	lpStruct->biSize = (*env)->GetIntField(env, lpObject, BITMAPINFOHEADERFc.biSize);
+	return lpStruct;
+}
+
+void setBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *lpStruct)
+{
+	if (!BITMAPINFOHEADERFc.cached) cacheBITMAPINFOHEADERFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biClrImportant, (jint)lpStruct->biClrImportant);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biClrUsed, (jint)lpStruct->biClrUsed);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biYPelsPerMeter, (jint)lpStruct->biYPelsPerMeter);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biXPelsPerMeter, (jint)lpStruct->biXPelsPerMeter);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biSizeImage, (jint)lpStruct->biSizeImage);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biCompression, (jint)lpStruct->biCompression);
+	(*env)->SetShortField(env, lpObject, BITMAPINFOHEADERFc.biBitCount, (jshort)lpStruct->biBitCount);
+	(*env)->SetShortField(env, lpObject, BITMAPINFOHEADERFc.biPlanes, (jshort)lpStruct->biPlanes);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biHeight, (jint)lpStruct->biHeight);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biWidth, (jint)lpStruct->biWidth);
+	(*env)->SetIntField(env, lpObject, BITMAPINFOHEADERFc.biSize, (jint)lpStruct->biSize);
+}
+#endif /* NO_BITMAPINFOHEADER */
+
 #ifndef NO_BROWSEINFO
 typedef struct BROWSEINFO_FID_CACHE {
 	int cached;

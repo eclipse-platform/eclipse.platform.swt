@@ -125,6 +125,8 @@ public class OS {
 	public static final int BIF_RETURNONLYFSDIRS = 0x1;
 	public static final int BIF_VALIDATE = 0x20;
 	public static final int BITSPIXEL = 0xc;
+	public static final int BI_BITFIELDS = 3;
+	public static final int BI_RGB = 0;
 	public static final int BLACKNESS = 0x42;
 	public static final int BM_CLICK = 0xf5;
 	public static final int BM_GETCHECK = 0xf0;
@@ -2219,6 +2221,7 @@ public static final native int MessageBoxA (int hWnd, byte [] lpText, byte [] lp
 public static final native void MoveMemory (char[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (byte [] Destination, int Source, int Length);
 public static final native void MoveMemory (byte [] Destination, ACCEL Source, int Length);
+public static final native void MoveMemory (byte [] Destination, BITMAPINFOHEADER Source, int Length);
 public static final native void MoveMemory (int [] Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, byte [] Source, int Length);
 public static final native void MoveMemory (int Destination, char [] Source, int Length);
@@ -2232,6 +2235,7 @@ public static final native void MoveMemoryA (int Destination, NMTTDISPINFO Sourc
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
 public static final native void MoveMemory (int Destination, TRIVERTEX Source, int Length);
 public static final native void MoveMemory (int Destination, WINDOWPOS Source, int Length);
+public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [] Source, int Length);
 public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (HDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (HELPINFO Destination, int Source, int Length);
