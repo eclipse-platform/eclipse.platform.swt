@@ -203,27 +203,8 @@ public void cut () {
 }
 
 void drawWidget (int control) {
-	drawBackground (handle, background);
+	drawFocus (control, hasFocus (), hasBorder (), inset ());
 	OS.TXNDraw (txnObject, 0);
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	Rect inset = inset ();
-	rect.left += inset.left;
-	rect.top += inset.top;
-	rect.right -= inset.right;
-	rect.bottom -= inset.bottom;
-	if (hasBorder ()) {
-		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		if (hasFocus ()) {
-			OS.DrawThemeEditTextFrame (rect, state);
-			OS.DrawThemeFocusRect (rect, true);
-		} else {
-			OS.DrawThemeFocusRect (rect, false);
-			OS.DrawThemeEditTextFrame (rect, state);
-		}
-	} else {
-		OS.DrawThemeFocusRect (rect, hasFocus ());
-	}
 }
 
 public int getCaretLineNumber () {
@@ -443,8 +424,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+	drawFocusClipped (handle, part [0] != 0, hasBorder (), inset ());
+	OS.TXNDraw (txnObject, 0);
 	OS.TXNFocus (txnObject, part [0] != 0);
-	redraw ();
 	return OS.noErr;
 }
 

@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -141,45 +140,12 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
-void drawFocus (int control, boolean hasFocus) {
-	int visibleRgn = getVisibleRegion (control, true);
-	if (!OS.EmptyRgn (visibleRgn)) {
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		int window = OS.GetControlOwner (control);
-		int port = OS.GetWindowPort (window);
-		OS.SetPort (port);
-		int oldClip = OS.NewRgn ();
-		OS.GetClip (oldClip);
-		OS.SetClip (visibleRgn);
-		drawBackground (control, null);
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		Rect inset = inset ();
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
-		boolean drawBorder = hasBorder ();
-		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		if (hasFocus) {
-			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
-			if (drawFocus) OS.DrawThemeFocusRect (rect, true);
-		} else {
-			if (drawFocus) OS.DrawThemeFocusRect (rect, false);
-			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
-		}
-		OS.SetClip (oldClip);
-		OS.SetPort (currentPort [0]);
-	}
-	OS.DisposeRgn (visibleRgn);
-}
-
 void drawWidget (int control) {
 	if ((state & CANVAS) != 0) {
 		if (control == scrolledHandle) {
-			drawFocus (control, hasFocus ());
+			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+				drawFocus (control, hasFocus (), hasBorder (), inset ());
+			}
 		} else {
 			if ((style & SWT.NO_BACKGROUND) != 0) return;
 			drawBackground (control, background);
@@ -265,11 +231,13 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ())) {
+	if ((state & CANVAS) != 0) {
 		if (scrolledHandle != 0) {
-			short [] part = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			drawFocus (scrolledHandle, part [0] != 0);
+			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+				short [] part = new short [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+				drawFocusClipped (scrolledHandle, part [0] != 0, hasBorder (), inset ());
+			}
 		}
 		return OS.noErr;
 	}

@@ -287,6 +287,42 @@ void drawBackground (int control, float [] background) {
 	}
 }
 
+void drawFocus (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
+	drawBackground (control, null);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	rect.left += inset.left;
+	rect.top += inset.top;
+	rect.right -= inset.right;
+	rect.bottom -= inset.bottom;
+	int state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+	if (hasFocus) {
+		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+		OS.DrawThemeFocusRect (rect, true);
+	} else {
+		OS.DrawThemeFocusRect (rect, false);
+		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+	}
+}
+
+void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
+	int visibleRgn = getVisibleRegion (control, true);
+	if (!OS.EmptyRgn (visibleRgn)) {
+		int [] currentPort = new int [1];
+		OS.GetPort (currentPort);
+		int window = OS.GetControlOwner (control);
+		int port = OS.GetWindowPort (window);
+		OS.SetPort (port);
+		int oldClip = OS.NewRgn ();
+		OS.GetClip (oldClip);
+		OS.SetClip (visibleRgn);
+		drawFocus (control, hasFocus, hasBorder, inset);
+		OS.SetClip (oldClip);
+		OS.SetPort (currentPort [0]);
+	}
+	OS.DisposeRgn (visibleRgn);
+}
+
 void drawWidget (int control) {
 }
 
