@@ -301,12 +301,22 @@ public void test_drawFocusIIII() {
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
 	Color red = display.getSystemColor(SWT.COLOR_RED);
 	Color black = display.getSystemColor(SWT.COLOR_BLACK);
 	Color green = display.getSystemColor(SWT.COLOR_GREEN);
 	PaletteData paletteData = new PaletteData(new RGB[] {red.getRGB(), black.getRGB(), green.getRGB()});
 	ImageData data = new ImageData(30,30, 8, paletteData);
-	for (int y = 0; y < data.height; y++) {
+	for (y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {
 			if (x > y) data.setPixel(x, y, paletteData.getPixel(red.getRGB()));
 			else if (x < y) data.setPixel(x, y, paletteData.getPixel(black.getRGB()));
@@ -318,7 +328,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	data.transparentPixel = paletteData.getPixel(red.getRGB());
 	Image imageTransparent = new Image(display, data);
 	data.transparentPixel = -1;
-	for (int y = 0; y < data.height; y++) {
+	for (y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {
 			data.setAlpha(x, y, 127);
 		}
@@ -329,12 +339,10 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	gc.drawImage(imageAlpha, 160, 100);
 	
 	try {
-		Rectangle bounds = image.getBounds();
 		PerformanceMeter meter = createMeter("normal");
 		meter.start();
 		for (int i = 0; i < COUNT; i++) {
-			int pos = i % bounds.width;
-			gc.drawImage(imageNormal, pos, pos);	// normal image
+			gc.drawImage(imageNormal, coords[i][0], coords[i][1]);	// normal image
 		}
 		meter.stop();
 		
@@ -343,8 +351,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		meter = createMeter("transparent");
 		meter.start();
 		for (int i = 0; i < COUNT; i++) {
-			int pos = i % bounds.width;
-			gc.drawImage(imageTransparent, pos, pos);	// transparent image
+			gc.drawImage(imageTransparent, coords[i][0], coords[i][1]);	// transparent image
 		}
 		meter.stop();
 		
@@ -353,8 +360,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		meter = createMeter("alpha");
 		meter.start();
 		for (int i = 0; i < COUNT; i++) {
-			int pos = i % bounds.width;
-			gc.drawImage(imageAlpha, pos, pos);	// alpha image
+			gc.drawImage(imageAlpha, coords[i][0], coords[i][1]);	// alpha image
 		}
 		meter.stop();
 		
@@ -367,6 +373,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
+	// TODO
 //	Color c1 = new Color(display, 255, 0, 0);
 //	Color c2 = new Color(display, 0, 0, 0);
 //	Color c3 = new Color(display, 255, 255, 0);
@@ -639,7 +646,7 @@ public void test_drawTextLjava_lang_StringII() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawString("test string", coords[i][0], coords[i][1], true);				
+		gc.drawText("test string", coords[i][0], coords[i][1], true);				
 	}
 	meter.stop();
 	
@@ -777,7 +784,7 @@ public void test_fillArcIIIIII() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawArc(coords[i][0], coords[i][1], 20, 10, 90, 90);
+		gc.fillArc(coords[i][0], coords[i][1], 20, 10, 90, 90);
 	}
 	meter.stop();
 	
@@ -891,7 +898,7 @@ public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawRectangle(coords[i]);
+		gc.fillRectangle(coords[i]);
 	}
 	meter.stop();
 	
