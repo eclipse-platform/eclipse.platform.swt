@@ -20,8 +20,6 @@ import org.eclipse.swt.internal.gtk.OS;
  * Note that, unicode characters which can not be found in the platform
  * encoding will be converted to an arbitrary platform specific character.
  * </p>
- * 
- * @deprecated
  */
 public final class Converter {
 	public static final byte [] NullByteArray = new byte [1];
