@@ -550,8 +550,12 @@ public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int 
 
 public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
 public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
+public static final native int NotifyWinEvent (int event, int hwnd, int idObject, int idChild);
 
+public static final int OBJID_WINDOW = 0x00000000;
 public static final int OBJID_CLIENT = 0xfffffffc;
+public static final int EVENT_OBJECT_FOCUS = 0x8005;
+//public static final int EVENT_OBJECT_SELECTION = 0x8006;
 public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;
 
 public static final int STATE_SYSTEM_NORMAL = 0;

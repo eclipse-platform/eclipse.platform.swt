@@ -3344,6 +3344,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_LresultFromOb
 
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    NotifyWinEvent
+ * Signature: (IIII)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_NotifyWinEvent
+  (JNIEnv *env, jclass that, jint event, jint hwnd, jint idObject, jint idChild)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "NotifyWinEvent\n");
+#endif
+
+	NotifyWinEvent((DWORD)event, (HWND)hwnd, idObject, idChild);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    VtblCall
  * Signature: (IIIIII)I
  */
