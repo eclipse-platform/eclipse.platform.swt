@@ -30,12 +30,14 @@ public /*final*/ class CoolItem extends Item {
 	boolean dragging;
 	int mouseXOffset;
 	int preferredWidth = -1;
+	int preferredHeight = -1;
 	int id;
 	
 	static final int MARGIN_WIDTH = 4;
 	static final int MARGIN_HEIGHT = 2;
-	static final int MINIMUM_WIDTH = 11;
-	static final int MINIMUM_CHILD_HEIGHT = 22;
+	static final int DEFAULT_HEIGHT = (2 * MARGIN_HEIGHT) + 28;
+	static final int GRABBER_WIDTH = 2;
+	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 		
 /**
  * Constructs a new instance of this class given its parent
@@ -134,18 +136,12 @@ protected void checkSubclass () {
  * @see Layout
  */
 public Point computeSize (int wHint, int hHint) {
-	checkWidget ();
-	Point size;
-	if (control != null) {
-		size = control.computeSize (wHint, hHint);
-	}
-	else {
-		size = new Point (0,0);	
-	}
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	int width = size.x + MINIMUM_WIDTH + MARGIN_WIDTH;
-	int height = Math.max (MINIMUM_CHILD_HEIGHT, size.y) + MARGIN_HEIGHT;
+	checkWidget();
+	if (preferredWidth > -1) return new Point(preferredWidth, preferredHeight);
+	int width = MINIMUM_WIDTH;
+	int height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint + MINIMUM_WIDTH + MARGIN_WIDTH; 
+	if (hHint != SWT.DEFAULT) height = hHint + (2 + MARGIN_HEIGHT);
 	return new Point (width, height);
 }
 void createHandle (int index) {
@@ -224,7 +220,7 @@ public CoolBar getParent () {
 	checkWidget();
 	return parent;
 }
-public Point getSize () {
+Point getSize () {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Point (argList [1], argList [3]);
@@ -270,7 +266,7 @@ int processMouseMove (int callData) {
 	if (dragging) {
 		int [] argList = {OS.XmNheight, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);		
-		int left_root = Math.max(0, xEvent.x_root - mouseXOffset);
+		int left_root = xEvent.x_root - mouseXOffset;
 		if (xEvent.y < 0) {
 			parent.moveUp(this, left_root);				
 			return 0;
@@ -328,11 +324,12 @@ int processPaint (int callData) {
 	/* Draw grabber. */
 	OS.XSetForeground(xDisplay, xGC, highlightPixel);
 	OS.XSetBackground(xDisplay, xGC, lightShadowPixel);
-	OS.XFillRectangle(xDisplay, xWindow, xGC, 4, MARGIN_HEIGHT, 3, grabberHeight);
+	OS.XFillRectangle(xDisplay, xWindow, xGC, MARGIN_WIDTH, MARGIN_HEIGHT, GRABBER_WIDTH, grabberHeight);
 	OS.XSetForeground(xDisplay, xGC, shadowPixel);
-	int grabberBottom = MARGIN_HEIGHT + grabberHeight - 1;
-	OS.XDrawLine (xDisplay, xWindow, xGC, 6, MARGIN_HEIGHT, 6, grabberBottom);
-	OS.XDrawLine (xDisplay, xWindow, xGC, 4, grabberBottom, 6, grabberBottom);		
+	int right = MARGIN_WIDTH + GRABBER_WIDTH;
+	int bottom = MARGIN_HEIGHT + grabberHeight;
+	OS.XDrawLine (xDisplay, xWindow, xGC, right, MARGIN_HEIGHT, right, bottom);
+	OS.XDrawLine (xDisplay, xWindow, xGC, MARGIN_WIDTH, bottom, right, bottom);		
 	
 	OS.XFreeGC(xDisplay, xGC);
 	return 0;
@@ -355,8 +352,8 @@ void propagateWidget (boolean enabled) {
  * @param control the new control
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
- *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -375,12 +372,13 @@ public void setControl (Control control) {
 	if (control != null && !control.isDisposed ()) {
 		int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		Point controlSize = control.getSize ();
+		int controlY = ((short) argList[3]) + MARGIN_HEIGHT;
 		control.setBounds (
 			((short) argList [1]) + MINIMUM_WIDTH, 
-			((short) argList[3]) + MARGIN_HEIGHT, 
-			controlSize.x, 
-			controlSize.y);
+			controlY, 
+			argList [5] - MINIMUM_WIDTH - MARGIN_WIDTH, 
+			argList [7] - (2 * MARGIN_HEIGHT));
+			
 		if (OS.XtIsRealized (handle)) {
 			int window = OS.XtWindow (handle);
 			if (window == 0) return;
@@ -390,26 +388,21 @@ public void setControl (Control control) {
 		}
 		control.setVisible(true);
 	}
-	Point size = computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	setSize(size);
-	setPreferredSize(size);
 }
 public void setSize (int width, int height) {
 	checkWidget();
 	width = Math.max (width, MINIMUM_WIDTH);
-	height = Math.max (height, MINIMUM_CHILD_HEIGHT + MARGIN_HEIGHT);
-	OS.XtResizeWidget (handle, width, height, 0);
+	height = Math.max (height, DEFAULT_HEIGHT);
+	OS.XtResizeWidget (handle, width, height, 0);			
 	if (control != null) {
-		/*
-		 * Feature in Motif.  Motif will not allow a window
-		 * to have a zero width or zero height.  The fix is
-		 * to ensure these values are never zero.
-		 */
-		int controlWidth = Math.max (1, width - MINIMUM_WIDTH - MARGIN_WIDTH);
-		int controlHeight = Math.max (MINIMUM_CHILD_HEIGHT, height - MARGIN_HEIGHT);
-		control.setSize (controlWidth, controlHeight);
+		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
+		int controlHeight = height - (2 * MARGIN_HEIGHT);
+		control.setSize(controlWidth, controlHeight);
 	}
 	parent.relayout();
+}
+int getControlOffset(int height) {
+	return ((height - control.getSize().y - (2 * MARGIN_HEIGHT)) / 2) + MARGIN_HEIGHT;
 }
 void redraw() {
 	int display = OS.XtDisplay (handle);
@@ -428,7 +421,8 @@ void setLocation (int x, int y) {
 	if (control != null) {
 		int [] argList = {OS.XmNheight, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		control.setLocation(x + MINIMUM_WIDTH, y + MARGIN_HEIGHT);
+		int controlY = y + getControlOffset(argList[1]);
+		control.setLocation(x + MINIMUM_WIDTH, controlY);
 	}
 }
 public void setSize (Point size) {
@@ -447,30 +441,30 @@ void setBounds (int x, int y, int width, int height) {
 	* to have a zero width or zero height.  The fix is
 	* to ensure these values are never zero.
 	*/
-	int newWidth = Math.max (width, MINIMUM_WIDTH);
-	int newHeight = Math.max (height, MINIMUM_CHILD_HEIGHT + MARGIN_HEIGHT);
+	int newWidth = Math.max (width, 1), newHeight = Math.max (height, 1);
 	OS.XtConfigureWidget (handle, x, y, newWidth, newHeight, 0);
 	if (control != null) {
-		int controlWidth = Math.max (1, newWidth - MINIMUM_WIDTH - MARGIN_WIDTH);
-		int controlHeight = Math.max (MINIMUM_CHILD_HEIGHT, height - MARGIN_HEIGHT);
-		control.setBounds (x + MINIMUM_WIDTH, y + MARGIN_HEIGHT, controlWidth, controlHeight);
+		int controlY = y + getControlOffset(newHeight);
+		control.setBounds(
+			x + MINIMUM_WIDTH, 
+			controlY, 
+			newWidth - MINIMUM_WIDTH - MARGIN_WIDTH, 
+			control.getSize().y);
 	}
 }
 public Point getPreferredSize () {
 	checkWidget();
-	int[] argList = new int[] { OS.XmNheight, 0 };
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return new Point (preferredWidth, argList[1]);
+	return new Point(preferredWidth, preferredHeight);
 }
 public void setPreferredSize (int width, int height) {
 	checkWidget();
-	preferredWidth = width;
-	int newHeight = Math.max (height, MINIMUM_CHILD_HEIGHT + MARGIN_HEIGHT);
-	int[] argList = new int[] { OS.XmNwidth, 0 };
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtResizeWidget (handle, argList[1], newHeight, 0);
+	preferredWidth = Math.max (width, MINIMUM_WIDTH);
+	preferredHeight = Math.max (height, DEFAULT_HEIGHT);
+	OS.XtResizeWidget (handle, preferredWidth, preferredHeight, 0);
 	if (control != null) {
-		control.setSize(control.getSize().x, newHeight - MARGIN_HEIGHT);
+		int controlWidth = preferredWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
+		int controlHeight = preferredHeight - (2 * MARGIN_HEIGHT);
+		control.setSize(controlWidth, controlHeight);
 	}
 }
 public void setPreferredSize (Point size) {

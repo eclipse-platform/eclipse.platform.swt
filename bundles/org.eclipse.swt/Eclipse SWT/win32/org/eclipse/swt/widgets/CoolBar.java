@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
+ 
 public class CoolBar extends Composite {
 	
 	CoolItem [] items;
@@ -100,18 +100,19 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, rowWidth = 0;
-	int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+	int height = 0, width = 0;
+	RECT rect = new RECT ();
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_IDEALSIZE;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
-		Point size = items[i].computeSize (SWT.DEFAULT, SWT.DEFAULT);
-		if (rowWidth != 0) rowWidth += 2;
-		rowWidth += size.x;
-		if (i+1==count || items[i + 1].getWrap()) {
-			width = Math.max(width, rowWidth);
-			rowWidth = 0;
-		}
+		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
+		height = Math.max (height, rect.bottom - rect.top);
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		width += rbBand.cxIdeal;
 	}
+	if (count != 0) width += 4;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -160,11 +161,11 @@ void createItem (CoolItem item, int index) {
 	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
 	rbBand.lpText = lpText;
 	rbBand.wID = id;
-	items [item.id = id] = item;
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	OS.HeapFree (hHeap, 0, lpText);
+	items [item.id = id] = item;
 }
 
 void createWidget () {
@@ -302,7 +303,6 @@ void releaseWidget () {
 		}
 	}
 	items = null;
-	super.releaseWidget();
 }
 
 void setBackgroundPixel (int pixel) {
