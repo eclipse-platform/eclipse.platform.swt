@@ -28,16 +28,12 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class ToolItem extends Item {
+	int boxHandle, arrowHandle, separatorHandle, labelHandle, pixmapHandle, tooltipsHandle;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
 	String toolTipText;
-
-	int boxHandle, arrowHandle, arrowButtonHandle;
-	
-	int currentpixmap;
 	boolean drawHotImage;
-	private int tooltipsHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -74,6 +70,7 @@ public ToolItem (ToolBar parent, int style) {
 	this.parent = parent;
 	createWidget (parent.getItemCount ());
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>ToolBar</code>), a style value
@@ -150,106 +147,71 @@ public void addSelectionListener(SelectionListener listener) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	switch (style & (SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN)) {
-		case SWT.PUSH:
-		case 0:
-			handle = OS.gtk_toolbar_insert_element (parent.handle,
-			OS.GTK_TOOLBAR_CHILD_BUTTON,
-			0, new byte[1], null, null,
-			0, 0, 0,
-			index);
-			return;
-		case SWT.RADIO:
-			handle = OS.gtk_toolbar_insert_element (parent.handle,
-				OS.GTK_TOOLBAR_CHILD_RADIOBUTTON,
-				0, new byte[1], null, null,
-				0, 0, 0,
-				index);
-			return;
-		case SWT.CHECK:
-			handle = OS.gtk_toolbar_insert_element (parent.handle,
-				OS.GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-				0, new byte[1], null, null,
-				0, 0, 0,
-				index);
-			return;
+	if ((style & SWT.SEPARATOR) == 0) {
+		boxHandle = (parent.style & SWT.RIGHT) != 0 ? OS.gtk_hbox_new (false, 0) : OS.gtk_vbox_new (false, 0);
+		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		labelHandle = OS.gtk_label_new_with_mnemonic (null);
+		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		Display display = getDisplay ();
+		pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
+		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (boxHandle, pixmapHandle);
+		OS.gtk_container_add (boxHandle, labelHandle);
+		OS.gtk_widget_show (boxHandle);
+	}	
+	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
+	switch (style & bits) {
 		case SWT.SEPARATOR:
-			boxHandle = OS.gtk_event_box_new();
-			if (boxHandle==0) error(SWT.ERROR_NO_HANDLES);
-			boolean isVertical = (parent.getStyle()&SWT.VERTICAL) != 0;
-			handle = isVertical? OS.gtk_hseparator_new() : OS.gtk_vseparator_new();
-			if (handle==0) error(SWT.ERROR_NO_HANDLES);
-			OS.gtk_toolbar_insert_widget (
-				parent.handle,
-				boxHandle,
-				new byte[1], new byte[1],
-				index);
-			OS.gtk_container_add(boxHandle, handle);
-			OS.gtk_widget_show(boxHandle);
-			OS.gtk_widget_show(handle);
-			return;
+			handle = OS.gtk_hbox_new (false, 0);
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			boolean isVertical = (parent.style & SWT.VERTICAL) != 0;
+			separatorHandle = isVertical ? OS.gtk_hseparator_new() : OS.gtk_vseparator_new();
+			if (separatorHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_widget_set_size_request (separatorHandle, isVertical ? 15 : 2, isVertical ? 2 : 15);
+			OS.gtk_container_add (handle, separatorHandle);
+			OS.gtk_widget_show (separatorHandle);
+			break;
 		case SWT.DROP_DOWN:
-			/* create the box */
-			isVertical = (parent.getStyle()&SWT.VERTICAL) != 0;
-			boxHandle = isVertical? OS.gtk_vbox_new(false, 0) : OS.gtk_hbox_new(false, 0);
-			if (boxHandle==0) error(SWT.ERROR_NO_HANDLES);
-			/* create the button */
-			handle = OS.gtk_button_new();
-			if (handle==0) error(SWT.ERROR_NO_HANDLES);
-			OS.gtk_button_set_relief(handle, OS.GTK_RELIEF_NONE);
-			/* create the arrow */
+			handle = OS.gtk_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			int arrowBoxHandle = OS.gtk_hbox_new (false, 0);
+			if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
-			if (arrowHandle==0) error(SWT.ERROR_NO_HANDLES);
-			arrowButtonHandle = OS.gtk_button_new ();
-			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
-			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
-			OS.gtk_container_set_border_width(arrowButtonHandle,0);
-			//?? LEAK
-			int style = OS.gtk_style_copy(OS.gtk_widget_get_style(arrowButtonHandle));
-			GtkStyle gtkStyle = new GtkStyle ();
-			OS.memmove(gtkStyle, style);
-			gtkStyle.xthickness = 0;
-			OS.memmove(style, gtkStyle);
-			OS.gtk_widget_set_style(arrowButtonHandle, style);
-			// when the arrow gets destroyed, it will dereference the clone
-			
-			OS.gtk_toolbar_insert_widget (
-				parent.handle,
-				boxHandle,
-				new byte[1], new byte[1],
-				index);
-			OS.gtk_box_pack_start(boxHandle, handle, true,true,0);
-			OS.gtk_box_pack_end(boxHandle, arrowButtonHandle, true,true,0);
-			OS.gtk_container_add (arrowButtonHandle, arrowHandle);
-			OS.gtk_widget_show(handle);
+			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_container_add (handle, arrowBoxHandle);
+			OS.gtk_container_add (arrowBoxHandle, boxHandle);	
+			OS.gtk_container_add (arrowBoxHandle, arrowHandle);	
+			OS.gtk_widget_show (arrowBoxHandle);
 			OS.gtk_widget_show (arrowHandle);
-			OS.gtk_widget_show (arrowButtonHandle);
-			OS.gtk_widget_show(boxHandle);
-			return;
+			break;
+		case SWT.RADIO:
+			handle = OS.gtk_radio_button_new (0);
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_toggle_button_set_mode (handle, false);
+			OS.gtk_container_add (handle, boxHandle);	
+			break;
+		case SWT.CHECK:
+			handle = OS.gtk_toggle_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_toggle_button_set_mode (handle, false);
+			OS.gtk_container_add (handle, boxHandle);	
+			break;
+		case SWT.PUSH:
 		default:
-			/*
-			 * Can not specify more than one style
-			 */
-			error(SWT.ERROR_ITEM_NOT_ADDED);
+			handle = OS.gtk_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_container_add (handle, boxHandle);
+			break;
 	}
-}
-
-
-void register() {
-	super.register ();
-	if (boxHandle != 0) WidgetTable.put(boxHandle, this);
-	if (arrowButtonHandle != 0) WidgetTable.put(arrowButtonHandle, this);
-	if (arrowHandle != 0) WidgetTable.put(arrowHandle, this);
-}
-void deregister() {
-	super.deregister ();
-	if (boxHandle != 0) WidgetTable.remove (boxHandle);
-	if (arrowButtonHandle != 0) WidgetTable.remove (arrowButtonHandle);
-	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
-}
-
-int topHandle() {
-	return boxHandle == 0 ? handle : boxHandle;
+	if ((style & SWT.SEPARATOR) == 0) {
+		byte [] button_relief = Converter.wcsToMbcs(null, "button_relief", true);
+		int [] relief = new int [1];
+		OS.gtk_widget_style_get (parent.handle, button_relief, relief, 0);
+		OS.gtk_button_set_relief (handle, relief [0]);
+		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	}
+	OS.gtk_widget_show (handle);
+	OS.gtk_toolbar_insert_widget (parent.handle, handle, new byte[1], new byte[1], index);
 }
 
 /**
@@ -265,10 +227,11 @@ int topHandle() {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	int x = OS.GTK_WIDGET_X (handle);
-	int y = OS.GTK_WIDGET_Y (handle);
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	int topHandle = topHandle ();
+	int x = OS.GTK_WIDGET_X (topHandle);
+	int y = OS.GTK_WIDGET_Y (topHandle);
+	int width = OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -304,14 +267,14 @@ public Control getControl () {
  */
 public Image getDisabledImage () {
 	checkWidget();
-	error(SWT.ERROR_NOT_IMPLEMENTED);
-	return null;
+	return disabledImage;
 }
 
 public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise.
@@ -329,8 +292,10 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return OS.GTK_WIDGET_SENSITIVE(handle);
+	int topHandle = topHandle ();
+	return OS.GTK_WIDGET_SENSITIVE (topHandle);
 }
+
 /**
  * Returns the receiver's hot image if it has one, or null
  * if it does not.
@@ -347,8 +312,7 @@ public boolean getEnabled () {
  */
 public Image getHotImage () {
 	checkWidget();
-	/* NOT IMPLEMENTED */
-	return null;
+	return hotImage;
 }
 
 /**
@@ -388,6 +352,7 @@ public boolean getSelection () {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	return OS.gtk_toggle_button_get_active (handle);
 }
+
 /**
  * Returns the receiver's tool tip text, or null if it has not been set.
  *
@@ -415,9 +380,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-/* FIXME */
-	return 15;
+	int topHandle = topHandle ();
+	return OS.GTK_WIDGET_WIDTH (topHandle);
 }
+
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -427,9 +393,6 @@ void hookEvents () {
 	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
 	OS.gtk_signal_connect (handle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
 	OS.gtk_signal_connect (handle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
-	if (arrowButtonHandle != 0) {
-		OS.gtk_signal_connect (arrowButtonHandle, OS.clicked, windowProc2, SWT.DefaultSelection);
-	}
 
 	/*
 	 * Feature in GTK.
@@ -496,8 +459,8 @@ int processMouseUp (int callData, int arg1, int int2) {
 
 int processMouseEnter (int int0, int int1, int int2) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if ( drawHotImage && (currentpixmap != 0) ) { 
-		OS.gtk_pixmap_set (currentpixmap, hotImage.pixmap, hotImage.mask);
+	if (drawHotImage && pixmapHandle != 0) {
+		OS.gtk_pixmap_set (pixmapHandle, hotImage.pixmap, hotImage.mask);
 	}
 	return 0;
 }
@@ -505,28 +468,13 @@ int processMouseEnter (int int0, int int1, int int2) {
 int processMouseExit (int int0, int int1, int int2) {
 	if (drawHotImage) {
 		drawHotImage = false;
-		if (currentpixmap != 0 && image != null){
-			OS.gtk_pixmap_set (currentpixmap, image.pixmap, image.mask);
+		if (pixmapHandle != 0 && image != null) {
+			OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
 		}	
 	}
 	return 0;
 }
-/*
-int processPaint (int int0, int int1, int int2) {
-	if (ignorePaint) return 0;
-	Image currentImage = drawHotImage ? hotImage : image;
-	if (!getEnabled()) {
-		Display display = getDisplay ();
-		currentImage = disabledImage;
-		if (currentImage == null) {
-			currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
-		}
-	}	
-	if (currentpixmap != 0 && currentImage != null)
-		OS.gtk_pixmap_set (currentpixmap, currentImage.pixmap, currentImage.mask);
-	return 0;
-}
-*/
+
 int processSelection  (int int0, int int1, int int2) {
 	if ((style & SWT.RADIO) != 0) {
 		this.setSelection (true);
@@ -544,18 +492,40 @@ int processSelection  (int int0, int int1, int int2) {
 		}
 	}
 	Event event = new Event ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int eventPtr = OS.gtk_get_current_event ();
+		if (eventPtr != 0) {
+			GdkEvent gdkEvent = new GdkEvent ();
+			OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
+			switch (gdkEvent.type) {
+				case OS.GDK_BUTTON_PRESS:
+				case OS.GDK_2BUTTON_PRESS: 
+				case OS.GDK_BUTTON_RELEASE: {
+					double [] x_win = new double [1];
+					double [] y_win = new double [1];
+					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
+					if ((int) x_win [0] > OS.GTK_WIDGET_WIDTH (boxHandle)) {
+						event.detail = SWT.ARROW;
+					}
+					break;
+				}
+			}
+		}
+	}
 	postEvent (SWT.Selection, event);
 	return 0;
 }
-int processDefaultSelection (int int0, int int1, int int2) {
-	Event event = new Event ();
-	event.detail = SWT.ARROW;
-	postEvent (SWT.Selection, event);
-	return 0;
+
+void releaseHandle () {
+	super.releaseHandle ();
+	tooltipsHandle = boxHandle = arrowHandle = separatorHandle = 
+		labelHandle = pixmapHandle = 0;
 }
+
 void releaseWidget () {
+	// reparent the control back to the toolbar
+	if (control != null) setControl (null);
 	super.releaseWidget ();
-	tooltipsHandle = arrowButtonHandle = arrowHandle = 0;
 	parent = null;
 }
 
@@ -584,6 +554,12 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resizeControl () {
+	if (control == null) return;
+	//FIXME - we should not use computeSize()
+	control.setSize (control.computeSize (OS.GTK_WIDGET_WIDTH (handle), SWT.DEFAULT));
+}
+
 /**
  * Sets the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
@@ -602,29 +578,26 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setControl (Control control) {
 	checkWidget ();
 	if (control != null) {
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	Control newControl = control;
 	Control oldControl = this.control;
 	if (oldControl == newControl) return;
-
 	this.control = newControl;
+	if (oldControl != null) {
+		OS.gtk_widget_reparent (oldControl.topHandle(), parent.handle);
+	}
 	if (newControl != null) {
-		if (handle != boxHandle) {
-			WidgetTable.remove (handle);
-			OS.gtk_widget_destroy (handle);
-			handle = boxHandle;
-		}
-		OS.gtk_widget_reparent (newControl.topHandle(), boxHandle);
-	} else {		
-		boolean isVertical = (parent.getStyle () & SWT.VERTICAL) != 0;
-		handle = isVertical ? OS.gtk_hseparator_new () : OS.gtk_vseparator_new ();
-		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (boxHandle, handle);
+		OS.gtk_widget_reparent (newControl.topHandle(), handle);
+		OS.gtk_widget_hide (separatorHandle);
+		resizeControl ();
+	} else {
+		OS.gtk_widget_show (separatorHandle);
 	}
 }
+
 /**
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
@@ -666,29 +639,20 @@ public void setDisabledImage (Image image) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	OS.gtk_widget_set_sensitive (handle, enabled);
+	int topHandle = topHandle ();
+	OS.gtk_widget_set_sensitive (topHandle, enabled);
 }
 
 void setFontDescription (int font) {
-	int list = OS.gtk_container_get_children (handle);
-	if (list != 0) {
-		int fontHandle = OS.g_list_nth_data (list, 0);
-		OS.g_list_free (list);
-		OS.gtk_widget_modify_font (fontHandle, font);
-		return;
-	}
 	OS.gtk_widget_modify_font (handle, font);
+	OS.gtk_widget_modify_font (labelHandle, font);
+	OS.gtk_widget_modify_font (pixmapHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
-	int list = OS.gtk_container_get_children (handle);
-	if (list != 0) {
-		int colorHandle = OS.g_list_nth_data (list, 0);
-		OS.g_list_free (list);
-		OS.gtk_widget_modify_fg (colorHandle, 0, color);
-		return;
-	}
 	OS.gtk_widget_modify_fg (handle, 0, color);
+	OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 /**
@@ -713,23 +677,22 @@ public void setHotImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
 }
+
 public void setImage (Image image) {
 	checkWidget();
-	super.setImage (image);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int list = OS.gtk_container_get_children (handle);
-	if (list != 0) {
-		int widget = OS.g_list_nth_data (list, 0);
-		if (widget != 0) OS.gtk_widget_destroy (widget);
-		OS.g_list_free (list);
-	}
+	super.setImage (image);
+	if (pixmapHandle == 0) return;
 	if (image != null) {
-		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
-		OS.gtk_container_add (handle, pixmap);
-		OS.gtk_widget_show (pixmap);
-		currentpixmap = pixmap;
+		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (pixmapHandle);
+	} else {
+		Display display = getDisplay ();
+		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
+		OS.gtk_widget_hide (pixmapHandle);
 	}
 }
+
 /**
  * Sets the selection state of the receiver.
  * <p>
@@ -753,28 +716,28 @@ public void setSelection (boolean selected) {
 	OS.gtk_toggle_button_set_active (handle, selected);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
+	if (labelHandle == 0) return;
 	int length = string.length ();
 	char [] text = new char [length + 1];
 	string.getChars (0, length, text, 0);
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_get_children (handle);
-	if (list != 0) {
-		int widget = OS.g_list_nth_data (list, 0);
-		if (widget !=  0) OS.gtk_widget_destroy (widget);
-		OS.g_list_free (list);
-	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
-	int label = OS.gtk_label_new_with_mnemonic (buffer);
-	OS.gtk_container_add (handle, label);
-	OS.gtk_widget_show (label);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	if (length != 0) {
+		OS.gtk_widget_show (labelHandle);
+	} else {
+		OS.gtk_widget_hide (labelHandle);
+	}
 }
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
@@ -794,6 +757,7 @@ public void setToolTipText (String string) {
 	if (string != null) buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
+
 /**
  * Sets the width of the receiver.
  *
@@ -807,9 +771,9 @@ public void setToolTipText (String string) {
 public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
-	
-	Point size = control.computeSize(width, SWT.DEFAULT);
-	control.setSize(size);
+	if (width < 0) return;
+	OS.gtk_widget_set_size_request (handle, width, -1);
+	resizeControl ();
 }
 
 static int checkStyle (int style) {
