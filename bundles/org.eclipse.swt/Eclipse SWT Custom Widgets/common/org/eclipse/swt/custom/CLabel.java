@@ -258,7 +258,7 @@ private void initAccessible() {
 		}
 		
 		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_STATICTEXT;
+			e.code = ACC.ROLE_LABEL;
 		}
 		
 		public void getState(AccessibleControlEvent e) {

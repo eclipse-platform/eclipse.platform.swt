@@ -823,9 +823,9 @@ private void initAccessible() {
 			int role = 0;
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
-				role = ACC.ROLE_PAGETABLIST;
+				role = ACC.ROLE_TABFOLDER;
 			} else if (childID >= 0 && childID < items.length) {
-				role = ACC.ROLE_PAGETAB;
+				role = ACC.ROLE_TABITEM;
 			}
 			e.code = role;
 		}
