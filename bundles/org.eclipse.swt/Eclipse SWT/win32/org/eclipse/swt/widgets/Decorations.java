@@ -1024,12 +1024,14 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 		}
 	}
 	if ((flags & OS.SWP_NOMOVE) == 0) {
+		lpwndpl.right = x + (lpwndpl.right - lpwndpl.left);
+		lpwndpl.bottom = y + (lpwndpl.bottom - lpwndpl.top);
 		lpwndpl.left = x;
 		lpwndpl.top = y;
 	}
 	if ((flags & OS.SWP_NOSIZE) == 0) {
-		lpwndpl.right = x + width;
-		lpwndpl.bottom = y + height;
+		lpwndpl.right = lpwndpl.left + width;
+		lpwndpl.bottom = lpwndpl.top + height;
 	}
 	OS.SetWindowPlacement (handle, lpwndpl);
 }
