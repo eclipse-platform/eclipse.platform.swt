@@ -160,6 +160,11 @@ void setBackgroundPixel (int pixel) {
 	OS.SendMessage (handle, OS.PBM_SETBKCOLOR, 0, pixel);
 }
 
+public boolean setFocus () {
+	checkWidget();
+	return false;
+}
+
 void setForegroundPixel (int pixel) {
 	if (foreground == pixel) return;
 	foreground = pixel;
@@ -245,6 +250,21 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return ProgressBarProc;
+}
+
+LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  The progress bar does
+	* not implement WM_GETDLGCODE.  As a result,
+	* a progress bar takes focus and takes part
+	* in tab traversal.  This behavior, while
+	* unspecified, is unwanted.  The fix is to
+	* implement WM_GETDLGCODE to behave like a
+	* STATIC control.
+	*/
+	return new LRESULT (OS.DLGC_STATIC);
 }
 
 }
