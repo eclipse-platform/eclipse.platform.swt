@@ -158,21 +158,26 @@ public String getFilterPath () {
 public String open () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_file_selection_new (titleBytes);
-	if (parent!=null) {
-		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	if (parent != null) {
+		OS.gtk_window_set_transient_for (handle, parent.topHandle());
 	}
 	String answer = null;
-	preset();
-	int response = OS.gtk_dialog_run(handle);
+	preset ();
+	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
-		int lpFilename = OS.gtk_file_selection_get_filename (handle);
-		int filenameLength = OS.strlen (lpFilename);
-		byte [] filenameBytes = new byte [filenameLength];
-		OS.memmove (filenameBytes, lpFilename, filenameLength);
-		String osAnswer = new String( Converter.mbcsToWcs (null, filenameBytes) );
-		answer = interpretOsAnswer(osAnswer);
+		int fileNamePtr = OS.gtk_file_selection_get_filename (handle);
+		int utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
+		int [] items_written = new int [1];
+		int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		int length = items_written [0];
+		char [] buffer = new char [length];
+		OS.memmove (buffer, utf16Ptr, length * 2);
+		String osAnswer = new String (buffer);
+		OS.g_free (utf16Ptr);
+		OS.g_free (utf8Ptr);
+		answer = interpretOsAnswer (osAnswer);
 	}
-	OS.gtk_widget_destroy(handle);
+	OS.gtk_widget_destroy (handle);
 	return answer;
 }
 /**
@@ -220,11 +225,8 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 void preset() {
-	if ((style & SWT.MULTI) != 0) {
-		OS.gtk_file_selection_set_select_multiple(handle, true);
-	} else {
-		OS.gtk_file_selection_set_select_multiple(handle, false);
-	}
+	OS.gtk_file_selection_set_select_multiple(handle, (style & SWT.MULTI) != 0);
+
 	/* Calculate the fully-specified file name and convert to bytes */
 	StringBuffer stringBuffer = new StringBuffer ();
 	if (filterPath == null) {
@@ -243,9 +245,15 @@ void preset() {
 		stringBuffer.append (fileName);
 	}
 	fullPath = stringBuffer.toString ();
-	byte [] fullPathBytes = Converter.wcsToMbcs (null, fullPath, true);
-	OS.gtk_file_selection_set_filename (handle, fullPathBytes);
-	
+	int length = fullPath.length ();
+	char [] buffer = new char [length + 1];
+	fullPath.getChars (0, length, buffer, 0);
+	int utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
+	int fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
+	OS.gtk_file_selection_set_filename (handle, fileNamePtr);
+	OS.g_free (utf8Ptr);
+	OS.g_free (fileNamePtr);
+				
 	/* Set the extension */
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
@@ -253,60 +261,45 @@ void preset() {
 		String ext = filterExtensions [0];
 		byte [] extBytes = Converter.wcsToMbcs (null, ext, true);
 		OS.gtk_file_selection_complete (handle, extBytes);
-	}
-	
+	}	
 	fullPath = null;
 }
 String interpretOsAnswer(String osAnswer) {
 	if (osAnswer==null) return null;
-	int separatorIndex = osAnswer.lastIndexOf(SEPARATOR);
-	if (separatorIndex+1 == osAnswer.length()) {
-		/*
-		 * the selected thing is a directory
-		 */
-		return null;
-	}
+	int separatorIndex = osAnswer.lastIndexOf (SEPARATOR);
+	if (separatorIndex+1 == osAnswer.length ()) return null;
+	
 	String answer = fullPath = osAnswer;
-	fileName = fullPath.substring(separatorIndex+1);
-	filterPath = fullPath.substring(0, separatorIndex);
-	if ((style&SWT.MULTI) == 0) {
+	fileName = fullPath.substring (separatorIndex+1);
+	filterPath = fullPath.substring (0, separatorIndex);
+	if ((style & SWT.MULTI) == 0) {
 		fileNames = new String[] {fileName};
 	} else {
-		int namesPtr = OS.gtk_file_selection_get_selections(handle);
+		int namesPtr = OS.gtk_file_selection_get_selections (handle);
 		int namesPtr1 = namesPtr;
-		int[] namePtr = new int[1];
-		OS.memmove(namePtr, namesPtr1, 1);
-		int length=0;
+		int [] namePtr = new int [1];
+		OS.memmove (namePtr, namesPtr1, 4);
+		int length = 0;
 		while (namePtr[0] != 0) {
 			length++;
-			namesPtr1+=4;  // PROBLEM CODE: depend on address size
-			OS.memmove(namePtr, namesPtr1, 1);
+			namesPtr1+=4;
+			OS.memmove(namePtr, namesPtr1, 4);
 		}
-		fileNames = new String[length];
-		namePtr = new int[length];
-		OS.memmove(namePtr, namesPtr, length*4);
-		for (int i=0; i<length; i++) {
-			/*
-			 * NB:  We can not use the Converter here, because
-			 * the mount charset/iocharset is different than the locale!
-			 */
-			int bytesPtr = OS.g_filename_to_utf8(namePtr[i], -1, 0, 0, 0);
-			if (bytesPtr==0) continue;
-			// Careful! The size, not the length of the string
-			byte[] bytes = new byte[OS.strlen(bytesPtr)];
-			OS.memmove(bytes, bytesPtr, bytes.length);
-			// The better way to do it would be:
-			// fileNames[i] = new String(bytes);
-			String name = new String(Converter.mbcsToWcs(null, bytes));
-			fileNames[i] = name.substring(name.lastIndexOf(SEPARATOR)+1);
-			/*
-			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
-			 * documentation does not say the resulting UTF8 string should be
-			 * freed.  However, the strdup makes me believe the free is necessary.
-			 */
-			OS.g_free(bytesPtr);
+		fileNames = new String [length];
+		namePtr = new int [length];
+		OS.memmove (namePtr, namesPtr, length * 4);
+		for (int i = 0; i < length; i++) {			
+			int utf8Ptr = OS.g_filename_to_utf8 (namePtr [i], -1, null, null, null);
+			int [] items_written = new int [1];
+			int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			char[] buffer = new char [items_written [0]];
+			OS.memmove (buffer, utf16Ptr, items_written [0] * 2);
+			String name = new String (buffer);
+			fileNames [i] = name.substring (name.lastIndexOf (SEPARATOR) + 1);
+			OS.g_free (utf16Ptr);
+			OS.g_free (utf8Ptr);
 		}
-		OS.g_strfreev(namesPtr);
+		OS.g_strfreev (namesPtr);
 	}
 	return answer;
 }
