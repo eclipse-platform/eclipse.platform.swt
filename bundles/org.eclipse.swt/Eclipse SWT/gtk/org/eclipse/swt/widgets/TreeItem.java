@@ -33,6 +33,8 @@ import org.eclipse.swt.graphics.*;
 public class TreeItem extends Item {
 	Tree parent;
 	boolean cached;
+	Font font;
+	Font[] cellFont;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -446,10 +448,7 @@ public boolean getExpanded () {
 public Font getFont () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FONT_COLUMN, ptr, -1);
-	if (ptr [0] == 0) return parent.getFont ();
-	return Font.gtk_new (display, ptr[0]);
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -471,11 +470,8 @@ public Font getFont (int index) {
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getFont ();
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, ptr, -1);
-	if (ptr [0] == 0) return getFont ();
-	return Font.gtk_new (display, ptr[0]);
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 
@@ -802,6 +798,8 @@ void releaseWidget () {
 	if (handle != 0) OS.g_free (handle);
 	handle = 0;
 	parent = null;
+	font = null;
+	cellFont = null;
 }
 
 /**
@@ -952,6 +950,9 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (this.font == font) return;
+	if (this.font != null && this.font.equals (font)) return;
+	this.font = font;
 	int /*long*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
 	cached = true;
@@ -983,6 +984,12 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
+	if (cellFont == null) {
+		cellFont = new Font [count];
+	}
+	if (cellFont [index] == font) return;
+	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	cellFont [index] = font;
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
