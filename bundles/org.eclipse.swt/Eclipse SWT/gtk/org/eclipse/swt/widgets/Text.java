@@ -250,9 +250,7 @@ public void append (String string) {
  */
 public void clearSelection () {
 	checkWidget ();
-	int position = OS.gtk_editable_get_position (handle);
-	OS.gtk_editable_delete_selection(handle);
-	OS.gtk_editable_set_position (handle, position);
+	OS.gtk_editable_delete_selection (handle);
 }
 
 /**
