@@ -122,8 +122,11 @@ Point computeSize () {
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int marginHeight = argList [1], marginWidth = argList [3];
-	int shadowThickness = (parent.style & SWT.FLAT) != 0 ? 2 : argList [5];
-
+	int shadowThickness = argList [5];
+	if ((parent.style & SWT.FLAT) != 0) {
+		Display display = getDisplay ();
+		shadowThickness = Math.min (2, display.buttonShadowThickness);
+	}
 	int textWidth = 0, textHeight = 0;
 	if (text.length () > 0) {
 		GC gc = new GC (parent);
@@ -138,32 +141,29 @@ Point computeSize () {
 		imageWidth = rect.width;
 		imageHeight = rect.height;
 	}
-	
-	int contentHeight = 0, contentWidth = 0;
+	int width = 0, height = 0;
 	if ((parent.style & SWT.RIGHT) != 0) {
-		contentHeight = Math.max (imageHeight, textHeight);
-		contentWidth = imageWidth + textWidth;
-		if (imageWidth > 0 && textWidth > 0) {
-			contentWidth += marginWidth + shadowThickness;
-		}
+		width = imageWidth + textWidth;
+		height = Math.max (imageHeight, textHeight);
+		if (imageWidth != 0 && textWidth != 0) width += 2;
 	} else {
-		contentHeight = imageHeight + textHeight;
-		if (imageHeight > 0 && textHeight > 0) {
-			contentHeight += marginHeight + shadowThickness;
-		}
-		contentWidth = Math.max (imageWidth, textWidth);
+		height = imageHeight + textHeight;
+		if (imageHeight != 0 && textHeight != 0) height += 2;
+		width = Math.max (imageWidth, textWidth);
 	}
-	if ((style & SWT.DROP_DOWN) != 0) contentWidth += 12;
+	if ((style & SWT.DROP_DOWN) != 0) width += 12;
 	
-	/* These values come from Windows */
-	int height = 22, width = 24;
-	if (contentHeight != 0) {
-		height = contentHeight + marginHeight + shadowThickness + 4;
+	/* The 24 and 22 values come from Windows */
+	if (width != 0) {
+		width += (marginWidth + shadowThickness) * 2 + 2;
+	} else {
+		width = 24;
 	}
-	if (contentWidth != 0) {
-		width = contentWidth + marginWidth + shadowThickness + 4;
+	if (height != 0) {
+		height += (marginHeight + shadowThickness) * 2 + 2;
+	} else {
+		height = 22;
 	}
-	
 	return new Point (width, height);
 }
 void createWidget (int index) {
@@ -561,7 +561,7 @@ public void setSelection (boolean selected) {
 	setDrawPressed(set);
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
-		int thickness = set ? display.buttonShadowThickness : 0;
+		int thickness = set ? Math.min (2, display.buttonShadowThickness) : 0;
 		int [] argList = {OS.XmNshadowThickness, thickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
@@ -637,7 +637,7 @@ int processMouseDown (int callData) {
 int processMouseEnter (int callData) {
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
-		int thickness = display.buttonShadowThickness;
+		int thickness = Math.min (2, display.buttonShadowThickness);
 		int [] argList = {OS.XmNshadowThickness, thickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
@@ -718,20 +718,14 @@ int processPaint (int callData) {
 	if (xDisplay == 0) return 0;
 	int xWindow = OS.XtWindow (handle);
 	if (xWindow == 0) return 0;
-	
 	int [] argList = {
 		OS.XmNcolormap, 0,
 		OS.XmNwidth, 0,
 		OS.XmNheight, 0,
-		OS.XmNmarginWidth, 0,
-		OS.XmNmarginHeight, 0,
-		OS.XmNshadowThickness, 0,
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int x = 0, y = 0, width = argList [3], height = argList [5];
-	int marginWidth = argList [7],  marginHeight = argList [9];
-	int shadowThickness = (parent.style & SWT.FLAT) != 0 ? 2 : argList [11];
-	
+	int width = argList [3], height = argList [5];
+
 	ToolDrawable wrapper = new ToolDrawable ();
 	wrapper.device = getDisplay ();
 	wrapper.display = xDisplay;
@@ -764,28 +758,30 @@ int processPaint (int callData) {
 	gc.setBackground (parent.getBackground ());
 		
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-	if (text.length () > 0) {
-		Point textExtent = gc.textExtent(text);
+	if (text.length () != 0) {
+		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 	}	
 	int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
 	if (currentImage != null) {
-		Rectangle imageBounds = currentImage.getBounds();
+		Rectangle imageBounds = currentImage.getBounds ();
 		imageWidth = imageBounds.width;
 		imageHeight = imageBounds.height;
 	}
 	
+	int spacing = 0;
+	if (textWidth != 0 && imageWidth != 0) spacing = 2;
 	if ((parent.style & SWT.RIGHT) != 0) {
-		imageX = x + ((width - imageWidth - textWidth) / 2);
-		imageY = y + ((height - imageHeight) / 2);
-		textX = imageX + imageWidth + marginWidth + shadowThickness;
-		textY = y + ((height - textHeight) / 2);
+		imageX = (width - imageWidth - textWidth - spacing) / 2;
+		imageY = (height - imageHeight) / 2;
+		textX = spacing + imageX + imageWidth;
+		textY = (height - textHeight) / 2;
 	} else {		
-		imageX = x + ((width - imageWidth) / 2);
-		imageY = y + ((height - imageHeight - textHeight) / 2);
-		textX = x + ((width - textWidth) / 2);
-		textY = imageY + imageHeight + marginHeight + shadowThickness;
+		imageX = (width - imageWidth) / 2;
+		imageY = (height - imageHeight - textHeight - spacing) / 2;
+		textX = (width - textWidth) / 2;
+		textY = spacing + imageY + imageHeight;
 	}
 	
 	if ((style & SWT.DROP_DOWN) != 0) {
