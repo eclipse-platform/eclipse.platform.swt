@@ -313,8 +313,17 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	// NEEDS WORK
-	int width = 100, height = 21;
+	int width = 0, height = 0;
+	int [] currentPort = new int [1];
+	short themeFont = (short) OS.kThemeSystemFont;
+	if (font != null) {
+		themeFont = OS.kThemeCurrentPortFont;
+		OS.GetPort (currentPort);
+		OS.SetPortWindowPort (OS.GetControlOwner (handle));
+		OS.TextFont (font.id);
+		OS.TextFace (font.style);
+		OS.TextSize (font.size);
+	}
 	int [] ptr = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.GetControlValue (handle) - 1;
@@ -322,24 +331,48 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
 	}
+	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
 	if (ptr [0] != 0) {
-		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-		if (font == null) {
-			OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, false, ioBounds, null);
-		} else {
-			int [] currentPort = new int [1];
-			OS.GetPort (currentPort);
-			OS.SetPortWindowPort (OS.GetControlOwner (handle));
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
-			OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-			OS.SetPort (currentPort [0]);
-		}
+		OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
 		width = Math.max (width, ioBounds.h);
 		height = Math.max (height, ioBounds.v);
 		OS.CFRelease (ptr [0]);
 	}
+	int count;
+	if ((style & SWT.READ_ONLY) != 0) {
+		count = OS.CountMenuItems (menuHandle);
+	} else {
+		count = OS.HIComboBoxGetItemCount (handle);
+	}
+	for (int i=0; i<count; i++) {
+		int result;
+		if ((style & SWT.READ_ONLY) != 0) {
+			result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(i+1), ptr);
+		} else {
+			result = OS.HIComboBoxCopyTextItemAtIndex (handle, i, ptr);
+		}
+		if (result == OS.noErr) {
+			OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
+			width = Math.max (width, ioBounds.h);
+			OS.CFRelease (ptr [0]);
+		}
+	}
+	if (font != null) {
+		OS.SetPort (currentPort [0]);
+	}
+	int [] metric = new int [1];
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.GetThemeMetric (OS.kThemeMetricDisclosureButtonWidth, metric);
+		width += metric [0];
+		//NOT DONE
+		width += 13;
+	} else {
+		OS.GetThemeMetric (OS.kThemeMetricComboBoxLargeDisclosureWidth, metric);
+		width += metric [0];
+	}
+	OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
+	width += metric [0] * 2;
+	height += metric [0] * 2;
 	Rect inset = getInset ();
 	width += inset.left + inset.right;
 	height += inset.top + inset.bottom;

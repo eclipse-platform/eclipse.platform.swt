@@ -516,10 +516,13 @@ public class OS {
 	public static final int kThemeMenuItemCmdKeyFont = 103;
 	public static final int kThemeMenuItemFont = 101;
 	public static final int kThemeMenuItemHierarchical = 1;
+	public static final int kThemeMetricDisclosureButtonWidth = 22;
 	public static final int kThemeMetricDisclosureTriangleHeight = 25;
 	public static final int kThemeMetricCheckBoxWidth = 50;
+	public static final int kThemeMetricComboBoxLargeDisclosureWidth = 74;
 	public static final int kThemeMetricRadioButtonWidth = 52;
 	public static final int kThemeMetricEditTextFrameOutset = 5;
+	public static final int kThemeMetricEditTextWhitespace = 4;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kThemeMetricHSliderHeight = 41;
 	public static final int kThemeMetricMenuTextTrailingEdgeMargin = 67;
