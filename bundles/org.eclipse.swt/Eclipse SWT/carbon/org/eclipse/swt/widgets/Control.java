@@ -636,6 +636,7 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	//NOT DONE
 	if (keyCode [0] == 114) {
 		//HELP KEY
 	}
