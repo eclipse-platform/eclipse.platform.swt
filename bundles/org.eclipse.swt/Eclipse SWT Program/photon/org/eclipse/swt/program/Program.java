@@ -116,7 +116,8 @@ public static boolean launch (String fileName) {
 /**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
- * programmer to ensure that the file
+ * programmer to ensure that the file contains valid data for 
+ * this program.
  *
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
