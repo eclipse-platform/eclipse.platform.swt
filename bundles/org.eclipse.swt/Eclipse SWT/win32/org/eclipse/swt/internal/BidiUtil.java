@@ -134,10 +134,12 @@ static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, 
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	int length = renderDx.length;
 	
-	if (OS.GetLayout (gc.handle) != 0) {
-		reverse(renderDx);
-		renderDx[length-1]--;               //fixes bug 40006
-		reverse(renderBuffer);
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (OS.GetLayout (gc.handle) != 0) {
+			reverse(renderDx);
+			renderDx[length-1]--;               //fixes bug 40006
+			reverse(renderBuffer);
+		}
 	}	
 	// render transparently to avoid overlapping segments. fixes bug 40006
 	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
@@ -167,7 +169,10 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	int hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(gc.handle);
-	boolean isRightOriented = OS.GetLayout(gc.handle) != 0; 
+	boolean isRightOriented = false;
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		isRightOriented = OS.GetLayout(gc.handle) != 0;
+	}
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
@@ -300,7 +305,10 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
-	boolean isRightOriented = (OS.GetLayout(gc.handle) != 0); 
+	boolean isRightOriented = false;
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		isRightOriented = OS.GetLayout(gc.handle) != 0;
+	}
 
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;

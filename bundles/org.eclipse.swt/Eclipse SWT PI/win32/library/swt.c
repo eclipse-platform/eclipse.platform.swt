@@ -2008,11 +2008,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
 {
 	COMBOBOXINFO _arg1, *lparg1=NULL;
 	jboolean rc;
-	
 	DEBUG_CALL("GetComboBoxInfo\n\n")
-
 	if (arg1) lparg1 = getCOMBOBOXINFOFields(env, arg1, &_arg1);
-	rc = (jboolean)GetComboBoxInfo((HWND)arg0, lparg1);
+	{
+		/*
+		*  GetComboBoxInfo is a Win2000 and Win98 specific call
+		*  If you link it into swt.dll a system modal entry point not found dialog will
+		*  appear as soon as swt.dll is loaded. Here we check for the entry point and
+		*  only do the call if it exists.
+		*/
+		HMODULE hm;
+		FARPROC fp;
+    	if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "GetComboBoxInfo"))) {
+			rc = (jboolean)(fp)((HWND)arg0, lparg1);
+    	}
+	}
 	if (arg1) setCOMBOBOXINFOFields(env, arg1, lparg1);
 	return rc;
 }

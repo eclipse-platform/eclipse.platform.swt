@@ -1601,7 +1601,9 @@ void setCheckboxImageList (int width, int height) {
 	int count = 4;
 	int hStateList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
 	int hDC = OS.GetDC (handle);
-	OS.SetLayout (hDC, 0);
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		OS.SetLayout (hDC, 0);
+	}
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
