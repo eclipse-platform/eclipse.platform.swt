@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 823;
-int OS_nativeFunctionCallCount[823];
+int OS_nativeFunctionCount = 825;
+int OS_nativeFunctionCallCount[825];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -287,6 +287,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1invalidate_1region", 
 	"gdk_1window_1lookup", 
 	"gdk_1window_1lower", 
+	"gdk_1window_1move", 
 	"gdk_1window_1new", 
 	"gdk_1window_1process_1all_1updates", 
 	"gdk_1window_1process_1updates", 
@@ -302,6 +303,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1set_1icon_1list", 
 	"gdk_1window_1set_1keep_1above", 
 	"gdk_1window_1set_1override_1redirect", 
+	"gdk_1window_1set_1user_1data", 
 	"gdk_1window_1shape_1combine_1region", 
 	"gdk_1window_1show", 
 	"gdk_1window_1thaw_1updates", 

@@ -3541,6 +3541,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1lower)
 }
 #endif
 
+#ifndef NO_gdk_1window_1move
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1move)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1move_FUNC);
+	gdk_window_move((GdkWindow *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1move_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1window_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1new)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -3723,6 +3733,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1override_1redirect)
 	OS_NATIVE_ENTER(env, that, gdk_1window_1set_1override_1redirect_FUNC);
 	gdk_window_set_override_redirect((GdkWindow *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1set_1override_1redirect_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1window_1set_1user_1data
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1user_1data)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1set_1user_1data_FUNC);
+	gdk_window_set_user_data((GdkWindow *)arg0, (gpointer)arg1);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1set_1user_1data_FUNC);
 }
 #endif
 

@@ -98,6 +98,7 @@ public class OS {
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_Home = 0xff50;
 	public static final int GDK_INCLUDE_INFERIORS = 0x1;
+	public static final int GDK_INPUT_ONLY = 1;
 	public static final int GDK_INTERP_BILINEAR = 0x2;
 	public static final int GDK_Insert = 0xff63;
 	public static final int GDK_ISO_Left_Tab = 0xfe20;
@@ -260,6 +261,8 @@ public class OS {
 	public static final int GTK_VISIBILITY_FULL = 0x2;
 	public static final int GTK_VISIBILITY_NONE = 0x0;
 	public static final int GTK_VISIBLE = 0x100;
+	public static final int GDK_WA_X = 1 << 2;
+	public static final int GDK_WA_Y = 1 << 3;
 	public static final int GTK_WINDOW_POPUP = 0x1;
 	public static final int GTK_WINDOW_TOPLEVEL = 0x0;
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
@@ -644,6 +647,7 @@ public static final synchronized native int /*long*/ gdk_window_get_pointer(int 
 public static final synchronized native void gdk_window_get_user_data(int /*long*/ window, int /*long*/[] data);
 public static final synchronized native void gdk_window_invalidate_rect(int /*long*/ window, GdkRectangle rectangle, boolean invalidate_children);
 public static final synchronized native void gdk_window_invalidate_region(int /*long*/ window, int /*long*/ region, boolean invalidate_children);
+public static final synchronized native void gdk_window_move(int /*long*/ window, int x, int y);
 public static final synchronized native int /*long*/ gdk_window_new(int /*long*/ parent, GdkWindowAttr attributes, int attributes_mask);
 public static final synchronized native void gdk_window_lower(int /*long*/ window);
 public static final synchronized native void gdk_window_process_all_updates();
@@ -660,6 +664,7 @@ public static final synchronized native void gdk_window_set_icon(int /*long*/ wi
 public static final synchronized native void gdk_window_set_icon_list(int /*long*/ window, int /*long*/ pixbufs);
 public static final synchronized native void gdk_window_set_keep_above(int /*long*/ window, boolean setting);
 public static final synchronized native void gdk_window_set_override_redirect(int /*long*/ window, boolean override_redirect);
+public static final synchronized native void gdk_window_set_user_data(int /*long*/ window, int /*long*/ user_data);
 public static final synchronized native void gdk_window_shape_combine_region (int /*long*/ window, int /*long*/  shape_region, int offset_x,  int offset_y);
 public static final synchronized native void gdk_window_show(int /*long*/ window);
 public static final synchronized native void gdk_window_thaw_updates(int /*long*/ window);
