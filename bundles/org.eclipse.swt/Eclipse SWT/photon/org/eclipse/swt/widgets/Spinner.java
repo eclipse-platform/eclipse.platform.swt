@@ -321,6 +321,11 @@ int defaultForeground () {
 	return display.TEXT_FOREGROUND;
 }
 
+public int getDigits () {
+	checkWidget ();
+	return 0;
+}
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed.
@@ -543,6 +548,10 @@ void removeVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
+}
+
+public void setDigits (int value) {
+	checkWidget ();
 }
 
 /**
