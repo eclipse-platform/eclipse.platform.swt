@@ -1091,21 +1091,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	display.setWarnings (false);
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	display.setWarnings(warnings);
-	
-	/*
-	* Bug in Motif.  When the receiver is a Text widget
-	* (not a Text Field) and is resized to be smaller than
-	* the inset that surrounds the text and the selection
-	* is set, the receiver scrolls to the left.  When the
-	* receiver is resized larger, the text is not scrolled
-	* back.  The fix is to detect this case and scroll the
-	* text back.
-	*/
-//	inset := self inset.
-//	nWidth := self dimensionAt: XmNwidth.
-//	self noWarnings: [super resizeWidget].
-//	nWidth > inset x ifTrue: [^self].
-//	self showPosition: self topCharacter
 	return changed;
 }
 /**
