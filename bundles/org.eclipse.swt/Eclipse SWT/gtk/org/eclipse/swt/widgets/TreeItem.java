@@ -433,7 +433,7 @@ public void setBackground (Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, 3, gdkColor, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, 3, gdkColor, -1);
 }
 
 /**
@@ -522,7 +522,7 @@ public void setForeground (Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, 2, gdkColor, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, 2, gdkColor, -1);
 }
 
 public void setImage (Image image) {
