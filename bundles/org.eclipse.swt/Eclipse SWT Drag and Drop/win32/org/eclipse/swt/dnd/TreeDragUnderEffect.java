@@ -1,14 +1,13 @@
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.TVITEM;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.TVITEM;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 

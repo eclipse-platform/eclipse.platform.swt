@@ -1,19 +1,17 @@
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.widgets.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
 
-/*
- *
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- *
  */
 public class Clipboard {
 

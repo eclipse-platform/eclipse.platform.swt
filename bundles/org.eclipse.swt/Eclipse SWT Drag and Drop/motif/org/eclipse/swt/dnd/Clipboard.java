@@ -11,9 +11,7 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- *
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- *
  */ 
 public class Clipboard {
 	

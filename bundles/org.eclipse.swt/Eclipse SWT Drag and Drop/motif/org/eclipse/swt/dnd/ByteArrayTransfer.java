@@ -16,7 +16,6 @@ import org.eclipse.swt.internal.motif.*;
  * into the byte array based platform specific drag and drop data types.  See TextTransfer and 
  * FileTransfer for examples.  If the data you are transferring <b>does not</b> map to a byte array, 
  * you should sub-class Transfer directly and do your own mapping to the platform data types.</p>
- *
  */
 public abstract class ByteArrayTransfer extends Transfer {
 public TransferData[] getSupportedTypes(){
