@@ -1344,6 +1344,12 @@ boolean isVirtualKey (int key) {
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
+		case OS.WM_ACTIVATEAPP:
+			if (wParam == 1) {
+				Shell shell = getModalShell ();
+				if (shell != null) shell.bringToTop ();
+			}
+			break;
 		case OS.WM_ENDSESSION:
 			if (wParam != 0) dispose ();
 			break;
