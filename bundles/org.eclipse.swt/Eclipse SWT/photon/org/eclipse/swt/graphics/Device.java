@@ -85,13 +85,61 @@ public Device(DeviceData data) {
 	systemFont = getSystemFont ().handle;
 }
 
+/**
+ * Throws an <code>SWTException</code> if the receiver can not
+ * be accessed by the caller. This may include both checks on
+ * the state of the receiver and more generally on the entire
+ * execution context. This method <em>should</em> be called by
+ * device implementors to enforce the standard SWT invariants.
+ * <p>
+ * Currently, it is an error to invoke any method (other than
+ * <code>isDisposed()</code> and <code>dispose()</code>) on a
+ * device that has had its <code>dispose()</code> method called.
+ * </p><p>
+ * In future releases of SWT, there may be more or fewer error
+ * checks and exceptions may be thrown for different reasons.
+ * <p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 protected void checkDevice () {
 	if (disposed) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
+/**
+ * Creates the device in the operating system.  If the device
+ * does not have a handle, this method may do nothing depending
+ * on the device.
+ * <p>
+ * This method is called before <code>init</code>.
+ * </p><p>
+ * Subclasses are supposed to reimplement this method and not
+ * call the <code>super</code> implementation.
+ * </p>
+ *
+ * @param data the DeviceData which describes the receiver
+ *
+ * @see #init
+ */
 protected void create (DeviceData data) {
 }
 
+/**
+ * Destroys the device in the operating system and releases
+ * the device's handle.  If the device does not have a handle,
+ * this method may do nothing depending on the device.
+ * <p>
+ * This method is called after <code>release</code>.
+ * </p><p>
+ * Subclasses are supposed to reimplement this method and not
+ * call the <code>super</code> implementation.
+ * </p>
+ *
+ * @see #dispose
+ * @see #release
+ */
 protected void destroy () {
 }
 
@@ -396,6 +444,18 @@ public boolean getWarnings () {
 	return false;
 }
 
+/**
+ * Initializes any internal resources needed by the
+ * device.
+ * <p>
+ * This method is called after <code>create</code>.
+ * </p><p>
+ * If subclasses reimplement this method, they must
+ * call the <code>super</code> implementation.
+ * </p>
+ * 
+ * @see #create
+ */
 protected void init () {
 }
 
@@ -465,6 +525,29 @@ void new_Object (Object object) {
 	errors = newErrors;
 }
 
+/**
+ * Releases any internal resources back to the operating
+ * system and clears all fields except the device handle.
+ * <p>
+ * When a device is destroyed, resources that were acquired
+ * on behalf of the programmer need to be returned to the
+ * operating system.  For example, if the device allocated a
+ * font to be used as the system font, this font would be
+ * freed in <code>release</code>.  Also,to assist the garbage
+ * collector and minimize the amount of memory that is not
+ * reclaimed when the programmer keeps a reference to a
+ * disposed device, all fields except the handle are zero'd.
+ * The handle is needed by <code>destroy</code>.
+ * </p>
+ * This method is called before <code>destroy</code>.
+ * </p><p>
+ * If subclasses reimplement this method, they must
+ * call the <code>super</code> implementation.
+ * </p>
+ *
+ * @see #dispose
+ * @see #destroy
+ */
 protected void release () {
 }
 

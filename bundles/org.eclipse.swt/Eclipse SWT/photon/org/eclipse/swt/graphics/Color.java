@@ -21,6 +21,7 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see RGB
+ * @see Device#getSystemColor
  */
 public final class Color {
 
