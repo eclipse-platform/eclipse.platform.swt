@@ -93,7 +93,6 @@ void createHandle () {
 	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	//NOT DONE
-//	column.headerBtnDesc_minimumWidth = 80;
 	column.headerBtnDesc_maximumWidth = 0x7FFF;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);

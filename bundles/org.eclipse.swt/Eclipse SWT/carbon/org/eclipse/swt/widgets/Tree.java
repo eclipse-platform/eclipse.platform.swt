@@ -95,10 +95,11 @@ void createHandle () {
 	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	//NOT DONE
-	column.headerBtnDesc_maximumWidth = 300;
+	column.headerBtnDesc_maximumWidth = 0x7FFF;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {

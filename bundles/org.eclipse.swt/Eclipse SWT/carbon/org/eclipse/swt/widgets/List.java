@@ -107,7 +107,7 @@ void createHandle () {
 	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, 0);
 	//NOT DONE
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)0x7FFF);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
 }
 
 void createWidget () {
