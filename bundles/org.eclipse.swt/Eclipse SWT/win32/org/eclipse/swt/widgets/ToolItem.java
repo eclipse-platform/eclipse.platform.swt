@@ -362,6 +362,8 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -566,6 +568,8 @@ public void setText (String string) {
 	*/
 	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
+	
+	parent.layoutItems ();
 }
 
 /**
@@ -607,6 +611,7 @@ public void setWidth (int width) {
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
+	parent.layoutItems ();
 }
 
 void updateImages () {
@@ -668,6 +673,8 @@ void updateImages () {
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+	
+	parent.layoutItems ();
 }
 
 int widgetStyle () {

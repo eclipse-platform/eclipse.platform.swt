@@ -240,6 +240,7 @@ void createItem (ToolItem item, int index) {
 	if ((style & SWT.VERTICAL) != 0) {
 		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
 	}
+	layoutItems ();
 }
 
 void createWidget () {
@@ -291,6 +292,7 @@ void destroyItem (ToolItem item) {
 	if ((style & SWT.VERTICAL) != 0) {
 		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
 	}
+	layoutItems ();
 }
 
 ImageList getDisabledImageList () {
@@ -441,6 +443,19 @@ public int indexOf (ToolItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	return OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
+}
+
+void layoutItems () {
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				Rectangle rect = item.getBounds ();
+				control.setLocation (rect.x, rect.y);
+			}
+		}
+	}
 }
 
 void releaseWidget () {
@@ -608,16 +623,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null) {
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				Rectangle rect = item.getBounds ();
-				control.setLocation (rect.x, rect.y);
-			}
-		}
-	}
+	layoutItems ();
 	return result;
 }
 
