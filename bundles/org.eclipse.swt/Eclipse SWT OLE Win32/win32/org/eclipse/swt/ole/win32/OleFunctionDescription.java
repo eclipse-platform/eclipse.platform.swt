@@ -1,11 +1,11 @@
 package org.eclipse.swt.ole.win32;
 
-import org.eclipse.swt.internal.ole.win32.COM;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+
+import org.eclipse.swt.internal.ole.win32.COM;
 
 public class OleFunctionDescription {
 
