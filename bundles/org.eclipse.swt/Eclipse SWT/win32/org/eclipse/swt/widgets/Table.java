@@ -1455,7 +1455,7 @@ public void removeAll () {
  * </ul>
  *
  * @see SelectionListener
- * @see #addSelectionListener
+ * @see #addSelectionListener(SelectionListener)
  */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget ();
@@ -1810,7 +1810,7 @@ void setForegroundPixel (int pixel) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param visible the new visibility state
+ * @param show the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1845,7 +1845,7 @@ public void setHeaderVisible (boolean show) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param visible the new visibility state
+ * @param show the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2223,7 +2223,7 @@ public void showColumn (TableColumn column) {
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
 	int index = indexOf (column);	
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count <= 1 || !(0 <= index && index < count)) return; 
 	RECT rect = new RECT ();
@@ -2231,24 +2231,24 @@ public void showColumn (TableColumn column) {
 		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		rect.top = 1;
 		rect.left = OS.LVIR_BOUNDS;
-		OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, -1, rect);
+		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
 		rect.left = rect.left - width;
 		rect.right = rect.left + width;
 	} else {
 		rect.top = index;
 		rect.left = OS.LVIR_BOUNDS;
-		OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, -1, rect);
+		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
 	}
 	RECT area = new RECT ();
 	OS.GetClientRect (handle, area);
 	if (rect.left < area.left) {
 		int dx = rect.left - area.left;
-		OS.SendMessage (handle, OS. LVM_SCROLL, dx, 0);
+		OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
 	} else {
 		int width = Math.min (area.right - area.left, rect.right - rect.left);
 		if (rect.left + width > area.right) {
 			int dx = rect.left + width - area.right;
-			OS.SendMessage (handle, OS. LVM_SCROLL, dx, 0);
+			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
 		}
 	}
 }
@@ -2716,18 +2716,17 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
 					TableItem item = items [nmcd.dwItemSpec];
-					int font = (item.cellFont != null) ? item.cellFont [nmcd.iSubItem] : -1;
-					if (font == -1) font = item.font;
-					int clrText = (item.cellForeground != null) ? item.cellForeground [nmcd.iSubItem] : -1;
+					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+					if (hFont == -1) hFont = item.font;
+					int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 					if (clrText == -1) clrText = item.foreground;
-					int clrTextBk = (item.cellBackground != null) ? item.cellBackground [nmcd.iSubItem] : -1;
+					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (font == -1 && clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null && item.cellFont == null) break;
+					if (hFont == -1 && clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null && item.cellFont == null) break;
+					if (hFont != -1) OS.SelectObject(nmcd.hdc, hFont);
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-					if (font == -1) font = getFont ().handle;
-					OS.SelectObject(nmcd.hdc, font);
 					return new LRESULT (OS.CDRF_NEWFONT);
 				}
 			}
