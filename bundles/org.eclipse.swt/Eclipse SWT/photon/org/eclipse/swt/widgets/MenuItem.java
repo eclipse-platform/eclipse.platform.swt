@@ -594,9 +594,8 @@ public void setEnabled (boolean enabled) {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (this.image == image) return;
 	super.setImage (image);
-	//TEMPORARY CODE
-	if (true) return;
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) return;
 	int imageHandle = 0;
 	int type = OS.Pt_Z_STRING;
@@ -607,7 +606,7 @@ public void setImage (Image image) {
 	}	
 	int [] args = {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
-		OS.Pt_ARG_LABEL_TYPE, type, 0
+		OS.Pt_ARG_LABEL_TYPE, type, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 	if (imageHandle != 0) OS.free (imageHandle);
