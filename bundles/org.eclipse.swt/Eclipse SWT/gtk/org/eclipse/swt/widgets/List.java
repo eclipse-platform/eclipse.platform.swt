@@ -357,6 +357,9 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget();
+	if (!(0 <= index && index < OS.GTK_CLIST_ROWS (handle))) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int [] buffer = new int [1];
 	int result = OS.gtk_clist_get_text (handle, index, 0, buffer);
 	int length = OS.strlen (buffer [0]);
@@ -779,6 +782,9 @@ int processSelection (int int0, int int1, int int2) {
  */
 public void remove (int index) {
 	checkWidget();
+	if (!(0 <= index && index < OS.GTK_CLIST_ROWS (handle))) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_remove (handle, index);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
@@ -805,6 +811,9 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	if (!(0 < start && start <= end && end < OS.GTK_CLIST_ROWS (handle))) {
+		 error (SWT.ERROR_INVALID_RANGE);
+	}
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	int index = start;
 	while (index <= end) {
@@ -1028,6 +1037,9 @@ void setBackgroundColor (GdkColor color) {
 public void setItem (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!(0 <= index && index < OS.GTK_CLIST_ROWS (handle))) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_set_text (handle, index, 0, buffer);
