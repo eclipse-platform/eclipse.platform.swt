@@ -149,6 +149,122 @@ public class Accessible {
 	}
 	
 	/**
+	 * Adds the listener to the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information. The listener is notified by sending it
+	 * one of the messages defined in the <code>AccessibleTextListener</code>
+	 * interface.
+	 *
+	 * @param listener the listener that should be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #removeAccessibleTextListener
+	 * 
+	 * @since 3.0
+	 */
+	public void addAccessibleTextListener (AccessibleTextListener listener) {
+	}
+
+	/**
+	 * Removes the listener from the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #addAccessibleTextListener
+	 * 
+	 * @since 3.0
+	 */
+	public void removeAccessibleTextListener (AccessibleTextListener listener) {
+	}
+
+	/**
+	 * Sends a message to accessible clients that the child selection
+	 * within a custom container control has changed.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.0
+	 */
+	public void selectionChanged () {
+	}
+	
+	/**
+	 * Sends a message to accessible clients that the text
+	 * caret has moved within a custom control.
+	 *
+	 * @param index the new caret index within the control
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textCaretMoved (int index) {
+	}
+	
+	/**
+	 * Sends a message to accessible clients that the text
+	 * within a custom control has changed.
+	 *
+	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
+	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param startIndex the text index within the control where the insertion or deletion begins
+	 * @param length the non-negative length in characters of the insertion or deletion
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @see ACC#NOTIFY_TEXT_INSERT
+	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * 
+	 * @since 3.0
+	 */
+	public void textChanged (int type, int startIndex, int length) {
+	}
+	
+	/**
+	 * Sends a message to accessible clients that the text
+	 * selection has changed within a custom control.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textSelectionChanged () {
+	}
+	
+	/**
 	 * Sends a message to accessible clients indicating that the focus
 	 * has changed within a custom control.
 	 *
