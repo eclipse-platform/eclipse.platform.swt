@@ -4973,6 +4973,19 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SCR
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	SCRIPT_PROPERTIES _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+	if (arg0) setSCRIPT_PROPERTIESFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II\n")
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -6059,6 +6072,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScriptGetLogicalWidths)
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg0) setSCRIPT_ANALYSISFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "ScriptGetLogicalWidths\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptGetProperties
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptGetProperties)
+	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
+{
+	jint *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ScriptGetProperties\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)ScriptGetProperties((const SCRIPT_PROPERTIES ***)lparg0, (int *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "ScriptGetProperties\n")
 	return rc;
 }
 #endif

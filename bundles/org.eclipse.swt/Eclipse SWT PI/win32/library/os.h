@@ -75,6 +75,7 @@
 #define NO_SCRIPT_CONTROL
 #define NO_SCRIPT_ITEM
 #define NO_SCRIPT_LOGATTR
+#define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
 #define NO_TOOLINFO
 #define NO_TRACKMOUSEEVENT
@@ -247,6 +248,7 @@
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II
 #define NO_MoveToEx
 #define NO_OleInitialize
 #define NO_OleUninitialize
@@ -318,6 +320,7 @@
 #define NO_ScriptCPtoX
 #define NO_ScriptFreeCache
 #define NO_ScriptGetLogicalWidths
+#define NO_ScriptGetProperties
 #define NO_ScriptItemize
 #define NO_ScriptLayout
 #define NO_ScriptPlace

@@ -2454,6 +2454,7 @@ public static final native void MoveMemory(int DestinationPtr, float[] Source, i
 public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native void MoveMemory (SCRIPT_ITEM Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (SCRIPT_LOGATTR Destination, int SourcePtr, int Length);
+public static final native void MoveMemory (SCRIPT_PROPERTIES Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (int Destination, KEYBDINPUT Source, int Length);
 public static final native void MoveMemory (int Destination, MOUSEINPUT Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
@@ -2504,6 +2505,7 @@ public static final native boolean RoundRect (int hdc, int nLeftRect, int nTopRe
 public static final native int SaveDC(int hdc);
 public static final native boolean ScreenToClient (int hWnd, POINT lpPoint);
 public static final native int ScriptBreak(char[] pwcChars, int cChars, SCRIPT_ANALYSIS psa, int psla);
+public static final native int ScriptGetProperties(int[] ppSp, int[] piNumScripts);
 public static final native int ScriptCacheGetHeight(int hdc, int psc, int[] tmHeight);
 public static final native int ScriptCPtoX(int iCP, boolean fTrailing, int cChars, int cGlyphs, int pwLogClust, int psva, int piAdvance, SCRIPT_ANALYSIS psa, int[] piX);
 public static final native int ScriptFreeCache(int psc);

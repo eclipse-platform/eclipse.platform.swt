@@ -3970,6 +3970,79 @@ void setSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpSt
 }
 #endif
 
+#ifndef NO_SCRIPT_PROPERTIES
+typedef struct SCRIPT_PROPERTIES_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID langid, fNumeric, fComplex, fNeedsWordBreaking, fNeedsCaretInfo, bCharSet, fControl, fPrivateUseArea, fNeedsCharacterJustify, fInvalidGlyph, fInvalidLogAttr, fCDM, fAmbiguousCharSet, fClusterSizeVaries, fRejectInvalid;
+} SCRIPT_PROPERTIES_FID_CACHE;
+
+SCRIPT_PROPERTIES_FID_CACHE SCRIPT_PROPERTIESFc;
+
+void cacheSCRIPT_PROPERTIESFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_PROPERTIESFc.cached) return;
+	SCRIPT_PROPERTIESFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_PROPERTIESFc.langid = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "langid", "S");
+	SCRIPT_PROPERTIESFc.fNumeric = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fNumeric", "Z");
+	SCRIPT_PROPERTIESFc.fComplex = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fComplex", "Z");
+	SCRIPT_PROPERTIESFc.fNeedsWordBreaking = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fNeedsWordBreaking", "Z");
+	SCRIPT_PROPERTIESFc.fNeedsCaretInfo = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fNeedsCaretInfo", "Z");
+	SCRIPT_PROPERTIESFc.bCharSet = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "bCharSet", "B");
+	SCRIPT_PROPERTIESFc.fControl = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fControl", "Z");
+	SCRIPT_PROPERTIESFc.fPrivateUseArea = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fPrivateUseArea", "Z");
+	SCRIPT_PROPERTIESFc.fNeedsCharacterJustify = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fNeedsCharacterJustify", "Z");
+	SCRIPT_PROPERTIESFc.fInvalidGlyph = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fInvalidGlyph", "Z");
+	SCRIPT_PROPERTIESFc.fInvalidLogAttr = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fInvalidLogAttr", "Z");
+	SCRIPT_PROPERTIESFc.fCDM = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fCDM", "Z");
+	SCRIPT_PROPERTIESFc.fAmbiguousCharSet = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fAmbiguousCharSet", "Z");
+	SCRIPT_PROPERTIESFc.fClusterSizeVaries = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fClusterSizeVaries", "Z");
+	SCRIPT_PROPERTIESFc.fRejectInvalid = (*env)->GetFieldID(env, SCRIPT_PROPERTIESFc.clazz, "fRejectInvalid", "Z");
+	SCRIPT_PROPERTIESFc.cached = 1;
+}
+
+SCRIPT_PROPERTIES *getSCRIPT_PROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_PROPERTIES *lpStruct)
+{
+	if (!SCRIPT_PROPERTIESFc.cached) cacheSCRIPT_PROPERTIESFields(env, lpObject);
+	lpStruct->langid = (*env)->GetShortField(env, lpObject, SCRIPT_PROPERTIESFc.langid);
+	lpStruct->fNumeric = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNumeric);
+	lpStruct->fComplex = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fComplex);
+	lpStruct->fNeedsWordBreaking = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsWordBreaking);
+	lpStruct->fNeedsCaretInfo = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsCaretInfo);
+	lpStruct->bCharSet = (*env)->GetByteField(env, lpObject, SCRIPT_PROPERTIESFc.bCharSet);
+	lpStruct->fControl = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fControl);
+	lpStruct->fPrivateUseArea = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fPrivateUseArea);
+	lpStruct->fNeedsCharacterJustify = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsCharacterJustify);
+	lpStruct->fInvalidGlyph = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fInvalidGlyph);
+	lpStruct->fInvalidLogAttr = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fInvalidLogAttr);
+	lpStruct->fCDM = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fCDM);
+	lpStruct->fAmbiguousCharSet = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fAmbiguousCharSet);
+	lpStruct->fClusterSizeVaries = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fClusterSizeVaries);
+	lpStruct->fRejectInvalid = (*env)->GetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fRejectInvalid);
+	return lpStruct;
+}
+
+void setSCRIPT_PROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_PROPERTIES *lpStruct)
+{
+	if (!SCRIPT_PROPERTIESFc.cached) cacheSCRIPT_PROPERTIESFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, SCRIPT_PROPERTIESFc.langid, (jshort)lpStruct->langid);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNumeric, (jboolean)lpStruct->fNumeric);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fComplex, (jboolean)lpStruct->fComplex);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsWordBreaking, (jboolean)lpStruct->fNeedsWordBreaking);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsCaretInfo, (jboolean)lpStruct->fNeedsCaretInfo);
+	(*env)->SetByteField(env, lpObject, SCRIPT_PROPERTIESFc.bCharSet, (jbyte)lpStruct->bCharSet);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fControl, (jboolean)lpStruct->fControl);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fPrivateUseArea, (jboolean)lpStruct->fPrivateUseArea);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fNeedsCharacterJustify, (jboolean)lpStruct->fNeedsCharacterJustify);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fInvalidGlyph, (jboolean)lpStruct->fInvalidGlyph);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fInvalidLogAttr, (jboolean)lpStruct->fInvalidLogAttr);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fCDM, (jboolean)lpStruct->fCDM);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fAmbiguousCharSet, (jboolean)lpStruct->fAmbiguousCharSet);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fClusterSizeVaries, (jboolean)lpStruct->fClusterSizeVaries);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_PROPERTIESFc.fRejectInvalid, (jboolean)lpStruct->fRejectInvalid);
+}
+#endif
+
 #ifndef NO_SCRIPT_STATE
 typedef struct SCRIPT_STATE_FID_CACHE {
 	int cached;

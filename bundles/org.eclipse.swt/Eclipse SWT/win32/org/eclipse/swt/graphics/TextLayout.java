@@ -41,6 +41,7 @@ public class TextLayout {
 	int[] tabs;
 	StyleItem[] styles;
 
+	StyleItem[] allRuns;
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	
@@ -67,6 +68,9 @@ public class TextLayout {
 		int goffsets;
 		int width;
 		int height;
+
+		/* ScriptBreak */
+		int psla;
 	
 	void free() {
 		int hHeap = OS.GetProcessHeap();
@@ -96,6 +100,10 @@ public class TextLayout {
 		if (goffsets != 0) {
 			OS.HeapFree(hHeap, 0, goffsets);
 			goffsets = 0;
+		}
+		if (psla != 0) {
+			OS.HeapFree(hHeap, 0, psla);
+			psla = 0;
 		}
 		width = 0;
 		height = 0;
@@ -133,6 +141,15 @@ public TextLayout (Device device) {
 	if (device.tracking) device.new_Object(this);
 }
 
+void breakRun(StyleItem run) {
+	if (run.psla != 0) return;
+	char[] chars = new char[run.length];
+	text.getChars(run.start, run.start + run.length, chars, 0);
+	int hHeap = OS.GetProcessHeap();
+	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length); 
+	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
+}
+
 void checkLayout () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
@@ -145,7 +162,7 @@ void computeRuns (GC gc) {
 	if (runs != null) return;
 	int hDC = gc != null ? gc.handle : device.internal_new_GC(null);
 	int srcHdc = OS.CreateCompatibleDC(hDC);
-	StyleItem[] allRuns = itemize();
+	allRuns = itemize();
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		Font font = null;
@@ -206,19 +223,13 @@ void computeRuns (GC gc) {
 				}
 				int firstStart = start;
 				int firstIndice = i;
-				
 				while (i >= lineStart) {
-					char[] chars = new char[run.length];
-					text.getChars(run.start, run.start + run.length, chars, 0);
-					int hHeap = OS.GetProcessHeap();
-					int psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length); 
-					OS.ScriptBreak(chars, chars.length, run.analysis, psla);
+					breakRun(run);
 					while (start >= 0) {
-						OS.MoveMemory(logAttr, psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+						OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
 						if (logAttr.fSoftBreak || logAttr.fWhiteSpace) break;
 						start--;
 					}
-					OS.HeapFree(hHeap, 0, psla);
 					if (start >= 0 || i == lineStart) break;
 					run = allRuns[--i];
 					start = run.length - 1;
@@ -230,17 +241,12 @@ void computeRuns (GC gc) {
 					i = firstIndice;
 					run = allRuns[i];
 					start = Math.max(1, firstStart);
-					char[] chars = new char[run.length];
-					text.getChars(run.start, run.start + run.length, chars, 0);
-					int hHeap = OS.GetProcessHeap();
-					int psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
-					OS.ScriptBreak(chars, chars.length, run.analysis, psla);
+					breakRun(run);
 					while (start < run.length) {
-						OS.MoveMemory(logAttr, psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+						OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
 						if (!logAttr.fWhiteSpace) break;
 						start++;
 					}
-					OS.HeapFree(hHeap, 0, psla);		
 				}
 				if (0 < start && start < run.length) {
 					StyleItem newRun = new StyleItem();
@@ -489,14 +495,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 }
 
 void freeRuns () {
-	if (runs == null) return;
-	for (int line=0; line<runs.length; line++) {
-		StyleItem[] lineRuns = runs[line];
-		for (int i=0; i<lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
-			run.free();
-		}
+	if (allRuns == null) return;
+	for (int i=0; i<allRuns.length; i++) {
+		StyleItem run = allRuns[i];
+		run.free();
 	}
+	allRuns = null;
 	runs = null;
 }
 
@@ -857,69 +861,68 @@ public Point getLocation (int offset, int trailing) {
  * @return end offset
  */
 public int getNextOffset (int offset, int movement) {
-	return _getOffset(offset, movement, true);
-}
-
-int _getOffset (int offset, int movement, boolean forward) {
 	checkLayout();
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	if (forward) {
-		if (offset == length) return length;
-	} else {
-		if (offset == 0) return 0;
-	}
-	int step = forward ? 1 : -1;
-	if ((movement & MOVEMENT_CHAR) != 0) return offset + step;
-	int line;
-	for (line=0; line<runs.length; line++) {
-		if (lineOffset[line + 1] > offset) break;
-	}
-	line = Math.min(line, runs.length - 1);
-	StyleItem[] lineRuns = runs[line];
-	int lineStart = lineOffset[line];
-	int lineEnd =  lineOffset[line + 1];
-	boolean searching = true;
-	int i = 0;
-	offset += step;
+	if (offset == length) return length;
+	if ((movement & MOVEMENT_CHAR) != 0) return offset + 1;
+	int[] ppSp = new int[1];
+	int[] piNumScripts = new int[1];
+	OS.ScriptGetProperties(ppSp, piNumScripts);
+	int[] scripts = new int[piNumScripts[0]];
+	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
+	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
-	while (searching && lineStart <= offset && offset < lineEnd) {
-		StyleItem run = lineRuns[i];
-		int start = run.start;
-		int end = start + run.length;
-		if (end == length) end++;
-		if (start <= offset && offset < end) {
-			int hHeap = OS.GetProcessHeap();
-			char[] chars = new char[run.length];
-			int psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
-			text.getChars(start, start + chars.length, chars, 0);
-			OS.ScriptBreak(chars, chars.length, run.analysis, psla);
-			while (searching && start <= offset && offset < end) {
-				OS.MoveMemory(logAttr, psla + ((offset - start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
-				if (!logAttr.fInvalid) {
-					if (((movement & MOVEMENT_CLUSTER) != 0) && logAttr.fCharStop) searching = false;
-					if (((movement & MOVEMENT_WORD) != 0) && logAttr.fWordStop) searching = false;
-				}
-				if (searching) offset += step;
+	boolean previousWhitespace = false;
+	int i = 0;	
+	int lastScript  = -1;
+	for (; i < allRuns.length; i++) {
+		StyleItem run = allRuns[i];
+		if (run.start <= offset && offset < run.start + run.length) {
+			if (run.lineBreak && !run.softBreak) return run.start + run.length;
+			breakRun(run);
+			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
+			previousWhitespace = logAttr.fWhiteSpace;
+			lastScript = run.analysis.eScript;
+			break;
+		}
+	}
+	offset++;
+	for (; i < allRuns.length && offset < length; i++) {
+		StyleItem run = allRuns[i];
+		if (run.start <= offset && offset < run.start + run.length) {
+			if (run.lineBreak && !run.softBreak) return offset;
+			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
+				return offset;
 			}
-			OS.HeapFree(hHeap, 0, psla);
-			if (!searching) return offset;
-			i = 0;
-		} else {
-			i++;
+			breakRun(run);
+			if ((movement & MOVEMENT_WORD) != 0) {
+				if (run.analysis.eScript != lastScript) {
+					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+					if (!logAttr.fWhiteSpace) return offset;
+				}				
+				lastScript = run.analysis.eScript;
+			}
+			while (run.start <= offset && offset < run.start + run.length) {
+				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+				if (!logAttr.fInvalid) {
+					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return offset;
+					if ((movement & MOVEMENT_WORD) != 0) {
+						if (properties.fNeedsWordBreaking) {
+							if (logAttr.fWordStop) return offset;
+						} else {
+							if (!logAttr.fWhiteSpace && previousWhitespace) return offset;
+						}
+					}
+					previousWhitespace = logAttr.fWhiteSpace;
+				}
+				offset++;
+			}
 		}
 	}
-	if (searching) {
-		if (forward) {
-			if ((movement & MOVEMENT_CLUSTER) != 0) return lineEnd;
-			if (offset >= lineEnd) return lineEnd;
-			return lineEnd - 1;
-		} else {
-			return Math.max(0, lineStart - 1);
-		}
-	}
-	return offset;
+	return length;
 }
 
 /**
@@ -1031,7 +1034,67 @@ public int getOrientation () {
  * @return end offset
  */
 public int getPreviousOffset (int offset, int movement) {
-	return _getOffset(offset, movement, false);
+	checkLayout();
+	computeRuns(null);
+	int length = text.length();
+	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (offset == 0) return 0;
+	if ((movement & MOVEMENT_CHAR) != 0) return offset - 1;
+	int[] ppSp = new int[1];
+	int[] piNumScripts = new int[1];
+	OS.ScriptGetProperties(ppSp, piNumScripts);
+	int[] scripts = new int[piNumScripts[0]];
+	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
+	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
+	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
+	boolean previousWhitespace = false;
+	int i = allRuns.length - 1;
+	int lastScript  = -1;
+	offset--;
+	for (;  i >= 0; i--) {
+		StyleItem run = allRuns[i];
+		if (run.start <= offset && offset < run.start + run.length) {
+			if (run.lineBreak && !run.softBreak) return run.start;
+			breakRun(run);
+			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
+			previousWhitespace = logAttr.fWhiteSpace;
+			lastScript = run.analysis.eScript;
+			break;
+		}
+	}
+	for (; i >= 0 && offset >= 0; i--) {
+		StyleItem run = allRuns[i];
+		if (run.start <= offset && offset < run.start + run.length) {
+			if (run.lineBreak && !run.softBreak) return run.start + run.length;
+			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
+				return offset;
+			}
+			if ((movement & MOVEMENT_WORD) != 0) {
+				if (run.analysis.eScript != lastScript) {
+					if (!previousWhitespace) return offset + 1;
+				}
+				lastScript = run.analysis.eScript;
+			}
+			breakRun(run);
+			while (run.start <= offset && offset < run.start + run.length) {
+				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+				if (!logAttr.fInvalid) {
+					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return offset;
+					if ((movement & MOVEMENT_WORD) != 0) {
+						if (properties.fNeedsWordBreaking) {
+							if (logAttr.fWordStop) return offset;
+						} else {
+							if (logAttr.fWhiteSpace && !previousWhitespace) return offset + 1;
+						}
+					}
+					previousWhitespace = logAttr.fWhiteSpace;
+				};
+				offset--;
+			}
+		}
+	}
+	return 0;
 }
 
 /**

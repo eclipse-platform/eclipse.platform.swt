@@ -731,6 +731,16 @@ void setSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpSt
 #define SCRIPT_LOGATTR_sizeof() 0
 #endif
 
+#ifndef NO_SCRIPT_PROPERTIES
+SCRIPT_PROPERTIES *getSCRIPT_PROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_PROPERTIES *lpStruct);
+void setSCRIPT_PROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_PROPERTIES *lpStruct);
+#define SCRIPT_PROPERTIES_sizeof() sizeof(SCRIPT_PROPERTIES)
+#else
+#define getSCRIPT_PROPERTIESFields(a,b,c) NULL
+#define setSCRIPT_PROPERTIESFields(a,b,c)
+#define SCRIPT_PROPERTIES_sizeof() 0
+#endif
+
 #ifndef NO_SCRIPT_STATE
 SCRIPT_STATE *getSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct);
 void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct);
