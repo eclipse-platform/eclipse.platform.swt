@@ -273,12 +273,12 @@ void createItem (TableColumn column, int index) {
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
-	if (customDraw && items != null && count != 0) {
+	if (customDraw && count != 0) {
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		for (int i = 0;  i < itemCount;  i++) {
+		for (int i=0; i<itemCount; i++) {
 			if (items [i].cellBackground != null) {
-				int  [] cellBackground = items [i].cellBackground;
-				int  [] temp = new int [columnCount];
+				int [] cellBackground = items [i].cellBackground;
+				int [] temp = new int [columnCount];
 				System.arraycopy (cellBackground, 0, temp, 0, index);
 				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
 				temp [index] = -1;
@@ -572,11 +572,10 @@ void destroyItem (TableColumn column) {
 	if (first) index = 0;
 	System.arraycopy (columns, index + 1, columns, index, --count - index);
 	columns [count] = null;
-
-	if (customDraw && items != null && getColumnCount () != 0) {
+	if (customDraw && getColumnCount () != 0) {
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		for (int i = 0; i < itemCount; i++) {
+		for (int i=0; i<itemCount; i++) {
 			if (items [i].cellBackground != null) {
 				int [] cellBackground = items [i].cellBackground;
 				int [] temp = new int [columnCount];
@@ -1580,19 +1579,20 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* list widget and other widgets in Windows.  The fix is
 	* to detect the case when an item is reselected and issue
 	* the notification.
+	* 
+	* NOTE: This code runs for multi-select as well, ignoring
+	* the selection that is issed from WM_NOTIFY.
 	*/
 	boolean wasSelected = false;
-	if ((style & SWT.SINGLE) != 0) {
-		int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
-		if (count == 1 && pinfo.iItem != -1) {
-			LVITEM lvItem = new LVITEM ();
-			lvItem.mask = OS.LVIF_STATE;
-			lvItem.stateMask = OS.LVIS_SELECTED;
-			lvItem.iItem = pinfo.iItem;
-			OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-			wasSelected = (lvItem.state & OS.LVIS_SELECTED) != 0;
-			if (wasSelected) ignoreSelect = true;
-		}
+	int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+	if (count == 1 && pinfo.iItem != -1) {
+		LVITEM lvItem = new LVITEM ();
+		lvItem.mask = OS.LVIF_STATE;
+		lvItem.stateMask = OS.LVIS_SELECTED;
+		lvItem.iItem = pinfo.iItem;
+		OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+		wasSelected = (lvItem.state & OS.LVIS_SELECTED) != 0;
+		if (wasSelected) ignoreSelect = true;
 	}
 	dragStarted = false;
 	int code = callWindowProc (msg, wParam, lParam);
