@@ -277,7 +277,7 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int minimum = OS.GetControl32BitMinimum (handle);
-	if (value >= minimum) {
+	if (value > minimum) {
 		OS.SetControl32BitMaximum (handle, value);
 	}
 }
@@ -298,7 +298,7 @@ public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int maximum = OS.GetControl32BitMaximum (handle);
-	if (value <= maximum) {
+	if (value < maximum) {
 		OS.SetControl32BitMinimum (handle, value);
 	}
 }

@@ -162,7 +162,10 @@ public int getSelection () {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-    OS.SetControl32BitMaximum (handle, value);
+	int minimum = OS.GetControl32BitMinimum (handle);
+	if (value > minimum) {
+		OS.SetControl32BitMaximum (handle, value);
+	}
 }
 
 /**
@@ -180,7 +183,10 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-    OS.SetControl32BitMinimum (handle, value);
+	int maximum = OS.GetControl32BitMaximum (handle);
+	if (value < maximum) {
+		OS.SetControl32BitMinimum (handle, value);
+	}
 }
 
 /**
