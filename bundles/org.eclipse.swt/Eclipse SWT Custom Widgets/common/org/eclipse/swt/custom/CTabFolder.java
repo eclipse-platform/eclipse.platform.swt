@@ -364,7 +364,8 @@ static int checkStyle (Composite parent, int style) {
 	 * To alleviate some of the appearance problems, allow the OS to draw the background.
 	 * This does not draw correctly but the result is less obviously wrong.
 	 */
-	if ("win32".equals(platform) && (parent.getStyle() & SWT.RIGHT_TO_LEFT) != 0) return style;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) return style;
+	if ((parent.getStyle() & SWT.MIRRORED) != 0 && (style & SWT.LEFT_TO_RIGHT) == 0) return style;
 	
 	return style | SWT.NO_BACKGROUND;
 }
