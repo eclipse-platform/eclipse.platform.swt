@@ -887,6 +887,15 @@ public static final boolean GTK_IS_CELL_RENDERER_TEXT(int /*long*/ obj) {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_CONTAINER(int /*long*/ obj);
+public static final boolean GTK_IS_CONTAINER(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_CONTAINER(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj);
 public static final boolean GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj) {
 	lock.lock();
@@ -3440,6 +3449,15 @@ public static final void gtk_container_add(int /*long*/ container, int /*long*/ 
 	lock.lock();
 	try {
 		_gtk_container_add(container, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_container_forall(int /*long*/ container, int /*long*/ callback, int /*long*/ callback_data);
+public static final void gtk_container_forall(int /*long*/ container, int /*long*/ callback, int /*long*/ callback_data) {
+	lock.lock();
+	try {
+		_gtk_container_forall(container, callback, callback_data);
 	} finally {
 		lock.unlock();
 	}

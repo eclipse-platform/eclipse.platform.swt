@@ -969,6 +969,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CELL_1RENDERER_1TEXT)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1CONTAINER
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CONTAINER)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1CONTAINER_FUNC);
+	rc = (jboolean)GTK_IS_CONTAINER(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1CONTAINER_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1IMAGE_1MENU_1ITEM
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5199,6 +5211,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1add)
 	OS_NATIVE_ENTER(env, that, _1gtk_1container_1add_FUNC);
 	gtk_container_add((GtkContainer *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1container_1add_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1container_1forall
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1forall)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1container_1forall_FUNC);
+	gtk_container_forall((GtkContainer *)arg0, (GtkCallback)arg1, (gpointer)arg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1container_1forall_FUNC);
 }
 #endif
 

@@ -181,6 +181,10 @@ public class Display extends Device {
 	int /*long*/ pixbufCellDataProc;
 	Callback pixbufCellDataCallback;
 	
+	/* Set direction callback */
+	int /*long*/ setDirectionProc;
+	Callback setDirectionCallback;
+	
 	/* Flush exposes */
 	int /*long*/ checkIfEventProc;
 	Callback checkIfEventCallback;
@@ -1945,6 +1949,10 @@ void initializeCallbacks () {
 	pixbufCellDataProc = pixbufCellDataCallback.getAddress ();
 	if (pixbufCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	setDirectionCallback = new Callback (this, "setDirectionProc", 2);
+	setDirectionProc = setDirectionCallback.getAddress ();
+	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
 	checkIfEventProc = checkIfEventCallback.getAddress ();
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2515,6 +2523,10 @@ void releaseDisplay () {
 	textCellDataProc = 0;
 	pixbufCellDataCallback.dispose (); pixbufCellDataCallback = null;
 	pixbufCellDataProc = 0;
+	
+	/* Dispose the set direction callback */
+	setDirectionCallback.dispose (); setDirectionCallback = null;
+	setDirectionProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
@@ -2915,6 +2927,14 @@ public void setData (String key, Object value) {
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
+}
+
+int setDirectionProc (int widget, int direction) {
+	OS.gtk_widget_set_direction (widget, direction);
+	if (OS.GTK_IS_CONTAINER (widget)) {
+		OS.gtk_container_forall (widget, setDirectionProc, direction);
+	}
+	return 0;
 }
 
 /**

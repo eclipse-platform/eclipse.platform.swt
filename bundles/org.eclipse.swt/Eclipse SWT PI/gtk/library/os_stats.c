@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 969;
-int OS_nativeFunctionCallCount[969];
+int OS_nativeFunctionCount = 971;
+int OS_nativeFunctionCallCount[971];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -102,6 +102,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1IS_1BUTTON",
 	"_1GTK_1IS_1CELL_1RENDERER_1PIXBUF",
 	"_1GTK_1IS_1CELL_1RENDERER_1TEXT",
+	"_1GTK_1IS_1CONTAINER",
 	"_1GTK_1IS_1IMAGE_1MENU_1ITEM",
 	"_1GTK_1STOCK_1CANCEL",
 	"_1GTK_1STOCK_1OK",
@@ -416,6 +417,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1combo_1set_1case_1sensitive",
 	"_1gtk_1combo_1set_1popdown_1strings",
 	"_1gtk_1container_1add",
+	"_1gtk_1container_1forall",
 	"_1gtk_1container_1get_1border_1width",
 	"_1gtk_1container_1get_1children",
 	"_1gtk_1container_1remove",
