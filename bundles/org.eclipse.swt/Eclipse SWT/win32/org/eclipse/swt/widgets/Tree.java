@@ -3282,7 +3282,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
 				Image image = item.image;
-				lptvdi.iImage = OS.I_IMAGENONE;
+				lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
 				if (image != null) {
 					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image);
 				}
