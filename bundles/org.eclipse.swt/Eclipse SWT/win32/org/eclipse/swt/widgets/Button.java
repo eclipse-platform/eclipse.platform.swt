@@ -13,7 +13,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
- * issues notificiation when pressed and released. 
+ * issues notification when pressed and released. 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
