@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Group extends Composite {
 	static final int GroupProc;
-	static final TCHAR GroupClass = new TCHAR (0, "SWT_GROUP", true);
+	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
 	static {
 		/*
 		* Feature in Windows.  The group box window class
@@ -45,22 +45,32 @@ public class Group extends Composite {
 		* register a new window class without these bits and
 		* implement special code that damages only the exposed
 		* area.
+		* 
+		* Feature in WinCE.  On certain devices, defining
+		* a new window class which looks like BUTTON causes
+		* CreateWindowEx() to crash.  The workaround is to use
+		* the class Button directly.
 		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
-		TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
-		OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
-		GroupProc = lpWndClass.lpfnWndProc;
-		int hInstance = OS.GetModuleHandle (null);
-		if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
-			int hHeap = OS.GetProcessHeap ();
-			lpWndClass.hInstance = hInstance;
-			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-			int byteCount = GroupClass.length () * TCHAR.sizeof;
-			int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (lpszClassName, GroupClass, byteCount);
-			lpWndClass.lpszClassName = lpszClassName;
-			OS.RegisterClass (lpWndClass);
-//			OS.HeapFree (hHeap, 0, lpszClassName);
+		if (OS.IsWinCE) {
+			OS.GetClassInfo (0, GroupClass, lpWndClass);
+			GroupProc = lpWndClass.lpfnWndProc;
+		} else {
+			TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
+			OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
+			GroupProc = lpWndClass.lpfnWndProc;
+			int hInstance = OS.GetModuleHandle (null);
+			if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
+				int hHeap = OS.GetProcessHeap ();
+				lpWndClass.hInstance = hInstance;
+				lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
+				int byteCount = GroupClass.length () * TCHAR.sizeof;
+				int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				OS.MoveMemory (lpszClassName, GroupClass, byteCount);
+				lpWndClass.lpszClassName = lpszClassName;
+				OS.RegisterClass (lpWndClass);
+	//			OS.HeapFree (hHeap, 0, lpszClassName);
+			}
 		}
 	}
 
@@ -341,6 +351,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (OS.IsWinCE) return result;
 	OS.InvalidateRect (handle, null, true);
 	return result;
 }
