@@ -32,7 +32,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class TabFolder extends Composite {
+public class TabFolder extends Composite {
 	TabItem items[];
 	int selectedIndex = -1;
 	int xClient, yClient;

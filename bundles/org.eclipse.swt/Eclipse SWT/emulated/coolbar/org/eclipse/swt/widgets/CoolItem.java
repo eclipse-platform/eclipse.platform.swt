@@ -23,7 +23,7 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class CoolItem extends Item {
+public class CoolItem extends Item {
 	Composite composite;
 	Control control;
 	CoolBar parent;

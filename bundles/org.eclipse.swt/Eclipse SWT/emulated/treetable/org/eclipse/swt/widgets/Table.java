@@ -33,7 +33,7 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class Table extends SelectableItemWidget {
+public class Table extends SelectableItemWidget {
 	private static final int COLUMN_RESIZE_OFFSET = 7;	// offset from the start and end of each 
 														// column at which the resize cursor is displayed 
 														// if the mouse is in the column header

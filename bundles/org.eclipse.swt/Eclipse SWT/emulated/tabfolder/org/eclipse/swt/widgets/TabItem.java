@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 
-public /*final*/ class TabItem extends Item {
+public class TabItem extends Item {
 	TabFolder parent;
 	int x,y,width,height = 0;
 	String toolTipText;

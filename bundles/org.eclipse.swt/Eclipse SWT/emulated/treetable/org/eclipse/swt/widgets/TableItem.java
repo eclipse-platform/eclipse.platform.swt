@@ -22,7 +22,7 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class TableItem extends SelectableItem {
+public class TableItem extends SelectableItem {
 	private static final int FIRST_COLUMN_IMAGE_INDENT = 2;	// Space in front of image - first column only
 	private static final int FIRST_COLUMN_TEXT_INDENT = 4;	// Space in front of text - first column only	
 	private static final int TEXT_INDENT_NO_IMAGE = 2;		// Space in front of item text when no item in the column has an image - first column only
