@@ -74,23 +74,6 @@ public final class GridLayout extends Layout {
 	 */
  	public int marginHeight = 5;
 
-	/**
-	 * horizontalSpacing specifies the number of pixels between the right
-	 * edge of one cell and the left edge of its neighbouring cell to
-	 * the right.
-	 *
-	 * The default value is 5.
-	 */
- 	public int horizontalSpacing = 5;
-
-	/**
-	 * verticalSpacing specifies the number of pixels between the bottom
-	 * edge of one cell and the top edge of its neighbouring cell underneath.
-	 *
-	 * The default value is 5.
-	 */
- 	public int verticalSpacing = 5;
-
  	/**
 	 * marginLeft specifies the number of pixels of horizontal margin
 	 * that will be placed along the left edge of the layout.
@@ -130,7 +113,24 @@ public final class GridLayout extends Layout {
 	 * @since 3.1
 	 */
 	public int marginBottom = 0;
-	
+
+	/**
+	 * horizontalSpacing specifies the number of pixels between the right
+	 * edge of one cell and the left edge of its neighbouring cell to
+	 * the right.
+	 *
+	 * The default value is 5.
+	 */
+ 	public int horizontalSpacing = 5;
+
+	/**
+	 * verticalSpacing specifies the number of pixels between the bottom
+	 * edge of one cell and the top edge of its neighbouring cell underneath.
+	 *
+	 * The default value is 5.
+	 */
+ 	public int verticalSpacing = 5;
+ 
 /**
  * Constructs a new instance of this class.
  */

@@ -101,7 +101,48 @@ public final class FormLayout extends Layout {
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
- 	
+ 
+
+ 	/**
+	 * marginLeft specifies the number of pixels of horizontal margin
+	 * that will be placed along the left edge of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.1
+	 */
+	public int marginLeft = 0;
+
+	/**
+	 * marginTop specifies the number of pixels of vertical margin
+	 * that will be placed along the top edge of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.1
+	 */
+	public int marginTop = 0;
+
+	/**
+	 * marginRight specifies the number of pixels of horizontal margin
+	 * that will be placed along the right edge of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.1
+	 */
+	public int marginRight = 0;
+
+	/**
+	 * marginBottom specifies the number of pixels of vertical margin
+	 * that will be placed along the bottom edge of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.1
+	 */
+	public int marginBottom = 0;
+
 	/**
 	 * spacing specifies the number of pixels between the edge of one control
 	 * and the edge of its neighbouring control.
@@ -236,10 +277,10 @@ int computeWidth (Control control, FormData data, boolean flushCache) {
 
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
-	int x = rect.x + marginWidth;
-	int y = rect.y + marginHeight;
-	int width = Math.max (0, rect.width - 2 * marginWidth);
-	int height = Math.max (0, rect.height - 2 * marginHeight);
+	int x = rect.x + marginLeft + marginWidth;
+	int y = rect.y + marginTop + marginHeight;
+	int width = Math.max (0, rect.width - marginLeft - 2 * marginWidth - marginRight);
+	int height = Math.max (0, rect.height - marginLeft - 2 * marginHeight - marginBottom);
 	layout (composite, true, x, y, width, height, flushCache);
 }
 
@@ -315,8 +356,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			children [i].setBounds (bounds [i]);
 		}
 	}
-	w += marginWidth * 2;
-	h += marginHeight * 2;
+	w += marginLeft + marginWidth * 2 + marginRight;
+	h += marginTop + marginHeight * 2 + marginBottom;
 	return new Point (w, h);
 }
 
@@ -324,6 +365,10 @@ public String toString () {
  	String string =  getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
  	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+ 	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
+ 	if (marginRight != 0) string += "marginRight="+marginRight+" ";
+ 	if (marginTop != 0) string += "marginTop="+marginTop+" ";
+ 	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
  	if (spacing != 0) string += "spacing="+spacing+" ";
  	string = string.trim();
  	string += "}";
