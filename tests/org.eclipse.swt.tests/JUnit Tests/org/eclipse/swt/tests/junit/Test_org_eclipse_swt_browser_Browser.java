@@ -191,6 +191,20 @@ public void test_back() {
 	assertFalse(result);
 }
 
+public void test_executeLjava_lang_String() {
+	shell.setText("test_executeLjava_lang_String");
+	try {
+		browser.execute(null);
+		fail("No exception thrown for script == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	/* Real testing is done in the tests that run the event loop
+	 * since a document must have been loaded to execute a script on it.
+	 */
+}
+
 public void test_forward() {
 	shell.setText("test_forward");
 	for (int i = 0; i < 10; i++) {
@@ -382,6 +396,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addTitleListenerLorg_eclipse_swt_browser_TitleListener");
 	methodNames.addElement("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	methodNames.addElement("test_back");
+	methodNames.addElement("test_executeLjava_lang_String");
 	methodNames.addElement("test_forward");
 	methodNames.addElement("test_getUrl");
 	methodNames.addElement("test_isBackEnabled");
@@ -411,6 +426,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addTitleListenerLorg_eclipse_swt_browser_TitleListener")) test_addTitleListenerLorg_eclipse_swt_browser_TitleListener();
 	else if (getName().equals("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener")) test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener();
 	else if (getName().equals("test_back")) test_back();
+	else if (getName().equals("test_executeLjava_lang_String")) test_executeLjava_lang_String();
 	else if (getName().equals("test_forward")) test_forward();
 	else if (getName().equals("test_getUrl")) test_getUrl();
 	else if (getName().equals("test_isBackEnabled")) test_isBackEnabled();
