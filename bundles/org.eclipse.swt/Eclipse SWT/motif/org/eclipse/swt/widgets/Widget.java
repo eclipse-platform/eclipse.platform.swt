@@ -538,8 +538,6 @@ void manageChildren () {
  * @param eventType the type of event which has occurred
  * @param event the event data
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -548,7 +546,7 @@ void manageChildren () {
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (event == null) event = new Event ();
 	sendEvent (eventType, event);
 }
 void postEvent (int eventType) {
