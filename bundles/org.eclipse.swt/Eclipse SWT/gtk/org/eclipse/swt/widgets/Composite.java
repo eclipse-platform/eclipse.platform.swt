@@ -294,6 +294,10 @@ void hookEvents () {
 	}
 }
 
+boolean hooksKeys () {
+	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
@@ -589,9 +593,7 @@ boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) {
-			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
-		}
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 		if (takeFocus && setTabItemFocus ()) return true;
 	}
 	Control [] children = _getChildren ();
@@ -605,9 +607,7 @@ boolean setTabGroupFocus () {
 boolean setTabItemFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) {
-			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
-		}
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 		if (takeFocus) {
 			if (!isShowing ()) return false;
 			if (forceFocus ()) return true;
@@ -660,7 +660,7 @@ public void setTabList (Control [] tabList) {
 int traversalCode(int key, int event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
+		if (hooksKeys ()) return 0;
 	}
 	return super.traversalCode (key, event);
 }
