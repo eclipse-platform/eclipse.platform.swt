@@ -37,7 +37,6 @@ public final class GC {
 	GCData data;
 		
 	//---- AW
-	private Rect fRect= new Rect();
 	private int[] fSavePort= new int[1];
 	private int[] fSaveGWorld= new int[1];
 	private int fSaveClip= OS.NewRgn();
@@ -47,7 +46,6 @@ public final class GC {
 	private int fDamageRgn;
 	private boolean fPendingClip;
 	private boolean fClipAgainstChildren= true;
-	
 	private int[] fContext= new int[1];
 	private boolean fCGContextCreated;
 	//---- AW
@@ -78,8 +76,8 @@ GC() {
 public GC (Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
-	int xGC = drawable.internal_new_GC(data);
-	init(drawable, data, xGC);
+	int port = drawable.internal_new_GC(data);
+	init(drawable, data, port);
 }
 
 /**
@@ -105,8 +103,10 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 		
 	Rectangle src= new Rectangle(x, y, width, height);
 	src= src.union(new Rectangle(destX, destY, width, height));
+	
 	Rect r= new Rect();
-	OS.SetRect(r, (short)src.x, (short)src.y, (short)(src.x + src.width), (short)(src.y + src.height));
+	r.left= (short)src.x; r.top= (short)src.y;
+	r.right= (short)(src.x + src.width); r.bottom= (short)(src.y + src.height);
 	
 	try {
 		if (focus(true, null)) {
@@ -376,8 +376,12 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		if (focus(true, null)) {
 	
 			Rect ib= new Rect();
-			OS.SetRect(ib, (short)srcX, (short)srcY, (short)(srcX + srcWidth), (short)(srcY + srcHeight));
-			OS.SetRect(fRect, (short)destX, (short)destY, (short)(destX + destWidth), (short)(destY + destHeight));
+			ib.left= (short)srcX; ib.top= (short)srcY;
+			ib.right= (short)(srcX + srcWidth); ib.bottom= (short)(srcY + srcHeight);
+			
+			Rect rect= new Rect();
+			rect.left= (short)destX; rect.top= (short)destY;
+			rect.right= (short)(destX + destWidth); rect.bottom= (short)(destY + destHeight);
 		
 			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
 			OS.RGBForeColor((short)0x0000, (short)0x0000, (short)0x0000);
@@ -385,7 +389,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
 				
 				if (srcImage.alpha == 255) {	// fully opaque
-					OS.CopyBits(srcBits, destBits, ib, fRect, (short)0, 0);
+					OS.CopyBits(srcBits, destBits, ib, rect, (short)0, 0);
 					return;
 				}
 				
@@ -398,7 +402,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	
 				int maskBits= srcImage.mask != 0 ? OS.DerefHandle(srcImage.mask) : 0;
 				if (maskBits != 0) {
-					int rc= OS.CopyMask(srcBits, maskBits, destBits, ib, ib, fRect);
+					int rc= OS.CopyMask(srcBits, maskBits, destBits, ib, ib, rect);
 					if (rc != OS.noErr)
 						System.out.println("GC.drawImage: error in CopyMask: " + rc);
 				}
@@ -407,7 +411,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 
 			} else {
-				OS.CopyBits(srcBits, destBits, ib, fRect, (short)0, 0);
+				OS.CopyBits(srcBits, destBits, ib, rect, (short)0, 0);
 			}
 		}
 	} finally {
@@ -475,8 +479,10 @@ public void drawOval(int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			OS.SetRect(fRect, (short)x, (short)y, (short)(x + width + 1), (short)(y + height + 1));
-			OS.FrameOval(fRect);
+			Rect rect= new Rect();
+			rect.left= (short)x; rect.top= (short)y;
+			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
+			OS.FrameOval(rect);
 		}
 	} finally {
 		unfocus(true);
@@ -514,8 +520,8 @@ public void drawPolygon(int[] pointArray) {
 	// do this optimization.
 	
 	if (length < 4) {
-			drawPolyline(pointArray);
-			return;
+		drawPolyline(pointArray);
+		return;
 	}
 
 	// If first and last points are the same, the polygon is already closed.
@@ -575,7 +581,6 @@ public void drawPolyline(int[] pointArray) {
 	int poly= 0;
 	try {
 		if (focus(true, null)) {
-		
 			poly= OS.OpenPoly();
 			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
 			for (int i= 2; i < pointArray.length; i+= 2)
@@ -622,8 +627,10 @@ public void drawRectangle (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width+1), (short)(y+height+1));
-			OS.FrameRect(fRect);
+			Rect rect= new Rect();
+			rect.left= (short)x; rect.top= (short)y;
+			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
+			OS.FrameRect(rect);
 		}
 	} finally {
 		unfocus(true);
@@ -682,8 +689,10 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width+1), (short)(y+height+1));
-			OS.FrameRoundRect(fRect, (short)arcWidth, (short)arcHeight);
+			Rect rect= new Rect();
+			rect.left= (short)x; rect.top= (short)y;
+			rect.right= (short)(x + width + 1); rect.bottom= (short)(y + height + 1);
+			OS.FrameRoundRect(rect, (short)arcWidth, (short)arcHeight);
 		}
 	} finally {
 		unfocus(true);
@@ -1045,8 +1054,10 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 			OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
 			*/
 			MacUtil.RGBForeColor(data.foreground);
-			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
-			OS.PaintRect(fRect);
+			Rect rect= new Rect();
+			rect.left= (short)x; rect.top= (short)y;
+			rect.right= (short)(x + width); rect.bottom= (short)(y + height);
+			OS.PaintRect(rect);
 			return;
 		}
 		/* X Window deals with a virtually limitless array of color formats
@@ -1143,8 +1154,10 @@ public void fillOval (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
-				OS.PaintOval(fRect);
+				Rect rect= new Rect();
+				rect.left= (short)x; rect.top= (short)y;
+				rect.right= (short)(x + width); rect.bottom= (short)(y + height);
+				OS.PaintOval(rect);
 			} else {
 				//	System.out.println("GC.fillOval: " + Integer.toHexString(data.background));
 			}
@@ -1233,12 +1246,14 @@ public void fillRectangle (int x, int y, int width, int height) {
 	}
 	try {
 		if (focus(true, null)) {
-			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
+			Rect rect= new Rect();
+			rect.left= (short)x; rect.top= (short)y;
+			rect.right= (short)(x + width); rect.bottom= (short)(y + height);
 			if (fXorMode) {
-				OS.InvertRect(fRect);
+				OS.InvertRect(rect);
 			} else if ((data.background & 0xFF000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				OS.PaintRect(fRect);
+				OS.PaintRect(rect);
 			} else {
 				short depth= getCurrentScreenDepth();
 				int[] state= new int[1];
@@ -1246,7 +1261,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 				//OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
 				if (data.controlHandle != 0)
 					OS.SetUpControlBackground(data.controlHandle, depth, true);
-				OS.EraseRect(fRect);
+				OS.EraseRect(rect);
 				OS.SetThemeDrawingState(state[0], true);
 			}
 		}
@@ -1296,8 +1311,10 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
-				OS.PaintRoundRect(fRect, (short)arcWidth, (short)arcHeight);
+				Rect rect= new Rect();
+				rect.left= (short)x; rect.top= (short)y;
+				rect.right= (short)(x + width); rect.bottom= (short)(y + height);
+				OS.PaintRoundRect(rect, (short)arcWidth, (short)arcHeight);
 			} else {
 				//	System.out.println("GC.fillRoundRectangle: " + Integer.toHexString(data.background));
 			}
@@ -1669,8 +1686,8 @@ public boolean isDisposed() {
 }
 public static GC macosx_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
-	int xGC = drawable.internal_new_GC(data);
-	gc.init(drawable, data, xGC);
+	int port = drawable.internal_new_GC(data);
+	gc.init(drawable, data, port);
 	return gc;
 }
 /**
@@ -2064,14 +2081,14 @@ public String toString () {
 		if (!doClip)
 			return true;
 		
-		int dx= 0;
-		int dy= 0;
+		int dx= 0, dy= 0;
 
 		// set origin of port using drawable bounds
 		if (data.controlHandle != 0) {
-			MacUtil.getControlBounds(data.controlHandle, fRect);
-			dx= fRect.left;
-			dy= fRect.top;
+			Rect r= new Rect();
+			MacUtil.getControlBounds(data.controlHandle, r);
+			dx= r.left;
+			dy= r.top;
 			OS.SetOrigin((short)-dx, (short)-dy);
 			org.eclipse.swt.internal.carbon.Point p= new org.eclipse.swt.internal.carbon.Point();
 			p.h= (short)-dx;
@@ -2181,7 +2198,6 @@ public String toString () {
 			// create CGContext from GrafPort
 			if (OS.QDBeginCGContext(handle, fContext) != OS.noErr)
 				return 0;
-			System.out.println("CGContext created");
 			fCGContextCreated= true;
 			// synch CGContext with GrafPort clipping and offset
 			Rect b= new Rect();
