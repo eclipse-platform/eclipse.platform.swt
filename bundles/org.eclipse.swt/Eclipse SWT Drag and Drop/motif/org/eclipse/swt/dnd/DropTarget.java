@@ -88,8 +88,8 @@ public class DropTarget extends Widget {
 	private Runnable dragOverHeartbeat;
 	private DNDEvent dragOverEvent;
 	
-	int lastOperation;
-	int selectionTimeout;
+	private int lastOperation;
+	private int selectionTimeout;
 	
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
