@@ -1823,7 +1823,7 @@ public boolean sleep () {
 	OS.FD_SET (display_fd, fd_set);
 	OS.FD_SET (read_fd, fd_set);
 	timeout [0] = 0;
-	timeout [1] = 100;
+	timeout [1] = 100000;
 	OS.select (max_fd + 1, fd_set, null, null, timeout);
 	return OS.FD_ISSET (display_fd, fd_set);
 }
