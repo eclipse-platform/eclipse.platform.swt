@@ -17,13 +17,18 @@ import org.eclipse.swt.events.*;
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
- * <dd>LEFT, RIGHT, CENTER</dd>
+ * <dd>UP, DOWN, LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
  * may be specified.
+ * </p><p>
+ * Note: Only one of the styles LEFT, RIGHT, and CENTER may be specified.
+ * </p><p>
+ * Note: Only one of the styles UP, DOWN, LEFT, and RIGHT may be specified
+ * when the ARROW style is specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
@@ -53,8 +58,8 @@ public class Button extends Control {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -68,7 +73,15 @@ public class Button extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#ARROW
+ * @see SWT#CHECK
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#TOGGLE
+ * @see SWT#FLAT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -291,7 +304,7 @@ int defaultForeground () {
  * unless the receiver is an <code>ARROW</code> button, in 
  * which case, the alignment will indicate the direction of
  * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
- * <code>UP</code> or <code>DOWN</code>.
+ * <code>UP</code> or <code>DOWN</code>).
  *
  * @return the alignment 
  *
@@ -350,7 +363,7 @@ String getNameText () {
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed. If the receiver is of any other type,
+ * it is selected when it is pushed in. If the receiver is of any other type,
  * this method returns false.
  *
  * @return the selection state
@@ -532,7 +545,7 @@ void selectRadio () {
  * unless the receiver is an <code>ARROW</code> button, in 
  * which case, the argument indicates the direction of
  * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
- * <code>UP</code> or <code>DOWN</code>.
+ * <code>UP</code> or <code>DOWN</code>).
  *
  * @param alignment the new alignment 
  *
@@ -633,7 +646,7 @@ public void setImage (Image image) {
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is pushed in.
  *
  * @param selected the new selection state
  *

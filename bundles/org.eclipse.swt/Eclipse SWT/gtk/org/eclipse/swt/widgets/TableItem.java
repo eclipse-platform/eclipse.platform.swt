@@ -39,8 +39,8 @@ public class TableItem extends Item {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -76,8 +76,8 @@ public TableItem (Table parent, int style, int index) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -218,22 +218,17 @@ public boolean getGrayed () {
 }
 
 /**
-* Gets the image at an index.
-* <p>
-* Indexing is zero based.
-*
-* This operation will fail when the index is out
-* of range or an item could not be queried from
-* the OS.
-*
-* @param index the index of the image
-* @return the image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the image stored at the given column index in the receiver,
+ * or null if the image has not been set or if the column does not exist.
+ *
+ * @param index the column index
+ * @return the image stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getImage (int index) {
 	checkWidget ();
 	if (index == 0) return getImage ();
@@ -297,24 +292,20 @@ public Table getParent () {
 }
 
 /**
-* Gets the item text at an index.
-* <p>
-* Indexing is zero based.
-*
-* This operation will fail when the index is out
-* of range or an item could not be queried from
-* the OS.
-*
-* @param index the index of the item
-* @return the item
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_CANNOT_GET_TEXT)
-*	when the operation fails
-*/
+ * Returns the text stored at the given column index in the receiver,
+ * or empty string if the text has not been set.
+ *
+ * @param index the column index
+ * @return the text stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
+ * </ul>
+ */
 public String getText (int index) {
 	checkWidget ();
 	if (index == 0) return getText ();
