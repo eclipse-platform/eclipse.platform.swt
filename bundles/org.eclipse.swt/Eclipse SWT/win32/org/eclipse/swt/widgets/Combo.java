@@ -1378,15 +1378,12 @@ boolean translateTraversal (MSG msg) {
 	* to select an item in the list and escape to close
 	* the combo box.
 	*/
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	if (hwndText != 0 && msg.hwnd == hwndText) {
-		switch (msg.wParam) {
-			case OS.VK_RETURN:
-			case OS.VK_ESCAPE:
-				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-					return false;
-				}
-		}
+	switch (msg.wParam) {
+		case OS.VK_RETURN:
+		case OS.VK_ESCAPE:
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+				return false;
+			}
 	}
 	return super.translateTraversal (msg);
 }
