@@ -1,7 +1,8 @@
 Bundle-Name: org.eclipse.swt
+Bundle-UniqueId: org.eclipse.swt
 Bundle-Version: 3.0.0
 Manifest-Version: 1.0
-Export-Package: 
+Provide-Package: 
  org.eclipse.swt,
  org.eclipse.swt.accessibility,
  org.eclipse.swt.browser,
@@ -15,7 +16,4 @@ Export-Package:
  org.eclipse.swt.layout,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
- org.eclipse.swt.widgets,
- org.eclipse.swt.internal.ole.win32,
- org.eclipse.swt.internal.win32,
- org.eclipse.swt.ole.win32
+ org.eclipse.swt.widgets
