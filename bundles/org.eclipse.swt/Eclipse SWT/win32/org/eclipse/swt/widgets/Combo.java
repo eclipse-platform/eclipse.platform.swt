@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	boolean noSelection;
+	boolean noSelection, ignoreCharacter;
 	
 	/**
 	 * the operating system limit for the number of characters
@@ -1452,6 +1452,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {
+	if (ignoreCharacter) return null;
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1484,6 +1485,40 @@ LRESULT WM_CTLCOLOR (int wParam, int lParam) {
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_GETDLGCODE, wParam, lParam);
 	return new LRESULT (code | OS.DLGC_WANTARROWS);
+}
+
+LRESULT WM_IME_CHAR (int wParam, int lParam) {
+
+	/* Process a DBCS character */
+	Display display = this.display;
+	display.lastKey = 0;
+	display.lastAscii = wParam;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
+
+	/*
+	* Feature in Windows.  The Windows text widget uses
+	* two 2 WM_CHAR's to process a DBCS key instead of
+	* using WM_IME_CHAR.  The fix is to allow the text
+	* widget to get the WM_CHAR's but ignore sending
+	* them to the application.
+	*/
+	ignoreCharacter = true;
+	int result = callWindowProc (OS.WM_IME_CHAR, wParam, lParam);
+	MSG msg = new MSG ();
+	int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+	while (OS.PeekMessage (msg, handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
+		OS.TranslateMessage (msg);
+		OS.DispatchMessage (msg);
+	}
+	ignoreCharacter = false;
+	
+	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
+	return new LRESULT (result);
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
