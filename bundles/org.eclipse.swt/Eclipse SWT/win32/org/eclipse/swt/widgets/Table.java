@@ -207,6 +207,11 @@ void createHandle () {
 		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 		int width = (oneItem >> 16) - (empty >> 16), height = width;
 		setCheckboxImageList (width, height);
+		//NOT DONE
+//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//		if ((bits & OS.LVS_OWNERDATA) != 0) {
+//			OS.SendMessage (handle, OS. LVM_SETCALLBACKMASK, OS.LVIS_STATEIMAGEMASK, 0);
+//		}
 	}
 
 	/*
@@ -431,12 +436,10 @@ public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=0; i<indices.length; i++) {
-		lvItem.iItem = indices [i];
 		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
 		ignoreSelect = false;
 	}
 }
@@ -456,11 +459,9 @@ public void deselect (int [] indices) {
 public void deselect (int index) {
 	checkWidget ();
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	lvItem.iItem = index;
 	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
 	ignoreSelect = false;
 }
 
@@ -482,12 +483,10 @@ public void deselect (int index) {
 public void deselect (int start, int end) {
 	checkWidget ();
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=start; i<=end; i++) {
-		lvItem.iItem = i;
 		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
 		ignoreSelect = false;
 	}
 }
@@ -1442,13 +1441,11 @@ public void select (int [] indices) {
 	int length = indices.length;
 	if (length == 0) return;
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=indices.length-1; i>=0; --i) {
-		lvItem.iItem = indices [i];
 		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
 		ignoreSelect = false;
 	}
 }
@@ -1468,12 +1465,10 @@ public void select (int [] indices) {
 public void select (int index) {
 	checkWidget ();
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	lvItem.iItem = index;
 	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
 	ignoreSelect = false;
 }
 
@@ -1495,13 +1490,11 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=start; i<=end; i++) {
-		lvItem.iItem = i;
 		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
 		ignoreSelect = false;
 	}
 }
@@ -1693,12 +1686,10 @@ void setCheckboxImageList (int width, int height) {
 void setFocusIndex (int index) {
 //	checkWidget ();	
 	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_FOCUSED;
 	lvItem.stateMask = OS.LVIS_FOCUSED;
-	lvItem.iItem = index;
 	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
 	ignoreSelect = false;
 }
 
@@ -1947,6 +1938,12 @@ void setScrollWidth () {
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count == 1 && columns [0] == null) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		//NOT DONE
+//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//		if ((bits & OS.LVS_OWNERDATA) != 0) {
+//			int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+//			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, width + 2);
+//		}
 	}
 }
 
@@ -2223,6 +2220,8 @@ int widgetStyle () {
 	*/
 //	if ((style & SWT.FLAT) != 0) bits |= OS.LVS_NOSORTHEADER;
 	bits |= OS.LVS_REPORT | OS.LVS_NOCOLUMNHEADER;
+	//NOT DONE
+//	if ((style & SWT.VIRTUAL) != 0) bits |= OS.LVS_OWNERDATA; 
 	return bits;
 }
 
@@ -2504,11 +2503,10 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 	if (index == -1) {
 		LVITEM lvItem = new LVITEM ();
-		lvItem.mask = OS.LVIF_STATE;
 		lvItem.state = OS.LVIS_FOCUSED;
 		lvItem.stateMask = OS.LVIS_FOCUSED;
 		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, 0, lvItem);
 		ignoreSelect = false;
 	}
 	return result;
@@ -2534,6 +2532,46 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
+		//NOT DONE
+//		case OS.LVN_GETDISPINFOA:
+//		case OS.LVN_GETDISPINFOW: {
+//			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//			if ((bits & OS.LVS_OWNERDATA) != 0) {
+//				NMLVDISPINFO info = new NMLVDISPINFO ();
+//				OS.MoveMemory (info, lParam, NMLVDISPINFO.sizeof);
+//				System.out.println ("LVN_GETDISPINFO: " + Integer.toHexString (info.mask));
+//				if ((info.mask & OS.LVIF_TEXT) != 0) {
+//					System.out.println ("\tLVIF_TEXT");
+//					TableItem item = items [info.iItem];
+//					String string = item.text;
+//					//BUG - no null when overflow buffer
+//					TCHAR buffer = new TCHAR (getCodePage (), string, true);
+//					int byteCount = Math.min (buffer.length (), info.cchTextMax) * TCHAR.sizeof;
+//					OS.MoveMemory (info.pszText, buffer, byteCount);
+//				}
+//				if ((info.mask & OS.LVIF_IMAGE) != 0) {
+//					System.out.println ("\tLVIF_IMAGE");
+//					TableItem item = items [info.iItem];
+//					if (item.image != null) info.iImage = imageIndex (item.image);
+//				}
+//				if ((info.mask & OS.LVIF_STATE) != 0) {
+//					System.out.println ("\tLVIF_STATE");
+//					TableItem item = items [info.iItem];
+//					int state = 3;
+//					//if (item.checked) state++;
+//					//if (item.grayed) state +=2;
+//					info.state = state << 12;
+//					info.stateMask = OS.LVIS_STATEIMAGEMASK;
+//				}
+//				if ((info.mask & OS.LVIF_INDENT) != 0) {
+//					System.out.println ("\tLVIF_INDENT");
+//					TableItem item = items [info.iItem];
+//					//info.iIndent = 1;
+//				}
+//				OS.MoveMemory (lParam, info, NMLVDISPINFO.sizeof);
+//			}
+//			break;
+//		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
