@@ -160,7 +160,6 @@ void hookEvents () {
 	if (imHandle != 0) {
 		int topHandle = topHandle ();
 		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
-		OS.g_signal_connect (topHandle, OS.hide, windowProc2, HIDE);
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
 		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
 	}
@@ -1696,12 +1695,6 @@ int gtk_focus_out_event (int widget, int event) {
 		}
 	}
 	return 0;
-}
-
-int gtk_hide (int widget) {
-	int imHandle = imHandle ();
-	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
-	return 0;	
 }
 
 int gtk_key_press_event (int widget, int event) {
