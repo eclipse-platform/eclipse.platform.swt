@@ -1059,13 +1059,14 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			glist = OS.g_list_append (glist, data);
 		}
 		/*
-		 * A call to gtk_combo_set_popdown_strings will result in the top item being selected
-		 * and a SELECT_CHILD and CHANGED event will be sent.  In the case where there
-		 * are no entires in the Combo widget and the first item is added, it is neccessary
-		 * to inform the application that a selection has occurred.  However, in all other cases,
-		 * the previous selection should be maintained and the application should not
-		 * be notified of a selection change.
-		 */
+		* Feature in GTK.  A call to gtk_combo_set_popdown_strings will result in the top item
+		* being selected and a SELECT_CHILD and CHANGED event will be sent.  In the case
+		* where there are no entires in the widget and the first item has been added, inform the
+		* application that a selection has occurred.  However, in all other cases, the previous
+		* selection is maintained and the application should not be notified of a selection change.
+		* The fix is to allow the SELECT_CHILD and CHANGED to be sent when the first item
+		* is added.
+		*/
 		boolean block = oldItems != null && oldItems.length > 0;
 		if (block) {
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
