@@ -602,6 +602,34 @@ void cacheSHELLEXECUTEINFOFids(JNIEnv *env, jobject lpObject, PSHELLEXECUTEINFO_
 SHELLEXECUTEINFO* getSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
 void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
 
+#ifdef _WIN32_WCE
+/* SHMENUBARINFO struct */
+typedef struct SHMENUBARINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, hwndParent, dwFlags, nToolBarId, hInstRes, nBmpId, cBmpImages, hwndMB;
+} SHMENUBARINFO_FID_CACHE;
+typedef SHMENUBARINFO_FID_CACHE *PSHMENUBARINFO_FID_CACHE;
+
+void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache);
+SHMENUBARINFO* getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
+void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
+#endif // _WIN32_WCE
+
+#ifdef _WIN32_WCE
+/* SHMENUBARINFO struct */
+typedef struct SHMENUBARINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, hwndParent, dwFlags, nToolBarId, hInstRes, nBmpId, cBmpImages, hwndMB;
+} SHMENUBARINFO_FID_CACHE;
+typedef SHMENUBARINFO_FID_CACHE *PSHMENUBARINFO_FID_CACHE;
+
+void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache);
+SHMENUBARINFO* getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
+void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
+#endif // _WIN32_WCE
+
 /* SIZE struct */
 typedef struct SIZE_FID_CACHE {
 	int cached;

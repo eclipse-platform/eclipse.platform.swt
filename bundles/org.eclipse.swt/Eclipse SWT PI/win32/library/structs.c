@@ -54,6 +54,9 @@ TVINSERTSTRUCT_FID_CACHE TVINSERTSTRUCTFc;
 TVITEM_FID_CACHE TVITEMFc;
 WINDOWPOS_FID_CACHE WINDOWPOSFc;
 WNDCLASS_FID_CACHE WNDCLASSFc;
+#ifdef _WIN32_WCE
+	SHMENUBARINFO_FID_CACHE SHMENUBARINFOFc;
+#endif // _WIN32_WCE
 #ifndef _WIN32_WCE
 	BROWSEINFO_FID_CACHE BROWSEINFOFc;
 	CHOOSEFONT_FID_CACHE CHOOSEFONTFc;
@@ -2384,6 +2387,50 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 	(*env)->SetIntField(env, lpObject, lpCache->hIcon, (jint)lpStruct->hIcon);
 	(*env)->SetIntField(env, lpObject, lpCache->hProcess, (jint)lpStruct->hProcess);
 }
+
+#ifdef _WIN32_WCE
+void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->cbSize = (*env)->GetFieldID(env, lpCache->clazz, "cbSize", "I");
+	lpCache->hwndParent = (*env)->GetFieldID(env, lpCache->clazz, "hwndParent", "I");
+	lpCache->dwFlags = (*env)->GetFieldID(env, lpCache->clazz, "dwFlags", "I");
+	lpCache->nToolBarId = (*env)->GetFieldID(env, lpCache->clazz, "nToolBarId", "I");
+	lpCache->hInstRes = (*env)->GetFieldID(env, lpCache->clazz, "hInstRes", "I");
+	lpCache->nBmpId = (*env)->GetFieldID(env, lpCache->clazz, "nBmpId", "I");
+	lpCache->cBmpImages = (*env)->GetFieldID(env, lpCache->clazz, "cBmpImages", "I");
+	lpCache->hwndMB = (*env)->GetFieldID(env, lpCache->clazz, "hwndMB", "I");
+	lpCache->cached = 1;
+}
+
+SHMENUBARINFO* getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheSHMENUBARINFOFids(env, lpObject, lpCache);
+	lpStruct->cbSize = (DWORD)(*env)->GetIntField(env, lpObject, lpCache->cbSize);
+	lpStruct->hwndParent = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndParent);
+	lpStruct->dwFlags = (DWORD)(*env)->GetIntField(env, lpObject, lpCache->dwFlags);
+	lpStruct->nToolBarId = (UINT)(*env)->GetIntField(env, lpObject, lpCache->nToolBarId);
+	lpStruct->hInstRes = (HINSTANCE)(*env)->GetIntField(env, lpObject, lpCache->hInstRes);
+	lpStruct->nBmpId = (*env)->GetIntField(env, lpObject, lpCache->nBmpId);
+	lpStruct->cBmpImages = (*env)->GetIntField(env, lpObject, lpCache->cBmpImages);
+	lpStruct->hwndMB = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndMB);
+	return lpStruct;
+}
+
+void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheSHMENUBARINFOFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndParent, (jint)lpStruct->hwndParent);
+	(*env)->SetIntField(env, lpObject, lpCache->dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, lpCache->nToolBarId, (jint)lpStruct->nToolBarId);
+	(*env)->SetIntField(env, lpObject, lpCache->hInstRes, (jint)lpStruct->hInstRes);
+	(*env)->SetIntField(env, lpObject, lpCache->nBmpId, (jint)lpStruct->nBmpId);
+	(*env)->SetIntField(env, lpObject, lpCache->cBmpImages, (jint)lpStruct->cBmpImages);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndMB, (jint)lpStruct->hwndMB);
+}
+#endif // _WIN32_WCE
 
 void cacheSIZEFids(JNIEnv *env, jobject lpObject, PSIZE_FID_CACHE lpCache)
 {

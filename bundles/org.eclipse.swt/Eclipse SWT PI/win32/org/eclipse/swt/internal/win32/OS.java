@@ -707,6 +707,8 @@ public class OS {
 	public static final int SC_TASKLIST = 0xf130;
 	public static final int SC_VSCROLL = 0xf070;
 	public static final int SF_RTF = 0x2;
+	public static final int SHCMBM_SETSUBMENU = 0x590;
+	public static final int SHCMBM_GETSUBMENU = 0x591;
 	public static final int SIF_ALL = 0x17;
 	public static final int SIF_DISABLENOSCROLL = 0x8;
 	public static final int SIF_PAGE = 0x2;
@@ -796,7 +798,9 @@ public class OS {
 	public static final int TBN_DROPDOWN = 0xfffffd3a;
 	public static final int TBN_FIRST = 0xfffffd44;
 	public static final int TBSTATE_CHECKED = 0x1;
+	public static final int TBSTYLE_DROPDOWN = 0x8;
 	public static final int TBSTATE_ENABLED = 0x4;
+	public static final int TBSTYLE_AUTOSIZE = 0x10;
 	public static final int TBSTYLE_EX_DRAWDDARROWS = 0x1;
 	public static final int TBSTYLE_FLAT = 0x800;
 	public static final int TBSTYLE_LIST = 0x1000;
@@ -1818,12 +1822,7 @@ public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
 public static final native int CombineRgn (int hrgnDest, int hrgnSrc1, int hrgnSrc2, int fnCombineMode);
-public static final native int CommandBar_Create (int hInst, int hwndParent, int idCmdBar);
 public static final native void CommandBar_Destroy (int hwndCB);
-public static final native boolean CommandBar_DrawMenuBar (int hwndCB, int iButton);
-public static final native int CommandBar_Height (int hdnwCB);
-public static final native boolean CommandBar_InsertMenubarEx (int hwndCB, int hInst, int pszMenu, int iButton);
-public static final native boolean CommandBar_Show (int hwndCB, boolean fShow);
 public static final native int CommDlgExtendedError ();
 public static final native int CopyImage (int hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 public static final native int CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 
@@ -1941,6 +1940,8 @@ public static final native int GetKeyboardLayout(int idThread);public static fin
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
 public static final native int GetLastActivePopup (int hWnd);
 public static final native int GetLastError ();
+/* returns the instance handle to the swt library */
+public static final native int GetLibraryHandle ();
 public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);
 public static final native int GetLocaleInfoA (int Locale, int LCType, byte [] lpLCData, int cchData);
 public static final native int GetMenu (int hWnd);
@@ -2231,6 +2232,7 @@ public static final native int SetWindowsHookExW (int idHook, int lpfn,  int hMo
 public static final native int SetWindowsHookExA (int idHook, int lpfn,  int hMod,  int dwThreadId);
 public static final native int SHBrowseForFolderW (BROWSEINFO lpbi);
 public static final native int SHBrowseForFolderA (BROWSEINFO lpbi);
+public static final native boolean SHCreateMenuBar(SHMENUBARINFO pmb);
 public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo);
 public static final native int SHGetMalloc (int [] ppMalloc);

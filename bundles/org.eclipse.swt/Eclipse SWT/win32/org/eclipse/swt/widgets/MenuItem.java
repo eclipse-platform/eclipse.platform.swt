@@ -279,7 +279,14 @@ public boolean getEnabled () {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_STATE;
-	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
+	boolean success;
+	if (OS.IsWinCE) {
+		int index = parent.indexOf (this);
+		if (index == -1) error (SWT.ERROR_CANNOT_GET_ENABLED);
+		success = OS.GetMenuItemInfo (hMenu, index, true, info);
+	} else {
+		success = OS.GetMenuItemInfo (hMenu, id, false, info);
+	}
 	if (!success) error (SWT.ERROR_CANNOT_GET_ENABLED);
 	return (info.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) == 0;
 }
@@ -498,6 +505,14 @@ public void setEnabled (boolean enabled) {
 		if (index == -1) return;
 		int uEnable = OS.MF_BYPOSITION | (enabled ? OS.MF_ENABLED : OS.MF_GRAYED);
 		OS.EnableMenuItem (hMenu, index, uEnable);
+		/* if it is a top level menu item, set the state in the corresponding tool item */
+		Decorations shell = parent.parent;
+		if (parent == shell.menuBar) {
+			int fsState = OS.SendMessage (shell.hwndTB, OS.TB_GETSTATE, id, 0);
+			fsState &= ~OS.TBSTATE_ENABLED;
+			if (enabled) fsState |= OS.TBSTATE_ENABLED;
+			OS.SendMessage (shell.hwndTB, OS.TB_SETSTATE, id, fsState);
+		}
 	} else {
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
@@ -636,6 +651,14 @@ public void setMenu (Menu menu) {
 			if ((info.fState & OS.MFS_CHECKED) != 0) {
 				OS.CheckMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
 			}
+			
+			if (success) {
+				/* if it is a top level menu item, update the corresponding tool item */
+				Decorations shell = parent.parent;
+				if (parent == shell.menuBar) {
+					OS.SendMessage (shell.hwndCB, OS.SHCMBM_SETSUBMENU, id, uIDNewItem);
+				}
+			}
 		}
 		
 	} else {
@@ -700,6 +723,17 @@ public void setText (String string) {
 	info.fType = widgetStyle ();
 	info.dwTypeData = pszText;
 	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
+	if (OS.IsWinCE) {
+		Decorations shell = parent.parent;
+		if (parent == shell.menuBar) {
+			/* set text on corresponding tool item */
+			TBBUTTONINFO info2 = new TBBUTTONINFO ();
+			info2.cbSize = TBBUTTONINFO.sizeof;
+			info2.dwMask = OS.TBIF_TEXT;
+			info2.pszText = pszText;
+			OS.SendMessage (shell.hwndTB, OS.TB_SETBUTTONINFO, id, info2);
+		}
+	}
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) error (SWT.ERROR_CANNOT_SET_TEXT);
 	parent.redraw ();

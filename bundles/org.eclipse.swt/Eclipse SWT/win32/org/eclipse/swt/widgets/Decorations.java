@@ -91,7 +91,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
-	int hwndCB, hIcon;
+	int hwndCB, hwndTB, hIcon;
 	
 	/*
 	* The start value for WM_COMMAND id's.
@@ -322,7 +322,7 @@ void createHandle () {
 
 void createWidget () {
 	super.createWidget ();
-	swFlags = OS.SW_SHOWNOACTIVATE;
+	swFlags = OS.IsWinCE ? OS.SW_SHOWMAXIMIZED : OS.SW_SHOWNOACTIVATE;
 	hAccel = -1;
 }
 
@@ -364,30 +364,18 @@ public Rectangle getBounds () {
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	/* 
-	* Note: The CommandBar is part of the client area,
-	* not the trim.  Applications don't expect this so
-	* subtract the height of the CommandBar.
-	*/
-	if (OS.IsWinCE) {
-		Rectangle rect = super.getClientArea ();
-		if (hwndCB != 0) {
-			int height = OS.CommandBar_Height (hwndCB);
-			rect.y += height;
-			rect.height -= height;
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			RECT rect = new RECT ();
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			int width = lpwndpl.right - lpwndpl.left;
+			int height = lpwndpl.bottom - lpwndpl.top;
+			OS.SetRect (rect, 0, 0, width, height);
+			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
+			return new Rectangle (0, 0, rect.right, rect.bottom);
 		}
-		return rect;
-	}
-	if (OS.IsIconic (handle)) {
-		RECT rect = new RECT ();
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		int width = lpwndpl.right - lpwndpl.left;
-		int height = lpwndpl.bottom - lpwndpl.top;
-		OS.SetRect (rect, 0, 0, width, height);
-		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
-		return new Rectangle (0, 0, rect.right, rect.bottom);
 	}
 	return super.getClientArea ();
 }
@@ -465,8 +453,9 @@ public Point getLocation () {
  */
 public boolean getMaximized () {
 	checkWidget ();
-	if (OS.IsWinCE) return false;
-	if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
+	if (!OS.IsWinCE) {
+		if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
+	}
 	return swFlags == OS.SW_SHOWMAXIMIZED;
 }
 
@@ -569,46 +558,6 @@ boolean isTabItem () {
 
 Decorations menuShell () {
 	return this;
-}
-
-boolean moveMenu (int hMenuSrc, int hMenuDest) {
-	boolean success = true;
-	TCHAR lpNewItem = new TCHAR (0, "", true);
-	int index = 0, cch = 128;
-	int byteCount = cch * TCHAR.sizeof;
-	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	MENUITEMINFO lpmii = new MENUITEMINFO ();
-	lpmii.cbSize = MENUITEMINFO.sizeof;
-	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
-	lpmii.dwTypeData = pszText;
-	lpmii.cch = cch;
-	while (OS.GetMenuItemInfo (hMenuSrc, 0, true, lpmii)) {
-		int uFlags = OS.MF_BYPOSITION | OS.MF_ENABLED;
-		int uIDNewItem = lpmii.wID;
-		if (lpmii.hSubMenu != 0) {
-			uFlags |= OS.MF_POPUP;
-			uIDNewItem = lpmii.hSubMenu;
-		}
-		success = OS.InsertMenu (hMenuDest, index, uFlags, uIDNewItem, lpNewItem);
-		if (!success) break;
-		/* Set application data and text info */
-		lpmii.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
-		success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
-		if (!success) break;
-		lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
-		if ((lpmii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
-			OS.EnableMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
-		}
-		if ((lpmii.fState & OS.MFS_CHECKED) != 0) {
-			OS.CheckMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
-		}
-		OS.RemoveMenu (hMenuSrc, 0, OS.MF_BYPOSITION);
-		index++;
-		lpmii.cch = cch;
-	}
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	return success;
 }
 
 void releaseWidget () {
@@ -856,6 +805,7 @@ public void setImage (Image image) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
+	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
 	if (OS.IsWinCE) {
 		/*
 		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
@@ -876,6 +826,12 @@ public void setMaximized (boolean maximized) {
 			RECT rect = new RECT ();
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			int width = rect.right - rect.left, height = rect.bottom - rect.top;
+			/* leave space for menubar */
+			if (menuBar != null) {
+				RECT rectCB = new RECT ();
+				OS.GetWindowRect (hwndCB, rectCB);
+				height -= rectCB.bottom - rectCB.top;
+			}
 			OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
 		} else {
 			if ((style & SWT.NO_TRIM) == 0) {
@@ -888,8 +844,6 @@ public void setMaximized (boolean maximized) {
 			}
 		}
 	} else {
-		swFlags = OS.SW_RESTORE;
-		if (maximized) swFlags = OS.SW_SHOWMAXIMIZED;
 		if (!OS.IsWindowVisible (handle)) return;
 		if (maximized == OS.IsZoomed (handle)) return;
 		OS.ShowWindow (handle, swFlags);
@@ -936,30 +890,86 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}	
 	if (OS.IsWinCE) {
-		boolean resize = menuBar != menu;
+		/*
+		* Note in WinCE PPC.  MenuBar is a separate popup window. If
+		* the Shell is full screen, resize its window to leave
+		* space for the MenuBar.
+		*/
+		boolean resize = (getMaximized() && menuBar != menu);
 		if (menuBar != null) {
-			/*
-			* Because CommandBar_Destroy destroys the menu bar, it
-			* is necessary to move the current items into a new menu
-			* before it is called.
-			*/
-			int hMenu = OS.CreateMenu ();
-			if (!moveMenu (menuBar.handle, hMenu)) {
-				error (SWT.ERROR_CANNOT_SET_MENU);
-			}
-			menuBar.handle = hMenu;
-			if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
+			OS.CommandBar_Destroy (hwndCB);
 			hwndCB = 0;
+			hwndTB = 0;
 		}
 		menuBar = menu;
 		if (menuBar != null) {		
-			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
-			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
+			SHMENUBARINFO mbi = new SHMENUBARINFO ();
+			mbi.cbSize = mbi.sizeof;
+			mbi.hwndParent = handle;
+			mbi.dwFlags = 0;
+			mbi.nToolBarId = 100; /* as defined in .rc file */
+			mbi.hInstRes = OS.GetLibraryHandle ();
+			boolean res = OS.SHCreateMenuBar (mbi);
+			hwndCB = mbi.hwndMB;
+
+			/* Get ToolBar */
+			if (hwndCB != 0) hwndTB = OS.GetWindow (hwndCB, OS.GW_CHILD);
+						
+			if (hwndTB == 0) {
+				/* we can't use the menubar */
+				if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
+				return;
+			}
+			/* remove the menu item coming from the resource file */
+			OS.SendMessage (hwndTB, OS.TB_DELETEBUTTON, 0, 0);
+			
+			/* populate tool bar mapping menu items to tool items */
+			if (menuBar.getItemCount () > 0) {
+				MenuItem[] items = menuBar.getItems ();
+				TBBUTTON lpButton = new TBBUTTON ();
+				TBBUTTONINFO info = new TBBUTTONINFO ();
+				info.cbSize = TBBUTTONINFO.sizeof;
+				info.dwMask = OS.TBIF_TEXT;
+				for (int i = 0; i < items.length; i++) {
+					MenuItem item = items[i];
+					/* insert item */
+					lpButton.idCommand = item.id;
+					lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
+					lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
+					lpButton.iBitmap = OS.I_IMAGENONE;
+					if ((item.style & SWT.SEPARATOR) != 0) {
+						lpButton.fsStyle = (byte) OS.BTNS_SEP;
+					}
+					OS.SendMessage (hwndTB, OS.TB_INSERTBUTTON, i, lpButton);
+
+					if ((item.style & SWT.SEPARATOR) == 0) {
+						/* set text */
+						String string = item.getText();
+						int hHeap = OS.GetProcessHeap ();
+						TCHAR buffer = new TCHAR (0, string, true);
+						int byteCount = buffer.length () * TCHAR.sizeof;
+						int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+						OS.MoveMemory (pszText, buffer, byteCount);
+						info.pszText = pszText;
+						OS.SendMessage (hwndTB, OS.TB_SETBUTTONINFO, item.id, info);
+						if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+
+						/* set state */
+						if (!item.isEnabled()) {
+							int fsState = 0;
+							OS.SendMessage (hwndTB, OS.TB_SETSTATE, item.id, fsState);
+						}
+
+						/* set menu */
+						Menu menu2 = item.menu;
+						if (menu2 != null) {
+							OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, item.id, menu2.handle);
+						}
+					}
+				}
+			}
 		}
-		if (resize) {
-			sendEvent (SWT.Resize);
-			layout (false);
-		}
+		if (resize) setMaximized (true);
 	} else {
 		menuBar = menu;
 		int hMenu = 0;
@@ -1105,11 +1115,11 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		if (OS.IsWinCE) {
-			OS.CommandBar_DrawMenuBar (hwndCB, 0);
+			OS.ShowWindow (handle, OS.SW_SHOW);
 		} else {
 			OS.DrawMenuBar (handle);
+			OS.ShowWindow (handle, swFlags);
 		}
-		OS.ShowWindow (handle, swFlags);
 		OS.UpdateWindow (handle);
 	} else {
 		if (!OS.IsWinCE) {

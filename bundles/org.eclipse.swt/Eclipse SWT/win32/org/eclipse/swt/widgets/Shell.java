@@ -702,6 +702,7 @@ void setActiveControl (Control control) {
 
 void setBounds (int x, int y, int width, int height, int flags) {
 	if (OS.IsWinCE) {
+		swFlags = OS.SW_RESTORE;
 		if ((style & SWT.NO_TRIM) == 0) {
 			/* insert caption when no longer maximized */
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -969,15 +970,22 @@ LRESULT WM_CLOSE (int wParam, int lParam) {
 }
 
 LRESULT WM_COMMAND (int wParam, int lParam) {
-	/*
-	* Note on WinCE PPC:  close the Shell when the "Done Button" has
-	* been pressed.
-	*/
 	if (OS.IsWinCE) {
+		/*
+		* Note in WinCE PPC:  close the Shell when the "Done Button" has
+		* been pressed.
+		*/
 		int loWord = wParam & 0xFFFF;
 		if (loWord == OS.IDOK) {
 			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			return LRESULT.ZERO;			
+		}
+		/* 
+		* Note in WinCE PPC.  menu events originate from the
+		* command bar.
+		*/
+		if (hwndCB != 0 && lParam == hwndCB) {
+			return super.WM_COMMAND (wParam, 0);
 		}
 	}
 	return super.WM_COMMAND (wParam, lParam);

@@ -122,7 +122,11 @@ static int checkStyle (int style) {
 
 void createHandle () {
 	if ((style & SWT.BAR) != 0) {
-		handle = OS.CreateMenu ();
+		/*
+		* Note in WinCE PPC.  CreateMenu cannot insert items of type 
+		* separator.  The workaround is to always use CreatePopupMenu.
+		*/
+		handle = OS.IsWinCE ? OS.CreatePopupMenu () : OS.CreateMenu();
 	} else {
 		handle = OS.CreatePopupMenu ();
 	}
@@ -149,6 +153,19 @@ void createItem (MenuItem item, int index) {
 			info.fMask = OS.MIIM_DATA;
 			info.dwItemData = item.id;
 			success = OS.SetMenuItemInfo (handle, index, true, info);
+			
+			/* if it is a top level menu item, display it on the toolbar */
+			if (item.parent == parent.menuBar) {
+				TBBUTTON lpButton = new TBBUTTON ();
+				lpButton.idCommand = item.id;
+				lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
+				lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
+				lpButton.iBitmap = OS.I_IMAGENONE;
+				if ((item.style & SWT.SEPARATOR) != 0) {
+					lpButton.fsStyle = (byte) OS.BTNS_SEP;
+				} 
+				success = OS.SendMessage (parent.hwndTB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
+			}
 		}
 	} else {
 		/*
@@ -213,6 +230,13 @@ void destroyItem (MenuItem item) {
 		}	
 		if (!OS.RemoveMenu (handle, index, OS.MF_BYPOSITION)) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		/* 
+		* if it is a top level menu item, remove the corresponding
+		* tool item.
+		*/
+		if (parent.menuBar == this) {
+			OS.SendMessage (parent.hwndTB, OS.TB_DELETEBUTTON, index, 0);
 		}
 	} else {
 		if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
@@ -551,17 +575,10 @@ public boolean isVisible () {
 }
 
 void redraw () {
-	/*
-	* Each time a menu has been modified, we need
-	* to redraw the command bar.
-	*/
-	if (OS.IsWinCE) {
-		OS.CommandBar_DrawMenuBar (parent.hwndCB, 0);
-	} else {
-		if ((style & SWT.BAR) != 0) {
-			OS.DrawMenuBar (parent.handle);
-			return;
-		}
+	if (OS.IsWinCE) return;
+	if ((style & SWT.BAR) != 0) {
+		OS.DrawMenuBar (parent.handle);
+		return;
 	}
 	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
@@ -577,7 +594,6 @@ void redraw () {
 			if ((hasCheck = true) && hasImage) break;
 		}
 	}
-	if (OS.IsWinCE) return;
 	MENUINFO lpcmi = new MENUINFO ();
 	lpcmi.cbSize = MENUINFO.sizeof;
 	lpcmi.fMask = OS.MIM_STYLE;

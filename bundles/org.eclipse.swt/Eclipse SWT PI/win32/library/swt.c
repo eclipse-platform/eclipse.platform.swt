@@ -23,6 +23,28 @@ HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
      return 1;
 }
 
+/* Cache the handle to the library */
+HINSTANCE g_hInstance = NULL;
+
+BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
+{
+	if (dwReason == DLL_PROCESS_ATTACH) {
+		if (g_hInstance == NULL) g_hInstance = hInstDLL;
+	}
+	return TRUE;
+}
+
+/* Cache the handle to the library */
+HINSTANCE g_hInstance = NULL;
+
+BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
+{
+	if (dwReason == DLL_PROCESS_ATTACH) {
+		if (g_hInstance == NULL) g_hInstance = hInstDLL;
+	}
+	return TRUE;
+}
+
 /* Natives */
 
 #ifndef _WIN32_WCE
@@ -323,62 +345,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CombineRgn
 }
 
 #ifdef _WIN32_WCE 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Create
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("CommandBar_Create\n")
-
-	return (jint)CommandBar_Create((HINSTANCE)arg0, (HWND)arg1, (int)arg2);
-}
-#endif // _WIN32_WCE
-
-#ifdef _WIN32_WCE 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Destroy
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	DEBUG_CALL("CommandBar_Destroy\n")
 
 	return (jboolean)CommandBar_Destroy((HWND)arg0);
-}
-#endif // _WIN32_WCE
-
-#ifdef _WIN32_WCE 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1DrawMenuBar
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("CommandBar_DrawMenuBar\n")
-
-	return (jboolean)CommandBar_DrawMenuBar((HWND)arg0, (WORD)arg1);
-}
-#endif // _WIN32_WCE
-
-#ifdef _WIN32_WCE 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Height
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("CommandBar_Height\n")
-
-	return (jint)CommandBar_Height((HWND)arg0);
-}
-#endif // _WIN32_WCE
-
-#ifdef _WIN32_WCE 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1InsertMenubarEx
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
-{
-	DEBUG_CALL("CommandBar_InsertMenubarEx\n")
-
-	return (jboolean)CommandBar_InsertMenubarEx((HWND)arg0, (HINSTANCE)arg1, (LPTSTR)arg2, (WORD)arg3);
-}
-#endif // _WIN32_WCE
-
-#ifdef _WIN32_WCE 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Show
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	DEBUG_CALL("CommandBar_Show\n")
-
-	return (jboolean)CommandBar_Show((HWND)arg0, (BOOL)arg1);
 }
 #endif // _WIN32_WCE
 
@@ -1983,6 +1955,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLastError
 	DEBUG_CALL("GetLastError\n")
 
 	return (jint)GetLastError();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLibraryHandle
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetLibraryHandle\n")
+
+	return (jint)g_hInstance;
 }
 
 #ifndef _WIN32_WCE
@@ -5062,6 +5042,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHBrowseForFolderW
 
 	if (arg0) setBROWSEINFOFields(env, arg0, lparg0, &PGLOB(BROWSEINFOFc));
 
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifdef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHCreateMenuBar
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	SHMENUBARINFO _arg0, *lparg0=NULL;
+	jboolean rc;
+	
+	DEBUG_CALL("SHCreateMenuBar\n")
+	
+	if (arg0) lparg0 = getSHMENUBARINFOFields(env, arg0, &_arg0, &PGLOB(SHMENUBARINFOFc));
+	
+	rc = (jboolean) SHCreateMenuBar((PSHMENUBARINFO)lparg0);
+	
+	if (arg0) setSHMENUBARINFOFields(env, arg0, lparg0, &PGLOB(SHMENUBARINFOFc));
+	
 	return rc;
 }
 #endif // _WIN32_WCE
