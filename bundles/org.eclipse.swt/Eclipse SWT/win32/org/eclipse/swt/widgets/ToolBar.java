@@ -186,14 +186,25 @@ void createHandle () {
 	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
 	* a large value.
 	*/
+	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);	
 	/*
 	* This line is intentionally commented.  The tool
 	* bar currently sets this value to 300 so it is
 	* not necessary to set TTM_SETMAXTIPWIDTH.
 	*/
-//	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
 //	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	
+
+	/*
+	* Feature in Windows.  When the tool tip control is
+	* created, the parent of the tool tip is the shell.
+	* If SetParent () is used to reparent the tool bar
+	* into a new shell, the tool tip is not reparented
+	* and pops up underneath the new shell.  The fix is
+	* to make sure the tool tip is a topmost window.
+	*/
+	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
+	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);
+
 	/*
 	* Feature in Windows.  When the control is created,
 	* it does not use the default system font.  A new HFONT

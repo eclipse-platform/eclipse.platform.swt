@@ -1557,7 +1557,7 @@ public class OS {
 //	public static final int HWND_DESKTOP = 0x0;
 //	public static final int HWND_NOTOPMOST = 0xFFFFFFFE;
 	public static final int HWND_TOP = 0x0;
-//	public static final int HWND_TOPMOST = 0xFFFFFFFF;
+	public static final int HWND_TOPMOST = 0xFFFFFFFF;
 //	public static final int I_CHILDRENCALLBACK = -1;
 //	public static final int ICM_LEVEL2 = 0x0002;
 //	public static final int ICM_LEVEL2_5 = 0x0003;
