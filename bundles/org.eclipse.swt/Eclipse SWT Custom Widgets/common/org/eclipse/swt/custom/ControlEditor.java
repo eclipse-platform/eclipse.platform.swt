@@ -229,9 +229,6 @@ public void setEditor (Control editor) {
 	}
 	
 	this.editor = editor;
-	
-	editor.setVisible (false);
-	editor.setBounds (computeBounds ());
-	editor.setVisible (true);
+	resize();
 }
 }

@@ -126,6 +126,14 @@ public void dispose () {
 public int getColumn () {
 	return column;
 }
+/**
+* Returns the TableItem for the row of the cell being tracked by this editor.
+*
+* @return the TableItem for the row of the cell being tracked by this editor
+*/
+public TableItem getItem () {
+	return item;
+}
 public void setColumn(int column) {
 		
 	if (this.column > -1 && this.column < table.getColumnCount()){
@@ -141,24 +149,11 @@ public void setColumn(int column) {
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addListener(SWT.Resize, columnListener);
 	tableColumn.addListener(SWT.Move, columnListener);
-}
-/**
-* Returns the TableItem for the row of the cell being tracked by this editor.
-*
-* @return the TableItem for the row of the cell being tracked by this editor
-*/
-public TableItem getItem () {
-	return item;
+	resize();
 }
 public void setItem (TableItem item) {	
 	this.item = item;
-}
-public void setEditor (Control editor) {
-	TableItem item = null;
-	if (table.getItemCount() > 0) {
-		item = table.getItem(0);
-	}
-	this.setEditor(editor, item, 0);
+	resize();
 }
 
 /**
@@ -174,6 +169,12 @@ public void setEditor (Control editor) {
 public void setEditor (Control editor, TableItem item, int column) {
 	setItem(item);
 	setColumn(column);
-	super.setEditor(editor);
+	setEditor(editor);
+}
+void resize () {
+	if (table.isDisposed()) return;
+	if (item == null || item.isDisposed()) return;
+	if (column < 0 || column >= table.getItemCount()) return;
+	super.resize();
 }
 }

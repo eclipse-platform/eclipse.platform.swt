@@ -134,6 +134,7 @@ public TreeItem getItem () {
 }
 public void setItem (TreeItem item) {
 	this.item = item;
+	resize();
 }
 
 /**
@@ -150,12 +151,10 @@ public void setEditor (Control editor, TreeItem item) {
 	setItem (item);
 	super.setEditor (editor);
 }
-public void setEditor (Control editor) {
-	TreeItem item = null;
-	if (tree.getItemCount() != 0) {
-		item = tree.getItems()[0];
-	}
-	this.setEditor(editor, item);
-}
 
+void resize () {
+	if (tree.isDisposed()) return;
+	if (item == null || item.isDisposed()) return;	
+	super.resize();
+}
 }

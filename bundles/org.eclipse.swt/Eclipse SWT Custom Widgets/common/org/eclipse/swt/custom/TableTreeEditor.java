@@ -188,6 +188,8 @@ public void setColumn(int column) {
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
+	
+	resize();
 }
 /**
 * Returns the TableItem for the row of the cell being tracked by this editor.
@@ -199,13 +201,7 @@ public TableTreeItem getItem () {
 }
 public void setItem (TableTreeItem item) {	
 	this.item = item;
-}
-public void setEditor (Control editor) {
-	TableTreeItem item = null;
-	if (tableTree.getItemCount() > 0) {
-		item = tableTree.getItems()[0];
-	}
-	this.setEditor(editor, item, 0);
+	resize();
 }
 
 /**
@@ -222,5 +218,12 @@ public void setEditor (Control editor, TableTreeItem item, int column) {
 	setItem(item);
 	setColumn(column);
 	super.setEditor(editor);
+}
+void resize () {
+	if (tableTree.isDisposed()) return;
+	if (item == null || item.isDisposed()) return;
+	Table table = tableTree.getTable();
+	if (column < 0 || column >= table.getItemCount()) return;
+	super.resize();
 }
 }

@@ -59,7 +59,7 @@ public Object getContents(Transfer transfer) {
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
 		// Clipboard may be in use by some other application.
 		// Wait for 10 milliseconds before trying again.
-		try {display.wait(10);} catch (InterruptedException e) {}
+		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	if (retries == MAX_RETRIES) return null;
@@ -93,7 +93,7 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	while ((result = COM.OleSetClipboard(this.iDataObject.getAddress())) != COM.S_OK && retries < MAX_RETRIES){
 		// Clipboard may be in use by some other application.
 		// Wait for 10 milliseconds before trying again.
-		try {display.wait(10);} catch (InterruptedException e) {}
+		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	if (retries == MAX_RETRIES) {
@@ -104,6 +104,7 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	
 	retries = 0;
 	while ((COM.OleFlushClipboard() != COM.S_OK)  && (retries < MAX_RETRIES)) {
+		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	
