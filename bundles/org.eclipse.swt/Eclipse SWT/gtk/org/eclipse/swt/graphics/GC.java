@@ -1043,7 +1043,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		fromRGB = backgroundRGB;
 		toRGB   = foregroundRGB;
 	}
-	if (fromRGB == toRGB) {
+	if (fromRGB.equals(toRGB)) {
 		fillRectangle(x, y, width, height);
 		return;
 	}
