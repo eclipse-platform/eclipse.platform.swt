@@ -351,6 +351,7 @@ public static final native void gtk_adjustment_set_value(int adjustment, float v
 public static final native void gtk_adjustment_value_changed(int adjustment);
 public static final native int gtk_accel_group_new();
 public static final native void gtk_accel_group_unref(int accel_group);
+public static final native boolean gtk_accel_groups_activate(int accelGroup, int accelKey, int accelMods); // accelMods is one of GdkModifierType defined in gdk/gdktypes.h
 public static final native int gtk_arrow_new(int arrow_type, int shadow_type);
 public static final native void gtk_arrow_set(int arrow, int arrow_type, int shadow_type);
 public static final native void gtk_box_pack_start(int box, int child, boolean expand, boolean fill, int padding);
