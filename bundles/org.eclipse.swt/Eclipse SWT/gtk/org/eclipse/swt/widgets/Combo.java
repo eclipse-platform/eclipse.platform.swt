@@ -883,9 +883,9 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	OS.memmove (pos, position, 4);
 	if (pos [0] == -1)  {
 		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-		pos [0] = OS.g_utf8_strlen (ptr, -1);
+		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	}
-	String newText = verifyText (oldText, pos [0], pos [0]);
+	String newText = verifyText (oldText, pos [0], pos [0]); //WRONG POSITION
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
 	} else {
@@ -1376,15 +1376,24 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	/*
 	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
 	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
 	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
 	*/
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		string = verifyText (string, 0, OS.g_utf8_strlen (ptr, -1));
+		if (string == null) return;
+	}
+	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	OS.gtk_entry_set_text (entryHandle, buffer);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	sendEvent (SWT.Modify);
 }
 
