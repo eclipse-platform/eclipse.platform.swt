@@ -61,6 +61,7 @@ public class CBanner extends Composite {
 	static final int BORDER_STRIPE = 1;
 	static final int CURVE_TAIL = 200;
 	static final int MIN_LEFT = 50;
+	static final int MIN_RIGHT = 100;
 	
 	static RGB BORDER1 = null;
 	
@@ -108,11 +109,13 @@ static int checkStyle (int style) {
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
+	boolean showCurve = left != null && right != null;
 	int height = hHint;
 	int width = wHint;
+	
 	Point bottomSize = new Point(0, 0);
 	if (bottom != null) {
-		Point trim = bottom.computeSize(width, hHint);
+		Point trim = bottom.computeSize(width, SWT.DEFAULT);
 		trim.x = trim.x - width;
 		bottomSize = bottom.computeSize(width == SWT.DEFAULT ? SWT.DEFAULT : width - trim.x, SWT.DEFAULT);
 		if (height != SWT.DEFAULT) {
@@ -120,20 +123,16 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 			height -= bottomSize.y + BORDER_TOP + BORDER_STRIPE + BORDER_BOTTOM;
 		}
 	}
-	if (curve == null) {
-		if (height == SWT.DEFAULT) {
-			if (left != null) {
-				Point s = left.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				updateCurve(s.y + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE);
-			}
+	if (showCurve) {
+		if (height != SWT.DEFAULT ) height -= BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
+		if (width == SWT.DEFAULT) {
+			Point s = left.computeSize(SWT.DEFAULT, height);
+			updateCurve(s.y + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE);
 		} else {
-			updateCurve(height);
+			Point s1 = right.computeSize(rightWidth, height);
+			Point s2 = left.computeSize(width - s1.x - 44, height); //44 - best guess at width of curve
+			updateCurve(s2.y + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE);
 		}
-	} else {
-		updateCurve(getSize().y);
-	}
-	if (height != SWT.DEFAULT && left != null && right != null) {
-		height -= BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	}
 	Point rightSize = new Point(0, 0);
 	if (right != null) {
@@ -142,28 +141,34 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		if (width != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
-			width = Math.max(MIN_LEFT, width - rightSize.x - curveWidth + 2* curveIndent);
+			width -= rightSize.x + curveWidth - 2* curveIndent;
+			width = Math.max(width, MIN_LEFT);
 		}
 	}
 	Point leftSize = new Point(0, 0);
-	if (left != null && (width == SWT.DEFAULT || width > 0)) {
+	if (left != null) {
 		Point trim = left.computeSize(width, height);
 		trim.x = trim.x - width;
 		leftSize = left.computeSize(width == SWT.DEFAULT ? SWT.DEFAULT : width - trim.x, height);
+		if (height != SWT.DEFAULT) {
+			leftSize.y = Math.min(leftSize.y, height);
+		}
 	}
-	Point size = new Point(0, 0);
-	size.x = leftSize.x;
-	if (left != null && right!= null) size.x += curveWidth - 2*curveIndent;
-	size.x += rightSize.x;
-	size.y = leftSize.y > 0 ? leftSize.y : rightSize.y;
-	if (left != null && right!= null) size.y +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
-	size.y += bottomSize.y;
-	if (bottom != null && (left != null || right != null)) size.y += BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
+	int w = 0, h = 0;
+	h += bottomSize.y;
+	if (bottom != null && (left != null || right != null)) h += BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
+	w += leftSize.x + rightSize.x;
+	if (showCurve) {
+		w += curveWidth - 2*curveIndent;
+		h +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
+	}
+	h += left != null ? leftSize.y : rightSize.y; 
 	
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
+	if (wHint != SWT.DEFAULT) w = wHint;
+	if (hHint != SWT.DEFAULT) h = hHint;
 	
-	return new Point(size.x, size.y);
+	if (showCurve) updateCurve(getSize().y);
+	return new Point(w, h);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
@@ -230,7 +235,7 @@ public void layout (boolean changed) {
 	if (bottom != null) {
 		Point trim = bottom.computeSize(width, SWT.DEFAULT);
 		trim.x = trim.x - width;
-		bottomSize = bottom.computeSize(width, SWT.DEFAULT);
+		bottomSize = bottom.computeSize(width - trim.x, SWT.DEFAULT);
 		bottomSize.y = Math.min(bottomSize.y, height);
 		height -= bottomSize.y + BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
 	}
@@ -250,7 +255,7 @@ public void layout (boolean changed) {
 	if (left != null) {
 		Point trim = left.computeSize(width, height);
 		trim.x = trim.x - width;
-		leftSize = left.computeSize(Math.max(0, width - trim.x), height);
+		leftSize = left.computeSize(width - trim.x, height);
 		leftSize.y = Math.min(leftSize.y, height);
 	}
 
@@ -310,7 +315,7 @@ void onMouseMove(int x, int y) {
 		Point size = getSize();
 		if (!(0 < x && x < size.x)) return;
 		rightWidth = size.x - x - rightDragDisplacement;
-		rightWidth = Math.max(0, rightWidth);
+		rightWidth = Math.max(MIN_RIGHT, rightWidth);
 		layout();
 		return;
 	}
