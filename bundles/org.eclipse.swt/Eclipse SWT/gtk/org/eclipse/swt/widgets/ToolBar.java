@@ -351,7 +351,7 @@ void layoutItems () {
 	* This ensures that getBounds() returns accurate information for
 	* toolItems immediately.
 	*/
-	int /*long*/ parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parentingHandle ();
 	OS.gtk_container_resize_children (parentHandle);
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
