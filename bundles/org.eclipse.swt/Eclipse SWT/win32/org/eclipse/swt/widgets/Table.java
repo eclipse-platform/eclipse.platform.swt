@@ -144,7 +144,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		*/
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
-		case OS.WM_RBUTTONDOWN: {
+		case OS.WM_RBUTTONDOWN:
+		case OS.WM_XBUTTONDOWN: {
 			display.ignoreMsgFilter = true;
 			int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
 			display.ignoreMsgFilter = false;

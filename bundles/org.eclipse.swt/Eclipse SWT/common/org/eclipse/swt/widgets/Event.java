@@ -99,9 +99,10 @@ public class Event {
 	public int height;
 
 	/**
-	 * the number of following paint events which
-     * are pending which may always be zero on
-	 * some platforms
+	 * depending on the event type, the number of following
+	 * paint events which are pending which may always be zero
+	 * on some platforms or the number of lines or pages to
+	 * scroll using the mouse wheel
 	 */
 	public int count;
 	

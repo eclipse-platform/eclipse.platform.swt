@@ -68,7 +68,7 @@ public class SWT {
 	public static final int KeyUp = 2;
 	
 	/**
-	 * mouse down event type (value is 3)
+	 * The mouse down event type (value is 3)
 	 */
 	public static final int MouseDown = 3;
 	
@@ -257,7 +257,14 @@ public class SWT {
 	 * @since 3.0
 	 */
 	public static final int SetData = 36;
-		
+
+	/**
+	 * The mouse wheel event type  (value is 37).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int MouseWheel = 37;
+
 	/* Event Details */
 	
 	/**
@@ -1121,6 +1128,22 @@ public class SWT {
 	public static final int BUTTON3 = 1 << 21;
 
 	/**
+	 * Keyboard and/or mouse event mask indicating that mouse button four
+	 * was pushed when the event was generated. (value is 1&lt;&lt;23).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int BUTTON4 = 1 << 23;
+
+	/**
+	 * Keyboard and/or mouse event mask indicating that mouse button five
+	 * was pushed when the event was generated. (value is 1&lt;&lt;25).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int BUTTON5 = 1 << 25;
+
+	/**
 	 * Keyboard and/or mouse event mask indicating all possible
 	 * mouse buttons.
 	 * 
@@ -1171,6 +1194,26 @@ public class SWT {
 	 * @since 2.1
 	 */
 	public static final int MOD4;
+	
+	/**
+	 * Constants to indicate line scrolling (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.1
+	 */
+	public static final int SCROLL_LINE = 1;
+
+	/**
+	 * Constants to indicate page scrolling (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.1
+	 */
+	public static final int SCROLL_PAGE = 2;
 	
 	/**
 	 * Accelerator constant used to differentiate a key code from a
@@ -2825,7 +2868,7 @@ static {
 	* expand in the future.  Therefore they are not initialized
 	* in the declaration to stop the compiler from inlining.
 	*/
-	BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3;
+	BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3 | BUTTON4 | BUTTON5;
 	MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND;
 	
 	/*

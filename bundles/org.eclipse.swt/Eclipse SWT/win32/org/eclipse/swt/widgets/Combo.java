@@ -1714,6 +1714,9 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.WM_RBUTTONDBLCLK:	result = wmRButtonDblClk (hwnd, wParam, lParam); break;
 				case OS.WM_RBUTTONDOWN:		result = wmRButtonDown (hwnd, wParam, lParam); break;
 				case OS.WM_RBUTTONUP:		result = wmRButtonUp (hwnd, wParam, lParam); break;
+				case OS.WM_XBUTTONDBLCLK:	result = wmXButtonDblClk (hwnd, wParam, lParam); break;
+				case OS.WM_XBUTTONDOWN:		result = wmXButtonDown (hwnd, wParam, lParam); break;
+				case OS.WM_XBUTTONUP:		result = wmXButtonUp (hwnd, wParam, lParam); break;
 
 				/* Paint messages */
 				case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;

@@ -987,17 +987,23 @@ boolean setInputState (Event event, int type) {
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
 	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
 	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	if (OS.GetKeyState (OS.VK_XBUTTON1) < 0) event.stateMask |= SWT.BUTTON4;
+	if (OS.GetKeyState (OS.VK_XBUTTON2) < 0) event.stateMask |= SWT.BUTTON5;
 	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseDoubleClick:
 			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
 			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
 			if (event.button == 3) event.stateMask &= ~SWT.BUTTON3;
+			if (event.button == 4) event.stateMask &= ~SWT.BUTTON4;
+			if (event.button == 5) event.stateMask &= ~SWT.BUTTON5;
 			break;
 		case SWT.MouseUp:
 			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
 			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
 			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
+			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
+			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
 			break;
 		case SWT.KeyDown:
 		case SWT.Traverse:
@@ -1649,7 +1655,8 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return new LRESULT (result);
@@ -1686,7 +1693,8 @@ LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
 LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_MBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return new LRESULT (result);
@@ -1841,7 +1849,8 @@ LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
 LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return new LRESULT (result);
@@ -1989,5 +1998,46 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 
 LRESULT wmSysKeyUp (int hwnd, int wParam, int lParam) {
 	return wmKeyUp (hwnd, wParam, lParam);
+}
+
+LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows. Windows sends the following
+	* messages when the user double clicks the mouse:
+	*
+	*	WM_XBUTTONDOWN		- mouse down
+	*	WM_XBUTTONUP		- mouse up
+	*	WM_XLBUTTONDBLCLK	- double click
+	*	WM_XBUTTONUP		- mouse up
+	*
+	* Applications that expect matching mouse down/up
+	* pairs will not see the second mouse down.  The
+	* fix is to send a mouse down event.
+	*/
+	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, button, hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (result);
+}
+
+LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
+	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
+	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	return new LRESULT (result);
+}
+
+LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
+	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	sendMouseEvent (SWT.MouseUp, button, hwnd, OS.WM_XBUTTONUP, wParam, lParam);
+	int result = callWindowProc (hwnd, OS.WM_XBUTTONUP, wParam, lParam);
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if (((wParam & 0xFFFF) & mask) == 0) {
+		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
+	}
+	return new LRESULT (result);
 }
 }

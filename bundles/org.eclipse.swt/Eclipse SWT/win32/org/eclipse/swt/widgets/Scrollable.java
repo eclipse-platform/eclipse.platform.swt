@@ -258,7 +258,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 		int code = 0, count = 0;
   		if (value [0] == OS.WHEEL_PAGESCROLL) {	
    			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-   			count = 1;
+   			count = Math.abs (delta / OS.WHEEL_DELTA);
   		} else {
   			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
   			delta = Math.abs (delta);

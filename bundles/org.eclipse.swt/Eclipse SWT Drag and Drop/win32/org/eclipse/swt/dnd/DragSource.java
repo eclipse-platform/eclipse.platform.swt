@@ -383,7 +383,8 @@ private int GiveFeedback(int dwEffect) {
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (fEscapePressed != 0)
 		return COM.DRAGDROP_S_CANCEL;
-	if ((grfKeyState & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0)
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if ((grfKeyState & mask) == 0)
 		return COM.DRAGDROP_S_DROP;
 	return COM.S_OK;
 }

@@ -723,6 +723,8 @@ public class OS extends Platform {
 	public static final int MK_MBUTTON = 0x10;
 	public static final int MK_RBUTTON = 0x2;
 	public static final int MK_SHIFT = 0x4;
+	public static final int MK_XBUTTON1 = 0x20;
+	public static final int MK_XBUTTON2 = 0x40;
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
@@ -1292,6 +1294,8 @@ public class OS extends Platform {
 	public static final int VK_SUBTRACT = 0x6D;
 	public static final int VK_TAB = 0x9;
 	public static final int VK_UP = 0x26;
+	public static final int VK_XBUTTON1 = 0x05;
+	public static final int VK_XBUTTON2 = 0x06;
 	public static final int VK_ADD = 0x6B;
 	public static final int VK_APP1 = 0xc1;
 	public static final int VK_APP2 = 0xc2;
@@ -1435,6 +1439,11 @@ public class OS extends Platform {
 	public static final int WS_THICKFRAME = 0x40000;
 	public static final int WS_VISIBLE = 0x10000000;
 	public static final int WS_VSCROLL = 0x200000;
+	public static final int WM_XBUTTONDOWN = 0x020B;
+	public static final int WM_XBUTTONUP = 0x020C;
+	public static final int WM_XBUTTONDBLCLK = 0x020D;
+	public static final int XBUTTON1 = 0x1;
+	public static final int XBUTTON2 = 0x2;
 	
 public static int VERSION (int major, int minor) {
 	return major << 16 | minor;

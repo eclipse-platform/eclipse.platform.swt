@@ -1712,6 +1712,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 							case OS.WM_LBUTTONDOWN:
 							case OS.WM_RBUTTONDOWN:
 							case OS.WM_MBUTTONDOWN:
+							case OS.WM_XBUTTONDOWN:
 								OS.MessageBeep (OS.MB_OK);
 						}
 						return LRESULT.ONE;

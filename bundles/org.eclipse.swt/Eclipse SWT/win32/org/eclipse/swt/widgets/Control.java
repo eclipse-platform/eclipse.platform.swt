@@ -3063,6 +3063,9 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
+		case OS.WM_XBUTTONDBLCLK:		result = WM_XBUTTONDBLCLK (wParam, lParam); break;
+		case OS.WM_XBUTTONDOWN:			result = WM_XBUTTONDOWN (wParam, lParam); break;
+		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
 	return callWindowProc (hwnd, msg, wParam, lParam);
@@ -3467,6 +3470,21 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+	if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+		int delta = wParam >> 16;
+		Event event = new Event ();
+		int [] value = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
+		if (value [0] == OS.WHEEL_PAGESCROLL) {
+			event.detail = SWT.SCROLL_PAGE;
+			event.count = delta / OS.WHEEL_DELTA;
+		} else {
+			event.detail = SWT.SCROLL_LINE;
+			event.count = value [0] * delta / OS.WHEEL_DELTA;
+		}
+		sendEvent (SWT.MouseWheel, event);
+		if (!event.doit) return LRESULT.ZERO;
+	}
 	return null;
 }
 
@@ -3738,6 +3756,18 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	return null;
+}
+
+LRESULT WM_XBUTTONDBLCLK (int wParam, int lParam) {
+	return wmXButtonDblClk (handle, wParam, lParam);
+}
+
+LRESULT WM_XBUTTONDOWN (int wParam, int lParam) {
+	return wmXButtonDown (handle, wParam, lParam);
+}
+
+LRESULT WM_XBUTTONUP (int wParam, int lParam) {
+	return wmXButtonUp (handle, wParam, lParam);
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
