@@ -696,7 +696,7 @@ public void setLayout (Layout layout) {
  * </ul>
  * 
  * @see #layout(boolean)
- * @see #layout(Control)
+ * @see #layout(Control[])
  *
  * @since 3.1
  */
