@@ -321,7 +321,9 @@ public Rectangle getClientArea () {
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	return new Rectangle (inset.left, inset.top, rect.right - rect.left - inset.right, rect.bottom - rect.top - inset.bottom);
+	int width = Math.max (0, rect.right - rect.left - inset.right);
+	int height = Math.max (0, rect.bottom - rect.top - inset.bottom);
+	return new Rectangle (inset.left, inset.top, width, height);
 }
 
 public TreeItem getItem (Point point) {
