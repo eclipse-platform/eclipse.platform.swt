@@ -78,7 +78,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_BOTTOM_TO_TOP : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
@@ -139,8 +139,8 @@ public int getSelection () {
 	return selection;
 }
 
-int gtk_realize (int widget) {
-	int result = super.gtk_realize (widget);
+int /*long*/ gtk_realize (int /*long*/ widget) {
+	int /*long*/ result = super.gtk_realize (widget);
 	if (result != 0) return result;
 	/*
 	* Bug in GTK.  When a progress bar has been unrealized after being
@@ -216,7 +216,7 @@ public void setSelection (int value) {
 	updateBar (selection, minimum, maximum);
 }
 
-int timerProc (int widget) {
+int /*long*/ timerProc (int /*long*/ widget) {
 	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
 	return 1;
 }
@@ -240,7 +240,7 @@ void updateBar (int selection, int minimum, int maximum) {
 	* outstanding redraws to be delivered.
 	*/
 	OS.gdk_flush ();
-	int window = paintWindow ();
+	int /*long*/ window = paintWindow ();
 	OS.gdk_window_process_updates (window, false);
 }
 }

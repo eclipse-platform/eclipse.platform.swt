@@ -16,12 +16,12 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 class ImageList {
-	int [] pixbufs;
+	int /*long*/ [] pixbufs;
 	Image [] images;
 	
 public ImageList() {
 	images = new Image [4];
-	pixbufs = new int [4];
+	pixbufs = new int /*long*/ [4];
 }
 
 public int add (Image image) {
@@ -41,18 +41,18 @@ public int add (Image image) {
  	OS.gdk_drawable_get_size (image.pixmap, w, h);
 	int width = w [0], height = h [0]; 	
 	boolean hasMask = image.mask != 0;
-	int pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
+	int /*long*/ pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
 	if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int colormap = OS.gdk_colormap_get_system ();
+	int /*long*/ colormap = OS.gdk_colormap_get_system ();
 	OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, width, height);
 	if (hasMask) {
-		int gdkMaskImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, width, height);
+		int /*long*/ gdkMaskImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, width, height);
 		if (gdkMaskImagePtr == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-		int pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 		byte [] line = new byte [stride];
 		for (int y=0; y<height; y++) {
-			int offset = pixels + (y * stride);
+			int /*long*/ offset = pixels + (y * stride);
 			OS.memmove (line, offset, stride);
 			for (int x=0; x<width; x++) {
 				if (OS.gdk_image_get_pixel (gdkMaskImagePtr, x, y) == 0) {
@@ -67,7 +67,7 @@ public int add (Image image) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
 		images = newImages;
-		int [] newPixbufs = new int [pixbufs.length + 4];
+		int /*long*/ [] newPixbufs = new int /*long*/ [pixbufs.length + 4];
 		System.arraycopy (pixbufs, 0, newPixbufs, 0, pixbufs.length);
 		pixbufs = newPixbufs;
 	}
@@ -89,7 +89,7 @@ public Image get (int index) {
 	return images [index];
 }
 
-int getPixbuf (int index) {
+int /*long*/ getPixbuf (int index) {
 	return pixbufs [index];
 }
 

@@ -37,7 +37,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Group extends Composite {
-	int clientHandle, labelHandle;
+	int /*long*/ clientHandle, labelHandle;
 	String text = "";
 
 /**
@@ -88,7 +88,7 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
-int clientHandle () {
+int /*long*/ clientHandle () {
 	return clientHandle;
 }
 
@@ -145,7 +145,7 @@ void createHandle(int index) {
 	OS.gtk_object_sink (labelHandle);
 	clientHandle = OS.gtk_fixed_new();
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);
@@ -177,7 +177,7 @@ void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (labelHandle, enabled);
 }
 
-int eventHandle () {
+int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
@@ -242,7 +242,7 @@ boolean mnemonicMatch (char key) {
 	return mnemonicMatch (labelHandle, key);
 }
 
-int parentingHandle() {
+int /*long*/ parentingHandle() {
 	return clientHandle;
 }
 

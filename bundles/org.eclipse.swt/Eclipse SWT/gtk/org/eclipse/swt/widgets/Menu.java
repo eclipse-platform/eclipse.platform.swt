@@ -39,7 +39,7 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
-	int imItem, imSeparator, imHandle;
+	int /*long*/ imItem, imSeparator, imHandle;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -173,7 +173,7 @@ public void _setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
-			int address = 0;
+			int /*long*/ address = 0;
 			if (hasLocation) address = display.menuPositionProc;
 			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.popupTime);
 		} else {
@@ -184,7 +184,7 @@ public void _setVisible (boolean visible) {
 	}
 }
 
-void addAccelerators (int accelGroup) {
+void addAccelerators (int /*long*/ accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
@@ -250,7 +250,7 @@ void createHandle (int index) {
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int parentHandle = parent.fixedHandle;
+		int /*long*/ parentHandle = parent.fixedHandle;
 		OS.gtk_container_add (parentHandle, handle);
 	} else {
 		handle = OS.gtk_menu_new ();
@@ -258,7 +258,7 @@ void createHandle (int index) {
 	}
 }
 
-void createIMMenu (int imHandle) {
+void createIMMenu (int /*long*/ imHandle) {
 	if (this.imHandle == imHandle) return;
 	this.imHandle = imHandle;
 	if (imHandle == 0) {
@@ -283,7 +283,7 @@ void createIMMenu (int imHandle) {
 		OS.gtk_widget_show (imItem);
 		OS.gtk_menu_shell_insert (handle, imItem, -1);
 	}
-	int imSubmenu = OS.gtk_menu_new ();
+	int /*long*/ imSubmenu = OS.gtk_menu_new ();
 	OS.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
 	OS.gtk_menu_item_set_submenu (imItem, imSubmenu);
 }
@@ -364,7 +364,7 @@ public MenuItem getItem (int index) {
 	if (imSeparator != 0) count--;
 	if (imItem != 0) count--;
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	int data = OS.g_list_nth_data (list, index);
+	int /*long*/ data = OS.g_list_nth_data (list, index);
 	OS.g_list_free (list);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) display.getWidget (data);
@@ -416,7 +416,7 @@ public MenuItem [] getItems () {
 	if (imItem != 0) count--;
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
-		int data = OS.g_list_nth_data (list, i);
+		int /*long*/ data = OS.g_list_nth_data (list, i);
 		items [i] = (MenuItem) display.getWidget (data);
 	}
 	OS.g_list_free (list);
@@ -543,7 +543,7 @@ public boolean getVisible () {
 	return OS.GTK_WIDGET_MAPPED (handle);
 }
 
-int gtk_hide (int widget) {
+int /*long*/ gtk_hide (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		Shell shell = getShell ();
 		shell.hasFocus = true;
@@ -552,7 +552,7 @@ int gtk_hide (int widget) {
 	return 0;
 }
 
-int gtk_show (int widget) {
+int /*long*/ gtk_show (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		Shell shell = getShell ();
 		shell.hasFocus = true;
@@ -563,7 +563,7 @@ int gtk_show (int widget) {
 }
 
 
-int gtk_show_help (int widget, int helpType) {
+int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 	if (sendHelpEvent (helpType)) {
 		OS.gtk_menu_shell_deactivate (handle);
 		return 1;
@@ -573,8 +573,8 @@ int gtk_show_help (int widget, int helpType) {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc2 = display.windowProc2;
-	int windowProc3 = display.windowProc3;
+	int /*long*/ windowProc2 = display.windowProc2;
+	int /*long*/ windowProc3 = display.windowProc3;
 	OS.g_signal_connect (handle, OS.show, windowProc2, SHOW);
 	OS.g_signal_connect (handle, OS.hide, windowProc2, HIDE);
 	OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
@@ -648,7 +648,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
+int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
 	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
 	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
 	if (push_in != 0) OS.memmove (push_in, new int [] {1}, 4);
@@ -705,7 +705,7 @@ public void removeMenuListener (MenuListener listener) {
 	eventTable.unhook (SWT.Show, listener);
 }
 
-void removeAccelerators (int accelGroup) {
+void removeAccelerators (int /*long*/ accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
@@ -737,7 +737,7 @@ public void removeHelpListener (HelpListener listener) {
 	eventTable.unhook (SWT.Help, listener);
 }
 
-boolean sendHelpEvent (int helpType) {
+boolean sendHelpEvent (int /*long*/ helpType) {
 	if (selectedItem != null && !selectedItem.isDisposed()) {
 		if (selectedItem.hooks (SWT.Help)) {
 			selectedItem.postEvent (SWT.Help);

@@ -138,7 +138,7 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	int handle;
+	int /*long*/ handle;
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
@@ -159,11 +159,11 @@ public FontData open () {
 	int response = OS.gtk_dialog_run(handle);
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
-		int fontName = OS.gtk_font_selection_dialog_get_font_name (handle);
+		int /*long*/ fontName = OS.gtk_font_selection_dialog_get_font_name (handle);
 		int length = OS.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
 		OS.memmove (buffer, fontName, length);
-		int fontDesc = OS.pango_font_description_from_string (buffer);
+		int /*long*/ fontDesc = OS.pango_font_description_from_string (buffer);
 		Display display = parent != null ? parent.display  : Display.getCurrent ();
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];

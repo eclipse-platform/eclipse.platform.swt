@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class List extends Scrollable {
-	int modelHandle;
+	int /*long*/ modelHandle;
 
 	static final int TEXT_COLUMN = 0;
 
@@ -94,7 +94,7 @@ public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_list_store_append (modelHandle, iter);
 	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
@@ -135,7 +135,7 @@ public void add (String string, int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (index == count) {
 		OS.gtk_list_store_append (modelHandle, iter);
@@ -193,19 +193,19 @@ void createHandle (int index) {
 	* Columns:
 	* 0 - text
 	*/
-	int [] types = new int [] {OS.G_TYPE_STRING ()};
+	int /*long*/ [] types = new int /*long*/ [] {OS.G_TYPE_STRING ()};
 	modelHandle = OS.gtk_list_store_newv (types.length, types);
 	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_tree_view_new_with_model (modelHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int textRenderer = OS.gtk_cell_renderer_text_new ();
+	int /*long*/ textRenderer = OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	int columnHandle = OS.gtk_tree_view_column_new ();
+	int /*long*/ columnHandle = OS.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
@@ -254,7 +254,7 @@ void deregister() {
 public void deselect (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
@@ -285,7 +285,7 @@ public void deselect (int start, int end) {
 	if (start >= count && end >= count) return;
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
@@ -316,7 +316,7 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -363,10 +363,10 @@ GdkColor getBackgroundColor () {
  */
 public int getFocusIndex () {
 	checkWidget();
-	int [] path = new int [1];
+	int /*long*/ [] path = new int /*long*/ [1];
 	OS.gtk_tree_view_get_cursor (handle, path, null);
 	if (path [0] == 0) return -1;
-	int indices = OS.gtk_tree_path_get_indices (path [0]);
+	int /*long*/ indices = OS.gtk_tree_path_get_indices (path [0]);
 	int [] index = new int []{-1};
 	if (indices != 0) OS.memmove (index, indices, 4);
 	OS.gtk_tree_path_free (path [0]);
@@ -401,7 +401,7 @@ public String getItem (int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int [] ptr = new int [1];
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 	OS.g_free (iter);
@@ -447,9 +447,9 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	int column = OS.gtk_tree_view_get_column (handle, 0);
-	int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	int renderer = OS.g_list_nth_data (list, 0);
+	int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
+	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ renderer = OS.g_list_nth_data (list, 0);
 	OS.g_list_free (list);
 	int [] h = new int [1];
 	OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, null, h);
@@ -483,7 +483,7 @@ public String [] getItems () {
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	int [] ptr = new int [1];
 	String [] result = new String [count];
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	for (int index=0; index<count; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
@@ -621,24 +621,24 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget();
-	int [] path = new int [1];
+	int /*long*/ [] path = new int /*long*/ [1];
 	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
 	if (path [0] == 0) return 0;
-	int indices = OS.gtk_tree_path_get_indices (path[0]);
+	int /*long*/ indices = OS.gtk_tree_path_get_indices (path[0]);
 	int[] index = new int [1];
 	if (indices != 0) OS.memmove (index, indices, 4);
 	OS.gtk_tree_path_free (path [0]);
 	return index [0];
 }
 
-int gtk_changed (int widget) {
+int /*long*/ gtk_changed (int /*long*/ widget) {
 	postEvent (SWT.Selection);
 	return 0;
 }
 
-int gtk_button_press_event (int widget, int event) {
-	int result = super.gtk_button_press_event (widget, event);
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  In a multi-select list view, when multiple items are already
@@ -652,7 +652,7 @@ int gtk_button_press_event (int widget, int event) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		int [] path = new int [1];
+		int /*long*/ [] path = new int /*long*/ [1];
 		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
 				int selection = OS.gtk_tree_view_get_selection (handle);
@@ -670,7 +670,7 @@ int gtk_button_press_event (int widget, int event) {
 	* widget from automatically selecting the first item.
 	*/
 	if ((style & SWT.SINGLE) != 0 && getSelectionCount () == 0) {
-		int [] path = new int [1];
+		int /*long*/ [] path = new int /*long*/ [1];
 		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
 				int selection = OS.gtk_tree_view_get_selection (handle);
@@ -684,8 +684,8 @@ int gtk_button_press_event (int widget, int event) {
 	return result;
 }
 
-int gtk_key_press_event (int widget, int event) {
-	int result = super.gtk_key_press_event (widget, event);
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 
 	/*
@@ -707,7 +707,7 @@ int gtk_key_press_event (int widget, int event) {
 	return result;
 }
 
-int gtk_row_activated (int tree, int path, int column) {
+int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
@@ -792,13 +792,13 @@ public boolean isSelected (int index) {
 	checkWidget();
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	byte [] buffer = Converter.wcsToMbcs (null, Integer.toString (index), true);
-	int path = OS.gtk_tree_path_new_from_string (buffer);
+	int /*long*/ path = OS.gtk_tree_path_new_from_string (buffer);
 	boolean answer = OS.gtk_tree_selection_path_is_selected (selection, path);
 	OS.gtk_tree_path_free (path);
 	return answer;
 }
 
-int paintWindow () {
+int /*long*/ paintWindow () {
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_tree_view_get_bin_window (handle);
 }
@@ -836,7 +836,7 @@ public void remove (int index) {
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -871,7 +871,7 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=end; index>=start; index--) {
@@ -938,7 +938,7 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int last = -1;
@@ -1010,13 +1010,13 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	OS.gtk_tree_selection_select_iter (selection, iter); 
 	if ((style & SWT.SINGLE) != 0) {
-		int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+		int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 		OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 		OS.gtk_tree_path_free (path);
 	}
@@ -1046,14 +1046,14 @@ public void select (int start, int end) {
 	if (count <= start || count == 0) return;
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_selection_select_iter (selection, iter); 
 		if ((style & SWT.SINGLE) != 0) {
-			int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 			OS.gtk_tree_path_free (path);
 		}
@@ -1082,7 +1082,7 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1092,7 +1092,7 @@ public void select (int [] indices) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_selection_select_iter (selection, iter); 
 		if ((style & SWT.SINGLE) != 0) {
-			int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 			OS.gtk_tree_path_free (path);
 			break;
@@ -1127,9 +1127,9 @@ void selectFocusIndex (int index) {
 	 */
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (!(0 <= index && index < count))  return;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
@@ -1187,7 +1187,7 @@ public void setItem (int index, String string) {
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
@@ -1217,7 +1217,7 @@ public void setItems (String [] items) {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_list_store_clear (modelHandle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
@@ -1395,9 +1395,9 @@ public void setTopIndex (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0))) return;
 	// FIXME - For some reason, sometimes the tree scrolls to the wrong place
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
@@ -1417,17 +1417,17 @@ public void showSelection () {
 	checkWidget();
 	int index = getSelectionIndex ();
 	if (index == -1) return;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
 
-int treeSelectionProc (int model, int path, int iter, int[] selection, int length) {
+int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int length) {
 	if (selection != null) { 
-		int indices = OS.gtk_tree_path_get_indices (path);
+		int /*long*/ indices = OS.gtk_tree_path_get_indices (path);
 		if (indices != 0) {
 			int [] index = new int [1];
 			OS.memmove (index, indices, 4);

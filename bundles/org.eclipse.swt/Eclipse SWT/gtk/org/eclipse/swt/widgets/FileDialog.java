@@ -36,7 +36,7 @@ public class FileDialog extends Dialog {
 	String fileName = "";
 	String[] fileNames = new String [0];
 	String fullPath = "";
-	int handle;
+	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	
 /**
@@ -168,10 +168,10 @@ public String open () {
 	preset ();
 	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
-		int fileNamePtr = OS.gtk_file_selection_get_filename (handle);
-		int utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
+		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
 		int [] items_written = new int [1];
-		int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 		int length = items_written [0];
 		char [] buffer = new char [length];
 		OS.memmove (buffer, utf16Ptr, length * 2);
@@ -251,8 +251,8 @@ void preset() {
 	int length = fullPath.length ();
 	char [] buffer = new char [length + 1];
 	fullPath.getChars (0, length, buffer, 0);
-	int utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
-	int fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
+	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
+	int /*long*/ fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
 	OS.gtk_file_selection_set_filename (handle, fileNamePtr);
 	OS.g_free (utf8Ptr);
 	OS.g_free (fileNamePtr);
@@ -279,8 +279,8 @@ String interpretOsAnswer(String osAnswer) {
 	if ((style & SWT.MULTI) == 0) {
 		fileNames = new String[] {fileName};
 	} else {
-		int namesPtr = OS.gtk_file_selection_get_selections (handle);
-		int namesPtr1 = namesPtr;
+		int /*long*/ namesPtr = OS.gtk_file_selection_get_selections (handle);
+		int /*long*/ namesPtr1 = namesPtr;
 		int [] namePtr = new int [1];
 		OS.memmove (namePtr, namesPtr1, 4);
 		int length = 0;
@@ -293,9 +293,9 @@ String interpretOsAnswer(String osAnswer) {
 		namePtr = new int [length];
 		OS.memmove (namePtr, namesPtr, length * 4);
 		for (int i = 0; i < length; i++) {			
-			int utf8Ptr = OS.g_filename_to_utf8 (namePtr [i], -1, null, null, null);
+			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (namePtr [i], -1, null, null, null);
 			int [] items_written = new int [1];
-			int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 			char[] buffer = new char [items_written [0]];
 			OS.memmove (buffer, utf16Ptr, items_written [0] * 2);
 			String name = new String (buffer);

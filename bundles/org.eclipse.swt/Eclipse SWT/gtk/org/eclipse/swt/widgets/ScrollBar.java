@@ -285,7 +285,7 @@ public int getSelection () {
 public Point getSize () {
 	checkWidget ();
 	int barHandle = 0;
-	int scrolledHandle = parent.scrolledHandle;
+	int /*long*/ scrolledHandle = parent.scrolledHandle;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
 	} else {
@@ -336,7 +336,7 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	int scrolledHandle = parent.scrolledHandle;
+	int /*long*/ scrolledHandle = parent.scrolledHandle;
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -346,7 +346,7 @@ public boolean getVisible () {
 	}
 }
 
-int gtk_value_changed (int adjustment) {
+int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	postEvent (SWT.Selection);
 	return 0;
 }
@@ -670,7 +670,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	int scrolledHandle = parent.scrolledHandle;
+	int /*long*/ scrolledHandle = parent.scrolledHandle;
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	int policy = visible ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
@@ -686,7 +686,7 @@ public void setVisible (boolean visible) {
 	/*
 	* Force the container to allocate the size of its children.
 	*/
-	int parentHandle = parent.scrolledHandle;
+	int /*long*/ parentHandle = parent.scrolledHandle;
 	OS.gtk_container_resize_children (parentHandle);
 
 	parent.sendEvent (SWT.Resize);

@@ -139,7 +139,7 @@ public void setMessage (String string) {
  * </ul>
  */
 public int open () {
-	int parentHandle = (parent != null)? parent.topHandle() : 0;
+	int /*long*/ parentHandle = (parent != null)? parent.topHandle() : 0;
 	int dialogFlags = OS.GTK_DIALOG_DESTROY_WITH_PARENT;
 	if ((style & (SWT.PRIMARY_MODAL|SWT.APPLICATION_MODAL|SWT.SYSTEM_MODAL)) != 0) {
 		dialogFlags |= OS.GTK_DIALOG_MODAL;

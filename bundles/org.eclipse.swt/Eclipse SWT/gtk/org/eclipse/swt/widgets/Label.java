@@ -39,7 +39,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Label extends Control {
-	int frameHandle, labelHandle, imageHandle;
+	int /*long*/ frameHandle, labelHandle, imageHandle;
 	Image image;
 	String text;
 
@@ -167,7 +167,7 @@ void createHandle (int index) {
 	} else {
 		OS.gtk_container_add (fixedHandle, handle);
 	}
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_widget_show (fixedHandle);
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -204,7 +204,7 @@ void deregister () {
 	if (imageHandle != 0) display.removeWidget (imageHandle);
 }
 
-int eventHandle () {
+int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
@@ -323,7 +323,7 @@ void releaseWidget () {
 
 void resizeHandle (int width, int height) {
 	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	int widgetHandle = frameHandle != 0 ? frameHandle : handle;
+	int /*long*/ widgetHandle = frameHandle != 0 ? frameHandle : handle;
 	OS.gtk_widget_set_size_request (widgetHandle, width, height);
 
 	/*
@@ -422,7 +422,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
-		int widgetHandle = frameHandle != 0 ? frameHandle : handle;
+		int /*long*/ widgetHandle = frameHandle != 0 ? frameHandle : handle;
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (widgetHandle, requisition);
 	}

@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
-	int defaultCursor;
+	int /*long*/ defaultCursor;
 
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
@@ -132,22 +132,22 @@ void createHandle (int index) {
 	handle = OS.gtk_drawing_area_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
 	defaultCursor = OS.gdk_cursor_new (type);
-	int window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	if (window != 0) OS.gdk_window_set_cursor (window, defaultCursor);
 }
 
 void drawBand (int x, int y, int width, int height) {
-	int window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
-	int stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
-	int gc = OS.gdk_gc_new (window);
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
+	int /*long*/ gc = OS.gdk_gc_new (window);
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	GdkColor color = new GdkColor ();
 	OS.gdk_color_white (colormap, color);
 	OS.gdk_gc_set_foreground (gc, color);	
@@ -160,13 +160,13 @@ void drawBand (int x, int y, int width, int height) {
 	OS.g_object_unref (gc);
 }
 
-int gtk_button_press_event (int widget, int eventPtr) {
-	int result = super.gtk_button_press_event (widget, eventPtr);
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_button_press_event (widget, eventPtr);
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button != 1) return 0;
-	int window = OS.GTK_WIDGET_WINDOW (widget);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
@@ -201,8 +201,8 @@ int gtk_button_press_event (int widget, int eventPtr) {
 	return result;	
 }
 
-int gtk_button_release_event (int widget, int eventPtr) {
-	int result = super.gtk_button_release_event (widget, eventPtr);
+int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_button_release_event (widget, eventPtr);
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
@@ -224,8 +224,8 @@ int gtk_button_release_event (int widget, int eventPtr) {
 	return result;
 }
 
-int gtk_focus_in_event (int widget, int event) {
-	int result = super.gtk_focus_in_event (widget, event);
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_in_event (widget, event);
 	if (result != 0) return result;
 	// widget could be disposed at this point
 	if (handle != 0) {
@@ -235,8 +235,8 @@ int gtk_focus_in_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_key_press_event (int widget, int eventPtr) {
-	int result = super.gtk_key_press_event (widget, eventPtr);
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -274,9 +274,9 @@ int gtk_key_press_event (int widget, int eventPtr) {
 			if (newX == lastX && newY == lastY) return result;
 			
 			/* Ensure that the pointer image does not change */
-			int window = OS.GTK_WIDGET_WINDOW (handle);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
-			int gdkCursor = cursor != null ? cursor.handle : defaultCursor;
+			int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
 			int ptrGrabResult = OS.gdk_pointer_grab (window, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
 
 			/* The event must be sent because its doit flag is used. */
@@ -312,8 +312,8 @@ int gtk_key_press_event (int widget, int eventPtr) {
 	return result;
 }
 
-int gtk_motion_notify_event (int widget, int eventPtr) {
-	int result = super.gtk_motion_notify_event (widget, eventPtr);
+int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_motion_notify_event (widget, eventPtr);
 	int [] state = new int [1];
 	OS.gdk_event_get_state (eventPtr, state);
 	if (!dragging || (state [0] & OS.GDK_BUTTON1_MASK) == 0) return 0;
@@ -326,7 +326,7 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
 	double [] root_x = new double [1], root_y = new double [1];
 	OS.gdk_event_get_root_coords (eventPtr, root_x, root_y);	
-	int window = OS.GTK_WIDGET_WINDOW (widget);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	int eventX = (int) (root_x [0] - origin_x [0]), eventY = (int) (root_y [0] - origin_y [0]);
@@ -361,9 +361,9 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	return result;
 }
 
-int gtk_realize (int widget) {
-	int window = OS.GTK_WIDGET_WINDOW (paintHandle());
-	int gdkCursor = cursor != null && !cursor.isDisposed() ? cursor.handle : defaultCursor;
+int /*long*/ gtk_realize (int /*long*/ widget) {
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle());
+	int /*long*/ gdkCursor = cursor != null && !cursor.isDisposed() ? cursor.handle : defaultCursor;
 	OS.gdk_window_set_cursor (window, gdkCursor);
 	return 0;
 }
@@ -408,8 +408,8 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	int gdkCursor = cursor != null ? cursor.handle : defaultCursor;
-	int window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+	int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 	if (window != 0) {
 		OS.gdk_window_set_cursor (window, gdkCursor);
 		OS.gdk_flush ();

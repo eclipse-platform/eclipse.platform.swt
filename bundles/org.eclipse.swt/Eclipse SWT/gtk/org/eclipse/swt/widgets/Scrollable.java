@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public abstract class Scrollable extends Control {
-	int scrolledHandle;
+	int /*long*/ scrolledHandle;
 	ScrollBar horizontalBar, verticalBar;
 
 /**
@@ -71,7 +71,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int clientHandle () {
+int /*long*/ clientHandle () {
 	return handle;
 }
 
@@ -109,7 +109,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimWidth  += vScrollBarWidth ();
 	if (scrolledHandle != 0) {
 		if (OS.gtk_scrolled_window_get_shadow_type (scrolledHandle) != OS.GTK_SHADOW_NONE) {
-			int style = OS.gtk_widget_get_style (scrolledHandle);
+			int /*long*/ style = OS.gtk_widget_get_style (scrolledHandle);
 			int xthickness = OS.gtk_style_get_xthickness (style);
 			int ythickness = OS.gtk_style_get_ythickness (style);
 			trimX -= xthickness;
@@ -179,7 +179,7 @@ public int getBorderWidth () {
 public Rectangle getClientArea () {
 	checkWidget ();
 	//FIXME - List, Table, Tree, ...
-	int clientHandle = clientHandle ();
+	int /*long*/ clientHandle = clientHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
 	if ((state & CANVAS) != 0) {
@@ -283,7 +283,7 @@ void resizeHandle (int width, int height) {
 	}
 }
 
-int topHandle () {
+int /*long*/ topHandle () {
 	if (fixedHandle != 0) return fixedHandle;
 	if (scrolledHandle != 0) return scrolledHandle;
 	return super.topHandle ();
