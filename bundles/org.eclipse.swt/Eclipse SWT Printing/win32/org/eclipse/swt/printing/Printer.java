@@ -64,16 +64,12 @@ public final class Printer extends Device {
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
- * </ul>
- *
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
 	byte[] buf = new byte[1024];
 	int n = OS.GetProfileString(profile, null, new byte[] {0}, buf, buf.length);
-	if (n == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
+	if (n == 0) return new PrinterData[0];
 	byte[][] deviceNames = new byte[5][];
 	int nameCount = 0;
 	int index = 0;
@@ -108,21 +104,21 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
-/**
+/*
  * Returns a <code>PrinterData</code> object representing
  * the default printer.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
  * </ul>
  *
- * @return the default printer
+ * @return the default printer data
  */
 static PrinterData getDefaultPrinterData() {
 	byte [] deviceName = null;
 	byte[] buf = new byte[1024];
 	int n = OS.GetProfileString(appName, keyName, new byte[] {0}, buf, buf.length);
-	if (n == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
+	if (n == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int commaIndex = 0;
 	while(buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
 	if (commaIndex < buf.length) {
@@ -462,12 +458,10 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 /**
- * Returns an array of <code>FontData</code>s representing the receiver.
- * On Windows, only one FontData will be returned per font. On X however, 
- * a <code>Font</code> object <em>may</em> be composed of multiple X 
- * fonts. To support this case, we return an array of font data objects.
- *
- * @return an array of font data objects describing the receiver
+ * Returns a <code>PrinterData</code> object representing the
+ * target printer for this print job.
+ * 
+ * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {
 	return data;
