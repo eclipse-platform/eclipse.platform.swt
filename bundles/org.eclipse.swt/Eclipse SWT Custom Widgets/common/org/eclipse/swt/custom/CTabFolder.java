@@ -11,6 +11,14 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 
+/* Start ACCESSIBILITY */
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.ole.win32.*;
+/* End ACCESSIBILITY */
+
+
 /**
  * Instances of this class implement the notebook user interface
  * metaphor.  It allows the user to select a notebook page from
@@ -134,6 +142,15 @@ public class CTabFolder extends Composite {
 	// tool tip
 	private Shell tip;
 
+
+/* Start ACCESSIBILITY */
+	static final boolean debug = false;
+	int refCount = 0;
+	COMObject objIAccessible;
+	IAccessible iaccessible;
+/* End ACCESSIBILITY */
+
+
 /**
  * Construct a CTabFolder with the specified parent and style.
  * @param parent org.eclipse.swt.widgets.Composite
@@ -203,6 +220,104 @@ public CTabFolder(Composite parent, int style) {
 	createCloseBar();
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
+	
+	
+/* Start ACCESSIBILITY */
+		objIAccessible = new COMObject(new int[] { 2, 0, 0, 1, 3, 5, 8, 1, 1, 5, 5, 5, 5, 5, 5, 5, 6, 5, 1, 1, 5, 5, 8, 6, 3, 4, 5, 5 }) {
+			public int method0(int[] args) {
+				return QueryInterface(args[0], args[1]);
+			}
+			public int method1(int[] args) {
+				return AddRef();
+			}
+			public int method2(int[] args) {
+				return Release();
+			}
+			public int method3(int[] args) {
+				return GetTypeInfoCount(args[0]);
+			}
+			public int method4(int[] args) {
+				return GetTypeInfo(args[0], args[1], args[2]);
+			}
+			public int method5(int[] args) {
+				return GetIDsOfNames(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method6(int[] args) {
+				return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+			}
+			public int method7(int[] args) {
+				return get_accParent(args[0]);
+			}
+			public int method8(int[] args) {
+				return get_accChildCount(args[0]);
+			}
+			public int method9(int[] args) {
+				return get_accChild(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method10(int[] args) {
+				return get_accName(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method11(int[] args) {
+				return get_accValue(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method12(int[] args) {
+				return get_accDescription(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method13(int[] args) {
+				return get_accRole(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method14(int[] args) {
+				return get_accState(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method15(int[] args) {
+				return get_accHelp(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method16(int[] args) {
+				return get_accHelpTopic(args[0], args[1], args[2], args[3], args[4], args[5]);
+			}
+			public int method17(int[] args) {
+				return get_accKeyboardShortcut(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method18(int[] args) {
+				return get_accFocus(args[0]);
+			}
+			public int method19(int[] args) {
+				return get_accSelection(args[0]);
+			}
+			public int method20(int[] args) {
+				return get_accDefaultAction(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method21(int[] args) {
+				return accSelect(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method22(int[] args) {
+				return accLocation(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+			}
+			public int method23(int[] args) {
+				return accNavigate(args[0], args[1], args[2], args[3], args[4], args[5]);
+			}
+			public int method24(int[] args) {
+				return accHitTest(args[0], args[1], args[2]);
+			}
+			public int method25(int[] args) {
+				return accDoDefaultAction(args[0], args[1], args[2], args[3]);
+			}
+			public int method26(int[] args) {
+				return put_accName(args[0], args[1], args[2], args[3], args[4]);
+			}
+			public int method27(int[] args) {
+				return put_accValue(args[0], args[1], args[2], args[3], args[4]);
+			}
+		};
+
+		int[] ppvObject = new int[1];
+		int result = COM.CreateStdAccessibleObject(handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
+		iaccessible = new IAccessible(ppvObject[0]);
+		iaccessible.AddRef();
+		new TypeInfoBrowser(ppvObject[0]);
+/* End ACCESSIBILITY */
 }
 private static int checkStyle (int style) {
 	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT;
@@ -1568,4 +1683,344 @@ public void setTabHeight(int height) {
 	fixedTabHeight = height;
 	onClientAreaChange();
 }
+
+
+/* Start ACCESSIBILITY */
+	public LRESULT WM_GETOBJECT(int wParam, int lParam) {
+		//if (isDisposed()) return new LRESULT(COM.CO_E_OBJNOTCONNECTED); // not sure about this line
+		if (lParam == COM.OBJID_CLIENT) {
+			int result = COM.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
+			return new LRESULT(result);
+		}
+		return null;
+	}
+
+	int QueryInterface(int arg1, int arg2) {
+		if (debug)
+			System.out.println("QueryInterface");
+
+		GUID guid = new GUID();
+		COM.MoveMemory(guid, arg1, GUID.sizeof);
+
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
+			if (debug)
+				System.out.println("IUnknown");
+			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			return COM.S_OK;
+		}
+
+		if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
+			if (debug)
+				System.out.println("IDispatch");
+			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			return COM.S_OK;
+		}
+
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
+			if (debug)
+				System.out.println("IAccessible");
+			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			return COM.S_OK;
+		}
+
+		int[] ppvObject = new int[1];
+		int result = iaccessible.QueryInterface(guid, ppvObject);
+		COM.MoveMemory(arg2, ppvObject, 4);
+		if (debug)
+			System.out.println("QI other " + result);
+		return result;
+	}
+
+	int AddRef() {
+		if (debug)
+			System.out.println("AddRef");
+		refCount++;
+		return refCount;
+	}
+
+	int Release() {
+		if (debug)
+			System.out.println("Release");
+		refCount--;
+
+		if (refCount == 0) {
+			//disposeCOMInterfaces();
+		}
+		return refCount;
+	}
+
+	int GetTypeInfoCount(int pctinfo) {
+		if (debug)
+			System.out.println("GetTypeInfoCount");
+		return COM.E_NOTIMPL;
+	}
+
+	int GetTypeInfo(int iTInfo, int lcid, int ppTInfo) {
+		if (debug)
+			System.out.println("GetTypeInfo");
+		return COM.E_NOTIMPL;
+	}
+
+	int GetIDsOfNames(int riid, int rgszNames, int cNames, int lcid, int rgDispId) {
+		if (debug)
+			System.out.println("GetIDsOfNames");
+		return COM.E_NOTIMPL;
+	}
+
+	int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispParams, int pVarResult, int pExcepInfo, int pArgErr) {
+		if (debug)
+			System.out.println("Invoke");
+		return COM.E_NOTIMPL;
+	}
+
+	int accDoDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
+		if (debug)
+			System.out.println("accDoDefaultAction " + varChild_vt + " " + varChild_lVal);
+		// must implement this for the items because they have a default action
+		return iaccessible.accDoDefaultAction(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
+	}
+	
+	int accHitTest(int xLeft, int yTop, int pvarChild) {
+		//if (debug)
+			System.out.println("accHitTest " + xLeft + " " + yTop + " " + pvarChild);
+		Point testPoint = toControl(new Point(xLeft, yTop));
+		System.out.println("testPoint= " + testPoint);
+		int childID = COM.CHILDID_SELF;
+		for (int i = 0; i < items.length; i++) {
+			Rectangle bounds = items[i].getBounds();
+			if (bounds.contains(testPoint)) {
+				childID = i + 1;
+				break;
+			}
+		}
+		if (debug)
+			System.out.println("accHitTest ChildID=" + childID + ", bounds=" + (childID == 0?getClientArea():items[childID-1].getBounds()));
+		if (childID == COM.CHILDID_SELF && !getBounds().contains(testPoint)) {
+			COM.MoveMemory(pvarChild, new short[] { COM.VT_EMPTY }, 2);
+			return OLE.S_FALSE;
+		}
+		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
+		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
+		return OLE.S_OK;
+	}
+	
+	int accLocation(int pxLeft, int pyTop, int pcxWidth, int pcyHeight, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
+		if (debug)
+			System.out.println("accLocation " + pxLeft + " " + pyTop + " " + pcxWidth + " " + pcyHeight + " " + varChild_vt + " " + varChild_lVal);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		Rectangle location;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			location = getClientArea();
+		} else {
+			CTabItem childItem = items[varChild_lVal - 1];
+			location = childItem.getBounds();
+		}
+		OS.MoveMemory(pxLeft, new int[] { toDisplay(new Point(location.x, 0)).x }, 4);
+		OS.MoveMemory(pyTop, new int[] { toDisplay(new Point(0, location.y)).y }, 4);
+		OS.MoveMemory(pcxWidth, new int[] { location.width }, 4);
+		OS.MoveMemory(pcyHeight, new int[] { location.height }, 4);
+		return OLE.S_OK;
+	}
+	
+	int accNavigate(int navDir, int varStart_vt, int varStart_reserved1, int varStart_lVal, int varStart_reserved2, int pvarEndUpAt) {
+		if (debug)
+			System.out.println("accNavigate " + navDir + " " + varStart_vt + " " + varStart_lVal + " " + pvarEndUpAt);
+		// must implement this (somehow)
+		return iaccessible.accNavigate(navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
+	}
+	
+	int accSelect(int flagsSelect, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
+		if (debug)
+			System.out.println("accSelect " + flagsSelect + " " + varChild_vt + " " + varChild_lVal);
+		// must implement for the items because they support selection
+		return iaccessible.accSelect(flagsSelect, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
+	}
+	
+	int get_accChild(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int ppdispChild) {
+		//if (debug)
+			System.out.println("get_accChild " + varChild_vt + " " + varChild_lVal + " " + ppdispChild);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			System.out.println("get_accChild CHILDID_SELF");
+			COM.MoveMemory(ppdispChild, new int[] { objIAccessible.getAddress() }, 4);
+			return OLE.S_OK;
+			//return iaccessible.get_accChild(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, ppdispChild);
+		}
+		System.out.println("get_accChild childID=" + varChild_lVal);
+		COM.MoveMemory(ppdispChild, new int[] { objIAccessible.getAddress() }, 4);
+		return OLE.S_OK; // the item children do not have their own IAccessible
+		//return iaccessible.get_accChild(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, ppdispChild);
+	}
+	
+	int get_accChildCount(int pcountChildren) {
+		if (debug)
+			System.out.println("get_accChildCount " + pcountChildren);
+		COM.MoveMemory(pcountChildren, new int[] { items.length }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszDefaultAction) {
+		if (debug)
+			System.out.println("get_accDefaultAction " + varChild_vt + " " + varChild_lVal + " " + pszDefaultAction);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		if (varChild_lVal == COM.CHILDID_SELF) return OLE.S_FALSE;
+		char[] data = ("Switch\0").toCharArray();
+		int ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pszDefaultAction, new int[] { ptr }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accDescription(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszDescription) {
+		if (debug)
+			System.out.println("get_accDescription " + varChild_vt + " " + varChild_lVal + " " + pszDescription);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		String description;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			description = "This is a CTabFolder";
+		} else {
+			description = "This is a CTabItem";
+		}
+		char[] data = (description + "\0").toCharArray();
+		int ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pszDescription, new int[] { ptr }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accFocus(int pvarChild) {
+		if (debug)
+			System.out.println("get_accFocus " + pvarChild);
+		return iaccessible.get_accFocus(pvarChild);
+	}
+	
+	int get_accHelp(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszHelp) {
+		if (debug)
+			System.out.println("get_accHelp " + varChild_vt + " " + varChild_lVal + " " + pszHelp);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		String help;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			help = getToolTipText();
+		} else {
+			CTabItem childItem = items[varChild_lVal - 1];
+			help = childItem.getToolTipText();
+		}
+		if (help == null) return OLE.S_FALSE;
+		char[] data = (help + "\0").toCharArray();
+		int ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pszHelp, new int[] { ptr }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accHelpTopic(int pszHelpFile, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pidTopic) {
+		if (debug)
+			System.out.println("get_accHelpTopic " + pszHelpFile + " " + varChild_vt + " " + varChild_lVal + " " + pidTopic);
+		return OLE.S_FALSE;
+	}
+	
+	int get_accKeyboardShortcut(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszKeyboardShortcut) {
+		if (debug)
+			System.out.println("get_accKeyboardShortcut " + pszKeyboardShortcut);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		if (varChild_lVal == COM.CHILDID_SELF) return OLE.S_FALSE;
+		char[] data = ("Ctrl+TAB\0").toCharArray();
+		int ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pszKeyboardShortcut, new int[] { ptr }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accName(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszName) {
+		if (debug)
+			System.out.println("get_accName " + varChild_vt + " " + varChild_lVal + " " + pszName);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		String name;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			name = "CTabFolder";
+		} else {
+			CTabItem childItem = items[varChild_lVal - 1];
+			name = childItem.getText();
+		}
+		char[] data = (name + "\0").toCharArray();
+		int ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pszName, new int[] { ptr }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accParent(int ppdispParent) {
+		if (debug)
+			System.out.println("get_accParent");
+		//COM.MoveMemory(ppdispParent, new int[] { objIAccessible.getAddress() }, 4);
+		//return OLE.S_OK;
+		return iaccessible.get_accParent(ppdispParent);
+	}
+	
+	int get_accRole(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarRole) {
+		if (debug)
+			System.out.println("get_accRole " + varChild_vt + " " + varChild_lVal + " " + pvarRole);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		int role;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			role = COM.ROLE_SYSTEM_PAGETABLIST;
+		} else {
+			role = COM.ROLE_SYSTEM_PAGETAB;
+		}
+		COM.MoveMemory(pvarRole, new short[] { COM.VT_I4 }, 2);
+		COM.MoveMemory(pvarRole + 8, new int[] { role }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accSelection(int pvarChildren) {
+		if (debug)
+			System.out.println("get_accSelection " + pvarChildren);
+		if (selectedIndex == -1) {
+			System.out.println("nothing is selected");
+			COM.MoveMemory(pvarChildren, new short[] { COM.VT_EMPTY }, 2);
+			//COM.MoveMemory(pvarChildren + 8, new int[] { 0 }, 4);
+			//return COM.VT_EMPTY; // spec says to return this... but VT_EMPTY == 0 == S_OK...
+			//return OLE.S_FALSE;
+			return OLE.S_OK;
+		} else {
+			System.out.println("childID " + (selectedIndex + 1) + " is selected");
+			COM.MoveMemory(pvarChildren, new short[] { COM.VT_I4 }, 2);
+			COM.MoveMemory(pvarChildren + 8, new int[] { selectedIndex + 1 }, 4);
+		}
+		return OLE.S_OK;
+	}
+	
+	int get_accState(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarState) {
+		if (debug)
+			System.out.println("get_accState " + varChild_vt + " " + varChild_lVal + " " + pvarState);
+		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
+		int state;
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			state = COM.STATE_SYSTEM_NORMAL;
+		} else {
+			state = COM.STATE_SYSTEM_SELECTABLE;
+			if (selectedIndex + 1 == varChild_lVal) {
+				state |= COM.STATE_SYSTEM_SELECTED;
+			}
+		}
+		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
+		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
+		return OLE.S_OK;
+	}
+	
+	int get_accValue(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszValue) {
+		if (debug)
+			System.out.println("get_accValue " + varChild_vt + " " + varChild_lVal + " " + pszValue);
+		return OLE.S_FALSE;
+	}
+	
+	int put_accName(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int szName) {
+		// this method is no longer supported
+		if (debug)
+			System.out.println("put_accName " + varChild_vt + " " + varChild_lVal + " " + szName);
+		return iaccessible.put_accName(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szName);
+	}
+	
+	int put_accValue(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int szValue) {
+		// this method is typically only used for edit controls
+		if (debug)
+			System.out.println("put_accValue " + varChild_vt + " " + varChild_lVal + " " + szValue);
+		return iaccessible.put_accValue(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szValue);
+	}
+/* End ACCESSIBILITY */
 }

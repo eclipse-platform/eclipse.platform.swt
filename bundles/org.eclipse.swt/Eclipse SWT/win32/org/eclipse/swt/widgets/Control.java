@@ -2818,7 +2818,7 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 
 public LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	if (lParam == COM.OBJID_CLIENT) {
-		System.out.println("WM_GETOBJECT");
+		//System.out.println("WM_GETOBJECT");
 	}
 	return null;
 }
