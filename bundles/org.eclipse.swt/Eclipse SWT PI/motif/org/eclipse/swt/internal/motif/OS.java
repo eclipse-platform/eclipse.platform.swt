@@ -57,6 +57,12 @@ public class OS {
 	public static final int ButtonPressMask = 1 << 2;
 	public static final int ButtonRelease = 5;
 	public static final int ButtonReleaseMask = 1 << 3;
+	public static final int ButtonMotionMask = 1 << 13;
+	public static final int Button1MotionMask = 1 << 8;
+	public static final int Button2MotionMask = 1 << 9;
+	public static final int Button3MotionMask = 1 << 10;
+	public static final int Button4MotionMask = 1 << 11;
+	public static final int Button5MotionMask = 1 << 12;
 	public static final int CWBackPixmap = 0x1;
 	public static final int CWBitGravity = 0x10;
 	public static final int CWCursor = 0x4000;
@@ -141,6 +147,7 @@ public class OS {
 	public static final int PMinSize = 1 << 4;
 	public static final int PMaxSize = 1 << 5;
 	public static final int PointerMotionMask = 1 << 6;
+	public static final int PointerMotionHintMask = 1 << 7;
 	public static final int PropertyChangeMask = 1 << 22;
 	public static final int PropertyNotify = 28;
 	public static final int PropModeReplace = 0;

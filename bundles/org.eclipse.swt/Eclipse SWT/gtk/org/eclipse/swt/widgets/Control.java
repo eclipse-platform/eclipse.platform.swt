@@ -2716,7 +2716,9 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			if (redrawWindow != 0) {
+				int /*long*/ window = paintWindow ();
 				OS.gdk_window_destroy (redrawWindow);
+				OS.gdk_window_set_events (window, OS.gtk_widget_get_events (paintHandle ()));
 				redrawWindow = 0;
 			}
 		}
@@ -2732,6 +2734,12 @@ public void setRedraw (boolean redraw) {
 				attributes.window_type = OS.GDK_WINDOW_CHILD;
 				redrawWindow = OS.gdk_window_new (window, attributes, 0);
 				if (redrawWindow != 0) {
+					int mouseMask = OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
+						OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
+						OS.GDK_POINTER_MOTION_MASK | OS.GDK_POINTER_MOTION_HINT_MASK |
+						OS.GDK_BUTTON_MOTION_MASK | OS.GDK_BUTTON1_MOTION_MASK | 
+						OS.GDK_BUTTON2_MOTION_MASK | OS.GDK_BUTTON3_MOTION_MASK;
+					OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) & ~mouseMask);
 					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
 					OS.gdk_window_raise (redrawWindow);
 					OS.gdk_window_show (redrawWindow);

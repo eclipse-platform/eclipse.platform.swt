@@ -37,6 +37,10 @@ public class OS {
 	public static final int GDK_BUTTON1_MASK = 0x100;
 	public static final int GDK_BUTTON2_MASK = 0x200;
 	public static final int GDK_BUTTON3_MASK = 0x400;
+	public static final int GDK_BUTTON_MOTION_MASK	= 1 << 4;
+	public static final int GDK_BUTTON1_MOTION_MASK	= 1 << 5;
+	public static final int GDK_BUTTON2_MOTION_MASK	= 1 << 6;
+	public static final int GDK_BUTTON3_MOTION_MASK	= 1 << 7;
 	public static final int GDK_BUTTON_PRESS = 0x4;
 	public static final int GDK_BUTTON_PRESS_MASK = 0x100;
 	public static final int GDK_BUTTON_RELEASE = 0x7;
@@ -1037,6 +1041,7 @@ public static final synchronized native boolean gtk_widget_event(int /*long*/ wi
 public static final synchronized native int gtk_widget_get_default_direction();
 public static final synchronized native int /*long*/ gtk_widget_get_default_style();
 public static final synchronized native int gtk_widget_get_direction(int /*long*/ widget);
+public static final synchronized native int gtk_widget_get_events(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_widget_get_modifier_style(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_widget_get_pango_context(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_widget_get_parent(int /*long*/ widget);

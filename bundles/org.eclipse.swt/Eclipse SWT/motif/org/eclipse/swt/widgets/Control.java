@@ -2310,8 +2310,12 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			if (redrawWindow != 0) {
-				int xDisplay = OS.XtDisplay(handle);
-				OS.XDestroyWindow(xDisplay, redrawWindow);
+				int xDisplay = OS.XtDisplay (handle);
+				if (xDisplay == 0) return;
+				int xWindow = OS.XtWindow (handle);
+				if (xWindow == 0) return;
+				OS.XDestroyWindow (xDisplay, redrawWindow);
+				OS.XSelectInput (xDisplay, xWindow, OS.XtBuildEventMask (handle));
 				redrawWindow = 0;
 			}
 		}
@@ -2328,8 +2332,16 @@ public void setRedraw (boolean redraw) {
 			int mask = OS.CWDontPropagate | OS.CWEventMask | OS.CWBackPixmap;
 			redrawWindow = OS.XCreateWindow (xDisplay, xWindow, 0, 0, rect.width, rect.height,
 					0,OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, mask, attributes);
-			OS.XRaiseWindow (xDisplay, redrawWindow);
-			OS.XMapWindow (xDisplay, redrawWindow);
+			if (redrawWindow != 0) {
+				int mouseMask = OS.ButtonPressMask | OS.ButtonReleaseMask |
+					OS.LeaveWindowMask | OS.PointerMotionMask |
+					OS.PointerMotionMask | OS.PointerMotionHintMask |
+					OS.ButtonMotionMask | OS.Button1MotionMask | OS.Button2MotionMask |
+					OS.Button3MotionMask | OS.Button4MotionMask | OS.Button5MotionMask; 
+				OS.XSelectInput (xDisplay, xWindow, OS.XtBuildEventMask (handle) & ~mouseMask);
+				OS.XRaiseWindow (xDisplay, redrawWindow);
+				OS.XMapWindow (xDisplay, redrawWindow);
+			}
 		}
 	}
 }

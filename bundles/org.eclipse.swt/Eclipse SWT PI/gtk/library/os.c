@@ -8231,6 +8231,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1direction)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1events
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1events)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1widget_1get_1events_FUNC);
+	rc = (jint)gtk_widget_get_events((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1widget_1get_1events_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1modifier_1style
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1modifier_1style)
 	(JNIEnv *env, jclass that, jint arg0)
