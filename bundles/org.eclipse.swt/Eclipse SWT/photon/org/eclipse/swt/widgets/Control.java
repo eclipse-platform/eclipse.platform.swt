@@ -895,6 +895,7 @@ void hookEvents () {
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, OS.Ph_EV_BOUNDARY);
 	if ((state & GRAB) != 0) {
 		OS.PtAddEventHandler (handle, OS.Ph_EV_DRAG, windowProc, OS.Ph_EV_DRAG);
+		OS.PtAddCallback (handle, OS.Pt_CB_OUTBOUND, windowProc, OS.Pt_CB_OUTBOUND);
 	}
 	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, OS.Pt_CB_GOT_FOCUS);
 	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, OS.Pt_CB_LOST_FOCUS);

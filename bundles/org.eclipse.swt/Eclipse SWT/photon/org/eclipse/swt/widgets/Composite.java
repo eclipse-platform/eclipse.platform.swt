@@ -209,6 +209,7 @@ void createScrolledHandle (int parentHandle) {
 	}
 	int clazz = display.PtContainer;
 	args = new int [] {
+		OS.Pt_ARG_FLAGS, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW,
 		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
@@ -508,6 +509,31 @@ int parentingHandle () {
 }
 
 int Ph_EV_BUT_PRESS (int widget, int info) {
+	int result = super.Ph_EV_BUT_PRESS (widget, info);
+	if (result != OS.Pt_CONTINUE)return result;
+	if ((state & CANVAS) != 0) {
+		if (info == 0) return OS.Pt_END;
+		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+		if (cbinfo.event == 0) return OS.Pt_END;
+		PhEvent_t ev = new PhEvent_t ();
+		OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+		int data = OS.PhGetData (cbinfo.event);
+		if (data == 0) return OS.Pt_END;
+		PhPointerEvent_t pe = new PhPointerEvent_t ();
+		OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	
+		/* Set focus for a CANVAS with no children */
+		if ((style & SWT.NO_FOCUS) == 0) {
+			if (pe.buttons == OS.Ph_BUTTON_SELECT) {
+				if (OS.PtWidgetChildFront (handle) == 0) setFocus ();
+			}
+		}
+	}
+	return result;
+}
+
+int Pt_CB_OUTBOUND (int widget, int info) {
 	if ((state & CANVAS) != 0) {
 		if (info == 0) return OS.Pt_END;
 		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -521,34 +547,21 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 		OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	
 		/* Grab pointer */
-		if (!(menu != null && pe.buttons == OS.Ph_BUTTON_MENU)) {
-			if (pe.click_count == 1) {
-				PhRect_t rect = new PhRect_t ();
-				PhPoint_t pos = new PhPoint_t();
-				pos.x = pe.pos_x;
-				pos.y = pe.pos_y;
-				rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
-				rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
-				int rid = OS.PtWidgetRid (handle);
-				int input_group = OS.PhInputGroup (0);
-				int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
-				OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
-			}
-		}
-	
-		int result = super.Ph_EV_BUT_PRESS (widget, info);
-	
-		/* Set focus for the a CANVAS with no children */
-		if ((style & SWT.NO_FOCUS) == 0) {
-			if (pe.buttons == OS.Ph_BUTTON_SELECT) {
-				if (OS.PtWidgetChildFront (handle) == 0) {
-					setFocus ();
-				}
-			}
-		}
-		return result;
+		PhRect_t rect = new PhRect_t ();
+		PhPoint_t pos = new PhPoint_t ();
+		pos.x = pe.pos_x;
+		pos.y = pe.pos_y;
+		rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
+		rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
+		int rid = OS.PtWidgetRid (handle);
+		int input_group = OS.PhInputGroup (0);
+		int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
+		OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+		
+		/* Post drag detect event */
+		postEvent (SWT.DragDetect);
 	}
-	return super.Ph_EV_BUT_PRESS (widget, info);
+	return OS.Pt_CONTINUE;
 }
 
 void releaseChildren () {

@@ -410,7 +410,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= HANDLE | GRAB | CANVAS;
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {

@@ -1906,6 +1906,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_CB_MULTITEXT_SCROLLUPDATE                          = ( 5 * 1000 + 14 );
 //public static final int Pt_CB_NUMERIC_CHANGED                                 = ( 53 * 1000 + 15 );
 //public static final int Pt_CB_ONOFF_NEW_VALUE                                 = ( 8 * 1000 + 1 );
+	public static final int Pt_CB_OUTBOUND                                        = ( 1 * 1000 + 22 );
 //public static final int Pt_CB_PRINT_PROPS                                     = (46 * 1000 + 2);
 //public static final int Pt_CB_PRINT_TOFILE                                    = (46 * 1000 + 3);
 //public static final int Pt_CB_RAW                                             = ( 1 * 1000 + 11 );

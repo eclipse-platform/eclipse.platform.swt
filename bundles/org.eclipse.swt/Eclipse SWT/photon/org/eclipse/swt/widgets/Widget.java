@@ -651,6 +651,10 @@ int Pt_CB_MODIFY_VERIFY (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int Pt_CB_OUTBOUND (int widget, int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int Pt_CB_PG_PANEL_SWITCHING (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
@@ -1081,6 +1085,7 @@ int windowProc (int handle, int data, int info) {
 		case OS.Pt_CB_GOT_FOCUS:			return Pt_CB_GOT_FOCUS (handle, info);
 		case OS.Pt_CB_LOST_FOCUS:			return Pt_CB_LOST_FOCUS (handle, info);
 		case OS.Pt_CB_MODIFY_VERIFY:			return Pt_CB_MODIFY_VERIFY (handle, info);
+		case OS.Pt_CB_OUTBOUND:			return Pt_CB_OUTBOUND (handle, info);
 		case OS.Pt_CB_PG_PANEL_SWITCHING:			return Pt_CB_PG_PANEL_SWITCHING (handle, info);
 		case OS.Pt_CB_REALIZED:			return Pt_CB_REALIZED (handle, info);
 		case OS.Pt_CB_RESIZE:			return Pt_CB_RESIZE (handle, info);
