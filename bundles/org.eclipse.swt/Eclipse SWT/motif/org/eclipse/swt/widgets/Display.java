@@ -177,20 +177,29 @@ public class Display extends Device {
 		
 		/* Non-Numeric Keypad Keys */
 		{OS.XK_Up,			SWT.ARROW_UP},
+		{OS.XK_KP_Up,		SWT.ARROW_UP},
 		{OS.XK_Down,		SWT.ARROW_DOWN},
+		{OS.XK_KP_Down,		SWT.ARROW_DOWN},
 		{OS.XK_Left,		SWT.ARROW_LEFT},
+		{OS.XK_KP_Left,		SWT.ARROW_LEFT},
 		{OS.XK_Right,		SWT.ARROW_RIGHT},
+		{OS.XK_KP_Right,	SWT.ARROW_RIGHT},
 		{OS.XK_Page_Up,		SWT.PAGE_UP},
+		{OS.XK_KP_Page_Up,	SWT.PAGE_UP},
 		{OS.XK_Page_Down,	SWT.PAGE_DOWN},
+		{OS.XK_KP_Page_Down,SWT.PAGE_DOWN},
 		{OS.XK_Home,		SWT.HOME},
+		{OS.XK_KP_Home,		SWT.HOME},
 		{OS.XK_End,			SWT.END},
-		{OS.XK_Insert,		SWT.INSERT},
+		{OS.XK_KP_End,		SWT.END},
+		{OS.XK_KP_Insert,	SWT.INSERT},
+		{OS.XK_KP_Insert,	SWT.INSERT},
 		
 		/* Virtual and Ascii Keys */
 		{OS.XK_BackSpace,	SWT.BS},
 		{OS.XK_Return,		SWT.CR},
-		{OS.XK_KP_Enter,	SWT.CR},
 		{OS.XK_Delete,		SWT.DEL},
+		{OS.XK_KP_Delete,	SWT.DEL},
 		{OS.XK_Escape,		SWT.ESC},
 		{OS.XK_Cancel,		SWT.ESC},
 		{OS.XK_Linefeed,	SWT.LF},
@@ -210,26 +219,37 @@ public class Display extends Device {
 		{OS.XK_F10,	SWT.F10},
 		{OS.XK_F11,	SWT.F11},
 		{OS.XK_F12,	SWT.F12},
+		{OS.XK_F13,	SWT.F13},
+		{OS.XK_F14,	SWT.F14},
+		{OS.XK_F15,	SWT.F15},
 		
-		/* Numeric Keypad Constants */
-		/*
-		{OS.XK_KP_Add,		SWT.KP_PLUS},
-		{OS.XK_KP_Subtract,	SWT.KP_MINUS},
-		{OS.XK_KP_Multiply,	SWT.KP_TIMES},
-		{OS.XK_KP_Divide,	SWT.KP_DIVIDE},
-		{OS.XK_KP_Decimal,	SWT.KP_PERIOD},
-		{OS.XK_KP_Enter,	SWT.KP_ENTER},
-		{OS.XK_KP_0,		SWT.KP_0},
-		{OS.XK_KP_1,		SWT.KP_1},
-		{OS.XK_KP_2,		SWT.KP_2},
-		{OS.XK_KP_3,		SWT.KP_3},
-		{OS.XK_KP_4,		SWT.KP_4},
-		{OS.XK_KP_5,		SWT.KP_5},
-		{OS.XK_KP_6,		SWT.KP_6},
-		{OS.XK_KP_7,		SWT.KP_7},
-		{OS.XK_KP_8,		SWT.KP_8},
-		{OS.XK_KP_9,		SWT.KP_9},
-		*/
+		/* Numeric Keypad Keys */
+		{OS.XK_KP_Multiply,	SWT.KEYPAD_TIMES},
+		{OS.XK_KP_Add,		SWT.KEYPAD_PLUS},
+		{OS.XK_KP_Enter,	SWT.KEYPAD_CR},
+		{OS.XK_KP_Subtract,	SWT.KEYPAD_MINUS},
+		{OS.XK_KP_Decimal,	SWT.KEYPAD_DECIMAL},
+		{OS.XK_KP_Divide,	SWT.KEYPAD_DIVIDE},
+		{OS.XK_KP_0,		SWT.KEYPAD_0},
+		{OS.XK_KP_1,		SWT.KEYPAD_1},
+		{OS.XK_KP_2,		SWT.KEYPAD_2},
+		{OS.XK_KP_3,		SWT.KEYPAD_3},
+		{OS.XK_KP_4,		SWT.KEYPAD_4},
+		{OS.XK_KP_5,		SWT.KEYPAD_5},
+		{OS.XK_KP_6,		SWT.KEYPAD_6},
+		{OS.XK_KP_7,		SWT.KEYPAD_7},
+		{OS.XK_KP_8,		SWT.KEYPAD_8},
+		{OS.XK_KP_9,		SWT.KEYPAD_9},
+
+		/* Other keys */
+		{OS.XK_Caps_Lock,	SWT.CAPS_LOCK},
+		{OS.XK_Num_Lock,	SWT.NUM_LOCK},
+		{OS.XK_Scroll_Lock,	SWT.SCROLL_LOCK},
+		{OS.XK_Pause,		SWT.PAUSE},
+		{OS.XK_Break,		SWT.BREAK},
+		{OS.XK_Print,		SWT.PRINT_SCREEN},
+		{OS.XK_Help,		SWT.HELP},
+
 	};
 	static String numLock;
 

@@ -774,10 +774,25 @@ boolean setKeyState (Event event, XKeyEvent xEvent) {
 	* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
 	*/
 	int key = keysym [0];
-	if ((xEvent.state & OS.ControlMask) != 0 && (0 <= key && key <= 0x7F)) {
-		if ('a' <= key && key <= 'z') key -= 'a' - 'A';
-		if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
-		isNull = key == '@' && buffer [0] == 0;
+	if ((xEvent.state & OS.ControlMask) != 0) {
+		if (0 <= key && key <= 0x7F) {
+			if ('a' <= key && key <= 'z') key -= 'a' - 'A';
+			if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
+			isNull = key == '@' && buffer [0] == 0;
+		} else {
+			switch (keysym [0]) {
+				case OS.XK_KP_0: buffer [0] = '0'; break;
+				case OS.XK_KP_1: buffer [0] = '1'; break;
+				case OS.XK_KP_2: buffer [0] = '2'; break;
+				case OS.XK_KP_3: buffer [0] = '3'; break;
+				case OS.XK_KP_4: buffer [0] = '4'; break;
+				case OS.XK_KP_5: buffer [0] = '5'; break;
+				case OS.XK_KP_6: buffer [0] = '6'; break;
+				case OS.XK_KP_7: buffer [0] = '7'; break;
+				case OS.XK_KP_8: buffer [0] = '8'; break;
+				case OS.XK_KP_9: buffer [0] = '9'; break;
+			}
+		}
 	}
 	
 	/*
@@ -786,6 +801,7 @@ boolean setKeyState (Event event, XKeyEvent xEvent) {
 	* Some of examples are Shift+Tab and Ctrl+Space.
 	*/
 	switch (keysym [0]) {
+		case OS.XK_KP_Delete: buffer [0] = 0x7f; break;
 		case OS.XK_ISO_Left_Tab: buffer [0] = '\t'; break;
 		case OS.XK_space: buffer [0] = ' '; break;
 	}
