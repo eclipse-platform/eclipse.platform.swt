@@ -19,10 +19,10 @@ import org.eclipse.swt.events.*;
 *
 * <p> Here is an example of using a TreeEditor:
 * <code><pre>
-* Tree tree = new Tree(parent, SWT.FULL_SELECTION);
-* TreeEditor editor = new TreeEditor (tree);
+* final Tree tree = new Tree(parent, SWT.FULL_SELECTION);
+* final TreeEditor editor = new TreeEditor (tree);
 * tree.addSelectionListener (new SelectionAdapter() {
-*	public void widgetSelected(SelectionEvent e) {}
+*	public void widgetSelected(SelectionEvent e) {
 *
 *		// Clean up any previous editor control
 *		Control oldEditor = editor.getEditor();
@@ -30,9 +30,7 @@ import org.eclipse.swt.events.*;
 *			oldEditor.dispose();	
 *
 *		// Identify the selected row
-*		int index = tree.getSelectionIndex ();
-*		if (index == -1) return;
-*		TreeItem item = tree.getItem (index);
+*		TreeItem item = (TreeItem)e.item;
 *
 *		// The control that will be the editor must be a child of the Tree
 *		Text text = new Text(tree, SWT.NONE);
