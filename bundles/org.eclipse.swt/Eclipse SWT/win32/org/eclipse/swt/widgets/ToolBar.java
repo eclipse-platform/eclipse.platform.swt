@@ -532,13 +532,7 @@ public int indexOf (ToolItem item) {
 void layoutItems () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
-		if (item != null) {
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				Rectangle rect = item.getBounds ();
-				control.setLocation (rect.x, rect.y);
-			}
-		}
+		if (item != null) item.resizeControl ();
 	}
 }
 

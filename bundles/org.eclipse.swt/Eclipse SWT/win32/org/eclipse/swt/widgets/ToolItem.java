@@ -453,6 +453,19 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resizeControl () {
+	if (control != null && !control.isDisposed ()) {
+		Rectangle itemRect = getBounds ();
+		control.setBounds (itemRect);
+		Rectangle rect = control.getBounds ();
+		if (!rect.equals (itemRect)) {
+			rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+			rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+			control.setBounds (rect);
+		}
+	}
+}
+
 /**
  * Sets the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
@@ -476,9 +489,7 @@ public void setControl (Control control) {
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	this.control = control;
-	if (control != null && !control.isDisposed ()) {
-		control.setBounds (getBounds ());
-	}
+	resizeControl ();
 }
 
 /**
@@ -659,9 +670,6 @@ public void setWidth (int width) {
 	info.dwMask = OS.TBIF_SIZE;
 	info.cx = (short) width;
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	if (control != null && !control.isDisposed ()) {
-		control.setBounds (getBounds ());
-	}
 	parent.layoutItems ();
 }
 
