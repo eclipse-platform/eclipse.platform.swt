@@ -214,7 +214,7 @@ void destroyChild (TabItem item) {
 		selectedIndex = -1;
 		topTabIndex = 0;
 		if (!inDispose){
-			Control control = item.getControl();
+			Control control = item.control;
 			if (control != null && !control.isDisposed()) {
 				control.setVisible(false);
 			}
