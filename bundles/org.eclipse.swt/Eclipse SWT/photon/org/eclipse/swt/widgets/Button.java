@@ -256,23 +256,23 @@ int processActivate (int info) {
 }
 
 int processFocusIn (int info) {
-	super.processFocusIn (info);
+	int result = super.processFocusIn (info);
 	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) == 0) return 0;
+	if (handle == 0) return result;
+	if ((style & SWT.PUSH) == 0) return result;
 	getShell ().setDefaultButton (this, false);
-	return 0;
+	return result;
 }
 
 int processFocusOut (int info) {
-	super.processFocusOut (info);
+	int result = super.processFocusOut (info);
 	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) == 0) return 0;
+	if (handle == 0) return result;
+	if ((style & SWT.PUSH) == 0) return result;
 	if (getDefault ()) {
 		getShell ().setDefaultButton (null, false);
 	}
-	return 0;
+	return result;
 }
 
 int processPaint (int damage) {
