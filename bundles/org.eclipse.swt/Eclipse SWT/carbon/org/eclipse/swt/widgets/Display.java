@@ -1805,7 +1805,7 @@ static String convertToLf(String text) {
 			int kind= OS.GetEventKind(inEvent);
 			switch (kind) {
 			case OS.kEventControlDraw:
-				System.out.println("Display.kEventControlDraw");
+				//System.out.println("Display.kEventControlDraw");
 			
 				int[] gccontext= new int[1];
 				OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, gccontext);
