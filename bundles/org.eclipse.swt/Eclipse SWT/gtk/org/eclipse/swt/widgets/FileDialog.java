@@ -83,7 +83,43 @@ public FileDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
 }
-String computeResult() {
+String computeResultChooserDialog () {
+	/* MULTI is only valid if the native dialog's action is Open */
+	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
+		int /*long*/ list = OS.gtk_file_chooser_get_filenames (handle);
+		int listLength = OS.g_slist_length (list);
+		fileNames = new String [listLength];
+		int /*long*/ current = list;
+		String path = null;
+		for (int i = 0; i < listLength; i++) {
+			int /*long*/ name = OS.g_slist_data (current);
+			int length = OS.strlen (name);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, name, length);
+			path = new String (Converter.mbcsToWcs (null, buffer));
+			fileNames [i] = path.substring (path.lastIndexOf (SEPARATOR) + 1);
+			current = OS.g_slist_next (current);
+			OS.g_free (name);
+		}
+		OS.g_slist_free (list);
+		fullPath = path;
+	} else {
+		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
+		if (path == 0) return null;
+		int length = OS.strlen (path);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, path, length);
+		OS.g_free (path);
+		fullPath = new String (Converter.mbcsToWcs (null, buffer));
+		fileNames = new String [1];
+		fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
+	}
+	int separatorIndex = fullPath.lastIndexOf (SEPARATOR);
+	fileName = fullPath.substring (separatorIndex + 1);
+	filterPath = fullPath.substring (0, separatorIndex);
+	return fullPath;
+}
+String computeResultClassicDialog () {
 	GtkFileSelection selection = new GtkFileSelection ();
 	OS.memmove (selection, handle);
 	int /*long*/ entry = selection.selection_entry;
@@ -229,16 +265,43 @@ public String getFilterPath () {
  * </ul>
  */
 public String open () {
+	boolean useChooserDialog = OS.gtk_check_version (2, 4, 10) == 0;
+	if (useChooserDialog) {
+		return openChooserDialog ();
+	} else {
+		return openClassicDialog ();
+	}
+}
+String openChooserDialog () {
+	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	int action = (style & SWT.SAVE) != 0 ?
+		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
+		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
+	handle = OS.gtk_file_chooser_dialog_new (
+		titleBytes,
+		parent.topHandle (),
+		action,
+		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
+		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
+		0);
+	presetChooserDialog ();
+	String answer = null;
+	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+		answer = computeResultChooserDialog ();
+	}
+	OS.gtk_widget_destroy (handle);
+	return answer;
+}
+String openClassicDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_file_selection_new (titleBytes);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (handle, parent.topHandle());
 	}
+	presetClassicDialog ();
 	String answer = null;
-	preset ();
-	int response = OS.gtk_dialog_run (handle);
-	if (response == OS.GTK_RESPONSE_OK) {
-		answer = computeResult ();
+	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+		answer = computeResultClassicDialog ();
 	}
 	OS.gtk_widget_destroy (handle);
 	return answer;
@@ -287,7 +350,56 @@ public void setFilterNames (String [] names) {
 public void setFilterPath (String string) {
 	filterPath = string;
 }
-void preset() {
+void presetChooserDialog () {
+	/* MULTI is only valid if the native dialog's action is Open */   
+	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
+		OS.gtk_file_chooser_set_select_multiple (handle, true);
+	}
+	if (filterPath == null) filterPath = "";
+	if (fileName == null) fileName = "";
+	if (filterPath.length () > 0) {
+		StringBuffer stringBuffer = new StringBuffer ();
+		/* filename must be a full path */
+		if (filterPath.charAt (0) != SEPARATOR) {
+			stringBuffer.append (SEPARATOR);
+		}
+		stringBuffer.append (filterPath);
+		if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
+			stringBuffer.append (SEPARATOR);
+		}
+		if (fileName.length () > 0) {
+			stringBuffer.append (fileName);
+		} else {
+			/* go into the specified directory */
+			stringBuffer.append ('.');
+		}
+		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+		OS.gtk_file_chooser_set_filename (handle, buffer);
+	}
+	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+		OS.gtk_file_chooser_set_current_name (handle, buffer);
+	}
+
+	/* Set the extension filters */
+	if (filterNames == null) filterNames = new String [0];
+	if (filterExtensions == null) filterExtensions = new String [0];
+	for (int i = 0; i < filterExtensions.length; i++) {
+		if (filterExtensions [i] != null) {
+			byte [] filterString = Converter.wcsToMbcs (null, filterExtensions [i], true);
+			int /*long*/ filter = OS.gtk_file_filter_new ();
+			OS.gtk_file_filter_add_pattern (filter, filterString);
+			if (filterNames.length > i && filterNames [i] != null) {
+				filterString = Converter.wcsToMbcs (null, filterNames [i], true);
+			}
+			OS.gtk_file_filter_set_name (filter, filterString);
+			OS.gtk_file_chooser_add_filter (handle, filter);
+		}
+	}
+	fullPath = null;
+	fileNames = new String [0];
+}
+void presetClassicDialog () {
 	OS.gtk_file_selection_set_select_multiple(handle, (style & SWT.MULTI) != 0);
 
 	/* Calculate the fully-specified file name and convert to bytes */

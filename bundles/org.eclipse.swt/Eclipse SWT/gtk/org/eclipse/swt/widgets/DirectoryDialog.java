@@ -109,6 +109,63 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
+	boolean useChooserDialog = OS.gtk_check_version (2, 4, 10) == 0;
+	if (useChooserDialog) {
+		return openChooserDialog ();
+	} else {
+		return openClassicDialog ();
+	}
+}
+String openChooserDialog () {
+	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	int /*long*/ handle = OS.gtk_file_chooser_dialog_new (
+		titleBytes,
+		parent.topHandle (),
+		OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
+		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
+		0);
+	if (filterPath != null && filterPath.length () > 0) {
+		StringBuffer stringBuffer = new StringBuffer ();
+		/* filename must be a full path */
+		if (!filterPath.startsWith (SEPARATOR)) {
+			stringBuffer.append (SEPARATOR);
+		}
+		stringBuffer.append (filterPath);
+		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+		OS.gtk_file_chooser_set_current_folder (handle, buffer);
+	}
+	if (message.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		int /*long*/ box = OS.gtk_hbox_new (false, 0);
+		if (box == 0) error (SWT.ERROR_NO_HANDLES);
+		int /*long*/ label = OS.gtk_label_new (buffer);
+		if (label == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (box, label);
+		OS.gtk_widget_show (label);
+		OS.gtk_label_set_line_wrap (label, true);
+		OS.gtk_label_set_justify (label, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_file_chooser_set_extra_widget (handle, box);
+	}
+	String answer = null;
+	int response = OS.gtk_dialog_run (handle);	
+	if (response == OS.GTK_RESPONSE_OK) {
+		int /*long*/ folder = OS.gtk_file_chooser_get_current_folder (handle);
+		if (folder == 0) {
+			OS.gtk_widget_destroy (handle);
+			return null;
+		}
+		int length = OS.strlen (folder);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, folder, length);
+		OS.g_free (folder);
+		answer = new String (Converter.mbcsToWcs (null, buffer));
+		filterPath = answer;
+	}
+	OS.gtk_widget_destroy (handle);
+	return answer;
+}
+String openClassicDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ handle = OS.gtk_file_selection_new (titleBytes);
 	if (parent != null) {

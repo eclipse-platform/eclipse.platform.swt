@@ -20,6 +20,19 @@
 #define PTR_sizeof() sizeof(void *)
 
 /* Libraries for dynamic loaded functions */
+#define gtk_file_chooser_add_filter_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_dialog_new_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_get_current_folder_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_get_filename_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_get_filenames_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_current_folder_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_current_name_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_extra_widget_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_filename_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_select_multiple_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_filter_add_pattern_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_filter_new_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_filter_set_name_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"

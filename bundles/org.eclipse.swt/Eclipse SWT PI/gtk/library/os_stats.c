@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 896;
-int OS_nativeFunctionCallCount[896];
+int OS_nativeFunctionCount = 913;
+int OS_nativeFunctionCallCount[913];
 char * OS_nativeFunctionNames[] = {
 	"Call", 
 	"GDK_1DISPLAY", 
@@ -38,6 +38,8 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1SCROLLED_1WINDOW_1HSCROLLBAR", 
 	"GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING", 
 	"GTK_1SCROLLED_1WINDOW_1VSCROLLBAR", 
+	"GTK_1STOCK_1CANCEL", 
+	"GTK_1STOCK_1OK", 
 	"GTK_1TEXTVIEW_1IM_1CONTEXT", 
 	"GTK_1TYPE_1FIXED", 
 	"GTK_1WIDGET_1FLAGS", 
@@ -180,6 +182,8 @@ char * OS_nativeFunctionNames[] = {
 	"g_1signal_1lookup", 
 	"g_1signal_1stop_1emission_1by_1name", 
 	"g_1slist_1data", 
+	"g_1slist_1free", 
+	"g_1slist_1length", 
 	"g_1slist_1next", 
 	"g_1strfreev", 
 	"g_1type_1add_1interface_1static", 
@@ -425,6 +429,19 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1entry_1set_1text", 
 	"gtk_1entry_1set_1visibility", 
 	"gtk_1events_1pending", 
+	"gtk_1file_1chooser_1add_1filter", 
+	"gtk_1file_1chooser_1dialog_1new", 
+	"gtk_1file_1chooser_1get_1current_1folder", 
+	"gtk_1file_1chooser_1get_1filename", 
+	"gtk_1file_1chooser_1get_1filenames", 
+	"gtk_1file_1chooser_1set_1current_1folder", 
+	"gtk_1file_1chooser_1set_1current_1name", 
+	"gtk_1file_1chooser_1set_1extra_1widget", 
+	"gtk_1file_1chooser_1set_1filename", 
+	"gtk_1file_1chooser_1set_1select_1multiple", 
+	"gtk_1file_1filter_1add_1pattern", 
+	"gtk_1file_1filter_1new", 
+	"gtk_1file_1filter_1set_1name", 
 	"gtk_1file_1selection_1complete", 
 	"gtk_1file_1selection_1get_1filename", 
 	"gtk_1file_1selection_1get_1selections", 

@@ -209,6 +209,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1SCROLLED_1WINDOW_1VSCROLLBAR)
 }
 #endif
 
+#ifndef NO_GTK_1STOCK_1CANCEL
+JNIEXPORT jint JNICALL OS_NATIVE(GTK_1STOCK_1CANCEL)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GTK_1STOCK_1CANCEL_FUNC);
+	rc = (jint)GTK_STOCK_CANCEL;
+	OS_NATIVE_EXIT(env, that, GTK_1STOCK_1CANCEL_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1STOCK_1OK
+JNIEXPORT jint JNICALL OS_NATIVE(GTK_1STOCK_1OK)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GTK_1STOCK_1OK_FUNC);
+	rc = (jint)GTK_STOCK_OK;
+	OS_NATIVE_EXIT(env, that, GTK_1STOCK_1OK_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1TEXTVIEW_1IM_1CONTEXT
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1TEXTVIEW_1IM_1CONTEXT)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1977,6 +2001,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1slist_1data)
 	OS_NATIVE_ENTER(env, that, g_1slist_1data_FUNC);
 	rc = (jint)g_slist_data((GSList *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1slist_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1slist_1free
+JNIEXPORT void JNICALL OS_NATIVE(g_1slist_1free)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, g_1slist_1free_FUNC);
+	g_slist_free((GSList *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1slist_1free_FUNC);
+}
+#endif
+
+#ifndef NO_g_1slist_1length
+JNIEXPORT jint JNICALL OS_NATIVE(g_1slist_1length)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, g_1slist_1length_FUNC);
+	rc = (jint)g_slist_length((GSList *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1slist_1length_FUNC);
 	return rc;
 }
 #endif
@@ -5214,6 +5260,377 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1events_1pending)
 	rc = (jint)gtk_events_pending();
 	OS_NATIVE_EXIT(env, that, gtk_1events_1pending_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1add_1filter
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1add_1filter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1add_1filter_FUNC);
+/*
+	gtk_file_chooser_add_filter(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_add_filter_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_add_filter");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1add_1filter_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1dialog_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1chooser_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1dialog_1new_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+/*
+	rc = (jint)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *, jint, jint, jint, jint, jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_dialog_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_dialog_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		}
+	}
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1current_1folder
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1chooser_1get_1current_1folder)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1current_1folder_FUNC);
+/*
+	rc = (jint)gtk_file_chooser_get_current_folder(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_get_current_folder_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_get_current_folder");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1current_1folder_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1filename
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1chooser_1get_1filename)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1filename_FUNC);
+/*
+	rc = (jint)gtk_file_chooser_get_filename(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_get_filename_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_get_filename");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1filename_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1filenames
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1chooser_1get_1filenames)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1filenames_FUNC);
+/*
+	rc = (jint)gtk_file_chooser_get_filenames(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_get_filenames_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_get_filenames");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1filenames_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1current_1folder
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+/*
+	gtk_file_chooser_set_current_folder(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_current_folder_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_current_folder");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1current_1name
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1current_1name)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1name_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+/*
+	gtk_file_chooser_set_current_name(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_current_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_current_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1name_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1extra_1widget
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1extra_1widget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1extra_1widget_FUNC);
+/*
+	gtk_file_chooser_set_extra_widget(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_extra_widget_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_extra_widget");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1extra_1widget_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1filename
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1filename)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1filename_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+/*
+	gtk_file_chooser_set_filename(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_filename_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_filename");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1filename_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1select_1multiple
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1select_1multiple)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1select_1multiple_FUNC);
+/*
+	gtk_file_chooser_set_select_multiple(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_select_multiple_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_select_multiple");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1select_1multiple_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1filter_1add_1pattern
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1filter_1add_1pattern)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1filter_1add_1pattern_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+/*
+	gtk_file_filter_add_pattern(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_filter_add_pattern_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_filter_add_pattern");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1filter_1add_1pattern_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1filter_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1filter_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1filter_1new_FUNC);
+/*
+	rc = (jint)gtk_file_filter_new();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_filter_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_filter_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, gtk_1file_1filter_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1filter_1set_1name
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1filter_1set_1name)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1file_1filter_1set_1name_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+/*
+	gtk_file_filter_set_name(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_filter_set_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_filter_set_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1file_1filter_1set_1name_FUNC);
 }
 #endif
 
