@@ -823,7 +823,7 @@ void init(Device device, ImageData image) {
 				((s & 0x20) >> 3) | ((s & 0x10) >> 1) | ((s & 0x08) << 1) |
 				((s & 0x04) << 3) | ((s & 0x02) << 5) |	((s & 0x01) << 7));
 		}
-		int mask = OS.gdk_bitmap_create_from_data(0, maskData, maskImage.bytesPerLine * 8 , height);
+		int mask = OS.gdk_bitmap_create_from_data(0, maskData, maskImage.bytesPerLine * 8, height);
 		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		this.mask = mask;
 		if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
