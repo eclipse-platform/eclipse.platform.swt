@@ -36,12 +36,15 @@ CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
 CDE_LIBS = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
 
+# Uncomment for Native Stats tool
+#NATIVE_STATS = -DNATIVE_STATS
+
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE
 # library.
 #
 CFLAGS = -O -s \
-	-DSWT_VERSION=$(SWT_VERSION) \
+	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-DAIX -DMOTIF -DCDE \
 	-DNO_XPRINTING_EXTENSIONS -DNO_XINERAMA_EXTENSIONS \
 	-q mbcs -qlanglvl=extended -qmaxmem=8192 \

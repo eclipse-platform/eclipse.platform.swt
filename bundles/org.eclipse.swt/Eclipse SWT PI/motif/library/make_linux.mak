@@ -28,13 +28,17 @@ SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama -lXtst
-CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DMOTIF  -fpic -I./ \
+
+# Uncomment for Native Stats tool
+#NATIVE_STATS = -DNATIVE_STATS
+
+CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DMOTIF  -fpic -I./ \
 	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
 
 GNOME_PREFIX = swt-gnome
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
-GNOME_CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
+GNOME_CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DGTK -I$(JAVA_HOME)/include `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
 KDE_PREFIX = swt-kde
