@@ -11,6 +11,7 @@
 package org.eclipse.swt.awt;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
@@ -150,12 +151,29 @@ public static Frame new_Frame (final Composite parent) {
 		public void run () {
 			if (parent.isDisposed()) return;
 			final Rectangle rect = parent.getClientArea ();
-			java.awt.EventQueue.invokeLater(new Runnable () {
+			EventQueue.invokeLater(new Runnable () {
 				public void run () {
 					frame.setSize (rect.width, rect.height);
 					frame.validate ();
 				}
 			});
+		}
+	});
+	/*
+	* TEMPORARY CODE
+	* 
+	* For some reason, the graphics configuration of the embedded
+	* frame is not initialized properly. This will cause a walkback
+	* when the depth of the screen is changed.
+	*/
+	EventQueue.invokeLater(new Runnable () {
+		public void run () {
+			try {
+				Class clazz = Class.forName("sun.awt.windows.WComponentPeer");
+				Field field = clazz.getDeclaredField("winGraphicsConfig");
+				field.setAccessible(true);
+				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
+			} catch (Throwable e) {}
 		}
 	});
 	return frame;
