@@ -96,7 +96,15 @@ public class Browser2 {
 		browser.addLocationListener(new LocationListener() {
 			public void changing(LocationEvent event) {
 				System.out.println("changing "+event.location);
-				passed = !locationChanging && !locationChanged && !progressCompleted;
+				/*
+				* Feature on Internet Explorer.  When pending requests are stopped, IE
+				* emits a Location.changing with res://C:\WINDOWS\System32\shdoclc.dll/navcancl.htm.
+				* Pending requests are stopped before going to the blank page to set HTML in memory
+				* with setText.
+				* The test considers it is OK to get multiple Location.changing events at the condition
+				* that no locationChanged and progressCompleted are reported.
+				*/
+				passed = !locationChanged && !progressCompleted;
 				locationChanging = true;
 				if (!passed) {
 					shell.close();
@@ -129,7 +137,8 @@ public class Browser2 {
 				 */
 				passed = event.location.length() == 0;
 				System.out.println("changed "+event.location+" "+passed);
-				locationChanged = true;
+				/* ignore LocationChanged that are empty */
+				locationChanged = !passed;
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {

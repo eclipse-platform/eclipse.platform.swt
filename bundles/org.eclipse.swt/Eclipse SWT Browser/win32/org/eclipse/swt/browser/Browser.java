@@ -191,7 +191,10 @@ public Browser(Composite parent, int style) {
 				case DocumentComplete: {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
-					if (html != null) {
+
+					varResult = event.arguments[1];
+					String url = varResult.getString();
+					if (html != null && url.equals(ABOUT_BLANK)) {
 						int charCount = html.length();
 						char[] chars = new char[charCount];
 						html.getChars(0, charCount, chars, 0);
@@ -244,8 +247,6 @@ public Browser(Composite parent, int style) {
 					} else {
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
-						varResult = event.arguments[1];
-						String url = varResult.getString();
 						LocationEvent locationEvent = new LocationEvent(Browser.this);
 						locationEvent.display = getDisplay();
 						locationEvent.widget = Browser.this;
@@ -1052,10 +1053,23 @@ public boolean setText(String html) {
 	* Navigate to the blank page and insert the given html when
 	* receiving the next DocumentComplete notification.  See the
 	* MSDN article "Loading HTML content from a Stream".
+	* 
+	* Note.  Stop any pending request.  This is required to avoid displaying a
+	* blank page as a result of consecutive calls to setUrl and/or setText.  
+	* The previous request would otherwise render the new html content and
+	* reset the html field before the browser actually navigates to the blank
+	* page as requested below.
 	*/
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
+	auto.invoke(rgdispid[0]);
+	/* Note.  Internet Explorer can still fire DocumentComplete events from the previous
+	 * requests that were stopped.  The DocumentComplete related to the blank page
+	 * will follow.  The workaround is to verify the DocumentComplete event relates to
+	 * the blank page.  
+	 */
+	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
-	rgvarg[0] = new Variant(ABOUT_BLANK); //$NON-NLS-1$
+	rgvarg[0] = new Variant(ABOUT_BLANK);
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
@@ -1085,6 +1099,7 @@ public boolean setText(String html) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	html = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(url);
