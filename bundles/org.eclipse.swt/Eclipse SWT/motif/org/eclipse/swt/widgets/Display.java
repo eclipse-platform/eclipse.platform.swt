@@ -1587,28 +1587,9 @@ void setCurrentCaret (Caret caret) {
 	}
 }
 /**
- * Sets the location of the on-screen pointer relative
- * to the top left corner of the screen.
- *
- * @param x new position 
- * @param y new position
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if x is not between 0 and display.width, or y is not between 0 and display.height
- * </ul>
- */
-public void setCursorLocation (int x, int y) {
-	checkDevice();
-	if (x < 0 || y < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle bounds = getBounds ();
-	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
-	int xWindow = OS.XDefaultRootWindow (xDisplay);	
-	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
-}
-/**
- * Sets the location of the on-screen pointer relative
- * to the top left corner of the screen.
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the user's pointer.</b>
  *
  * @param pt new position 
  *
@@ -1618,7 +1599,14 @@ public void setCursorLocation (int x, int y) {
  * </ul>
  */
 public void setCursorLocation (Point pt) {
-	setCursorLocation (pt.x, pt.y);
+	checkDevice ();
+	int x = pt.x;
+	int y = pt.y;
+	if (x < 0 || y < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle bounds = getBounds ();
+	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
+	int xWindow = OS.XDefaultRootWindow (xDisplay);	
+	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
 }
 /**
  * Sets the application defined property of the receiver

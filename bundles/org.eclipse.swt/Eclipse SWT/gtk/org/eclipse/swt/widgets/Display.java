@@ -1248,6 +1248,22 @@ public static void setAppName (String name) {
 }
 
 /**
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the user's pointer.</b>
+ *
+ * @param pt new position 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if pt.x is not between 0 and display.width, or pt.y is not between 0 and display.height
+ * </ul>
+ */
+public void setCursorLocation (Point pt) {
+	// NOT IMPLEMENTED
+}
+
+/**
  * Sets the application defined property of the receiver
  * with the specified name to the given argument.
  * <p>
@@ -1540,17 +1556,4 @@ int windowProc (int handle, int int0, int int1, int int2, int user_data) {
 	return widget.processEvent (user_data, int0, int1, int2);
 }
 
-/**
- * Sets the location of the on-screen pointer relative
- * to the top left corner of the screen.
- *
- * @param pt new position 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if pt.x is not between 0 and display.width, or pt.y is not between 0 and display.height
- * </ul>
- */
-public void setCursorLocation (Point pt) {
-	setCursorLocation (pt.x, pt.y);
-}}
+}
