@@ -2,27 +2,27 @@
 <project name="org.eclipse.swt" default="build.update.jar" basedir=".">
 
 	<target name="init">
-	      <property name="plugin" value="org.eclipse.swt"/>
- 	      <property name="version" value="2.0.0"/>
+		<property name="plugin" value="org.eclipse.swt"/>
+		<property name="version.suffix" value="_2.0.0"/>
+		<property name="full.name" value="${plugin}${version.suffix}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="plugin.destination" value="${basedir}"/>
+		<property name="build.result.folder" value="${basedir}"/>
 	</target>
 
 	<target name="build.update.jar" depends="init">
-		<property name="base" value="${basedir}/bin.zip.pdetemp"/>
-		<delete dir="${base}"/>
-		<mkdir dir="${base}"/>
+		<delete dir="${temp.folder}"/>
+		<mkdir dir="${temp.folder}"/>
 		<antcall target="gather.bin.parts">
-			<param name="destination" value="${base}/"/>
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
 		</antcall>
-		<delete>
-			<fileset dir="${base}" includes="**/*.bin.log"/>
-		</delete>
-		<zip zipfile="${basedir}/${plugin}_${version}.jar" basedir="${base}/${plugin}_${version}"/>
-		<delete dir="${base}"/>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false"/>
+		<delete dir="${temp.folder}"/>
 	</target>
 
-	<target name="gather.bin.parts" depends="init" if="destination">
-		<mkdir dir="${destination}/${plugin}_${version}"/>
-		<copy todir="${destination}/${plugin}_${version}">
+	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}"/>
+		<copy todir="${destination.temp.folder}/${full.name}">
 			<fileset dir="${basedir}" includes="plugin.properties,plugin.xml,about.html" />
 		</copy>
 	</target>
@@ -35,5 +35,4 @@
 	<target name="clean" depends="init">
 	</target>
    
- 
 </project>
