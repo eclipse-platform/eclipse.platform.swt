@@ -221,7 +221,7 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	int border = 0, parentBorder = 0;
+	int parentBorder = 0;
 	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
 	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
 	double[] px = new double [1], py = new double [1];

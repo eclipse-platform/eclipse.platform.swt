@@ -503,7 +503,6 @@ void new_Object (Object object) {
 protected void release () {
 	if (gdkColors != null) {
 		int colormap = OS.gdk_colormap_get_system();
-		int [] pixel = new int [1];
 		for (int i = 0; i < gdkColors.length; i++) {
 			GdkColor color = gdkColors [i];
 			if (color != null) {
@@ -521,7 +520,6 @@ protected void release () {
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 		
 	/* Free the GTK error and warning handler */
-	int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
 	for (int i=0; i<handler_ids.length; i++) {
 		if (handler_ids [i] != 0) {
 			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);

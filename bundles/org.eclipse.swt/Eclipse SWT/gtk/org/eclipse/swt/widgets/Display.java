@@ -1635,8 +1635,7 @@ void showIMWindow (Control control) {
 	int [] pangoAttrs = new int [1];
 	int imHandle = control.imHandle ();
 	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
-	int length;
-	if (preeditString [0] != 0 && (length = OS.strlen (preeditString [0])) > 0) {
+	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
 		OS.gtk_widget_modify_bg (preeditWindow, 0, control.getBackgroundColor ());
 		OS.gtk_widget_modify_fg (preeditWindow, 0, control.getForegroundColor ());		
 		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
