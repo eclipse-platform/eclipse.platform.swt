@@ -654,7 +654,13 @@ int gtk_event_after (int widget, int event) {
 			GdkEventFocus focusEvent = new GdkEventFocus ();
 			OS.memmove (focusEvent, event, GdkEventFocus.sizeof);
 			hasFocus = focusEvent.in != 0;
-			postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+			if (hasFocus) {
+				postEvent (SWT.Activate);
+				if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+			} else {
+				postEvent (SWT.Deactivate);
+				if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+			}
 		}
 	}
 	return result;

@@ -823,12 +823,10 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	byte [] buffer = null;
-	if (string != null && string.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, string, true);
+	if (parent.toolTipText == null) {
+		Shell shell = parent._getShell ();
+		shell.setToolTipText (handle, toolTipText);
 	}
-	int tooltipsHandle = parent.tooltipsHandle ();
-	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
 
 /**

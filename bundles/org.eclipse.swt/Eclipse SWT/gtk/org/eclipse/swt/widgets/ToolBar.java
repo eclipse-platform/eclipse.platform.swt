@@ -39,7 +39,6 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
-	int tooltipsHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -197,8 +196,9 @@ public ToolItem getItem (int index) {
  * </ul>
  */
 public ToolItem getItem (Point point) {
-	ToolItem[] items = getItems();
+	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	ToolItem[] items = getItems();
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(point)) return items[i];
 	}
@@ -311,8 +311,6 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
-	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
-	tooltipsHandle = 0;
 }
 
 void removeControl (Control control) {
@@ -349,22 +347,11 @@ void setForegroundColor (GdkColor color) {
 public void setToolTipText (String string) {
 	checkWidget();
 	super.setToolTipText (string);
-	int tooltipsHandle = tooltipsHandle ();
-	if (string == null) {
-		OS.gtk_tooltips_enable (tooltipsHandle);
-	} else {
-		OS.gtk_tooltips_disable (tooltipsHandle);
+	Shell shell = _getShell ();
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		shell.setToolTipText (items [i].handle, string != null ? null : items [i].toolTipText);
 	}
-}
-
-int tooltipsHandle() {
-	if (tooltipsHandle == 0) {
-		tooltipsHandle = OS.gtk_tooltips_new ();
-		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.g_object_ref (tooltipsHandle);
-		OS.gtk_object_sink (tooltipsHandle);
-	}
-	return tooltipsHandle;
 }
 
 }
