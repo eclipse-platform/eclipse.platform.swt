@@ -517,7 +517,7 @@ public boolean open () {
 			case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_KEYDOWN: wmKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_KEYUP: wmKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSCHAR: wmSysChar (0, msg.hwnd, msg.wParam, msg.lParam); break;
+			case OS.WM_SYSCHAR: wmSysChar (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
 		}

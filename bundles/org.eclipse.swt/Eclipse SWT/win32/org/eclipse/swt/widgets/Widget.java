@@ -1428,7 +1428,7 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmSysChar (int windowProc, int hwnd, int wParam, int lParam) {
+LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
 	Display display = this.display;
 	display.lastAscii = wParam;
 	display.lastNull = wParam == 0;

@@ -3904,7 +3904,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCHAR (int wParam, int lParam) {
-	return wmSysChar (windowProc (), handle, wParam, lParam);
+	return wmSysChar (handle, wParam, lParam);
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
