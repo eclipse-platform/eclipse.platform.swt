@@ -1008,6 +1008,7 @@ int processDefaultSelection (int int0, int int1, int int2) {
 int processMouseDown (int int0, int int1, int int2) {
 	GdkEventButton e = new GdkEventButton ();
 	OS.memmove (e, int0, GdkEventButton.sizeof);
+	if (e.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	int headerHeight = getHeaderHeight();
 	e.y += headerHeight;
 	OS.memmove (int0, e, GdkEventButton.sizeof);
@@ -1020,6 +1021,7 @@ int processMouseDown (int int0, int int1, int int2) {
 int processMouseMove (int int0, int int1, int int2) {
 	GdkEventButton e = new GdkEventButton ();
 	OS.memmove (e, int0, GdkEventButton.sizeof);
+	if (e.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	int headerHeight = getHeaderHeight ();
 	e.y += headerHeight;
 	OS.memmove (int0, e, GdkEventButton.sizeof);
@@ -1032,6 +1034,7 @@ int processMouseMove (int int0, int int1, int int2) {
 int processMouseUp (int int0, int int1, int int2) {
 	GdkEventButton e = new GdkEventButton ();
 	OS.memmove (e, int0, GdkEventButton.sizeof);
+	if (e.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
 	int headerHeight = getHeaderHeight();
 	e.y += headerHeight;
 	OS.memmove (int0, e, GdkEventButton.sizeof);
