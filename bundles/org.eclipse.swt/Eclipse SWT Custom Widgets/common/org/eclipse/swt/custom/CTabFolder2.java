@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.*;
  * set of pages.
  * <p>
  * The item children that may be added to instances of this class
- * must be of type <code>CTabItem</code>.
+ * must be of type <code>CTabItem2</code>.
  * <code>Control</code> children are created and then set into a
- * tab item using <code>CTabItem#setControl</code>.
+ * tab item using <code>CTabItem2#setControl</code>.
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.
@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.*;
  * <dd>CLOSE, TOP, BOTTOM, FLAT, BORDER, SINGLE, MULTI</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
- * <dd>"CTabFolder"</dd>
+ * <dd>"CTabFolder2"</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles TOP and BOTTOM 
@@ -156,7 +156,7 @@ public class CTabFolder2 extends Composite {
 	int borderBottom = 0;
 	int[] curve;
 	
-	// when disposing CTabFolder, don't try to layout the items or 
+	// when disposing CTabFolder2, don't try to layout the items or 
 	// change the selection as each child is destroyed.
 	boolean inDispose = false;
 
@@ -1177,7 +1177,7 @@ public CTabItem2 getItem (int index) {
 /**
  * Gets the item at a point in the widget.
  *
- * @param pt the point in coordinates relative to the CTabFolder
+ * @param pt the point in coordinates relative to the CTabFolder2
  * @return the item at a point or null
  * 
  * @exception SWTError <ul>
@@ -1616,13 +1616,12 @@ void onMouseDoubleClick(Event event) {
 	if (chevronRect.contains(x, y)) return;
 	
 	if (showMax) {
-		if (single) {
-			// In single mode, only maximize if user clicks outside of selecetd tab
-			if (selectedIndex != -1) {
-				Rectangle bounds = items[selectedIndex].getBounds();
-				if (bounds.contains(event.x, event.y)) return;
-			}
+		// Only maximize if user clicks outside of selected tab
+		if (selectedIndex != -1) {
+			Rectangle bounds = items[selectedIndex].getBounds();
+			if (bounds.contains(event.x, event.y)) return;
 		}
+		showList = false;
 		CTabFolderEvent e = new CTabFolderEvent(this);
 		e.widget = this;
 		e.time = event.time;
@@ -1717,12 +1716,12 @@ void onMouse(Event event) {
 					return;
 				}
 				if (bounds.contains(x, y)) {
+					if (event.button == 1 && i == selectedIndex && chevronRect.width > 0) {
+						showList = true;
+					}
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
-					if (single && event.button == 1 && selectedIndex != -1 && items.length > 1) {
-						showList = true;
-					}
 					return;
 				}
 			}
@@ -1890,7 +1889,7 @@ void onMouse(Event event) {
 					return;
 				}
 			}
-			if (showList && event.button == 1 && single && selectedIndex != -1 && items.length > 1) {
+			if (showList && event.button == 1 && selectedIndex != -1 && chevronRect.width > 0) {
 				Rectangle bounds = items[selectedIndex].getBounds();
 				if (bounds.contains(event.x, event.y)) {
 					Rectangle rect = bounds;
@@ -3053,7 +3052,7 @@ public void setTabHeight(int height) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder2</li>
  * </ul>
  * 
  */
@@ -3081,7 +3080,7 @@ public void setTopRight(Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see CTabFolder#showSelection()
+ * @see CTabFolder2#showSelection()
  * 
  * @since 2.0
  */
@@ -3136,7 +3135,7 @@ void showList (Rectangle rect, int alignment) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see CTabFolder#showItem(CTabItem)
+ * @see CTabFolder2#showItem(CTabItem2)
  * 
  * @since 2.0
  * 

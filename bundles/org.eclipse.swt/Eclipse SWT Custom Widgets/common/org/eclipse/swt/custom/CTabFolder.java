@@ -1614,13 +1614,12 @@ void onMouseDoubleClick(Event event) {
 	if (chevronRect.contains(x, y)) return;
 	
 	if (showMax) {
-		if (single) {
-			// In single mode, only maximize if user clicks outside of selecetd tab
-			if (selectedIndex != -1) {
-				Rectangle bounds = items[selectedIndex].getBounds();
-				if (bounds.contains(event.x, event.y)) return;
-			}
+		// Only maximize if user clicks outside of selected tab
+		if (selectedIndex != -1) {
+			Rectangle bounds = items[selectedIndex].getBounds();
+			if (bounds.contains(event.x, event.y)) return;
 		}
+		showList = false;
 		CTabFolderEvent e = new CTabFolderEvent(this);
 		e.widget = this;
 		e.time = event.time;
@@ -1715,12 +1714,12 @@ void onMouse(Event event) {
 					return;
 				}
 				if (bounds.contains(x, y)) {
+					if (event.button == 1 && i == selectedIndex && chevronRect.width > 0) {
+						showList = true;
+					}
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
-					if (single && event.button == 1 && selectedIndex != -1 && items.length > 1) {
-						showList = true;
-					}
 					return;
 				}
 			}
@@ -1888,7 +1887,7 @@ void onMouse(Event event) {
 					return;
 				}
 			}
-			if (showList && event.button == 1 && single && selectedIndex != -1 && items.length > 1) {
+			if (showList && event.button == 1 && selectedIndex != -1 && chevronRect.width > 0) {
 				Rectangle bounds = items[selectedIndex].getBounds();
 				if (bounds.contains(event.x, event.y)) {
 					Rectangle rect = bounds;
