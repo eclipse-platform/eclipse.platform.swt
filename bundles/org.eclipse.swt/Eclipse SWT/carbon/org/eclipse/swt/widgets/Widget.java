@@ -191,13 +191,11 @@ void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) 
 	if (OS.IsControlVisible (control)) {
 		int childRgn = OS.NewRgn ();
 		int window = OS.GetControlOwner (control);
-		int port = OS.GetWindowPort (window);
 		short [] count = new short [1];
 		int [] outControl = new int [1];
 		OS.GetRootControl (window, outControl);
 		int root = outControl [0];
 		OS.GetControlRegion (root, (short) OS.kControlStructureMetaPart, visibleRgn);
-		Rect rect = new Rect();
 		int tempControl = control, lastControl = 0;
 		while (tempControl != root) {
 			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
