@@ -1,12 +1,18 @@
-package org.eclipse.swt.examples.explorer;
-
+package org.eclipse.swt.examples.fileviewer;
+
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.program.*;
+import org.eclipse.swt.widgets.*;
 
-import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.program.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.util.*;
-
+import java.io.*;
+import java.util.*;
+
 /**
  * Manages icons for the application.
  * This is necessary as we could easily end up creating thousands of icons
@@ -54,10 +60,10 @@ import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.
 		cursorDefault = 0,
 		cursorWait = 1;
 	public static Cursor stockCursors[];
-
+
 	// Cached icons
 	private static Hashtable iconCache;
-
+
 	/**
 	 * Loads the resources
 	 * 
@@ -85,7 +91,7 @@ import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.
 		}
 		iconCache = new Hashtable();
 	}
-
+
 	/**
 	 * Frees the resources
 	 */
@@ -104,7 +110,7 @@ import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.
 			}
 		}
 	}
-
+
 	/**
 	 * Creates a stock image
 	 * 
@@ -125,7 +131,7 @@ import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.
 		}
 		return null;
 	}
-
+
 	/**
 	 * Gets an image for a file associated with a given program and extension
 	 *

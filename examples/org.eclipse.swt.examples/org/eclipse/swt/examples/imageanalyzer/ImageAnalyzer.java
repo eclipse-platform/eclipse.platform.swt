@@ -1,10 +1,10 @@
-package org.eclipse.swt.examples.imageexample;
-
+package org.eclipse.swt.examples.imageanalyzer;
+
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
@@ -12,7 +12,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
 import java.util.*;
 import java.text.MessageFormat;
-
+
 public class ImageAnalyzer {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
 	
@@ -56,12 +56,12 @@ public class ImageAnalyzer {
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
-
+
 	public static void main(String [] args) {
 		ImageAnalyzer imageAnalyzer = new ImageAnalyzer();
 		imageAnalyzer.open();
 	}
-
+
 	void open() {
 		// Create a window and set its title.
 		shell = new Shell();
@@ -85,7 +85,7 @@ public class ImageAnalyzer {
 				}
 			}
 		});
-
+
 		// Create colors and fonts.
 		display = shell.getDisplay();
 		whiteColor = new Color(display, 255, 255, 255);
@@ -108,7 +108,7 @@ public class ImageAnalyzer {
 		shell.open();
 		while (!shell.isDisposed())
 			if (!display.readAndDispatch()) display.sleep();
-
+
 		// Clean up.
 		if (image != null)
 			image.dispose();
@@ -121,14 +121,14 @@ public class ImageAnalyzer {
 		crossCursor.dispose();
 		imageCanvasGC.dispose();
 	}
-
+
 	void createWidgets() {
 		// Add the widgets to the shell in a grid layout.
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.numColumns = 2;
 		shell.setLayout(layout);
-
+
 		// Separate the menu bar from the rest of the widgets.
 		Label separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gridData = new GridData();
@@ -228,7 +228,7 @@ public class ImageAnalyzer {
 				incremental = ((Button)event.widget).getSelection();
 			}
 		});
-
+
 		// Check box to request transparent display.
 		transparentCheck = new Button(group, SWT.CHECK);
 		transparentCheck.setText(bundle.getString("Transparent"));
@@ -241,7 +241,7 @@ public class ImageAnalyzer {
 				}
 			}
 		});
-
+
 		// Check box to request mask display.
 		maskCheck = new Button(group, SWT.CHECK);
 		maskCheck.setText(bundle.getString("Mask"));
@@ -254,7 +254,7 @@ public class ImageAnalyzer {
 				}
 			}
 		});
-
+
 		// Check box to request background display.
 		backgroundCheck = new Button(group, SWT.CHECK);
 		backgroundCheck.setText(bundle.getString("Background"));
@@ -264,12 +264,12 @@ public class ImageAnalyzer {
 				showBackground = ((Button)event.widget).getSelection();
 			}
 		});
-
+
 		// Group the animation buttons.
 		group = new Group(controls, SWT.NULL);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Animation"));
-
+
 		// Push button to display the previous image in a multi-image file.
 		previousButton = new Button(group, SWT.PUSH);
 		previousButton.setText(bundle.getString("Previous"));
@@ -279,7 +279,7 @@ public class ImageAnalyzer {
 				previous();
 			}
 		});
-
+
 		// Push button to display the next image in a multi-image file.
 		nextButton = new Button(group, SWT.PUSH);
 		nextButton.setText(bundle.getString("Next"));
@@ -289,7 +289,7 @@ public class ImageAnalyzer {
 				next();
 			}
 		});
-
+
 		// Push button to toggle animation of a multi-image file.
 		animateButton = new Button(group, SWT.PUSH);
 		animateButton.setText(bundle.getString("Animate"));
@@ -299,19 +299,19 @@ public class ImageAnalyzer {
 				animate();
 			}
 		});
-
+
 		// Separate the control widgets from the rest of the widgets.
 //		Label separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 //		gridData = new GridData();
 //		gridData.horizontalSpan = 2;
 //		gridData.horizontalAlignment = GridData.FILL;
 //		separator.setLayoutData(gridData);
-
+
 		// Label to show the image file type.
 		typeLabel = new Label(shell, SWT.NULL);
 		typeLabel.setText(bundle.getString("Type_initial"));
 		typeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Canvas to show the image.
 		imageCanvas = new Canvas(shell, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_REDRAW_RESIZE);
 		imageCanvas.setBackground(whiteColor);
@@ -336,7 +336,7 @@ public class ImageAnalyzer {
 				}
 			}
 		});
-
+
 		// Set up the image canvas scroll bars.
 		ScrollBar horizontal = imageCanvas.getHorizontalBar();
 		horizontal.setVisible(true);
@@ -356,65 +356,65 @@ public class ImageAnalyzer {
 				scrollVertically((ScrollBar)event.widget);
 			}
 		});
-
+
 		// Label to show the image size.
 		sizeLabel = new Label(shell, SWT.NULL);
 		sizeLabel.setText(bundle.getString("Size_initial"));
 		sizeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the image depth.
 		depthLabel = new Label(shell, SWT.NULL);
 		depthLabel.setText(bundle.getString("Depth_initial"));
 		depthLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the transparent pixel.
 		transparentPixelLabel = new Label(shell, SWT.NULL);
 		transparentPixelLabel.setText(bundle.getString("Transparent_pixel_initial"));
 		transparentPixelLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Separate the animation fields from the rest of the fields.
 		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the logical screen size for animation.
 		screenSizeLabel = new Label(shell, SWT.NULL);
 		screenSizeLabel.setText(bundle.getString("Animation_size_initial"));
 		screenSizeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the background pixel.
 		backgroundPixelLabel = new Label(shell, SWT.NULL);
 		backgroundPixelLabel.setText(bundle.getString("Background_pixel_initial"));
 		backgroundPixelLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the image location (x, y).
 		locationLabel = new Label(shell, SWT.NULL);
 		locationLabel.setText(bundle.getString("Image_location_initial"));
 		locationLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the image disposal method.
 		disposalMethodLabel = new Label(shell, SWT.NULL);
 		disposalMethodLabel.setText(bundle.getString("Disposal_initial"));
 		disposalMethodLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the image delay time.
 		delayTimeLabel = new Label(shell, SWT.NULL);
 		delayTimeLabel.setText(bundle.getString("Delay_initial"));
 		delayTimeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show the background pixel.
 		repeatCountLabel = new Label(shell, SWT.NULL);
 		repeatCountLabel.setText(bundle.getString("Repeats_initial"));
 		repeatCountLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Separate the animation fields from the palette.
 		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Label to show if the image has a direct or indexed palette.
 		paletteLabel = new Label(shell, SWT.NULL);
 		paletteLabel.setText(bundle.getString("Palette_initial"));
 		paletteLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-
+
 		// Canvas to show the image's palette.
 		paletteCanvas = new Canvas(shell, SWT.BORDER | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE);
 		paletteCanvas.setFont(fixedWidthFont);
@@ -434,7 +434,7 @@ public class ImageAnalyzer {
 					paintPalette(event);
 			}
 		});
-
+
 		// Set up the palette canvas scroll bar.
 		vertical = paletteCanvas.getVerticalBar();
 		vertical.setVisible(true);
@@ -446,7 +446,7 @@ public class ImageAnalyzer {
 				scrollPalette((ScrollBar)event.widget);
 			}
 		});
-
+
 		// Sash to see more of image or image data.
 		sash = new Sash(shell, SWT.HORIZONTAL);
 		gridData = new GridData();
@@ -478,7 +478,7 @@ public class ImageAnalyzer {
 				}
 			}
 		});
-
+
 		// Label to show data-specific fields.
 		dataLabel = new Label(shell, SWT.NULL);
 		dataLabel.setText(bundle.getString("Pixel_data_initial"));
@@ -525,10 +525,10 @@ public class ImageAnalyzer {
 		// Menu bar.
 		Menu menuBar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menuBar);
-
+
 		createFileMenu(menuBar);
 		createAlphaMenu(menuBar);
-
+
 		return menuBar;
 	}
 	
@@ -538,7 +538,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("File"));
 		Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
 		item.setMenu(fileMenu);
-
+
 		// File -> Open...
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("Open"));
@@ -589,7 +589,7 @@ public class ImageAnalyzer {
 		});
 		
 		new MenuItem(fileMenu, SWT.SEPARATOR);
-
+
 		// File -> Exit
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("Exit"));
@@ -601,14 +601,14 @@ public class ImageAnalyzer {
 		});
 	
 	}
-
+
 	void createAlphaMenu(Menu menuBar) {
 		// Alpha menu
 		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
 		item.setText(bundle.getString("Alpha"));
 		Menu alphaMenu = new Menu(shell, SWT.DROP_DOWN);
 		item.setMenu(alphaMenu);
-
+
 		// Alpha -> K
 		item = new MenuItem(alphaMenu, SWT.NULL);
 		item.setText("K");
@@ -617,7 +617,7 @@ public class ImageAnalyzer {
 				menuComposeAlpha(ALPHA_CONSTANT);
 			}
 		});
-
+
 		// Alpha -> (K + x) % 256
 		item = new MenuItem(alphaMenu, SWT.NULL);
 		item.setText("(K + x) % 256");
@@ -626,7 +626,7 @@ public class ImageAnalyzer {
 				menuComposeAlpha(ALPHA_X);
 			}
 		});
-
+
 		// Alpha -> (K + y) % 256
 		item = new MenuItem(alphaMenu, SWT.NULL);
 		item.setText("(K + y) % 256");
@@ -636,11 +636,11 @@ public class ImageAnalyzer {
 			}
 		});
 	}
-
+
 	void menuComposeAlpha(int alpha_op) {
 		if (image == null) return;
 		animate = false; // stop any animation in progress
-
+
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -674,7 +674,7 @@ public class ImageAnalyzer {
 			waitCursor.dispose();
 		}
 	}
-
+
 	void menuOpen() {
 		animate = false; // stop any animation in progress
 		resetScaleCombos();
@@ -690,7 +690,7 @@ public class ImageAnalyzer {
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
 			return;
-
+
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -708,7 +708,7 @@ public class ImageAnalyzer {
 			// Read the new image(s) from the chosen file.
 			imageDataArray = loader.load(filename);
 			if (imageDataArray.length > 0) {
-
+
 				// Cache the filename.
 				fileName = filename;
 				
@@ -788,14 +788,14 @@ public class ImageAnalyzer {
 	void menuSave() {
 		if (image == null) return;
 		animate = false; // stop any animation in progress
-
+
 		// If the image file type is unknown, we can't 'Save',
 		// so we have to use 'Save As...'.
 		if (imageData.type == SWT.IMAGE_UNDEFINED) {
 			menuSaveAs();
 			return;
 		}
-
+
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -812,11 +812,11 @@ public class ImageAnalyzer {
 			waitCursor.dispose();
 		}
 	}
-
+
 	void menuSaveAs() {
 		if (image == null) return;
 		animate = false; // stop any animation in progress
-
+
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
@@ -827,7 +827,7 @@ public class ImageAnalyzer {
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
 			return;
-
+
 		// Figure out what file type the user wants saved.
 		// We need to rely on the file extension because FileDialog
 		// does not have API for asking what filter type was selected.
@@ -860,7 +860,7 @@ public class ImageAnalyzer {
 			fileName = filename;
 			shell.setText(createMsg(bundle.getString("Analyzer_on"), filename));
 			typeLabel.setText(createMsg(bundle.getString("Type_string"), fileTypeString(filetype)));
-
+
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
@@ -869,12 +869,12 @@ public class ImageAnalyzer {
 			waitCursor.dispose();
 		}
 	}
-
+
 	void menuSaveMaskAs() {
 		if (image == null || !showMask) return;
 		if (imageData.getTransparencyType() == SWT.TRANSPARENCY_NONE) return;
 		animate = false; // stop any animation in progress
-
+
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
@@ -885,7 +885,7 @@ public class ImageAnalyzer {
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
 			return;
-
+
 		// Figure out what file type the user wants saved.
 		// We need to rely on the file extension because FileDialog
 		// does not have API for asking what filter type was selected.
@@ -922,13 +922,13 @@ public class ImageAnalyzer {
 			waitCursor.dispose();
 		}
 	}
-
+
 	void menuReopen() {
 		if (fileName == null) return;
 		animate = false; // stop any animation in progress
 		resetScrollBars();
 		resetScaleCombos();
-
+
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -937,7 +937,7 @@ public class ImageAnalyzer {
 			ImageData[] newImageData = loader.load(fileName);
 			imageDataIndex = 0;
 			displayImage(newImageData[imageDataIndex]);
-
+
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Reloading_lc"), fileName, e);
 		} finally {	
@@ -1090,7 +1090,7 @@ public class ImageAnalyzer {
 		if (x >= 0 && x < imageData.width && y >= 0 && y < imageData.height) {
 			int pixel = imageData.getPixel(x, y);
 			RGB rgb = imageData.palette.getRGB(pixel);
-
+
 			Object[] args = {new Integer(x),
 					     new Integer(y),
 					     new Integer(pixel),
@@ -1156,7 +1156,7 @@ public class ImageAnalyzer {
 					canvasBackground = imageCanvas.getBackground();
 				}
 			});
-
+
 			// Fill the off-screen image with the background color of the canvas.
 			offScreenImageGC.setBackground(canvasBackground);
 			offScreenImageGC.fillRectangle(
@@ -1176,7 +1176,7 @@ public class ImageAnalyzer {
 				imageData.y,
 				imageData.width,
 				imageData.height);
-
+
 			int repeatCount = loader.repeatCount;
 			while (animate && (loader.repeatCount == 0 || repeatCount > 0)) {
 				if (imageData.disposalMethod == SWT.DM_FILL_BACKGROUND) {
@@ -1248,7 +1248,7 @@ public class ImageAnalyzer {
 			offScreenImageGC.dispose();
 		}
 	}
-
+
 	/*
 	 * Pre animation setup.
 	 */
@@ -1277,7 +1277,7 @@ public class ImageAnalyzer {
 			}
 		});
 	}
-
+
 	/*
 	 * Post animation reset.
 	 */
@@ -1309,7 +1309,7 @@ public class ImageAnalyzer {
 			}
 		});
 	}
-
+
 	/*
 	 * Called when the Previous button is pressed.
 	 * Display the previous image in a multi-image file.
@@ -1323,7 +1323,7 @@ public class ImageAnalyzer {
 			displayImage(imageDataArray[imageDataIndex]);
 		}	
 	}
-
+
 	/*
 	 * Called when the Next button is pressed.
 	 * Display the next image in a multi-image file.
@@ -1334,7 +1334,7 @@ public class ImageAnalyzer {
 			displayImage(imageDataArray[imageDataIndex]);
 		}	
 	}
-
+
 	void displayImage(ImageData newImageData) {
 		if (incremental && incrementalThread != null) {
 			// Tell the incremental thread to stop drawing.
@@ -1350,22 +1350,22 @@ public class ImageAnalyzer {
 					
 		// Dispose of the old image, if there was one.
 		if (image != null) image.dispose();
-
+
 		try {
 			// Cache the new image and imageData.
 			image = new Image(null, newImageData);
 			imageData = newImageData;
-
+
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Creating_from") + " ", fileName, e);
 			image = null;
 			return;
 		}
-
+
 		// Update the widgets with the new image info.
 		String string = createMsg(bundle.getString("Analyzer_on"), fileName);
 		shell.setText(string);
-
+
 		if(imageDataArray.length > 1){
 			string = createMsg(bundle.getString("Type_index"), 
 			                   new Object[] {fileTypeString(imageData.type),
@@ -1375,35 +1375,35 @@ public class ImageAnalyzer {
 			string = createMsg(bundle.getString("Type_string"), fileTypeString(imageData.type));
 		}
 		typeLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Size_value"), 
 					 new Object[] {new Integer(imageData.width),
 							   new Integer(imageData.height)});
 		sizeLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Depth_value"), new Integer(imageData.depth));
 		depthLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
 		transparentPixelLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Animation_size_value"), 
 		                      new Object[] {new Integer(loader.logicalScreenWidth),
 								new Integer(loader.logicalScreenHeight)});
 		screenSizeLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Background_pixel_value"), pixelInfo(loader.backgroundPixel));
 		backgroundPixelLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Image_location_value"), 
 		                      new Object[] {new Integer(imageData.x), new Integer(imageData.y)});
 		locationLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Disposal_value"),
 		                      new Object[] {new Integer(imageData.disposalMethod),
 							      disposalString(imageData.disposalMethod)});
 		disposalMethodLabel.setText(string);
-
+
 		int delay = imageData.delayTime * 10;
 		int delayUsed = visibleDelay(delay);
 		if(delay != delayUsed){
@@ -1413,35 +1413,35 @@ public class ImageAnalyzer {
 			string = createMsg(bundle.getString("Delay_used"), new Integer(delay));
 		}
 		delayTimeLabel.setText(string);
-
+
 		if(loader.repeatCount == 0){
 			string = createMsg( bundle.getString("Repeats_forever"), new Integer(loader.repeatCount));
 		} else {
 			string = createMsg(bundle.getString("Repeats_value"), new Integer(loader.repeatCount));
 		}
 		repeatCountLabel.setText(string);
-
+
 		if(imageData.palette.isDirect){
 			string = bundle.getString("Palette_direct");
 		} else {
 			string = createMsg(bundle.getString("Palette_value"), new Integer(imageData.palette.getRGBs().length));
 		}
 		paletteLabel.setText(string);
-
+
 		string = createMsg(bundle.getString("Pixel_data_value"), 
 					 new Object[] {new Integer(imageData.bytesPerLine),
 						         new Integer(imageData.scanlinePad),
 							   depthInfo(imageData.depth)});
 		dataLabel.setText(string);
-
+
 		dataText.setText(dataHexDump(dataText.getLineDelimiter()));
 		statusLabel.setText("");
-
+
 		// Redraw both canvases.
 		paletteCanvas.redraw();
 		imageCanvas.redraw();
 	}
-
+
 	void paintImage(PaintEvent event) {
 		Image paintImage = image;
 		int transparentPixel = imageData.transparentPixel;
@@ -1481,7 +1481,7 @@ public class ImageAnalyzer {
 			paintImage.dispose();
 		}
 	}
-
+
 	void paintPalette(PaintEvent event) {
 		GC gc = event.gc;
 		gc.fillRectangle(paletteCanvas.getClientArea());
@@ -1524,7 +1524,7 @@ public class ImageAnalyzer {
 			return;
 		resizeScrollBars();
 	}
-
+
 	// Reset the scale combos to 1.
 	void resetScaleCombos() {
 		xscale = 1; yscale = 1;
@@ -1579,7 +1579,7 @@ public class ImageAnalyzer {
 				imageCanvas.redraw();
 			}
 		}
-
+
 		// Set the max and thumb for the palette canvas scroll bar.
 		vertical = paletteCanvas.getVerticalBar();
 		if (imageData.palette.isDirect) {
@@ -1593,7 +1593,7 @@ public class ImageAnalyzer {
 			vertical.setPageIncrement(canvasBounds.height);
 		}
 	}
-
+
 	/*
 	 * Called when the image canvas' horizontal scrollbar is selected.
 	 */
@@ -1633,7 +1633,7 @@ public class ImageAnalyzer {
 			iy = y;
 		}
 	}
-
+
 	/*
 	 * Called when the palette canvas' vertical scrollbar is selected.
 	 */
@@ -1652,7 +1652,7 @@ public class ImageAnalyzer {
 			py = y;
 		}
 	}
-
+
 	/*
 	 * Return a String containing a line-by-line dump of
 	 * the data in the current imageData. The lineDelimiter
@@ -1691,7 +1691,7 @@ public class ImageAnalyzer {
 	void showErrorDialog(String operation, String filename, SWTException e) {
 		MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 		String message = createMsg(bundle.getString("Error"), new String[] {operation, filename});
-
+
 		String errorMessage = e.getMessage();
 		if (e.throwable != null) {
 			errorMessage += ":\n" + e.throwable.toString();
@@ -1748,7 +1748,7 @@ public class ImageAnalyzer {
 		if (ms < 30) return ms + 10;
 		return ms;
 	}
-
+
 
 	/*
 	 * Return the specified byte value as a hex string,
@@ -1759,7 +1759,7 @@ public class ImageAnalyzer {
 			return "0" + Integer.toHexString(i);
 		return Integer.toHexString(i & 0xff);
 	}
-
+
 	/*
 	 * Return the specified 4-byte value as a hex string,
 	 * preserving leading 0's.
@@ -1852,7 +1852,7 @@ public class ImageAnalyzer {
 		MessageFormat formatter = new MessageFormat(msg);
 		return formatter.format(new Object[]{arg});
 	}
-
+
 }
-
+
 

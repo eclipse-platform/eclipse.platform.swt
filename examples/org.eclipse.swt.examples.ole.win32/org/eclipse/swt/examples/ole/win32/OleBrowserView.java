@@ -5,19 +5,7 @@ package org.eclipse.swt.examples.ole.win32;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.ole.win32.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.part.ViewPart;
-
-import java.util.ResourceBundle;
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-import java.io.File;
+import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.ole.win32.*;import org.eclipse.swt.widgets.*;import org.eclipse.ui.part.*;
 
 /**
  * Ole uses <code>org.eclipse.swt</code> to demonstrate Win32 OLE / ActiveX
@@ -35,6 +23,7 @@ public class OleBrowserView extends ViewPart {
 	private OleControlSite webControlSite;
 	private ProgressBar    webProgress;
 	private Label          webStatus;
+	private Button         webNavigateButton;
 	
 	private ToolItem webCommandBackward;
 	private ToolItem webCommandForward;
@@ -82,11 +71,12 @@ public class OleBrowserView extends ViewPart {
 	}
 	
 	/**
-	 * Called when frame obtains focus.
+	 * Called when we must grab focus.
 	 * 
-	 * @see ViewPart#setFocus
+	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus()  {
+		webUrl.setFocus();
 	}
 
 	/**
@@ -204,14 +194,19 @@ public class OleBrowserView extends ViewPart {
 		webUrl.setFont(OlePlugin.browserFont);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		webUrl.setLayoutData(gridData);
+		webUrl.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				webNavigateButton.getShell().setDefaultButton(webNavigateButton);
+			}
+		});
 	
 		// Add a button to navigate to the web site specified in the Text area defined above
-		Button navigate = new Button(addressBar, SWT.PUSH);
+		webNavigateButton = new Button(addressBar, SWT.PUSH);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL);
-		navigate.setLayoutData(gridData);
-		navigate.setText(OlePlugin.getResourceString("browser.Go.text"));
-		navigate.setFont(OlePlugin.browserFont);
-		navigate.addListener(SWT.Selection, new Listener() {
+		webNavigateButton.setLayoutData(gridData);
+		webNavigateButton.setText(OlePlugin.getResourceString("browser.Go.text"));
+		webNavigateButton.setFont(OlePlugin.browserFont);
+		webNavigateButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				if (webBrowser == null) return;
 				webBrowser.doNavigate(webUrl.getText());

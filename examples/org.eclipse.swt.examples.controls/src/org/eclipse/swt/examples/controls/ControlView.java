@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
  */
 public class ControlView extends ViewPart {
 	private ShellTab shellTab;
+	private TabFolder tabFolder;
 
 	/**
 	 * The constructor.
@@ -36,7 +37,7 @@ public class ControlView extends ViewPart {
 	 */
 	public void createPartControl(Composite frame) {
 		/* Create the tab folder */
-		TabFolder tabFolder = new TabFolder (frame, SWT.NULL);
+		tabFolder = new TabFolder (frame, SWT.NULL);
 		Tab [] tabs = new Tab [] {
 			new ButtonTab (),
 			new ComboTab (),
@@ -61,11 +62,12 @@ public class ControlView extends ViewPart {
 	}
 
 	/**
-	 * Called when frame obtains focus.
+	 * Called when we must grab focus.
 	 * 
-	 * @see ViewPart#setFocus
+	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus()  {
+		tabFolder.setFocus();
 	}
 
 	/**

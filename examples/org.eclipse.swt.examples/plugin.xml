@@ -36,12 +36,12 @@
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.explorer.FileViewer"
+         mainClass="org.eclipse.swt.examples.fileviewer.FileViewer"
          name="%launchitem.FileViewer.name"
          description="%launchitem.FileViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
          source="swtexamplessrc.zip"
-         id="org.eclipse.swt.examples.explorer.standalonelauncher">
+         id="org.eclipse.swt.examples.fileviewer.standalonelauncher">
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
@@ -99,7 +99,7 @@
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.imageexample.ImageAnalyzer"
+         mainClass="org.eclipse.swt.examples.imageanalyzer.ImageAnalyzer"
          name="%launchitem.ImageAnalyzer.name"
          description="%launchitem.ImageAnalyzer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"

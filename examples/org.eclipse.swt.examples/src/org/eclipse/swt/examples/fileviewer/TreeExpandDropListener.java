@@ -1,12 +1,15 @@
-package org.eclipse.swt.examples.explorer;
-
+package org.eclipse.swt.examples.fileviewer;
+
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
-import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.widgets.*;
-
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
 /**
  * TreeExpandDropListener provides automatic expansion for Trees during drag and drop
  * operations.
@@ -21,7 +24,7 @@ import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.g
  */
 public class TreeExpandDropListener extends DropTargetAdapter {
 	public static final long DEFAULT_EXPAND_DELAY = 1000; // millis
-
+
 	private long     hoverThreshhold = DEFAULT_EXPAND_DELAY;	
 	private long     hoverBegin = 0;
 	private TreeItem hoverItem = null;
@@ -35,7 +38,7 @@ public class TreeExpandDropListener extends DropTargetAdapter {
 	public TreeExpandDropListener(final Tree tree) {
 		this.tree = tree;
 	}
-
+
 	/**
 	 * Handles dragEnter events.
 	 * This is an implementation detail.
@@ -43,14 +46,14 @@ public class TreeExpandDropListener extends DropTargetAdapter {
 	public void dragEnter(DropTargetEvent event) {
 		hoverItem = null;
 	}
-
+
 	/**
 	 * Handles dragOver events.
 	 * This is an implementation detail.
 	 */
 	public void dragOver(DropTargetEvent event) {
 		Point point = tree.toControl(new Point(event.x, event.y));
-
+
 		// Get the item directly under the point
 		TreeItem item = tree.getItem(point);
 		if (item != hoverItem) {
@@ -64,7 +67,7 @@ public class TreeExpandDropListener extends DropTargetAdapter {
 		} else if (hoverItem != null) {
 			// We've been hovering for a while, expand if our timer elapsed
 			long hoverCurrent = System.currentTimeMillis();
-
+
 			if (hoverCurrent - hoverBegin >= hoverThreshhold) {
 				// Fake as if the user expanded the item manually
 				Event hoverEvent = new Event();

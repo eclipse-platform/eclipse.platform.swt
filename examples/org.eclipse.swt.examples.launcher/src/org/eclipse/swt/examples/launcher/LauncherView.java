@@ -35,6 +35,7 @@ public class LauncherView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		workbenchShell = getSite().getShell();
+		parent.setLayout(new OptimalSplitLayout());
 				
 		Group launchGroup = new Group(parent, SWT.NULL);
 		launchGroup.setText(LauncherPlugin.getResourceString("view.launchGroup.text"));
@@ -104,13 +105,15 @@ public class LauncherView extends ViewPart {
 	}
 
 	/**
-	 * Called when frame obtains focus.
+	 * Called when we must grab focus.
 	 * 
-	 * @see ViewPart#setFocus
+	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus()  {
+		launchTree.setFocus();
+		runButton.getShell().setDefaultButton(runButton);
 	}
-	
+
 	/**
 	 * Installs a new launch list.
 	 * 

@@ -73,11 +73,12 @@ public class PaintView extends ViewPart {
 	}
 	
 	/**
-	 * Called when frame obtains focus.
+	 * Called when we must grab focus.
 	 * 
-	 * @see ViewPart#setFocus
+	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus()  {
+		paintSurface.setFocus();
 	}
 
 	/**
