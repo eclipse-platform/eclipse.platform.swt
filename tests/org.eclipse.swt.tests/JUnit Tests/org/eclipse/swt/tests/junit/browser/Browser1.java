@@ -22,7 +22,7 @@ public class Browser1 {
 	public static boolean progressCompleted = false;
 	
 	public static boolean test1(String url) {
-		System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
+		System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
@@ -40,7 +40,9 @@ public class Browser1 {
 			}
 			public void changed(LocationEvent event) {
 				System.out.println("changed "+event.location);
-				passed = locationChanging && !locationChanged && !progressCompleted;
+				/* ignore non top frame loading */
+				if (!event.top) return;
+				passed = locationChanging && !progressCompleted;
 				locationChanged = true;
 				if (!passed) shell.close();
 			}
