@@ -68,7 +68,6 @@ public class Browser extends Composite {
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
-	static PromptService PromptService;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
@@ -161,8 +160,7 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		componentManager.Release();
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		AppShell = new nsIAppShell(result[0]);
 		rc = AppShell.Create(null, null);
@@ -196,16 +194,9 @@ public Browser(Composite parent, int style) {
 		PromptServiceFactory factory = new PromptServiceFactory();
 		factory.AddRef();
 		
-		rc = XPCOM.NS_GetComponentManager(result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-		
-		componentManager = new nsIComponentManager(result[0]);
-		result[0] = 0;
 		rc = componentManager.QueryInterface(nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		componentManager.Release();
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar(result[0]);
 		result[0] = 0;
@@ -218,8 +209,35 @@ public Browser(Composite parent, int style) {
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
 		if (rc != XPCOM.NS_OK) error(rc);
 		factory.Release();
-		componentRegistrar.Release();
 		
+		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory();
+		dialogFactory.AddRef();
+		
+		buffer = XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Helper App Launcher Dialog".getBytes();
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		dialogFactory.Release();
+		
+		DownloadFactory downloadFactory = new DownloadFactory();
+		downloadFactory.AddRef();
+		
+		buffer = XPCOM.NS_DOWNLOAD_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Download".getBytes();
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		downloadFactory.Release();
+		
+		componentRegistrar.Release();
+		componentManager.Release();
 		mozilla = true;
 	}
 	BrowserCount++;
@@ -253,11 +271,7 @@ public Browser(Composite parent, int style) {
 		rect.width = 1;
 		rect.height = 1;
 	}
-	/*
-	* Note. The following code compiles without warning on a 
-	* 64 bit platform but won't run. 
-	*/
-	rc = baseWindow.InitWindow((int)/*64*/handle, 0, 0, 0, rect.width, rect.height);
+	rc = baseWindow.InitWindow(handle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
