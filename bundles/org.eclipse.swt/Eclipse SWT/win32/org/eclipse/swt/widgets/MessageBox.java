@@ -161,6 +161,10 @@ public int open () {
 	}
 
 	int bits = buttonBits | iconBits | modalBits;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING;
+	if (parent != null && (parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.MB_RTLREADING;
+	}
 	
 	/*
 	* Feature in Windows.  System modal is not supported

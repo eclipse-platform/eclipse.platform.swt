@@ -891,9 +891,20 @@ public void setText (String string) {
 }
 
 int widgetStyle () {
-	if ((style & SWT.SEPARATOR) != 0) return OS.MFT_SEPARATOR;
-	if ((style & SWT.RADIO) != 0) return OS.MFT_RADIOCHECK;
-	return OS.MFT_STRING;
+	int bits = 0;
+	Decorations shell = parent.parent;
+	if ((shell.style & SWT.MIRRORED) != 0) {
+		if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) {
+			bits |= OS.MFT_RIGHTJUSTIFY | OS.MFT_RIGHTORDER;
+		}
+	} else {
+		if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits |= OS.MFT_RIGHTJUSTIFY | OS.MFT_RIGHTORDER;
+		}
+	}
+	if ((style & SWT.SEPARATOR) != 0) return bits | OS.MFT_SEPARATOR;
+	if ((style & SWT.RADIO) != 0) return bits | OS.MFT_RADIOCHECK;
+	return bits | OS.MFT_STRING;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
