@@ -312,11 +312,29 @@ void createItem (TableColumn column, int index) {
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		for (int j=columnCount-1; j>index; --j) {
+			// TODO - don't call setter
 			item.setText (j, item.getText (j - 1));
 			item.setImage (j, item.getImage (j - 1));
 		}
-		item.setText (index, "");
-		item.setImage (index, null);
+		if (columnCount > 1) {		
+			item.setText (index, "");
+			item.setImage (index, null);
+		
+			Color [] cellBackground = items [i].cellBackground;
+			if (cellBackground != null) {
+				Color [] temp = new Color [columnCount];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+				items [i].cellBackground = temp;
+			}
+			Color [] cellForeground = items [i].cellForeground;
+			if (cellForeground != null) {
+				Color [] temp = new Color [columnCount];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+				items [i].cellForeground = temp;
+			}
+		}
 	}
 }
 
@@ -467,12 +485,28 @@ void destroyItem (TableColumn column) {
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		for (int j=index; j<columnCount-1; j++) {
+			// TODO - don't call setter
 			item.setText (j, item.getText (j + 1));
 			item.setImage (j, item.getImage (j + 1));
 		}
 		if (columnCount > 1) {
 			item.setText (columnCount - 1, "");
 			item.setImage (columnCount - 1, null);
+
+			Color [] cellBackground = items [i].cellBackground;
+			if (cellBackground != null) {	
+				Color [] temp = new Color [columnCount - 1];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
+				items [i].cellBackground = temp;
+			}
+			Color [] cellForeground = items [i].cellForeground;
+			if (cellForeground != null) {
+				Color [] temp = new Color [columnCount - 1];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
+				items [i].cellForeground = temp;
+			}
 		}
 	}
 	if (columnCount == 1) {
@@ -542,7 +576,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		gc.fillRectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 	} else {
-		gc.setBackground (item.getBackground ());
+		gc.setBackground (item.getBackground (columnIndex));
 		gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 	}
 	int rectRgn = OS.NewRgn ();
@@ -567,7 +601,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			gc.fillRectangle (x - 1, y, extent.x + 2, height);
 		}
 	} else {
-		Color foreground = item.getForeground ();
+		Color foreground = item.getForeground (columnIndex);
 		gc.setForeground (foreground);
 	}
 	gc.drawString (text, x, y + (height - extent.y) / 2);

@@ -36,6 +36,7 @@ public class TableItem extends Item {
 	Image [] images;
 	boolean checked, grayed;
 	Color foreground, background;
+	Color[] cellForeground, cellBackground;
 	int width = -1;
 	
 /**
@@ -159,10 +160,10 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getBackground ();
-	// TODO
-	return getBackground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getBackground ();
+	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
+	return cellBackground [index];
 }
 
 /**
@@ -249,12 +250,11 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getForeground ();
-	// TODO
-	return getForeground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getForeground ();
+	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
+	return cellForeground [index];
 }
-
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
@@ -458,9 +458,13 @@ public void setBackground (int index, Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
-	// TODO
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellBackground == null) {
+		cellBackground = new Color [count];
+	}
+	cellBackground [index] = color;
+	redraw ();
 }
 
 /**
@@ -532,11 +536,14 @@ public void setForeground (int index, Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
-	// TODO
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellForeground == null) {
+		cellForeground = new Color [count];
+	}
+	cellForeground [index] = color;
+	redraw ();
 }
-
 /**
  * Sets the grayed state of the checkbox for this item.  This state change 
  * only applies if the Table was created with the SWT.CHECK style.
@@ -605,7 +612,7 @@ public void setImage (int index, Image image) {
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (images == null) images = new Image [columnCount];
-		if (images.length != columnCount) {
+		if (images.length < columnCount) {
 			Image [] newImages = new Image [columnCount];
 			System.arraycopy (images, 0, newImages, 0, images.length);
 			images = newImages;
@@ -688,7 +695,7 @@ public void setText (int index, String string) {
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (strings == null) strings = new String [columnCount];
-		if (strings.length != columnCount) {
+		if (strings.length < columnCount) {
 			String [] newStrings = new String [columnCount];
 			System.arraycopy (strings, 0, newStrings, 0, strings.length);
 			strings = newStrings;
