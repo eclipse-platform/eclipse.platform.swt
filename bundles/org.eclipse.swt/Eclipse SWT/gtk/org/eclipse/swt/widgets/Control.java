@@ -1272,7 +1272,8 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	return OS.GTK_WIDGET_SENSITIVE (handle);
+	int topHandle = topHandle ();
+	return OS.GTK_WIDGET_SENSITIVE (topHandle);
 }
 
 /**
@@ -1465,7 +1466,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return OS.GTK_WIDGET_VISIBLE(topHandle()); 
+	return OS.GTK_WIDGET_VISIBLE (topHandle ()); 
 }
 
 /**	 
