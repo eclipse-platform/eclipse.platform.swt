@@ -375,6 +375,24 @@ void destroyItem (TreeItem item) {
 	}
 }
 
+boolean fixScroll (int hItem) {
+	/*
+	* Feature in Windows.  If WM_SETREDRAW is false and the hItem
+	* is not a child of TVGN_ROOT, then TVM_SELECTITEM for the hItem
+	* does not work. The fix is to detect this case, and make sure
+	* WM_SETREDRAW is enabled for the TVM_SELECTITEM call.
+	*/
+	if (hItem != 0 && drawCount != 0) {
+		int hRoot = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+		while (hParent != hRoot && hParent != 0) {
+			hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hParent);
+		}
+		return hParent == 0;
+	}
+	return false;
+}
+
 int getBackgroundPixel () {
 	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
 	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
@@ -888,9 +906,17 @@ public void selectAll () {
 	if (hItem == 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		if (hItem != 0) {
+			/*
+			* NOTE: TVM_SELECTITEM will not make an item that is already
+			* focused become selected but this does not matter because
+			* every item is explicilty selected later in this method.
+			*/
+			boolean fixScroll = fixScroll(hItem);
+			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			ignoreSelect = true;
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
 			ignoreSelect = false;
+			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 	}
 	TVITEM tvItem = new TVITEM ();
@@ -1074,9 +1100,12 @@ public void setSelection (TreeItem [] items) {
 		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		hAnchor = hNewItem = item.handle;
 	}
+	boolean fixScroll = fixScroll(hNewItem);
+	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 	ignoreSelect = true;
 	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 	ignoreSelect = false;
+	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	/*
 	* Feature in Windows.  When the old and new focused item
 	* are the same, Windows does not check to make sure that
@@ -1151,7 +1180,11 @@ public void setTopItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, item.handle);
+	int hItem = item.handle;
+	boolean fixScroll = fixScroll(hItem);
+	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 }
 
 void showItem (int hItem) {
@@ -1165,8 +1198,11 @@ void showItem (int hItem) {
 	* the desired visible item be the top item in the tree.
 	*/
 	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
+		boolean fixScroll = fixScroll(hItem);
+		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP ,0);
+		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	} else {
 		boolean scroll = true;
 		RECT itemRect = new RECT ();
@@ -1183,7 +1219,12 @@ void showItem (int hItem) {
 				if (OS.PtInRect (rect, pt)) scroll = false;
 			}
 		}
-		if (scroll) OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+		if (scroll) {
+			boolean fixScroll = fixScroll(hItem);
+			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		}
 	}
 }
 
