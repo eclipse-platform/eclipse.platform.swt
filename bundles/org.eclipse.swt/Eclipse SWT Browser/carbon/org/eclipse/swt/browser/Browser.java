@@ -1058,14 +1058,13 @@ void didReceiveTitle(int title, int frame) {
 }
 
 void didStartProvisionalLoadForFrame(int frame) {
-	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
-
 	/* 
 	* This code is intentionally commented.  WebFrameLoadDelegate:didStartProvisionalLoadForFrame is
 	* called before WebResourceLoadDelegate:willSendRequest and
 	* WebFrameLoadDelegate:didCommitLoadForFrame.  The resource count is reset when didCommitLoadForFrame
 	* is received for the top frame.
 	*/
+//	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
 //	if (frame == WebKit.objc_msgSend(webView, WebKit.S_mainFrame)) {
 //		/* reset resource status variables */
 //		resourceCount= 0;
