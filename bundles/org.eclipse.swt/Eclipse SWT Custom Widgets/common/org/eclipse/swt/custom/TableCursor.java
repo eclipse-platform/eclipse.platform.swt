@@ -122,6 +122,9 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
+ * 
+ * @since 2.0
+ * 
  */
 public class TableCursor extends Canvas {
 	Table table;

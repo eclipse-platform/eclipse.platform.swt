@@ -54,10 +54,30 @@ public class TableTree extends Composite {
 	static final Image[] EMPTY_IMAGES = new Image [0];	
 
 /**
- * Creates a new instance of the widget.
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
  *
- * @param parent a composite widget
- * @param style the bitwise OR'ing of widget styles
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
  */
 public TableTree(Composite parent, int style) {
 	super(parent, SWT.NONE);
@@ -151,48 +171,10 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
 }  
-
-/**
- * Computes the preferred size of the widget.
- * <p>
- * Calculate the preferred size of the widget based
- * on the current contents. The hint arguments allow
- * a specific client area width and/or height to be
- * requested. The hints may be honored depending on
- * the platform and the layout.
- *
- * @param wHint the width hint (can be SWT.DEFAULT)
- * @param hHint the height hint (can be SWT.DEFAULT)
- * @return a point containing the preferred size of the widget including trim
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget();
 	return table.computeSize (wHint, hHint, true);
 }
-
-/**
- * Computes the widget trim.
- * <p>
- * Trim is widget specific and may include scroll
- * bars and menu bar in addition to other trimmings
- * that are outside of the widget's client area.
- *
- * @param x the x location of the client area
- * @param y the y location of the client area
- * @param width the width of the client area
- * @param height the height of the client area
- * @return a rectangle containing the trim of the widget.
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	return table.computeTrim(x, y, width, height);
@@ -228,6 +210,11 @@ void expandItem (TableTreeItem item) {
  * Gets the number of items.
  * <p>
  * @return the number of items in the widget
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemCount () {
 	checkWidget();
@@ -257,7 +244,11 @@ public int getItemHeight () {
  * Gets the items.
  * <p>
  * @return the items in the widget
- *
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableTreeItem [] getItems () {
 	checkWidget();
@@ -313,6 +304,11 @@ public int getSelectionCount () {
  * Returns the underlying Table control.
  *
  * @return the underlying Table control
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Table getTable () {
 	checkWidget();
@@ -385,7 +381,11 @@ Image getMinusImage() {
  *
  * @param item the search item
  * @return the index of the item or -1
- *
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int indexOf (TableTreeItem item) {
 	checkWidget();
@@ -426,6 +426,22 @@ void onSelection(Event e) {
 	}
 	notifyListeners(e.type, event);
 }
+/**
+ * Returns the item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the item at the given point
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public TableTreeItem getItem(Point point) {
 	checkWidget();
 	TableItem item = table.getItem(point);
@@ -600,20 +616,6 @@ public void selectAll () {
 	checkWidget();
 	table.selectAll();
 }
-
-/**
- * Sets the widget background color.
- * <p>
- * When new color is null, the background reverts
- * to the default system color for the widget.
- *
- * @param color the new color (or null)
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public void setBackground (Color color) {
 	super.setBackground(color);
 	table.setBackground(color);
@@ -625,77 +627,18 @@ public void setBackground (Color color) {
 		gc.dispose();
 	}
 }
-
-/**
- * Sets the enabled state.
- * <p>
- * A disabled widget is typically not selectable from
- * the user interface and draws with an inactive or
- * grayed look.
- *
- * @param enabled the new enabled state
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public void setEnabled (boolean enabled) {
 	super.setEnabled(enabled);
 	table.setEnabled(enabled);
 }
-
-/**
- * Sets the widget font.
- * <p>
- * When new font is null, the font reverts
- * to the default system font for the widget.
- *
- * @param font the new font (or null)
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public void setFont (Font font) {
 	super.setFont(font);
 	table.setFont(font);
 }
-
-/**
- * Gets the widget foreground color.
- * <p>
- * @return the widget foreground color
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public void setForeground (Color color) {
 	super.setForeground(color);
 	table.setForeground(color);
 }
-
-/**
- * Sets the pop up menu.
- * <p>
- * Every control has an optional pop up menu that is
- * displayed when the user requests a popup menu for
- * the control.  The sequence of key strokes/button
- * presses/button releases that is used to request
- * a pop up menu is platform specific.
- *
- * @param menu the new pop up menu
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *		<li>ERROR_MENU_NOT_POP_UP when the menu is not a POP_UP</li>
- *		<li>ERROR_NO_COMMON_PARENT when the menu is not in the same widget tree</li>
- *	</ul>
- */
 public void setMenu (Menu menu) {
 	super.setMenu(menu);
 	table.setMenu(menu);
@@ -722,17 +665,6 @@ public void setSelection (TableTreeItem[] items) {
 	}
 	table.setSelection(tableItems);
 }
-
-/**
- * Sets the tool tip text.
- * <p>
- * @param string the new tool tip text (or null)
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public void setToolTipText (String string) {
 	super.setToolTipText(string);
 	table.setToolTipText(string);
