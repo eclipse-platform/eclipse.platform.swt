@@ -35,6 +35,7 @@ GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJ    = gnome.o 
 GNOME_LIB    = -x -shared \
 	           `gnome-config --libs gnome`
+GNOME_CFLAGS = -DGNOME `gnome-config --cflags gnome gnomeui`
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -48,13 +49,12 @@ KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
 #
 CFLAGS = -O -s \
 	-DSWT_VERSION=$(SWT_VERSION) \
-	-DLINUX -DMOTIF -DGNOME \
+	-DLINUX -DMOTIF  \
 	-fpic \
 	-I./ \
 	-I$(JAVA_HOME)/include \
 	-I$(MOTIF_HOME)/include \
-	-I/usr/X11R6/include \
-	`gnome-config --cflags gnome gnomeui`
+	-I/usr/X11R6/include 
 
 
 all: make_swt make_gnome
@@ -73,6 +73,8 @@ make_gnome: $(GNOME_DLL)
 $(GNOME_DLL): $(GNOME_OBJ)
 	ld -o $@ $(GNOME_OBJ) $(GNOME_LIB)
 
+$(GNOME_OBJ): gnome.c 
+	$(CC) $(CFLAGS) $(GNOME_CFLAGS) -c -o gnome.o gnome.c
 
 make_kde: $(KDE_DLL)
 
