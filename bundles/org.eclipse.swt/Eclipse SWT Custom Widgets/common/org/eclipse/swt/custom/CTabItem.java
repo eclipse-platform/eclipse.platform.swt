@@ -162,6 +162,8 @@ void drawClose(GC gc) {
 	int y = closeRect.y + indent;
 	y += parent.onBottom ? -1 : 1;
 	
+	int index = parent.indexOf(this);
+	Color closeBorder = parent.single || index == parent.selectedIndex ? parent.getSelectionForeground() : parent.getForeground();
 	switch (closeImageState) {
 		case CTabFolder.NORMAL: {
 			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
@@ -170,7 +172,7 @@ void drawClose(GC gc) {
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);
 			break;
 		}
@@ -179,12 +181,12 @@ void drawClose(GC gc) {
 					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
 			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			Color fill = new Color(display, CTabFolder.CLOSE_FILL);
+			gc.setBackground(fill);
 			gc.fillPolygon(shape);
-			Color border = new Color(display, CTabFolder.CLOSE_BORDER);
-			gc.setForeground(border);
+			fill.dispose();
+			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);
-			border.dispose();
 			break;
 		}
 		case CTabFolder.SELECTED: {
@@ -196,10 +198,8 @@ void drawClose(GC gc) {
 			gc.setBackground(fill);
 			gc.fillPolygon(shape);
 			fill.dispose();
-			Color border = new Color(display, CTabFolder.CLOSE_BORDER);
-			gc.setForeground(border);
+			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);
-			border.dispose();
 			break;
 		}
 		case CTabFolder.NONE: {
@@ -216,74 +216,97 @@ void drawClose(GC gc) {
 }
 void drawSelected(GC gc ) {
 	Point size = parent.getSize();
-	
-	// Draw selection border across all tabs
-	int xx = parent.borderLeft;
-	int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - CTabFolder.HIGHLIGHT_HEADER : parent.borderTop + parent.tabHeight + 1;
-	int ww = size.x - parent.borderLeft - parent.borderRight;
-	int hh = CTabFolder.HIGHLIGHT_HEADER - 1;
-	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
-	parent.drawBackground(gc, shape, true);
-
-	// if selected tab scrolled out of view or partially out of view
-	// just draw bottom line
-	if (!isShowing()){
-		int x1 = Math.max(0, parent.borderLeft - 1);
-		int y1 = (parent.onBottom) ? y - 1 : y + height;
-		int x2 = size.x - parent.borderRight;
-		gc.setForeground(CTabFolder.borderColor);
-		gc.drawLine(x1, y1, x2, y1);
-		return;
-	}
-		
-	// draw selected tab background and outline
 	int rightEdge = Math.min (x+width, parent.getRightItemEdge());
-	shape = null;
-	if (this.parent.onBottom) {
-		int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
-		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
-		shape = new int[left.length+right.length+8];
-		int index = 0;
-		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
-		shape[index++] = y - 1;
-		shape[index++] = x;
-		shape[index++] = y - 1;
-		for (int i = 0; i < left.length/2; i++) {
-			shape[index++] = x + left[2*i];
-			shape[index++] = y + height + left[2*i+1] - 1;
-		}
-		for (int i = 0; i < right.length/2; i++) {
-			shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
-			shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
-		}
-		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
-		shape[index++] = y - 1;
-		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
-		shape[index++] = y - 1;
+	if (parent.single) {
+		if (!isShowing()) return;
 	} else {
-		int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
-		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
-		shape = new int[left.length+right.length+8];
-		int index = 0;
-		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
-		shape[index++] = y + height + 1;
-		shape[index++] = x;
-		shape[index++] = y + height + 1;
-		for (int i = 0; i < left.length/2; i++) {
-			shape[index++] = x + left[2*i];
-			shape[index++] = y + left[2*i+1];
+		// Draw selection border across all tabs
+		int xx = parent.borderLeft;
+		int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - CTabFolder.HIGHLIGHT_HEADER : parent.borderTop + parent.tabHeight + 1;
+		int ww = size.x - parent.borderLeft - parent.borderRight;
+		int hh = CTabFolder.HIGHLIGHT_HEADER - 1;
+		int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
+		parent.drawBackground(gc, shape, true);
+	
+		// if selected tab scrolled out of view or partially out of view
+		// just draw bottom line
+		if (!isShowing()){
+			int x1 = Math.max(0, parent.borderLeft - 1);
+			int y1 = (parent.onBottom) ? y - 1 : y + height;
+			int x2 = size.x - parent.borderRight;
+			gc.setForeground(CTabFolder.borderColor);
+			gc.drawLine(x1, y1, x2, y1);
+			return;
 		}
-		for (int i = 0; i < right.length/2; i++) {
-			shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
-			shape[index++] = y + right[2*i+1];
+			
+		// draw selected tab background and outline
+		shape = null;
+		if (this.parent.onBottom) {
+			int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
+			int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+			shape = new int[left.length+right.length+8];
+			int index = 0;
+			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
+			shape[index++] = y - 1;
+			shape[index++] = x;
+			shape[index++] = y - 1;
+			for (int i = 0; i < left.length/2; i++) {
+				shape[index++] = x + left[2*i];
+				shape[index++] = y + height + left[2*i+1] - 1;
+			}
+			for (int i = 0; i < right.length/2; i++) {
+				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
+				shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
+			}
+			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = y - 1;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = y - 1;
+		} else {
+			int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
+			int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+			shape = new int[left.length+right.length+8];
+			int index = 0;
+			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
+			shape[index++] = y + height + 1;
+			shape[index++] = x;
+			shape[index++] = y + height + 1;
+			for (int i = 0; i < left.length/2; i++) {
+				shape[index++] = x + left[2*i];
+				shape[index++] = y + left[2*i+1];
+			}
+			for (int i = 0; i < right.length/2; i++) {
+				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
+				shape[index++] = y + right[2*i+1];
+			}
+			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = y + height + 1;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = y + height + 1;
 		}
-		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
-		shape[index++] = y + height + 1;
-		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
-		shape[index++] = y + height + 1;
+		parent.drawBackground(gc, shape, true);
+		
+		// draw outline
+		shape[0] = Math.max(0, parent.borderLeft - 1);
+		shape[shape.length - 2] = size.x - parent.borderRight + 1;
+		for (int i = 0; i < shape.length/2; i++) {
+			if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
+		}
+		RGB inside = parent.selectionBackground.getRGB();
+		if (parent.selectionBgImage != null || 
+		    (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
+		    inside = null;
+		}
+		RGB outside = parent.getBackground().getRGB();		
+		if (parent.bgImage != null || 
+		    (parent.gradientColors != null && parent.gradientColors.length > 1)) {
+		    outside = null;
+		}
+		parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);
+		gc.setForeground(CTabFolder.borderColor);
+		gc.drawPolyline(shape);
 	}
-	parent.drawBackground(gc, shape, true);
-
+	
 	// draw Image
 	int xDraw = x + LEFT_MARGIN;
 	Image image = getImage();
@@ -336,26 +359,6 @@ void drawSelected(GC gc ) {
 		}
 	}
 	if (parent.showClose || showClose) drawClose(gc);
-	
-	// draw outline
-	shape[0] = Math.max(0, parent.borderLeft - 1);
-	shape[shape.length - 2] = size.x - parent.borderRight + 1;
-	for (int i = 0; i < shape.length/2; i++) {
-		if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
-	}
-	RGB inside = parent.selectionBackground.getRGB();
-	if (parent.selectionBgImage != null || 
-	    (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
-	    inside = null;
-	}
-	RGB outside = parent.getBackground().getRGB();		
-	if (parent.bgImage != null || 
-	    (parent.gradientColors != null && parent.gradientColors.length > 1)) {
-	    outside = null;
-	}
-	parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);
-	gc.setForeground(CTabFolder.borderColor);
-	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
 	// Do not draw partial items

@@ -203,11 +203,8 @@ public class CTabFolder extends Composite {
 	static final int NORMAL = 1;
 	static final int HOT = 2;
 	static final int SELECTED = 3;
-	static final RGB CLOSE_BORDER = new RGB(221, 106, 106);
-	static final RGB CLOSE_FILL = new RGB(214, 195, 195);
-	static final RGB MINMAX_BORDER = new RGB(114, 106, 221);
-	static final RGB MINMAX_FILL = new RGB(199, 196, 242);
-	static final RGB CHEVRON_BORDER = new RGB(111, 220, 106);
+	static final RGB CLOSE_FILL = new RGB(252, 160, 160);
+	static final RGB MINMAX_FILL = new RGB(199, 214, 252);
 	
 
 /**
@@ -808,6 +805,7 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	Display display = getDisplay();
 	// draw chevron (10x7)
+	Color chevronBorder = single ? getSelectionForeground() : getForeground();
 	int indent = 1;
 	int x = chevronRect.x + indent;
 	int y = chevronRect.y + indent;
@@ -820,7 +818,7 @@ void drawChevron(GC gc) {
 	}
 	switch (chevronImageState) {
 		case NORMAL: {
-			gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+			gc.setForeground(chevronBorder);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
 			gc.drawLine(x+1,y,   x+3,y+2);
@@ -838,8 +836,7 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case HOT: {
-			Color border = new Color(display, CHEVRON_BORDER);
-			gc.setForeground(border);
+			gc.setForeground(chevronBorder);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
 			gc.drawLine(x+1,y,   x+3,y+2);
@@ -853,13 +850,11 @@ void drawChevron(GC gc) {
 			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
-			border.dispose();
 			f.dispose();
 			break;
 		}
 		case SELECTED: {
-			Color border = new Color(display, CHEVRON_BORDER);
-			gc.setForeground(border);
+			gc.setForeground(chevronBorder);
 			gc.drawLine(x+1,y+1, x+3,y+3);
 			gc.drawLine(x+3,y+3, x+1,y+5);
 			gc.drawLine(x+2,y+1, x+4,y+3);
@@ -873,7 +868,6 @@ void drawChevron(GC gc) {
 			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
-			border.dispose();
 			f.dispose();
 			break;
 		}
@@ -883,6 +877,7 @@ void drawMaximize(GC gc) {
 	if (maxRect.width == 0 || maxRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 7x9
+	Color maxBorder = single ? getSelectionForeground() : getForeground();
 	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
 	int x = maxRect.x + indent - 1;
 	int y = maxRect.y + indent;
@@ -891,14 +886,14 @@ void drawMaximize(GC gc) {
 			if (!maximized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 7, 9);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -907,47 +902,45 @@ void drawMaximize(GC gc) {
 			break;
 		}
 		case HOT: {
-			Color border = new Color(display, MINMAX_BORDER);
+			Color fill = new Color(display, MINMAX_FILL);
 			if (!maximized) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(fill);
 				gc.fillRectangle(x, y, 7, 9);
-				gc.setForeground(border);
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(fill);
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(border);
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
 				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
-			border.dispose();
+			fill.dispose();
 			break;
 		}
 		case SELECTED: {
 			Color fill = new Color(display, MINMAX_FILL);
-			Color border = new Color(display, MINMAX_BORDER);
 			if (!maximized) {
 				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+1, 7, 9);
-				gc.setForeground(border);
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x+1, y+1, 7, 9);
 				gc.drawLine(x+2, y+3, x+7, y+3);
 			} else {
 				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+4, 5, 4);
 				gc.fillRectangle(x+3, y+1, 5, 4);
-				gc.setForeground(border);
+				gc.setForeground(maxBorder);
 				gc.drawRectangle(x+1, y+4, 5, 4);
 				gc.drawRectangle(x+3, y+1, 5, 4);
 				gc.drawLine(x+4, y+2, x+7, y+2);
 				gc.drawLine(x+2, y+5, x+5, y+5);
 			}
 			fill.dispose();
-			border.dispose();
 			break;
 		}
 	}
@@ -956,6 +949,7 @@ void drawMinimize(GC gc) {
 	if (minRect.width == 0 || minRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 9x3
+	Color minBorder = single ? getSelectionForeground() : getForeground();
 	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
 	int x = minRect.x + indent - 1;
 	int y = minRect.y + indent;
@@ -964,13 +958,13 @@ void drawMinimize(GC gc) {
 			if (!minimized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -979,45 +973,43 @@ void drawMinimize(GC gc) {
 			break;
 		}
 		case HOT: {
-			Color border = new Color(display, MINMAX_BORDER);
+			Color fill = new Color(display, MINMAX_FILL);
 			if (!minimized) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(fill);
 				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(border);
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(fill);
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(border);
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
 				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
-			border.dispose();
+			fill.dispose();
 			break;
 		}
 		case SELECTED: {
 			Color fill = new Color(display, MINMAX_FILL);
-			Color border = new Color(display, MINMAX_BORDER);
 			if (!minimized) {
 				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+1, 9, 3);
-				gc.setForeground(border);
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x+1, y+1, 9, 3);
 			} else {
 				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+4, 5, 4);
 				gc.fillRectangle(x+3, y+1, 5, 4);
-				gc.setForeground(border);
+				gc.setForeground(minBorder);
 				gc.drawRectangle(x+1, y+4, 5, 4);
 				gc.drawRectangle(x+3, y+1, 5, 4);
 				gc.drawLine(x+4, y+2, x+7, y+2);
 				gc.drawLine(x+2, y+5, x+5, y+5);
 			}
 			fill.dispose();
-			border.dispose();
 			break;
 		}
 	}
@@ -1098,7 +1090,7 @@ void drawTabArea(Event event) {
 		shape[index++] = y+height+HIGHLIGHT_HEADER+1;
 	}
 	// Fill in background
-	drawBackground(gc, shape, false);
+	drawBackground(gc, shape, single);
 	// Fill in parent background for non-rectangular shape
 	Region r = new Region();
 	r.add(new Rectangle(x, y, width + 1, height + 1));
@@ -2607,8 +2599,7 @@ boolean setItemLocation() {
 			item.x = borderLeft + indent; 
 			item.y = y;
 			if (showClose || item.showClose) {
-				int extra = simple ? 0 : CURVE_INDENT;
-				int rightEdge = Math.min(item.x + item.width - extra, getRightItemEdge() - extra);
+				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
 				item.closeRect.x = rightEdge - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
@@ -2690,7 +2681,7 @@ boolean setItemSize() {
 			widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 		}
 		gc.dispose();
-		if (items.length > 1) {
+		if (!single && items.length > 1) {
 			int count = items.length;
 			int averageWidth = tabAreaWidth / count;
 			int oldAverageWidth = 0;
