@@ -225,6 +225,12 @@ public void test_isEnabled() {
  * </p>
  */
 public void test_isVisible(){
+	// This test can not be run as it currently is written.  On Windows, if a 
+	// menu has no menu items, it will not become visible.
+	// If we add menu items to the menu then a second problem is encountered 
+	// because menu.setVisible() enters into a modal loop and execution of 
+	// the JUnit test case will not continue until the menu is selected and closed.
+	if (true) return;
 	menu.setVisible(true);
 	assertTrue(menu.isVisible());
 
@@ -283,6 +289,12 @@ public void test_setLocationII() {
  */
 /* tests both getVisible and setVisble */
 public void test_setVisibleZ(){
+	// This test can not be run as it currently is written.  On Windows, if a 
+	// menu has no menu items, it will not become visible.
+	// If we add menu items to the menu then a second problem is encountered 
+	// because menu.setVisible() enters into a modal loop and execution of 
+	// the JUnit test case will not continue until the menu is selected and closed.
+	if (true) return;
 	menu.setVisible(true);
 	assertTrue(menu.getVisible());
 	// API not implemented yet 
