@@ -12,6 +12,7 @@
 #     Tom Tromey (Red Hat, Inc.)
 #*******************************************************************************
 
+makefile="make_linux.mak"
 CC=gcc
 LD=gcc
 MOZILLA_HOME=/mozilla/mozilla/1.6/linux_gtk2/mozilla/dist
@@ -33,4 +34,4 @@ esac
 
 export CC LD JAVA_HOME AWT_LIB_PATH XTEST_LIB_PATH MOZILLA_HOME SWT_PTR_CFLAGS
 
-make -f make_gtk.mak ${1} ${2} ${3} ${4}
+make -f $makefile ${1} ${2} ${3} ${4}
