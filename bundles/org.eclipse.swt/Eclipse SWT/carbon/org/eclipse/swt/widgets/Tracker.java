@@ -94,7 +94,8 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 void drawRectangles () {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
-		parent.getShell ().update ();
+		Shell shell = parent.getShell ();
+		shell.update (true);
 	} else {
 		display.update ();
 	}

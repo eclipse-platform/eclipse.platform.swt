@@ -92,7 +92,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	event.width = width;
 	event.height = height;
 	sendEvent (SWT.Selection, event);
-	update ();
+	if (isDisposed ()) return result;
 	if (!event.doit) return result;
 	
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
@@ -134,8 +134,12 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				event.height = height;
 				event.detail = 0; //outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
 				sendEvent (SWT.Selection, event);
-				if (event.doit) setBounds (newX, newY, width, height);
-				update ();
+				if (isDisposed ()) return result;
+				if (event.doit) {
+					setBounds (newX, newY, width, height);
+					Shell shell = parent.getShell ();
+					shell.update (true);
+				}
 				break;
 			}
 			default:

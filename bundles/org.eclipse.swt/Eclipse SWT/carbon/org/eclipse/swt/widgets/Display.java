@@ -1628,7 +1628,7 @@ public void update () {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.update ();
+		if (!shell.isDisposed ()) shell.update (true);
 	}
 	/*
 	* This code is intentionally commented.

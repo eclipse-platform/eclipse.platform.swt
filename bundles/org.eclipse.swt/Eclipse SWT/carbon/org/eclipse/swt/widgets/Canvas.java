@@ -64,7 +64,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (!isDrawing (handle)) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	update ();
+	update (all);
     GC gc = new GC (this);
     gc.copyArea (x, y, width, height, destX, destY);
     gc.dispose ();

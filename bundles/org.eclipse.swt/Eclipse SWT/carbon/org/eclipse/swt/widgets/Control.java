@@ -1368,13 +1368,13 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
-//	if (true) {
-//		System.out.println("update begin=" + this + " " + handle);
-////		Thread.dumpStack();
-////		return;
-//	}
+	update (false);
+}
+
+void update (boolean all) {
+//	checkWidget();
 	if (!isDrawing (handle)) return;
-//	long start = System.currentTimeMillis();
+	long start = System.currentTimeMillis();
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
 	int portRgn = OS.NewRgn ();
@@ -1383,32 +1383,32 @@ public void update () {
 		int updateRgn = OS.NewRgn ();
 		OS.GetWindowRegion (window, (short)OS.kWindowUpdateRgn, updateRgn);
 		if (!OS.EmptyRgn (updateRgn)) {
-			int visibleRgn = getVisibleRegion (handle, true);
-			if (!OS.EmptyRgn (visibleRgn)) {
-				Rect rect = new Rect ();
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-				OS.OffsetRgn (updateRgn, (short)-rect.left, (short)-rect.top);
-				OS.SectRgn (updateRgn, visibleRgn, visibleRgn);
-				OS.SectRgn (portRgn, visibleRgn, visibleRgn);
+			Rect rect = new Rect ();
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			OS.OffsetRgn (updateRgn, (short)-rect.left, (short)-rect.top);
+			OS.SectRgn (portRgn, updateRgn, updateRgn);
+			if (!OS.EmptyRgn (updateRgn)) {
+				int visibleRgn = getVisibleRegion (handle, !all);
 				if (!OS.EmptyRgn (visibleRgn)) {
-					int [] currentPort = new int[1];
-					OS.GetPort (currentPort);
-					OS.SetPort (port);
-					OS.BeginUpdate (window);
-					OS.UpdateControls (window, visibleRgn);
-					OS.EndUpdate (window);
-					OS.SetPort (currentPort [0]);
+					OS.SectRgn (updateRgn, visibleRgn, visibleRgn);
+					if (!OS.EmptyRgn (visibleRgn)) {	
+						int [] currentPort = new int[1];
+						OS.GetPort (currentPort);
+						OS.SetPort (port);
+						OS.BeginUpdate (window);	
+						OS.DiffRgn (updateRgn, visibleRgn, updateRgn);
+						OS.InvalWindowRgn (window, updateRgn);
+						OS.UpdateControls (window, visibleRgn);
+						OS.EndUpdate (window);
+						OS.SetPort (currentPort [0]);
+					}
 				}
-				OS.DiffRgn (updateRgn, visibleRgn, visibleRgn);
-				OS.InvalWindowRgn (window, visibleRgn);
+				OS.DisposeRgn (visibleRgn);
 			}
-			OS.DisposeRgn (visibleRgn);
 		}
 		OS.DisposeRgn (updateRgn);
 	}
 	OS.DisposeRgn (portRgn);
-//	long end = System.currentTimeMillis();
-//	System.out.println("\ttime=" + (end - start));
 }
 
 }
