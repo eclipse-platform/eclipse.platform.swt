@@ -131,6 +131,14 @@ void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataB
 #define setDataBrowserListViewColumnDescFields(a,b,c)
 #endif /* NO_DataBrowserListViewColumnDesc */
 
+#ifndef NO_DataBrowserListViewHeaderDesc
+DataBrowserListViewHeaderDesc *getDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewHeaderDesc *lpStruct);
+void setDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewHeaderDesc *lpStruct);
+#else
+#define getDataBrowserListViewHeaderDescFields(a,b,c) NULL
+#define setDataBrowserListViewHeaderDescFields(a,b,c)
+#endif /* NO_DataBrowserListViewHeaderDesc */
+
 #ifndef NO_EventRecord
 EventRecord *getEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);

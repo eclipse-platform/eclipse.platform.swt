@@ -641,6 +641,7 @@ public static final native int GetDataBrowserItemPartBounds(int cHandle, int ite
 public static final native int GetDataBrowserItems(int browser, int container, boolean recurse, int state, int items);
 public static final native int GetDataBrowserItemState(int browser, int item, int [] state);
 public static final native int GetDataBrowserListViewHeaderBtnHeight(int browser, short [] height);
+public static final native int GetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
 public static final native int GetDataBrowserTableViewItemID(int browser, int row, int [] item);
 public static final native int GetDataBrowserTableViewItemRow(int browser, int item, int [] row);                         
 public static final native int GetDataBrowserTableViewRowHeight(int browser, short [] height);
@@ -863,6 +864,7 @@ public static final native int SetDataBrowserItemDataItemID(int itemRef, int ite
 public static final native int SetDataBrowserItemDataText(int itemRef, int sHandle);
 public static final native int SetDataBrowserListViewDisclosureColumn(int cHandle, int colID, boolean b);
 public static final native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
+public static final native int SetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
 public static final native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
 public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);

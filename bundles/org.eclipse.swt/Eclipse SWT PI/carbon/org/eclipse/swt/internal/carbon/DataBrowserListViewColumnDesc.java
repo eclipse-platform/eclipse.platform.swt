@@ -36,6 +36,6 @@ public class DataBrowserListViewColumnDesc {
 	public short headerBtnDesc_btnFontStyle_backColor_blue;
 	//public ControlButtonContentInfo headerBtnDesc_btnContentInfo;
 	public short headerBtnDesc_btnContentInfo_contentType;
-	// public int headerBtnDesc_btnContentInfo_u; // union field 
+	public int headerBtnDesc_btnContentInfo_iconRef; // union field 
 	public static final int sizeof = 58;
 }

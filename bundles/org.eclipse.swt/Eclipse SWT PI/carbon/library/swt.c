@@ -2556,6 +2556,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserLis
 }
 #endif /* NO_GetDataBrowserListViewHeaderBtnHeight */
 
+#ifndef NO_GetDataBrowserListViewHeaderDesc
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserListViewHeaderDesc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	DataBrowserListViewHeaderDesc _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserListViewHeaderDesc\n")
+
+	if (arg2) lparg2 = getDataBrowserListViewHeaderDescFields(env, arg2, &_arg2);
+	rc = (jint)GetDataBrowserListViewHeaderDesc((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (DataBrowserListViewHeaderDesc *)lparg2);
+	if (arg2) setDataBrowserListViewHeaderDescFields(env, arg2, lparg2);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserTableViewItemID
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewItemID
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -5475,6 +5491,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserLis
 	return (jint)SetDataBrowserListViewHeaderBtnHeight((ControlRef)arg0, (UInt16)arg1);
 }
 #endif /* NO_SetDataBrowserListViewHeaderBtnHeight */
+
+
+#ifndef NO_SetDataBrowserListViewHeaderDesc
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewHeaderDesc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	DataBrowserListViewHeaderDesc _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetDataBrowserListViewHeaderDesc\n")
+
+	if (arg2) lparg2 = getDataBrowserListViewHeaderDescFields(env, arg2, &_arg2);
+	rc = (jint)SetDataBrowserListViewHeaderDesc((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (DataBrowserListViewHeaderDesc *)lparg2);
+	if (arg2) setDataBrowserListViewHeaderDescFields(env, arg2, lparg2);
+	return rc;
+}
+#endif
 
 #ifndef NO_SetDataBrowserScrollPosition
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserScrollPosition
