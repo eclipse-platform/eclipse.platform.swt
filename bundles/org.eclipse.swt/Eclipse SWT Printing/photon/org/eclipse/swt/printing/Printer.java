@@ -36,7 +36,6 @@ import org.eclipse.swt.graphics.*;
  */
 public final class Printer extends Device {
 	PrinterData data;
-	int defaultFontList;
 
 /**
  * Returns an array of <code>PrinterData</code> objects

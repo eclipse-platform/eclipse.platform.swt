@@ -687,7 +687,7 @@ public int hashCode () {
 }
 
 void init(Device device, int width, int height) {
-	if (width <= 0 | height <= 0) {
+	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.device = device;

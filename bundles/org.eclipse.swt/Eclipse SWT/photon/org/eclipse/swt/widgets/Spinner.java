@@ -172,9 +172,6 @@ public void addVerifyListener (VerifyListener listener) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		
-	}
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
