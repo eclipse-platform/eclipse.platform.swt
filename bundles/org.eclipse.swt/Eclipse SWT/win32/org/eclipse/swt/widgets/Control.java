@@ -2344,7 +2344,7 @@ boolean translateTraversal (MSG msg) {
 		default:
 			return false;
 	}
-	if (hooks (SWT.Traverse)) {
+	if (all || hooks (SWT.Traverse)) {
 		Event event = new Event ();
 		event.doit = doit;
 		event.detail = detail;
@@ -2370,7 +2370,7 @@ boolean translateTraversal (MSG msg) {
 			detail = event.detail;
 			if (control == shell) break;
 			control = control.parent;
-		} while (all && !doit);
+		} while (all && doit);
 	}
 	if (doit) return traverse (detail);
 	return false;

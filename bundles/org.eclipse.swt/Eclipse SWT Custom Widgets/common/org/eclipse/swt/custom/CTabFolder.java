@@ -823,12 +823,12 @@ boolean onMnemonic (Event event) {
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
 					setSelection(i, true);
-					return true;
+					return false;
 				}
 			}
 		}
 	}
-	return false;
+	return true;
 }
 /** 
  * Paint the receiver.
@@ -1495,10 +1495,28 @@ private void onTraverse (Event event) {
 		case SWT.TRAVERSE_TAB_PREVIOUS:
 			event.doit = true;
 			break;
-//		case SWT.TRAVERSE_MNEMONIC:
-//			event.doit = onMnemonic (event);
-//			break;
+		case SWT.TRAVERSE_MNEMONIC:
+			event.doit = onMnemonic(event);
+			break;
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
+			event.doit = onPageTraversal(event);
+			break;
 	}
+}
+
+private boolean onPageTraversal(Event event) {
+	int count = getItemCount ();
+	if (count == 0) return true;
+	int index = getSelectionIndex ();
+	if (index == -1) {
+		index = 0;
+	} else {
+		int offset = (event.detail == SWT.TRAVERSE_PAGE_NEXT) ? 1 : -1;
+		index = (index + offset + count) % count;
+	}
+	setSelection (index, true);
+	return false;
 }
 /** 
  * Answer the area where the left scroll button is drawn.
