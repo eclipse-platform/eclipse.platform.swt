@@ -1199,6 +1199,88 @@ public void setItems (String [] items) {
 }
 
 /**
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
+ * <p>
+ *
+ * @param orientation new orientation bit
+ * @return <code>true</code> if the orientation was changed and <code>false</code> otherwise.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public boolean setOrientation (int orientation) {
+	checkWidget();
+	if (OS.IsWinCE) return false;
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return false;
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return false;
+	style &= ~flags;
+	style |= orientation & flags;
+	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		style |= SWT.MIRRORED;
+		bits |= OS.WS_EX_LAYOUTRTL;
+	} else {
+		style &= ~SWT.MIRRORED;
+		bits &= ~OS.WS_EX_LAYOUTRTL;
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	int hwndText = 0, hwndList = 0;
+	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+	pcbi.cbSize = COMBOBOXINFO.sizeof;
+	if (OS.GetComboBoxInfo (handle, pcbi)) {
+		hwndText = pcbi.hwndItem;
+		hwndList = pcbi.hwndList;
+	}
+	if (hwndText != 0) {
+		int bits0 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+		int bits1 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits0 |= OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING;
+			bits1 |= OS.ES_RIGHT;
+		} else {
+			bits0 &= ~(OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING);
+			bits1 &= ~OS.ES_RIGHT;
+		}
+		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits0);
+		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits1);
+		
+		/*
+		* Bug in Windows.  For some reason, the single line text field
+		* portion of the combo box does not redraw to reflect the new
+		* style bits.  The fix is to force the widget to be resized by
+		* temporarily shrinking and then growing the width and height.
+		*/
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndText, rect);
+		int width = rect.right - rect.left, height = rect.bottom - rect.top;
+		OS.GetWindowRect (handle, rect);
+		int widthCombo = rect.right - rect.left, heightCombo = rect.bottom - rect.top;
+		int uFlags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
+		OS.SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
+		OS.SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
+		OS.SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
+		OS.SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
+		OS.InvalidateRect (handle, null, true);
+	}	
+	if (hwndList != 0) {
+		int exStyle = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			exStyle |= OS.WS_EX_LAYOUTRTL;
+		} else {
+			exStyle &= ~OS.WS_EX_LAYOUTRTL;
+		}
+		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, exStyle);
+	}
+	return true;       
+}
+
+/**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
  * start of the selection and whose y coordinate is the end

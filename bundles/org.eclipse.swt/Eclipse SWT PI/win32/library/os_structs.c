@@ -339,6 +339,73 @@ void setCHOOSEFONTFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpStruct)
 }
 #endif
 
+#ifndef NO_COMBOBOXINFO
+typedef struct COMBOBOXINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, itemLeft, itemTop, itemRight, itemBottom, buttonLeft, buttonTop, buttonRight, buttonBottom, stateButton, hwndCombo, hwndItem, hwndList;
+} COMBOBOXINFO_FID_CACHE;
+
+COMBOBOXINFO_FID_CACHE COMBOBOXINFOFc;
+
+void cacheCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (COMBOBOXINFOFc.cached) return;
+	COMBOBOXINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	COMBOBOXINFOFc.cbSize = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "cbSize", "I");
+	COMBOBOXINFOFc.itemLeft = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "itemLeft", "I");
+	COMBOBOXINFOFc.itemTop = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "itemTop", "I");
+	COMBOBOXINFOFc.itemRight = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "itemRight", "I");
+	COMBOBOXINFOFc.itemBottom = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "itemBottom", "I");
+	COMBOBOXINFOFc.buttonLeft = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "buttonLeft", "I");
+	COMBOBOXINFOFc.buttonTop = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "buttonTop", "I");
+	COMBOBOXINFOFc.buttonRight = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "buttonRight", "I");
+	COMBOBOXINFOFc.buttonBottom = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "buttonBottom", "I");
+	COMBOBOXINFOFc.stateButton = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "stateButton", "I");
+	COMBOBOXINFOFc.hwndCombo = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "hwndCombo", "I");
+	COMBOBOXINFOFc.hwndItem = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "hwndItem", "I");
+	COMBOBOXINFOFc.hwndList = (*env)->GetFieldID(env, COMBOBOXINFOFc.clazz, "hwndList", "I");
+	COMBOBOXINFOFc.cached = 1;
+}
+
+COMBOBOXINFO *getCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct)
+{
+	if (!COMBOBOXINFOFc.cached) cacheCOMBOBOXINFOFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.cbSize);
+	lpStruct->rcItem.left = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.itemLeft);
+	lpStruct->rcItem.top = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.itemTop);
+	lpStruct->rcItem.right = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.itemRight);
+	lpStruct->rcItem.bottom = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.itemBottom);
+	lpStruct->rcButton.left = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.buttonLeft);
+	lpStruct->rcButton.top = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.buttonTop);
+	lpStruct->rcButton.right = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.buttonRight);
+	lpStruct->rcButton.bottom = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.buttonBottom);
+	lpStruct->stateButton = (*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.stateButton);
+	lpStruct->hwndCombo = (HWND)(*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.hwndCombo);
+	lpStruct->hwndItem = (HWND)(*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.hwndItem);
+	lpStruct->hwndList = (HWND)(*env)->GetIntField(env, lpObject, COMBOBOXINFOFc.hwndList);
+	return lpStruct;
+}
+
+void setCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct)
+{
+	if (!COMBOBOXINFOFc.cached) cacheCOMBOBOXINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.itemLeft, (jint)lpStruct->rcItem.left);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.itemTop, (jint)lpStruct->rcItem.top);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.itemRight, (jint)lpStruct->rcItem.right);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.itemBottom, (jint)lpStruct->rcItem.bottom);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.buttonLeft, (jint)lpStruct->rcButton.left);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.buttonTop, (jint)lpStruct->rcButton.top);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.buttonRight, (jint)lpStruct->rcButton.right);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.buttonBottom, (jint)lpStruct->rcButton.bottom);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.stateButton, (jint)lpStruct->stateButton);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.hwndCombo, (jint)lpStruct->hwndCombo);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.hwndItem, (jint)lpStruct->hwndItem);
+	(*env)->SetIntField(env, lpObject, COMBOBOXINFOFc.hwndList, (jint)lpStruct->hwndList);
+}
+#endif
+
 #ifndef NO_COMPOSITIONFORM
 typedef struct COMPOSITIONFORM_FID_CACHE {
 	int cached;

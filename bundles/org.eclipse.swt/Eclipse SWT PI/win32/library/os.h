@@ -53,6 +53,7 @@
 #ifdef _WIN32_WCE
 #define NO_BROWSEINFO
 #define NO_CHOOSEFONT
+#define NO_COMBOBOXINFO
 #define NO_DOCINFO
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
@@ -159,6 +160,7 @@
 #define NO_GetCharacterPlacementW
 #define NO_GetClassInfoA
 #define NO_GetClipboardFormatNameA
+#define NO_GetComboBoxInfo
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo

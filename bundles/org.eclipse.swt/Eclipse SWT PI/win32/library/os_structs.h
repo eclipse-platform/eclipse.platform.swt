@@ -59,6 +59,14 @@ void setCHOOSEFONTFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpStruct);
 #define setCHOOSEFONTFields(a,b,c)
 #endif
 
+#ifndef NO_COMBOBOXINFO
+COMBOBOXINFO *getCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct);
+void setCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct);
+#else
+#define getCOMBOBOXINFOFields(a,b,c) NULL
+#define setCOMBOBOXINFOFields(a,b,c)
+#endif
+
 #ifndef NO_COMPOSITIONFORM
 COMPOSITIONFORM *getCOMPOSITIONFORMFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpStruct);
 void setCOMPOSITIONFORMFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpStruct);

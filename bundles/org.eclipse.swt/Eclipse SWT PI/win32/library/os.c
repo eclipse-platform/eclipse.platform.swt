@@ -1811,6 +1811,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetClipboardFormatNameW)
 }
 #endif
 
+#ifndef NO_GetComboBoxInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	COMBOBOXINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetComboBoxInfo\n")
+	if (arg1) lparg1 = getCOMBOBOXINFOFields(env, arg1, &_arg1);
+	rc = (jboolean)GetComboBoxInfo((HWND)arg0, lparg1);
+	if (arg1) setCOMBOBOXINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetComboBoxInfo\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentObject
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentObject)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
