@@ -296,7 +296,8 @@ public class OS {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
-	public static final int XA_CARDINAL = 0x6;
+	public static final int XA_CARDINAL = 6;
+	public static final int XA_WINDOW = 33;
 	
 	/** Signals */
 	public static final byte[] activate = signal("activate");

@@ -56,7 +56,19 @@ static int getDesktop(Display display) {
 	Integer desktopValue = (Integer)display.getData(DESKTOP_DATA);
 	if (desktopValue != null) return desktopValue.intValue();
 	int desktop = DESKTOP_UNKNOWN;
-	if (isGnomeDesktop() && gnome_init()) desktop = DESKTOP_GNOME;
+	/*
+	 * Feature in Linux Desktop. There is currently no official way to
+	 * determine whether the Gnome window manager or gnome-vfs is
+	 * available. Earlier versions including Red Hat 9 and Suse 9 provide
+	 * a documented Gnome specific property on the root window 
+	 * WIN_SUPPORTING_WM_CHECK. This property is no longer supported in newer
+	 * versions such as Fedora Core 2.
+	 * The workaround is to simply check that the window manager is a 
+	 * compliant one (property _NET_SUPPORTING_WM_CHECK) and to attempt to load 
+	 * our native library that depends on gnome-vfs.
+	 */
+
+	if (isWindowManagerCompliant() && gnome_init()) desktop = DESKTOP_GNOME;
 	display.setData(DESKTOP_DATA, new Integer(desktop));
 	return desktop;
 }
@@ -290,19 +302,20 @@ static boolean gnome_init() {
 	}
 }
 
-static boolean isGnomeDesktop() {
+static boolean isWindowManagerCompliant() {
+	byte[] name = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
 	/*
-	 * A Gnome Window Manager is detected by looking for a specific
-	 * property on the root window.
-	 */
-	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
+	* Bug in GDK. The flag only_if_exists is ignored and gdk_atom_intern
+	* never returns GDK_NONE. The workaround is to not rely on this function
+	* to detect an atom.
+	*/
 	int /*long*/ atom = OS.gdk_atom_intern(name, true);
 	if (atom == OS.GDK_NONE) return false;	
 	int /*long*/[] actualType = new int /*long*/[1];
 	int[] actualFormat = new int[1];
 	int[] actualLength = new int[1];
 	int /*long*/[] data = new int /*long*/[1];
-	if (!OS.gdk_property_get(OS.GDK_ROOT_PARENT(), atom, OS.XA_CARDINAL,
+	if (!OS.gdk_property_get(OS.GDK_ROOT_PARENT(), atom, OS.XA_WINDOW,
 		0, 1, 0, actualType, actualFormat, actualLength, data)) return false;
 	if (data[0] != 0) OS.g_free(data[0]);
 	return actualLength[0] > 0;
