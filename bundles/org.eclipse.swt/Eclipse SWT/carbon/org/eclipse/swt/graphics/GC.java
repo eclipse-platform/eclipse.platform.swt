@@ -189,41 +189,45 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		
 		/* Copy bits with appropriated clipping region */
 		if (!OS.EmptyRect(srcRect)) {
-			int clipRgn = data.visibleRgn;
-			if (data.clipRgn != 0) {
-				clipRgn = OS.NewRgn();
-				OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
+			if (data.visibleRgn == 0 || OS.RectInRgn(srcRect, data.visibleRgn)) {
+				int clipRgn = data.visibleRgn;
+				if (data.clipRgn != 0) {
+					clipRgn = OS.NewRgn();
+					OS.SectRgn(data.clipRgn, data.visibleRgn, clipRgn);
+				}
+	
+				/*
+				* Feature in the Macintosh.  ScrollRect() only copies bits
+				* that are inside the specified rectangle.  This means that
+				* it is not possible to copy non overlaping bits without
+				* copying the bits in between the source and destination
+				* rectangles.  The fix is to check if the source and
+				* destination rectangles are disjoint and use CopyBits()
+				* instead.
+				*/
+				if (!OS.EmptyRgn(clipRgn)) {
+					boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+					if (!disjoint && (deltaX == 0 || deltaY == 0)) {
+						int[] currentPort = new int[1];
+						OS.GetPort(currentPort);
+						OS.SetPort(port);
+						int oldClip = OS.NewRgn();
+						OS.GetClip(oldClip);
+						OS.SetClip(clipRgn);
+						OS.UnionRect(srcRect, destRect, rect);
+						OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
+						OS.SetClip(oldClip);
+						OS.DisposeRgn(oldClip);
+						OS.SetPort(currentPort[0]);
+					} else {
+						int portBitMap = OS.GetPortBitMapForCopyBits (port);
+						OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
+						OS.QDFlushPortBuffer(port, destRgn);
+					}
+				}
+				
+				if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
 			}
-
-			/*
-			* Feature in the Macintosh.  ScrollRect() only copies bits
-			* that are inside the specified rectangle.  This means that
-			* it is not possible to copy non overlaping bits without
-			* copying the bits in between the source and destination
-			* rectangles.  The fix is to check if the source and
-			* destination rectangles are disjoint and use CopyBits()
-			* instead.
-			*/
-			boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
-			if (!disjoint && (deltaX == 0 || deltaY == 0)) {
-				int[] currentPort = new int[1];
-				OS.GetPort(currentPort);
-				OS.SetPort(port);
-				int oldClip = OS.NewRgn();
-				OS.GetClip(oldClip);
-				OS.SetClip(clipRgn);
-				OS.UnionRect(srcRect, destRect, rect);
-				OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
-				OS.SetClip(oldClip);
-				OS.DisposeRgn(oldClip);
-				OS.SetPort(currentPort[0]);
-			} else {
-				int portBitMap = OS.GetPortBitMapForCopyBits (port);
-				OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
-				OS.QDFlushPortBuffer(port, destRgn);
-			}
-			
-			if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
 		}
 		
 		/* Invalidate src and obscured areas */
