@@ -179,7 +179,7 @@ Menu (Decorations parent, int style, int handle) {
 	createWidget ();
 }
 
-public void _setVisible (boolean visible) {
+void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	int hwndParent = parent.handle;
 	if (!visible) {

@@ -59,7 +59,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
 }
 
-public void _setVisible (boolean visible) {
+void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (!visible) return;
 	int left = x, top = y;
