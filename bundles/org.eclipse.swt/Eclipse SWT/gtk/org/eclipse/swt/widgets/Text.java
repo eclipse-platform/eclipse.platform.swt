@@ -251,6 +251,8 @@ public void append (String string) {
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, position);
 		OS.gtk_text_buffer_insert (bufferHandle, position, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+		int mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 }
 
@@ -823,6 +825,9 @@ int gtk_changed (int widget) {
 
 int gtk_commit (int imContext, int text) {
 	if (text == 0) return 0;
+	if ((style & SWT.SINGLE) != 0) {
+		if (!OS.gtk_editable_get_editable (handle)) return 0;
+	}
 	int length = OS.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
@@ -988,6 +993,8 @@ public void insert (String string) {
 		}
 		OS.gtk_text_buffer_insert (bufferHandle, start, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, start);
+		int mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 }
 
@@ -1236,7 +1243,9 @@ public void setSelection (int start) {
 	} else {
 		byte [] position =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, start);
-		OS.gtk_text_buffer_place_cursor (bufferHandle, position);		
+		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+		int mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 }
 
@@ -1373,6 +1382,8 @@ public void setText (String string) {
 		OS.gtk_text_buffer_set_text (bufferHandle, buffer, buffer.length);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, 0);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+		int mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 }
 
