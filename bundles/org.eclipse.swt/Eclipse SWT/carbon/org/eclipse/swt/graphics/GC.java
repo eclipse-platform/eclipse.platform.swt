@@ -642,7 +642,7 @@ public void drawPolyline(int[] pointArray) {
 	if (data.updateClip) setCGClipping();
 	float[] points = new float[pointArray.length];
 	for (int i=0; i<points.length; i++) {
-		points[i] = pointArray[i];
+		points[i] = pointArray[i] + 0.5f;
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
