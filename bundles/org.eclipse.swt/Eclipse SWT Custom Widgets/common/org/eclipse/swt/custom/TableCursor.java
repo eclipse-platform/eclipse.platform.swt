@@ -371,14 +371,12 @@ void paint(Event event) {
 	Image image = item.getImage(column);
 	if (image != null) {
 		Rectangle imageSize = image.getBounds();
-		int imageY = y + (int) (((float) size.y - (float) imageSize.height) / 2.0);
+		int imageY = y + (size.y - imageSize.height) / 2;
 		gc.drawImage(image, x, imageY);
 		x += imageSize.width;
 	}
-	x += (column == 0) ? 2 : 6;
-
-	int textY =
-		y + (int) (((float) size.y - (float) gc.getFontMetrics().getHeight()) / 2.0);
+	x += column == 0 ? 2 : 6;
+	int textY = y + (size.y - gc.getFontMetrics().getHeight()) / 2;
 	gc.drawString(item.getText(column), x, textY);
 	if (isFocusControl()) {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
