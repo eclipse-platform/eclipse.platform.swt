@@ -50,6 +50,12 @@ public final class FontData {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int style;
+	
+	/**
+	 * the Pango string 
+	 * (Warning: This field is platform dependent)
+	 */
+	public byte[] string;
 
 	/**
 	 * The locales of the font
@@ -237,6 +243,7 @@ public int hashCode () {
 public void setHeight(int height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
+	this.string = null;
 }
 
 /**
@@ -304,6 +311,7 @@ public void setLocale(String locale) {
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.name = name;
+	this.string = null;
 }
 
 /**
@@ -317,6 +325,7 @@ public void setName(String name) {
  */
 public void setStyle(int style) {
 	this.style = style;
+	this.string = null;
 }
 
 /**

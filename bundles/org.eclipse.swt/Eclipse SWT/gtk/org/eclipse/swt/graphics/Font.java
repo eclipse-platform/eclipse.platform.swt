@@ -58,7 +58,7 @@ public Font(Device display, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeight(), fd.getStyle());
+	init(device, fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
 }
 
 /**	 
@@ -85,7 +85,7 @@ public Font(Device display, FontData fd) {
 public Font(Device display, String name, int height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style);
+	init(device, name, height, style, null);
 }
 
 /**
@@ -140,9 +140,15 @@ public FontData[] getFontData() {
 	int style = SWT.NORMAL;
 	if (pangoStyle == OS.PANGO_STYLE_ITALIC) style |= SWT.ITALIC;
 	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
-	/* Anything bolder than NORMAL, is BOLD */
-	if (pangoWeight > OS.PANGO_WEIGHT_NORMAL) style |= SWT.BOLD;
-	return new FontData[]{new FontData(name, height, style)};
+	if (pangoWeight >= OS.PANGO_WEIGHT_BOLD) style |= SWT.BOLD;
+	int fontString = OS.pango_font_description_to_string (handle);
+	length = OS.strlen (fontString);
+	buffer = new byte [length + 1];
+	OS.memmove (buffer, fontString, length);	
+	OS.g_free (fontString);
+	FontData data = new FontData(name, height, style);
+	data.string = buffer;
+	return new FontData[]{data};
 }
 
 /**	 
@@ -182,23 +188,28 @@ public int hashCode() {
 	return handle;
 }
 
-void init(Device device, String name, int height, int style) {
+void init(Device device, String name, int height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
-	handle = OS.pango_font_description_new();
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	byte[] buffer = Converter.wcsToMbcs(null, name, true);
-	OS.pango_font_description_set_family(handle, buffer);
-	OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE);
-	OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
-	int pangoStyle = OS.PANGO_STYLE_NORMAL;
-	int pangoWeight = OS.PANGO_WEIGHT_NORMAL;
-	if ((style & SWT.ITALIC) != 0) pangoStyle = OS.PANGO_STYLE_ITALIC;
-	if ((style & SWT.ROMAN) != 0) pangoStyle = OS.PANGO_STYLE_OBLIQUE;
-	if ((style & SWT.BOLD) != 0) pangoWeight = OS.PANGO_WEIGHT_BOLD;
-	OS.pango_font_description_set_style(handle, pangoStyle);
-	OS.pango_font_description_set_weight(handle, pangoWeight);
+	if (fontString != null) {
+		handle = OS.pango_font_description_from_string (fontString);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		handle = OS.pango_font_description_new();
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		byte[] buffer = Converter.wcsToMbcs(null, name, true);
+		OS.pango_font_description_set_family(handle, buffer);
+		OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE);
+		OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
+		int pangoStyle = OS.PANGO_STYLE_NORMAL;
+		int pangoWeight = OS.PANGO_WEIGHT_NORMAL;
+		if ((style & SWT.ITALIC) != 0) pangoStyle = OS.PANGO_STYLE_ITALIC;
+		if ((style & SWT.ROMAN) != 0) pangoStyle = OS.PANGO_STYLE_OBLIQUE;
+		if ((style & SWT.BOLD) != 0) pangoWeight = OS.PANGO_WEIGHT_BOLD;
+		OS.pango_font_description_set_style(handle, pangoStyle);
+		OS.pango_font_description_set_weight(handle, pangoWeight);
+	}
 }
 
 /**
