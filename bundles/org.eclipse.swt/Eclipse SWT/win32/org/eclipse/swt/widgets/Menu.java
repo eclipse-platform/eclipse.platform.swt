@@ -267,7 +267,7 @@ void createHandle () {
 		if (OS.IsPPC) {
 			int hwndShell = parent.handle;
 			SHMENUBARINFO mbi = new SHMENUBARINFO ();
-			mbi.cbSize = mbi.sizeof;
+			mbi.cbSize = SHMENUBARINFO.sizeof;
 			mbi.hwndParent = hwndShell;
 			mbi.dwFlags = OS.SHCMBF_HIDDEN;
 			mbi.nToolBarId = ID_PPC;
@@ -299,7 +299,7 @@ void createHandle () {
 			
 			/* Create SHMENUBAR */
 			SHMENUBARINFO mbi = new SHMENUBARINFO ();
-			mbi.cbSize = mbi.sizeof;
+			mbi.cbSize = SHMENUBARINFO.sizeof;
 			mbi.hwndParent = parent.handle;
 			mbi.dwFlags = OS.SHCMBF_HIDDEN;
 			mbi.nToolBarId = nToolBarId; /* as defined in .rc file */

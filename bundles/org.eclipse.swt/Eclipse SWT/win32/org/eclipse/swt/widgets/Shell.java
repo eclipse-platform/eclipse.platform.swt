@@ -444,7 +444,7 @@ void createHandle () {
 		if (OS.IsWinCE) setMaximized (true);
 		if (OS.IsPPC) {
 			psai = new SHACTIVATEINFO ();
-			psai.cbSize = psai.sizeof;
+			psai.cbSize = SHACTIVATEINFO.sizeof;
 		}
 	}
 	if (OS.IsDBLocale) {
@@ -848,7 +848,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	state &= ~DISABLED;
 	if (!enabled) state |= DISABLED;
-	if (!display.TrimEnabled) {
+	if (!Display.TrimEnabled) {
 		super.setEnabled (enabled);
 	} else {
 		if (isActive ()) setItemEnabled (OS.SC_CLOSE, enabled);
@@ -1025,7 +1025,7 @@ boolean traverseEscape () {
 }
 
 void updateModal () {
-	if (!display.TrimEnabled) {
+	if (!Display.TrimEnabled) {
 		super.setEnabled (isActive ());
 	} else {
 		setItemEnabled (OS.SC_CLOSE, isActive ());
@@ -1142,7 +1142,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 }
 
 LRESULT WM_CLOSE (int wParam, int lParam) {
-	if ((display.TrimEnabled && !isEnabled ()) || !isActive ()) {
+	if ((Display.TrimEnabled && !isEnabled ()) || !isActive ()) {
 		return LRESULT.ZERO;
 	}
 	return super.WM_CLOSE (wParam, lParam);
@@ -1237,7 +1237,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isEnabled () || !isActive ()) {
-		if (!display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
+		if (!Display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
 		int hittest = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTCLIENT || hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
@@ -1275,7 +1275,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	*/
 	int msg = lParam >> 16;
 	if (msg == OS.WM_LBUTTONDOWN) {
-		if (!display.TrimEnabled) {
+		if (!Display.TrimEnabled) {
 			Shell modalShell = display.getModalShell ();
 			if (modalShell != null && !isActive ()) {
 				int hwndModal = modalShell.handle;
@@ -1315,7 +1315,7 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 				return LRESULT.ZERO;
 			} else {
 				SIPINFO pSipInfo = new SIPINFO ();
-				pSipInfo.cbSize = pSipInfo.sizeof;
+				pSipInfo.cbSize = SIPINFO.sizeof;
 				OS.SipGetInfo (pSipInfo);
 				psai.fSipUp = pSipInfo.fdwFlags & OS.SIPF_ON;					
 			}

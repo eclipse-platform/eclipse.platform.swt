@@ -303,7 +303,7 @@ public boolean getEnabled () {
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		int hwndCB = parent.hwndCB;
 		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = info.sizeof;
+		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_STATE;
 		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
 		return (info.fsState & OS.TBSTATE_ENABLED) != 0;
