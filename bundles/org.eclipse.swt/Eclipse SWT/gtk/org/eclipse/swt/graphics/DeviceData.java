@@ -9,7 +9,7 @@ package org.eclipse.swt.graphics;
 
 public class DeviceData {
 	/*
-	* Motif only fields.
+	* The following fields are platform dependent.
 	*/
 	public String display_name;
 	public String application_name;
