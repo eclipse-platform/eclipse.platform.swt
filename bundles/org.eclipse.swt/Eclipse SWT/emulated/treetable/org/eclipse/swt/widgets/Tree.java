@@ -1600,14 +1600,14 @@ void redrawHeader() {
 	header.redraw();
 }
 /*
- * Redraws the table at the specified index.  It is valid for this index to reside
+ * Redraws the tree item at the specified index.  It is valid for this index to reside
  * beyond the last available item in the receiver.
  */
 void redrawItem(int index) {
 	redrawItems(index,index);
 }
 /*
- * Redraws the table between the start and end item indices inclusive.  It is valid
+ * Redraws the tree between the start and end item indices inclusive.  It is valid
  * for the end index value to extend beyond the last available item in the receiver.
  */
 void redrawItems(int start, int end) {

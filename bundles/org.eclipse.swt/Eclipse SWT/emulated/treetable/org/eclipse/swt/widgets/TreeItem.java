@@ -208,7 +208,10 @@ public void dispose() {
 	if (focusItem != null && focusItem.hasAncestor (this)) {
 		parent.setFocusItem (this, false);
 		parent.reassignFocus ();
-		parent.redrawItem (parent.focusItem.availableIndex);
+		focusItem = parent.focusItem;
+		if (focusItem != null) {
+			parent.redrawItem (focusItem.availableIndex);
+		}
 	}
 	if (parentItem != null) {
 		parentItem.removeItem (this, index);
@@ -591,7 +594,7 @@ void initialize() {
  * 
  * Important: All references to an item's image should go through this method since
  * it compensates for empty slots that are left in the images structure which still
- * represent valid table cells. 
+ * represent valid cells. 
  */
 Image internalGetImage (int columnIndex) {
 	if (images.length < columnIndex + 1) return null;
@@ -603,7 +606,7 @@ Image internalGetImage (int columnIndex) {
  * 
  * Important: All references to an item's text should go through this method since
  * it compensates for empty slots that are left in the texts structure which still
- * represent valid table cells. 
+ * represent valid cells. 
  */
 String internalGetText (int columnIndex) {
 	if (texts.length < columnIndex + 1) return "";
@@ -615,7 +618,7 @@ String internalGetText (int columnIndex) {
  * 
  * Important: All references to an item's text length should go through this method
  * since it compensates for empty slots that are left in the text lengths structure
- * which still represent valid table cells. 
+ * which still represent valid cells. 
  */
 int internalGetTextWidth (int columnIndex) {
 	if (textWidths.length < columnIndex + 1) return 0;
@@ -1006,9 +1009,10 @@ public void setImage (int columnIndex, Image value) {
 	if (value != null && value.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max (1, parent.getColumnCount());
+	int validColumnCount = Math.max (1, parent.getColumnCount ());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (images.length < columnIndex + 1) {
+		if (value == null) return;	/* replacing a null with a null */
 		Image[] newImages = new Image[columnIndex + 1];
 		System.arraycopy (images, 0, newImages, 0, images.length);
 		images = newImages;
@@ -1020,7 +1024,7 @@ public void setImage (int columnIndex, Image value) {
 	images[columnIndex] = value;
 
 	/*
-	 * If this is the first image being put into the table then its item height
+	 * If this is the first image being put into the tree then its item height
 	 * may be adjusted, in which case a full redraw is needed.
 	 */
 	if (parent.imageHeight == 0) {
