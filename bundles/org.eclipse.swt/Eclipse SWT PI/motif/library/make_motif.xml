@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build_linux_dll" basedir="../../..">
+
+<target name="init_linux">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/linux" />
+    <property name="dll_destdir" value="${fragment_dir}/os/linux/x86" />
+	<property name="log_dir" value="${basedir}"/>
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+</target>
+
+<target name="init_aix">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/aix" />
+    <property name="dll_destdir" value="${fragment_dir}/os/aix/ppc" />
+	<property name="log_dir" value="${basedir}"/>
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+</target>
+
+<target name="init_hpux">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/hpux" />
+    <property name="dll_destdir" value="${fragment_dir}/os/hpux/PA_RISC" />
+	<property name="log_dir" value="${basedir}"/>
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+</target>
+
+<target name="init_solaris">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/solaris" />
+    <property name="dll_destdir" value="${fragment_dir}/os/solaris/sparc" />
+	<property name="log_dir" value="${basedir}"/>
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+</target>
+
+<target name="build_file_dll">
+	<exec dir="./bin/library" executable="csh" output="${log_dir}/build_log.txt">
+		<arg line="${basedir}/bin/library/build.csh"/>
+		<arg line="clean"/>
+	</exec>
+	<exec dir="./bin/library" executable="csh" output="${log_dir}/build_log.txt">
+		<arg line="${basedir}/bin/library/build.csh"/>
+	</exec>
+	<copy todir="${dll_destdir}">
+		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
+	</copy>
+</target>
+
+<!-- Build swt.so for motif linux -->
+<!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
+<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
+<target name="build_linux_dll" depends="init_linux,build_file_dll">
+</target>
+
+<!-- Build swt.so for aix ppc -->
+<!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
+<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
+<target name="build_aix_dll" depends="init_aix,build_file_dll">
+</target>
+
+<!-- Build swt.so for hpux PA_RISC -->
+<!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
+<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
+<target name="build_hpux_dll" depends="init_hpux,build_file_dll">
+</target>
+
+<!-- Build swt.so for solaris sparc -->
+<!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
+<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
+<target name="build_solaris_dll" depends="init_solaris,build_file_dll">
+</target>
+
+</project>
