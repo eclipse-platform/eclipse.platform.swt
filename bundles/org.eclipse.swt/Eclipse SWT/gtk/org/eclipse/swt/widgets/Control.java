@@ -2432,6 +2432,10 @@ public boolean setParent (Composite parent) {
 	return false;
 }
 
+boolean setRadioSelection (boolean value) {
+	return false;
+}
+
 /**
  * If the argument is <code>false</code>, causes subsequent drawing
  * operations in the receiver to be ignored. No drawing of any kind

@@ -41,8 +41,9 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Button extends Control {
-	int boxHandle, labelHandle, imageHandle, arrowHandle;
+	int boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	Image image;
+	boolean selected;
 	String text;
 
 /**
@@ -171,7 +172,11 @@ void createHandle (int index) {
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
-			handle = OS.gtk_radio_button_new (parent.radioGroup());
+			groupHandle = OS.gtk_radio_button_new (0);
+			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.g_object_ref (groupHandle);
+			OS.gtk_object_sink (groupHandle);
+			handle = OS.gtk_radio_button_new (OS.gtk_radio_button_get_group (groupHandle));
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
@@ -331,7 +336,21 @@ public String getText () {
 	return text;
 }
 
+int gtk_button_press_event (int widget, int event) {
+	int result = super.gtk_button_press_event (widget, event);
+	if (result != 0) return result;
+	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
+	return result;
+}
+
 int gtk_clicked (int widget) {
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+			setSelection (!selected);
+		} else {
+			selectRadio ();
+		}
+	}
 	postEvent (SWT.Selection);
 	return 0;
 }
@@ -357,6 +376,13 @@ int gtk_focus_out_event (int widget, int event) {
 			menuShell.defaultButton = null;
 		}
 	}
+	return result;
+}
+
+int gtk_key_press_event (int widget, int event) {
+	int result = super.gtk_key_press_event (widget, event);
+	if (result != 0) return result;
+	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
 }
 
@@ -388,6 +414,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (groupHandle != 0) OS.g_object_unref (groupHandle);
+	groupHandle = 0;
 	image = null;
 	text = null;
 }
@@ -415,6 +443,31 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+void selectRadio () {
+	/*
+	* This code is intentionally commented.  When two groups
+	* of radio buttons with the same parent are separated by
+	* another control, the correct behavior should be that
+	* the two groups act independently.  This is consistent
+	* with radio tool and menu items.  The commented code
+	* implements this behavior.
+	*/
+//	int index = 0;
+//	Control [] children = parent._getChildren ();
+//	while (index < children.length && children [index] != this) index++;
+//	int i = index - 1;
+//	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+//	int j = index + 1;
+//	while (j < children.length && children [j].setRadioSelection (false)) j++;
+//	setSelection (true);
+	Control [] children = parent._getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (this != child) child.setRadioSelection (false);
+	}
+	setSelection (true);
 }
 
 /**
@@ -485,6 +538,15 @@ void setFontDescription (int font) {
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
 }
 
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
+}
+
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
@@ -550,6 +612,7 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	OS.gtk_toggle_button_set_active (handle, selected);
+	if ((style & SWT.RADIO) != 0) OS.gtk_toggle_button_set_active (groupHandle, !selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 

@@ -39,7 +39,7 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	int radioHandle, imHandle;
+	int imHandle;
 	Layout layout;
 	Control[] tabList;
 
@@ -537,25 +537,12 @@ int parentingHandle () {
 	return fixedHandle != 0 ? fixedHandle : handle;
 }
 
-int radioGroup() {
-	if (radioHandle == 0) {
-		radioHandle = OS.gtk_radio_button_new (0);
-		if (radioHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	}
-	return OS.gtk_radio_button_get_group (radioHandle);
-}
-
 void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child != null && !child.isDisposed ()) child.releaseResources ();
 	}
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	radioHandle = 0;
 }
 
 void releaseWidget () {
