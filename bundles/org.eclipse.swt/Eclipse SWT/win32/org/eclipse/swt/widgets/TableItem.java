@@ -224,15 +224,16 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	if (!getText && !getImage) return new RECT ();
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > column || column > count - 1) return new RECT ();
+	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	rect.top = column;
 	rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
 	if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
 		/*
-		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL and
-		* zero for the column number gives the bounds of the first item without
-		* including the bounds of the icon.  This behavior is undocumented.
+		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
+		* and zero for the column number gives the bounds of the first item
+		* without including the bounds of the icon.  This is undocumented.
 		* When called with values greater than zero, the icon bounds are
 		* included and this behavior is documented.
 		*/
@@ -243,9 +244,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 				iconRect.top = column;
 				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
 					rect.left = iconRect.left;
+					rect.right = Math.max (rect.right, iconRect.right);
 				}
 			}
-			rect.left -= 1;
+			rect.left -= gridWidth;
 		} else {
 			if (getText && !getImage && images != null) {
 				RECT iconRect = new RECT ();
@@ -274,7 +276,6 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
-	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
 	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) rect.top -= gridWidth;
 	rect.left += gridWidth;
 	rect.top += gridWidth;
