@@ -36,12 +36,20 @@ public class EventConsole {
 		text = new Text (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		
 		Menu bar = new Menu (shell, SWT.BAR);
-		MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
-		fileItem.setText ("File");
+		MenuItem consoleItem = new MenuItem (bar, SWT.CASCADE);
+		consoleItem.setText ("Console");
 		shell.setMenuBar (bar);
 		Menu dropDown = new Menu (bar);
-		fileItem.setMenu (dropDown);
+		consoleItem.setMenu (dropDown);
 
+		MenuItem clear = new MenuItem (dropDown, SWT.NONE);
+		clear.setText ("Clear");
+		clear.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				text.setText("");
+			}
+		});
+		
 		MenuItem close = new MenuItem (dropDown, SWT.NONE);
 		close.setText ("Dismiss");
 		close.addListener (SWT.Selection, new Listener () {
