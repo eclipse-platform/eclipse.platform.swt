@@ -237,6 +237,16 @@ void createHandle (int index) {
 		OS.XmNrecomputeSize, 0,
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
+		/*
+		* This code is intentionally commented.  On some
+		* platforms, the standard behavior is that push
+		* buttons are tab groups, traversed with the tab
+		* key.  On Motif, push buttons are tab items, 
+		* that are traversed with the arrow keys.  This
+		* behavior is unspecifed so the line remains
+		* commented.
+		*/
+//		OS.XmNnavigationType, OS.XmTAB_GROUP,
 	};
 	handle = OS.XmCreatePushButton (parent.handle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
