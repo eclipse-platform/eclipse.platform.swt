@@ -11,18 +11,19 @@
 package org.eclipse.swt.snippets;
 
 /*
- * How to access About, Preferences and Quit menus on carbon
+ * How to access About, Preferences and Quit menus on carbon.
+ * NOTE: This snippet uses internal SWT packages that are
+ * subject to change without notice.
  * 
  * For a list of all SWT example snippets see
  * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
  */
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.carbon.HICommand;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet178 {
 
@@ -37,15 +38,11 @@ public class Snippet178 {
 
 public static void main(String[] arg) {
 	Display.setAppName("AppMenu"); // sets name in Dock
-
-	Display display = Display.getDefault();
-
+	Display display = new Display();
 	hookApplicationMenu(display, "About AppMenu");
-
 	Shell shell = new Shell(display);
 	shell.setText("Main Window");
 	shell.open();
-
 	while (!shell.isDisposed())
 		if (!display.readAndDispatch())
 			display.sleep();
