@@ -1279,6 +1279,169 @@ public class SWT {
 	 * (value is (1&lt;&lt;24)+21).
 	 */
 	public static final int F12 = KEYCODE_BIT + 21;
+
+	/**
+	 * Keyboard event constant representing the F13 key
+	 * (value is (1&lt;&lt;24)+22).
+	 */
+	public static final int F13 = KEYCODE_BIT + 22;
+	
+	/**
+	 * Keyboard event constant representing the F14 key
+	 * (value is (1&lt;&lt;24)+23).
+	 */
+	public static final int F14 = KEYCODE_BIT + 23;
+	
+	/**
+	 * Keyboard event constant representing the F15 key
+	 * (value is (1&lt;&lt;24)+24).
+	 */
+	public static final int F15 = KEYCODE_BIT + 24;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad times key (value is (1&lt;&lt;24)+42).
+	 */
+	public static final int KEYPAD_TIMES = KEYCODE_BIT + 42;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad plus key (value is (1&lt;&lt;24)+43).
+	 */
+	public static final int KEYPAD_PLUS = KEYCODE_BIT + 43;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad enter key (value is (1&lt;&lt;24)+44).
+	 */
+	public static final int KEYPAD_CR = KEYCODE_BIT + 44;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad minus key (value is (1&lt;&lt;24)+45).
+	 */
+	public static final int KEYPAD_MINUS = KEYCODE_BIT + 45;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad decimal key (value is (1&lt;&lt;24)+46).
+	 */
+	public static final int KEYPAD_DECIMAL = KEYCODE_BIT + 46;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad divide key (value is (1&lt;&lt;24)+47).
+	 */
+	public static final int KEYPAD_DIVIDE = KEYCODE_BIT + 47;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad zero key (value is (1&lt;&lt;24)+48).
+	 */
+	public static final int KEYPAD_0 = KEYCODE_BIT + 48;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad one key (value is (1&lt;&lt;24)+49).
+	 */
+	public static final int KEYPAD_1 = KEYCODE_BIT + 49;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad two key (value is (1&lt;&lt;24)+50).
+	 */
+	public static final int KEYPAD_2 = KEYCODE_BIT + 50;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad three key (value is (1&lt;&lt;24)+51).
+	 */
+	public static final int KEYPAD_3 = KEYCODE_BIT + 51;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad four key (value is (1&lt;&lt;24)+52).
+	 */
+	public static final int KEYPAD_4 = KEYCODE_BIT + 52;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad five key (value is (1&lt;&lt;24)+53).
+	 */
+	public static final int KEYPAD_5 = KEYCODE_BIT + 53;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad six key (value is (1&lt;&lt;24)+54).
+	 */
+	public static final int KEYPAD_6 = KEYCODE_BIT + 54;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad seven key (value is (1&lt;&lt;24)+55).
+	 */
+	public static final int KEYPAD_7 = KEYCODE_BIT + 55;
+
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad eight key (value is (1&lt;&lt;24)+56).
+	 */
+	public static final int KEYPAD_8 = KEYCODE_BIT + 56;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad nine key (value is (1&lt;&lt;24)+57).
+	 */
+	public static final int KEYPAD_9 = KEYCODE_BIT + 57;
+
+	/**
+	 * Keyboard event constant representing the help
+	 * key (value is (1&lt;&lt;24)+58).
+	 * 
+	 * NOTE: The HELP key maps to the key labeled "help",
+	 * not "F1". If your keyboard does not have a HELP key,
+	 * you will never see this key press.  To listen for
+	 * help on a control, use SWT.Help.
+	 * 
+	 * @see SWT.Help
+	 */
+	public static final int HELP = KEYCODE_BIT + 58;
+	
+	/**
+	 * Keyboard event constant representing the caps
+	 * lock key (value is (1&lt;&lt;24)+59).
+	 */
+	public static final int CAPS_LOCK = KEYCODE_BIT + 59;
+	
+	/**
+	 * Keyboard event constant representing the num
+	 * lock key (value is (1&lt;&lt;24)+60).
+	 */
+	public static final int NUM_LOCK = KEYCODE_BIT + 60;
+	
+	/**
+	 * Keyboard event constant representing the num
+	 * lock key (value is (1&lt;&lt;24)+61).
+	 */
+	public static final int SCROLL_LOCK = KEYCODE_BIT + 61;
+	
+	/**
+	 * Keyboard event constant representing the pause
+	 * key (value is (1&lt;&lt;24)+62).
+	 */
+	public static final int PAUSE = KEYCODE_BIT + 62;
+	
+	/**
+	 * Keyboard event constant representing the break
+	 * key (value is (1&lt;&lt;24)+63).
+	 */
+	public static final int BREAK = KEYCODE_BIT + 63;
+	
+	/**
+	 * Keyboard event constant representing the break
+	 * key (value is (1&lt;&lt;24)+64).
+	 */
+	public static final int PRINT_SCREEN = KEYCODE_BIT + 64;
 	
 	/**
 	 * The <code>MessageBox</code> style constant for error icon

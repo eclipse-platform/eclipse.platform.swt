@@ -1078,6 +1078,7 @@ public class OS {
 	public static final int UIS_INITIALIZE = 3;
 	public static final int VERTRES = 0xa;
 	public static final int VK_BACK = 0x8;
+	public static final int VK_CANCEL = 0x3;
 	public static final int VK_CAPITAL = 0x14;
 	public static final int VK_CONTROL = 0x11;
 	public static final int VK_DECIMAL = 0x6E;
@@ -1090,6 +1091,9 @@ public class OS {
 	public static final int VK_F10 = 0x79;
 	public static final int VK_F11 = 0x7a;
 	public static final int VK_F12 = 0x7b;
+	public static final int VK_F13 = 0x7c;
+	public static final int VK_F14 = 0x7d;
+	public static final int VK_F15 = 0x7e;
 	public static final int VK_F2 = 0x71;
 	public static final int VK_F3 = 0x72;
 	public static final int VK_F4 = 0x73;
@@ -1117,6 +1121,7 @@ public class OS {
 	public static final int VK_NUMPAD7 = 0x67;
 	public static final int VK_NUMPAD8 = 0x68;
 	public static final int VK_NUMPAD9 = 0x69;
+	public static final int VK_PAUSE = 0x13;
 	public static final int VK_PRIOR = 0x21;
 	public static final int VK_RBUTTON = 0x2;
 	public static final int VK_RETURN = 0xd;
@@ -1124,6 +1129,7 @@ public class OS {
 	public static final int VK_SCROLL = 0x91;
 	public static final int VK_SEPARATOR = 0x6C;
 	public static final int VK_SHIFT = 0x10;
+	public static final int VK_SNAPSHOT = 0x2C;
 	public static final int VK_SPACE = 0x20;
 	public static final int VK_SUBTRACT = 0x6D;
 	public static final int VK_TAB = 0x9;
