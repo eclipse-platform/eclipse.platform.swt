@@ -432,13 +432,8 @@ public void setText (String string) {
 		resizeHandle (width, height); 
 		OS.gtk_widget_show (handle);
 	}
-	int length = string.length ();
-	char [] text = new char [length + 1];
-	string.getChars (0, length, text, 0);
-	for (int i=0; i<length; i++) {
-		if (text [i] == '&') text [i] = '_';
-	}
-	byte [] buffer = Converter.wcsToMbcs (null, text);
+	char [] chars = fixMnemonic (string);
+	byte [] buffer = Converter.wcsToMbcs (null, chars);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
 }
 

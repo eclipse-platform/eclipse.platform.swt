@@ -603,18 +603,13 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	int length = string.length ();
 	int index = string.indexOf ('\t');
-	if (index != -1) length = index;
-	char [] text = new char [length + 1];
-	string.getChars (0, length, text, 0);
-	for (int i=0; i<length; i++) {
-		if (text [i] == '&') text [i] = '_';
-	}
+	if (index != -1) string = string.substring (0, index);
+	char [] chars = fixMnemonic (string);
+	byte [] buffer = Converter.wcsToMbcs (null, chars);
 	int list = OS.gtk_container_get_children (handle);
 	int label = OS.g_list_nth_data (list, 0);
 	OS.g_list_free (list);
-	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 }
 }

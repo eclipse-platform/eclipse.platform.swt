@@ -276,17 +276,17 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_combo_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (handle);
 	GtkCombo combo = new GtkCombo ();
 	OS.memmove (combo, handle);
 	entryHandle = combo.entry;
 	listHandle = combo.list;
 	boolean editable = (style & SWT.READ_ONLY) == 0;
 	OS.gtk_entry_set_editable (entryHandle, editable);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 }
 
 GdkColor defaultBackground () {
@@ -315,13 +315,15 @@ public boolean forceFocus () {
 	OS.gtk_widget_grab_focus (entryHandle);
 	return hasFocus ();
 }
+
 boolean hasFocus () {
-	boolean hasIt = OS.GTK_WIDGET_HAS_FOCUS(handle);
-	if (OS.GTK_WIDGET_HAS_FOCUS(entryHandle)) return true;
-	if (OS.GTK_WIDGET_HAS_FOCUS(listHandle)) return true;
-	if (OS.GTK_WIDGET_HAS_FOCUS(handle)) return true;
+	if (super.hasFocus ()) return true;
+	if (OS.GTK_WIDGET_HAS_FOCUS (entryHandle)) return true;
+	if (OS.GTK_WIDGET_HAS_FOCUS (listHandle)) return true;
+	if (OS.GTK_WIDGET_HAS_FOCUS (handle)) return true;
 	return false;
 }
+
 void hookEvents () {
 	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();

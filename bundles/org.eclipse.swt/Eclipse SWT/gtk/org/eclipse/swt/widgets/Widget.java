@@ -124,8 +124,7 @@ public Widget (Widget parent, int style) {
  * @see #removeListener
  */
 public void addListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
@@ -151,8 +150,7 @@ public void addListener (int eventType, Listener handler) {
  * @see #removeDisposeListener
  */
 public void addDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -314,8 +312,7 @@ void error (int code) {
  * @see #setData
  */
 public Object getData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return data;
 }
 /**
@@ -343,8 +340,7 @@ public Object getData () {
  * @see #setData
  */
 public Object getData (String key) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -406,9 +402,24 @@ String getNameText () {
  * </ul>
  */
 public int getStyle () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return style;
+}
+
+char [] fixMnemonic (String string) {
+	int length = string.length ();
+	char [] text = new char [length];
+	string.getChars (0, length, text, 0);
+	int i = 0, j = 0;
+	char [] result = new char [length * 2 + 1];
+	while (i < length) {
+		switch (text [i]) {
+			case '&': text [i] = '_'; break;
+			case '_': result [j++] = '_'; break;
+		}
+		result [j++] = text [i++];
+	}
+	return result;
 }
 
 /**
@@ -442,8 +453,7 @@ public boolean isDisposed () {
  * </ul>
  */
 protected boolean isListening (int eventType) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return hooks (eventType);
 }
 
@@ -557,7 +567,8 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
 		case SWT.Help:				return processHelp            	(int0, int1, int2);
 		case SWT.Hide:				return processHide            	(int0, int1, int2);
-		case SWT.KeyDown:			if (!translateTraversal(int0)) {
+		case SWT.KeyDown:
+			if (!translateTraversal(int0)) {
 				return processKeyDown (int0, int1, int2);
 			} else {
 				return 1;
@@ -590,15 +601,15 @@ int processArm (int int0, int int1, int int2) {
 }
 
 int processCollapse (int int0, int int1, int int2) {
-	return 1;  // stop emission
+	return 0;
 }
 
 int processExpand (int int0, int int1, int int2) {
-	return 1;  // stop emission
+	return 0;
 }
 
 int processDispose (int arg0, int arg1, int int2) {
-	return 1;
+	return 0;
 }
 
 int processDefaultSelection (int int0, int int1, int int2) {
@@ -658,11 +669,6 @@ int processMouseHover (int arg0, int arg1, int int2) {
 }
 
 int processMouseMove (int arg0, int arg1, int int2) {
-	/* Do nothing */
-	/* Even though we do nothing, we still need to at least
-	 * motify the X Server we are ready to process more events.
-	 * However, only OS controls can receive this event.
-	 */
 	return 0;
 }
 
@@ -739,8 +745,7 @@ void releaseWidget () {
  * @see #addListener
  */
 public void removeListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -750,8 +755,7 @@ public void removeListener (int eventType, Listener handler) {
 * Warning: API under construction.
 */
 protected void removeListener (int eventType, SWTEventListener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -775,8 +779,7 @@ protected void removeListener (int eventType, SWTEventListener handler) {
  * @see #removeDisposeListener
  */
 public void removeDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
@@ -844,8 +847,7 @@ public void setData (Object data) {
  * @see #getData
  */
 public void setData (String key, Object value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */
