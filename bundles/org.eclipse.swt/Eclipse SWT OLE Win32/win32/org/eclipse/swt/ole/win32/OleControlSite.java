@@ -588,6 +588,7 @@ protected void releaseObjectInterfaces() {
  *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeEventListener(int eventID, OleListener listener) {
+	checkWidget();
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	
 	GUID riid = getDefaultEventSinkGUID(objIUnknown);
@@ -613,6 +614,7 @@ public void removeEventListener(int eventID, OleListener listener) {
  *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
+	checkWidget();
 	if (automation == null || listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	removeEventListener(automation.getAddress(), guid, eventID, listener);
 }
@@ -631,6 +633,7 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
  *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
+	checkWidget();
 	if (automation == null || listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	int address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);

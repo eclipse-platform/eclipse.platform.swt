@@ -129,7 +129,10 @@ private int OnChanged(int dispID) {
 	
 	OleEvent event = new OleEvent();
 	event.detail = OLE.PROPERTY_CHANGED;
-	notifyListener(dispID,event);
+	try {
+		notifyListener(dispID,event);
+	} catch (Throwable e) {
+	}
 	
 	return COM.S_OK;
 }
@@ -141,7 +144,10 @@ private int OnRequestEdit(int dispID) {
 	event.doit = true;
 	event.detail = OLE.PROPERTY_CHANGING;
 	
-	notifyListener(dispID,event);
+	try {
+		notifyListener(dispID,event);
+	} catch (Throwable e) {
+	}
 	
 	if (event.doit) return COM.S_OK;
 
