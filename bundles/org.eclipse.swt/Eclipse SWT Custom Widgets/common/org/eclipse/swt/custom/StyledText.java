@@ -2263,6 +2263,8 @@ void createKeyBindings() {
 	
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
+	setKeyBinding(SWT.BS | SWT.MOD1, ST.DELETE_WORD_PREVIOUS);
+	setKeyBinding(SWT.DEL | SWT.MOD1, ST.DELETE_WORD_NEXT);
 	
 	// Miscellaneous
 	setKeyBinding(SWT.INSERT, ST.TOGGLE_OVERWRITE);
@@ -2799,6 +2801,38 @@ void doDelete() {
 		}
 		sendKeyEvent(event);
 	}
+}
+/**
+ * Deletes the next word.
+ */
+void doDeleteWordNext() {
+	Event event = new Event();
+	event.text = "";
+	if (selection.x != selection.y) {
+		event.start = selection.x;
+		event.end = getWordEnd(selection.x);
+	}
+	else {	
+		event.start = caretOffset;
+		event.end = getWordEnd(caretOffset);
+	}
+	sendKeyEvent(event);
+}
+/**
+ * Deletes the previous word.
+ */
+void doDeleteWordPrevious() {
+	Event event = new Event();
+	event.text = "";
+	if (selection.x != selection.y) {
+		event.start = getWordStart(selection.y);
+		event.end = selection.y;
+	}
+	else {	
+		event.start = getWordStart(caretOffset);
+		event.end = caretOffset;
+	}
+	sendKeyEvent(event);
 }
 /**
  * Moves the caret one line down and to the same character offset relative 
@@ -5580,6 +5614,12 @@ public void invokeAction(int action) {
 			break;
 		case ST.DELETE_NEXT:
 			doDelete();
+			break;
+		case ST.DELETE_WORD_PREVIOUS:
+			doDeleteWordPrevious();
+			break;
+		case ST.DELETE_WORD_NEXT:
+			doDeleteWordNext();
 			break;
 		// Miscellaneous
 		case ST.TOGGLE_OVERWRITE:

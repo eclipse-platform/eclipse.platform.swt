@@ -54,6 +54,8 @@ public class ST {
 	public static final int PASTE = 16908297;		// binding = SWT.MOD2 + SWT.INSERT ;
 	public static final int DELETE_PREVIOUS = '\b'; 	// binding = SWT.BS;
 	public static final int DELETE_NEXT = 0x7F; 		// binding = SWT.DEL;
+	public static final int DELETE_WORD_PREVIOUS = 262152;	// binding = SWT.BS | SWT.MOD1;
+	public static final int DELETE_WORD_NEXT = 262271;	// binding = SWT.DEL | SWT.MOD1;
 
 	/* Miscellaneous Key Actions */
 	public static final int TOGGLE_OVERWRITE = 16777225; // binding = SWT.INSERT;
