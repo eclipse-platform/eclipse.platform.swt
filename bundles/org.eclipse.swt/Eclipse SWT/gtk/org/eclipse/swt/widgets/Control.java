@@ -2447,6 +2447,17 @@ public void setVisible (boolean visible) {
 		OS.gtk_widget_show (topHandle);
 	} else {	
 		OS.gtk_widget_hide (topHandle);
+		/*
+		* Bug in GTK.  When duplicate mnemonics are created
+		* in two different widgets and one of the widgets is
+		* hidden, GTK runs the mnemonic for the hidden widget.
+		* This only happens for duplicates.  A hidden widget
+		* with a unique mnemonic does not have the problem.
+		* By observation, a widget that is not realized will
+		* not respond to a mnemonic.  The fix is to unrealize
+		* the widget hierarchy every time a widget is hidden.
+		*/
+		OS.gtk_widget_unrealize (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }

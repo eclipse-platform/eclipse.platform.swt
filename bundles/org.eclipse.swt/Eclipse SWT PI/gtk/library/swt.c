@@ -5769,6 +5769,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1style_1
 }
 #endif
 
+#ifndef NO_gtk_1widget_1unrealize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1unrealize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1unrealize\n")
+
+	gtk_widget_unrealize((GtkWidget *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1window_1activate_1default
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1activate_1default
 	(JNIEnv *env, jclass that, jint arg0)

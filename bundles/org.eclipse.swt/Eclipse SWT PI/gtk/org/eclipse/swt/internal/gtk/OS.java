@@ -779,6 +779,7 @@ public static final synchronized native void gtk_widget_show_now(int widget);
 public static final synchronized native void gtk_widget_size_allocate(int widget, GtkAllocation allocation);
 public static final synchronized native void gtk_widget_size_request(int widget, GtkRequisition requisition);
 public static final synchronized native void gtk_widget_style_get(int widget, byte[] property_name, int[] value, int null_terminator);
+public static final synchronized native void gtk_widget_unrealize(int widget);
 public static final synchronized native boolean gtk_window_activate_default(int window);
 public static final synchronized native void gtk_window_add_accel_group(int window, int accel_group);
 public static final synchronized native void gtk_window_deiconify(int handle);
