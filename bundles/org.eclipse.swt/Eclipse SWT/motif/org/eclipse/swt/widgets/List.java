@@ -1210,6 +1210,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return changed;
 }
 void setFocusIndex (int index) {
+	int [] argList = {OS.XmNitemCount, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int count = argList [1];
+	if (!(0 <= index && index < count))  return;
 	OS.XmListSetKbdItemPos (handle, index + 1);
 }
 public void setFont (Font font) {
@@ -1352,6 +1356,9 @@ public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
 	showSelection ();
+	if ((style & SWT.MULTI) != 0) {
+		if (0 <= index) setFocusIndex (index);
+	}
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
@@ -1375,6 +1382,9 @@ public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 	showSelection ();
+	if ((style & SWT.MULTI) != 0) {
+		if (0 <= start && start <= end) setFocusIndex (start);
+	}
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
@@ -1399,6 +1409,12 @@ public void setSelection(int[] indices) {
 	deselectAll ();
 	select (indices);
 	showSelection ();
+	if ((style & SWT.MULTI) != 0) {
+		if (indices.length != 0) {
+			int focusIndex = indices [0];
+			if (0 <= focusIndex) setFocusIndex (focusIndex);
+		}
+	}
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -1457,7 +1473,17 @@ public void setSelection (String [] items) {
 	OS.memmove (ptr, table, length * 4);
 	int [] argList = {OS.XmNselectedItems, ptr, OS.XmNselectedItemCount, length};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	for (int i=0; i<length; i++) OS.XmStringFree (table [i]);
+	boolean focusSet = false;
+	for (int i = 0; i < length; i++) {
+		if (!focusSet) {
+			int index = OS.XmListItemPos (handle, table [i]);
+			if (index > 0) {
+				focusSet = true;
+				setFocusIndex (index - 1);
+			}
+		}
+		OS.XmStringFree (table [i]);
+	}
 	OS.XtFree (ptr);
 	OS.XmListUpdateSelectedList (handle);
 	showSelection ();
