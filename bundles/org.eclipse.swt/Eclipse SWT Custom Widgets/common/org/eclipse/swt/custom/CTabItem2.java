@@ -155,7 +155,7 @@ void drawClose(GC gc) {
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
-			gc.setForeground(CTabFolder2.borderColor1);
+			gc.setForeground(CTabFolder2.borderColor);
 			gc.drawPolygon(shape);
 			break;
 		}
@@ -224,7 +224,7 @@ void drawSelected(GC gc ) {
 			shape[index++] = y + height;
 		}
 		// draw line	
-		gc.setForeground(CTabFolder2.borderColor1);
+		gc.setForeground(CTabFolder2.borderColor);
 		gc.drawPolyline(shape);
 		// if tab partially visible, fill in background for tab
 		shape = new int[] {x,y-1, x,y+height, size.x,y+height, size.x,y-1};
@@ -371,8 +371,8 @@ void drawSelected(GC gc ) {
 	if (parent.selectionBgImage != null || (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1 && !parent.selectionGradientVertical)) inside = null;
 	RGB outside = parent.getBackground().getRGB();		
 	if (parent.bgImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1 && !parent.gradientVertical)) outside = null;
-	parent.antialias(shape, CTabFolder2.borderColor1.getRGB(), inside, outside, gc);
-	gc.setForeground(CTabFolder2.borderColor1);
+	parent.antialias(shape, CTabFolder2.borderColor.getRGB(), inside, outside, gc);
+	gc.setForeground(CTabFolder2.borderColor);
 	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
@@ -441,7 +441,7 @@ void drawUnselected(GC gc) {
 	
 	// draw border
 	if (parent.indexOf(this) != parent.selectedIndex - 1) {
-		gc.setForeground(CTabFolder2.borderColor1);
+		gc.setForeground(CTabFolder2.borderColor);
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
 	

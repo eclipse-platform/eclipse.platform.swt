@@ -78,14 +78,20 @@ public class CTabFolder2 extends Composite {
 	
 	/**
 	 * Color of innermost line of drop shadow border.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
 
@@ -120,9 +126,7 @@ public class CTabFolder2 extends Composite {
 	int[] gradientPercents;
 	boolean gradientVertical;
 	
-	static Color borderColor1;
-	static Color borderColor2;
-	static Color borderColor3;
+	static Color borderColor;
 	
 	// close, min/max and chevron buttons
 	boolean showClose = false;
@@ -179,13 +183,11 @@ public class CTabFolder2 extends Composite {
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-9, 1,-8, 1,-7, 2,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-2, 7,-1, 8,-1, 9,0};
 	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-9,0, -8,-1, -7,-1, -6,-2, -5,-2, -4,-3, -3,-4, -2,-5, -2,-6, -1,-7, -1,-8, 0,-9};
 
-	static final int SELECTION_FOREGROUND = SWT.COLOR_TITLE_FOREGROUND;
-	static final int SELECTION_BACKGROUND = SWT.COLOR_TITLE_BACKGROUND;
+	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
+	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
-	static final int BORDER2_COLOR = SWT.COLOR_WIDGET_DARK_SHADOW;
-	static final int BORDER3_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
-	static final int FOREGROUND = SWT.COLOR_TITLE_INACTIVE_FOREGROUND;
-	static final int BACKGROUND = SWT.COLOR_TITLE_INACTIVE_BACKGROUND;
+	static final int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
+	static final int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
 	
 	static final int NONE = 0;
 	static final int NORMAL = 1;
@@ -246,9 +248,7 @@ public CTabFolder2(Composite parent, int style) {
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
-	borderColor1 = new Color(getDisplay(), borderInsideRGB);
-	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
-	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
+	borderColor = display.getSystemColor(BORDER1_COLOR);
 	setForeground(display.getSystemColor(FOREGROUND));
 	setBackground(display.getSystemColor(BACKGROUND));
 	
@@ -767,7 +767,7 @@ void drawBody(Event event) {
 	
 	//draw 1 pixel border around outside
 	if (borderLeft > 0) {
-		gc.setForeground(borderColor1);
+		gc.setForeground(borderColor);
 		int x1 = borderLeft - 1;
 		int x2 = size.x - borderRight;
 		int y1 = onBottom ? borderTop - 1 : borderTop + tabHeight;
@@ -826,7 +826,7 @@ void drawChevron(GC gc) {
 			int[] shape = onBottom ? new int[]{x,y+9, x+9,y+9, x+9,y+7, x+5,y+3, x+4,y+3, x,y+7, x,y+9} : new int[]{x,y, x+9,y, x+9,y+2, x+5,y+6, x+4,y+6, x,y+2, x,y};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
-			gc.setForeground(borderColor1);
+			gc.setForeground(borderColor);
 			gc.drawPolygon(shape);
 			break;
 		}
@@ -865,14 +865,14 @@ void drawMaximize(GC gc) {
 			if (!maximized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 7, 9);
-				gc.setForeground(borderColor1);
+				gc.setForeground(borderColor);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(borderColor1);
+				gc.setForeground(borderColor);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -937,13 +937,13 @@ void drawMinimize(GC gc) {
 			if (!minimized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(borderColor1);
+				gc.setForeground(borderColor);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(borderColor1);
+				gc.setForeground(borderColor);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -1003,8 +1003,7 @@ void drawTabArea(Event event) {
 	int y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
 	int width = size.x - borderLeft - borderRight + 1;
 	int height = tabHeight - 1;
-	
-	
+
 	// Fill in the empty spaces to the right and left of the tabs
 	if (single) {
 		int[] shapeLeft = null;
@@ -1018,10 +1017,10 @@ void drawTabArea(Event event) {
 			shapeLeft[index++] = y;
 			for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
 				shapeLeft[index++] = x+BOTTOM_LEFT_CORNER[2*i];
-				shapeLeft[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
+				shapeLeft[index++] = y+height+1+BOTTOM_LEFT_CORNER[2*i+1];
 			}
 			shapeLeft[index++] = x+width2;
-			shapeLeft[index++] = y+height;
+			shapeLeft[index++] = y+height+1;
 			shapeLeft[index++] = x+width2;
 			shapeLeft[index++] = y;
 			//right side
@@ -1033,10 +1032,10 @@ void drawTabArea(Event event) {
 			shapeRight[index++] = x2;
 			shapeRight[index++] = y;
 			shapeRight[index++] = x2;
-			shapeRight[index++] = y+height;
+			shapeRight[index++] = y+height+1;
 			for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
 				shapeRight[index++] = x2+width2+BOTTOM_RIGHT_CORNER[2*i];
-				shapeRight[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
+				shapeRight[index++] = y+height+1+BOTTOM_RIGHT_CORNER[2*i+1];
 			}
 			shapeRight[index++] = x2+width2;
 			shapeRight[index++] = y;
@@ -1134,7 +1133,7 @@ void drawTabArea(Event event) {
 		gc.fillRectangle(x2, y2, width2, height2);
 		x2 = borderLeft;
 		y2 = (onBottom) ? size.y - borderBottom - tabHeight - 1 : borderTop + tabHeight;
-		gc.setForeground(borderColor1);
+		gc.setForeground(borderColor);
 		gc.drawLine(x2, y2, x2 + width2, y2);
 	}
 	
@@ -1162,7 +1161,8 @@ void drawTabArea(Event event) {
 //			gc.drawLine(bounds.x + bounds.width - 2, bounds.y + bounds.height - 1, bounds.x + bounds.width + 2, bounds.y + bounds.height - 1);
 //		}
 //	}
-	
+
+		
 	// draw outside border area
 	if (onBottom) {
 		shape = new int[BOTTOM_LEFT_CORNER.length + BOTTOM_RIGHT_CORNER.length + 4];
@@ -1172,10 +1172,12 @@ void drawTabArea(Event event) {
 		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
 			shape[index++] = x+BOTTOM_LEFT_CORNER[2*i];
 			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
+			if (borderLeft == 0) shape[index-1] += 1;
 		}
 		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
 			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
 			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
+			if (borderLeft == 0) shape[index-1] += 1;
 		}
 		shape[index++] = x+width;
 		shape[index++] = y-1;
@@ -1208,8 +1210,8 @@ void drawTabArea(Event event) {
 		RGB inside = getBackground().getRGB();
 		if (bgImage != null || (gradientColors != null && gradientColors.length > 1 && !gradientVertical)) inside = null;
 		RGB outside = getParent().getBackground().getRGB();
-		antialias(shape, borderColor1.getRGB(), inside, outside, gc);
-		gc.setForeground(borderColor1);
+		antialias(shape, borderColor.getRGB(), inside, outside, gc);
+		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
 	}
 }
@@ -3366,7 +3368,6 @@ boolean updateTabHeight(int oldHeight, boolean force){
 			curve = newCurve;
 		}
 	}
-	
 	notifyListeners(SWT.Resize, new Event());
 	return true;
 }
