@@ -257,7 +257,7 @@ void createHandle (int index) {
 	int windowHandle= OS.GetControlOwner(parentHandle);
 	handle= OS.createDataBrowserControl(windowHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.embedControl(handle, parentHandle);
+	MacUtil.addControl(handle, parentHandle);
 	MacUtil.initLocation(handle);
 	
 	/* Single or Multiple Selection */
