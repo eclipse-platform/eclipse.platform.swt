@@ -145,7 +145,8 @@ int GetExternal(int ppDispatch) {
 }
 
 int GetHostInfo(int pInfo) {
-	return COM.E_NOTIMPL;
+	OS.MoveMemory(pInfo + 4, new int[] {Browser.DOCHOSTUIFLAG_THEME}, 4);
+	return COM.S_OK;
 }
 
 int GetOptionKeyPath(int pchKey, int dw) {
