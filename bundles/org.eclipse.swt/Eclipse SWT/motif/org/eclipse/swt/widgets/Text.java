@@ -345,7 +345,7 @@ void createHandle (int index) {
 			OS.XtSetValues (handle, argList3, argList3.length / 2);
 		}
 	} else {
-		handle = OS.XmCreateScrolledText (parentHandle, null, argList1, argList1.length / 2);
+		handle = OS.XmCreateScrolledText (parentHandle, new byte [0], argList1, argList1.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
 	}	

@@ -283,7 +283,7 @@ void createHandle (int index) {
 		handle = OS.XmCreateList (formHandle, null, argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = OS.XmCreateScrolledList (formHandle, null, argList2, argList2.length / 2);
+		handle = OS.XmCreateScrolledList (formHandle, new byte [0], argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
 	}
