@@ -200,6 +200,14 @@ void createWidget () {
 	hookEvents ();
 }
 
+int commandProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventProcessCommand:	return kEventProcessCommand (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+	
 void deregister () {
 }
 
@@ -388,6 +396,10 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
+int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+	
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }

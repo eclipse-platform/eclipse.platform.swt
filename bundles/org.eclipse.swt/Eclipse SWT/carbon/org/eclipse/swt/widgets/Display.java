@@ -288,17 +288,22 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 				return OS.noErr;
 			}
 			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
-				int menuRef = command.menu_menuRef;
-				short menuID = OS.GetMenuID (menuRef);
-				Menu menu = findMenu (menuID);
-				if (menu != null) {
-					int [] outCommandID = new int [1];
-					short menuIndex = command.menu_menuItemIndex;
-					OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
-					MenuItem item = findMenuItem (outCommandID [0]);
-					return item.kEventProcessCommand (nextHandler, theEvent, userData);
+				if (userData != 0) {
+					Widget widget = WidgetTable.get (userData);
+					if (widget != null) return widget.commandProc (nextHandler, theEvent, userData);
+				} else {
+					int menuRef = command.menu_menuRef;
+					short menuID = OS.GetMenuID (menuRef);
+					Menu menu = findMenu (menuID);
+					if (menu != null) {
+						int [] outCommandID = new int [1];
+						short menuIndex = command.menu_menuItemIndex;
+						OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
+						MenuItem item = findMenuItem (outCommandID [0]);
+						return item.kEventProcessCommand (nextHandler, theEvent, userData);
+					}
+					OS.HiliteMenu ((short) 0);
 				}
-				OS.HiliteMenu ((short) 0);
 			}
 		}
 	}
