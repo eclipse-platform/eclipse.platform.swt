@@ -63,11 +63,8 @@ public class Display extends Device {
 	Control helpControl;
 	int lastHelpX, lastHelpY;
 	
-	/* Mouse Enter/Exit */
+	/* Mouse Enter/Exit/Hover */
 	Control currentControl;
-	
-	/* Mouse Hover */
-	Control hoverControl;
 	int mouseHoverID;
 	
 	/* Menus */
@@ -892,8 +889,9 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 
 int mouseProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
+	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, where);
 	int [] theWindow = new int [1];
 	int part = OS.FindWindow (where, theWindow);
 	switch (part) {
@@ -928,24 +926,16 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 					OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers [0], cursorWasSet);
 					if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 					if (widget != null) {
-						if (widget == hoverControl) {
-							int [] outDelay = new int [1];
-							OS.HMGetTagDelay (outDelay);
-							if (mouseHoverID != 0) {
-								OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
-							}
+						int [] outDelay = new int [1];
+						OS.HMGetTagDelay (outDelay);
+						if (widget == currentControl && mouseHoverID != 0) {
+							OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
 						} else {
-							//NOT DONE - get rid of instanceof test
-							if (widget instanceof Control) {
-								if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
-								hoverControl = (Control) widget;
-								int [] id = new int [1], outDelay = new int [1];
-								OS.HMGetTagDelay (outDelay);
-								int handle = hoverControl.handle;
-								int eventLoop = OS.GetCurrentEventLoop ();
-								OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, handle, id);
-								if ((mouseHoverID = id [0]) == 0) hoverControl = null;
-							}
+							if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+							int [] id = new int [1];
+							int eventLoop = OS.GetCurrentEventLoop ();
+							OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
+							mouseHoverID = id [0];
 						}
 					}
 				}
@@ -958,25 +948,20 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	}
 	switch (eventKind) {
 		case OS.kEventMouseDragged:
-		case OS.kEventMouseMoved:
-			OS.InitCursor ();
+		case OS.kEventMouseMoved:  OS.InitCursor ();
 	}
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
-	mouseHoverID = 0;
-	hoverControl = null;
 	return OS.eventNotHandledErr;
 }
 
 int mouseHoverProc (int id, int handle) {
-	if (hoverControl == null) return 0;
-	if (hoverControl.handle == handle && !hoverControl.isDisposed ()) {
+	if (currentControl == null) return 0;
+	if (!currentControl.isDisposed ()) {
 		//OPTIMIZE - use OS calls
 		int chord = OS.GetCurrentEventButtonState ();
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		Point pt = hoverControl.toControl (getCursorLocation ());
-		hoverControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		Point pt = currentControl.toControl (getCursorLocation ());
+		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
 	}
-	hoverControl = null;
 	return 0;
 }
 
@@ -1117,6 +1102,8 @@ boolean runEnterExit () {
 			modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (point);
 			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+			mouseHoverID = 0;
 		}
 		if ((currentControl = control) != null) {
 			if (point == null) {
@@ -1126,6 +1113,12 @@ boolean runEnterExit () {
 			}
 			Point pt = currentControl.toControl (point);
 			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+			int [] id = new int [1], outDelay = new int [1];
+			OS.HMGetTagDelay (outDelay);
+			int eventLoop = OS.GetCurrentEventLoop ();
+			OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
+			mouseHoverID = id [0];
 		}
 	}
 	return point != null;
