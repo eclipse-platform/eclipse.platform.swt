@@ -534,4 +534,10 @@ public void setText (String string) {
 	}
 }
 
+int traversalCode (int key, int event) {
+	int code = super.traversalCode (key, event);
+	if ((style & SWT.PUSH) != 0) return code;
+	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
+}
+
 }

@@ -2257,6 +2257,7 @@ public boolean traverse (int traversal) {
 	event.detail = traversal;
 	return traverse (event);
 }
+
 boolean translateTraversal (int gdkEvent) {
 	int detail = SWT.TRAVERSE_NONE;
 	GdkEventKey keyEvent = new GdkEventKey ();
@@ -2330,16 +2331,14 @@ boolean translateTraversal (int gdkEvent) {
 	} while (all && control != null);
 	return false;
 }
+
 int traversalCode (int key, int event) {
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
-//	FIXME - Needs to be implemented
-//	if (getNavigationType () == OS.XmNONE) {
-//		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
-//	}
 	return code;
 }
+
 boolean traverse (Event event) {
 	sendEvent (SWT.Traverse, event);
 	if (isDisposed ()) return false;
@@ -2358,14 +2357,15 @@ boolean traverse (Event event) {
 	}
 	return false;
 }
+
 boolean traverseEscape () {
 	return false;
 }
+
 boolean traverseGroup (boolean next) {
-	// FIXME - Needs to be implemented
-	Control root = computeTabRoot();
-	Control group = computeTabGroup();
-	Control[] list = root.computeTabList();
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
 	int length = list.length;
 	int index = 0;
 	while (index < length) {
@@ -2389,16 +2389,39 @@ boolean traverseGroup (boolean next) {
 	if (group.isDisposed ()) return false;
 	return group.setTabGroupFocus ();
 }
+
 boolean traverseItem (boolean next) {
-	// FIXME - Needs to be implemented
-	return true;
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
+	}
+	return false;
 }
+
 boolean traverseReturn () {
 	return false;
 }
+
 boolean traversePage (boolean next) {
 	return false;
 }
+
 boolean traverseMnemonic (Event event) {
 	// This code is intentionally commented.
 	// TraverseMnemonic always originates from the OS and
@@ -2408,7 +2431,6 @@ boolean traverseMnemonic (Event event) {
 	// return OS.gtk_accel_groups_activate (shellHandle, keyCode, stateMask);
 	return true;
 }
-
 
 /**
  * Forces all outstanding paint requests for the widget tree
