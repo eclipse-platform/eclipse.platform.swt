@@ -146,7 +146,7 @@ public FontData open () {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
 	if (fontData != null) {
-		Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
+		Display display = parent != null ? parent.display : Display.getCurrent ();
 		Font font = new Font (display, fontData);
 		int fontName = OS.pango_font_description_to_string (font.handle);
 		int length = OS.strlen (fontName);
@@ -164,7 +164,7 @@ public FontData open () {
 		byte [] buffer = new byte [length + 1];
 		OS.memmove (buffer, fontName, length);
 		int fontDesc = OS.pango_font_description_from_string (buffer);
-		Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
+		Display display = parent != null ? parent.display  : Display.getCurrent ();
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];
 		OS.pango_font_description_free (fontDesc);		
