@@ -1956,14 +1956,16 @@ void init(Drawable drawable, GCData data, int hDC) {
 	}
 	int layout = data.layout;
 	if (layout != -1) {
-		if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
-			data.style |= SWT.MIRRORED;
-			layout = OS.LAYOUT_RTL;
-		}	
-		int flags = OS.GetLayout(hDC);
-		if ((flags & OS.LAYOUT_RTL) != layout) {
-			flags &= ~OS.LAYOUT_RTL;
-			OS.SetLayout(hDC, flags | layout);
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10))  {
+			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
+				data.style |= SWT.MIRRORED;
+				layout = OS.LAYOUT_RTL;
+			}	
+			int flags = OS.GetLayout(hDC);
+			if ((flags & OS.LAYOUT_RTL) != layout) {
+				flags &= ~OS.LAYOUT_RTL;
+				OS.SetLayout(hDC, flags | layout);
+			}
 		}	
 	}	
 	this.drawable = drawable;
