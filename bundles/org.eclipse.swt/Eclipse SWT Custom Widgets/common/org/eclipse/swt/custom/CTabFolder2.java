@@ -1458,8 +1458,8 @@ void onMouseHover(Event event) {
 	showToolTip(event.x, event.y);
 }
 void onMouseUp(Event event) {
-	int x = event.x, y = event.y;
 	if (event.button != 1) return;
+	int x = event.x, y = event.y;
 	if (closeRect.contains(x, y)) {
 		if (selectedIndex == -1) return;
 		CTabItem2 item = items[selectedIndex];
@@ -1520,7 +1520,7 @@ void onMouseUp(Event event) {
 					e.widget = this;
 					e.time = event.time;
 					e.rect = rect;
-					for (int j = 0; j < listListeners.length; i++) {
+					for (int j = 0; j < listListeners.length; j++) {
 						listListeners[j].showList(e);
 					}
 				}
