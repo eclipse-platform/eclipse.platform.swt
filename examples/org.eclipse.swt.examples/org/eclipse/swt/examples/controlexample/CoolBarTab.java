@@ -68,11 +68,10 @@ class CoolBarTab extends Tab {
 		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));		
 		pushItem = new CoolItem (coolBar, SWT.NULL);
 		pushItem.setControl (toolBar);
-		Point size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		size = pushItem.computeSize(size.x, size.y);
-		pushItem.setSize(size);
-		pushItem.setPreferredSize(size);
-		
+		Point pushSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		pushSize = pushItem.computeSize(pushSize.x, pushSize.y);
+		pushItem.setSize(pushSize);
+				
 		/* create the dropdown toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.DROP_DOWN);
@@ -85,11 +84,10 @@ class CoolBarTab extends Tab {
 		item.addSelectionListener (new DropDownSelectionListener());
 		dropDownItem = new CoolItem (coolBar, SWT.NULL);
 		dropDownItem.setControl (toolBar);
-		size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		size = dropDownItem.computeSize(size.x, size.y);
-		dropDownItem.setSize(size);
-		dropDownItem.setPreferredSize(size);
-		
+		Point dropSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		dropSize = dropDownItem.computeSize(dropSize.x, dropSize.y);
+		dropDownItem.setSize(dropSize);
+				
 		/* create the radio button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.RADIO);
@@ -103,10 +101,9 @@ class CoolBarTab extends Tab {
 		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
 		radioItem = new CoolItem (coolBar, SWT.NULL);
 		radioItem.setControl (toolBar);
-		size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		size = radioItem.computeSize(size.x, size.y);
-		radioItem.setSize(size);
-		radioItem.setPreferredSize(size);
+		Point radioSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		radioSize = radioItem.computeSize(radioSize.x, radioSize.y);
+		radioItem.setSize(radioSize);
 		
 		/* create the check button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -124,14 +121,23 @@ class CoolBarTab extends Tab {
 		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
 		checkItem = new CoolItem (coolBar, SWT.NULL);
 		checkItem.setControl (toolBar);
-		size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		size = checkItem.computeSize(size.x, size.y);
-		checkItem.setSize(size);
-		checkItem.setPreferredSize(size);
+		Point checkSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		checkSize = checkItem.computeSize(checkSize.x, checkSize.y);
+		checkItem.setSize(checkSize);
 		
 		/* if we have saved state, restore it */
 		if (order != null) {
 			coolBar.setItemLayout(order, wrapIndices, sizes);
+			/* 
+			 * special case: because setItemLayout will restore the items
+			 * to the sizes the user left them at, the preferred size may not
+			 * be the same as the actual size. Thus we must explicitly set
+			 * the preferred sizes.
+			 */
+			pushItem.setPreferredSize(pushSize);
+			dropDownItem.setPreferredSize(dropSize);
+			radioItem.setPreferredSize(radioSize);
+			checkItem.setPreferredSize(checkSize);
 		}
 		else {
 			coolBar.setWrapIndices(new int[] {1, 3});
