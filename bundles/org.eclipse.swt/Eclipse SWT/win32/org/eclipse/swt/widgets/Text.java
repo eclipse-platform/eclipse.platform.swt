@@ -377,23 +377,32 @@ void fixAlignment () {
 	* according to the orientation and mirroring.
 	*/
 	if ((style & SWT.MIRRORED) != 0) return;
-	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int bits0 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
 		if ((style & SWT.RIGHT) != 0) {
-			bits |= OS.WS_EX_RIGHT;
+			bits0 |= OS.WS_EX_RIGHT;
+			bits1 |= OS.ES_RIGHT;
 		}
 		if ((style & SWT.LEFT) != 0) {
-			bits &=~ OS.WS_EX_RIGHT;
+			bits0 &= ~OS.WS_EX_RIGHT;
+			bits1 &= ~OS.ES_RIGHT;
 		}
 	} else {
 		if ((style & SWT.RIGHT) != 0) {
-			bits &=~ OS.WS_EX_RIGHT;
+			bits0 &= ~OS.WS_EX_RIGHT;
+			bits1 &= ~OS.ES_RIGHT;
 		}
 		if ((style & SWT.LEFT) != 0) {
-			bits |= OS.WS_EX_RIGHT;
+			bits0 |= OS.WS_EX_RIGHT;
+			bits1 |= OS.ES_RIGHT;
 		}
 	}
-	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	if ((style & SWT.CENTER) != 0) {
+		bits1 |= OS.ES_CENTER;
+	}	
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits0);
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
 }
 
 /**
@@ -1223,6 +1232,40 @@ public void setFont (Font font) {
 }
 
 /**
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
+ * <p>
+ *
+ * @param orientation new orientation bit
+ * @return <code>true</code> if the orientation was changed and <code>false</code> otherwise.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public boolean setOrientation (int orientation) {
+	checkWidget();
+	if (OS.IsWinCE) return false;
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return false;
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return false;
+	style &= ~flags;
+	style |= orientation & flags;
+	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR;
+	} else {
+		bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	fixAlignment ();
+	return true;
+}
+
+/**
  * Sets the selection.
  * <p>
  * Indexing is zero based.  The range of
@@ -1560,7 +1603,6 @@ int wcsToMbcsPos (int wcsPos) {
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if ((style & SWT.CENTER) != 0) bits |= OS.ES_CENTER;
-	if ((style & SWT.RIGHT) != 0) bits |= OS.ES_RIGHT;
 	if ((style & SWT.READ_ONLY) != 0) bits |= OS.ES_READONLY;
 	if ((style & SWT.SINGLE) != 0) return bits | OS.ES_AUTOHSCROLL;
 	bits |= OS.ES_MULTILINE | OS.ES_AUTOHSCROLL | OS.ES_NOHIDESEL;	

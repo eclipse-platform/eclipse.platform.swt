@@ -56,6 +56,7 @@
 #ifdef _WIN32_WCE
 #define NO_BROWSEINFO
 #define NO_CHOOSEFONT
+#define NO_COMBOBOXINFO
 #define NO_DOCINFO
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
@@ -151,6 +152,14 @@ void setCHOOSEFONTFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpStruct);
 #define getCHOOSEFONTFields(a,b,c) NULL
 #define setCHOOSEFONTFields(a,b,c)
 #endif /* NO_CHOOSEFONT */
+
+#ifndef NO_COMBOBOXINFO
+COMBOBOXINFO *getCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct);
+void setCOMBOBOXINFOFields(JNIEnv *env, jobject lpObject, COMBOBOXINFO *lpStruct);
+#else
+#define getCOMBOBOXINFOFields(a,b,c) NULL
+#define setCOMBOBOXINFOFields(a,b,c)
+#endif
 
 #ifndef NO_COMPOSITIONFORM
 COMPOSITIONFORM *getCOMPOSITIONFORMFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpStruct);

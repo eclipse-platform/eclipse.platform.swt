@@ -2068,6 +2068,7 @@ public static final native int GetClipboardFormatNameA (int format, byte[] lpszF
 public static final native int GetClipboardFormatNameW (int format, char[] lpszFormatName, int cchMaxCount);
 public static final native int GetClipBox (int hdc, RECT lprc);
 public static final native int GetClipRgn (int hdc, int hrgn);
+public static final native boolean GetComboBoxInfo (int hwndCombo, COMBOBOXINFO pcbi);
 public static final native int GetCurrentObject (int hdc, int uObjectType);
 public static final native int GetCurrentProcessId ();
 public static final native int GetCurrentThreadId ();

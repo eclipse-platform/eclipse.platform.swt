@@ -64,6 +64,7 @@
 #define NO_GetCharacterPlacementW
 #define NO_GetClassInfoA
 #define NO_GetClipboardFormatNameA
+#define NO_GetComboBoxInfo
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
@@ -2000,6 +2001,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetClipboardFormatNameW)
 	return rc;
 }
 #endif /* NO_GetClipboardFormatNameW */
+
+#ifndef NO_GetComboBoxInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	COMBOBOXINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	
+	DEBUG_CALL("GetComboBoxInfo\n\n")
+
+	if (arg1) lparg1 = getCOMBOBOXINFOFields(env, arg1, &_arg1);
+	rc = (jboolean)GetComboBoxInfo((HWND)arg0, lparg1);
+	if (arg1) setCOMBOBOXINFOFields(env, arg1, lparg1);
+	return rc;
+}
+#endif
 
 #ifndef NO_GetCurrentObject
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentObject)
