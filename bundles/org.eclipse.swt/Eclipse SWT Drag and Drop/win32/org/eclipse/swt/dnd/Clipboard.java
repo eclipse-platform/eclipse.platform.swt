@@ -536,12 +536,12 @@ private FORMATETC[] _getAvailableTypes() {
 	int rc = dataObject.EnumFormatEtc(COM.DATADIR_GET, ppFormatetc);
 	dataObject.Release();
 	if (rc != COM.S_OK)return types;
-	IEnumFORMATETC enum = new IEnumFORMATETC(ppFormatetc[0]);
+	IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(ppFormatetc[0]);
 	// Loop over enumerator and save any types that match what we are looking for
 	int rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 	int[] pceltFetched = new int[1];
-	enum.Reset();
-	while (enum.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {
+	enumFormatetc.Reset();
+	while (enumFormatetc.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {
 		FORMATETC formatetc = new FORMATETC();
 		COM.MoveMemory(formatetc, rgelt, FORMATETC.sizeof);
 		FORMATETC[] newTypes = new FORMATETC[types.length + 1];
@@ -550,7 +550,7 @@ private FORMATETC[] _getAvailableTypes() {
 		types = newTypes;
 	}
 	OS.GlobalFree(rgelt);
-	enum.Release();
+	enumFormatetc.Release();
 	return types;
 }
 }

@@ -642,14 +642,14 @@ private boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, i
 		if (dataObject.EnumFormatEtc(COM.DATADIR_GET, address) != COM.S_OK) {
 			return false;
 		}
-		IEnumFORMATETC enum = new IEnumFORMATETC(address[0]);
+		IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(address[0]);
 		try {
 			// Loop over enumerator and save any types that match what we are looking for
 			int rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 			try {
 				int[] pceltFetched = new int[1];
-				enum.Reset();
-				while (enum.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {
+				enumFormatetc.Reset();
+				while (enumFormatetc.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {
 					TransferData transferData = new TransferData();
 					transferData.formatetc = new FORMATETC();
 					COM.MoveMemory(transferData.formatetc, rgelt, FORMATETC.sizeof);
@@ -669,7 +669,7 @@ private boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, i
 				OS.GlobalFree(rgelt);
 			}
 		} finally {
-			enum.Release();
+			enumFormatetc.Release();
 		}
 	} finally {
 		dataObject.Release();
