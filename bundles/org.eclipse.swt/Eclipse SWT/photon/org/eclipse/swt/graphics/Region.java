@@ -82,8 +82,8 @@ public void dispose () {
 public boolean equals (Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
-	int rgn = ((Region)object).handle;
-	return handle == rgn;
+	Region region = (Region)object;
+	return handle == region.handle;
 }
 
 public Rectangle getBounds() {

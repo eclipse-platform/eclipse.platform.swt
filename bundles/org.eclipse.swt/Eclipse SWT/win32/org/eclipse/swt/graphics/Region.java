@@ -151,10 +151,8 @@ public void dispose () {
 public boolean equals (Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
-	int rgn = ((Region)object).handle;
-	if (handle == rgn) return true;
-	if (rgn == 0) return false;
-	return OS.EqualRgn (handle, rgn);
+	Region rgn = (Region)object;
+	return handle == rgn.handle;
 }
 
 /**

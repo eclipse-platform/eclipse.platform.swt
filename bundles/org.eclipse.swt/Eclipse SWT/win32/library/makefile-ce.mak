@@ -7,18 +7,17 @@
 CPU=ARM
 
 maj_ver=2
-min_ver=005
+min_ver=012
 bld_num=0
 
 DLLPREFIX=swt
-OSPREFIX=win32
+OSPREFIX=win32-ce
 DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).dll
 
 LIBPATH=# declaration
 LIBNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).lib
 
-SWTDEFS=-DSWT_LIBRARY_MAJOR_VERSION=$(maj_ver) -DSWT_LIBRARY_MINOR_VERSION=$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num)
-
+SWTDEFS=-DSWT_LIBRARY_VERSION=$(maj_ver)$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num)
 .c.obj:
 	clarm /nologo /c /W3 $(SWTDEFS) -DJ9WINCE -D _WIN32_WCE=300 -D "MS Pocket PC" /D UNDER_CE=300 /D "UNICODE" /D "_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
 

@@ -138,10 +138,8 @@ public void dispose () {
 public boolean equals (Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
-	int xRegion = ((Region)object).handle;
-	if (handle == xRegion) return true;
-	if (xRegion == 0) return false;
-	return OS.XEqualRegion(handle, xRegion);
+	Region region = (Region)object;
+	return handle == region.handle;
 }
 /**
  * Returns a rectangle which represents the rectangular

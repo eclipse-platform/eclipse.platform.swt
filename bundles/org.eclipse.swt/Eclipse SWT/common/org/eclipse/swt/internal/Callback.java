@@ -166,6 +166,7 @@ static String getOS () {
 	String name = System.getProperty("os.name");
 	if (name == null) return "unknown";
 	name = name.toLowerCase ();
+	if (name.indexOf ("windows ce") == 0) return "win32-ce";
 	if (name.indexOf ("win") == 0) return "win32";
 	if (name.indexOf ("sun") == 0) return "solaris";
 	return name;
