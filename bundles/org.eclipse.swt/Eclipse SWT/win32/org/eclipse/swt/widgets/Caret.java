@@ -215,8 +215,12 @@ public boolean getVisible () {
 	return isVisible;
 }
 
+boolean hasFocus () {
+	return parent.handle == OS.GetFocus ();
+}
+
 boolean isFocusCaret () {
-	return parent.caret == this && parent.isFocusControl ();
+	return parent.caret == this && hasFocus ();
 }
 
 /**
@@ -238,7 +242,7 @@ boolean isFocusCaret () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return isVisible && parent.isVisible () && parent.hasFocus ();
+	return isVisible && parent.isVisible () && hasFocus ();
 }
 
 void killFocus () {
@@ -333,10 +337,10 @@ public void setBounds (int x, int y, int width, int height) {
 	this.width = width;  this.height = height;
 	if (sameExtent) {
 		moved = true;
-		if (isVisible && parent.hasFocus ()) move ();
+		if (isVisible && hasFocus ()) move ();
 	} else {
 		resized = true;
-		if (isVisible && parent.hasFocus ()) resize ();
+		if (isVisible && hasFocus ()) resize ();
 	}
 }
 
@@ -393,7 +397,7 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	if (isVisible && parent.hasFocus ()) {
+	if (isVisible && hasFocus ()) {
 		int hFont = 0;
 		if (font != null) hFont = font.handle;
 		if (hFont == 0) hFont = defaultFont ();
@@ -423,7 +427,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.image = image;
-	if (isVisible && parent.hasFocus ()) resize ();
+	if (isVisible && hasFocus ()) resize ();
 }
 
 void setIMEFont (int hFont) {
@@ -455,7 +459,7 @@ public void setLocation (int x, int y) {
 	if (this.x == x && this.y == y) return;
 	this.x = x;  this.y = y;
 	moved = true;
-	if (isVisible && parent.hasFocus ()) move ();
+	if (isVisible && hasFocus ()) move ();
 }
 
 /**
@@ -492,7 +496,7 @@ public void setSize (int width, int height) {
 	if (this.width == width && this.height == height) return;
 	this.width = width;  this.height = height;
 	resized = true;
-	if (isVisible && parent.hasFocus ()) resize ();
+	if (isVisible && hasFocus ()) resize ();
 }
 
 /**
