@@ -233,8 +233,8 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* contains the handle to the scroll bar.  The fix is to check for
 	* both.
 	*/
-	if ((lParam == 0 || lParam == handle) && horizontalBar != null) {
-		return wmScroll (horizontalBar, OS.WM_HSCROLL, wParam, lParam);
+	if (horizontalBar != null && (lParam == 0 || lParam == handle)) {
+		return wmScroll (horizontalBar, handle, OS.WM_HSCROLL, wParam, lParam);
 	}
 	return result;
 }
@@ -319,7 +319,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_VSCROLL (int wParam, int lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
-
 	/*
 	* Bug on WinCE.  lParam should be NULL when the message is not sent
 	* by a scroll bar control, but it contains the handle to the window.
@@ -327,20 +326,20 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* contains the handle to the scroll bar.  The fix is to check for
 	* both.
 	*/
-	if ((lParam == 0 || lParam == handle) && verticalBar != null) {
-		return wmScroll (verticalBar, OS.WM_VSCROLL, wParam, lParam);
+	if (verticalBar != null && (lParam == 0 || lParam == handle)) {
+		return wmScroll (verticalBar, handle, OS.WM_VSCROLL, wParam, lParam);
 	}
 	return result;
 }
 
-LRESULT wmScroll (ScrollBar bar, int msg, int wParam, int lParam) {
+LRESULT wmScroll (ScrollBar bar, int hwnd, int msg, int wParam, int lParam) {
 	LRESULT result = null;
 	if ((state & CANVAS) != 0) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_TRACKPOS | OS.SIF_POS | OS.SIF_RANGE;
-		OS.GetScrollInfo (handle, type, info);
+		OS.GetScrollInfo (hwnd, type, info);
 		info.fMask = OS.SIF_POS;
 		int code = wParam & 0xFFFF;
 		switch (code) {
@@ -376,9 +375,9 @@ LRESULT wmScroll (ScrollBar bar, int msg, int wParam, int lParam) {
 				info.nPos = Math.max (info.nMin, info.nPos - pageIncrement);
 				break;
 		}
-		OS.SetScrollInfo (handle, type, info, true);
+		OS.SetScrollInfo (hwnd, type, info, true);
 	} else {
-		int code = callWindowProc (handle, msg, wParam, lParam);
+		int code = callWindowProc (hwnd, msg, wParam, lParam);
 		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	bar.wmScrollChild (wParam, lParam);
