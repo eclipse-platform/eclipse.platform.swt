@@ -651,6 +651,7 @@ void destroyItem (TableItem item) {
 		selectedItems = newSelectedItems;
 	}
 	if (item == anchorItem) anchorItem = null;
+	if (item == lastClickedItem) lastClickedItem = null;
 }
 int getCellPadding () {
 	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
@@ -2641,22 +2642,18 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget ();
-	setFocusItem (null, false);
-	TableItem[] items = this.items;
-	this.items = new TableItem [0];
-	selectedItems = new TableItem [0];
-	anchorItem = lastClickedItem = null;
-	for (int i = 0; i < itemsCount; i++) {
-		items [i].dispose (false);
+	setRedraw (false);
+	setFocusItem (null, false);		/* do this upfront for performance */
+	while (itemsCount > 0) {
+		items [0].dispose (true);
 	}
-	itemsCount = topIndex = 0;
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
 	vBar.setMaximum (1);
 	hBar.setMaximum (1);
 	vBar.setVisible (false);
 	hBar.setVisible (false);
-	redraw ();
+	setRedraw (true);
 }
 void removeSelectedItem (int index) {
 	TableItem[] newSelectedItems = new TableItem [selectedItems.length - 1];

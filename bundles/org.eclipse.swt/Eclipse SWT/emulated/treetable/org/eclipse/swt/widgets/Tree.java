@@ -457,6 +457,7 @@ void destroyItem (TreeItem item) {
 	}
 	if (item == anchorItem) anchorItem = null;
 	if (item == insertMarkItem) insertMarkItem = null;
+	if (item == lastClickedItem) lastClickedItem = null;
 }
 TreeItem[] getAllItems () {
 	int childCount = items.length;
@@ -2487,23 +2488,18 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
  */
 public void removeAll () {
 	checkWidget ();
-	setFocusItem (null, false);
-	TreeItem[] items = this.items;
-	this.items = new TreeItem [0];
-	selectedItems = new TreeItem [0];
-	availableItems = new TreeItem [0];
-	anchorItem = insertMarkItem = lastClickedItem = null;
-	for (int i = 0; i < items.length; i++) {
-		items [i].dispose (false);
+	setRedraw (false);
+	setFocusItem (null, false);		/* do this upfront for performance */
+	while (items.length > 0) {
+		items [0].dispose (true);
 	}
-	topIndex = availableItemsCount = 0;
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
 	vBar.setMaximum (1);
 	hBar.setMaximum (1);
 	vBar.setVisible (false);
 	hBar.setVisible (false);
-	redraw ();
+	setRedraw (true);
 }
 void removeSelectedItem (int index) {
 	TreeItem[] newSelectedItems = new TreeItem [selectedItems.length - 1];

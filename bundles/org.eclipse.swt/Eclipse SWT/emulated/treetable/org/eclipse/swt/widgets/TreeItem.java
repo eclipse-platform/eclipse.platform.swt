@@ -82,7 +82,19 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	this (parent, style, checkNull (parent).items.length);
+	super (parent, style);
+	this.parent = parent;
+	int index = parent.items.length;
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
+	}
+	parent.createItem (this, index);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -162,7 +174,21 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	this (parentItem, style, checkNull (parentItem).items.length);
+	super (parentItem, style);
+	this.parentItem = parentItem;
+	parent = parentItem.parent;
+	depth = parentItem.depth + 1;
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
+	}
+	int index = parentItem.items.length;
+	parentItem.addItem (this, index);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -196,7 +222,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	super (checkNull (parentItem).parent, style);
+	super (parentItem, style);
 	this.parentItem = parentItem;
 	parent = parentItem.parent;
 	depth = parentItem.depth + 1;
@@ -1559,8 +1585,9 @@ public void removeAll () {
 		parent.setFocusItem (this, false);
 	}
 
-	for (int i = 0; i < items.length; i++) {
-		items [i].dispose (true);
+	while (items.length > 0) {
+		items [0].dispose (true);
+		removeItem (items [0], 0);
 	}
 	items = NO_ITEMS;
 	expanded = false;
