@@ -340,6 +340,18 @@ public void test_getPixelII() {
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for y out of bounds", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
+	int width = 3;
+	int height = 3;
+	int depth = 4;
+	byte pixelValue = 1;
+	byte[] data = {(byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4)}; 
+	imageData = new ImageData(width, height, depth, new PaletteData(new RGB[] {new RGB(0, 0, 255), new RGB(111, 111, 111)}), 1, data);
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			int pixel = imageData.getPixel(x, y);
+			assertEquals("Bad pixel data", pixelValue, pixel);
+		}
+	}
 }
 
 public void test_getPixelsIII$BI() {
