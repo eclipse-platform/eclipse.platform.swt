@@ -42,7 +42,7 @@ public class NativeStats {
 	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "KDE", "XPCOM", "COM"};
 
 	
-	public static class NativeFunction {
+	public static class NativeFunction implements Comparable {
 		String name;
 		int callCount;
 		
@@ -61,6 +61,9 @@ public class NativeStats {
 
 	public String getName() {
 		return name;
+	}
+	public int compareTo(Object func) {
+		return ((NativeFunction)func).callCount - callCount;
 	}
 	}
 	
@@ -108,11 +111,7 @@ public void dump(Hashtable snapshot, PrintStream ps) {
 	
 void dump(String className, NativeFunction[] funcs, PrintStream ps) {
 	if (funcs == null) return;
-	Arrays.sort(funcs, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((NativeFunction)b).getCallCount() - ((NativeFunction)a).getCallCount();
-		}
-	});
+	Arrays.sort(funcs);
 	int total = 0;
 	for (int i = 0; i < funcs.length; i++) {
 		NativeFunction func = funcs[i];
