@@ -964,10 +964,6 @@ public Control getCursorControl () {
 	return null;
 }
 
-public Point getCursorSize () {
-	return new Point (16, 16);
-}
-
 /**
  * Returns the location of the on-screen pointer relative
  * to the top left corner of the screen.
@@ -984,6 +980,11 @@ public Point getCursorLocation () {
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (pt);
 	return new Point (pt.h, pt.v);
+}
+
+public Point getCursorSize () {
+	checkDevice ();
+	return new Point (16, 16);
 }
 
 /**

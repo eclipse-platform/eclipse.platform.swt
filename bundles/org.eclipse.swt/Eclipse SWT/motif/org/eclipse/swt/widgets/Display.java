@@ -1097,6 +1097,13 @@ public Point getCursorLocation () {
 	OS.XQueryPointer (xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
+public Point getCursorSize () {
+	checkDevice ();
+	int xDrawable = OS.XDefaultRootWindow (xDisplay);
+	int [] width_return = new int [1], height_return = new int [1];
+	OS.XQueryBestCursor (xDisplay, xDrawable, 1024, 1024, width_return, height_return);
+	return new Point (width_return [0], height_return [0]);
+}
 /**
  * Returns the default display. One is created (making the
  * thread that invokes this method its user-interface thread)
@@ -1313,12 +1320,6 @@ public Monitor [] getMonitors () {
 		monitors = new Monitor [] { monitor };			
 	}
 	return monitors;
-}
-public Point getCursorSize () {
-	int xDrawable = OS.XDefaultRootWindow (xDisplay);
-	int [] width_return = new int [1], height_return = new int [1];
-	OS.XQueryBestCursor (xDisplay, xDrawable, 1024, 1024, width_return, height_return);
-	return new Point (width_return [0], height_return [0]);
 }
 /**
  * Returns the primary monitor for that device.

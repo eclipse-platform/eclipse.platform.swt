@@ -813,11 +813,6 @@ public Control getCursorControl () {
 	return null;
 }
 
-public Point getCursorSize () {
-	/* Standard cursor size is defined in documentation for gdk_cursor_new_from_pixmap */
-	return new Point (16, 16);
-}
-
 boolean filterEvent (Event event) {
 	if (filterTable != null) filterTable.sendEvent (event);
 	return false;
@@ -844,6 +839,12 @@ public Point getCursorLocation () {
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
 	return new Point (x [0], y [0]);
+}
+
+public Point getCursorSize () {
+	checkDevice ();
+	/* Standard cursor size is defined in documentation for gdk_cursor_new_from_pixmap */
+	return new Point (16, 16);
 }
 
 /**
