@@ -1012,13 +1012,15 @@ public void setWrapIndices (int[] data) {
 	int itemIndex = 0;
 	for (int i = 0; i <= data.length; i++) {
 		int nextWrap = (i < data.length) ? data[i] : allItems.length;
-		row = new CoolItem[nextWrap - itemIndex];
-		System.arraycopy(allItems, itemIndex, row, 0, row.length); 
-		itemIndex += row.length;
-		newItems = new CoolItem[items.length + 1][];
-		System.arraycopy(items, 0, newItems, 0, items.length);
-		newItems[items.length] = row;
-		items = newItems;
+		if (nextWrap != 0) {
+			row = new CoolItem[nextWrap - itemIndex];
+			System.arraycopy(allItems, itemIndex, row, 0, row.length); 
+			itemIndex += row.length;
+			newItems = new CoolItem[items.length + 1][];
+			System.arraycopy(items, 0, newItems, 0, items.length);
+			newItems[items.length] = row;
+			items = newItems;
+		}
 	}
 	relayout();
 }
