@@ -587,15 +587,37 @@ public void test_getTextII() {
 	assertEquals("", text.getText());
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
-	// these tests should not cause a null pointer exception, checks not implemented yet	
-	if (fCheckOutOfRangeBehaviour) {
-		text.setText("");
-		assertEquals("", text.getText(3, 5));
-		text.setText("01234567890");
-		assertEquals(":d:", text.getText(3, 100));
-		text.setText("01234567890");
-		assertEquals("34", text.getText(5, 3));
-	}
+
+	try {
+		text.getText(-1, 2);
+		fail("no exception thrown for negative start");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(3, 100);
+		fail("no exception thrown for out-of-range end");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(5, 3);
+		fail("no exception thrown for start > end");
+	} catch (IllegalArgumentException e) {}
+	
+	text.setText("");
+	try {
+		text.getText(-1, 0);
+		fail("no exception thrown for negative start");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(0, 10);
+		fail("no exception thrown for out-of-range end");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(1, 0);
+		fail("no exception thrown for start > end");
+	} catch (IllegalArgumentException e) {}
 }
 
 public void test_getTextLimit() {
@@ -1067,15 +1089,36 @@ public void test_setTextLjava_lang_String() {
 	assertEquals("", text.getText());
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
-	// these tests should not cause a null pointer exception, checks not implemented yet	
-	if (fCheckOutOfRangeBehaviour) {
-		text.setText("");
-		assertEquals("", text.getText(3, 5));
-		text.setText("01234567890");
-		assertEquals("34567890", text.getText(3, 100));
-		text.setText("01234567890");
-		assertEquals("34", text.getText(5, 3));
-	}
+	try {
+		text.getText(-1, 2);
+		fail("no exception thrown for negative start");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(3, 100);
+		fail("no exception thrown for out-of-range end");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(5, 3);
+		fail("no exception thrown for start > end");
+	} catch (IllegalArgumentException e) {}
+	
+	text.setText("");
+	try {
+		text.getText(-1, 0);
+		fail("no exception thrown for negative start");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(0, 10);
+		fail("no exception thrown for out-of-range end");
+	} catch (IllegalArgumentException e) {}
+	
+	try {
+		text.getText(1, 0);
+		fail("no exception thrown for start > end");
+	} catch (IllegalArgumentException e) {}
 }
 
 public void test_setTopIndexI() {
