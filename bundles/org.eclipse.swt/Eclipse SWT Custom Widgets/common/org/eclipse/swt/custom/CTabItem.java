@@ -577,7 +577,7 @@ public boolean isShowing () {
 		return x <= rightEdge;
 	}
 	int extra = parent.simple || index != parent.selectedIndex ? 0 : parent.curveWidth - 2*parent.curveIndent;
-	return x + width + extra < rightEdge;
+	return x + width + extra <= rightEdge;
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
