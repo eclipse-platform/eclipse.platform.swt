@@ -411,8 +411,8 @@ int processSelection (int int0, int int1, int int2) {
 void releaseChild () {
 	super.releaseChild ();
 	if (menu != null) {
-		menu.dispose ();
 		if (menu.selectedItem == this) menu.selectedItem = null;
+		menu.dispose ();
 	}
 	menu = null;
 }
