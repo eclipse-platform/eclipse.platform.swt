@@ -507,6 +507,13 @@ public int indexOf (String string, int start) {
 boolean isDropped () {
 	return popup.getVisible ();
 }
+public boolean isFocusControl () {
+	if (text.isFocusControl() || arrow.isFocusControl() || list.isFocusControl() || popup.isFocusControl()) {
+		return true;
+	} else {
+		return super.isFocusControl();
+	}
+}
 void internalLayout () {
 	if (isDropped ()) dropDown (false);
 	
