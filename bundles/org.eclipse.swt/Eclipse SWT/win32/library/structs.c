@@ -938,7 +938,7 @@ void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct, LOGFON
     (*env)->SetByteField(env,lpObject,lpCache->lfPitchAndFamily, lpStruct->lfPitchAndFamily);
     {
     WCHAR lfFaceName [32] = {0};
-	MultiByteToWideChar (CP_ACP, MB_PRECOMPOSED, lpStruct->lfFaceName, 32, lfFaceName, 32);
+	MultiByteToWideChar (CP_ACP, MB_PRECOMPOSED, lpStruct->lfFaceName, -1, lfFaceName, 32);
     (*env)->SetCharField(env,lpObject,lpCache->lfFaceName0, lfFaceName[0]);
     (*env)->SetCharField(env,lpObject,lpCache->lfFaceName1, lfFaceName[1]);
     (*env)->SetCharField(env,lpObject,lpCache->lfFaceName2, lfFaceName[2]);
