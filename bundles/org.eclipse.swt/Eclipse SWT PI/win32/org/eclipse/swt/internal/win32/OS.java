@@ -184,6 +184,7 @@ public class OS {
 	public static final int CB_SELECTSTRING = 0x14d;
 	public static final int CB_SETCURSEL = 0x14e;
 	public static final int CB_SETEDITSEL = 0x142;
+	public static final int CB_SHOWDROPDOWN = 0x14f;
 	public static final int CCM_FIRST = 0x2000;
 	public static final int CCM_SETBKCOLOR = 0x2001;
 	public static final int CCS_NODIVIDER = 0x40;
@@ -278,6 +279,7 @@ public class OS {
 	public static final int DLGC_WANTALLKEYS = 0x4;
 	public static final int DLGC_WANTARROWS = 0x1;
 	public static final int DLGC_WANTTAB = 0x2;
+	public static final int DM_SETDEFID = OS.WM_USER + 1;
 	public static final int DSS_DISABLED = 0x20;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DST_BITMAP = 0x4;
@@ -348,6 +350,7 @@ public class OS {
 	public static final int GTL_PRECISE = 0x2;
 	public static final int GT_DEFAULT = 0x0;
 	public static final int GWL_EXSTYLE = 0xffffffec;
+	public static final int GWL_ID = -12;
 	public static final int GWL_STYLE = 0xfffffff0;
 	public static final int GWL_USERDATA = 0xffffffeb;
 	public static final int GWL_WNDPROC = 0xfffffffc;
@@ -838,6 +841,7 @@ public class OS {
 	public static final int TBSTYLE_FLAT = 0x800;
 	public static final int TBSTYLE_LIST = 0x1000;
 	public static final int TBSTYLE_TOOLTIPS = 0x100;
+	public static final int TBSTYLE_TRANSPARENT = 0x8000;
 	public static final int TBSTYLE_WRAPABLE = 0x200;
 	public static final int TBS_AUTOTICKS = 0x1;
 	public static final int TBS_BOTH = 0x8;
@@ -955,6 +959,7 @@ public class OS {
 	public static final int TVM_GETITEMRECT = 0x1104;
 	public static final int TVM_GETNEXTITEM = 0x110a;
 	public static final int TVM_GETTEXTCOLOR = 0x1120;
+	public static final int TVM_GETVISIBLECOUNT = OS.TV_FIRST + 16;
 	public static final int TVM_HITTEST = 0x1111;
 	public static final int TVM_INSERTITEM = IsUnicode ? 0x1132 : 0x1100;
 	public static final int TVM_SELECTITEM = 0x110b;
@@ -989,6 +994,7 @@ public class OS {
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int TV_FIRST = 0x1100;
+	public static final int UIS_INITIALIZE = 3;
 	public static final int VERTRES = 0xa;
 	public static final int VK_BACK = 0x8;
 	public static final int VK_CAPITAL = 0x14;
@@ -1043,6 +1049,7 @@ public class OS {
 	public static final int WM_ACTIVATE = 0x6;
 	public static final int WM_APP = 0x8000;
 	public static final int WM_CANCELMODE = 0x1f;
+	public static final int WM_CHANGEUISTATE = 0x0127;
 	public static final int WM_CHAR = 0x102;
 	public static final int WM_CLEAR = 0x303;
 	public static final int WM_CLOSE = 0x10;
@@ -1942,6 +1949,7 @@ public static final native int EndPage (int hdc);
 public static final native int EndPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native int EnumFontFamiliesW (int hdc, char [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native int EnumFontFamiliesA (int hdc, byte [] lpszFamily, int lpEnumFontFamProc, int lParam);
+public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
 public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
 public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lsDst, int nSize);
@@ -2050,6 +2058,7 @@ public static final native boolean GetTextExtentPoint32W (int hdc, char [] lpStr
 public static final native boolean GetTextExtentPoint32A (int hdc, byte [] lpString, int cbString, SIZE lpSize);
 public static final native boolean GetTextMetricsW (int hdc, TEXTMETRIC lptm);
 public static final native boolean GetTextMetricsA (int hdc, TEXTMETRIC lptm);
+public static final native boolean GetUpdateRect (int hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean GetVersionExW (OSVERSIONINFO lpVersionInfo);
 public static final native boolean GetVersionExA (OSVERSIONINFO lpVersionInfo);

@@ -1224,6 +1224,27 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLoca
 	return (jboolean)EnumSystemLocalesW((LOCALE_ENUMPROCW)arg0, arg1);
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRect
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg0, *lparg0=NULL;
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("EqualRect\n")
+
+	if (arg0) lparg0 = getRECTFields(env, arg0, &_arg0, &PGLOB(RECTFc));
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)EqualRect((LPRECT)lparg0, (LPRECT)lparg1);
+
+	if (arg0) setRECTFields(env, arg0, lparg0, &PGLOB(RECTFc));
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRgn
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1231,7 +1252,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRgn
 
 	return (jboolean)EqualRgn((HRGN)arg0, (HRGN)arg1);
 }
-
 
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExpandEnvironmentStringsW
@@ -2872,6 +2892,24 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTickCount
 	DEBUG_CALL("GetTickCount\n")
 
 	return (jint)GetTickCount();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetUpdateRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetUpdateRect\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)GetUpdateRect((HWND)arg0, (LPRECT)lparg1, (BOOL)arg2);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetUpdateRgn
