@@ -48,8 +48,10 @@ public class CTabItem extends Item {
 	public static /*final*/ int LEFT_MARGIN = 7;
 	public static /*final*/ int RIGHT_MARGIN = 6;
 	public static /*final*/ int RIGHT_FOCUS_MARGIN = 4;
-	public static /*final*/ int MINIMUM_LEFT_MARGIN = 3;
-	public static /*final*/ int MINIMUM_RIGHT_MARGIN = 2;
+	public static /*final*/ int LEFT_SIMPLE_IMAGE_MARGIN = 3;
+	public static /*final*/ int RIGHT_SIMPLE_CLOSE_MARGIN = 2;
+	public static /*final*/ int LEFT_SIMPLE_MARGIN = 4;
+	public static /*final*/ int RIGHT_SIMPLE_MARGIN = 4;
 	public static /*final*/ int TOP_MARGIN = 2;
 	public static /*final*/ int BOTTOM_MARGIN = 2;
 	public static /*final*/ int INTERNAL_SPACING = 2;
@@ -312,12 +314,12 @@ void drawSelected(GC gc ) {
 	}
 	
 	// draw Image
-	int xDraw = x + marginLeft();
+	int xDraw = x + marginLeft(true);
 	Image image = getImage();
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
 		// only draw image if it won't overlap with close button
-		int maxImageWidth = rightEdge - xDraw - marginRight();
+		int maxImageWidth = rightEdge - xDraw - marginRight(true);
 		if (!parent.simple) maxImageWidth -= CTabFolder.CURVE_INDENT;
 		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		if (closeRect.width == 0 || imageBounds.width < maxImageWidth) {
@@ -334,7 +336,7 @@ void drawSelected(GC gc ) {
 	}
 	
 	// draw Text
-	int textWidth = rightEdge - xDraw - marginRight();
+	int textWidth = rightEdge - xDraw - marginRight(true);
 	if (!parent.simple) textWidth -= CTabFolder.CURVE_INDENT;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	if (textWidth > 0) {
@@ -408,7 +410,7 @@ void drawUnselected(GC gc) {
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
 	// draw Image
-	int xDraw = x + marginLeft();
+	int xDraw = x + marginLeft(false);
 	Image image = getImage();
 	if (image != null && parent.showUnselectedImage) {
 		Rectangle imageBounds = image.getBounds();
@@ -423,7 +425,7 @@ void drawUnselected(GC gc) {
 		xDraw += imageWidth + INTERNAL_SPACING;
 	}
 	// draw Text
-	int textWidth = x + width - xDraw - marginRight();
+	int textWidth = x + width - xDraw - marginRight(false);
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	Font gcFont = gc.getFont();
 	if (font != null) {
@@ -574,14 +576,15 @@ public boolean isShowing () {
 	}
 	return (x + width < parent.getRightItemEdge());
 }
-int marginLeft() {
-	return parent.simple ? (getImage() != null ? MINIMUM_LEFT_MARGIN : LEFT_MARGIN) : LEFT_MARGIN;
+int marginLeft(boolean isSelected) {
+	boolean hasImage = getImage() != null && (isSelected || parent.showUnselectedImage);
+	return parent.simple ? (hasImage ? LEFT_SIMPLE_IMAGE_MARGIN : LEFT_SIMPLE_MARGIN) : LEFT_MARGIN;
 }
-int marginRight() {
-	boolean close = parent.showClose || showClose;
+int marginRight(boolean isSelected) {
+	boolean hasClose = (parent.showClose || showClose) && (isSelected || parent.showUnselectedClose);
 	return parent.simple ?
-		(close ? MINIMUM_RIGHT_MARGIN : RIGHT_MARGIN) :
-		(close ? RIGHT_MARGIN : RIGHT_MARGIN + RIGHT_FOCUS_MARGIN);
+		(hasClose ? RIGHT_SIMPLE_CLOSE_MARGIN : RIGHT_SIMPLE_MARGIN) :
+		(hasClose ? RIGHT_MARGIN : RIGHT_MARGIN + RIGHT_FOCUS_MARGIN);
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
@@ -641,7 +644,7 @@ int preferredWidth(GC gc, boolean isSelected) {
 		}
 	}
 	if (!parent.simple && isSelected) w += CTabFolder.CURVE_INDENT;
-	return w + marginLeft() + marginRight();
+	return w + marginLeft(isSelected) + marginRight(isSelected);
 }
 /**
  * Sets the background color at the given column index in the receiver 

@@ -2622,7 +2622,7 @@ boolean setItemLocation() {
 			item.y = y;
 			if (showClose || item.showClose) {
 				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
-				item.closeRect.x = rightEdge - BUTTON_SIZE - item.marginRight();
+				item.closeRect.x = rightEdge - BUTTON_SIZE - item.marginRight(true);
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
 			if (item.x != oldX || item.y != oldY) changed = true;
@@ -2637,7 +2637,7 @@ boolean setItemLocation() {
 			// layout tab items from right to left thus making them invisible
 			item.x = x;
 			item.y = y;
-			item.closeRect.x = item.x + item.width - BUTTON_SIZE - item.marginRight();
+			item.closeRect.x = item.x + item.width - BUTTON_SIZE - item.marginRight(i == selectedIndex);
 			if (!simple && i == selectedIndex) item.closeRect.x -= CURVE_INDENT;
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		}
@@ -2651,9 +2651,9 @@ boolean setItemLocation() {
 			if (i == selectedIndex) {
 				int extra = simple ? 0 : CURVE_INDENT;
 				int rightEdge = Math.min(item.x + item.width - extra, getRightItemEdge() - extra);
-				item.closeRect.x = rightEdge - BUTTON_SIZE - item.marginRight();
+				item.closeRect.x = rightEdge - BUTTON_SIZE - item.marginRight(true);
 			} else {
-				item.closeRect.x = item.x + item.width - BUTTON_SIZE - item.marginRight();
+				item.closeRect.x = item.x + item.width - BUTTON_SIZE - item.marginRight(false);
 			}
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			x = x + item.width;
