@@ -22,7 +22,7 @@ public class LONG {
 		if (object == this) return true;
 		if (!(object instanceof LONG)) return false;
 		LONG obj = (LONG)object;
-		return (obj.value == this.value);
+		return obj.value == this.value;
 	}
 
 	public int hashCode () {
