@@ -470,6 +470,7 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (background == color) return;
 	if (background != null && background.equals (color)) return;
 	background = color;
 	redraw (Tree.COLUMN_ID);
@@ -538,6 +539,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
 	redraw (Tree.COLUMN_ID);
@@ -568,6 +570,7 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (foreground == color) return;
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
 	redraw (Tree.COLUMN_ID);
