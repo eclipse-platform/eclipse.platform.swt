@@ -431,7 +431,6 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			leading = Math.max (leading, metrics.getLeading());
 			aveCharWidth += metrics.getAverageCharWidth();
 		}
-		//TODO bad, motif specific
 		metrics = FontMetrics.internal_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
 	}
 	gc.dispose();

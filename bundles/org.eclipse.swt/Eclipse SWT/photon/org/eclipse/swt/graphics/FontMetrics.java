@@ -150,6 +150,15 @@ public int hashCode() {
 		handle.desc.hashCode();
 }
 
+public static FontMetrics internal_new(int ascent, int descent, int aveCharWidth, int leading, int height) {
+	FontQueryInfo info = new FontQueryInfo();
+	info.ascender = (short)-ascent;
+	info.descender = (short)descent;
+	info.style = OS.PHFONT_INFO_FIXED;
+	info.width = (short)aveCharWidth;
+	return photon_new(info);
+}
+
 public static FontMetrics photon_new(FontQueryInfo handle) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.handle = handle;
