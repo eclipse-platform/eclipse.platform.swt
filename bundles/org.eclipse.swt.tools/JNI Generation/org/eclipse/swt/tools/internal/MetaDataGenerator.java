@@ -27,6 +27,11 @@ public void generate(Class clazz) {
 	outputDelimiter();
 }
 
+public void generate(Class[] classes) {
+	generateMetaData("swt_properties_copyright");
+	super.generate(classes);
+}
+
 public void generate(Field[] fields) {
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
