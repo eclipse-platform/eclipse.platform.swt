@@ -647,7 +647,8 @@ public void setVisible (boolean visible) {
     if (WORKS) {
 		fVisible= visible;
 		if (OS.IsControlVisible(handle) != visible) {
-			OS.SetControlVisibility(handle, visible, true);
+			OS.HIViewSetVisible(handle, visible);
+			//OS.SetControlVisibility(handle, visible, true);
 			
 			parent.relayout123();
 	
@@ -659,12 +660,14 @@ public void setVisible (boolean visible) {
 			int topHandle = topHandle ();
 			if (OS.IsControlVisible(topHandle) != visible) {
 				if (visible) {
-					OS.SetControlVisibility(topHandle, true, false);
+					OS.HIViewSetVisible(handle, true);
+					//OS.SetControlVisibility(topHandle, true, false);
 					parent.relayout123();
 					sendEvent(SWT.Show);
-					redrawHandle (0, 0, 0, 0, topHandle, true);
+					//redrawHandle (0, 0, 0, 0, topHandle, true);
 				} else {
-					OS.SetControlVisibility(topHandle, false, true);
+					OS.HIViewSetVisible(handle, false);
+					//OS.SetControlVisibility(topHandle, false, true);
 					parent.relayout123();
 					sendEvent(SWT.Hide);
 				}

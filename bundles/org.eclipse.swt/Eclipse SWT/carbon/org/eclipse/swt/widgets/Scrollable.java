@@ -327,16 +327,22 @@ int topHandle () {
 	int createScrollView(int parentControlHandle, int style) {
 	
 		Display display= getDisplay();
-	
+		
 		int pos= -1;
 	
 		if (OS.IsValidControlHandle(parentControlHandle)) {
 		} else if (OS.IsValidWindowPtr(parentControlHandle)) {
 			int[] root= new int[1];
-			OS.CreateRootControl(parentControlHandle, root);
-			parentControlHandle= root[0];
+			if (OS.CreateRootControl(parentControlHandle, root) == OS.kNoErr) {
+				//OS.GetRootControl(parentControlHandle, root);
+				parentControlHandle= root[0];
+			} else {
+				OS.HIViewFindByID(OS.HIViewGetRoot(parentControlHandle), 0, root);
+				parentControlHandle= root[0];
+				pos= -1;	// below growbox
+			}
 		} else
-			System.out.println("createScrollView: don't know");
+			System.out.println("createScrollView: shouldn't happen");
 	
 		int controlHandle = MacUtil.createDrawingArea(parentControlHandle, pos, true, 0, 0, 0);
 		
