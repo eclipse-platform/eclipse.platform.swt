@@ -29,7 +29,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	int pixbufRendererHandle;
+	int modelIndex;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -68,6 +68,7 @@ public TableColumn (Table parent, int style) {
 	this.parent = parent;
 	createWidget (parent.getColumnCount ());
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>), a style value
@@ -106,6 +107,7 @@ public TableColumn (Table parent, int style, int index) {
 	this.parent = parent;
 	createWidget (index);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -132,6 +134,7 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -163,13 +166,16 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
+
 void createWidget (int index) {
 	parent.createItem (this, index);
 	text = "";
 }
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -189,11 +195,13 @@ public int getAlignment () {
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
 }
+
 public Display getDisplay () {
 	Table parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *
@@ -208,6 +216,7 @@ public Table getParent () {
 	checkWidget();
 	return parent;
 }
+
 /**
  * Gets the resizable attribute. A column that is
  * not resizable cannot be dragged by the user but
@@ -222,7 +231,7 @@ public Table getParent () {
  */
 public boolean getResizable () {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_resizable(handle);
+	return OS.gtk_tree_view_column_get_resizable (handle);
 }
 
 /**
@@ -237,7 +246,7 @@ public boolean getResizable () {
  */
 public int getWidth () {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_width(handle);
+	return OS.gtk_tree_view_column_get_width (handle);
 }
 
 /**
@@ -260,15 +269,17 @@ public void pack () {
 		OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 	}
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
-	text = null;
 	parent = null;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
@@ -293,6 +304,7 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
@@ -317,6 +329,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
 /**
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
@@ -332,9 +345,9 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	// FIXME
-	// NOT IMPLEMENTED
+	//NOT IMPLEMENTED - there is OS support
 }
+
 /**
  * Sets the resizable attribute.  A column that is
  * not resizable cannot be dragged by the user but
@@ -349,23 +362,15 @@ public void setAlignment (int alignment) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_resizable(handle, resizable);
+	OS.gtk_tree_view_column_set_resizable (handle, resizable);
 }
 
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte[] bytes = Converter.wcsToMbcs(null, string, true);
-	OS.gtk_tree_view_column_set_title(handle, bytes);
-	/*
-	* Bug in GTK.  When a table column is hidden and then shown,
-	* and new text is set into the column, the widget that shows the
-	* text is not resized to show the new text.  The fix is to force the
-	* table header to resize the widget.
-	* 
-	* FIXME - Must investigate what is the story with the new Table.
-	*/
+	byte[] bytes = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_tree_view_column_set_title (handle, bytes);
 }
 
 /**
@@ -380,7 +385,8 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-	OS.gtk_tree_view_column_set_fixed_width(handle, width);
+	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
+	OS.gtk_tree_view_column_set_fixed_width (handle, width);
 }
+
 }

@@ -705,10 +705,6 @@ int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
-int processSelectionIter (int int0, int int1, int int2) {
-	return 0;
-}
-
 int processShow (int int0, int int1, int int2) {
 	return 0;
 }
@@ -717,7 +713,15 @@ int processTimer (int id) {
 	return 0;
 }
 
-int processToggle (int int0, int int1) {
+int processTreeColumnSelection (int column) {
+	return 0;
+}
+
+int processTreeSelection (int model, int path, int iter, int[] selection, int length) {
+	return 0;
+}
+
+int processTreeToggle (int renderer, int arg1) {
 	return 0;
 }
 

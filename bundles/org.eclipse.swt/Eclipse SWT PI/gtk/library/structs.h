@@ -56,17 +56,6 @@ void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStru
 GtkAllocation *getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStruct);
 void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStruct);
 
-#ifndef NO_CLIST
-GtkCListColumn *getGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpStruct);
-void setGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpStruct);
-
-GtkCListRow *getGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpStruct);
-void setGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpStruct);
-
-GtkCTreeRow *getGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpStruct);
-void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpStruct);
-#endif /* NO_CLIST */
-
 GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);
 void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);
 

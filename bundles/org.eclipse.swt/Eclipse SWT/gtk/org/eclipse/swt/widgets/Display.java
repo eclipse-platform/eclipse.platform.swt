@@ -91,8 +91,8 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
-	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc, selectionIterProc, toggleProc;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback, selectionIterCallback, toggleCallback;
+	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback;
 	EventTable eventTable;
 
 	/* Sync/Async Widget Communication */
@@ -121,6 +121,12 @@ public class Display extends Device {
 	/* Mouse hover */
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
+	
+	/* GtkTreeView callbacks */
+	int[] treeSelection;
+	int treeSelectionLength;
+	int treeSelectionProc, treeColumnSelectionProc, treeToggleProc;
+	Callback treeSelectionCallback, treeColumnSelectionCallback, treeToggleCallback;
 	
 	/* Drag Detect */
 	int dragStartX,dragStartY;
@@ -964,17 +970,17 @@ void initializeSystemResources () {
 	COLOR_LIST_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.fg3_pixel;
-	gdkColor.red   = style.fg3_red;
-	gdkColor.green = style.fg3_green;
-	gdkColor.blue  = style.fg3_blue;
+	gdkColor.pixel = style.text3_pixel;
+	gdkColor.red   = style.text3_red;
+	gdkColor.green = style.text3_green;
+	gdkColor.blue  = style.text3_blue;
 	COLOR_LIST_SELECTION_TEXT = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.bg3_pixel;
-	gdkColor.red   = style.bg3_red;
-	gdkColor.green = style.bg3_green;
-	gdkColor.blue  = style.bg3_blue;
+	gdkColor.pixel = style.base3_pixel;
+	gdkColor.red   = style.base3_red;
+	gdkColor.green = style.base3_green;
+	gdkColor.blue  = style.base3_blue;
 	COLOR_LIST_SELECTION = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -1115,13 +1121,17 @@ void initializeCallbacks () {
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	selectionIterCallback = new Callback(this, "selectionIterProc", 4);
-	selectionIterProc = selectionIterCallback.getAddress();
-	if (selectionIterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
+	treeSelectionProc = treeSelectionCallback.getAddress();
+	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	toggleCallback = new Callback(this, "toggleProc", 3);
-	toggleProc = toggleCallback.getAddress();
-	if (toggleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	treeColumnSelectionCallback = new Callback(this, "treeColumnSelectionProc", 2);
+	treeColumnSelectionProc = treeColumnSelectionCallback.getAddress();
+	if (treeColumnSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	treeToggleCallback = new Callback(this, "treeToggleProc", 3);
+	treeToggleProc = treeToggleCallback.getAddress();
+	if (treeToggleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 /**	 
@@ -1287,6 +1297,14 @@ void releaseDisplay () {
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
+	
+	/* Dispose GtkTreeView callbacks */
+	treeSelectionCallback.dispose (); treeSelectionCallback = null;
+	treeSelectionProc = 0;
+	treeColumnSelectionCallback.dispose (); treeColumnSelectionCallback = null;
+	treeColumnSelectionProc = 0;
+	treeToggleCallback.dispose (); treeToggleCallback = null;
+	treeToggleProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
@@ -1651,12 +1669,6 @@ int timerProc (int index, int id) {
 	return 0;
 }
 
-int toggleProc (int rendererHandle, int int0, int int1) {
-	Widget widget = WidgetTable.get (int1);
-	if (widget == null) return 0;
-	return widget.processToggle (int0, int1);
-}
-
 int caretProc (int clientData, int id) {
 	caretId = 0;
 	if (currentCaret == null) {
@@ -1671,10 +1683,22 @@ int caretProc (int clientData, int id) {
 	return 0;
 }
 
-int selectionIterProc (int handle, int int0, int int1, int int2) {
-	Widget widget = WidgetTable.get (int2);
+int treeColumnSelectionProc (int column, int data) {
+	Widget widget = WidgetTable.get (data);
 	if (widget == null) return 0;
-	return widget.processSelectionIter (int0, int1, int2);
+	return widget.processTreeColumnSelection (column);
+}
+
+int treeSelectionProc (int model, int path, int iter, int data) {
+	Widget widget = WidgetTable.get (data);
+	if (widget == null) return 0;
+	return widget.processTreeSelection (model, path, iter, treeSelection, treeSelectionLength++);
+}
+
+int treeToggleProc (int renderer, int arg1, int data) {
+	Widget widget = WidgetTable.get (data);
+	if (widget == null) return 0;
+	return widget.processTreeToggle (renderer, arg1);
 }
 
 void sendEvent (int eventType, Event event) {

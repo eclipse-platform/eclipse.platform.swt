@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TreeItem extends Item {
 	Tree parent;
+	boolean grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -140,29 +141,6 @@ public TreeItem (TreeItem parentItem, int style) {
 }
 
 /**
- * Returns the receiver's background color.
- *
- * @return the background color
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public Color getBackground () {
-	checkWidget ();
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 3, ptr, -1);
-	if (ptr[0]==0) return parent.getBackground();
-	GdkColor gdkColor = new GdkColor();
-	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
-	return Color.gtk_new(getDisplay(), gdkColor);
-}
-
-/**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
  * a style value describing its behavior and appearance, and the index
@@ -206,6 +184,29 @@ static TreeItem checkNull (TreeItem item) {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, 3, ptr, -1);
+	if (ptr [0] == 0) return parent.getBackground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (getDisplay (), gdkColor);
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -217,8 +218,10 @@ static TreeItem checkNull (TreeItem item) {
  * </ul>
  */
 public Rectangle getBounds () {
-	GdkRectangle rect = new GdkRectangle();
-	OS.gtk_tree_view_get_cell_area(parent.handle, handle, parent.columnHandle, rect);
+	checkWidget ();
+	GdkRectangle rect = new GdkRectangle ();
+	int column = OS.gtk_tree_view_get_column (handle, 0);
+	OS.gtk_tree_view_get_cell_area (parent.handle, handle, column, rect);
 	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 }	
 
@@ -238,9 +241,9 @@ public Rectangle getBounds () {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 5, ptr, -1);
-	return ptr[0] != 0;
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, 5, ptr, -1);
+	return ptr [0] != 0;
 }
 
 public Display getDisplay () {
@@ -262,9 +265,9 @@ public Display getDisplay () {
  */
 public boolean getExpanded () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
-	boolean answer = OS.gtk_tree_view_row_expanded(parent.handle, path);
-	OS.gtk_tree_path_free(path);
+	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	boolean answer = OS.gtk_tree_view_row_expanded (parent.handle, path);
+	OS.gtk_tree_path_free (path);
 	return answer;
 }
 
@@ -283,12 +286,12 @@ public boolean getExpanded () {
  */
 public Color getForeground () {
 	checkWidget ();
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 2, ptr, -1);
-	if (ptr[0]==0) return parent.getBackground();
-	GdkColor gdkColor = new GdkColor();
-	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
-	return Color.gtk_new(getDisplay(), gdkColor);
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, 2, ptr, -1);
+	if (ptr [0]==0) return parent.getBackground();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (getDisplay (), gdkColor);
 }
 
 /**
@@ -306,7 +309,8 @@ public Color getForeground () {
  */
 public boolean getGrayed() {
 	checkWidget();
-	return false;
+	//NOT IMPLEMENTED
+	return grayed;
 }
 
 /**
@@ -322,7 +326,7 @@ public boolean getGrayed() {
  */
 public int getItemCount () {
 	checkWidget();
-	return parent.getItemCount (handle);
+	return  OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
 /**
@@ -375,19 +379,19 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
-	if (OS.gtk_tree_path_get_depth(path)<2) {
-		OS.gtk_tree_path_free(path);
+	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	if (OS.gtk_tree_path_get_depth (path) < 2) {
+		OS.gtk_tree_path_free (path);
 		return null;
 	}
-	OS.gtk_tree_path_up(path);
-	int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
-	OS.gtk_tree_model_get_iter(parent.modelHandle, iter, path);
-	int[] index = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, iter, 4, index, -1);
-	OS.g_free(iter);
-	OS.gtk_tree_path_free(path);
-	return parent.items[index[0]];
+	OS.gtk_tree_path_up (path);
+	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_get_iter (parent.modelHandle, iter, path);
+	int [] index = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, iter, 4, index, -1);
+	OS.g_free (iter);
+	OS.gtk_tree_path_free (path);
+	return parent.items [index [0]];
 }
 
 void releaseChild () {
@@ -397,6 +401,8 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (handle != 0) OS.g_free (handle);
+	handle = 0;
 	parent = null;
 }
 
@@ -423,8 +429,8 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	GdkColor ptr = (color != null)? color.handle : null;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 3, ptr, -1);
+	GdkColor gdkColor = color != null ? color.handle : null;
+	OS.gtk_list_store_set (parent.modelHandle, handle, 3, gdkColor, -1);
 }
 
 /**
@@ -441,7 +447,7 @@ public void setBackground (Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 5, checked, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, 5, checked, -1);
 }
 
 /**
@@ -457,6 +463,8 @@ public void setChecked (boolean checked) {
  */
 public void setGrayed (boolean grayed) {
 	checkWidget();
+	//NOT IMPLEMENTED
+	this.grayed = grayed;
 }
 
 /**
@@ -472,17 +480,17 @@ public void setGrayed (boolean grayed) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
+	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	if (expanded) {
-		blockSignal(parent.handle, SWT.Expand);
-		OS.gtk_tree_view_expand_row(parent.handle, path, false);
-		unblockSignal(parent.handle, SWT.Expand);
+		blockSignal (parent.handle, SWT.Expand);
+		OS.gtk_tree_view_expand_row (parent.handle, path, false);
+		unblockSignal (parent.handle, SWT.Expand);
 	} else {
-		blockSignal(parent.handle, SWT.Collapse);
-		OS.gtk_tree_view_collapse_row(parent.handle, path);
-		unblockSignal(parent.handle, SWT.Collapse);
+		blockSignal (parent.handle, SWT.Collapse);
+		OS.gtk_tree_view_collapse_row (parent.handle, path);
+		unblockSignal (parent.handle, SWT.Collapse);
 	}
-	OS.gtk_tree_path_free(path);
+	OS.gtk_tree_path_free (path);
 }
 
 /**
@@ -510,8 +518,8 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	GdkColor ptr = (color != null)? color.handle : null;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 2, ptr, -1);
+	GdkColor gdkColor = color != null ? color.handle : null;
+	OS.gtk_list_store_set (parent.modelHandle, handle, 2, gdkColor, -1);
 }
 
 public void setImage (Image image) {
@@ -519,38 +527,16 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.image = image;
+	super.setImage (image);
 	int pixbuf = 0;
 	if (image != null) {
-		int[] w = new int[1], h = new int[1];
-		boolean hasMask = (image.mask != 0);
-	 	OS.gdk_drawable_get_size(image.pixmap, w, h);
- 		int width = w[0], height = h[0]; 	
-		pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int colormap = OS.gdk_colormap_get_system();
-		OS.gdk_pixbuf_get_from_drawable(pixbuf, image.pixmap, colormap, 0, 0, 0, 0, width, height);
-		if (hasMask) {
-			int gdkMaskImagePtr = OS.gdk_drawable_get_image(image.mask, 0, 0, width, height);
-			if (gdkMaskImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-			int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-			byte[] line = new byte[stride];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, pixels + (y * stride), stride);
-				for (int x=0; x<width; x++) {
-					if (OS.gdk_image_get_pixel(gdkMaskImagePtr, x, y) != 0) {
-						line[x*4+3] = (byte)0xFF;
-					} else {
-						line[x*4+3] = 0;
-					}
-				}
-				OS.memmove(pixels + (y * stride), line, stride);
-			}
-			OS.g_object_unref(gdkMaskImagePtr);
-		}
-	}	
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 1, pixbuf, -1);
+		ImageList imageList = parent.imageList;
+		if (imageList == null) imageList = parent.imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = imageList.add (image);
+		pixbuf = imageList.getPixbuf (imageIndex);
+	}
+	OS.gtk_tree_store_set (parent.modelHandle, handle, 1, pixbuf, -1);
 }
 
 /**
@@ -562,8 +548,8 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte[] bytes = Converter.wcsToMbcs(null, string, true);
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 0, bytes, -1);
+	byte[] buffer = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, 0, buffer, -1);
 }
 
 }
