@@ -71,6 +71,8 @@ public class OS extends OS2 {
 	public static final int kControlSupportsEmbedding = 1 << 1;
 	public static final int kControlSupportsFocus = 1 << 2;
 	public static final int kControlTabContentRectTag = ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';
+	public static final int kControlTabInfoVersionOne = 1;
+	public static final int kControlTabInfoTag = ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';
 	public static final int kControlTabSmallProc = 129;
 	public static final int kControlUpButtonPart = 20;
 	public static final int kControlUserPaneDrawProcTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'w';
@@ -586,6 +588,7 @@ public static final native void SetControl32BitMinimum(int cHandle, int minimum)
 public static final native void SetControl32BitValue(int cHandle, int value);
 public static final native void SetControlAction(int cHandle, int actionProc);
 public static final native void SetControlBounds(int cHandle, Rect bounds);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlTabInfoRecV1 inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, Rect inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, short[] inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, int[] inData);

@@ -3564,6 +3564,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__I
 }
 #endif /* NO_SetControlData__IIII_3S */
 
+#ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	ControlTabInfoRecV1 _arg4, *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2\n")
+
+	if (arg4) lparg4 = getControlTabInfoRecV1Fields(env, arg4, &_arg4);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) setControlTabInfoRecV1Fields(env, arg4, lparg4);
+	return rc;
+}
+#endif /* NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2 */
+
 #ifndef NO_SetControlFontStyle
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -4578,9 +4594,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_ecli
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
 	NavReplyRecord _arg0, *lparg0=NULL;
-
-printf("size of NavReplyRecord is %d",sizeof(NavReplyRecord));
-printf("size of boolean is %d",sizeof(Boolean));
 
 	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II\n")
 

@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ControlTabInfoRecV1;
 
 /**
  * Instances of this class implement the notebook user interface
@@ -646,7 +647,11 @@ void setTabText(int index, String string) {
 	try {
 		String t= MacUtil.removeMnemonics(string);
 		sHandle= OS.CFStringCreateWithCharacters(t);
-		OS.setTabText(handle, index+1, sHandle);
+		ControlTabInfoRecV1 tab= new ControlTabInfoRecV1();
+		tab.version= OS.kControlTabInfoVersionOne;
+		tab.iconSuiteID= 0;
+		tab.name= sHandle;
+		OS.SetControlData(handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
 	} finally {
 		if (sHandle != 0)
 			OS.CFRelease(sHandle);

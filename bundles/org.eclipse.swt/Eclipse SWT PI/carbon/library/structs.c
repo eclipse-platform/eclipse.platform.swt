@@ -357,6 +357,43 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 }
 #endif /* NO_ControlFontStyleRec */
 
+#ifndef NO_ControlTabInfoRecV1
+typedef struct ControlTabInfoRecV1_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, iconSuiteID, name;
+} ControlTabInfoRecV1_FID_CACHE;
+
+ControlTabInfoRecV1_FID_CACHE ControlTabInfoRecV1Fc;
+
+void cacheControlTabInfoRecV1Fids(JNIEnv *env, jobject lpObject)
+{
+	if (ControlTabInfoRecV1Fc.cached) return;
+	ControlTabInfoRecV1Fc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ControlTabInfoRecV1Fc.version = (*env)->GetFieldID(env, ControlTabInfoRecV1Fc.clazz, "version", "S");
+	ControlTabInfoRecV1Fc.iconSuiteID = (*env)->GetFieldID(env, ControlTabInfoRecV1Fc.clazz, "iconSuiteID", "S");
+	ControlTabInfoRecV1Fc.name = (*env)->GetFieldID(env, ControlTabInfoRecV1Fc.clazz, "name", "I");
+	ControlTabInfoRecV1Fc.cached = 1;
+}
+
+ControlTabInfoRecV1 *getControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct)
+{
+	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fids(env, lpObject);
+	lpStruct->version = (SInt16)(*env)->GetShortField(env, lpObject, ControlTabInfoRecV1Fc.version);
+	lpStruct->iconSuiteID = (SInt16)(*env)->GetShortField(env, lpObject, ControlTabInfoRecV1Fc.iconSuiteID);
+	lpStruct->name = (CFStringRef)(*env)->GetIntField(env, lpObject, ControlTabInfoRecV1Fc.name);
+	return lpStruct;
+}
+
+void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct)
+{
+	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fids(env, lpObject);
+	(*env)->SetShortField(env, lpObject, ControlTabInfoRecV1Fc.version, (jshort)lpStruct->version);
+	(*env)->SetShortField(env, lpObject, ControlTabInfoRecV1Fc.iconSuiteID, (jshort)lpStruct->iconSuiteID);
+	(*env)->SetIntField(env, lpObject, ControlTabInfoRecV1Fc.name, (jint)lpStruct->name);
+}
+#endif /* NO_ControlTabInfoRecV1 */
+
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
 	int cached;
@@ -473,8 +510,8 @@ NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyR
 	lpStruct->replacing = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.replacing);
 	lpStruct->isStationery = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.isStationery);
 	lpStruct->translationNeeded = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.translationNeeded);
-	lpStruct->selection.descriptorType = (AEDataStorage)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_descriptorType);
-	lpStruct->selection.dataHandle = (DescType)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_dataHandle);
+	lpStruct->selection.descriptorType = (DescType)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_descriptorType);
+	lpStruct->selection.dataHandle = (AEDataStorage)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_dataHandle);
 	lpStruct->keyScript = (ScriptCode)(*env)->GetShortField(env, lpObject, NavReplyRecordFc.keyScript);
 	lpStruct->fileTranslation = (FileTranslationSpecArrayHandle)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.fileTranslation);
 	lpStruct->reserved1 = (UInt32)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.reserved1);

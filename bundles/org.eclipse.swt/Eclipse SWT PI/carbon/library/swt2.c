@@ -98,16 +98,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DrawThemeButton(
 	return status;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setTabText(JNIEnv *env, jclass zz,
-				jint cHandle, jint index, jint sHandle) {
-	ControlTabInfoRecV1 tab;
-			
-	tab.version= kControlTabInfoVersionOne;
-	tab.iconSuiteID= 0;
-	tab.name= (CFStringRef) sHandle;
-	return RC(SetControlData((ControlRef)cHandle, index, kControlTabInfoTag, sizeof(ControlTabInfoRecV1), &tab));
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setTabIcon(JNIEnv *env, jclass zz,
 				jint cHandle, jint index, jint iconHandle) {
 	ControlButtonContentInfo tab;

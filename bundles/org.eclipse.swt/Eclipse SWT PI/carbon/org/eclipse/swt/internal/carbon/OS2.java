@@ -24,7 +24,6 @@ public static final native int newColumnDesc(int propertyID, int propertyType, i
 public static final native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP, int compareCallbackUPP, int itemNotificationCallbackUPP);
 public static final native void setTXNMargins(int txHandle, short margin);
 public static final native int setTabIcon(int cHandle, int index, int iconHandle);
-public static final native int setTabText(int cHandle, int index, int sHandle);
 public static final native void getHandleData(int handle, char[] data);
 public static final native void getHandleData(int handle, int[] data);
 
