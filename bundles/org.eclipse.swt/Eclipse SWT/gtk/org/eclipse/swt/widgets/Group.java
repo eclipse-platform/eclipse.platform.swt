@@ -238,6 +238,19 @@ public String getText () {
 	return text;
 }
 
+int gtk_mnemonic_activate (int widget, int arg1) {
+	int result = super.gtk_mnemonic_activate (widget, arg1);
+	if (result == 0) setFocus ();
+	return 1;
+}
+
+void hookEvents () {
+	super.hookEvents();
+	if (labelHandle != 0) {
+		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+	}
+}
+
 int parentingHandle() {
 	return clientHandle;
 }
