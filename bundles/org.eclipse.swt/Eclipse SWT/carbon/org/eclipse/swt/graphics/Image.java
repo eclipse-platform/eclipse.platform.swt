@@ -188,7 +188,7 @@ public Image(Device device, Image srcImage, int flag) {
 			
 	this.type = srcImage.type;
 	this.mask = 0;
-	
+		
 	MacRect bounds= new MacRect();
 	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
  	int width = bounds.getWidth();
@@ -287,13 +287,9 @@ public Image(Device device, Image srcImage, int flag) {
 			int greenMask = getGreenMask(16);
 			int blueMask = getBlueMask(16);					
 			/* Calculate mask shifts */
-			int[] shift = new int[1];
-			getOffsetForMask(16, redMask, true, shift);
-			int rShift = 24 - shift[0];
-			getOffsetForMask(16, greenMask, true, shift);
-			int gShift = 24 - shift[0];
-			getOffsetForMask(16, blueMask, true, shift);
-			int bShift = 24 - shift[0];
+			int rShift = 24 - getOffsetForMask(16, redMask, true);
+			int gShift = 24 - getOffsetForMask(16, greenMask, true);
+			int bShift = 24 - getOffsetForMask(16, blueMask, true);
 			byte zeroLow = (byte)(zeroPixel & 0xFF);
 			byte zeroHigh = (byte)((zeroPixel >> 8) & 0xFF);
 			byte oneLow = (byte)(onePixel & 0xFF);
@@ -328,13 +324,9 @@ public Image(Device device, Image srcImage, int flag) {
 			greenMask = getGreenMask(srcBitsPerPixel);
 			blueMask = getBlueMask(srcBitsPerPixel);					
 			/* Calculate mask shifts */
-			shift = new int[1];
-			getOffsetForMask(srcBitsPerPixel, redMask, true, shift);
-			rShift = shift[0];
-			getOffsetForMask(srcBitsPerPixel, greenMask, true, shift);
-			gShift = shift[0];
-			getOffsetForMask(srcBitsPerPixel, blueMask, true, shift);
-			bShift = shift[0];
+			rShift = getOffsetForMask(srcBitsPerPixel, redMask, true);
+			gShift = getOffsetForMask(srcBitsPerPixel, greenMask, true);
+			bShift = getOffsetForMask(srcBitsPerPixel, blueMask, true);
 			byte zeroR = (byte)zeroColor.getRed();
 			byte zeroG = (byte)zeroColor.getGreen();
 			byte zeroB = (byte)zeroColor.getBlue();
@@ -343,21 +335,22 @@ public Image(Device device, Image srcImage, int flag) {
 			byte oneB = (byte)oneColor.getBlue();
 			for (int y = 0; y < height; y++) {
 				int xIndex = 0;
-				for (int x = 0; x < height; x++) {
-					r = srcData[index + xIndex + rShift] & 0xFF;
-					g = srcData[index + xIndex + gShift] & 0xFF;
-					b = srcData[index + xIndex + bShift] & 0xFF;
+				for (int x = 0; x < width; x++) {
+					int i= index + xIndex;
+					r = srcData[i + rShift] & 0xFF;
+					g = srcData[i + gShift] & 0xFF;
+					b = srcData[i + bShift] & 0xFF;
 					/* See if the rgb maps to 0 or 1 */
 					if ((r * r + g * g + b * b) < 98304) {
 						/* Map down to 0 */
-						destData[index + xIndex + rShift] = zeroR;
-						destData[index + xIndex + gShift] = zeroG;
-						destData[index + xIndex + bShift] = zeroB;
+						destData[i + rShift] = zeroR;
+						destData[i + gShift] = zeroG;
+						destData[i + bShift] = zeroB;
 					} else {
 						/* Map up to 1 */
-						destData[index + xIndex + rShift] = oneR;
-						destData[index + xIndex + gShift] = oneG;
-						destData[index + xIndex + bShift] = oneB;
+						destData[i + rShift] = oneR;
+						destData[i + gShift] = oneG;
+						destData[i + bShift] = oneB;
 					}
 					xIndex += destBitsPerPixel / 8;
 				}
@@ -852,53 +845,57 @@ public ImageData getImageData() {
  * have their color components aligned on byte boundaries, and 16-bit images
  * do not.
  */
-static boolean getOffsetForMask(int bitspp, int mask, boolean msbFirst, int[] poff) {
+static int getOffsetForMask(int bitspp, int mask, boolean msbFirst) {
 	if (bitspp % 8 != 0) {
-		return false;
+		System.err.println("Image.getOffsetForMask: error 1");
+		return 0;
 	}
+	int poff= 0;
 	switch (mask) {
-		/* 24-bit and 32-bit masks */
-		case 0x000000FF:
-			poff[0] = 0;
-			break;
-		case 0x0000FF00:
-			poff[0] = 1;
-			break;
-		case 0x00FF0000:
-			poff[0] = 2;
-			break;
-		case 0xFF000000:
-			poff[0] = 3;
-			break;
-		/* 16-bit masks */
-		case 0x001F:
-			poff[0] = 5;
-			break;
-		case 0x03E0:
-			poff[0] = 10;
-			break;
-		case 0x07E0:
-			poff[0] = 11;
-			break;
-		case 0x7C00:
-			poff[0] = 15;
-			break;
-		case 0xF800:
-			poff[0] = 16;
-			break;
-		default:
-			return false;
+	/* 24-bit and 32-bit masks */
+	case 0x000000FF:
+		poff = 0;
+		break;
+	case 0x0000FF00:
+		poff = 1;
+		break;
+	case 0x00FF0000:
+		poff = 2;
+		break;
+	case 0xFF000000:
+		poff = 3;
+		break;
+	/* 16-bit masks */
+	case 0x001F:
+		poff = 5;
+		break;
+	case 0x03E0:
+		poff = 10;
+		break;
+	case 0x07E0:
+		poff = 11;
+		break;
+	case 0x7C00:
+		poff = 15;
+		break;
+	case 0xF800:
+		poff = 16;
+		break;
+	default:
+		System.err.println("Image.getOffsetForMask: error 2");
+		return 0;
 	}
 	if (bitspp == 16) {
-		return true;
+		return poff;
 	}
-	if (poff[0] >= bitspp / 8) {
-		return false;
+	if (poff >= bitspp / 8) {
+		System.err.println("Image.getOffsetForMask: error 3");
+		return 0;
 	}
 	if (msbFirst) {
-		poff[0] = (bitspp/8 - 1) - poff[0];
+		poff = (bitspp/8 - 1) - poff;
 	}
-	return true;
+	return poff;
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
@@ -928,17 +925,17 @@ void init(Device device, int width, int height) {
 	/* Fill the bitmap with white */
     int[] offscreenGWorld= new int[1];
 	OS.NewGWorldFromPtr(offscreenGWorld, pixmap);
-	int xGC = offscreenGWorld[0];
-	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int gw= offscreenGWorld[0];
+	if (gw == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 
 	int[] savePort= new int[1];
 	int[] saveGWorld= new int[1];
 	OS.GetGWorld(savePort, saveGWorld);
-	OS.SetGWorld(xGC, 0);
-	OS.EraseRect(new short[] { 0, 0, (short)width, (short)height } );
+	OS.SetGWorld(gw, 0);
+	OS.EraseRect(new short[] { 0, 0, (short)height, (short)width } );
 	OS.SetGWorld(savePort[0], saveGWorld[0]);
 	
-	OS.DisposeGWorld(xGC);
+	OS.DisposeGWorld(gw);
 	
 	this.pixmap = pixmap;
 }
@@ -1354,6 +1351,7 @@ public String toString () {
 	//private static int fgIconCount;
 	
 	public static int carbon_createCIcon(Image image) {
+		
 		if (image == null)
 			return 0;
 		
@@ -1361,30 +1359,35 @@ public String toString () {
 		short w= (short)r.width;
 		short h= (short)r.height;
 
-		int pm= image.pixmap;
+
+		int mask= image.mask;
+		if (mask == 0) {
+			//System.out.println("---> CIcon: creating dummy mask");
+			int rowBytes= rowBytes(w, 1);
+			mask= newBitMap(w, h, rowBytes);
+			initPixMapData(mask, rowBytes*h, 0xff);
+		}
 		
+		int pm= image.pixmap;
 		if (pm != 0 && getDepth(pm) > 8) {
 			
-			//System.out.println("reduce depth");
-		
 			ImageData id= image.getImageData();
-			
-			int[] values= new int[256];
-			int fill= 0;
-		
-			short depth= 8;
+									
+			int depth= 8;
 			int bytesPerRow= rowBytes(w, depth);
 			byte[] data= new byte[bytesPerRow*h];
 		
 			short[] reds= new short[256];
 			short[] greens= new short[256];
 			short[] blues= new short[256];
-	
+			
+			int[] values= new int[256];
+			int i, fill= 0;
+			
 			for (int y= 0; y < h; y++) {
 				for (int x= 0; x < w; x++) {
 					int index= -1;
 					int value= id.getPixel(x, y);
-					int i;
 					for (i= 0; i < fill; i++) {
 						if (value == values[i]) {
 							index= i;
@@ -1409,29 +1412,21 @@ public String toString () {
 			System.out.println("---> CIcon: can use pixmap");
 		}
 		
-		if (pm != 0) {
-			
-			int mask= image.mask;
-			if (mask == 0) {
-				//System.out.println("---> creating mask");
-				int rowBytes= rowBytes(w, 1);
-				mask= newBitMap(w, h, rowBytes);
-				initPixMapData(mask, rowBytes*h, 0xff);
-			}
-			
-			int icon= OS.NewCIcon(pm, mask);
-			
-			if (mask != image.mask)
-				disposeBitmapOrPixmap(mask);
-			
+		int icon= 0;
+		if (pm != 0 && mask != 0) {		
+			icon= OS.NewCIcon(pm, mask);
 			//System.out.println("CIcons: " + fgIconCount++);
-			
-			return icon;
 		}
-		return 0; 
+		
+		if (mask != image.mask)
+			disposeBitmapOrPixmap(mask);
+		if (pm != image.pixmap)
+			disposeBitmapOrPixmap(pm);
+				
+		return icon; 
 	}
 	
-	public static void DisposeCIcon(int iconHandle) {
+	public static void disposeCIcon(int iconHandle) {
 		int iconData= OS.getCIconIconData(iconHandle);
 		if (iconData != 0)
 			OS.DisposeHandle(iconData);

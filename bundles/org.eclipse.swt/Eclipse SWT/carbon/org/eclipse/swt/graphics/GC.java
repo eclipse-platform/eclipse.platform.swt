@@ -43,8 +43,6 @@ public final class GC {
 	private boolean fIsFocused= false;
 	private int fLineWidth= 1;
 	private boolean fXorMode= false;
-	private short fOffsetX;
-	private short fOffsetY;
 	private int fDamageRgn;
 	private boolean fPendingClip;
 	//---- AW
@@ -160,10 +158,6 @@ public void dispose () {
 		
 	Image image = data.image;
 	if (image != null) image.memGC = null;
-	/* AW
-	int renderTable = data.renderTable;
-	if (renderTable != 0) OS.XmRenderTableFree(renderTable);
-	*/
 
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
@@ -345,7 +339,6 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	int depth = OS.GetPixDepth(srcImage.pixmap);
 	MacRect bounds= new MacRect();
 	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
  	int imgWidth = bounds.getWidth();
@@ -363,18 +356,18 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		}
  	}	
 	if (srcImage.alpha != -1 || srcImage.alphaData != null) {
-		drawImageAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, depth);
+		drawImageAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 	} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
-		drawImageMask(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, depth);
+		drawImageMask(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 	} else {
-		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, depth);
+		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 	}
 }
-void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
+void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
 	/* Simple cases */
 	if (srcImage.alpha == 0) return;
 	if (srcImage.alpha == 255) {
-		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, depth);
+		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		return;
 	}
 
@@ -500,7 +493,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	}
 	System.out.println("GC.drawImageAlpha: nyi");
 }
-void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
+void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
 	/* Generate the mask if necessary. */
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
 	try {
@@ -523,7 +516,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 	
 }
-void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
+void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
 	try {
 		if (focus(true, null)) {
 			int srcBits= OS.DerefHandle(srcImage.pixmap);
@@ -1186,7 +1179,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		OS.memmove(visual, xVisual, visual.sizeof);
 		final int depth = OS.XDefaultDepthOfScreen(xScreen);
 		*/
-		int depth= 32;
+		
+		int depth= getCurrentScreenDepth();
 		final boolean directColor = (depth > 8);
 	
 		// This code is intentionally commented since elsewhere in SWT we
@@ -1360,17 +1354,17 @@ public void fillRectangle (int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			fRect.set(x, y, width, height);
-			if ((data.background & 0xff000000) == 0) {
+			int t= data.background & 0xff000000;
+			if (t == 0) {
 				OS.RGBForeColor(data.background);
 				OS.PaintRect(fRect.getData());
 			} else {
-				/*
-				OS.RGBForeColor(0xffffff);
-				OS.PaintRect(fRect.getData());
-				*/
+				short depth= getCurrentScreenDepth();
 				int[] state= new int[1];
 				OS.GetThemeDrawingState(state);
-				OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, (short)32, true);
+				//OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
+				if (data.controlHandle != 0)
+					OS.SetUpControlBackground(data.controlHandle, depth, true);
 				OS.EraseRect(fRect.getData());
 				OS.SetThemeDrawingState(state[0], true);
 			}
@@ -1912,10 +1906,6 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		data.font = font.handle;
 	}
-	/* AW
-	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
-	data.renderTable = 0;
-	*/
 }
 /**
  * Sets the foreground color. The foreground color is used
@@ -2191,16 +2181,16 @@ public String toString () {
 		if (!doClip)
 			return true;
 		
-		fOffsetX= fOffsetY= 0;
+		int dx= 0, dy= 0;
 
 		// set origin of port using drawable bounds
 		if (data.controlHandle != 0) {
 			OS.GetControlBounds(data.controlHandle, fRect.getData());
-			fOffsetX= (short)fRect.getX();
-			fOffsetY= (short)fRect.getY();
-			OS.SetOrigin((short)-fOffsetX, (short)-fOffsetY);
+			dx= fRect.getX();
+			dy= fRect.getY();
+			OS.SetOrigin((short)-dx, (short)-dy);
 		}
-		// save clip region 
+		// save clip region
 		OS.GetClip(fSaveClip);
 		
 		// calculate new clip based on the controls bound and GC clipping region
@@ -2208,13 +2198,13 @@ public String toString () {
 			
 			int result= OS.NewRgn();
 			MacUtil.getVisibleRegion(data.controlHandle, result, true);
-			OS.OffsetRgn(result, (short)-fRect.getX(), (short)-fRect.getY());
+			OS.OffsetRgn(result, (short)-dx, (short)-dy);
 
 			// clip against damage 
 			if (fDamageRgn != 0) {
 				int dRgn= OS.NewRgn();
 				OS.CopyRgn(fDamageRgn, dRgn);
-				OS.OffsetRgn(dRgn, (short)-fRect.getX(), (short)-fRect.getY());
+				OS.OffsetRgn(dRgn, (short)-dx, (short)-dy);
 				OS.SectRgn(result, dRgn, result);
 			}
 			
@@ -2289,5 +2279,15 @@ public String toString () {
 		} else {
 			OS.RGBBackColor(0xFFFFFF);
 		}
+	}
+	
+	private short getCurrentScreenDepth() {
+		int gd= OS.GetGDevice();
+		if (gd != 0) {
+			int pm= OS.getgdPMap(gd);
+			if (pm != 0)
+				return OS.GetPixDepth(pm);
+		}
+		return 32;
 	}
 }

@@ -38,10 +38,6 @@ public abstract class Device implements Drawable {
 	
 	/* System Font */
 	MacFont systemFont;
-	/* AW
-	String characterSetName;
-	String characterSetRegistry;
-	*/
 
 	// AW
 	int fScreenDepth;
@@ -208,10 +204,6 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();
-	/* AW
-	int xScreenPtr = OS.XDefaultScreenOfDisplay (xDisplay);
-	return OS.XDefaultDepthOfScreen (xScreenPtr);
-	*/
 	return fScreenDepth;
 }
 
