@@ -20,7 +20,7 @@ class ClipboardProxy {
 
 	Display display;
 	int shellHandle;
-	int atomAtom, clipboardAtom, primaryAtom, targetsAtom;
+	int atomAtom, clipboardAtom, motifClipboardAtom, primaryAtom, targetsAtom;
 	int[][] convertData = new int[10][3];
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -42,6 +42,7 @@ class ClipboardProxy {
 	static byte [] CLIPBOARD = Converter.wcsToMbcs (null, "CLIPBOARD", true); //$NON-NLS-1$
 	static byte [] PRIMARY = Converter.wcsToMbcs (null, "PRIMARY", true); //$NON-NLS-1$
 	static byte [] TARGETS = Converter.wcsToMbcs (null, "TARGETS", true); //$NON-NLS-1$
+	static byte [] _MOTIF_CLIPBOARD_TARGETS = Converter.wcsToMbcs (null, "_MOTIF_CLIPBOARD_TARGETS", true); //$NON-NLS-1$
 	static String ID = "CLIPBOARD PROXY OBJECT"; //$NON-NLS-1$	
 	
 	static ClipboardProxy _getInstance(final Display display) {
@@ -74,6 +75,7 @@ ClipboardProxy(Display display) {
 	int xDisplay = OS.XtDisplay(shellHandle);
 	atomAtom = OS.XmInternAtom(xDisplay, ATOM, true);
 	clipboardAtom = OS.XmInternAtom(xDisplay, CLIPBOARD, true);
+	motifClipboardAtom = OS.XmInternAtom(xDisplay, _MOTIF_CLIPBOARD_TARGETS, true);
 	primaryAtom = OS.XmInternAtom(xDisplay, PRIMARY, true);
 	targetsAtom = OS.XmInternAtom(xDisplay, TARGETS, true);
 }
@@ -93,12 +95,6 @@ ClipboardProxy(Display display) {
  void dispose () {
 	if (display == null) return;
 	if (shellHandle != 0) {
-		if (activeClipboard != null) {
-			OS.XtDisownSelection(shellHandle, clipboardAtom, OS.CurrentTime);
-		}
-		if (activePrimaryClipboard != null) {
-			OS.XtDisownSelection(shellHandle, primaryAtom, OS.CurrentTime);
-		}
 		OS.XtDestroyWidget (shellHandle);
 		shellHandle = 0;
 	}
@@ -110,6 +106,8 @@ ClipboardProxy(Display display) {
 	XtSelectionCallbackCallback = null;
 	if (XtSelectionDoneCallback != null) XtSelectionDoneCallback.dispose();
 	XtSelectionDoneCallback = null;
+	activeClipboard = null;
+	activePrimaryClipboard = null;
 	clipboardData = null;
 	clipboardDataTypes = null;
 	primaryClipboardData = null;
@@ -148,13 +146,35 @@ int[] getAvailableTypes(int clipboardType) {
 	done = false;
 	selectionValue = null; selectionTransfer = null;
 	int selection = clipboardType == DND.CLIPBOARD ? clipboardAtom : primaryAtom;
-	int target = clipboardType == DND.CLIPBOARD ? atomAtom : targetsAtom;
+	int target = targetsAtom;
 	OS.XtGetSelectionValue(shellHandle, selection, target, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
 	if (!done) {
 		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
 		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
 		wait(selectionTimeout);
 		
+	}
+	if (done && selectionValue == null) {
+		done = false;
+		target = motifClipboardAtom;
+		OS.XtGetSelectionValue(shellHandle, selection, target, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
+		if (!done) {
+			int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
+			int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+			wait(selectionTimeout);
+			
+		}
+	}
+	if (done && selectionValue == null) {
+		done = false;
+		target = atomAtom;
+		OS.XtGetSelectionValue(shellHandle, selection, target, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
+		if (!done) {
+			int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
+			int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+			wait(selectionTimeout);
+			
+		}
 	}
 	return (!done || selectionValue == null) ? new int[0] : (int[])selectionValue;
 }
@@ -257,7 +277,9 @@ int XtConvertSelection(int widget, int selection, int target, int type, int valu
 		OS.memmove(dest, target, 4);
 		targetAtom = dest[0];
 	}
-	if (targetAtom == atomAtom || targetAtom == targetsAtom) {
+	if (targetAtom == atomAtom ||
+		targetAtom == targetsAtom ||
+		targetAtom == motifClipboardAtom) {
 		int[] transferTypes = new int[] {targetAtom};
 		for (int i = 0; i < types.length; i++) {
 			TransferData[] subTypes = types[i].getSupportedTypes();
@@ -328,7 +350,9 @@ int XtSelectionCallback(int widget, int client_data, int selection, int type, in
 	if (selectionLength[0] == 0) return 0;
 	int[] selectionFormat = new int[1];
 	if (format != 0) OS.memmove(selectionFormat, format, 4);
-	if (selectionType[0] == atomAtom || selectionType[0] == targetsAtom) {
+	if (selectionType[0] == atomAtom ||
+		selectionType[0] == targetsAtom ||
+		selectionType[0] == motifClipboardAtom) {
 		int[] targets = new int[selectionLength[0]];
 		OS.memmove(targets, value, selectionLength[0] * selectionFormat [0] / 8);
 		selectionValue = targets;
