@@ -44,7 +44,6 @@ public class TabFolder extends Composite {
 	private static final int MARGIN= 4;
 	
 	TabItem [] items;
-	private int oldValue;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -397,10 +396,11 @@ public int getSelectionIndex () {
 	return OS.GetControl32BitValue(handle)-1;
 }
 void hookEvents () {
-	super.hookEvents ();
-	
-	Display display= getDisplay();
-	OS.SetControlAction(handle, display.fControlActionProc);
+	super.hookEvents ();	
+	int[] mask= new int[] {
+		OS.kEventClassControl, OS.kEventControlHit,
+	};
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), getDisplay().fControlProc, mask.length/2, mask, handle, null);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -457,6 +457,30 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 */
+int processSelection (Object callData) {
+	int newIndex= OS.GetControl32BitValue(handle)-1;
+	for (int i= 0; i < items.length; i++) {
+		if (i != newIndex && items[i] != null) {
+			Control control = items[i].control;
+			if (control != null && !control.isDisposed ())
+				control.setVisible (false);
+		}
+	}
+	TabItem item = null;
+	if (newIndex != -1) item = items [newIndex];
+	if (item != null) {
+		Control control = item.control;
+		if (control != null && !control.isDisposed ()) {
+			control.setBounds (getClientArea ());
+			control.setVisible (true);
+		}
+	}
+	Event event = new Event ();
+	event.item = item;
+	postEvent (SWT.Selection, event);
+	redraw();
+	return OS.noErr;
+}
 void releaseWidget () {
 	int count = OS.GetControl32BitMaximum(handle);
 	for (int i=0; i<count; i++) {
@@ -464,14 +488,6 @@ void releaseWidget () {
 		if (item != null && !item.isDisposed ()) item.releaseWidget ();
 	}
 	items = null;
-	/* AW
-	if (imageList != null) {
-		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-		Display display = getDisplay ();
-		display.releaseImageList (imageList);
-	}
-	imageList = null;
-	*/
 	super.releaseWidget ();
 }
 
@@ -544,10 +560,9 @@ public void setSelection (int index) {
 }
 
 void setSelection (int index, boolean notify) {
-	
-	int oldIndex = OS.GetControl32BitValue(handle) - 1;
-	if (oldIndex != -1) {
-		TabItem item = items [oldIndex];
+	int currentIndex = OS.GetControl32BitValue(handle) - 1;
+	if (currentIndex != -1) {
+		TabItem item = items [currentIndex];
 		if (item != null) {
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
@@ -556,10 +571,9 @@ void setSelection (int index, boolean notify) {
 		}
 	}
 	OS.SetControl32BitValue(handle, index+1);
-
-	int newIndex = OS.GetControl32BitValue(handle) - 1;
-	if (newIndex != -1) {
-		TabItem item = items [newIndex];
+	index = OS.GetControl32BitValue(handle)-1;
+	if (index != -1) {
+		TabItem item = items [index];
 		if (item != null) {
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
@@ -571,8 +585,34 @@ void setSelection (int index, boolean notify) {
 				event.item = item;
 				sendEvent (SWT.Selection, event);
 			}
-		}	
+		}
 	}
+	redraw();
+}
+
+void setTabText(int index, String string) {
+	int sHandle= 0;
+	try {
+		String t= MacUtil.removeMnemonics(string);
+		sHandle= OS.CFStringCreateWithCharacters(t);
+		ControlTabInfoRecV1 tab= new ControlTabInfoRecV1();
+		tab.version= (short) OS.kControlTabInfoVersionOne;
+		tab.iconSuiteID= 0;
+		tab.name= sHandle;
+		OS.SetControlData(handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
+	} finally {
+		if (sHandle != 0)
+			OS.CFRelease(sHandle);
+	}
+}
+
+void setTabImage(int index, Image image) {
+	/* AW: does not work yet...
+	int icon= Image.carbon_createCIcon(image);
+	if (icon != 0)
+		if (OS.setTabIcon(handle, index+1, icon) != OS.noErr)
+			System.err.println("TabFolder.setTabImage: error");
+	*/
 }
 
 boolean traversePage (boolean next) {
@@ -593,46 +633,6 @@ boolean traversePage (boolean next) {
 // Mac stuff
 //////////////////////////////////////////////////
 
-int processSelection (Object callData) {
-	MacControlEvent macEvent= (MacControlEvent) callData;
-	oldValue= OS.GetControl32BitValue(handle)-1;
-	handleSelectionChange(macEvent.getPartCode()-1);
-	return OS.noErr;
-}
-
-private void handleSelectionChange(int newValue)  {
-	
-	if (false)
-		setSelection (newValue, true);
-	
-	else {
-		TabItem item = null;
-		int index= oldValue;
-	
-		if (index != -1) item = items [index];
-		if (item != null) {
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				control.setVisible (false);
-			}
-		}
-			
-		index= newValue;
-		if (index != -1) item = items [index];
-		if (item != null) {
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
-				control.setVisible (true);
-			}
-		}
-		
-		Event event = new Event ();
-		event.item = item;
-		postEvent (SWT.Selection, event);
-	}
-}
-
 private void updateCarbon(int startIndex) {
 	int n= OS.GetControl32BitMaximum(handle);
 	for (int i= startIndex; i < n; i++) {
@@ -640,31 +640,6 @@ private void updateCarbon(int startIndex) {
 		if (item != null)
 			setTabText(i, item.getText());
 	}
-}
-
-void setTabText(int index, String string) {
-	int sHandle= 0;
-	try {
-		String t= MacUtil.removeMnemonics(string);
-		sHandle= OS.CFStringCreateWithCharacters(t);
-		ControlTabInfoRecV1 tab= new ControlTabInfoRecV1();
-		tab.version= OS.kControlTabInfoVersionOne;
-		tab.iconSuiteID= 0;
-		tab.name= sHandle;
-		OS.SetControlData(handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
-	} finally {
-		if (sHandle != 0)
-			OS.CFRelease(sHandle);
-	}
-}
-
-void setTabImage(int index, Image image) {
-	/* AW: does not work yet...
-	int icon= Image.carbon_createCIcon(image);
-	if (icon != 0)
-		if (OS.setTabIcon(handle, index+1, icon) != OS.noErr)
-			System.err.println("TabFolder.setTabImage: error");
-	*/
 }
 
 void internalGetControlBounds(int hndl, Rect bounds) {
@@ -695,6 +670,7 @@ void handleResize(int hndl, Rect bounds) {
 				control.setBounds(getClientArea());
 			}
 		}
+		redraw();
 	}
 }
 
