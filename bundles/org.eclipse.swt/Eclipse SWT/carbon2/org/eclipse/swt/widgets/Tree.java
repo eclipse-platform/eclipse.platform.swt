@@ -11,7 +11,6 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
-import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -338,8 +337,9 @@ public TreeItem getItem (Point point) {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
-			OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
-			if (OS.PtInRect (pt, rect)) return item;
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if (OS.PtInRect (pt, rect)) return item;
+			}
 		}
 	}
 	return null;
@@ -422,6 +422,29 @@ public int getSelectionCount () {
 	return count [0];
 }
 
+public TreeItem getTopItem () {
+	checkWidget();
+	//OPTIMIZE
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int offset = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	offset += outMetric [0];
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	offset += outMetric [0];
+	int y = rect.top + offset;
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if (rect.top <= y && y <= rect.bottom) return item;
+			}
+		}
+	}
+	return null;
+}
+
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
 //	int index = id - 1;
 //	if (!(0 <= index && index < items.length)) return 0;
@@ -454,16 +477,26 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 	switch (property) {
 		case CHECK_COLUMN_ID: {
 			if (setValue != 0) {
-				short [] theData = new short [1];
-				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
-				item.checked = theData [0] == OS.kThemeButtonOn;
+//				short [] theData = new short [1];
+//				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
+//				item.checked = theData [0] == OS.kThemeButtonOn;
+				item.checked = !item.checked;
+				if (item.checked && item.grayed) {
+					OS.SetDataBrowserItemDataButtonValue (itemData, (short) OS.kThemeButtonMixed);
+				} else {
+					int theData = item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff;
+					OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
+				}
 				Event event = new Event ();
 				event.item = item;
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 			} else {
-				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
-				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
+//				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
+//				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
+				int theData = OS.kThemeButtonOff;
+				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;
+				OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
 			}
 			break;
 		}
@@ -665,6 +698,20 @@ public void setSelection (TreeItem [] items) {
 	if (items.length > 0) showItem (items [0], true);
 }
 
+public void setTopItem (TreeItem item) {
+	checkWidget();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	showItem (item, false);	
+	OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+//	Rect rect = new Rect ();
+//	OS.GetControlBounds (handle, rect);
+//	int x = rect.left, y = rect.top;
+//	if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//		OS.SetDataBrowserScrollPosition (handle, rect.top - y - 3, 0);
+//	}
+}
+
 public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -700,6 +747,7 @@ void showItem (TreeItem item, boolean scroll) {
 //		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
 //	}
 	if (scroll) {
+		//OPTIMIZE
 		Rectangle treeRect = getClientArea ();
 		Rectangle itemRect = item.getBounds ();
 		if (treeRect.contains (itemRect.x, itemRect.y)) return;

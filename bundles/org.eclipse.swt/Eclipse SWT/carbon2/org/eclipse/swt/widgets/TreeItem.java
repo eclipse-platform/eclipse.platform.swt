@@ -17,7 +17,7 @@ public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
 	int id, index = -1;
-	boolean checked;
+	boolean checked, grayed;
 	Color foreground, background;
 
 public TreeItem (Tree parent, int style) {
@@ -59,13 +59,15 @@ protected void checkSubclass () {
 
 public Color getBackground () {
 	checkWidget ();
-	return background != null ? background : getDisplay ().getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+	return background != null ? background : parent.getBackground ();
 }
 
 public Rectangle getBounds () {
 	checkWidget ();
 	Rect rect = new Rect();
-	OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
 	int x = rect.left, y = rect.top;
 	int width = 0;
 	if (image != null) {
@@ -104,14 +106,13 @@ public boolean getExpanded () {
 
 public Color getForeground () {
 	checkWidget ();
-	return foreground != null ? foreground : getDisplay ().getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+	return foreground != null ? foreground : parent.getForeground ();
 }
 
 public boolean getGrayed () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	//NOT DONE
-	return false;
+	return grayed;
 }
 
 public int getItemCount () {
@@ -134,6 +135,11 @@ public TreeItem getParentItem () {
 	return parentItem;
 }
 
+void redraw () {
+	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
+	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -141,6 +147,7 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	background = foreground = null;
 	parentItem = null;
 	parent = null;
 	id = 0;
@@ -186,7 +193,8 @@ public void setForeground (Color color) {
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	//NOT DONE
+	this.grayed = grayed;
+	redraw ();
 }
 
 public void setImage (Image image) {
@@ -200,12 +208,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	redraw ();
-}
-
-void redraw () {
-	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-
 }
 
 }
