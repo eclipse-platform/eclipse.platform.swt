@@ -164,10 +164,24 @@ int ResizeBorder(int prcBorder, int pUIWindow, int fFrameWindow) {
 }
 
 int ShowContextMenu(int dwID, int ppt, int pcmdtReserved, int pdispReserved) {
-	Event event = new Event();
 	Browser browser = (Browser)getParent().getParent();
+	Event event = new Event();
+	POINT pt = new POINT();
+	OS.MoveMemory(pt, ppt, POINT.sizeof);
+	event.x = pt.x;
+	event.y = pt.y;
 	browser.notifyListeners(SWT.MenuDetect, event);
-	return event.doit ? COM.S_FALSE : COM.S_OK;
+	if (!event.doit) return COM.S_OK;
+	Menu menu = browser.getMenu();
+	if (menu != null && !menu.isDisposed ()) {
+		if (pt.x != event.x || pt.y != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
+		menu.setVisible (true);
+		return COM.S_OK;
+	}
+	/* Show default IE popup menu */
+	return COM.S_FALSE;
 }
 
 int ShowUI(int dwID, int pActiveObject, int pCommandTarget, int pFrame, int pDoc) {
