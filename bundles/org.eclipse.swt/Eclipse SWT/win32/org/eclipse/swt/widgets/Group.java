@@ -37,11 +37,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Group extends Composite {
-	/*
-	 * Number of pixels between client area and border.
-	 */
 	static final int CLIENT_INSET = 3;
-	
 	static final int GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
 	static {
@@ -158,13 +154,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
-
 	int textWidth = 0;
 	int length = OS.GetWindowTextLength (handle);
-	if (length > 0) {
-		/* If the group has text, and the text is wider than the
-		 * client area, pad the width so the text is not clipped.
-		 */
+	if (length != 0) {
+		/*
+		* If the group has text, and the text is wider than the
+		* client area, pad the width so the text is not clipped.
+		*/
 		TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
 		OS.GetWindowText (handle, buffer1, length + 1);
 		RECT rect = new RECT ();
@@ -172,10 +168,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		OS.DrawText (hDC, buffer1, length, rect, flags);
 		textWidth = rect.right - rect.left + CLIENT_INSET * 4;
 	}
-	
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	trim.x -= CLIENT_INSET;  trim.y -= tm.tmHeight;
+	trim.x -= CLIENT_INSET;
+	trim.y -= tm.tmHeight;
 	trim.width = Math.max (trim.width, textWidth) + CLIENT_INSET * 2;
 	trim.height += tm.tmHeight + CLIENT_INSET;
 	return trim;
@@ -200,7 +196,9 @@ public Rectangle getClientArea () {
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	int x = CLIENT_INSET, y = tm.tmHeight;
-	return new Rectangle (x, y, rect.right - CLIENT_INSET * 2, rect.bottom - y - CLIENT_INSET);
+	int width = rect.right - CLIENT_INSET * 2;
+	int height = rect.bottom - y - CLIENT_INSET;
+	return new Rectangle (x, y, width, height);
 }
 
 String getNameText () {
