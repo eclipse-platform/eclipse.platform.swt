@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 
-class DNDListener extends org.eclipse.swt.widgets.TypedListener {
+class DNDListener extends TypedListener {
 /**
  * DNDListener constructor comment.
  * @param listener org.eclipse.swt.internal.SWTEventListener
