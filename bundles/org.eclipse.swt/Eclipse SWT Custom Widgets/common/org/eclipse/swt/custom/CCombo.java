@@ -341,24 +341,14 @@ void dropDown (boolean drop) {
 		text.setFocus();
 		return;
 	}
+
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Display display = getDisplay ();
 	Rectangle listRect = list.getBounds ();
 	Rectangle parentRect = display.map (getParent (), null, getBounds());
 	Point comboSize = getSize ();
-	Rectangle displayRect = display.getClientArea();
-	// Get Monitor for CCombo widget
-	Monitor[] monitors = display.getMonitors ();
-	if (monitors.length > 1) {
-		for (int i = 0; i < monitors.length; i++) {
-			Rectangle monitorRect = monitors[i].getClientArea();
-			if (monitorRect.contains(parentRect.x, parentRect.y)) {
-				displayRect = monitorRect;
-				break;
-			}
-		}
-	}
+	Rectangle displayRect = getMonitor().getClientArea();
 	int width = Math.max (comboSize.x, listRect.width + 2);
 	int height = listRect.height + 2;
 	int x = parentRect.x;
@@ -679,9 +669,6 @@ void listEvent (Event event) {
 		case SWT.MouseUp: {
 			if (event.button != 1) return;
 			dropDown (false);
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.DefaultSelection, e);
 			break;
 		}
 		case SWT.Selection: {
