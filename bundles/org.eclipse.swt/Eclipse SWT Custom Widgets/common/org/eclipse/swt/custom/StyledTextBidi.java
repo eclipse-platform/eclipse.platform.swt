@@ -1,5 +1,5 @@
 package org.eclipse.swt.custom;
-
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
-
+
 /*
  */
 public class StyledTextBidi {
@@ -117,7 +117,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 	int endOffset = logicalStart + length;
 	int stopX;
-
+
 	if (endOffset > getTextLength()) {
 		return 0;
 	}
@@ -126,7 +126,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int x = xOffset + run.getRenderStartX();
-
+
 		drawGlyphs(visualStart, visualEnd - visualStart + 1, x, yOffset);				
 	}		
 	// between R2L and L2R direction segment?
@@ -165,7 +165,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object instanceof StyledTextBidi) test = (StyledTextBidi) object;
 	else return false;
-
+
 	int[] intArray1 = test.order;
 	int[] intArray2 = this.order;
 	if (intArray1.length != intArray2.length) return false;
@@ -200,7 +200,7 @@ public boolean equals(Object object) {
 }
 public void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
-
+
 	if (logicalStart + length > getTextLength()) {
 		return;
 	}
@@ -218,7 +218,7 @@ public int getCaretOffsetAtX(int x) {
 	int high = lineLength;
 	int offset;
 	int logicalHigh;
-
+
 	if (lineLength == 0) {
 		return 0;
 	}
@@ -272,7 +272,7 @@ public int getCaretOffsetAtX(int x) {
 }
 public int getCaretPosition(int logicalOffset) {
 	int caretX;
-
+
 	if (getTextLength() == 0) {
 		return 0;
 	}
@@ -414,6 +414,20 @@ public int getTextWidth() {
  * 
  */
 public boolean isRightToLeft(int logicalIndex) {
+	// for rendering, caret positioning, consider numbers as LtoR
+	boolean isRightToLeft = false;
+	
+	if (logicalIndex < classBuffer.length) {
+		isRightToLeft = (classBuffer[logicalIndex] == BidiText.CLASS_ARABIC) || 
+					    (classBuffer[logicalIndex] == BidiText.CLASS_HEBREW);
+	}
+	return isRightToLeft;
+}
+/**
+ * 
+ */
+public boolean isRightToLeftMode(int logicalIndex) {
+	// for keyboard positioning, consider numbers as RtoL
 	boolean isRightToLeft = false;
 	
 	if (logicalIndex < classBuffer.length) {
@@ -422,15 +436,14 @@ public boolean isRightToLeft(int logicalIndex) {
 					    (classBuffer[logicalIndex] == BidiText.CLASS_LOCALNUMBER);
 	}
 	return isRightToLeft;
-}
-/**
+}/**
  *
  */
 void prepareBoldText(String textline, int logicalStart, int length) {
 	int byteCount = length;
 	int flags = 0;
 	String text = textline.substring(logicalStart, logicalStart + length);
-
+
 	// figure out what is before and after the substring
 	// so that the proper character shaping will occur
 	if (logicalStart != 0  
@@ -475,7 +488,7 @@ public void redrawRange(Control parent, int logicalStart, int length, int xOffse
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int startX = run.getRenderStartX();
-
+
 		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
 	}				
 }
@@ -491,7 +504,7 @@ public void setKeyboardLanguage(int logicalIndex) {
 	if (logicalIndex >= classBuffer.length) {
 		return;
 	}
-	if (isRightToLeft(logicalIndex)) {
+	if (isRightToLeftMode(logicalIndex)) {
 		String codePage = System.getProperty("file.encoding").toUpperCase();
 		if ("CP1255".equals(codePage)) {
 			language = BidiText.KEYBOARD_HEBREW;
