@@ -1345,7 +1345,7 @@ int processPaint (Object callData) {
 		// erase background
 		if ((state & CANVAS) != 0 && (style & SWT.NO_BACKGROUND) == 0)
 			gc.fillRectangle(r);
-		if (hooks (SWT.Paint)) {
+		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 			Event event = new Event();
 			//event.count = xEvent.count;
 			//event.time = OS.XtLastTimestampProcessed (xDisplay);

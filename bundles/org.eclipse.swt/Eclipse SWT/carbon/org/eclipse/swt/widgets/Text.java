@@ -195,7 +195,7 @@ public void append (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
 	int length = OS.TXNDataSize(fTX) / 2;
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		string = verifyText (string, length, length);
 		if (string == null) return;
 	}
@@ -903,7 +903,7 @@ public void insert (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int [] start = new int [1], end = new int [1];
 		OS.TXNGetSelection(fTX, start, end);
 		string = verifyText (string, start [0], end [0]);
@@ -1268,7 +1268,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int length = OS.TXNDataSize(fTX) / 2;
 		string = verifyText (string, 0, length);
 		if (string == null) return;
@@ -1459,7 +1459,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		int eRefHandle= mEvent.getEventRef();
 		int nextHandler= mEvent.getNextHandler();
 
-		if (hooks (SWT.Verify)) {
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 
 			// extract characters from event
 			String unicode= mEvent.getText();
