@@ -819,6 +819,7 @@ void manageChildren () {
 public void open () {
 	checkWidget();
 	setVisible (true);
+	if (!restoreFocus ()) traverseGroup (true);
 }
 int processDispose (int callData) {
 	closeWidget ();

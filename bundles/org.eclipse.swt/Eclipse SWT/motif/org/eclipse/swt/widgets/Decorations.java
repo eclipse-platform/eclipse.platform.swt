@@ -343,6 +343,16 @@ void releaseWidget () {
 	defaultButton = saveDefault = null;
 	label = null;
 }
+boolean restoreFocus () {
+	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
+	boolean restored = savedFocus != null && savedFocus.setFocus ();
+	savedFocus = null;
+	if (restored) return true;
+	if (defaultButton != null && !defaultButton.isDisposed ()) {
+		if (defaultButton.setFocus ()) return true;
+	}
+	return false;
+}
 void remove (Menu menu) {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {
@@ -585,14 +595,6 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	label = string;
-}
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-	if (!visible) return;
-	if (savedFocus != null && !savedFocus.isDisposed ()) {
-		savedFocus.setFocus ();
-	}
-	savedFocus = null;
 }
 boolean traverseItem (boolean next) {
 	return false;

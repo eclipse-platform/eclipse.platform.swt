@@ -1188,12 +1188,6 @@ public void setText (String string) {
 			display.setWarnings(warnings);
 		}
 		OS.XmStringFree (xmString);
-		/*
-		* Bug in Linux.  When the widget is multi-line
-		* it does not send a Modify to notify the application
-		* that the text has changed.  The fix is to send the event.
-		*/
-		if (OS.IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
 	}
 }
 /**
