@@ -80,9 +80,12 @@ public class Cairo {
 /** 64*/
 public static final synchronized native int cairo_font_extents_t_sizeof ();
 	
-/** Natives */
+/** Custom natives */ 
 public static final synchronized native void cairo_add_path (int /*long*/ cr1, int /*long*/ cr2);
 public static final synchronized native void cairo_extents (int /*long*/ cr, double[] extents);
+public static final synchronized native void cairo_points (int /*long*/ cr, int[] n_types, int[] n_points, byte[] types, float[] points);
+
+/** Natives */
 public static final synchronized native int /*long*/ cairo_create ();
 public static final synchronized native void cairo_reference (int /*long*/ cr);
 public static final synchronized native void cairo_destroy (int /*long*/ cr);

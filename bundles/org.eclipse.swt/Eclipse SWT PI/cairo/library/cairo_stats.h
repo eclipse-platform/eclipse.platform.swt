@@ -104,6 +104,7 @@ typedef enum {
 	cairo_1pattern_1set_1extend_FUNC,
 	cairo_1pattern_1set_1filter_FUNC,
 	cairo_1pattern_1set_1matrix_FUNC,
+	cairo_1points_FUNC,
 	cairo_1rectangle_FUNC,
 	cairo_1reference_FUNC,
 	cairo_1rel_1curve_1to_FUNC,

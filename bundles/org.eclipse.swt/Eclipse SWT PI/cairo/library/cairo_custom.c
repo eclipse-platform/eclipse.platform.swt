@@ -93,3 +93,86 @@ fail:
 	Cairo_NATIVE_EXIT(env, that, cairo_1extents_FUNC);
 }
 #endif
+
+#ifndef NO_cairo_1points
+#define PATH_MOVE_TO 0
+#define PATH_LINE_TO 1
+#define PATH_CURVE_TO 3
+#define PATH_CLOSE 4
+typedef struct _points_data {
+	jint *n_types;
+	jint *n_points;
+	jbyte *types;
+	jfloat *points;
+} points_data;
+
+static void pointsMoveTo(points_data *data, double x, double y) {
+	if (data->types != NULL) data->types[data->n_types[0]] = PATH_MOVE_TO;
+	if (data->points != NULL) {
+		int offset = data->n_points[0] * 2;
+		data->points[offset] = x;
+		data->points[offset + 1] = y;
+	}
+	data->n_types[0]++;
+	data->n_points[0]++;
+}
+
+static void pointsLineTo(points_data *data, double x, double y) {
+	if (data->types != NULL) data->types[data->n_types[0]] = PATH_LINE_TO;
+	if (data->points != NULL) {
+		int offset = data->n_points[0] * 2;
+		data->points[offset] = x;
+		data->points[offset + 1] = y;
+	}
+	data->n_types[0]++;
+	data->n_points[0]++;
+}
+
+static void pointsCurveTo(points_data *data, double x1, double y1, double x2, double y2, double x3, double y3) {
+	if (data->types != NULL) data->types[data->n_types[0]] = PATH_CURVE_TO;
+	if (data->points != NULL) {
+		int offset = data->n_points[0] * 2;
+		data->points[offset] = x1;
+		data->points[offset + 1] = y1;
+		data->points[offset + 2] = x2;
+		data->points[offset + 3] = y2;
+		data->points[offset + 4] = x3;
+		data->points[offset + 5] = y3;
+	}
+	data->n_types[0]++;
+	data->n_points[0] += 3;
+}
+
+static void pointsClosePath(points_data *data) {
+	if (data->types != NULL) data->types[data->n_types[0]] = PATH_CLOSE;
+	data->n_types[0]++;
+}
+
+JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1points)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jbyteArray arg3, jfloatArray arg4)
+{
+	points_data data;
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jfloat *lparg4=NULL;
+	Cairo_NATIVE_ENTER(env, that, cairo_1points_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	data.n_types = lparg1;
+	data.n_points = lparg2;
+	data.types = lparg3;
+	data.points = lparg4;
+	data.n_types[0] = data.n_points[0] = 0;
+	cairo_current_path((cairo_t *)arg0, (cairo_move_to_func_t *)pointsMoveTo, (cairo_line_to_func_t *)pointsLineTo, (cairo_curve_to_func_t *)pointsCurveTo, (cairo_close_path_func_t *)pointsClosePath, (void *)&data);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	Cairo_NATIVE_EXIT(env, that, cairo_1points_FUNC);
+}
+#endif
+
