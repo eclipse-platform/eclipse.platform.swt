@@ -1238,6 +1238,7 @@ public static final native void memmove (int dest, XmDragProcCallback src, int c
 public static final native void memmove (int dest, XmTextBlockRec src, int count);
 public static final native void memmove (int dest, XmTextVerifyCallbackStruct src, int count);
 public static final native void memmove (int dest, byte [] src, int count);
+public static final native void memmove (int dest, char [] src, int count);
 public static final native void memmove (int dest, int [] src, int count);
 public static final native void memmove (Visual dest, int src, int count);
 public static final native void memmove (XButtonEvent dest, int src, int count);
@@ -1259,6 +1260,7 @@ public static final native void memmove (XmDropProcCallback dest, int src, int c
 public static final native void memmove (XmTextBlockRec dest, int src, int count);
 public static final native void memmove (XmTextVerifyCallbackStruct dest, int src, int count);
 public static final native void memmove (byte [] dest, int src, int count);
+public static final native void memmove (char [] dest, int src, int count);
 public static final native void memmove (int [] dest, int src, int count);
 public static final native int strlen (int string);
 public static final native int XmCreateDrawnButton (int parent, byte [] name, int [] arglist, int argcount);

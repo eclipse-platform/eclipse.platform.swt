@@ -231,6 +231,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3BI
     }
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3CI
+  (JNIEnv *env, jclass that, jint dest, jcharArray src, jint count)
+{
+    jchar *src1;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__I_3CI\n");
+#endif
+
+    /* don't do anything if src pointer is NULL */
+    if (src) {
+        src1 = (*env)->GetCharArrayElements(env, src, NULL);
+        memmove((void *)dest, (void *)src1, count);
+        (*env)->ReleaseCharArrayElements(env, src, src1, 0);
+    }
+}
+
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    memmove
@@ -696,6 +712,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3BII
         dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
         memmove((void *)dest1, (void *)src, count);
         (*env)->ReleaseByteArrayElements(env, dest, dest1, 0);
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3CII
+  (JNIEnv *env, jclass that, jcharArray dest, jint src, jint count)
+{
+    jchar *dest1;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove___3CII\n");
+#endif
+
+    /* don't do anything if dest pointer is NULL */
+    if (dest) {
+        dest1 = (*env)->GetCharArrayElements(env, dest, NULL);
+        memmove((void *)dest1, (void *)src, count);
+        (*env)->ReleaseCharArrayElements(env, dest, dest1, 0);
     }
 }
 
@@ -8502,52 +8534,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_MB_1CUR_1MAX
 
     return (jint)MB_CUR_MAX;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: ([CII)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3CII
-  (JNIEnv *env, jclass that, jcharArray dest, jint src, jint count)
-{
-    jchar *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3CII\n");
-#endif
-
-    if (dest) {
-        dest1 = (*env)->GetCharArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseCharArrayElements(env, dest, dest1, 0);
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (I[CI)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3CI
-  (JNIEnv *env, jclass that, jint dest, jcharArray src, jint count)
-{
-    jchar *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3CI\n");
-#endif
-
-    if (src) {
-    	int i;
-    	unsigned char *dest1 = (unsigned char *)dest;
-        src1 = (*env)->GetCharArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseCharArrayElements(env, src, src1, 0);
-    }
-}
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
