@@ -286,6 +286,20 @@ public class SWT {
 	public static final int DEFAULT = -1;
 
 	/**
+	 * Indicates that a property is off (value is 0).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int OFF = 0;
+	
+	/**
+	 * Indicates that a property is on (value is 1).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int ON = 1;
+
+	/**
 	 * Style constant for menu bar behavior (value is 1&lt;&lt;1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>
@@ -1973,6 +1987,8 @@ public class SWT {
 	/** 
 	 * SWT error constant indicating that the matrix is not invertible
 	 * (value is 10).
+	 * 
+	 * @since 3.1
 	 */
 	public static final int ERROR_CANNOT_INVERT_MATRIX = 10;
 
@@ -2180,6 +2196,8 @@ public class SWT {
 	 * SWT error constant indicating that an unsatisfied link
 	 * error occured while attempting to load a library
 	 * (value is 47).
+	 * 
+	 * @since 3.1
 	 */
 	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
 	
@@ -2524,11 +2542,15 @@ public class SWT {
 	
 	/**
 	 * Even odd rule for filling operations (value is 1).
+	 * 
+	 * @since 3.1
 	 */
 	public static final int FILL_EVEN_ODD = 1;
 
 	/**
 	 * Winding rule for filling operations (value is 2).
+	 * 
+	 * @since 3.1
 	 */
 	public static final int FILL_WINDING = 2;
 
