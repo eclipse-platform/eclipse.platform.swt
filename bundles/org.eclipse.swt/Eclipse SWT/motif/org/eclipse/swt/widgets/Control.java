@@ -2727,7 +2727,6 @@ boolean traverse (Event event) {
  */
 public boolean traverse (int traversal) {
 	checkWidget();
-	if (!isFocusControl () && !setFocus ()) return false;
 	Event event = new Event ();
 	event.doit = true;
 	event.detail = traversal;
@@ -2757,7 +2756,7 @@ boolean traverseGroup (boolean next) {
 	while ((index = ((index + offset + length) % length)) != start) {
 		Control control = list [index];
 		if (!control.isDisposed () && control.setTabGroupFocus (next)) {
-			if (!isDisposed () && !isFocusControl ()) return true;
+			return true;
 		}
 	}
 	if (group.isDisposed ()) return false;
@@ -2777,6 +2776,7 @@ boolean traverseItem (boolean next) {
 	* or out events.  Ensure that a disposed widget is
 	* not accessed.
 	*/
+	if (index == length) return false;
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = (index + offset + length) % length) != start) {
 		Control child = children [index];
