@@ -441,9 +441,6 @@ public boolean open () {
 				continue;
 		}
 		OS.memmove (phEvent, buffer, PhEvent_t.sizeof);
-		if (phEvent.type == OS.Ph_EV_BUT_RELEASE) {
-			System.out.println(WidgetTable.get(phEvent.collector_handle));
-		}
 		if (phEvent.type == OS.Ph_EV_DRAG) {
 			switch (phEvent.subtype) {
 				case OS.Ph_EV_DRAG_MOTION_EVENT: {
