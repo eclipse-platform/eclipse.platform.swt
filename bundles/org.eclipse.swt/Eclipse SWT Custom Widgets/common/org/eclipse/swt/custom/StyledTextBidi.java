@@ -1,0 +1,559 @@
+package org.eclipse.swt.custom;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.internal.BidiText;
+import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.widgets.Control;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+/*
+ */
+public class StyledTextBidi {
+	GC gc;
+	int tabWidth;
+	int[] renderPositions;
+	int[] order;
+	int[] dx;
+	byte[] classBuffer;
+	byte[] glyphBuffer;
+	class DirectionRun {
+		int logicalStart;
+		int logicalEnd;
+		
+		DirectionRun(int logicalStart, int logicalEnd) {
+			this.logicalStart = logicalStart;
+			this.logicalEnd = logicalEnd;
+		}		
+		int getVisualStart() {
+			int visualStart = order[logicalStart];
+			int visualEnd = order[logicalEnd];
+			
+			if (visualEnd < visualStart) {
+				visualStart = visualEnd;
+			}
+			return visualStart;
+		}
+		int getVisualEnd() {
+			int visualStart = order[logicalStart];
+			int visualEnd = order[logicalEnd];
+			
+			if (visualEnd < visualStart) {
+				visualEnd = visualStart;
+			}
+			return visualEnd;
+		}
+		int getRenderStartX() {
+			return renderPositions[getVisualStart()];
+		}
+		int getRenderStopX() {
+			int visualEnd = getVisualEnd();
+			
+			return renderPositions[visualEnd] + dx[visualEnd];
+		}
+	}
+	
+public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont) {
+	int length = text.length();
+	
+	setGC(gc);
+	setTabWidth(tabWidth);
+	renderPositions = new int[length];
+	order = new int[length];
+	dx = new int[length];
+	classBuffer = new byte[length];
+	if (text.length() == 0) {
+		glyphBuffer = new byte[0];
+	}
+	else {	
+		glyphBuffer = BidiText.getRenderInfo(gc, text, order, classBuffer, dx, 0);
+		if (boldRanges != null) {
+			Font normalFont = gc.getFont();
+			gc.setFont(boldFont);
+			for (int i = 0; i < boldRanges.length; i += 2) {
+				int rangeStart = boldRanges[i];
+				int rangeLength = boldRanges[i + 1];
+				prepareBoldText(text, rangeStart, rangeLength);
+			}
+			gc.setFont(normalFont);
+		}
+		adjustTabStops(text);
+		calculateRenderPositions();
+	}
+}
+void adjustTabStops(String text) {
+	int tabIndex = text.indexOf('\t', 0);
+	int logicalIndex = 0;
+	int x = 0;
+				
+	while (tabIndex != -1) {
+		for (; logicalIndex < tabIndex; logicalIndex++) {
+			x += dx[order[logicalIndex]];
+		}
+		int tabStop = x + tabWidth;
+		tabStop -= tabStop % tabWidth;
+		dx[order[tabIndex]] = tabStop - x;
+		tabIndex = text.indexOf('\t', tabIndex + 1);
+	}
+}
+void calculateRenderPositions() {
+	renderPositions = new int[dx.length];	
+	renderPositions[0] = 0;
+	for (int i = 0; i < dx.length - 1; i++) {
+		renderPositions[i + 1] = renderPositions[i] + dx[i];
+	}
+}
+/** 
+ * 
+ * @param logicalStart start offset in the logical text
+ * @param length number of logical characters to render
+ * @param xOffset x location of the line start
+ * @param yOffset y location of the line start
+ */
+public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
+	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
+	int endOffset = logicalStart + length;
+	int stopX;
+
+	if (endOffset > getTextLength()) {
+		return 0;
+	}
+	while (directionRuns.hasMoreElements()) {
+		DirectionRun run = (DirectionRun) directionRuns.nextElement();
+		int visualStart = run.getVisualStart();
+		int visualEnd = run.getVisualEnd();
+		int x = xOffset + run.getRenderStartX();
+
+		drawGlyphs(visualStart, visualEnd - visualStart + 1, x, yOffset);				
+	}		
+	// between R2L and L2R direction segment?
+	if (endOffset < order.length && isRightToLeft(endOffset) == false && isRightToLeft(endOffset - 1)) {
+		// continue drawing at start of L2R segment
+		stopX = renderPositions[endOffset];
+	}
+	else
+	if (isRightToLeft(endOffset - 1)) {
+		// we rendered a R2L segment
+		stopX = renderPositions[order[endOffset - 1]];
+	}
+	else {
+		int visualEnd = order[endOffset - 1];
+		// we rendered a L2R segment
+		stopX = renderPositions[visualEnd] + dx[visualEnd];
+	}
+	return stopX;
+}
+/**
+ * 
+ */
+void drawGlyphs(int visualStart, int length, int x, int y) {
+	byte[] renderBuffer = new byte[length * 2];
+	int[] renderDx = new int[length];
+	if (length == 0) {
+		return;
+	}	
+	System.arraycopy(glyphBuffer, visualStart * 2, renderBuffer, 0, length * 2);
+	// copy the distance values for the desired rendering range
+	System.arraycopy(dx, visualStart, renderDx, 0, length);	
+	// why do we have to specify the WORD count, not the byte count?
+	// when using the ANSI version of ExtTextOut cbCount is supposed to specify the byte count.
+	BidiText.drawGlyphs(gc, renderBuffer, renderDx, x, y);
+}
+public boolean equals(Object object) {
+	StyledTextBidi test;
+	if (object == this) return true;
+	if (object instanceof StyledTextBidi) test = (StyledTextBidi) object;
+	else return false;
+
+	int[] intArray1 = test.order;
+	int[] intArray2 = this.order;
+	if (intArray1.length != intArray2.length) return false;
+	for (int i=0; i<intArray1.length; i++) {
+		if (intArray1[i] != intArray2[i]) return false;
+	}
+	intArray1 = test.dx;
+	intArray2 = this.dx;
+	if (intArray1.length != intArray2.length) return false;
+	for (int i=0; i<intArray1.length; i++) {
+		if (intArray1[i] != intArray2[i]) return false;
+	}
+	intArray1 = test.renderPositions;
+	intArray2 = this.renderPositions;
+	if (intArray1.length != intArray2.length) return false;
+	for (int i=0; i<intArray1.length; i++) {
+		if (intArray1[i] != intArray2[i]) return false;
+	}
+	byte[] byteArray1 = test.classBuffer;
+	byte[] byteArray2 = this.classBuffer;
+	if (byteArray1.length != byteArray2.length) return false;
+	for (int i=0; i<byteArray1.length; i++) {
+		if (byteArray1[i] != byteArray2[i]) return false;
+	}
+	byteArray1 = test.glyphBuffer;
+	byteArray2 = this.glyphBuffer;
+	if (byteArray1.length != byteArray2.length) return false;
+	for (int i=0; i<byteArray1.length; i++) {
+		if (byteArray1[i] != byteArray2[i]) return false;
+	}
+	return true;
+}
+public void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
+	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
+
+	if (logicalStart + length > getTextLength()) {
+		return;
+	}
+	while (directionRuns.hasMoreElements()) {
+		DirectionRun run = (DirectionRun) directionRuns.nextElement();
+		int visualStart = run.getVisualStart();
+		int visualEnd = run.getVisualEnd();
+		int startX = run.getRenderStartX();
+		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
+	}				
+}
+public int getCaretOffsetAtX(int x) {
+	int lineLength = getTextLength();
+	int low = -1;
+	int high = lineLength;
+	int offset;
+	int logicalHigh;
+
+	if (lineLength == 0) {
+		return 0;
+	}
+	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
+		return lineLength;
+	}
+	while (high - low > 1) {
+		offset = (high + low) / 2;
+		int visualX = renderPositions[offset];
+		if (x <= visualX + dx[offset] / 2) {
+			high = offset;			
+		}
+		else {
+			low = offset;
+		}
+	}
+	logicalHigh = getLogicalOffset(high);
+	offset = logicalHigh;
+	// is x on first glyph?
+	if (low == -1) {
+		int logicalLow = getLogicalOffset(0);
+		// if in R2L segment find the offset behind the glyph (which may be a ligature)
+		if (isRightToLeft(logicalLow)) {
+			int i = logicalLow + 1;
+			while (i < order.length && order[i] == order[logicalLow]) {
+				i++;
+			}
+			offset = i;
+		}
+	}
+	else {
+		int logicalLow = getLogicalOffset(low);
+		// if x is in R2L segment
+		if (isRightToLeft(logicalLow)) {
+			offset = logicalLow;
+		}
+		else
+		if (isRightToLeft(logicalLow) == false && isRightToLeft(logicalHigh)) {
+			// if x is between L2R and R2L segment, place offset either logically at
+			// first character of R2L segment or in front of next L2R segment.
+			// This reflects the possible keyboard cursor movement.
+			if (x <= renderPositions[low] + dx[low]) {
+				offset = logicalLow + 1;
+			}
+			if (x > renderPositions[high]) {
+				offset = logicalHigh + 1;
+			}
+		}
+	}
+	return offset;
+}
+public int getCaretPosition(int logicalOffset) {
+	int caretX;
+
+	if (getTextLength() == 0) {
+		return 0;
+	}
+	// at or past end of line?
+	if (logicalOffset >= order.length) {
+		logicalOffset = Math.min(logicalOffset, order.length - 1);
+		int visualOffset = order[logicalOffset];
+		if (isRightToLeft(logicalOffset)) {
+			caretX = renderPositions[visualOffset];
+		}
+		else {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		}
+	}
+	else
+	if (logicalOffset > 0 && isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+		// logically first character of different direction segment?
+		// go behind last character of previous direction segment
+		int visualOffset = order[logicalOffset - 1];
+		if (isRightToLeft(logicalOffset - 1)) {
+			caretX = renderPositions[visualOffset];
+		}
+		else {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		}
+	}
+	else
+	// at R2L character or beginning of line?
+	if (isRightToLeft(logicalOffset) || logicalOffset == 0) {
+		int visualOffset = order[logicalOffset];
+
+		if (isRightToLeft(logicalOffset)) {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		}
+		else {
+			caretX = renderPositions[visualOffset];
+		}
+	}	
+	else {
+		// L2R segment
+		caretX = renderPositions[order[logicalOffset]];
+	}		
+	return caretX;
+}
+Vector getDirectionRuns(int logicalStart, int length) {
+	Vector directionRuns = new Vector();
+	int logicalEnd = logicalStart + length - 1;
+	int segmentLogicalStart = logicalStart;
+	int segmentLogicalEnd = segmentLogicalStart;
+	
+	if (logicalEnd < getTextLength()) {
+		while (segmentLogicalEnd <= logicalEnd) {
+			boolean isStartRightToLeft = isRightToLeft(segmentLogicalStart);			
+			// Search for the end of the direction segment. Each segment needs to 
+			// be rendered separately. 
+			// E.g., 11211 (1=R2L, 2=L2R), rendering from logical index 0 to 5 
+			// would be visual 1 to 4 and would thus miss visual 0. Rendering the 
+			// segments separately would render from visual 1 to 0, then 2, then 
+			// 4 to 3.
+			while (segmentLogicalEnd < logicalEnd && isStartRightToLeft == isRightToLeft(segmentLogicalEnd + 1)) {
+				segmentLogicalEnd++;
+			}
+			directionRuns.addElement(new DirectionRun(segmentLogicalStart, segmentLogicalEnd));
+			segmentLogicalStart = ++segmentLogicalEnd;
+		}
+	}
+	return directionRuns;
+}
+/**
+ *  Answer SWT.LEFT or SWT.RIGHT.
+ */
+public static int getKeyboardLanguageDirection() {
+	int language = BidiText.getKeyboardLanguage();
+	if (language == BidiText.KEYBOARD_HEBREW) {
+		return SWT.RIGHT;
+	}
+	if (language == BidiText.KEYBOARD_ARABIC) {
+		return SWT.RIGHT;
+	}
+	return SWT.LEFT;
+}
+int getLogicalOffset(int visualOffset) {
+	int logicalOffset = 0;
+	
+	while (logicalOffset < order.length && order[logicalOffset] != visualOffset) {
+		logicalOffset++;
+	}
+	return logicalOffset;
+}
+public int getOffsetAtX(int x) {
+	int lineLength = getTextLength();
+	int low = -1;
+	int high = lineLength;
+	if (lineLength == 0) {
+		return 0;
+	}
+	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
+		return lineLength;
+	}
+	while (high - low > 1) {
+		int offset = (high + low) / 2;
+		int visualX = renderPositions[offset];
+
+		if (x <= visualX + dx[offset]) {
+			high = offset;			
+		}
+		else 
+		if (high == lineLength && high - offset == 1) {
+			// requested x location is past end of line
+			high = -1;
+		}
+		else {
+			low = offset;
+		}
+	}
+	return getLogicalOffset(high);
+}
+int[] getRenderIndexesFor(int start, int length) {
+	int[] positions = new int[length];
+	int end = start + length;
+	
+	for (int i = start; i < end; i++) {
+		positions[i-start] = order[i];
+	}		
+	return positions;
+}
+int getTextLength() {
+	return order.length;
+}
+public int getTextWidth() {
+	int width = 0;
+	
+	if (getTextLength() > 0) {
+		width = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
+	}
+	return width;
+}
+/**
+ * 
+ */
+public boolean isRightToLeft(int logicalIndex) {
+	boolean isRightToLeft = false;
+	
+	if (logicalIndex < classBuffer.length) {
+		isRightToLeft = (classBuffer[logicalIndex] == BidiText.CLASS_ARABIC) || 
+					    (classBuffer[logicalIndex] == BidiText.CLASS_HEBREW) ||
+					    (classBuffer[logicalIndex] == BidiText.CLASS_LOCALNUMBER);
+	}
+	return isRightToLeft;
+}
+/**
+ *
+ */
+void prepareBoldText(String textline, int logicalStart, int length) {
+	int byteCount = length;
+	int flags = 0;
+	String text = textline.substring(logicalStart, logicalStart + length);
+
+	// figure out what is before and after the substring
+	// so that the proper character shaping will occur
+	if (logicalStart != 0  
+		&& !Character.isWhitespace(textline.charAt(logicalStart - 1)) 
+		&& isRightToLeft(logicalStart - 1)) {
+		// if the start of the substring is not the beginning of the 
+		// text line, check to see what is before the string
+		flags |= BidiText.LINKBEFORE;
+	}
+	if ((logicalStart + byteCount) != dx.length 
+		&& !Character.isWhitespace(textline.charAt(logicalStart + byteCount)) 
+		&& isRightToLeft(logicalStart + byteCount)) {
+		// if the end of the substring is not the end of the text line,
+		// check to see what is after the substring
+		flags |= BidiText.LINKAFTER;
+	}		
+	// set classification values for the substring
+	flags |= BidiText.CLASSIN;
+	byte[] classArray = new byte[byteCount];
+	int[] renderIndexes = getRenderIndexesFor(logicalStart, byteCount);
+	for (int i = 0; i < byteCount; i++) {
+		classArray[i] = classBuffer[renderIndexes[i]];
+	}
+	int[] dxArray = new int[byteCount];
+	int[] orderArray = new int[byteCount];	
+	BidiText.getRenderInfo(gc, text, orderArray, classArray, dxArray, flags);
+	// update the existing dx array with the new dx values based on the bold font
+	for (int i = 0; i < dxArray.length; i++) {
+		int dxValue = dxArray[orderArray[i]];
+		int visualIndex = renderIndexes[i];
+		dx[visualIndex] = dxValue;
+	}
+}
+public void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
+	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
+
+	if (logicalStart + length > getTextLength()) {
+		return;
+	}
+	while (directionRuns.hasMoreElements()) {
+		DirectionRun run = (DirectionRun) directionRuns.nextElement();
+		int visualStart = run.getVisualStart();
+		int visualEnd = run.getVisualEnd();
+		int startX = run.getRenderStartX();
+
+		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
+	}				
+}
+void setGC(GC gc) {
+	this.gc = gc;
+}
+/**
+ * 
+ */
+public void setKeyboardLanguage(int logicalIndex) {
+	int language = BidiText.KEYBOARD_LATIN;
+	
+	if (logicalIndex >= classBuffer.length) {
+		return;
+	}
+	if (isRightToLeft(logicalIndex)) {
+		String codePage = System.getProperty("file.encoding").toUpperCase();
+		if ("CP1255".equals(codePage)) {
+			language = BidiText.KEYBOARD_HEBREW;
+		}
+		else
+		if ("CP1256".equals(codePage)) {		
+			language = BidiText.KEYBOARD_ARABIC;
+		}
+	}
+	BidiText.setKeyboardLanguage(language);
+}
+void setTabWidth(int tabWidth) {
+	this.tabWidth = tabWidth;
+}
+/**
+ * Should change output to conform with other SWT toString output (i.e., Class {value1, value2})
+ */
+public String toString() {
+	StringBuffer buf = new StringBuffer();
+	buf.append("\n");
+	buf.append("Render Positions: ");
+	buf.append("\n");
+	for (int i=0; i<renderPositions.length; i++) {
+		buf.append(renderPositions[i]);
+		buf.append(" ");
+	}
+	buf.append("\n");
+	buf.append("Order: ");
+	buf.append("\n");
+	for (int i=0; i<order.length; i++) {
+		buf.append(order[i]);
+		buf.append(" ");
+	}
+	buf.append("\n");
+	buf.append("DX: ");
+	buf.append("\n");
+	for (int i=0; i<dx.length; i++) {
+		buf.append(dx[i]);
+		buf.append(" ");
+	}
+	buf.append("\n");
+	buf.append("Class: ");
+	buf.append("\n");
+	for (int i=0; i<classBuffer.length; i++) {
+		buf.append(classBuffer[i]);
+		buf.append(" ");
+	}
+	buf.append("\n");
+	buf.append("Glyph Buffer: ");
+	buf.append("\n");
+	for (int i=0; i<glyphBuffer.length; i++) {
+		buf.append(glyphBuffer[i]);
+		buf.append(" ");
+	}
+/*	buf.append("\n");
+	buf.append("Glyphs: ");
+	buf.append("\n");
+	buf.append(getGlyphs());
+	buf.append("\n");
+*/
+	return buf.toString();
+}
+}
