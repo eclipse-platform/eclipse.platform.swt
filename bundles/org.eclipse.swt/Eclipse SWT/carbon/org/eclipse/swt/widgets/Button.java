@@ -49,6 +49,7 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	// NEEDS WORK
 	if ((style & SWT.ARROW) != 0) {
 		return new Point (10, 10);
 	}
@@ -124,6 +125,25 @@ void createHandle () {
 	OS.SetControlFontStyle (handle, fontRec);
 	OS.HIViewAddSubview (parent.handle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
+	
+	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
+		int textAlignment = 0;
+		int graphicAlignment = 0;
+		if ((style & SWT.LEFT) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
+			graphicAlignment = OS.kControlBevelButtonAlignLeft;
+		}
+		if ((style & SWT.RIGHT) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextCenter;
+			graphicAlignment = OS.kControlBevelButtonAlignCenter;
+		}
+		if ((style & SWT.CENTER) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+			graphicAlignment = OS.kControlBevelButtonAlignRight;
+		}
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
+	}
 }
 
 public int getAlignment () {
@@ -180,7 +200,7 @@ public void setAlignment (int alignment) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		//OS.SetControlData (??);
+		//NEEDS WORK
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
@@ -222,17 +242,17 @@ public void setImage (Image image) {
 		OS.SetControlTitleWithCFString (handle, ptr);
 		OS.CFRelease (ptr);
 	}
-//	int kControlContentIconRef = 132;
-//	int kOnSystemDisk = -32768;
-//	int kSystemIconsCreator = ('m'<<24) + ('a'<<16) + ('c'<<8) + 's';
-//	int kHelpIcon = ('c'<<24) + ('a'<<16) + ('p'<<8) + 'l';
-//	int [] iconRef = new int [1];
-//	OS.GetIconRef ((short)kOnSystemDisk, kSystemIconsCreator, kHelpIcon, iconRef);
-//	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-//	inContent.contentType = (short)kControlContentIconRef;
-//	inContent.iconRef = iconRef [0];
-//	OS.SetBevelButtonContentInfo (handle, inContent);
-//	OS.HIViewSetNeedsDisplay (handle, true);
+	//int kControlContentIconRef = 132;
+	//int kOnSystemDisk = -32768;
+	//int kSystemIconsCreator = ('m'<<24) + ('a'<<16) + ('c'<<8) + 's';
+	//int kColorSyncFolderIcon = ('p'<<24) + ('r'<<16) + ('o'<<8) + 'f';
+	//int [] iconRef = new int [1];
+	//OS.GetIconRef ((short)kOnSystemDisk, kSystemIconsCreator, kColorSyncFolderIcon, iconRef);
+	//ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+	//inContent.contentType = (short)kControlContentIconRef;
+	//inContent.iconRef = iconRef [0];
+	//OS.SetBevelButtonContentInfo (handle, inContent);
+	//OS.HIViewSetNeedsDisplay (handle, true);
 }
 
 public void setSelection (boolean selected) {
