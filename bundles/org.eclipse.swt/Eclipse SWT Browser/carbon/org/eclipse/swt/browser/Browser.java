@@ -1024,6 +1024,7 @@ void didCommitLoadForFrame(int frame) {
 		location.display = display;
 		location.widget = this;
 		location.location = url2;
+		location.top = true;
 		for (int i = 0; i < locationListeners.length; i++)
 			locationListeners[i].changed(location);
 	}
