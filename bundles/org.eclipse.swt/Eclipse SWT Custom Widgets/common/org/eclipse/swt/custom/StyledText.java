@@ -2559,7 +2559,6 @@ void doContentEnd() {
 		int length = content.getCharCount();		
 		if (caretOffset < length) {
 			caretOffset = length;
-			getAccessible().textCaretMoved(caretOffset);
 			showCaret();
 		}
 	}
@@ -2570,7 +2569,6 @@ void doContentEnd() {
 void doContentStart() {
 	if (caretOffset > 0) {
 		caretOffset = 0;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -2587,7 +2585,6 @@ void doCursorPrevious() {
 		int caretLine;
 		
 		caretOffset = selection.x;
-		getAccessible().textCaretMoved(caretOffset);
 		caretLine = getCaretLine();
 		showCaret(caretLine);
 	}
@@ -2608,7 +2605,6 @@ void doCursorNext() {
 		int caretLine;
 
 		caretOffset = selection.y;
-		getAccessible().textCaretMoved(caretOffset);
 		caretLine = getCaretLine();
 		showCaret(caretLine);
 	}
@@ -2701,7 +2697,6 @@ int doLineDown() {
 		else {
 			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 		}
-		getAccessible().textCaretMoved(caretOffset);
 	}
 	return caretLine;
 }
@@ -2716,7 +2711,6 @@ void doLineEnd() {
 	
 	if (caretOffset < lineEndOffset) {
 		caretOffset = lineEndOffset;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -2729,7 +2723,6 @@ void doLineStart() {
 		
 	if (caretOffset > lineOffset) {
 		caretOffset = lineOffset;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret(caretLine);
 	}
 }
@@ -2753,7 +2746,6 @@ int doLineUp() {
 		else {
 			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 		}
-		getAccessible().textCaretMoved(caretOffset);
 	}
 	return caretLine;
 }
@@ -2802,7 +2794,6 @@ void doMouseLocationChange(int x, int y, boolean select) {
 		if (newCaretOffset != caretOffset) {
 			lastCaretDirection = newCaretDirection;
 			caretOffset = newCaretOffset;
-			getAccessible().textCaretMoved(caretOffset);
 			if (select) {
 				doMouseSelection();
 			}
@@ -2908,7 +2899,6 @@ void doPageDown(boolean select) {
 		else {
 			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 		}
-		getAccessible().textCaretMoved(caretOffset);
 		if (select) {
 			doSelection(ST.COLUMN_NEXT);
 		}
@@ -2941,7 +2931,6 @@ void doPageEnd() {
 
 		if (caretOffset < bottomCaretOffset) {
 			caretOffset = bottomCaretOffset;
-			getAccessible().textCaretMoved(caretOffset);
 			showCaret();
 		}
 	}
@@ -2954,7 +2943,6 @@ void doPageStart() {
 	
 	if (caretOffset > topCaretOffset) {
 		caretOffset = topCaretOffset;
-		getAccessible().textCaretMoved(caretOffset);
 		// explicitly go to the calculated caret line. may be different 
 		// from content.getLineAtOffset(caretOffset) when in word wrap mode
 		showCaret(topIndex);
@@ -2985,7 +2973,6 @@ void doPageUp() {
 		else {
 			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 		}
-		getAccessible().textCaretMoved(caretOffset);
 		// scroll one page up or to the top
 		scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
 		if (scrollOffset < verticalScrollOffset) {				
@@ -3066,7 +3053,6 @@ void doSelectionCursorNext() {
 		// extra methods.		
 		lastCaretDirection = ST.COLUMN_NEXT;
 		caretOffset++;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 	else
@@ -3074,7 +3060,6 @@ void doSelectionCursorNext() {
 		// only go to next line if not in single line mode. fixes 5673
 		caretLine++;		
 		caretOffset = content.getOffsetAtLine(caretLine);
-		getAccessible().textCaretMoved(caretOffset);
 		// explicitly go to the calculated caret line. may be different 
 		// from content.getLineAtOffset(caretOffset) when in word wrap mode
 		showCaret(caretLine);
@@ -3095,7 +3080,6 @@ void doSelectionCursorPrevious() {
 		// extra methods.			
 		lastCaretDirection = ST.COLUMN_PREVIOUS;		
 		caretOffset--;
-		getAccessible().textCaretMoved(caretOffset);
 		// explicitly go to the calculated caret line. may be different 
 		// from content.getLineAtOffset(caretOffset) when in word wrap mode
 		showCaret(caretLine);
@@ -3105,7 +3089,6 @@ void doSelectionCursorPrevious() {
 		caretLine--;
 		lineOffset = content.getOffsetAtLine(caretLine);
 		caretOffset = lineOffset + content.getLine(caretLine).length();
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -3134,7 +3117,6 @@ void doSelectionLineDown() {
 		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
 	if (caretLine == content.getLineCount() - 1) {
 		caretOffset = content.getCharCount();
-		getAccessible().textCaretMoved(caretOffset);
 	}
 	else {
 		caretLine = doLineDown();
@@ -3169,7 +3151,6 @@ void doSelectionLineUp() {
 		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);	
 	if (caretLine == 0) {
 		caretOffset = 0;
-		getAccessible().textCaretMoved(caretOffset);
 	}
 	else {
 		caretLine = doLineUp();
@@ -3242,7 +3223,6 @@ void doSelectionWordNext() {
 		content.getLineAtOffset(caretOffset) == content.getLineAtOffset(newCaretOffset)) {
 		lastCaretDirection = ST.COLUMN_NEXT;
 		caretOffset = newCaretOffset;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -3254,7 +3234,6 @@ void doSelectionWordPrevious() {
 	
 	lastCaretDirection = ST.COLUMN_PREVIOUS;
 	caretOffset = getWordStart(caretOffset);
-	getAccessible().textCaretMoved(caretOffset);
 	caretLine = content.getLineAtOffset(caretOffset);
 	// word previous always comes from bottom line. when
 	// wrapping lines, stay on bottom line when on line boundary
@@ -3332,7 +3311,6 @@ void doVisualPrevious() {
 				}
 			}
 			caretOffset = lineOffset + offsetInLine;
-			getAccessible().textCaretMoved(caretOffset);
 			showCaret();
 		}
 		if (bidi.getTextPosition(offsetInLine, ST.COLUMN_NEXT) == XINSET) {
@@ -3344,7 +3322,6 @@ void doVisualPrevious() {
 	else
 	if (offsetInLine > 0) {
 		caretOffset--;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -3409,7 +3386,6 @@ void doVisualNext() {
 				}
 			}
 			caretOffset = lineOffset + offsetInLine;
-			getAccessible().textCaretMoved(caretOffset);
 			showCaret();
 		}
 		gc.dispose();
@@ -3417,7 +3393,6 @@ void doVisualNext() {
 	else
 	if (offsetInLine < lineLength) {
 		caretOffset++;
-		getAccessible().textCaretMoved(caretOffset);
 		showCaret();
 	}
 }
@@ -3431,7 +3406,6 @@ void doWordNext() {
 		int caretLine;
 		
 		caretOffset = selection.y;
-		getAccessible().textCaretMoved(caretOffset);
 		caretLine = getCaretLine();
 		showCaret(caretLine);
 	}
@@ -3449,7 +3423,6 @@ void doWordPrevious() {
 		int caretLine;
 		
 		caretOffset = selection.x;
-		getAccessible().textCaretMoved(caretOffset);
 		caretLine = getCaretLine();
 		showCaret(caretLine);
 	}
@@ -5351,7 +5324,6 @@ void handleMouseDoubleClick(Event event) {
 	caretOffset = getWordStart(caretOffset);
 	resetSelection();
 	caretOffset = getWordEndNoSpaces(caretOffset);
-	getAccessible().textCaretMoved(caretOffset);
 	showCaret();
 	doMouseSelection();
 	doubleClickSelection = new Point(selection.x, selection.y);
@@ -5544,10 +5516,7 @@ void handleTextChanging(TextChangingEvent event) {
 	// handleTextChanging and handleTextChanged events and this API sets the
 	// caretOffset.
 	int newEndOfText = content.getCharCount() - event.replaceCharCount + event.newCharCount;
-	if (caretOffset > newEndOfText) {
-		caretOffset = newEndOfText;
-		getAccessible().textCaretMoved(caretOffset);
-	}
+	if (caretOffset > newEndOfText) caretOffset = newEndOfText;
 }
 /**
  * Called when the widget content is set programatically, overwriting 
@@ -6830,7 +6799,6 @@ void reset() {
 	ScrollBar verticalBar = getVerticalBar();
 	ScrollBar horizontalBar = getHorizontalBar();
 	caretOffset = 0;
-	getAccessible().textCaretMoved(caretOffset);
 	topIndex = 0;
 	topOffset = 0;
 	verticalScrollOffset = 0;
@@ -7137,6 +7105,7 @@ void setBidiCaretLocation(StyledTextBidi bidi, int caretLine) {
 		caret.setLocation(
 			columnX, 
 			caretLine * lineHeight - verticalScrollOffset + topMargin);
+		getAccessible().textCaretMoved(getCaretOffset());
 	}
 	if (gc != null) {
 		gc.dispose();
@@ -7215,6 +7184,7 @@ void setCaretLocation(int newCaretX, int line) {
 			caret.setLocation(
 				newCaretX, 
 				line * lineHeight - verticalScrollOffset + topMargin);
+			getAccessible().textCaretMoved(getCaretOffset());
 		}
 	}
 }
@@ -7236,6 +7206,7 @@ void setCaretLocation() {
 			caret.setLocation(
 				columnX, 
 				caretLine * lineHeight - verticalScrollOffset + topMargin);
+			getAccessible().textCaretMoved(getCaretOffset());
 		}
 	}
 }
@@ -7259,12 +7230,10 @@ public void setCaretOffset(int offset) {
 	if (length > 0 && offset != caretOffset) {
 		if (offset < 0) {
 			caretOffset = 0;
-			getAccessible().textCaretMoved(caretOffset);
 		}
 		else
 		if (offset > length) {
 			caretOffset = length;
-			getAccessible().textCaretMoved(caretOffset);
 		}
 		else {
 			if (isLineDelimiter(offset)) {
@@ -7273,7 +7242,6 @@ public void setCaretOffset(int offset) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			}
 			caretOffset = offset;
-			getAccessible().textCaretMoved(caretOffset);
 		}
 		// clear the selection if the caret is moved.
 		// don't notify listeners about the selection change.
@@ -7903,7 +7871,6 @@ void internalSetSelection(int start, int length, boolean sendEvent) {
 			caretOffset = selection.y = end;
 		}
 		internalRedrawRange(selection.x, selection.y - selection.x, true);
-		getAccessible().textCaretMoved(caretOffset);
 	}
 }
 /** 
@@ -8062,7 +8029,6 @@ public void setTabs(int tabs) {
 	renderer.setTabLength(tabLength);
 	if (caretOffset > 0) {
 		caretOffset = 0;
-		getAccessible().textCaretMoved(caretOffset);
 		if (isBidi()) {
 			showBidiCaret();
 		}
