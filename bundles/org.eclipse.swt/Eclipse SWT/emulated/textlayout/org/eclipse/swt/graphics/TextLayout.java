@@ -520,10 +520,10 @@ public int getNextOffset (int offset, int movement) {
 			break;
 		}
 	}
-	boolean previousSpaceChar = Compatibility.isSpaceChar(text.charAt(offset));
+	boolean previousSpaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
 	offset++;
 	while (offset < lineEnd) {
-		boolean spaceChar = Compatibility.isSpaceChar(text.charAt(offset));
+		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
 		if (!spaceChar && previousSpaceChar) break;
 		previousSpaceChar = spaceChar;
 		offset++;
@@ -613,9 +613,9 @@ public int getPreviousOffset (int offset, int movement) {
 		}
 	}	
 	offset--;
-	boolean previousSpaceChar = Compatibility.isSpaceChar(text.charAt(offset));
+	boolean previousSpaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
 	while (lineStart < offset) {
-		boolean spaceChar = Compatibility.isSpaceChar(text.charAt(offset - 1));
+		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset - 1));
 		if (spaceChar && !previousSpaceChar) break;
 		offset--;
 		previousSpaceChar = spaceChar;
