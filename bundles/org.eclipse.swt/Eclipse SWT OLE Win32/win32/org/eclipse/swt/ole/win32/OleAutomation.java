@@ -283,33 +283,56 @@ public String getLastError() {
  * @param dispIdMember the ID of the property as specified by the IDL of the ActiveX Control; the
  *        value for the ID can be obtained using OleAutomation.getIDsOfNames
  *
- * @return the value of the property specified by the dispIdMember
+ * @return the value of the property specified by the dispIdMember or null
  */
 public Variant getProperty(int dispIdMember) {
-	// get the IDispatch interface for the control
-	if (objIDispatch == null) return null;
-	
-	DISPPARAMS pDispParams = new DISPPARAMS();
-	EXCEPINFO excepInfo = new EXCEPINFO();
-	int[] pArgErr = new int[1];
-	int pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
-	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, COM.DISPATCH_PROPERTYGET, pDispParams, pVarResultAddress, excepInfo, pArgErr);
-	
-	// save error string and cleanup EXCEPINFO
-	manageExcepinfo(result, excepInfo);
-
-	Variant pVarResult = null;
-	if (result == COM.S_OK) {
-		pVarResult = new Variant();
-		pVarResult.setData(pVarResultAddress);
-	}
-	
-	COM.VariantClear(pVarResultAddress);
-	OS.GlobalFree(pVarResultAddress);
-		
-	return pVarResult;
+	Variant pVarResult = new Variant();
+	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, null, null, pVarResult);
+	return (result == OLE.S_OK) ? pVarResult : null;
+}
+/**
+ * Returns the value of the property specified by the dispIdMember.
+ *
+ * @param dispIdMember the ID of the property as specified by the IDL of the ActiveX Control; the
+ *        value for the ID can be obtained using OleAutomation.getIDsOfNames
+ *
+ * @param rgvarg an array of arguments for the method.  All arguments are considered to be
+ *        read only unless the Variant is a By Reference Variant type.
+ * 
+ * @return the value of the property specified by the dispIdMember or null
+ * 
+ * @since 2.0
+ */
+public Variant getProperty(int dispIdMember, Variant[] rgvarg) {
+	Variant pVarResult = new Variant();
+	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, rgvarg, null, pVarResult);
+	return (result == OLE.S_OK) ? pVarResult : null;
 	
 }
+/**
+ * Returns the value of the property specified by the dispIdMember.
+ *
+ * @param dispIdMember the ID of the property as specified by the IDL of the ActiveX Control; the
+ *        value for the ID can be obtained using OleAutomation.getIDsOfNames
+ *
+ * @param rgvarg an array of arguments for the method.  All arguments are considered to be
+ *        read only unless the Variant is a By Reference Variant type.
+ * 
+ * @param rgdispidNamedArgs an array of identifiers for the arguments specified in rgvarg; the
+ *        parameter IDs must be in the same order as their corresponding values;
+ *        all arguments must have an identifier - identifiers can be obtained using 
+ *        OleAutomation.getIDsOfNames
+ * 
+ * @return the value of the property specified by the dispIdMember or null
+ * 
+ * @since 2.0
+ */
+public Variant getProperty(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs) {
+	Variant pVarResult = new Variant();
+	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, rgvarg, rgdispidNamedArgs, pVarResult);
+	return (result == OLE.S_OK) ? pVarResult : null;
+}
+
 /** 
  * Invokes a method on the OLE Object; the method has no parameters.
  *
@@ -319,13 +342,9 @@ public Variant getProperty(int dispIdMember) {
  * @return the result of the method or null if the method failed to give result information
  */
 public Variant invoke(int dispIdMember) {
-
 	Variant pVarResult = new Variant();
-	int result = invoke(dispIdMember, null, null, pVarResult);
-
-	if (result == COM.S_OK) return pVarResult;
-
-	return null;
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, null, null, pVarResult);
+	return (result == COM.S_OK) ? pVarResult : null;
 }
 /** 
  * Invokes a method on the OLE Object; the method has no optional parameters.
@@ -339,13 +358,9 @@ public Variant invoke(int dispIdMember) {
  * @return the result of the method or null if the method failed to give result information
  */
 public Variant invoke(int dispIdMember, Variant[] rgvarg) {
-
 	Variant pVarResult = new Variant();
-	int result = invoke(dispIdMember, rgvarg, null, pVarResult);
-
-	if (result == COM.S_OK) return pVarResult;
-
-	return null;
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, rgvarg, null, pVarResult);
+	return (result == COM.S_OK) ? pVarResult : null;
 }
 /** 
  * Invokes a method on the OLE Object; the method has optional parameters.  It is not
@@ -366,15 +381,11 @@ public Variant invoke(int dispIdMember, Variant[] rgvarg) {
  * @return the result of the method or null if the method failed to give result information
  */
 public Variant invoke(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs) {
-
 	Variant pVarResult = new Variant();
-	int result = invoke(dispIdMember, rgvarg, rgdispidNamedArgs, pVarResult);
-
-	if (result == COM.S_OK) return pVarResult;
-
-	return null;
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, rgvarg, rgdispidNamedArgs, pVarResult);
+	return (result == COM.S_OK) ? pVarResult : null;
 }
-private int invoke(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs, Variant pVarResult) {
+private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispidNamedArgs, Variant pVarResult) {
 
 	// get the IDispatch interface for the control
 	if (objIDispatch == null) return COM.E_FAIL;
@@ -408,7 +419,7 @@ private int invoke(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs, 
 	int[] pArgErr = new int[1];
 	int pVarResultAddress = 0;
 	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
-	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, COM.DISPATCH_METHOD, pDispParams, pVarResultAddress, excepInfo, pArgErr);
+	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, wFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
 
 	if (pVarResultAddress != 0){
 		pVarResult.setData(pVarResultAddress);
@@ -448,7 +459,7 @@ private int invoke(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs, 
  *	</ul>
  */
 public void invokeNoReply(int dispIdMember) {
-	int result = invoke(dispIdMember, null, null, null);
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, null, null, null);
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_ACTION_NOT_PERFORMED, result);
 }
@@ -469,7 +480,7 @@ public void invokeNoReply(int dispIdMember) {
  *	</ul>
  */
 public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
-	int result = invoke(dispIdMember, rgvarg, null, null);
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, rgvarg, null, null);
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_ACTION_NOT_PERFORMED, result);
 }
@@ -497,7 +508,7 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
  *	</ul>
  */
 public void invokeNoReply(int dispIdMember, Variant[] rgvarg, int[] rgdispidNamedArgs) {
-	int result = invoke(dispIdMember, rgvarg, rgdispidNamedArgs, null);
+	int result = invoke(dispIdMember, COM.DISPATCH_METHOD, rgvarg, rgdispidNamedArgs, null);
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_ACTION_NOT_PERFORMED, result);
 }
@@ -545,42 +556,13 @@ private void manageExcepinfo(int hResult, EXCEPINFO excepInfo) {
  * @return true if the operation was successful
  */
 public boolean setProperty(int dispIdMember, Variant rgvarg) {
-
-	// get the IDispatch interface for the control
-	if (objIDispatch == null) return false;
-
-	// create Dispparams structure with input parameters
-	DISPPARAMS pDispParams = new DISPPARAMS();
-	pDispParams.cArgs = 1;
-	pDispParams.rgvarg = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, Variant.sizeof);
-	rgvarg.getData(pDispParams.rgvarg);
-	
-	// add in information for named args
-	pDispParams.cNamedArgs = 1;
-	pDispParams.rgdispidNamedArgs = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, 4);
-	COM.MoveMemory(pDispParams.rgdispidNamedArgs, new int[] {COM.DISPID_PROPERTYPUT}, 4);
-
-	int pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
-	EXCEPINFO excepInfo = new EXCEPINFO();
-	int[] pArgErr = new int[1];
+	Variant[] rgvarg2 = new Variant[] {rgvarg};
+	int[] rgdispidNamedArgs = new int[] {COM.DISPID_PROPERTYPUT};
 	int dwFlags = COM.DISPATCH_PROPERTYPUT;
 	if ((rgvarg.getType() & COM.VT_BYREF) == COM.VT_BYREF)
 		dwFlags = COM.DISPATCH_PROPERTYPUTREF;
-	int rc = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, dwFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
-
-	// free the result
-	COM.VariantClear(pVarResultAddress);
-	OS.GlobalFree(pVarResultAddress);
-	
-	// free the Dispparams resources
-	OS.GlobalFree(pDispParams.rgdispidNamedArgs);
-	COM.VariantClear(pDispParams.rgvarg);
-	OS.GlobalFree(pDispParams.rgvarg);
-	
-	// save error string and cleanup EXCEPINFO
-	manageExcepinfo(rc, excepInfo);
-		
-	return (rc == COM.S_OK);
-
+	Variant pVarResult = new Variant();
+	int result = invoke(dispIdMember, dwFlags, rgvarg2, rgdispidNamedArgs, pVarResult);
+	return (result == COM.S_OK);
 }
 }
