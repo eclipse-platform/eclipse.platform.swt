@@ -71,6 +71,7 @@ public class StyledText extends Canvas {
 	static final char TAB = '\t';
 	static final String PlatformLineDelimiter = System.getProperty("line.separator");
 	static final int BIDI_CARET_WIDTH = 4;		
+	static final int XINSET = BIDI_CARET_WIDTH - 1;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
 	
@@ -1084,9 +1085,6 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.BORDER) == 0 || (style & SWT.SINGLE) == 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 0;
 	}
-	if (isBidi()) {
-		leftMargin = BIDI_CARET_WIDTH - 1;
-	}
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
 	createKeyBindings();
@@ -1966,7 +1964,7 @@ void doColumnLeft() {
 			}
 			else
 			if (offsetInLine == lineLength && 
-				bidi.getCaretPosition(lineLength) != 0) {
+				bidi.getCaretPosition(lineLength) != XINSET) {
 				// at logical line end in R2L segment but there's more text (a
 				// L2R segment) go to end of R2L segment (visually left of next
 				// L2R segment)/end of line
@@ -2007,7 +2005,7 @@ void doColumnLeft() {
 			// Beginning of line reached (auto scroll finished) but not scrolled 
 			// completely to the left? Fixes 1GKM193
 			if (caretOffset - lineOffset == 0 && horizontalScrollOffset > 0 && 
-				horizontalScrollOffset <= 0) {
+				horizontalScrollOffset <= XINSET) {
 				scrollHorizontalBar(-horizontalScrollOffset);
 			}
 		}
@@ -2883,6 +2881,10 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 			}
 		}
 	}	
+	// handle empty line case
+	if (bidi != null && (paintX == 0)) {
+		paintX = XINSET;	
+	}
 	// fill the background first since expanded tabs are not 
 	// drawn as spaces. tabs just move the draw position. 
 	gc.fillRectangle(paintX - horizontalScrollOffset, paintY, selectionBackgroundWidth, lineHeight);
@@ -5740,9 +5742,14 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	// redraw line break marker (either space or full client area width)
 	// if redraw range extends over more than one line and background should be redrawn
 	if (lastLine > firstLine && clearBackground) {
-		int lineBreakStartX = bidi.getTextWidth() - horizontalScrollOffset;
 		int lineBreakWidth;		
+		int lineBreakStartX = bidi.getTextWidth();
 
+		// handle empty line case
+		if (lineBreakStartX == 0) {
+			lineBreakStartX = XINSET;
+		}
+		lineBreakStartX = lineBreakStartX - horizontalScrollOffset;
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
 			lineBreakWidth = getClientArea().width - lineBreakStartX;
 		}
