@@ -342,6 +342,9 @@ public static String getMessage(String key) {
 	if (key.equals("SWT_Charset_Unicode")) return "unicode";
 	if (key.equals("SWT_Charset_ASCII")) return "ASCII";
 	if (key.equals("SWT_InputMethods")) return "Input Methods";
+	if (key.equals("SWT_Password")) return "Password:";
+	if (key.equals("SWT_Username")) return "User Name:";
+	if (key.equals("SWT_Prompt")) return "Prompt";
 	return key;
 }
 	

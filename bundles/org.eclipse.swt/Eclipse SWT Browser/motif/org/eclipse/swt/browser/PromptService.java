@@ -12,7 +12,6 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.mozilla.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class PromptService {
@@ -145,11 +144,11 @@ String getLabel(int buttonFlag, int index, int buttonTitle) {
 	String label = null;
 	int flag = (buttonFlag & (0xff * index)) / index;
 	switch (flag) {
-		case nsIPromptService.BUTTON_TITLE_CANCEL : label = SWT.getMessage("SWT_Cancel"); break;
-		case nsIPromptService.BUTTON_TITLE_NO : label = SWT.getMessage("SWT_No"); break;
-		case nsIPromptService.BUTTON_TITLE_OK : label = SWT.getMessage("SWT_OK"); break;
-		case nsIPromptService.BUTTON_TITLE_SAVE : label = SWT.getMessage("SWT_Save"); break;
-		case nsIPromptService.BUTTON_TITLE_YES : label = SWT.getMessage("SWT_Yes"); break;
+		case nsIPromptService.BUTTON_TITLE_CANCEL : label = SWT.getMessage("SWT_Cancel"); break; //$NON-NLS-1$
+		case nsIPromptService.BUTTON_TITLE_NO : label = SWT.getMessage("SWT_No"); break; //$NON-NLS-1$
+		case nsIPromptService.BUTTON_TITLE_OK : label = SWT.getMessage("SWT_OK"); break; //$NON-NLS-1$
+		case nsIPromptService.BUTTON_TITLE_SAVE : label = SWT.getMessage("SWT_Save"); break; //$NON-NLS-1$
+		case nsIPromptService.BUTTON_TITLE_YES : label = SWT.getMessage("SWT_Yes"); break; //$NON-NLS-1$
 		case nsIPromptService.BUTTON_TITLE_IS_STRING : {
 			int length = XPCOM.nsCRT_strlen_PRUnichar(buttonTitle);
 			char[] dest = new char[length];
@@ -163,7 +162,23 @@ String getLabel(int buttonFlag, int index, int buttonTitle) {
 /* nsIPromptService */
 
 public int Alert(int parent, int dialogTitle, int text) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	Browser browser = getBrowser(parent);
+	
+	int length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+	char[] dest = new char[length];
+	XPCOM.memmove(dest, dialogTitle, length * 2);
+	String titleLabel = new String(dest);
+
+	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	dest = new char[length];
+	XPCOM.memmove(dest, text, length * 2);
+	String textLabel = new String(dest);
+
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK);
+	messageBox.setText(titleLabel);
+	messageBox.setMessage(textLabel);
+	messageBox.open();
+	return XPCOM.NS_OK;
 }
 
 public int AlertCheck(int parent, int dialogTitle, int text, int checkMsg, int checkValue) {
@@ -217,7 +232,128 @@ public int Prompt(int parent, int dialogTitle, int text, int value, int checkMsg
 }
 
 public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int username, int password, int checkMsg, int checkValue, int _retval) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	Browser browser = getBrowser(parent);
+	String titleLabel = null, textLabel, checkLabel = null;
+	String[] userLabel = new String[1], passLabel = new String[1];
+	char[] dest;
+	int length;
+	if (dialogTitle != 0) {
+		length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+		dest = new char[length];
+		XPCOM.memmove(dest, dialogTitle, length * 2);
+		titleLabel = new String(dest);
+	} else {
+		titleLabel = SWT.getMessage("SWT_Prompt"); //$NON-NLS-1$
+	}
+	
+	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	dest = new char[length];
+	XPCOM.memmove(dest, text, length * 2);
+	textLabel = new String(dest);
+	
+	int[] userAddr = new int[1];
+	XPCOM.memmove(userAddr, username, 4);
+	if (userAddr[0] != 0) {
+		length = XPCOM.nsCRT_strlen_PRUnichar(userAddr[0]);
+		dest = new char[length];
+		XPCOM.memmove(dest, userAddr[0], length * 2);
+		userLabel[0] = new String(dest);		
+	}
+	
+	int[] passAddr = new int[1];
+	XPCOM.memmove(passAddr, password, 4);
+	if (passAddr[0] != 0) {
+		length = XPCOM.nsCRT_strlen_PRUnichar(passAddr[0]);
+		dest = new char[length];
+		XPCOM.memmove(dest, passAddr[0], length * 2);
+		passLabel[0] = new String(dest);		
+	}
+	
+	if (checkMsg != 0) {
+		length = XPCOM.nsCRT_strlen_PRUnichar(checkMsg);
+		dest = new char[length];
+		XPCOM.memmove(dest, checkMsg, length * 2);
+		checkLabel = new String(dest);
+	}
+	
+	PromptDialog dialog = new PromptDialog(browser.getShell());
+	int[] check = new int[1], result = new int[1];
+	if (checkValue != 0) XPCOM.memmove(check, checkValue, 4);
+	dialog.promptUsernameAndPassword(titleLabel, textLabel, checkLabel, userLabel, passLabel, check, result);
+
+	XPCOM.memmove(_retval, result, 4);
+	if (result[0] == 1) {
+		/* 
+		* User selected OK. User name and password are returned as PRUnichar values. Any default
+		* value that we override must be freed using the nsIMemory service.
+		*/
+		int cnt, size, ptr;
+		char[] buffer;
+		if (userLabel[0] != null) {
+			cnt = userLabel[0].length();
+			buffer = new char[cnt + 1];
+			userLabel[0].getChars(0, cnt, buffer, 0);
+			size = buffer.length * 2;
+			ptr = XPCOM.PR_Malloc(size);
+			XPCOM.memmove(ptr, buffer, size);
+			XPCOM.memmove(username, new int[] {ptr}, 4);
+
+			if (userAddr[0] != 0) {
+				result[0] = 0;
+				int rc = XPCOM.NS_GetServiceManager(result);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);
+			
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;
+				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
+				byte[] aContractID = new byte[tmp.length + 1];
+				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
+				serviceManager.Release();
+				
+				nsIMemory memory = new nsIMemory(result[0]);
+				result[0] = 0;
+				memory.Free(userAddr[0]);
+				memory.Release();
+			}
+		}
+		if (passLabel[0] != null) {
+			cnt = passLabel[0].length();
+			buffer = new char[cnt + 1];
+			passLabel[0].getChars(0, cnt, buffer, 0);
+			size = buffer.length * 2;
+			ptr = XPCOM.PR_Malloc(size);
+			XPCOM.memmove(ptr, buffer, size);
+			XPCOM.memmove(password, new int[] {ptr}, 4);
+			
+			if (passAddr[0] != 0) {
+				result[0] = 0;
+				int rc = XPCOM.NS_GetServiceManager(result);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);
+			
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;
+				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
+				byte[] aContractID = new byte[tmp.length + 1];
+				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
+				serviceManager.Release();
+				
+				nsIMemory memory = new nsIMemory(result[0]);
+				result[0] = 0;
+				memory.Free(passAddr[0]);
+				memory.Release();
+			}
+		}
+	}
+	if (checkValue != 0) XPCOM.memmove(checkValue, check, 4);
+	return XPCOM.NS_OK;
 }
 
 public int PromptPassword(int parent, int dialogTitle, int text, int password, int checkMsg, int checkValue, int _retval) {
@@ -226,79 +362,5 @@ public int PromptPassword(int parent, int dialogTitle, int text, int password, i
 
 public int Select(int parent, int dialogTitle, int text, int count, int selectList, int outSelection, int _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
-}
-
-class PromptDialog extends Dialog {
-	
-	public PromptDialog(Shell parent, int style) {
-		super(parent, style);
-	}
-	
-	public PromptDialog(Shell parent) {
-		this(parent, 0);
-	}
-	
-	public void confirmEx(String title, String text, String check, String button1, String button2, String button3, final int[] checkValue, final int[] result) {
-		Shell parent = getParent();
-		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		shell.setText(title);
-		GridLayout gridLayout = new GridLayout();
-		shell.setLayout(gridLayout);
-		Label label = new Label(shell, SWT.WRAP);
-		label.setText(text);
-		GridData data = new GridData();
-		data.horizontalAlignment = GridData.FILL;
-		data.grabExcessHorizontalSpace = true;
-		label.setLayoutData (data);
-		
-		final Button[] buttons = new Button[4];
-		Listener listener = new Listener() {
-			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection() ? 1 : 0;
-				Widget widget = event.widget;
-				for (int i = 1; i < buttons.length; i++) {
-					if (widget == buttons[i]) {
-						result[0] = i - 1;
-						break;
-					}
-				}
-				shell.close();
-			}	
-		};
-		if (check != null) {
-			buttons[0] = new Button(shell, SWT.CHECK);
-			buttons[0].setText(check);
-			buttons[0].setSelection(checkValue[0] != 0);
-			data = new GridData ();
-			data.horizontalAlignment = GridData.END;
-			buttons[0].setLayoutData (data);
-		}
-		Composite composite = new Composite(shell, SWT.NONE);
-		data = new GridData();
-		data.horizontalAlignment = GridData.END;
-		composite.setLayoutData (data);
-		composite.setLayout(new RowLayout());
-		if (button1 != null) {
-			buttons[1] = new Button(composite, SWT.PUSH);
-			buttons[1].setText(button1);
-			buttons[1].addListener(SWT.Selection, listener);
-		}
-		if (button2 != null) {
-			buttons[2] = new Button(composite, SWT.PUSH);
-			buttons[2].setText(button2);
-			buttons[2].addListener(SWT.Selection, listener);
-		}
-		if (button3 != null) {
-			buttons[3] = new Button(composite, SWT.PUSH);
-			buttons[3].setText(button3);
-			buttons[3].addListener(SWT.Selection, listener);
-		}
-		shell.pack();
-		shell.open();
-		Display display = parent.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
-		}
-	}
 }
 }
