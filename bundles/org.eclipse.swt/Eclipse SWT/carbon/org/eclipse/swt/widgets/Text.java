@@ -142,11 +142,7 @@ void createHandle () {
 	for (short i= newCount [0]; i > count [0]; i--) {
 		OS.GetIndexedSubControl (theRoot [0], i, child);
 		OS.HIViewRemoveFromSuperview (child [0]);
-		OS.HIViewAddSubview (handle, child [0]);
-		/* Place the child at (0, 0) in the parent */
-		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		OS.MoveControl (child [0], (short) rect.left, (short) rect.top);	
+		OS.HIViewAddSubview (handle, child [0]);	
 	}	
 	
 	txnObject = oTXNObject [0];
