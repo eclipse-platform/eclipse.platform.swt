@@ -2049,8 +2049,17 @@ int /*long*/ DoContent(int /*long*/ aContentType, int /*long*/ aIsContentPreferr
 }
 
 int /*long*/ IsPreferred(int /*long*/ aContentType, int /*long*/ aDesiredContentType, int /*long*/ retval) {
+	int preferred = 1;
+	
+	int size = XPCOM.strlen(aContentType);
+	if (size > 0) {
+		byte[] dest = new byte[size];
+		XPCOM.memmove(dest, aContentType, size);
+		String contentType = new String(dest);
+		if (contentType.equals(XPCOM.CONTENT_MULTIPART)) preferred = 0;
+	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove(retval, new int[] {1}, 4);
+	XPCOM.memmove(retval, new int[] {preferred}, 4);
 	return XPCOM.NS_OK;
 }
 
