@@ -1345,7 +1345,23 @@ boolean isVirtualKey (int key) {
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
 		case OS.WM_ACTIVATEAPP:
-			if (wParam == 1) {
+			/*
+			* Feature in Windows.  When multiple shells are
+			* disabled and one of the shells has an enabled
+			* dialog child and the user selects a disabled
+			* shell that does not have the enabled dialog
+			* child using the Task bar, Windows brings the
+			* disabled shell to the front.  As soon as the
+			* user clicks on the disabled shell, the enabled
+			* dialog child comes to the front.  This behavior
+			* is unspecified and seems strange.  Normally, a
+			* disabled shell is frozen on the screen and the
+			* user cannot change the z-order by clicking with
+			* the mouse.  The fix is to look for WM_ACTIVATEAPP
+			* and force the enabled dialog child to the front.
+			* This is typically what the user is expecting.
+			*/
+			if (wParam != 0) {
 				Shell shell = getModalShell ();
 				if (shell != null) shell.bringToTop ();
 			}
