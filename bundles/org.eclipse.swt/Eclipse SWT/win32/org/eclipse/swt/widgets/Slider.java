@@ -415,9 +415,9 @@ public void setMaximum (int value) {
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
+	info.fMask = OS.SIF_PAGE | OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
-	if (value - info.nMin - info.nPage < 1) return;
+	if (value - info.nMin - info.nPage + 1 < 0) return;
 	info.nMax = value;
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, (state & DISABLED) == 0);
 		
@@ -467,9 +467,9 @@ public void setMinimum (int value) {
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
+	info.fMask = OS.SIF_PAGE | OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
-	if (info.nMax - value - info.nPage < 1) return;
+	if (info.nMax - value - info.nPage + 1 < 0) return;
 	info.nMin = value;
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
 
