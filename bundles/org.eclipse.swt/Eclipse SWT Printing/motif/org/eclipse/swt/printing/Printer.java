@@ -42,7 +42,7 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	return new PrinterData[0]; // printing on X is currently unimplemented
+	if (true) return new PrinterData[0]; // printing on X is currently unimplemented
 	
 	/* Connect to the default X print server */
 	//byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
