@@ -5232,6 +5232,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1set_1alignment
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1alignment
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1alignment\n")
+
+	gtk_tree_view_column_set_alignment((GtkTreeViewColumn *)arg0, arg1);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1set_1clickable
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1clickable
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
