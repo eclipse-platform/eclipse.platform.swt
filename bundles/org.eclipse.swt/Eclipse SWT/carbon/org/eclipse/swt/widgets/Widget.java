@@ -783,25 +783,13 @@ void setInputState (Event event, MacEvent mEvent) {
 	event.stateMask= mEvent.getStateMask();
 }
 void setKeyState (Event event, MacEvent mEvent) {
-	/*
-	if (mEvent.getKeyCode() != 0) {
-		byte [] buffer1 = new byte [1];
-		int [] keysym = new int [1];
-		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
-			if (OS.IsSunOS) {
-				if ((keysym [0] == 0x1005FF10) || (keysym [0] == 0x1005FF11)) {
-					if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
-					if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
-				}
-			}
-			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
-		} else {
-			event.character = (char) buffer1 [0];
-		}
-		*/
-		event.keyCode = Display.translateKey(mEvent.getKeyCode());
-		event.character= (char) mEvent.getMacCharCodes();
-	/* } */
+	int kc= Display.translateKey(mEvent.getKeyCode());
+	if (kc != 0) {
+		event.keyCode = kc;
+	} else {
+		//event.keyCode = 0;
+		event.character = (char) mEvent.getMacCharCodes();
+	}	
 	setInputState (event, mEvent);
 }
 void sendEvent (int eventType, Event event) {

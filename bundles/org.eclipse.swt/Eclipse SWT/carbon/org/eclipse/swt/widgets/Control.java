@@ -1277,32 +1277,17 @@ int processHelp (Object callData) {
 	return 0;
 }
 int processKeyDown (Object callData) {
-	
 	MacEvent macEvent = (MacEvent) callData;
-	
 	if (translateTraversal (macEvent))
 		return OS.kNoErr;
-		
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	
-	int keyCode= macEvent.getKeyCode();
-	if (Display.translateKey(keyCode) != 0) {
-		return sendKeyEvent (SWT.KeyDown, macEvent);
-	} else {
-		return sendKeyEvent (SWT.KeyDown, macEvent);
-		//return sendIMEKeyEvent (SWT.KeyDown, macEvent);
-	}
+	return sendKeyEvent (SWT.KeyDown, macEvent);
 }
 int processKeyUp (Object callData) {
-	MacEvent macEvent = (MacEvent) callData;
-	int keyCode= macEvent.getKeyCode();
-	if (Display.translateKey(keyCode) != 0) {
-		return sendKeyEvent (SWT.KeyUp, macEvent);
-	} else {
-		return sendKeyEvent (SWT.KeyUp, macEvent);
-		//return sendIMEKeyEvent (SWT.KeyUp, macEvent);
-	}
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;
+	return sendKeyEvent (SWT.KeyUp, (MacEvent) callData);
 }
 int processModify (Object callData) {
 	sendEvent (SWT.Modify);
@@ -1798,29 +1783,6 @@ void sendHelpEvent (Object callData) {
 		}
 		control = control.parent;
 	}
-}
-private final byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
-	byte [] buffer = new byte[0];
-
-	/* Convert from MBCS to UNICODE and send the event */
-	/* Use the character encoding for the default locale */
-	/* AW
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	*/
-	char [] result= new char[1];
-	result[0]= (char) xEvent.getMacCharCodes();
-	
-	int index = 0;
-	while (index < result.length) {
-		if (result [index] == 0) break;
-		Event event = new Event ();
-		event.time = xEvent.getWhen();
-		event.character = result [index];
-		setInputState (event, xEvent);
-		postEvent (type, event);
-		index++;
-	}
-	return buffer;
 }
 final int sendKeyEvent (int type, MacEvent mEvent) {
 	Event event = new Event ();
