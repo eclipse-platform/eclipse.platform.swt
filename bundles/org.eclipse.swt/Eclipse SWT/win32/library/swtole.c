@@ -845,6 +845,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory__I
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    MoveMemory
+ * Signature: (Lorg/eclipse/swt/internal/ole/win32/STGMEDIUM;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2II
+  (JNIEnv *env, jclass that, jobject Destination, jint SourcePtr, jint Length)
+{
+	DECL_GLOB(pGlob)
+    STGMEDIUM stgmedium, *Destination1=&stgmedium;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2II\n");
+#endif
+
+	MoveMemory((PVOID)Destination1, (CONST VOID *)SourcePtr, Length);
+
+    if (Destination) {
+        cacheStgmediumFids(env, Destination, &PGLOB(StgmediumFc));
+        setStgmediumFields(env, Destination, Destination1, &PGLOB(StgmediumFc));
+    }
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    MoveMemory
  * Signature: (Lorg/eclipse/swt/internal/ole/win32/DISPPARAMS;II)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory__Lorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2II
@@ -3054,6 +3077,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_OleDraw
     fprintf(stderr, "OleDraw\n");
 #endif
     return (jint) OleDraw((LPUNKNOWN)pUnk, (DWORD)dwAspect, (HDC)hdcDraw, (LPRECT)lprcBounds);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    ReleaseStgMedium
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_ReleaseStgMedium
+  (JNIEnv *env, jclass that, jint pmedium)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ReleaseStgMedium\n");
+#endif
+    ReleaseStgMedium((STGMEDIUM *)pmedium);
 }
 
 /* ------------- obsolete OLE calls ------------- */

@@ -89,6 +89,8 @@ public class DragSource extends Widget {
 
 	private Listener controlListener;
 	
+	private int dataEffect;
+
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
  * 
@@ -177,7 +179,7 @@ private void createCOMInterfaces() {
 		// method4 GetDataHere - not implemented
 		public int method5(int[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
-		// method7 SetData - not implemented
+		public int method7(int[] args) {return SetData(args[0], args[1], args[2]);}
 		public int method8(int[] args) {return EnumFormatEtc(args[0], args[1]);}
 		// method9 DAdvise - not implemented
 		// method10 DUnadvise - not implemented
@@ -196,7 +198,20 @@ private void onDispose () {
 	
 	transferAgents = null;
 }
+private int osToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & COM.DROPEFFECT_LINK) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & COM.DROPEFFECT_MOVE) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	return operation;
 
+}
 private void disposeCOMInterfaces() {
 	
 	if (iUnknown != null)
@@ -227,21 +242,27 @@ private void drag() {
 	}
 	
 	if (!event.doit) return;
-		
+	
+	dataEffect = DND.DROP_NONE;
 	int[] pdwEffect = new int[1];
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), getStyle(), pdwEffect);
-
+	int operation = osToOp(pdwEffect[0]);
 	event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
-	event.detail = pdwEffect[0];
+	if (dataEffect == DND.DROP_MOVE && (operation == DND.DROP_NONE || operation == DND.DROP_COPY)) {
+		dataEffect = DND.DROP_TARGET_MOVE;
+	}
+	if (dataEffect == DND.DROP_NONE) {
+		dataEffect = operation;
+	}
+	event.detail = dataEffect;
 	event.doit = (result == COM.DRAGDROP_S_DROP);
-	
+
 	try {
 		notifyListeners(DND.DragEnd,event);
 	} catch (Throwable e) {
 	}
-
 }
 
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
@@ -322,6 +343,8 @@ private int GetData(int pFormatetc, int pmedium) {
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
 }
+
+
 public Display getDisplay () {
 
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
@@ -338,6 +361,8 @@ public Transfer[] getTransfer(){
 private int GiveFeedback(int dwEffect) {
 	return COM.DRAGDROP_S_USEDEFAULTCURSORS;
 }
+
+
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (fEscapePressed != 0)
 		return COM.DRAGDROP_S_CANCEL;
@@ -354,7 +379,7 @@ private int QueryGetData(int pFormatetc) {
 	transferData.formatetc = new FORMATETC();
 	COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
 	transferData.type = transferData.formatetc.cfFormat;
-	
+
 	// is this type supported by the transfer agent?
 	for (int i = 0; i < transferAgents.length; i++){
 		if (transferAgents[i].isSupportedType(transferData))
@@ -415,6 +440,27 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragEnd, listener);
 	removeListener (DND.DragSetData, listener);
+}
+private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	
+private int SetData(int pFormatetc, int pmedium, int fRelease) {
+	
+	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
+	
+	FORMATETC formatetc = new FORMATETC();
+	COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
+	if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
+		STGMEDIUM stgmedium = new STGMEDIUM();
+		COM.MoveMemory(stgmedium, pmedium,STGMEDIUM.sizeof);
+		int[] ptrEffect = new int[1];
+		OS.MoveMemory(ptrEffect, stgmedium.unionField,4);
+		int[] effect = new int[1];
+		OS.MoveMemory(effect, ptrEffect[0],4);
+		dataEffect = osToOp(effect[0]);
+	}
+	if (fRelease == 1) {
+		COM.ReleaseStgMedium(pmedium);
+	}
+	return COM.S_OK;
 }
 /**
  * Specifies the list of data types that can be transferred by this DragSource.

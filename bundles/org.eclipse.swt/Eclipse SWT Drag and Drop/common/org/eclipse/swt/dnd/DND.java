@@ -33,7 +33,8 @@ public class DND {
 	 * Drag and Drop Operation: the drop target makes a link to the data in the drag source
 	 */
 	public final static int DROP_LINK = 4;
-
+	
+	public final static int DROP_TARGET_MOVE = 5;
 	/**
 	 * DragSource Event: the drop has successfully completed or has been terminated (such as hitting the ESC key);
 	 *                   perform cleanup such as removing data on a move operation
