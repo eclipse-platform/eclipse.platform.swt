@@ -1741,34 +1741,30 @@ public void test_paste(){
 }
 
 public void test_print() {
-//	Printer printer = new Printer();
-//	
-//	text.print();
-//	printer.cancelJob();
-//	text.setText("Line1");
-//	text.print();
-//	printer.cancelJob();
-//	printer.dispose();
+	// if there aren't any printers, don't do this test
+	if (Printer.getDefaultPrinterData() == null) return;
+	
+	text.print();
+	text.setText("Line1");
+	text.print();
 }
 
 public void test_printLorg_eclipse_swt_printing_Printer() {
-	Printer printer = new Printer();
+	// if there aren't any printers, don't do this test
+	if (Printer.getDefaultPrinterData() == null) return;
+
 	boolean exceptionThrown = false;
-	
 	try {
 		text.print(null);
-	}
-	catch (IllegalArgumentException e) {
+	} catch (IllegalArgumentException ex) {
 		exceptionThrown = true;
 	}	
-	assertTrue(exceptionThrown);
+	assertTrue("no exception thrown for print(null)", exceptionThrown);
 	
+	Printer printer = new Printer();
 	text.print(printer);
-	printer.cancelJob();
 	text.setText("Line1");
 	text.print(printer);
-	printer.cancelJob();
-	
 	printer.dispose();
 }
 
