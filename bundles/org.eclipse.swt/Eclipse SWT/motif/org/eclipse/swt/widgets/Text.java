@@ -1517,7 +1517,6 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 		}
 	}
 	OS.memmove (call_data, textVerify, XmTextVerifyCallbackStruct.sizeof);
-	textVerify = null;
 	return result;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
