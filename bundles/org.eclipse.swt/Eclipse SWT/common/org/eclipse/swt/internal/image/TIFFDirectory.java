@@ -150,7 +150,6 @@ void decodePixels(ImageData image) throws IOException {
 		} else if (compression == COMPRESSION_PACKBITS) {
 			destIndex += decodePackBits(data, imageData, destIndex);
 		} else if (compression == COMPRESSION_CCITT_3_1 || compression == 3) {
-			boolean whiteIsZero = photometricInterpretation == 0;
 			TIFFModifiedHuffmanCodec codec = new TIFFModifiedHuffmanCodec();
 			int nRows = rowsPerStrip;
 			if (i == length -1) {
