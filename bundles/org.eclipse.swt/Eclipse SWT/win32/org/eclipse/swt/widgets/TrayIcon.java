@@ -18,11 +18,31 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class TrayIcon extends Widget {
 	int id;
-	boolean isVisible = false;
-	Image iconImage;
-	Image image;
+	Image image, iconImage;
 	Menu menu;
 	String toolTipText;
+	boolean visible;
+	static final int SHELL32_MAJOR, SHELL32_MINOR;
+	static {
+		/* Get the Shell32.DLL version */
+		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
+		dvi.cbSize = DLLVERSIONINFO.sizeof;
+		dvi.dwMajorVersion = 4;
+		TCHAR lpLibFileName = new TCHAR (0, "Shell32.dll", true); //$NON-NLS-1$
+		int hModule = OS.LoadLibrary (lpLibFileName);
+		if (hModule != 0) {
+			String name = "DllGetVersion\0"; //$NON-NLS-1$
+			byte [] lpProcName = new byte [name.length ()];
+			for (int i=0; i<lpProcName.length; i++) {
+				lpProcName [i] = (byte) name.charAt (i);
+			}
+			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
+			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
+			OS.FreeLibrary (hModule);
+		}
+		SHELL32_MAJOR = dvi.dwMajorVersion;
+		SHELL32_MINOR = dvi.dwMinorVersion;
+	}
 
 /**
  * Constructs a new instance of this class given its Display.
@@ -38,7 +58,9 @@ public class TrayIcon extends Widget {
  * </ul>
  */
 public TrayIcon (Display display) {
-	if (display == null) error (SWT.ERROR_NULL_ARGUMENT);
+//	checkSubclass ();
+	if (display == null) display = Display.getCurrent ();
+	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
@@ -80,9 +102,9 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 void createWidget () {
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA)
-		new NOTIFYICONDATAW () :
-		new NOTIFYICONDATAA ();
+	visible = true;
+	if (SHELL32_MAJOR < 5) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
@@ -92,15 +114,13 @@ void createWidget () {
 }
 
 void destroyWidget () {
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA)
-		new NOTIFYICONDATAW () :
-		new NOTIFYICONDATAA ();
+	if (SHELL32_MAJOR < 5) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
 	OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-	display.removeTrayIcon (this);
-	super.destroyWidget ();
+	releaseHandle ();
 }
 
 /**
@@ -128,7 +148,7 @@ public Image getImage () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public Menu getMenu () {
+Menu getMenu () {
 	checkWidget ();
 	return menu;
 }
@@ -160,20 +180,49 @@ public String getToolTipText (String value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public boolean isVisible () {
+public boolean getVisible () {
 	checkWidget ();
-	return isVisible;
+	return visible;
+}
+
+int messageProc (int hwnd, int msg, int wParam, int lParam) {
+	switch (lParam) {
+		case OS.WM_LBUTTONDOWN:
+			postEvent (SWT.Selection);
+			break;
+		case OS.WM_LBUTTONDBLCLK:
+		case OS.WM_RBUTTONDBLCLK:
+			postEvent (SWT.DefaultSelection);
+			break;
+		case OS.WM_RBUTTONDOWN: {
+			POINT pos = new POINT ();
+			OS.GetCursorPos (pos);
+			Event event = new Event ();
+			event.x = pos.x;
+			event.y = pos.y;
+			sendEvent (SWT.MenuDetect, event);
+			if (event.doit) {
+				if (menu != null && !menu.isDisposed ()) {
+					if (pos.x != event.x || pos.y != event.y) {
+						menu.setLocation (event.x, event.y);
+					}
+					menu.setVisible (true);
+				}
+			}
+			break;
+		}
+	}
+	return 0;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (iconImage != null) {
-		iconImage.dispose ();
-		iconImage = null;
-	}
+	if (iconImage != null) iconImage.dispose ();
+	iconImage = null;
 	image = null;
 	toolTipText = null;
 	menu = null;
+	display.removeTrayIcon (this);
 }
 	
 /**
@@ -235,9 +284,8 @@ public void setImage (Image image) {
 				break;
 		}
 	}
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA)
-		new NOTIFYICONDATAW () :
-		new NOTIFYICONDATAA ();
+	if (SHELL32_MAJOR < 5) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hIcon = hIcon;
@@ -257,7 +305,7 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMenu (Menu menu) {
+void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.menu = menu;
@@ -277,20 +325,17 @@ public void setMenu (Menu menu) {
 public void setToolTipText (String value) {
 	checkWidget ();
 	toolTipText = value;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA)
-		new NOTIFYICONDATAW () :
-		new NOTIFYICONDATAA ();
+	if (SHELL32_MAJOR < 5) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	if (OS.IsUnicode) {
-		int length = Math.min (((NOTIFYICONDATAW) iconData).szTip.length - 1, buffer.length ());
 		char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
-		for (int i = length; i < szTip.length; i++) szTip [i] = 0;
-		System.arraycopy (buffer.toString ().toCharArray (), 0, szTip, 0, length);
+		int length = Math.min (szTip.length - 1, buffer.length ());
+		System.arraycopy (buffer.chars, 0, szTip, 0, length);
 	} else {
-		int length = Math.min (((NOTIFYICONDATAA) iconData).szTip.length - 1, buffer.length ());
 		byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
-		for (int i = length; i < szTip.length; i++) szTip [i] = 0;
-		System.arraycopy (buffer.toString ().getBytes (), 0, szTip, 0, length);
+		int length = Math.min (szTip.length - 1, buffer.length ());
+		System.arraycopy (buffer.bytes, 0, szTip, 0, length);
 	}
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -312,8 +357,7 @@ public void setToolTipText (String value) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (isVisible == visible) return;
-	isVisible = visible;
+	if (this.visible == visible) return;
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -323,61 +367,18 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 	}
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA)
-		new NOTIFYICONDATAW () :
-		new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_STATE;
-	iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-	iconData.dwStateMask = OS.NIS_HIDDEN;
-	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-	if (!visible) {
-		sendEvent (SWT.Hide);
+	this.visible = visible;
+	if (SHELL32_MAJOR >= 5) {
+		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+		iconData.cbSize = NOTIFYICONDATA.sizeof;
+		iconData.uID = id;
+		iconData.hWnd = display.hwndMessage;
+		iconData.uFlags = OS.NIF_STATE;
+		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+		iconData.dwStateMask = OS.NIS_HIDDEN;
+		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 	}
+	if (!visible) sendEvent (SWT.Hide);
 }
 
-LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
-	Event event = new Event ();
-	POINT pos = new POINT ();
-	OS.GetCursorPos (pos);
-	event.x = pos.x;
-	event.y = pos.y;
-	sendEvent (SWT.DefaultSelection, event);
-	return null;
-}
-	
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	Event event = new Event ();
-	POINT pos = new POINT ();
-	OS.GetCursorPos (pos);
-	event.x = pos.x;
-	event.y = pos.y;
-	sendEvent (SWT.Selection, event);
-	return null;
-}
-
-LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
-	Event event = new Event ();
-	POINT pos = new POINT ();
-	OS.GetCursorPos (pos);
-	event.x = pos.x;
-	event.y = pos.y;
-	sendEvent (SWT.DefaultSelection, event);
-	return null;
-}
-	
-LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	if (menu == null) return null;
-	POINT pos = new POINT ();
-	OS.GetCursorPos (pos);
-	menu.setLocation (pos.x, pos.y);
-	Event event = new Event ();
-	event.x = pos.x;
-	event.y = pos.y;
-	sendEvent (SWT.MenuDetect, event);
-	menu.setVisible(true);
-	return null;
-}
 }

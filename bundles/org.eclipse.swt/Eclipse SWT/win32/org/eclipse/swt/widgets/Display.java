@@ -1566,17 +1566,6 @@ TrayIcon getTrayIcon (int id) {
 	return null;
 }
 
-/**
- * Returns an array of tray icons that are active on the display.
- * 
- * @return the array of tray icons
- * 
- * @since 3.0
- */
-TrayIcon [] getTrayIcons () {
-	return trayIcons;
-}
-
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1921,6 +1910,9 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
 			}
 			return 0;
+		case SWT_TRAYICONMSG:
+			TrayIcon trayIcon = getTrayIcon (wParam);
+			return trayIcon != null ? trayIcon.messageProc (hwnd, msg, wParam, lParam) : 0;
 		case OS.WM_ACTIVATEAPP:
 			/*
 			* Feature in Windows.  When multiple shells are
@@ -1976,24 +1968,6 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		case OS.WM_TIMER:
 			runTimer (wParam);
-			break;
-		case SWT_TRAYICONMSG:
-			TrayIcon trayIcon = getTrayIcon (wParam);
-			if (trayIcon == null) return 0;
-			switch (lParam) {
-				case OS.WM_LBUTTONDOWN:
-					trayIcon.WM_LBUTTONDOWN (wParam, lParam);
-					break;
-				case OS.WM_LBUTTONDBLCLK:
-					trayIcon.WM_LBUTTONDBLCLK (wParam, lParam);
-					break;
-				case OS.WM_RBUTTONDOWN:
-					trayIcon.WM_RBUTTONDOWN (wParam, lParam);
-					break;
-				case OS.WM_RBUTTONDBLCLK:
-					trayIcon.WM_RBUTTONDBLCLK (wParam, lParam);
-					break;
-			}
 			break;
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
