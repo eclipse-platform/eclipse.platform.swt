@@ -269,10 +269,10 @@ public class StyledText extends Canvas {
 	 */
 	void dispose() {
 		if (printerColors != null) {
-			Iterator colors = printerColors.values().iterator();
+			Enumeration colors = printerColors.elements();
 			
-			while (colors.hasNext()) {
-				Color color = (Color) colors.next();
+			while (colors.hasMoreElements()) {
+				Color color = (Color) colors.nextElement();
 				color.dispose();
 			}
 			printerColors = null;
@@ -340,16 +340,16 @@ public class StyledText extends Canvas {
 	 * line styles with printer colors.
 	 */
 	void createPrinterColors() {
-		Iterator values = lineBackgrounds.values().iterator();
+		Enumeration values = lineBackgrounds.elements();
 		printerColors = new Hashtable();
-		while (values.hasNext()) {
-			StyledTextEvent event = (StyledTextEvent) values.next();
+		while (values.hasMoreElements()) {
+			StyledTextEvent event = (StyledTextEvent) values.nextElement();
 			event.lineBackground = getPrinterColor(event.lineBackground);
 		}
 		
-		values = lineStyles.values().iterator();
-		while (values.hasNext()) {
-			StyledTextEvent event = (StyledTextEvent) values.next();
+		values = lineStyles.elements();
+		while (values.hasMoreElements()) {
+			StyledTextEvent event = (StyledTextEvent) values.nextElement();
 			for (int i = 0; i < event.styles.length; i++) {
 				StyleRange style = event.styles[i];
 				Color printerBackground = getPrinterColor(style.background);
