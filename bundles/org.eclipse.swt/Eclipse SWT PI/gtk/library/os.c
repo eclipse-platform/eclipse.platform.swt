@@ -2889,7 +2889,23 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1number)
 {
 	jint rc;
 	NATIVE_ENTER(env, that, "gdk_1screen_1get_1number\n")
+/*
 	rc = (jint)gdk_screen_get_number((GdkScreen *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_number_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_screen_get_number");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0);
+		}
+	}
 	NATIVE_EXIT(env, that, "gdk_1screen_1get_1number\n")
 	return rc;
 }
