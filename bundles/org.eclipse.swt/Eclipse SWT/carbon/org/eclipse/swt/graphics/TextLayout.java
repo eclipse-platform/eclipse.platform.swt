@@ -141,14 +141,6 @@ public TextLayout (Device device) {
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	layout = buffer[0];	
-	int ptr = OS.NewPtr(4);
-	buffer[0] = OS.kATSLineUseDeviceMetrics;
-	OS.memcpy(ptr, buffer, 4);		
-	int[] tags = new int[]{OS.kATSULineLayoutOptionsTag};
-	int[] sizes = new int[]{4};
-	int[] values = new int[]{ptr};
-	OS.ATSUSetLayoutControls(layout, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr);	
 	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
