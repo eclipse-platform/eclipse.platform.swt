@@ -800,6 +800,7 @@ public static final native int GetDataBrowserScrollPosition(int cHandle, int[] t
 public static final native int GetDataBrowserSelectionAnchor(int browser, int [] first, int [] last);
 public static final native int GetDblTime();
 public static final native short GetDefFontSize();
+public static final native int GetDeviceList();
 public static final native int GetEventClass(int eHandle);
 public static final native int GetEventDispatcherTarget();
 public static final native int GetEventKind(int eHandle);
@@ -835,6 +836,7 @@ public static final native int GetMenuItemHierarchicalMenu(int inMenu, short inI
 public static final native int GetMenuItemRefCon(int inMenu, short intItem, int[] outRefCon);
 public static final native int GetMenuTrackingData(int menu, MenuTrackingData outData);
 public static final native void GetMouse(Point where);
+public static final native int GetNextDevice(int curDevice);
 public static final native void GetPixBounds(int pHandle, Rect bounds);
 public static final native short GetPixDepth(int pHandle);
 public static final native void GetPort(int[] port);
