@@ -623,7 +623,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the image indent.
+ * Sets the indent of the first column's image, expressed in terms of the image's width.
  *
  * @param indent the new indent
  *
