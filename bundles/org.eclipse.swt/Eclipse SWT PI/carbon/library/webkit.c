@@ -184,6 +184,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 	proc((int)sender, user_data, 23, (int)text, 0, 0, 0);
 }
 
+- (void)webViewFocus:(WebView *)sender
+{
+	proc((int)sender, user_data, 24, 0, 0, 0, 0);
+}
+
+- (void)webViewUnfocus:(WebView *)sender
+{
+	proc((int)sender, user_data, 25, 0, 0, 0, 0);
+}
+
+- (NSResponder *)webViewFirstResponder:(WebView *)sender
+{
+	return (NSResponder *) proc((int)sender, user_data, 26, 0, 0, 0, 0);
+}
+
+- (void)webView:(WebView *)sender makeFirstResponder:(NSResponder *)responder
+{
+	proc((int)sender, user_data, 27, (int)responder, 0, 0, 0);
+}
+
 /* WebPolicyDelegate */
 /*
 - (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener
