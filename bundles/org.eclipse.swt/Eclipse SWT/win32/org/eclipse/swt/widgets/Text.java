@@ -889,7 +889,7 @@ public int getTextLimit () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	if ((style & SWT.MULTI) == 0) return 0;
+	if ((style & SWT.SINGLE) != 0) return 0;
 	return OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
 }
 
@@ -1187,7 +1187,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			}
 			break;
 		case '\r':	/* Return */
-			if ((style & SWT.MULTI) == 0) return true;
+			if ((style & SWT.SINGLE) != 0) return true;
 			oldText = DELIMITER;
 			break;
 		default:	/* Tab and other characters */
@@ -1590,7 +1590,7 @@ public void setTextLimit (int limit) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-	if ((style & SWT.MULTI) == 0) return;
+	if ((style & SWT.SINGLE) != 0) return;
 	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 	index = Math.min (Math.max (index, 0), count - 1);
 	int topIndex = OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
@@ -1718,7 +1718,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* The fix is to look for these keys and not call
 	* the window proc.
 	*/
-	if ((style & SWT.MULTI) == 0) {
+	if ((style & SWT.SINGLE) != 0) {
 		switch (wParam) {
 			case OS.VK_RETURN:
 				postEvent (SWT.DefaultSelection);
