@@ -763,7 +763,7 @@ public void setVisible (boolean visible) {
 			}
 			
 			/* Release resources and unwanted grabs */
-			OS.gdk_pointer_ungrab (0);
+			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 			OS.gtk_widget_destroy (barHandle);			
 			GtkMenuBarEventFunc.dispose ();
 		} else {

@@ -687,15 +687,15 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 			case OS.GDK_FOCUS_CHANGE: {
 				/*
 				* Bug in GTK.  When an application opens a new modal top level
-				* shell from inside the "select_row" signal, the list does not get the
-				* use up and does not release grabs.  The fix is to release the grabs
+				* shell from inside the "select_row" signal, the GtkCList does not get the
+				* mouse up and does not release grabs.  The fix is to release the grabs
 				* when focus is lost.
 				*/
 				GdkEventFocus focusEvent = new GdkEventFocus ();
 				OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
 				if (focusEvent.in == 0) {
 					OS.gtk_grab_remove (handle);
-					OS.gdk_pointer_ungrab (0);
+					OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 				}
 				break;
 			}
