@@ -1208,7 +1208,16 @@ public void setVisible (boolean visible) {
 	*/
 	boolean fixFocus = false;
 	if (!visible) fixFocus = isFocusAncestor ();
-	OS.SetControlVisibility (topHandle (), visible, true);
+	int oldRgn = 0;
+	int topHandle = topHandle ();
+	boolean drawing = isDrawing (topHandle);
+	if (drawing) oldRgn = getVisibleRegion (topHandle, false);
+	OS.SetControlVisibility (topHandle, visible, false);
+	if (drawing) {
+		int window = OS.GetControlOwner (topHandle);
+		OS.InvalWindowRgn (window, oldRgn);
+		OS.DisposeRgn (oldRgn);
+	}
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
