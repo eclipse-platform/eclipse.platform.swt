@@ -353,8 +353,8 @@ public Rectangle getBounds (int start, int end) {
 	rect.y = lineY[startLine];
 	rect.height = lineY[endLine + 1] - rect.y;
 	if (startLine == endLine) {
-		rect.x = getLocation(start, SWT.LEAD).x;
-		rect.width = getLocation(end, SWT.TRAIL).x - rect.x;
+		rect.x = getLocation(start, false).x;
+		rect.width = getLocation(end, true).x - rect.x;
 	} else {
 		while (startLine <= endLine) {
 			rect.width = Math.max(rect.width, lineWidth[startLine++]);
@@ -449,7 +449,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	return metrics;
 }
 
-public Point getLocation (int offset, int trailing) {
+public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -469,11 +469,10 @@ public Point getLocation (int offset, int trailing) {
 			StyleItem run = lineRuns[i];
 			int end = run.start + run.length;
 			if (run.start <= offset && offset < end) {
-				boolean isTrailing = offset < length && (trailing & SWT.TRAIL) != 0;
 				if (run.tab) {
-					if (isTrailing || offset == length) width += run.width;
+					if (trailing || offset == length) width += run.width;
 				} else {
-					if (isTrailing) offset++;
+					if (trailing) offset++;
 					String string = text.substring(run.start, offset);
 					GC gc = new GC (device);
 					gc.setFont(getItemFont(run));
@@ -564,7 +563,7 @@ public int getOffset (int x, int y, int[] trailing) {
 		if (width + run.width > x) {
 			if (run.tab) {
 				if (trailing != null) {
-					trailing[0] = x < (width + run.width / 2) ? SWT.LEAD : SWT.TRAIL; 
+					trailing[0] = x < (width + run.width / 2) ? 0 : 1; 
 				}
 				return run.start;
 			}
@@ -577,7 +576,7 @@ public int getOffset (int x, int y, int[] trailing) {
 				int charWidth = gc.stringExtent(String.valueOf(chars[0])).x;
 				if (width + charWidth > x) {
 					if (trailing != null) {
-						trailing[0] = x < (width + charWidth / 2) ? SWT.LEAD : SWT.TRAIL;
+						trailing[0] = x < (width + charWidth / 2) ? 0 : 1;
 					}
 					break;
 				}
@@ -588,7 +587,7 @@ public int getOffset (int x, int y, int[] trailing) {
 		}
 		width += run.width;
 	}
-	if (trailing != null) trailing[0] = SWT.LEAD;
+	if (trailing != null) trailing[0] = 0;
 	return lineOffset[line + 1];
 }
 
