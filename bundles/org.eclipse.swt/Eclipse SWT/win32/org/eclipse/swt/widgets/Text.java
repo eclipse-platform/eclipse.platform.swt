@@ -1093,6 +1093,39 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return false;
 }
 
+void setBounds (int x, int y, int width, int height, int flags) {
+	/*
+	* Feature in Windows.  When the caret is moved,
+	* the text widget scrolls to show the new location.
+	* This means that the text widget may be scrolled
+	* to the right in order to show the caret when the
+	* widget is not large enough to show both the caret
+	* location and all the text.  Unfortunately, when
+	* the text widget is resized such that all the text
+	* and the caret could be visible, Windows does not
+	* scroll the widget back.  The fix is to resize the
+	* text widget, set the selection to the start of the
+	* text and then restore the selection.  This will
+	* cause the text widget compute the correct scroll
+	* position.
+	*/
+	if ((flags & OS.SWP_NOSIZE) == 0 && width != 0) {
+		RECT rect = new RECT ();
+		OS.GetWindowRect (handle, rect);
+		if (rect.right - rect.left == 0) {
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			if (start [0] != 0 || end [0] != 0) {
+				OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+				OS.SendMessage (handle, OS.EM_SETSEL, 0, 0);
+				OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
+				return;
+			}
+		}
+	}	
+	super.setBounds (x, y, width, height, flags);
+}
+
 /**
  * Sets the double click enabled flag.
  * <p>
@@ -1696,43 +1729,6 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 		return LRESULT.ZERO;
 	}
-	return result;
-}
-
-LRESULT WM_SIZE (int wParam, int lParam) {
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	// widget may be disposed at this point
-	if (handle == 0) return result;
-	
-	/*
-	* Feature in Windows.  When the caret is moved,
-	* the text widget scrolls to show the new location.
-	* This means that the text widget may be scrolled
-	* to the left in order to show the caret when the
-	* widget is not large enough to show both the caret
-	* location and all the text.  Unfortunately, when
-	* the text widget is resized such that all the text
-	* and the caret could be visible, Windows does not
-	* scroll the widget back.  The fix is to save the
-	* current selection, set the selection to the start
-	* of the text and then restore the selection.  This
-	* will cause the text widget recompute the left
-	* scroll position.
-	*
-	* NOTE: Currently, this work around is only applied
-	* to single line text widgets that are not visible.
-	* If the widget is resized when it is visible, this
-	* is fine because the user has already seen that the
-	* text is scrolled.
-	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-	if ((bits & OS.ES_MULTILINE) != 0) return result;
-	if (OS.IsWindowVisible (handle)) return result;
-	int [] start = new int [1], end = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (start [0] == 0 && end [0] == 0) return result;
-	OS.SendMessage (handle, OS.EM_SETSEL, 0, 0);
-	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	return result;
 }
 
