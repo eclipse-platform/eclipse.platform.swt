@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatability;
 
 /**
  * Classes which implement this interface provide a method
@@ -22,7 +22,7 @@ import java.util.EventListener;
  *
  * @see HelpEvent
  */
-public interface HelpListener extends EventListener {
+public interface HelpListener extends EventListenerCompatability {
 
 /**
  * Sent when help is requested for a control, typically

@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatability;
 
 /**
  * Classes which implement this interface provide a method
@@ -22,7 +22,7 @@ import java.util.EventListener;
  *
  * @see TraverseEvent
  */
-public interface TraverseListener extends EventListener {
+public interface TraverseListener extends EventListenerCompatability {
 
 /**
  * Sent when a traverse event occurs in a control.

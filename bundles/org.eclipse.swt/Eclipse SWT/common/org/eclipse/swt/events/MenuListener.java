@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatability;
 
 /**
  * Classes which implement this interface provide methods
@@ -22,7 +22,7 @@ import java.util.EventListener;
  * @see MenuAdapter
  * @see MenuEvent
  */
-public interface MenuListener extends EventListener {
+public interface MenuListener extends EventListenerCompatability {
 
 /**
  * Sent when a menu is hidden.

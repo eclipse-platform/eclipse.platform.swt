@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatability;
 
 /**
  * Classes which implement this interface provide a method
@@ -22,7 +22,7 @@ import java.util.EventListener;
  *
  * @see DisposeEvent
  */
-public interface DisposeListener extends EventListener {
+public interface DisposeListener extends EventListenerCompatability {
 
 /**
  * Sent when the widget is disposed.
