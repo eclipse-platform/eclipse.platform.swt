@@ -139,9 +139,9 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	// set required dwFlags
 	int dwFlags = 0;
 	int glyphFlags = 0;
-	if (((fontLanguageInfo & GCP_REORDER) == GCP_REORDER)) {
-		dwFlags |= GCP_REORDER;
-	}
+	// Always reorder.  We assume that if we are calling this function we're
+	// on a platform that supports bidi.  Fixes 20690.
+	dwFlags |= GCP_REORDER;
 	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
 		dwFlags |= GCP_LIGATE;
 		glyphFlags |= 0;
@@ -260,9 +260,9 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	// set required dwFlags, these values will affect how the text gets rendered and
 	// ordered
 	int dwFlags = 0;
-	if (((fontLanguageInfo & GCP_REORDER) == GCP_REORDER)) {
-		dwFlags |= GCP_REORDER;
-	}
+	// Always reorder.  We assume that if we are calling this function we're
+	// on a platform that supports bidi.  Fixes 20690.
+	dwFlags |= GCP_REORDER;
 	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
 		dwFlags |= GCP_LIGATE;
 	}
