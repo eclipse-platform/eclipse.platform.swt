@@ -37,17 +37,18 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 * of the control child at the specified display coordinates.
 	 * The default behavior is to do nothing.
 	 *
-	 * @param e an event object containing the following fields:
-	 * x, y [IN] - the specified point in display coordinates
-	 * childID [OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>x, y [IN] - the specified point in display coordinates</li>
+	 *    <li>childID [OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE</li>
+	 * </ul>
 	 */
-	public void accHitTest(AccessibleControlEvent e) {
+	public void hitTest(AccessibleControlEvent e) {
 	}
 	
-	public void accLocation(AccessibleControlEvent e) {
+	public void getLocation(AccessibleControlEvent e) {
 	}
 	
-	public void accNavigate(AccessibleControlEvent e) {
+	public void navigate(AccessibleControlEvent e) {
 	}
 	
 	public void getChild(AccessibleControlEvent e) {

@@ -1385,6 +1385,7 @@ void releaseWidget () {
 	unsubclass ();
 	parent = null;
 	layoutData = null;
+	accessible = null;
 }
 
 /**

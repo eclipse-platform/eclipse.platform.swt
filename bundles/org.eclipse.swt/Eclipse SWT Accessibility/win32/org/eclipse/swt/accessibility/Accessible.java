@@ -7,7 +7,8 @@ package org.eclipse.swt.accessibility;
 
 import java.util.Vector;
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -79,6 +80,16 @@ public class Accessible {
 			public int method5(int[] args) {return Reset();}
 			// method6 Clone - not implemented
 		};
+		AddRef();
+		
+		control.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				if (iaccessible != null)
+					iaccessible.Release();
+				iaccessible = null;
+				Release();
+			}
+		});
 	}
 	
 	public static Accessible internal_new_accessible(Control control) {
@@ -124,6 +135,7 @@ public class Accessible {
 			if (debug)
 				System.out.println("IUnknown");
 			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			AddRef();
 			return COM.S_OK;
 		}
 
@@ -131,6 +143,7 @@ public class Accessible {
 			if (debug)
 				System.out.println("IDispatch");
 			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			AddRef();
 			return COM.S_OK;
 		}
 
@@ -138,6 +151,7 @@ public class Accessible {
 			if (debug)
 				System.out.println("IAccessible");
 			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			AddRef();
 			return COM.S_OK;
 		}
 
@@ -152,6 +166,7 @@ public class Accessible {
 			variants = event.children;
 			enumIndex = 0;
 			COM.MoveMemory(arg2, new int[] { objIEnumVARIANT.getAddress()}, 4);
+			AddRef();
 			return COM.S_OK;
 		}
 
@@ -176,7 +191,13 @@ public class Accessible {
 		refCount--;
 
 		if (refCount == 0) {
-			//disposeCOMInterfaces();
+			if (objIAccessible != null)
+				objIAccessible.dispose();
+			objIAccessible = null;
+						
+			if (objIEnumVARIANT != null)
+				objIEnumVARIANT.dispose();
+			objIEnumVARIANT = null;
 		}
 		return refCount;
 	}
@@ -224,7 +245,7 @@ public class Accessible {
 		event.y = yTop;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.accHitTest(event);
+			listener.hitTest(event);
 		}
 		int childID = event.childID;
 		if (childID == ACC.CHILDID_NONE) {
@@ -248,7 +269,7 @@ public class Accessible {
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.accLocation(event);
+			listener.getLocation(event);
 		}
 		OS.MoveMemory(pxLeft, new int[] { event.x }, 4);
 		OS.MoveMemory(pyTop, new int[] { event.y }, 4);
@@ -283,7 +304,7 @@ public class Accessible {
 		event.childID = varStart_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.accNavigate(event);
+			listener.navigate(event);
 		}
 		Accessible accessible = event.accessible;
 		if (accessible != null) {

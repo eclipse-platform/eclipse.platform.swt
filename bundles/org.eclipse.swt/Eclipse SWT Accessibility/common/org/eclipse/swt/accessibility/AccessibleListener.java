@@ -36,9 +36,10 @@ public interface AccessibleListener extends SWTEventListener {
 	 * Sent when an accessibility client requests the name
 	 * of the control, or the name of a child of the control.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested name string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested name string</li>
+	 * </ul>
 	 */
 	public void getName(AccessibleEvent e);
 
@@ -46,9 +47,10 @@ public interface AccessibleListener extends SWTEventListener {
 	 * Sent when an accessibility client requests the help string
 	 * of the control, or the help string of a child of the control.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested help string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested help string</li>
+	 * </ul>
 	 */
 	public void getHelp(AccessibleEvent e);
 
@@ -56,9 +58,10 @@ public interface AccessibleListener extends SWTEventListener {
 	 * Sent when an accessibility client requests the keyboard shortcut
 	 * of the control, or the keyboard shortcut of a child of the control.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested keyboard shortcut string (example: "CTRL+C")
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested keyboard shortcut string (example: "CTRL+C")</li>
+	 * </ul>
 	 */
 	public void getKeyboardShortcut(AccessibleEvent e);
 
@@ -66,9 +69,10 @@ public interface AccessibleListener extends SWTEventListener {
 	 * Sent when an accessibility client requests a description
 	 * of the control, or a description of a child of the control.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested description string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested description string</li>
+	 * </ul>
 	 */
 	public void getDescription(AccessibleEvent e);
 }

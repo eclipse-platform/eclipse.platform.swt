@@ -31,9 +31,10 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 * of the control, or the name of a child of the control.
 	 * The default behavior is to do nothing.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested name string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested name string</li>
+	 * </ul>
 	 */
 	public void getName(AccessibleEvent e) {
 	}
@@ -43,9 +44,10 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 * of the control, or the help string of a child of the control.
 	 * The default behavior is to do nothing.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested help string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested help string</li>
+	 * </ul>
 	 */
 	public void getHelp(AccessibleEvent e) {
 	}
@@ -55,9 +57,10 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 * of the control, or the keyboard shortcut of a child of the control.
 	 * The default behavior is to do nothing.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested keyboard shortcut string (example: "CTRL+C")
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested keyboard shortcut string (example: "CTRL+C")</li>
+	 * </ul>
 	 */
 	public void getKeyboardShortcut(AccessibleEvent e) {
 	}
@@ -67,9 +70,10 @@ public abstract class AccessibleAdapter implements AccessibleListener {
 	 * of the control, or a description of a child of the control.
 	 * The default behavior is to do nothing.
 	 *
-	 * @param e an event object containing the following fields:
-	 * childID [IN] - an identifier specifying the control or one of its children
-	 * result [OUT] - the requested description string
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested description string</li>
+	 * </ul>
 	 */
 	public void getDescription(AccessibleEvent e) {
 	}

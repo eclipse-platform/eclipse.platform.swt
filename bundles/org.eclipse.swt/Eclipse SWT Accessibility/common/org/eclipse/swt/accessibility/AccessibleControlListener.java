@@ -36,8 +36,8 @@ import org.eclipse.swt.internal.SWTEventListener;
  */
 public interface AccessibleControlListener extends SWTEventListener {
 
-	public void accHitTest(AccessibleControlEvent e);
-	public void accLocation(AccessibleControlEvent e);
+	public void hitTest(AccessibleControlEvent e);
+	public void getLocation(AccessibleControlEvent e);
 	public void getChild(AccessibleControlEvent e);
 	public void getChildCount(AccessibleControlEvent e);
 	public void getDefaultAction(AccessibleControlEvent e);
@@ -50,8 +50,8 @@ public interface AccessibleControlListener extends SWTEventListener {
 	// May need to implement for IEnumVARIANT
 	public void getChildren(AccessibleControlEvent e);
 	
-	// May not implement - not sure what clients use these - likely testing clients, not accesibility (but not sure)
-	public void accNavigate(AccessibleControlEvent e);
+	// May not implement - not sure what clients use these
+	public void navigate(AccessibleControlEvent e);
 	//public void accDoDefaultAction(AccessibleControlEvent e);
 	//public void accSelect(AccessibleControlEvent e);
 	
