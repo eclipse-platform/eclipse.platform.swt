@@ -5575,12 +5575,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1scr
 	gtk_tree_view_scroll_to_cell((GtkTreeView*)arg0, (GtkTreePath*)arg1, (GtkTreeViewColumn*)arg2, (gboolean)arg3, (gfloat)arg4, (gfloat)arg5);
 }
 
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1to_1string
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1to_1string
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	DEBUG_CALL("gtk_1tree_1path_1to_1string\n")
 
-	return (*env)->NewStringUTF(env, gtk_tree_path_to_string((GtkTreePath*)arg0));
+	return (jint) gtk_tree_path_to_string((GtkTreePath*)arg0);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1path_1at_1pos

@@ -874,7 +874,7 @@ public static final native void gtk_list_store_insert (int list_store, int iter,
 public static final native int  gtk_tree_model_get_path(int tree_model, int iter);
 public static final native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
 public static final native void gtk_tree_path_free(int path);
-public static final native String gtk_tree_path_to_string(int path);
+public static final native int  gtk_tree_path_to_string(int path);
 public static final native int gtk_tree_path_new_from_string(String path);
 public static final native void    gtk_tree_selection_set_mode(int selection, int mode);
 public static final native void    gtk_tree_selection_select_iter(int selection, int iter);
