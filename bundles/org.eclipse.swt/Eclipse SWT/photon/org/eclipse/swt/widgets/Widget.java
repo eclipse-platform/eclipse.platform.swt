@@ -121,20 +121,38 @@ protected void checkWidget () {
 
 int copyPhImage(int image) {
 	if (image == 0) return 0;
-	int imageHandle = OS.PiDuplicateImage (image, 0);
-	/* Bug in Photon - The image returned by PiDuplicateImage
-	has the same mask_bm as the original image.
+	int newImage = OS.PiDuplicateImage (image, 0);
+
+	/*
+	* Bug in Photon.  The image returned by PiDuplicateImage might
+	* have the same mask_bm/alpha as the original image.  The fix
+	* is to detect this case and copy mask_bm/alpha if necessary.
 	*/
 	PhImage_t phImage = new PhImage_t();
-	OS.memmove (phImage, imageHandle, PhImage_t.sizeof);
-	if (phImage.mask_bm != 0) {
-		int length = phImage.mask_bpl * phImage.size_h;
-		int ptr = OS.malloc (length);
-		OS.memmove(ptr, phImage.mask_bm, length);
-		phImage.mask_bm = ptr;
-		OS.memmove (imageHandle, phImage, PhImage_t.sizeof);
+	OS.memmove (phImage, image, PhImage_t.sizeof);
+	PhImage_t newPhImage = new PhImage_t();
+	OS.memmove(newPhImage, newImage, PhImage_t.sizeof);
+	if (newPhImage.mask_bm != 0 && phImage.mask_bm == newPhImage.mask_bm) {
+		int length = newPhImage.mask_bpl * newPhImage.size_h;
+		int ptr = OS.malloc(length);
+		OS.memmove(ptr, newPhImage.mask_bm, length);
+		newPhImage.mask_bm = ptr;
 	}
-	return imageHandle;
+	if (newPhImage.alpha != 0 && phImage.alpha == newPhImage.alpha) {
+		PgAlpha_t alpha = new PgAlpha_t();
+		OS.memmove(alpha, phImage.alpha, PgAlpha_t.sizeof);
+		if (alpha.src_alpha_map_map != 0) {
+			int length = alpha.src_alpha_map_bpl * alpha.src_alpha_map_dim_h;
+			int ptr = OS.malloc(length);
+			OS.memmove(ptr, alpha.src_alpha_map_map, length);
+			alpha.src_alpha_map_map = ptr;
+		}
+		int ptr = OS.malloc(PgAlpha_t.sizeof);
+		OS.memmove(ptr, alpha, PgAlpha_t.sizeof);
+		newPhImage.alpha = ptr;
+	}
+	OS.memmove(newImage, newPhImage, PhImage_t.sizeof);
+	return newImage;
 }
 
 /**

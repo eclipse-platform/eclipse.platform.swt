@@ -163,54 +163,52 @@ public Image(Device device, Image srcImage, int flag) {
 		case SWT.IMAGE_COPY:
 		case SWT.IMAGE_DISABLE:
 			this.type = srcImage.type;
-			int imageHandle = srcImage.handle;
-			if (imageHandle != 0) {
-				imageHandle = OS.PiDuplicateImage (imageHandle, 0);
-				if (imageHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int srcHandle = srcImage.handle;
+			int newHandle = OS.PiDuplicateImage (srcHandle, 0);
+			if (newHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if (flag == SWT.IMAGE_COPY) {
+				/*
+				* Bug in Photon.  The image returned by PiDuplicateImage might
+				* have the same mask_bm/alpha as the original image.  The fix
+				* is to detect this case and copy mask_bm/alpha if necessary.
+				*/
 				PhImage_t phImage = new PhImage_t();
-				if (flag == SWT.IMAGE_COPY) {
-					/*
-					 * Bug in Photon - The image returned by PiDuplicateImage
-					 * has the same mask_bm as the original image.
-					 */
-					OS.memmove (phImage, imageHandle, PhImage_t.sizeof);
-					if (phImage.mask_bm != 0) {
-						int length = phImage.mask_bpl * phImage.size_h;
-						int ptr = OS.malloc (length);
-						OS.memmove(ptr, phImage.mask_bm, length);
-						phImage.mask_bm = ptr;
-						OS.memmove (imageHandle, phImage, PhImage_t.sizeof);
-					}
-					/*
-					 * Bug in Photon - The image returned by PiDuplicateImage
-					 * has the same alpha as the original image.
-					 */
-					if (phImage.alpha != 0) {
-						PgAlpha_t alpha = new PgAlpha_t();
-						OS.memmove(alpha, phImage.alpha, PgAlpha_t.sizeof);
-						if (alpha.src_alpha_map_map != 0) {
-							int length = alpha.src_alpha_map_dim_w * alpha.src_alpha_map_dim_h;
-							int ptr = OS.malloc(length);
-							OS.memmove(ptr, alpha.src_alpha_map_map, length);
-						}
-						int ptr = OS.malloc(PgAlpha_t.sizeof);
-						OS.memmove(ptr, alpha, PgAlpha_t.sizeof);
-						phImage.alpha = ptr;
-						OS.memmove (imageHandle, phImage, PhImage_t.sizeof);
-					}
-					transparentPixel = srcImage.transparentPixel;
-				} else {
-					OS.PhMakeGhostBitmap(imageHandle);
-					OS.memmove (phImage, imageHandle, PhImage_t.sizeof);
-					phImage.mask_bm = phImage.ghost_bitmap;
-					phImage.mask_bpl = phImage.ghost_bpl;
-					phImage.ghost_bitmap = 0;
-					phImage.ghost_bpl = 0;
-					phImage.alpha = 0;
-					OS.memmove (imageHandle, phImage, PhImage_t.sizeof);
+				OS.memmove (phImage, srcHandle, PhImage_t.sizeof);
+				PhImage_t newPhImage = new PhImage_t();
+				OS.memmove(newPhImage, newHandle, PhImage_t.sizeof);
+				if (newPhImage.mask_bm != 0 && phImage.mask_bm == newPhImage.mask_bm) {
+					int length = newPhImage.mask_bpl * newPhImage.size_h;
+					int ptr = OS.malloc(length);
+					OS.memmove(ptr, newPhImage.mask_bm, length);
+					newPhImage.mask_bm = ptr;
 				}
+				if (newPhImage.alpha != 0 && phImage.alpha == newPhImage.alpha) {
+					PgAlpha_t alpha = new PgAlpha_t();
+					OS.memmove(alpha, phImage.alpha, PgAlpha_t.sizeof);
+					if (alpha.src_alpha_map_map != 0) {
+						int length = alpha.src_alpha_map_bpl * alpha.src_alpha_map_dim_h;
+						int ptr = OS.malloc(length);
+						OS.memmove(ptr, alpha.src_alpha_map_map, length);
+						alpha.src_alpha_map_map = ptr;
+					}
+					int ptr = OS.malloc(PgAlpha_t.sizeof);
+					OS.memmove(ptr, alpha, PgAlpha_t.sizeof);
+					newPhImage.alpha = ptr;
+				}
+				OS.memmove(newHandle, newPhImage, PhImage_t.sizeof);
+				transparentPixel = srcImage.transparentPixel;
+			} else {
+				PhImage_t phImage = new PhImage_t();
+				OS.PhMakeGhostBitmap(newHandle);
+				OS.memmove (phImage, newHandle, PhImage_t.sizeof);
+				phImage.mask_bm = phImage.ghost_bitmap;
+				phImage.mask_bpl = phImage.ghost_bpl;
+				phImage.ghost_bitmap = 0;
+				phImage.ghost_bpl = 0;
+				phImage.alpha = 0;
+				OS.memmove (newHandle, phImage, PhImage_t.sizeof);
 			}
-			handle = imageHandle;
+			handle = newHandle;
 			if (device.tracking) device.new_Object(this);	
 			return;
 		case SWT.IMAGE_GRAY:
