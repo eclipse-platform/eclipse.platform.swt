@@ -136,7 +136,7 @@ void createHandle (int index) {
 void drawBand (int x, int y, int width, int height) {
 	int window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	if (window == 0) return;
-	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
+	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
 	int stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
 	int gc = OS.gdk_gc_new (window);
 	int colormap = OS.gdk_colormap_get_system();

@@ -218,10 +218,12 @@ void createHandle (int index) {
 		int [] relief = new int [1];
 		OS.gtk_widget_style_get (parent.handle, OS.button_relief, relief, 0);
 		OS.gtk_button_set_relief (handle, relief [0]);
-		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	}
+	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	OS.gtk_widget_show (handle);
 	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
+	setForegroundColor (parent.getForegroundColor ());
+	setFontDescription (parent.getFontDescription ());
 }
 
 /**

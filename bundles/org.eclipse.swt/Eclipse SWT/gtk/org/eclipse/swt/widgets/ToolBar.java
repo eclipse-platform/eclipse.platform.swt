@@ -102,16 +102,11 @@ void createHandle (int index) {
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 	if ((style & SWT.FLAT) != 0) {
-		GtkStyle style = new GtkStyle ();
-		int stylePtr = OS.gtk_style_copy (OS.gtk_widget_get_style (handle));
-		OS.memmove (style, stylePtr);
-		style.xthickness = 0;
-		style.ythickness = 0;
-		OS.memmove (stylePtr, style);
-		OS.gtk_widget_set_style (handle, stylePtr);
+		int style = OS.gtk_widget_get_modifier_style (handle);
+		OS.gtk_rc_style_set_xthickness (style, 0);
+		OS.gtk_rc_style_set_ythickness (style, 0);
+		OS.gtk_widget_modify_style (handle, style);
 	}
-	setForegroundColor (parent.getForegroundColor ());
-	setFontDescription (parent.getFontDescription ());
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
