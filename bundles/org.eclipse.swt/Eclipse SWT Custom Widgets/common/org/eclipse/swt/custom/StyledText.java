@@ -1412,6 +1412,15 @@ void doBackspace() {
 		sendKeyEvent(event);
 	}
 }
+/**
+ * Moves the caret to the specified location.
+ * <p>
+ *
+ * @param x	x location of the new caret position
+ * @param y	y location of the new caret position
+ * @param select the location change is a selection operation.
+ * 	include the line delimiter in the selection
+ */
 void doBidiMouseLocationChange(int x, int y, boolean select) {
 	int line = (y + verticalScrollOffset) / lineHeight;
 	int lineCount = content.getLineCount();
@@ -1706,7 +1715,7 @@ void doContentStart() {
  * cursor selection rules.
  * <p>
  *
- * @see #doSelectionCursorLeft
+ * @see #doSelectionCursorPrevious
  */
 void doCursorPrevious() {
 	if (selection.y - selection.x > 0) {
@@ -1723,7 +1732,7 @@ void doCursorPrevious() {
  * cursor selection rules.
  * <p>
  *
- * @see #doSelectionCursorRight
+ * @see #doSelectionCursorNext
  */
 void doCursorNext() {
 	if (selection.y - selection.x > 0) {
@@ -1972,31 +1981,6 @@ void doPageUp() {
 	}
 }
 /**
- * Moves the caret one line down and to the same character offset relative 
- * to the beginning of the line. Move the caret to the end of the new line 
- * if the new line is shorter than the character offset.
- */
-void doSelectionLineDown() {
-	int line = content.getLineAtOffset(caretOffset);
-	
-	// allow line down action only if receiver is not in single line mode.
-	// fixes 4820.
-	if (isSingleLine() == false && line < content.getLineCount() - 1) {
-		String lineText = content.getLine(line);
-		int lineOffset = content.getOffsetAtLine(line);
-		int offsetInLine = caretOffset - lineOffset;		
-		int caretX = getXAtOffset(lineText, line, offsetInLine);
-
-		line++;
-		if (isBidi()) {
-			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(caretX, line);
-		}		
-	}
-}
-/**
  * Updates the selection to extend to the current caret position.
  */
 void doSelection(int direction) {
@@ -2050,6 +2034,30 @@ void doSelection(int direction) {
 	}
 }
 /**
+ * Moves the caret to the next character or to the beginning of the 
+ * next line if the cursor is at the end of a line.
+ */
+void doSelectionCursorNext() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineOffset = content.getOffsetAtLine(line);	
+	int offsetInLine = caretOffset - lineOffset;
+	
+	if (offsetInLine < content.getLine(line).length()) {
+		// Remember the last direction. Always update lastCaretDirection,
+		// even though it's not used in non-bidi mode in order to avoid 
+		// extra methods.		
+		lastCaretDirection = ST.COLUMN_NEXT;
+		caretOffset++;
+		showCaret();
+	}
+	else
+	if (line < content.getLineCount() - 1) {
+		line++;
+		caretOffset = content.getOffsetAtLine(line);
+		showCaret();
+	}
+}
+/**
  * Moves the caret to the previous character or to the end of the previous 
  * line if the cursor is at the beginning of a line.
  */
@@ -2075,42 +2083,45 @@ void doSelectionCursorPrevious() {
 	}
 }
 /**
- * Moves the caret to the next character or to the beginning of the 
- * next line if the cursor is at the end of a line.
+ * Moves the caret one line down and to the same character offset relative 
+ * to the beginning of the line. Move the caret to the end of the new line 
+ * if the new line is shorter than the character offset.
  */
-void doSelectionCursorNext() {
+void doSelectionLineDown() {
 	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);	
-	int offsetInLine = caretOffset - lineOffset;
 	
-	if (offsetInLine < content.getLine(line).length()) {
-		// Remember the last direction. Always update lastCaretDirection,
-		// even though it's not used in non-bidi mode in order to avoid 
-		// extra methods.		
-		lastCaretDirection = ST.COLUMN_NEXT;
-		caretOffset++;
-		showCaret();
-	}
-	else
-	if (line < content.getLineCount() - 1) {
+	// allow line down action only if receiver is not in single line mode.
+	// fixes 4820.
+	if (isSingleLine() == false && line < content.getLineCount() - 1) {
+		String lineText = content.getLine(line);
+		int lineOffset = content.getOffsetAtLine(line);
+		int offsetInLine = caretOffset - lineOffset;		
+		int caretX = getXAtOffset(lineText, line, offsetInLine);
+
 		line++;
-		caretOffset = content.getOffsetAtLine(line);
-		showCaret();
+		if (isBidi()) {
+			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
+		}
+		else {
+			caretOffset = getOffsetAtMouseLocation(caretX, line);
+		}		
 	}
 }
 /**
- * Moves the caret to the start of the previous word.
- * If a selection exists, move the caret to the start of the selection
- * and remove the selection.
+ * Moves the caret to the end of the next word .
  */
-void doWordPrevious() {
-	if (selection.y - selection.x > 0) {
-		caretOffset = selection.x;
-		showCaret();
-	}
-	else {
-		doSelectionWordPrevious();
-	}
+void doSelectionWordNext() {
+	lastCaretDirection = ST.COLUMN_NEXT;
+	caretOffset = getWordEnd(caretOffset);
+	showCaret();
+}
+/**
+ * Moves the caret to the start of the previous word.
+ */
+void doSelectionWordPrevious() {
+	lastCaretDirection = ST.COLUMN_PREVIOUS;
+	caretOffset = getWordStart(caretOffset);
+	showCaret();
 }
 /**
  * Moves the caret to the end of the next word.
@@ -2128,19 +2139,17 @@ void doWordNext() {
 }
 /**
  * Moves the caret to the start of the previous word.
+ * If a selection exists, move the caret to the start of the selection
+ * and remove the selection.
  */
-void doSelectionWordPrevious() {
-	lastCaretDirection = ST.COLUMN_PREVIOUS;
-	caretOffset = getWordStart(caretOffset);
-	showCaret();
-}
-/**
- * Moves the caret to the end of the next word .
- */
-void doSelectionWordNext() {
-	lastCaretDirection = ST.COLUMN_NEXT;
-	caretOffset = getWordEnd(caretOffset);
-	showCaret();
+void doWordPrevious() {
+	if (selection.y - selection.x > 0) {
+		caretOffset = selection.x;
+		showCaret();
+	}
+	else {
+		doSelectionWordPrevious();
+	}
 }
 /**
  * Draws the specified rectangle.
@@ -2494,6 +2503,17 @@ public boolean getBidiColoring() {
 	checkWidget();
 	return bidiColoring;
 }
+/**
+ * Returns the offset at the specified x location in the specified line.
+ * Also sets the caret direction so that the caret is placed correctly 
+ * depending on whether the mouse location is in a R2L or L2R segment.
+ * <p>
+ *
+ * @param x	x location of the mouse location
+ * @param line	line the mouse location is in
+ * @return the offset at the specified x location in the specified line,
+ * 	relative to the beginning of the document
+ */
 int getBidiOffsetAtMouseLocation(int x, int line) {
 	String lineText = content.getLine(line);
 	int lineOffset = content.getOffsetAtLine(line);
@@ -3017,13 +3037,13 @@ public int getOffsetAtLocation(Point point) {
 	return lineOffset + offsetInLine;
 }
 /**
- * Moves the caret to the specified location.
+ * Returns the offset at the specified x location in the specified line.
  * <p>
  *
- * @param x	x location of the new caret position
- * @param y	y location of the new caret position
- * @param select the location change is a selection operation.
- * 	include the line delimiter in the selection
+ * @param x	x location of the mouse location
+ * @param line	line the mouse location is in
+ * @return the offset at the specified x location in the specified line,
+ * 	relative to the beginning of the document
  */
 int getOffsetAtMouseLocation(int x, int line) {
 	String lineText = content.getLine(line);
@@ -3156,6 +3176,13 @@ public Point getSelectionRange() {
 
 	return new Point(selection.x, selection.y - selection.x);
 }
+/**
+ * Merges the selection into the styles that are passed in.
+ * The font style of existing style ranges is preserved in the selection.
+ * <p>
+ * @param styles the existing styles that the selection should be applied to.
+ * @return the selection style range merged with the existing styles
+ */
 /*
 Pseudo code for getSelectionLineStyles
 	for each style {
@@ -3241,13 +3268,6 @@ Pseudo code for getSelectionLineStyles
 		}
 	}
 */
-/**
- * Merges the selection into the styles that are passed in.
- * The font style of existing style ranges is preserved in the selection.
- * <p>
- * @param styles the existing styles that the selection should be applied to.
- * @return the selection style range merged with the existing styles
- */
 StyleRange[] getSelectionLineStyles(StyleRange[] styles) {
 	int selectionStart = selection.x;
 	int selectionEnd = selection.y;
