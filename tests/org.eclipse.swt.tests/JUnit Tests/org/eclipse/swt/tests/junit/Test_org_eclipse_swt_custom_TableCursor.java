@@ -18,7 +18,7 @@ import junit.textui.*;
  *
  * @see org.eclipse.swt.custom.TableCursor
  */
-public class Test_org_eclipse_swt_custom_TableCursor extends Test_org_eclipse_swt_widgets_Canvas_NEW {
+public class Test_org_eclipse_swt_custom_TableCursor extends Test_org_eclipse_swt_widgets_Canvas {
 
 public Test_org_eclipse_swt_custom_TableCursor(String name) {
 	super(name);
@@ -78,7 +78,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getRow");
 	methodNames.addElement("test_setSelectionII");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_widgets_TableItemI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas_NEW.methodNames()); // add superclass method names
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
 

@@ -4182,7 +4182,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTopPixelI");
 	methodNames.addElement("test_setWordWrapZ");
 	methodNames.addElement("test_showSelection");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas_NEW.methodNames()); // add superclass method names
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
 
