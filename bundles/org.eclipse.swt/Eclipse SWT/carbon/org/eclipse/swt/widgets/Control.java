@@ -774,6 +774,38 @@ public Menu getMenu () {
 	return menu;
 }
 
+public Monitor getMonitor () {
+	checkWidget();
+	Monitor [] monitors = display.getMonitors ();
+	if (monitors.length == 1) return monitors [0];
+	int index = -1, value = -1;
+	Rectangle bounds = getBounds ();
+	if (this != getShell ()) {
+		bounds = display.map (this.parent, null, bounds);
+	}
+	for (int i=0; i<monitors.length; i++) {
+		Rectangle rect = bounds.intersection (monitors [i].getBounds ());
+		int area = rect.width * rect.height;
+		if (area > 0 && area > value) {
+			index = i;
+			value = area;
+		}
+	}
+	if (index >= 0) return monitors [index];
+	int centerX = bounds.x + bounds.width / 2, centerY = bounds.y + bounds.height / 2;
+	for (int i=0; i<monitors.length; i++) {
+		Rectangle rect = monitors [i].getBounds ();
+		int x = centerX < rect.x ? rect.x - centerX : centerX > rect.x + rect.width ? centerX - rect.x - rect.width : 0;
+		int y = centerY < rect.y ? rect.y - centerY : centerY > rect.y + rect.height ? centerY - rect.y - rect.height : 0;
+		int distance = x * x + y * y;
+		if (index == -1 || distance < value) {
+			index = i;
+			value = distance;
+		} 
+	}
+	return monitors [index];
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Composite</code>
  * or null when the receiver is a shell that was created with null or
