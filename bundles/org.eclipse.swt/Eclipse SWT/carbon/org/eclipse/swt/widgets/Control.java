@@ -1371,20 +1371,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-
-		/*
-		* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
-		* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
-		* The fix is to remember the focus control and return it during
-		* kEventControlSetFocusPart.
-		*/
-		Display display = this.display;
-		display.focusControl = this;
-		display.focusEvent = part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut;
-		sendFocusEvent (display.focusEvent, false);
-		display.focusEvent = SWT.None;
-		display.focusControl = null;
-
+		sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut, false);
 		// widget could be disposed at this point
 		if (isDisposed ()) return OS.noErr;
 	}
@@ -1937,12 +1924,23 @@ void resetVisibleRegion (int control) {
 	}
 }
 
-void sendFocusEvent (int event, boolean post) {
+void sendFocusEvent (int type, boolean post) {
 	Shell shell = getShell ();
 	if (post) {
-		postEvent (event);
+		postEvent (type);
 	} else {
-		sendEvent (event);
+		/*
+		* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
+		* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
+		* The fix is to remember the focus control and return it during
+		* kEventControlSetFocusPart.
+		*/
+		Display display = this.display;
+		display.focusControl = this;
+		display.focusEvent = type;
+		sendEvent (type);
+		display.focusEvent = SWT.None;
+		display.focusControl = null;
 	}
 	
 	/*
@@ -1952,7 +1950,7 @@ void sendFocusEvent (int event, boolean post) {
 	* events.
 	*/
 	if (!shell.isDisposed ()) {
-		if (event == SWT.FocusIn) {
+		if (type == SWT.FocusIn) {
 			shell.setActiveControl (this);
 		} else {
 			Display display = shell.display;
