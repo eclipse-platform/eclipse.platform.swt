@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.OS;
@@ -31,9 +32,43 @@ public class MacUtil {
 		KEEP_MAC_SHORTCUTS= true;
 		FULL_KBD_NAV= true;
 	}
-	
+		
 	//---- HIView utilities
 	
+	/*
+	static void dump(int control, int level) {
+		for (int j= 0; j < level; j++)
+			System.out.print(' ');
+		
+		int id= OS.HIObjectCopyClassID(control);
+		String s= getStringAndRelease(id);
+		System.out.print(control + "(" + s + "): ");
+		
+		if ("com.apple.hiwindowcontentview".equals(s)) {
+			int[] id0= new int[2];
+			id0[0]= OSType("wind");
+			id0[1]= 1;
+			OS.SetControlID(control, id0);
+		}
+					
+		Rect b= new Rect();
+		OS.GetControlBounds(control, b);
+		System.out.print(new Rectangle(b.left, b.top, b.right-b.left, b.bottom-b.top));
+
+		int[] id2= new int[2];
+		OS.GetControlID(control, id2);
+		System.out.println(" " + toString(id2[0]) + " " + id2[1]);
+		
+		int n= countSubControls(control);
+		int[] outControl= new int[1];
+		for (int i= 0; i < n; i++) {
+			if (getChild(control, outControl, n, i) == OS.noErr) {
+				dump(outControl[0], level+1);
+			}
+		}
+	}
+	*/
+
 	/**
 	 * Returns the HIView that represents the contents of the given window or
 	 * the root HIView if no contents HIView could be found.
@@ -95,7 +130,6 @@ public class MacUtil {
 		} else {
 			System.out.println("MacUtil.insertControl: parentHandle is neither control nor window");
 		}
-		// todo
 		int n= countSubControls(parentHandle);
 		
 		int should= pos;
@@ -112,7 +146,8 @@ public class MacUtil {
 		}
 		
 		if (n == 0) {
-			OS.HIViewAddSubview(parentHandle, controlHandle);
+			if (OS.HIViewAddSubview(parentHandle, controlHandle) != OS.noErr)
+				System.out.println("MacUtil.insertControl: error in HIViewAddSubview");	
 			pos= 0;
 		} else {
 			if (pos >= 0 && pos < n) {
