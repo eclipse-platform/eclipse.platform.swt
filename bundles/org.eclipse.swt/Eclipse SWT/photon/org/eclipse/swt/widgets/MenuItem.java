@@ -415,11 +415,9 @@ int processShow (int info) {
 	* the menu item state and reset it when the menu item is
 	* realized.
 	*/
-	int [] args = {
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
-	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	int topHandle = topHandle ();
+	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 	return OS.Pt_CONTINUE;
 }
 
@@ -587,8 +585,7 @@ public void setEnabled (boolean enabled) {
 	this.enabled = enabled;
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 
 public void setImage (Image image) {
@@ -639,15 +636,13 @@ public void setMenu (Menu menu) {
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
 		if ((parent.style & SWT.BAR) == 0) {
-			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_TEXT, 0};
-			OS.PtSetResources (handle, args.length / 3, args);
+			OS.PtSetResource (handle, OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_TEXT, 0);
 		}
 	}
 	if (menu != null) {
 		menu.cascade = this;
 		if ((parent.style & SWT.BAR) == 0) {
-			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_RIGHT, 0};
-			OS.PtSetResources (handle, args.length / 3, args);		
+			OS.PtSetResource (handle, OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_RIGHT, 0);		
 		}
 	}
 }
@@ -668,8 +663,7 @@ public void setMenu (Menu menu) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET);
 }
 
 public void setText (String string) {
@@ -749,8 +743,7 @@ void showMenu() {
 	int menuHandle = menu.handle;
 	if (!OS.PtWidgetIsRealized (menuHandle)) {
 		if ((parent.style & SWT.BAR) == 0) {
-			int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
-			OS.PtSetResources (menuHandle, args.length / 3, args);
+			OS.PtSetResource (menuHandle, OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD);
 		}
 		OS.PtReParentWidget (menuHandle, handle);
 		
@@ -770,8 +763,7 @@ void showMenu() {
 			pt.y += args [1];
 			int ptr = OS.malloc (PhPoint_t.sizeof);
 			OS.memmove (ptr, pt, PhPoint_t.sizeof);
-			args = new int [] {OS.Pt_ARG_POS, ptr, 0};
-			OS.PtSetResources (menuHandle, args.length / 3, args);
+			OS.PtSetResource (menuHandle, OS.Pt_ARG_POS, ptr, 0);
 			OS.free (ptr);
 		} else {
 			OS.PtPositionMenu (menuHandle, null);

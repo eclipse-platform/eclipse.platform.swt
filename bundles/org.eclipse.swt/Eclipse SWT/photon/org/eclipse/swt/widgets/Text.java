@@ -1119,8 +1119,8 @@ public void setEditable (boolean editable) {
 	checkWidget();
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY; 
-	int [] args = {OS.Pt_ARG_TEXT_FLAGS, editable ? OS.Pt_EDITABLE : 0, OS.Pt_EDITABLE};
-	OS.PtSetResources(handle, args.length / 3, args);
+	int flags = editable ? OS.Pt_EDITABLE : 0;
+	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_FLAGS, flags, OS.Pt_EDITABLE);
 }
 
 public void setFont (Font font) {
@@ -1156,8 +1156,7 @@ public void setFont (Font font) {
  */
 public void setSelection (int position) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_CURSOR_POSITION, position, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_CURSOR_POSITION, position, 0);
 
 	/*
 	* Feature in Photon. On a single-line text, the selection is
@@ -1241,8 +1240,7 @@ public void setSelection (int start, int end) {
 	* cursor position.
 	*/
 	if ((style & SWT.MULTI) != 0 && start == end) {
-		int [] args = {OS.Pt_ARG_CURSOR_POSITION, start, 0};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_CURSOR_POSITION, start, 0);
 	}
 }
 
@@ -1273,8 +1271,7 @@ void setTabStops (int tabs) {
 	int tabsWidth = getTabWidth (tabs);
 	int ptr = OS.malloc (4);
 	OS.memmove (ptr, new int [] {tabsWidth}, 4);
-	int [] args = {OS.Pt_ARG_MULTITEXT_TABS, ptr, 1};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MULTITEXT_TABS, ptr, 1);
 	OS.free (ptr);
 }
 
@@ -1297,8 +1294,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int [] args = {OS.Pt_ARG_TEXT_STRING, ptr, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, ptr, 0);
 	OS.free (ptr);
 }
 
@@ -1319,8 +1315,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, limit, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MAX_LENGTH, limit, 0);
 }
 
 /**
@@ -1338,8 +1333,7 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	int [] args = {OS.Pt_ARG_MULTITEXT_TOP_LINE, index + 1, 0};
-	OS.PtSetResources(handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MULTITEXT_TOP_LINE, index + 1, 0);
 }
 
 /**

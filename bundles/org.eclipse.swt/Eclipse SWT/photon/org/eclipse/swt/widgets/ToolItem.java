@@ -632,8 +632,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 
 /**
@@ -720,8 +719,7 @@ public void setImage (Image image) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET);
 }
 
 public void setText (String string) {
@@ -789,8 +787,7 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	int [] args = {OS.Pt_ARG_WIDTH, width, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_WIDTH, width, 0);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}

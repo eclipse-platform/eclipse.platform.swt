@@ -178,8 +178,7 @@ public void setMaximum (int value) {
 	checkWidget();
 	int minimum = getMinimum();
 	if (0 <= minimum && minimum < value) {
-		int [] args = {OS.Pt_ARG_MAXIMUM, value, 0};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value, 0);
 	}
 }
 
@@ -199,8 +198,7 @@ public void setMinimum (int value) {
 	checkWidget();
 	int maximum = getMaximum();
 	if (0 <= value && value < maximum) {
-		int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_MINIMUM, value, 0);
 	}
 }
 
@@ -219,8 +217,7 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {

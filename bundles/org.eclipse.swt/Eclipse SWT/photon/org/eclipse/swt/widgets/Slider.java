@@ -367,8 +367,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setIncrement (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_INCREMENT, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_INCREMENT, value, 0);
 }
 
 /**
@@ -385,8 +384,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_MAXIMUM, value - 1, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value - 1, 0);
 }
 
 /**
@@ -403,8 +401,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MINIMUM, value, 0);
 }
 
 /**
@@ -422,8 +419,7 @@ public void setMinimum (int value) {
  */
 public void setPageIncrement (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_PAGE_INCREMENT, value, 0);
 }
 
 /**
@@ -440,8 +436,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
 }
 
 /**
@@ -460,8 +455,7 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SLIDER_SIZE, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_SLIDER_SIZE, value, 0);
 }
 
 /**

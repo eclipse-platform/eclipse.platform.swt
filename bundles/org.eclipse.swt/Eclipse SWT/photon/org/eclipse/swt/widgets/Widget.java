@@ -247,8 +247,7 @@ int createToolTip (String string, int handle, byte [] font) {
 	pt.y = (short) y;
 	int ptr = OS.malloc (PhPoint_t.sizeof);
 	OS.memmove (ptr, pt, PhPoint_t.sizeof);
-	int [] args = {OS.Pt_ARG_POS, ptr, 0};
-	OS.PtSetResources (toolTipHandle, args.length / 3, args);
+	OS.PtSetResource (toolTipHandle, OS.Pt_ARG_POS, ptr, 0);
 	OS.free (ptr);
 
 	return toolTipHandle;

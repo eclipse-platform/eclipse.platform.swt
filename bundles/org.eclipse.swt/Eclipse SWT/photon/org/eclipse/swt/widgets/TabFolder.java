@@ -214,8 +214,7 @@ void createItem (TabItem item, int index) {
 	int str = OS.malloc (1);
 	if (str == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.memmove (newPtr + (index * 4), new int [] {str}, 4);
-	args = new int [] {OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count + 1};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count + 1);
 	for (int i=0; i<count+1; i++) {
 		int [] address = new int [1];
 		OS.memmove (address, newPtr + (i * 4), 4);
@@ -253,8 +252,7 @@ void destroyItem (TabItem item) {
 		OS.memmove (str, address [0], length + 1);
 		OS.memmove (newPtr + ((i + offset) * 4), new int [] {str}, 4);
 	}
-	args = new int [] {OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count - 1};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count - 1);
 	for (int i=0; i<count-1; i++) {
 		int [] address = new int [1];
 		OS.memmove (address, newPtr + (i * 4), 4);
@@ -515,8 +513,7 @@ void setSelection (int index, boolean notify) {
 			control.setVisible (false);
 		}
 	}
-	args = new int[]{OS.Pt_ARG_PG_CURRENT_INDEX, index, 0};
-	OS.PtSetResources (handle, args.length / 3, args);	
+	OS.PtSetResource (handle, OS.Pt_ARG_PG_CURRENT_INDEX, index, 0);	
 	args = new int[]{OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int newIndex = args [1];

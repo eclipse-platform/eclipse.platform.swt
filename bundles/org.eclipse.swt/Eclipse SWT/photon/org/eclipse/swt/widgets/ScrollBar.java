@@ -471,8 +471,7 @@ void setBounds (int x, int y, int width, int height) {
 	area.size_h = (short) (Math.max (height, 0));
 	int ptr = OS.malloc (PhArea_t.sizeof);
 	OS.memmove (ptr, area, PhArea_t.sizeof);
-	int [] args = {OS.Pt_ARG_AREA, ptr, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_AREA, ptr, 0);
 	OS.free (ptr);
 }
 
@@ -493,8 +492,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 /**
  * Sets the amount that the receiver's value will be
@@ -511,8 +509,7 @@ public void setEnabled (boolean enabled) {
  */
 public void setIncrement (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_INCREMENT, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_INCREMENT, value, 0);
 }
 
 /**
@@ -529,8 +526,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_MAXIMUM, value - 1, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value - 1, 0);
 }
 
 /**
@@ -547,8 +543,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MINIMUM, value, 0);
 }
 
 /**
@@ -566,8 +561,7 @@ public void setMinimum (int value) {
  */
 public void setPageIncrement (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_PAGE_INCREMENT, value, 0);
 }
 
 /**
@@ -584,8 +578,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
 }
 
 /**
@@ -604,8 +597,7 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SLIDER_SIZE, value, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_SLIDER_SIZE, value, 0);
 }
 
 /**
@@ -644,7 +636,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 		OS.Pt_ARG_PAGE_INCREMENT, pageIncrement, 0,
 		OS.Pt_ARG_SLIDER_SIZE, thumb, 0,
 		OS.Pt_ARG_MINIMUM, minimum, 0,
-		OS.Pt_ARG_MAXIMUM, maximum-1, 0,
+		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
@@ -668,10 +660,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
-	int [] args = {
-		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
-	};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
 	if (visible) {
 		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (topHandle);

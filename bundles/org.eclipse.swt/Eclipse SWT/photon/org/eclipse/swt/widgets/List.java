@@ -1192,8 +1192,7 @@ public void setSelection (String [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-	int [] args = new int [] {OS.Pt_ARG_TOP_ITEM_POS, index + 1, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_TOP_ITEM_POS, index + 1, 0);
 }
 
 /**
@@ -1228,8 +1227,7 @@ public void showSelection () {
 	if ((topIndex <= index) && (index <= bottomIndex)) return;
 	int lastIndex = Math.max (1, count - visibleCount + 1);
 	int newTop = Math.min (Math.max (index - (visibleCount / 2), 1), lastIndex);
-	args = new int [] {OS.Pt_ARG_TOP_ITEM_POS, newTop, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_TOP_ITEM_POS, newTop, 0);
 }
 
 }

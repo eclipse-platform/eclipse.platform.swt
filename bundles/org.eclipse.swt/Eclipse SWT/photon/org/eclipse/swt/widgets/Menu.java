@@ -464,8 +464,7 @@ public boolean isVisible () {
 
 int processHide (int info) {
 	if (cascade != null) {
-		int [] args = {OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD);
 		int shellHandle = parent.topHandle ();
 		OS.PtReParentWidget (handle, shellHandle);
 	}
@@ -582,8 +581,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 
 /**
@@ -641,8 +639,7 @@ public void setVisible (boolean visible) {
 		}
 		int ptr = OS.malloc (PhPoint_t.sizeof);
 		OS.memmove (ptr, pt, PhPoint_t.sizeof);
-		int [] args = {OS.Pt_ARG_POS, ptr, 0};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_POS, ptr, 0);
 		OS.free (ptr);
 		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (handle);

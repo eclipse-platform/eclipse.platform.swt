@@ -742,8 +742,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	area.size_h = (short) (Math.max (height - top [0] - bottom [0], 0));
 	int ptr = OS.malloc (PhArea_t.sizeof);
 	OS.memmove (ptr, area, PhArea_t.sizeof);
-	args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
-	OS.PtSetResources (shellHandle, args.length / 3, args);
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_AREA, ptr, 0);
 	OS.free (ptr);
 	/*
 	* Feature in Photon.  The shell does not issue WM_SIZE
@@ -787,8 +786,7 @@ public void setMaximized (boolean maximized) {
 	checkWidget();
 	int bits = 0;
 	if (maximized) bits = OS.Ph_WM_STATE_ISMAX;
-	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISMAX};
-	OS.PtSetResources (shellHandle, args.length / 3, args);
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISMAX);
 	if (OS.PtWidgetIsRealized (shellHandle)) {
 		PhWindowEvent_t event = new PhWindowEvent_t ();
 		event.rid = OS.PtWidgetRid (shellHandle);
@@ -806,10 +804,7 @@ public void setMenuBar (Menu menu) {
 	}
 	if (menuBar != null) {
 		int menuHandle = menuBar.handle;
-		int [] args = {
-			OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
-		};
-		OS.PtSetResources (menuHandle, args.length / 3, args);
+		OS.PtSetResource (menuHandle, OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
 		OS.PtUnrealizeWidget (menuBar.handle);
 	}
 	menuBar = menu;
@@ -832,8 +827,7 @@ public void setMinimized (boolean minimized) {
 	checkWidget();
 	int bits = 0;
 	if (minimized) bits = OS.Ph_WM_STATE_ISICONIFIED;
-	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISICONIFIED};
-	OS.PtSetResources (shellHandle, args.length / 3, args);
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISICONIFIED);
 	if (OS.PtWidgetIsRealized (shellHandle)) {
 		PhWindowEvent_t event = new PhWindowEvent_t ();
 		event.rid = OS.PtWidgetRid (shellHandle);
@@ -850,8 +844,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int [] args = {OS.Pt_ARG_WINDOW_TITLE, ptr, 0};
-	OS.PtSetResources (shellHandle, args.length / 3, args);
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_WINDOW_TITLE, ptr, 0);
 	OS.free (ptr);
 }
 

@@ -301,10 +301,10 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int [] args = {OS.Pt_ARG_HORIZONTAL_ALIGNMENT, OS.Pt_LEFT, 0};
-	if ((style & SWT.CENTER) != 0) args [1] = OS.Pt_CENTER;
-	if ((style & SWT.RIGHT) != 0) args [1] = OS.Pt_RIGHT;
-	OS.PtSetResources (handle, args.length / 3, args);
+	int align = OS.Pt_LEFT;
+	if ((style & SWT.CENTER) != 0) align = OS.Pt_CENTER;
+	if ((style & SWT.RIGHT) != 0) align = OS.Pt_RIGHT;
+	OS.PtSetResource (handle, OS.Pt_ARG_HORIZONTAL_ALIGNMENT, align, 0);
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

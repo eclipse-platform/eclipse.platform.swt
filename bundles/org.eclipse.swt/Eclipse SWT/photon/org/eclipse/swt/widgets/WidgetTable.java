@@ -14,7 +14,6 @@ class WidgetTable {
 	static Widget [] WidgetTable = new Widget [GrowSize];
 	static int ArgPtr = OS.malloc (4);
 	static int [] ArgBuffer = new int [1];
-	static int [] SetArgs = new int [] {OS.Pt_ARG_USER_DATA, ArgPtr, 4};
 	static int [] GetArgs = new int [] {OS.Pt_ARG_USER_DATA, 0, 0};
 	static {
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
@@ -48,7 +47,7 @@ public synchronized static void put(int handle, Widget widget) {
 	}
 	ArgBuffer [0] = FreeSlot + 1;
 	OS.memmove (ArgPtr, ArgBuffer, 4);
-	OS.PtSetResources (handle, SetArgs.length / 3, SetArgs);
+	OS.PtSetResource (handle, OS.Pt_ARG_USER_DATA, ArgPtr, 4);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable[oldSlot];
 	IndexTable [oldSlot] = -2;
@@ -70,7 +69,7 @@ public static synchronized Widget remove (int handle) {
 		FreeSlot = index;
 		ArgBuffer [0] = 0;
 		OS.memmove (ArgPtr, ArgBuffer, 4);
-		OS.PtSetResources (handle, SetArgs.length / 3, SetArgs);
+		OS.PtSetResource (handle, OS.Pt_ARG_USER_DATA, ArgPtr, 4);
 	}
 	return widget;
 }

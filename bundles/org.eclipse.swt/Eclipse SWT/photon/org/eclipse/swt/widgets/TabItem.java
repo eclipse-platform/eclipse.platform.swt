@@ -237,8 +237,7 @@ public void setText (String text) {
 		}
 		OS.memmove (newPtr + (i * 4), new int [] {str}, 4);
 	}
-	args = new int [] {OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count};
-	OS.PtSetResources (parent.handle, args.length / 3, args);
+	OS.PtSetResource (parent.handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count);
 	for (int i=0; i<count; i++) {
 		int [] address = new int [1];
 		OS.memmove (address, newPtr + (i * 4), 4);

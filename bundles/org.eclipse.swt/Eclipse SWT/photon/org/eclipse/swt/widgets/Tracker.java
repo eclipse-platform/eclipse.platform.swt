@@ -668,8 +668,7 @@ void setCursor (int cursorHandle) {
 	*/
 	if (type == OS.Ph_CURSOR_BITMAP) {
 		type &= ~OS.Ph_CURSOR_NO_INHERIT;
-		args = new int []{OS.Pt_ARG_CURSOR_TYPE, type, 0};
-		OS.PtSetResources (cursorHandle, args.length / 3, args);
+		OS.PtSetResource (cursorHandle, OS.Pt_ARG_CURSOR_TYPE, type, 0);
 	}
 }
 
