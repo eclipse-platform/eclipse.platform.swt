@@ -1453,7 +1453,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* Windows message by returning zero as the result of
 			* the window proc.
 			*/
-			sendEvent (code == OS.CBN_SETFOCUS ? SWT.FocusIn : SWT.FocusOut);
+			sendFocusEvent (code == OS.CBN_SETFOCUS ? SWT.FocusIn : SWT.FocusOut, -1);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 	}

@@ -1638,6 +1638,48 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return true;
 }
 
+boolean sendFocusEvent (int type, int hwnd) {
+	Shell shell = getShell ();
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the focus
+	* out event.  If this happens keep going to send
+	* the deactivate events.
+	*/
+	sendEvent (type);
+	// widget could be disposed at this point
+	
+	switch (type) {
+		case SWT.FocusIn:
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/	
+			if (!shell.isDisposed ()) {
+				shell.setActiveControl (this);
+			}
+			break;
+		case SWT.FocusOut:
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/
+			if (!shell.isDisposed ()) {
+				Control control = hwnd != -1 ? display.findControl (hwnd) : display.getFocusControl ();
+				if (control == null || shell != control.getShell ()) {
+					shell.setActiveControl (null);
+				}
+			}
+			break;
+	}
+	return true;
+}
+
 boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	Event event = new Event ();
 	event.button = button;
@@ -3392,29 +3434,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_KILLFOCUS, wParam, lParam);
-	Shell shell = getShell ();
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the focus
-	* out event.  If this happens keep going to send
-	* the deactivate events.
-	*/
-	sendEvent (SWT.FocusOut);
+	sendFocusEvent (SWT.FocusOut, wParam);
 	// widget could be disposed at this point
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		Control control = display.findControl (wParam);
-		if (control == null || shell != control.getShell ()) {
-			shell.setActiveControl (null);
-		}
-	}
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -3911,26 +3932,8 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_SETFOCUS, wParam, lParam);
-	Shell shell = getShell ();
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the focus
-	* in event.  If this happens keep going to send
-	* the activate events.
-	*/
-	sendEvent (SWT.FocusIn);
+	sendFocusEvent (SWT.FocusIn, wParam);
 	// widget could be disposed at this point
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
 
 	/*
 	* It is possible (but unlikely), that application
