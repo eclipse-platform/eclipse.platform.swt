@@ -7,6 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.RGBColor;
+import org.eclipse.swt.internal.carbon.Rect;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -50,10 +54,31 @@ boolean drawCaret () {
 		nHeight = rect.height;
 	}
 	if (nWidth <= 0) nWidth = 2;
-	GC gc = new GC (parent);
-	gc.setXORMode (true);
-	gc.fillRectangle (x, y, nWidth, nHeight);
-	gc.dispose ();
+	int parentHandle = parent.handle;
+	int window = OS.GetControlOwner (parentHandle);
+	int port = OS.GetWindowPort (window);
+	int [] currentPort = new int [1];
+	OS.GetPort (currentPort);
+	OS.SetPort (port);
+	int oldRgn = OS.NewRgn ();
+	int clipRgn = getClipping (parentHandle);
+	OS.GetClip (oldRgn);
+	OS.SetClip (clipRgn);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (parentHandle, rect);
+	int left = rect.left + x;
+	int top = rect.top + y;
+	OS.SetRect(rect, (short) left, (short) top, (short) (left + nWidth), (short) (top + nHeight));
+	RGBColor color = new RGBColor ();
+	color.red = (short) 0xFFFF;
+	color.green = (short) 0xFFFF;
+	color.blue = (short) 0xFFFF;
+	OS.RGBBackColor (color);
+	OS.InvertRect (rect);	
+	OS.SetClip (oldRgn);
+	OS.DisposeRgn (clipRgn);
+	OS.DisposeRgn (oldRgn);
+	OS.SetPort (currentPort [0]);
 	return true;
 }
 
