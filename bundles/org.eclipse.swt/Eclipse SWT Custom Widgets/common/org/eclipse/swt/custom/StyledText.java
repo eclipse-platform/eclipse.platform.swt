@@ -1994,7 +1994,7 @@ void calculateTopIndex() {
  */
 static int checkStyle(int style) {
 	if ((style & SWT.SINGLE) != 0) {
-		style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
+		style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
 	} else {
 		style |= SWT.MULTI;
 	}
@@ -6885,6 +6885,7 @@ void sendSelectionEvent() {
  */
 public void setWordWrap(boolean wrap) {
 	checkWidget();
+	if ((getStyle() & SWT.SINGLE) != 0) return;
 	
 	if (wrap != wordWrap) {
 		ScrollBar horizontalBar = getHorizontalBar();
