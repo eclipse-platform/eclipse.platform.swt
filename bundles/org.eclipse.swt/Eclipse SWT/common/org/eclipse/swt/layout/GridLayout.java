@@ -150,6 +150,25 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		if (data == null) child.setLayoutData (data = new GridData ());
 		if (flushCache) data.flushCache ();
 		data.computeSize (child, data.widthHint, data.heightHint, flushCache);
+		if (data.grabExcessHorizontalSpace && data.minimumWidth > 0) {
+			if (data.cacheWidth < data.minimumWidth) {
+				int trim = 0;
+				if (child instanceof Group) {
+					Group g = (Group)child;
+					trim = g.getSize ().x - g.getClientArea ().width;
+				} else if (child instanceof Scrollable) {
+					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
+					trim = rect.width;
+				} else {
+					trim = child.getBorderWidth () * 2;
+				}
+				data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
+				data.computeSize(child, Math.max (0, data.minimumWidth - trim), data.heightHint, false);
+			}
+		}
+		if (data.grabExcessVerticalSpace && data.minimumHeight > 0) {
+			data.cacheHeight = Math.max(data.cacheHeight, data.minimumHeight);
+		}
 	}
 	
 	/* Build the grid */
@@ -389,6 +408,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							}
 							data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
 							data.computeSize(child, Math.max (0, currentWidth - trim), data.heightHint, false);
+							if (data.grabExcessVerticalSpace && data.minimumHeight > 0) {
+								data.cacheHeight = Math.max(data.cacheHeight, data.minimumHeight);
+							}
 							if (flush == null) flush = new GridData [children.length];
 							flush [flushLength++] = data;
 						}
