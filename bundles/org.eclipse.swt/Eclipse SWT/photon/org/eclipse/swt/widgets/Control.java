@@ -1241,6 +1241,8 @@ int processKey (int info) {
 					OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
 					return OS.Pt_PROCESS;
 				}
+				// widget could be disposed at this point
+				if (isDisposed ()) return OS.Pt_PROCESS;
 			}
 		}
 	}
