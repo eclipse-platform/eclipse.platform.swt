@@ -882,7 +882,7 @@ public int getOffset (int x, int y, int[] trailing) {
 			char[] chars = new char[run.length];
 			text.getChars(run.start, run.start + run.length, chars, 0);
 			for (offset = 0; offset < chars.length; offset++) {
-				int charWidth = gc.stringExtent(String.valueOf(chars[0])).x;
+				int charWidth = gc.stringExtent(String.valueOf(chars[offset])).x;
 				if (width + charWidth > x) {
 					if (trailing != null) {
 						trailing[0] = x < (width + charWidth / 2) ? 0 : 1;
