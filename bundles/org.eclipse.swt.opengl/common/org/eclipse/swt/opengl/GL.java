@@ -1102,8 +1102,8 @@ public class GL {
 	public static final native void glAlphaFunc (int func, float ref);
 	public static final native boolean glAreTexturesResident (int n, int[] textures, boolean[] residences);
 	public static final native void glArrayElement (int index);
-	public static final native int glBegin (int mode);
-	public static final native int glEnd ();
+	public static final native void glBegin (int mode);
+	public static final native void glEnd ();
 	public static final native void glBindTexture (int target, int texture);
 	public static final native void glBitmap (int width, int height, float xorig, float yorig, float xmove, float ymove, byte[] bitmap);
 	public static final native void glBlendFunc (int sfactor, int dfactor);
@@ -1149,7 +1149,6 @@ public class GL {
 	public static final native void glColor4ubv (byte[] v);
 	public static final native void glColor4uiv (int[] v);
 	public static final native void glColor4usv (short[] v);
-	public static final native void glColor4ubv (short[] v);
 	public static final native void glColorMask (boolean red, boolean green, boolean blue, boolean alpha);
 	public static final native void glColorMaterial (int face, int mode);
 	public static final native void glColorPointer (int size, int type, int stride, int[] pointer);
@@ -1360,8 +1359,8 @@ public class GL {
 	public static final native void glScaled (double x, double y, double z);
 	public static final native void glScalef (float x, float y, float z);
 	public static final native void glScissor (int x, int y, int width, int height);
-	//public static final native void glSelectBuffer (int size, int[] buffer);
-	public static final native void glSelectBuffer (int size, int buffer);
+	public static final native void glSelectBuffer (int size, int[] buffer);
+	//public static final native void glSelectBuffer (int size, int buffer);
 	public static final native void glShadeModel (int mode);
 	public static final native void glStencilFunc (int func, int ref, int mask);
 	public static final native void glStencilMask (int mask);
@@ -1435,12 +1434,11 @@ public class GL {
 	public static final native void glVertex2fv (float[] v);
 	public static final native void glVertex2iv (int[] v);
 	public static final native void glVertex2sv (short[] v);
-	public static final native int glVertex3dv (double[] v);
-	public static final native int glVertex3dv (int v);
+	public static final native void glVertex3dv (double[] v);
 	public static final native void glVertex3fv (float[] v);
 	public static final native void glVertex3iv (int[] v);
 	public static final native void glVertex3sv (short[] v);
-	public static final native int glVertex4dv (double[] v);
+	public static final native void glVertex4dv (double[] v);
 	public static final native void glVertex4fv (float[] v);
 	public static final native void glVertex4iv (int[] v);
 	public static final native void glVertex4sv (short[] v);
