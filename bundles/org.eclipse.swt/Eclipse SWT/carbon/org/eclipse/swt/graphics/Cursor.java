@@ -201,7 +201,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	}
 	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
 	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
-	int handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }
