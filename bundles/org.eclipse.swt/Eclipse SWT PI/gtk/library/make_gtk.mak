@@ -20,8 +20,8 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 
 # Define the installation directories for various products.
 # Your system may have these in a different place.
-#    JAVA_HOME   - IBM's version of Java (J9)
-JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
+#    JAVA_HOME   - IBM's version of Java
+JAVA_HOME   =/bluebird/teamswt/swt-builddir/IBMJava2-141
 
 #  mozilla source distribution folder
 MOZILLA_HOME = /mozilla/mozilla/1.5/linux_gtk2/mozilla/dist
@@ -29,11 +29,13 @@ MOZILLA_HOME = /mozilla/mozilla/1.5/linux_gtk2/mozilla/dist
 # Define the various shared libraries to be build.
 WS_PREFIX    		= gtk
 SWT_PREFIX   		= swt
+AWT_PREFIX		= swt-awt
 SWTPI_PREFIX   	= swt-pi
 ATK_PREFIX   		= swt-atk
 GNOME_PREFIX	= swt-gnome
 MOZILLA_PREFIX = swt-mozilla
 SWT_LIB			= lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+AWT_LIB			= lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB		= lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB				= lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB		= lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -41,6 +43,8 @@ MOZILLA_LIB 	= lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0`
+
+AWT_LIBS      = -L$(JAVA_HOME)/jre/bin -ljawt -shared
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
@@ -65,6 +69,7 @@ MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
 MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.5
 
 SWT_OBJECTS		= callback.o
+AWT_OBJECTS		= swt_awt.o
 SWTPI_OBJECTS	= os.o os_structs.o os_custom.o
 ATK_OBJECTS			= atk.o atk_structs.o atk_custom.o
 GNOME_OBJECTS	= gnome.o
@@ -81,7 +86,7 @@ LIBS = -shared -fpic -fPIC
 #  Target Rules
 #
 
-all: make_swt make_atk make_gnome make_mozilla
+all: make_swt make_awt make_atk make_gnome make_mozilla
 
 #
 # SWT libs
@@ -103,6 +108,14 @@ os_structs.o: os_structs.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_structs.c 
 os_custom.o: os_custom.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_custom.c
+
+#
+# AWT lib
+#
+make_awt:$(AWT_LIB)
+
+$(AWT_LIB): $(AWT_OBJECTS)
+	$(LD) $(AWT_LIBS) -o $(AWT_LIB) $(AWT_OBJECTS)
 
 #
 # Atk lib
