@@ -33,16 +33,8 @@ GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJ    = gnome.o 
 
-GNOME_CFLAGS = `gnome-config --cflags vfs`
-# GNOME_LIB
-# Use the output of `gnome-config --libs vfs`
-# Replace -rdynamic by --export-dynamic to avoid a rpath error with ld
-# (gcc transforms -rdynamic into --export-dynamic when calling ld)
-GNOME_LIB = -x -shared --export-dynamic -L/usr/lib -L/usr/X11R6/lib \
-			-lgnomevfs -lxml -lz -lgconf-gtk-1 -lgconf-1 -loaf \
-			-lORBitCosNaming -lORBit -lIIOP -lORBitutil -lnsl \
-			-lgtk -lgdk -lXi -lXext -lX11 -lm -lgmodule -lgthread \
-			-lglib -lpthread -ldl
+GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0`
+GNOME_LIB = -x -shared `pkg-config --libs gnome-vfs-2.0`
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so

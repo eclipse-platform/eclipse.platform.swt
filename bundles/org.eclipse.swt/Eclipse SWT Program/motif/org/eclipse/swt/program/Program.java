@@ -150,6 +150,7 @@ private static Program findProgram( Display display, String extension ) {
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (extension.equals( mimeExts.elementAt( index ) )) {
 				name = mimeType;
+				break;
 			}
 		}
 	}			
@@ -307,9 +308,9 @@ private static Hashtable gnome_getMimeInfo() {
 			while (extensionElement != 0) {
 				OS.memmove(extensionData, extensionElement, 4);
 				int extensionPtr = extensionData[0];
-				int extension_length = OS.strlen(extensionPtr);
-				byte[] extensionBuffer = new byte[extension_length];
-				OS.memmove(extensionBuffer, extensionPtr, extension_length);
+				int extensionLength = OS.strlen(extensionPtr);
+				byte[] extensionBuffer = new byte[extensionLength];
+				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
 				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
 				extension = '.' + extension;
 				extensions.add(extension);
@@ -327,7 +328,7 @@ private static Hashtable gnome_getMimeInfo() {
 private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExpectUri[]) {
 	String command = null;
 	GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
-	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType+'\0');
+	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
 	int ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	if (ptr != 0) {
 		GNOME.memmove(application, ptr, GnomeVFSMimeApplication.sizeof);
@@ -337,7 +338,7 @@ private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExp
 		command = new String(Converter.mbcsToWcs(null, buffer));
 		gnomeExpectUri[0] = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
 		GNOME.gnome_vfs_mime_application_free(ptr);
-		}
+	}
 	return command;
 }
 
@@ -729,13 +730,14 @@ public int hashCode() {
 public String toString () {
 	return "Program {" + name + "}";
 }
+
 static boolean gnome_init () {
 	try {
 		Library.loadLibrary("swt-gnome");
+		return GNOME.gnome_vfs_init();
 	} catch (Throwable e) {
 		return false;
 	}
-	return true;
 }
 
 /* CDE - Get Attribute Value
