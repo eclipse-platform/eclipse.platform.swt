@@ -637,12 +637,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					switch (data.horizontalAlignment) {
 						case SWT.CENTER:
 						case GridData.CENTER:
-							childX = gridX + Math.max (0, (cellWidth - childWidth) / 2);
+							childX += Math.max (0, (cellWidth - data.horizontalIndent - childWidth) / 2);
 							break;
 						case SWT.RIGHT:
 						case SWT.END:
 						case GridData.END:
-							childX = gridX + Math.max (0, cellWidth - childWidth);
+							childX += Math.max (0, cellWidth - data.horizontalIndent - childWidth);
 							break;
 						case SWT.FILL:
 							childWidth = cellWidth - data.horizontalIndent;
@@ -654,12 +654,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					switch (data.verticalAlignment) {
 						case SWT.CENTER:
 						case GridData.CENTER:
-							childY = gridY + Math.max (0, (cellHeight - childHeight) / 2);
+							childY += Math.max (0, (cellHeight - data.verticalIndent - childHeight) / 2);
 							break;
 						case SWT.BOTTOM:
 						case SWT.END:
 						case GridData.END:
-							childY = gridY + Math.max (0, cellHeight - childHeight);
+							childY += Math.max (0, cellHeight - data.verticalIndent - childHeight);
 							break;
 						case SWT.FILL:
 							childHeight = cellHeight - data.verticalIndent;
