@@ -104,17 +104,21 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
-/**
+/*
  * Returns a <code>PrinterData</code> object representing
  * the default printer.
  *
- * @return the default printer or null if there is no default printer
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+ * </ul>
+ *
+ * @return the default printer data or null if there is no default printer
  */
 static PrinterData getDefaultPrinterData() {
 	byte [] deviceName = null;
 	byte[] buf = new byte[1024];
 	int n = OS.GetProfileString(appName, keyName, new byte[] {0}, buf, buf.length);
-	if (n == 0) return null;
+	if (n == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
 	int commaIndex = 0;
 	while(buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
 	if (commaIndex < buf.length) {
