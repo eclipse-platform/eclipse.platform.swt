@@ -47,8 +47,6 @@ public abstract class Widget {
 	int style, state;
 	EventTable eventTable;
 	Object data;
-	String [] keys;
-	Object [] values;
 
 	/* Global state flags */
 //	static final int AUTOMATIC		= 1<<0;
@@ -64,6 +62,7 @@ public abstract class Widget {
 	static final int DISPOSED	= 1<<10;
 //	static final int HANDLE			= 1<<11;
 	static final int CANVAS		= 1<<12;
+	static final int KEYED_DATA		= 1<<13;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -414,7 +413,7 @@ boolean filters (int eventType) {
  */
 public Object getData () {
 	checkWidget();
-	return data;
+	return ((state & KEYED_DATA) != 0) ? ((Object []) data) [0] : data;
 }
 
 /**
@@ -444,9 +443,11 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (keys == null) return null;
-	for (int i=0; i<keys.length; i++) {
-		if (keys [i].equals (key)) return values [i];
+	if ((state & KEYED_DATA) != 0) {
+		Object [] table = (Object []) data;
+		for (int i=1; i<table.length; i+=2) {
+			if (key.equals (table [i])) return table [i+1];
+		}
 	}
 	return null;
 }
@@ -750,8 +751,6 @@ void releaseWidget () {
 	sendEvent (SWT.Dispose);
 	eventTable = null;
 	data = null;
-	keys = null;
-	values = null;
 }
 
 /**
@@ -890,7 +889,11 @@ void sendEvent (int eventType, Event event, boolean send) {
  */
 public void setData (Object data) {
 	checkWidget();
-	this.data = data;
+	if ((state & KEYED_DATA) != 0) {
+		((Object []) this.data) [0] = data;
+	} else {
+		this.data = data;
+	}
 }
 
 /**
@@ -920,49 +923,46 @@ public void setData (Object data) {
 public void setData (String key, Object value) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
-	/* Remove the key/value pair */
-	if (value == null) {
-		if (keys == null) return;
-		int index = 0;
-		while (index < keys.length && !keys [index].equals (key)) index++;
-		if (index == keys.length) return;
-		if (keys.length == 1) {
-			keys = null;
-			values = null;
+	int index = 1;
+	Object [] table = null;
+	if ((state & KEYED_DATA) != 0) {
+		table = (Object []) data;
+		while (index < table.length) {
+			if (key.equals (table [index])) break;
+			index += 2;
+		}
+	}
+	if (value != null) {
+		if ((state & KEYED_DATA) != 0) {
+			if (index == table.length) {
+				Object [] newTable = new Object [table.length + 2];
+				System.arraycopy (table, 0, newTable, 0, table.length);
+				data = table = newTable;
+			}
 		} else {
-			String [] newKeys = new String [keys.length - 1];
-			Object [] newValues = new Object [values.length - 1];
-			System.arraycopy (keys, 0, newKeys, 0, index);
-			System.arraycopy (keys, index + 1, newKeys, index, newKeys.length - index);
-			System.arraycopy (values, 0, newValues, 0, index);
-			System.arraycopy (values, index + 1, newValues, index, newValues.length - index);
-			keys = newKeys;
-			values = newValues;
+			table = new Object [3];
+			table [0] = data;
+			data = table;
+			state |= KEYED_DATA;
 		}
-		return;
-	}
-	
-	/* Add the key/value pair */
-	if (keys == null) {
-		keys = new String [] {key};
-		values = new Object [] {value};
-		return;
-	}
-	for (int i=0; i<keys.length; i++) {
-		if (keys [i].equals (key)) {
-			values [i] = value;
-			return;
+		table [index] = key;
+		table [index + 1] = value;
+	} else {
+		if ((state & KEYED_DATA) != 0) {
+			if (index != table.length) {
+				int length = table.length - 2;
+				if (length == 1) {
+					data = table [0];
+					state &= ~KEYED_DATA;
+				} else {
+					Object [] newTable = new Object [length];
+					System.arraycopy (table, 0, newTable, 0, index);
+					System.arraycopy (table, index + 2, newTable, index, length - index);
+					data = newTable;
+				}
+			}
 		}
 	}
-	String [] newKeys = new String [keys.length + 1];
-	Object [] newValues = new Object [values.length + 1];
-	System.arraycopy (keys, 0, newKeys, 0, keys.length);
-	System.arraycopy (values, 0, newValues, 0, values.length);
-	newKeys [keys.length] = key;
-	newValues [values.length] = value;
-	keys = newKeys;
-	values = newValues;
 }
 
 boolean setInputState (Event event, int type) {
