@@ -149,11 +149,13 @@ public class Display extends Device {
 	int shellMapProc;
 	Callback shellMapCallback;
 	
-	/* GtkTreeView callback */
+	/* GtkTreeView callbacks */
 	int[] treeSelection;
 	int treeSelectionLength;
 	int treeSelectionProc;
 	Callback treeSelectionCallback;
+	int cellDataProc;
+	Callback cellDataCallback;
 	
 	/* Drag Detect */
 	int dragStartX,dragStartY;
@@ -1449,6 +1451,10 @@ void initializeCallbacks () {
 	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	cellDataCallback = new Callback (this, "cellDataProc", 5);
+	cellDataProc = cellDataCallback.getAddress ();
+	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeWidgetTable () {
@@ -1724,9 +1730,11 @@ void releaseDisplay () {
 	shellMapCallback.dispose (); shellMapCallback = null;
 	shellMapProc = 0;
 	
-	/* Dispose GtkTreeView callback */
+	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
+	cellDataCallback.dispose (); cellDataCallback = null;
+	cellDataProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
@@ -2217,6 +2225,12 @@ int caretProc (int clientData) {
 		currentCaret = null;
 	}
 	return 0;
+}
+
+int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	Widget widget = getWidget (data);
+	if (widget == null) return 0;
+	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
 int treeSelectionProc (int model, int path, int iter, int data) {

@@ -213,6 +213,10 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
+int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	return 0;
+}
+
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
 	int mask = int0 | int1 | int2 | int3 | int4 | int5;
 	if ((style & mask) == 0) style |= int0;
