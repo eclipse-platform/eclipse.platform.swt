@@ -174,11 +174,6 @@ public class OS extends Platform {
 	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
 	public static final int GDK_NOTIFY_INFERIOR = 2;
-	public static final int PANGO_ALIGN_LEFT = 0;
-	public static final int PANGO_ALIGN_CENTER = 1;
-	public static final int PANGO_ALIGN_RIGHT = 2;
-	public static final int PANGO_DIRECTION_LTR = 0;
-	public static final int PANGO_DIRECTION_RTL = 1;	
 	public static final int GDK_Num_Lock = 0xFF7F;
 	public static final int GDK_OVERLAP_RECTANGLE_OUT = 0x1;
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
@@ -198,6 +193,10 @@ public class OS extends Platform {
 	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
 	public static final int GDK_SB_UP_ARROW = 0x72;
 	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
+	public static final int GDK_SCROLL_UP = 0; 
+	public static final int GDK_SCROLL_DOWN = 1;
+	public static final int GDK_SCROLL_LEFT = 2;
+	public static final int GDK_SCROLL_RIGHT = 3;
 	public static final int GDK_SELECTION_CLEAR = 17;
 	public static final int GDK_SELECTION_NOTIFY = 19;
 	public static final int GDK_SELECTION_REQUEST = 18;
@@ -206,6 +205,7 @@ public class OS extends Platform {
 	public static final int GDK_STIPPLED = 0x2;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
+	public static final int GDK_SCROLL = 31;
 	public static final int GDK_Scroll_Lock = 0xff14;
 	public static final int GDK_TOP_LEFT_CORNER = 0x86;
 	public static final int GDK_TOP_RIGHT_CORNER = 0x88;
@@ -309,6 +309,11 @@ public class OS extends Platform {
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
 	public static final int None = 0;
+	public static final int PANGO_ALIGN_LEFT = 0;
+	public static final int PANGO_ALIGN_CENTER = 1;
+	public static final int PANGO_ALIGN_RIGHT = 2;
+	public static final int PANGO_DIRECTION_LTR = 0;
+	public static final int PANGO_DIRECTION_RTL = 1;	
 	public static final int PANGO_SCALE = 1024;
 	public static final int PANGO_STRETCH_NORMAL = 0x4;
 	public static final int PANGO_STYLE_ITALIC = 0x2;
@@ -361,6 +366,7 @@ public class OS extends Platform {
 	public static final byte[] row_activated = ascii("row_activated");
 	public static final byte[] row_changed = ascii("row_changed");
 	public static final byte[] scroll_child = ascii("scroll_child");
+	public static final byte[] scroll_event = ascii("scroll_event");
 	public static final byte[] select = ascii("select");
 	public static final byte[] show = ascii("show");
 	public static final byte[] show_help = ascii("show_help");
@@ -432,6 +438,7 @@ public static final native int GdkEventExpose_sizeof();
 public static final native int GdkEventFocus_sizeof();
 public static final native int GdkEventKey_sizeof();
 public static final native int GdkEventMotion_sizeof();
+public static final native int GdkEventScroll_sizeof();
 public static final native int GdkEventVisibility_sizeof();
 public static final native int GdkEventWindowState_sizeof();
 public static final native int GdkGCValues_sizeof();
@@ -461,6 +468,7 @@ public static final native int PangoLayoutRun_sizeof();
 public static final native int PangoLogAttr_sizeof();
 public static final native int PangoRectangle_sizeof();
 public static final native int XAnyEvent_sizeof();
+public static final native int XButtonEvent_sizeof();
 public static final native int XClientMessageEvent_sizeof();
 public static final native int XEvent_sizeof();
 public static final native int XCrossingEvent_sizeof();
@@ -488,6 +496,7 @@ public static final native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ wid
 /** X11 Native methods and constants */
 public static final int Above = 0;
 public static final int Below = 1;
+public static final int ButtonRelease = 5;
 public static final int ClientMessage = 33;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
@@ -769,10 +778,12 @@ public static final void gdk_window_add_filter(int /*long*/ window, int /*long*/
 		lock.unlock();
 	}
 }
+public static final native void memmove(int /*long*/ dest, XButtonEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XCrossingEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XExposeEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XFocusChangeEvent src, int /*long*/ size);
+public static final native void memmove(XButtonEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XCrossingEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XExposeEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XFocusChangeEvent dest, int /*long*/ src, int /*long*/ size);
@@ -7234,6 +7245,7 @@ public static final native void memmove(GdkEventExpose dest, int /*long*/ src, i
 public static final native void memmove(GdkEventFocus dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventKey dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventMotion dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(GdkEventScroll dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventVisibility dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventWindowState dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GtkFixed dest, int /*long*/ src);

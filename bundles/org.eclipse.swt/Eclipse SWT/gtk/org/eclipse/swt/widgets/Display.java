@@ -749,11 +749,15 @@ synchronized void createDisplay (DeviceData data) {
 	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*swt-toolbar-flat*\" style : highest \"swt-flat\"", true);
 	OS.gtk_rc_parse_string (flatStyle);
 
-	/* Initialize the event callback */
+	/* Initialize the filter and event callback */
 	eventCallback = new Callback (this, "eventProc", 2);
 	eventProc = eventCallback.getAddress ();
 	if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_event_handler_set (eventProc, 0, 0);
+	filterCallback = new Callback (this, "filterProc", 3);
+	filterProc = filterCallback.getAddress ();
+	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.gdk_window_add_filter  (0, filterProc, 0);
 }
 
 int /*long*/[] createImage (String name) {
@@ -1070,6 +1074,21 @@ boolean filters (int eventType) {
 }
 
 int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
+	if (data == 0) {
+		XButtonEvent mouseEvent = new XButtonEvent ();
+		OS.memmove (mouseEvent, xEvent, 4);
+		if (mouseEvent.type == OS.ButtonRelease) {
+			OS.memmove (mouseEvent, xEvent, XButtonEvent.sizeof);
+			switch (mouseEvent.button) {
+				case 6:
+				case 7:
+					mouseEvent.button = -mouseEvent.button;
+					OS.memmove (xEvent, mouseEvent, XButtonEvent.sizeof);
+					break;
+			}
+		}
+		return 0;
+	} 
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.filterProc (xEvent, gdkEvent, data);
@@ -1902,10 +1921,6 @@ void initializeCallbacks () {
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
 	checkIfEventProc = checkIfEventCallback.getAddress ();
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-	filterCallback = new Callback (this, "filterProc", 3);
-	filterProc = filterCallback.getAddress ();
-	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeWidgetTable () {

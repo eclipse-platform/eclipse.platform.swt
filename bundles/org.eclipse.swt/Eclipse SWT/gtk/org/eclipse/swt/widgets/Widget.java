@@ -105,21 +105,22 @@ public abstract class Widget {
 	static final int REALIZE = 32;
 	static final int ROW_ACTIVATED = 33;
 	static final int SCROLL_CHILD = 34;
-	static final int SELECT = 35;
-	static final int SHOW = 36;
-	static final int SHOW_HELP = 37;
-	static final int SIZE_ALLOCATE = 38;
-	static final int STYLE_SET = 39;
-	static final int SWITCH_PAGE = 40;
-	static final int TEST_COLLAPSE_ROW = 41;
-	static final int TEST_EXPAND_ROW = 42;
-	static final int TOGGLED = 43;
-	static final int UNMAP = 44;
-	static final int UNMAP_EVENT = 45;
-	static final int UNREALIZE = 46;
-	static final int VALUE_CHANGED = 47;
-	static final int VISIBILITY_NOTIFY_EVENT = 48;
-	static final int WINDOW_STATE_EVENT = 49;
+	static final int SCROLL_EVENT = 35;
+	static final int SELECT = 36;
+	static final int SHOW = 37;
+	static final int SHOW_HELP = 38;
+	static final int SIZE_ALLOCATE = 39;
+	static final int STYLE_SET = 40;
+	static final int SWITCH_PAGE = 41;
+	static final int TEST_COLLAPSE_ROW = 42;
+	static final int TEST_EXPAND_ROW = 43;
+	static final int TOGGLED = 44;
+	static final int UNMAP = 45;
+	static final int UNMAP_EVENT = 46;
+	static final int UNREALIZE = 47;
+	static final int VALUE_CHANGED = 48;
+	static final int VISIBILITY_NOTIFY_EVENT = 49;
+	static final int WINDOW_STATE_EVENT = 50;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -646,6 +647,10 @@ int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long
 }
 
 int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int /*long*/ horizontal) {
+	return 0;
+}
+
+int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
@@ -1332,6 +1337,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
 		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
+		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
 		case STYLE_SET: return gtk_style_set (handle, arg0);

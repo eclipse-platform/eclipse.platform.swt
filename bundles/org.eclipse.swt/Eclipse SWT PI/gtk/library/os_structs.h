@@ -171,6 +171,18 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 #define GdkEventMotion_sizeof() 0
 #endif
 
+#ifndef NO_GdkEventScroll
+void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject);
+GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct);
+void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct);
+#define GdkEventScroll_sizeof() sizeof(GdkEventScroll)
+#else
+#define cacheGdkEventScrollFields(a,b)
+#define getGdkEventScrollFields(a,b,c) NULL
+#define setGdkEventScrollFields(a,b,c)
+#define GdkEventScroll_sizeof() 0
+#endif
+
 #ifndef NO_GdkEventVisibility
 void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject);
 GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);
@@ -493,6 +505,18 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct);
 #define getXAnyEventFields(a,b,c) NULL
 #define setXAnyEventFields(a,b,c)
 #define XAnyEvent_sizeof() 0
+#endif
+
+#ifndef NO_XButtonEvent
+void cacheXButtonEventFields(JNIEnv *env, jobject lpObject);
+XButtonEvent *getXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct);
+void setXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct);
+#define XButtonEvent_sizeof() sizeof(XButtonEvent)
+#else
+#define cacheXButtonEventFields(a,b)
+#define getXButtonEventFields(a,b,c) NULL
+#define setXButtonEventFields(a,b,c)
+#define XButtonEvent_sizeof() 0
 #endif
 
 #ifndef NO_XClientMessageEvent

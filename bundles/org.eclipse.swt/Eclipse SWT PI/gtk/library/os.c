@@ -317,6 +317,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkEventMotion_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkEventScroll_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventScroll_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GdkEventScroll_1sizeof_FUNC);
+	rc = (jint)GdkEventScroll_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkEventScroll_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkEventVisibility_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkEventVisibility_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -685,6 +697,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
 	OS_NATIVE_ENTER(env, that, XAnyEvent_1sizeof_FUNC);
 	rc = (jint)XAnyEvent_sizeof();
 	OS_NATIVE_EXIT(env, that, XAnyEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XButtonEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XButtonEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, XButtonEvent_1sizeof_FUNC);
+	rc = (jint)XButtonEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XButtonEvent_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -11513,6 +11537,19 @@ fail:
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XButtonEvent _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I_FUNC);
+	if (arg1) if ((lparg1 = getXButtonEventFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -11841,6 +11878,20 @@ fail:
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkEventScroll _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setGdkEventScrollFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -12086,6 +12137,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLog
 fail:
 	if (arg0 && lparg0) setPangoLogAttrFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XButtonEvent _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setXButtonEventFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II_FUNC);
 }
 #endif
 

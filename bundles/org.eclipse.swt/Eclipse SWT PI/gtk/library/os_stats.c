@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 945;
-int OS_nativeFunctionCallCount[945];
+int OS_nativeFunctionCount = 950;
+int OS_nativeFunctionCallCount[950];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -47,6 +47,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventFocus_1sizeof",
 	"GdkEventKey_1sizeof",
 	"GdkEventMotion_1sizeof",
+	"GdkEventScroll_1sizeof",
 	"GdkEventVisibility_1sizeof",
 	"GdkEventWindowState_1sizeof",
 	"GdkEvent_1sizeof",
@@ -78,6 +79,7 @@ char * OS_nativeFunctionNames[] = {
 	"PangoLogAttr_1sizeof",
 	"PangoRectangle_1sizeof",
 	"XAnyEvent_1sizeof",
+	"XButtonEvent_1sizeof",
 	"XClientMessageEvent_1sizeof",
 	"XCrossingEvent_1sizeof",
 	"XEvent_1sizeof",
@@ -916,6 +918,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkWidgetClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I",
+	"memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I",
@@ -935,6 +938,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II",
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II",
@@ -955,6 +959,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II",
+	"memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II",

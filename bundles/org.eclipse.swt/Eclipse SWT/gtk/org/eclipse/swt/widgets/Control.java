@@ -169,6 +169,7 @@ void hookEvents () {
 	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
 	OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+	OS.g_signal_connect (eventHandle, OS.scroll_event, windowProc3, SCROLL_EVENT);	
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -1722,7 +1723,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	display.dragging = false;
 	int button = gdkEvent.button;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	sendMouseEvent (type, button, event);
+	sendMouseEvent (type, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, event);
 	int result = 0;
 	if ((state & MENU) != 0) {
 		if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
@@ -1747,7 +1748,10 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	sendMouseEvent (SWT.MouseUp, gdkEvent.button, event);
+	int button = gdkEvent.button;
+	if (button == -6) button = 4;
+	if (button == -7) button = 5;
+	sendMouseEvent (SWT.MouseUp, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, event);
 	return 0;
 }
 
@@ -1767,7 +1771,7 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, 0, event);
+	sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, event);
 	return 0;
 }
 
@@ -1887,7 +1891,7 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, 0, event);
+	sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, event);
 	return 0;
 }
 
@@ -1913,14 +1917,12 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
+	GdkEventMotion gdkEvent = new GdkEventMotion ();
+	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	if (hooks (SWT.DragDetect)) {
 		if (!display.dragging) {
-			int []  state = new int [1];
-			OS.gdk_event_get_state (event, state);
-			if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) {
-				double [] px = new double [1], py = new double [1];
-				OS.gdk_event_get_coords (event, px, py);
-				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) px [0], (int) py [0])){
+			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) gdkEvent.x, (int) gdkEvent.y)) {
 					display.dragging = true;
 					Event e = new Event ();
 					e.x = display.dragStartX;
@@ -1933,7 +1935,14 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
 		display.addMouseHoverTimeout (handle);
 	}
-	sendMouseEvent (SWT.MouseMove, 0, event);
+	double x_root = gdkEvent.x_root, y_root = gdkEvent.y_root;
+	if (gdkEvent.is_hint != 0) {
+		int [] pointer_x = new int [1], pointer_y = new int [1];
+		OS.gdk_window_get_pointer (0, pointer_x, pointer_y, null);
+		x_root = pointer_x [0];
+		y_root = pointer_y [0];
+	}
+	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x_root, y_root, gdkEvent.state, event);
 	return 0;
 }
 
@@ -1955,6 +1964,28 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	if (imHandle != 0) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		OS.gtk_im_context_set_client_window (imHandle, window);
+	}
+	return 0;
+}
+
+int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	GdkEventScroll gdkEvent = new GdkEventScroll ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
+	switch (gdkEvent.direction) {
+		case OS.GDK_SCROLL_UP:
+		case OS.GDK_SCROLL_DOWN:
+			Event event = new Event ();
+			event.detail = SWT.SCROLL_LINE;
+			event.count = gdkEvent.direction == OS.GDK_SCROLL_UP ? 3 : -3;
+			sendEvent (SWT.MouseWheel, event);
+			if (!event.doit) return 1;
+			break;
+		case OS.GDK_SCROLL_LEFT:
+			sendMouseEvent (SWT.MouseDown, 4, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, eventPtr);
+			break;
+		case OS.GDK_SCROLL_RIGHT:
+			sendMouseEvent (SWT.MouseDown, 5, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, eventPtr);
+			break;
 	}
 	return 0;
 }
@@ -2323,37 +2354,16 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 	return false;
 }
 
-void sendMouseEvent (int type, int button, int /*long*/ eventPtr) {
+void sendMouseEvent (int type, int button, int time, double x_root, double y_root, int state, int /*long*/ eventPtr) {
 	Event event = new Event ();
-	event.time = OS.gdk_event_get_time (eventPtr);
+	event.time = time;
 	event.button = button;
-	if (type == SWT.MouseMove) {
-		GdkEventMotion gdkEvent = new GdkEventMotion ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventMotion.sizeof);
-		if (gdkEvent.is_hint != 0) {
-			int [] pointer_x = new int [1], pointer_y = new int [1];
-			OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, null);
-			event.x = pointer_x [0];
-			event.y = pointer_y [0];
-		} else {
-			int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
-			int [] origin_x = new int [1], origin_y = new int [1];
-			OS.gdk_window_get_origin (window, origin_x, origin_y);	
-			event.x = (int) (gdkEvent.x_root - origin_x [0]);
-			event.y = (int) (gdkEvent.y_root - origin_y [0]);
-		}
-	} else {
-		double [] root_x = new double [1], root_y = new double [1];
-		OS.gdk_event_get_root_coords (eventPtr, root_x, root_y);	
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
-		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (window, origin_x, origin_y);
-		event.x = (int)(root_x [0] - origin_x [0]);
-		event.y = (int)(root_y [0] - origin_y [0]);
-	}
-	int [] state = new int [1];
-	OS.gdk_event_get_state (eventPtr, state);
-	setInputState (event, state [0]);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	event.x = (int)(x_root - origin_x [0]);
+	event.y = (int)(y_root - origin_y [0]);
+	setInputState (event, state);
 	postEvent (type, event);
 }
 

@@ -674,6 +674,67 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 }
 #endif
 
+#ifndef NO_GdkEventScroll
+typedef struct GdkEventScroll_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, time, x, y, state, direction, device, x_root, y_root;
+} GdkEventScroll_FID_CACHE;
+
+GdkEventScroll_FID_CACHE GdkEventScrollFc;
+
+void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkEventScrollFc.cached) return;
+	cacheGdkEventFields(env, lpObject);
+	GdkEventScrollFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkEventScrollFc.window = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "window", "I");
+	GdkEventScrollFc.send_event = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "send_event", "B");
+	GdkEventScrollFc.time = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "time", "I");
+	GdkEventScrollFc.x = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x", "D");
+	GdkEventScrollFc.y = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y", "D");
+	GdkEventScrollFc.state = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "state", "I");
+	GdkEventScrollFc.direction = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "direction", "I");
+	GdkEventScrollFc.device = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "device", "I");
+	GdkEventScrollFc.x_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x_root", "D");
+	GdkEventScrollFc.y_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y_root", "D");
+	GdkEventScrollFc.cached = 1;
+}
+
+GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct)
+{
+	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventScrollFc.send_event);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.time);
+	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x);
+	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.state);
+	lpStruct->direction = (GdkScrollDirection)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.direction);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.device);
+	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x_root);
+	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y_root);
+	return lpStruct;
+}
+
+void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct)
+{
+	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, GdkEventScrollFc.send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.time, (jint)lpStruct->time);
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y, (jdouble)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.direction, (jint)lpStruct->direction);
+	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.device, (jint)lpStruct->device);
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x_root, (jdouble)lpStruct->x_root);
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y_root, (jdouble)lpStruct->y_root);
+}
+#endif
+
 #ifndef NO_GdkEventVisibility
 typedef struct GdkEventVisibility_FID_CACHE {
 	int cached;
@@ -2162,6 +2223,67 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
 	(*env)->SetIntField(env, lpObject, XAnyEventFc.send_event, (jint)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, XAnyEventFc.display, (jint)lpStruct->display);
 	(*env)->SetIntField(env, lpObject, XAnyEventFc.window, (jint)lpStruct->window);
+}
+#endif
+
+#ifndef NO_XButtonEvent
+typedef struct XButtonEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID root, subwindow, time, x, y, x_root, y_root, state, button, same_screen;
+} XButtonEvent_FID_CACHE;
+
+XButtonEvent_FID_CACHE XButtonEventFc;
+
+void cacheXButtonEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XButtonEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XButtonEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XButtonEventFc.root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "root", "I");
+	XButtonEventFc.subwindow = (*env)->GetFieldID(env, XButtonEventFc.clazz, "subwindow", "I");
+	XButtonEventFc.time = (*env)->GetFieldID(env, XButtonEventFc.clazz, "time", "I");
+	XButtonEventFc.x = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x", "I");
+	XButtonEventFc.y = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y", "I");
+	XButtonEventFc.x_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x_root", "I");
+	XButtonEventFc.y_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y_root", "I");
+	XButtonEventFc.state = (*env)->GetFieldID(env, XButtonEventFc.clazz, "state", "I");
+	XButtonEventFc.button = (*env)->GetFieldID(env, XButtonEventFc.clazz, "button", "I");
+	XButtonEventFc.same_screen = (*env)->GetFieldID(env, XButtonEventFc.clazz, "same_screen", "I");
+	XButtonEventFc.cached = 1;
+}
+
+XButtonEvent *getXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
+{
+	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XButtonEventFc.root);
+	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XButtonEventFc.subwindow);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XButtonEventFc.time);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XButtonEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XButtonEventFc.y);
+	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.x_root);
+	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.y_root);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XButtonEventFc.state);
+	lpStruct->button = (*env)->GetIntField(env, lpObject, XButtonEventFc.button);
+	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XButtonEventFc.same_screen);
+	return lpStruct;
+}
+
+void setXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
+{
+	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.x_root, (jint)lpStruct->x_root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.y_root, (jint)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.button, (jint)lpStruct->button);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.same_screen, (jint)lpStruct->same_screen);
 }
 #endif
 
