@@ -115,6 +115,18 @@ public class LauncherView extends ViewPart {
 	}
 
 	/**
+	 * Called when the View is to be disposed
+	 */	
+	public void dispose() {
+		workbenchShell = null;
+		launchTree = null;
+		descriptionText = null;
+		importButton = null;
+		runButton = null;		
+		super.dispose();
+	}
+
+	/**
 	 * Installs a new launch list.
 	 * 
 	 * @param newRoot the new tree of launch items for the UI

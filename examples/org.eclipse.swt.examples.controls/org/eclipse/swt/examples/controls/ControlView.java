@@ -76,8 +76,7 @@ public class ControlView extends ViewPart {
 
 	/**
 	 * Called when the View is to be disposed
-	 */
-	
+	 */	
 	public void dispose() {
 		/*
 		 * Destroy any shells that may have been created
@@ -89,6 +88,8 @@ public class ControlView extends ViewPart {
 		 */
 		if (shellTab != null) shellTab.closeAllShells ();
 		shellTab = null;
+		tabFolder = null;
+		mainFrame = null;
 		super.dispose();
 	}
 }
