@@ -28,7 +28,7 @@ public class EventConsole {
 
 	public EventConsole (Shell parent) {
 		super ();
-		shell = new Shell (parent);
+		shell = new Shell (parent, SWT.SHELL_TRIM);
 		shell.setText ("ControlExample Events");
 		shell.setLayout (new FillLayout ());
 		Point parentSize = parent.getSize();
