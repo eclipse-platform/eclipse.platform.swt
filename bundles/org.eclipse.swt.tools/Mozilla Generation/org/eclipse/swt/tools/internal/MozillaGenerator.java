@@ -84,6 +84,7 @@ public class MozillaGenerator {
 	static String GECKO = "/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/include/";
 	static String TARGET_FOLDER = "/bluebird/teamswt/chrisx/amd64/workspace/org.eclipse.swt/Eclipse SWT Mozilla/common/org/eclipse/swt/internal/mozilla/";
 	static String[] XPCOM_HEADERS = { 
+		"profile/nsIProfile.h",
 		"widget/nsIAppShell.h",
 		"widget/nsIBaseWindow.h", 
 		"xpcom/nsIComponentManager.h",

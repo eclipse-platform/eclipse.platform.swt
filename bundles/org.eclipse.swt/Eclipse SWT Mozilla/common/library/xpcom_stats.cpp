@@ -31,8 +31,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 115;
-int XPCOM_nativeFunctionCallCount[115];
+int XPCOM_nativeFunctionCount = 120;
+int XPCOM_nativeFunctionCallCount[120];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
@@ -102,6 +102,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"VtblCall__II_3BI",
 	"VtblCall__II_3BILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 	"VtblCall__II_3BI_3I",
+	"VtblCall__II_3BJ",
 	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z",
 	"VtblCall__II_3BZI_3I_3Z",
@@ -113,6 +114,10 @@ char * XPCOM_nativeFunctionNames[] = {
 	"VtblCall__II_3C",
 	"VtblCall__II_3CIIII",
 	"VtblCall__II_3CI_3I",
+	"VtblCall__II_3CZ",
+	"VtblCall__II_3C_3C",
+	"VtblCall__II_3C_3C_3CZ",
+	"VtblCall__II_3C_3Z",
 	"VtblCall__II_3F",
 	"VtblCall__II_3I",
 	"VtblCall__II_3I_3I",

@@ -32,7 +32,6 @@ import org.eclipse.swt.internal.*;
 public class XPCOM extends Platform {
 	
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
-	public static final String HTTPS_PROTOCOL = "https:";  //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
@@ -44,6 +43,7 @@ public class XPCOM extends Platform {
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 	
 	public static final String NS_CATEGORYMANAGER_CONTRACTID = "@mozilla.org/categorymanager;1"; //$NON-NLS-1$
+	public static final String NS_PROFILE_CONTRACTID = "@mozilla.org/profile/manager;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
@@ -142,6 +142,10 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, 
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, boolean[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/ arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/[] arg1);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, int arg4, int arg5, int arg6, int arg7, int arg8, boolean arg9, boolean arg10, boolean arg11, boolean arg12, short arg13, int /*long*/ arg14);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, boolean arg1);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, boolean[] arg1);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int /*long*/[] arg1, boolean[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/[] arg0, int /*long*/[] arg1, int /*long*/[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, long[] arg1, int /*long*/[] arg2);
@@ -175,6 +179,7 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, int[] arg1, int[] arg2, int[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, byte[] arg1, byte[] arg2, int /*long*/ arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/ arg1, nsID arg2, int /*long*/[] arg3);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1, char[] arg2, boolean arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean arg1, int /*long*/ arg2, int /*long*/[] arg3, boolean[] arg4);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, int arg4);
@@ -193,5 +198,4 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, int /*long*/[] arg3, int /*long*/[] arg4, char[] arg5, boolean[] arg6, boolean[] arg7);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, int arg3, char[] arg4, char[] arg5, char[] arg6, char[] arg7, boolean[] arg8, int[] arg9);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3, char[] arg4, int /*long*/ arg5, int /*long*/ arg6, int arg7, int /*long*/ arg8, boolean arg9, int /*long*/[] arg10, int /*long*/[] arg11);
-static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, int arg4, int arg5, int arg6, int arg7, int arg8, boolean arg9, boolean arg10, boolean arg11, boolean arg12, short arg13, int /*long*/ arg14);
 }
