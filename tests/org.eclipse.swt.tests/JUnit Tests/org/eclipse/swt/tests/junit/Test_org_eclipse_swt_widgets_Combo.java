@@ -51,7 +51,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	int[] cases = {SWT.DROP_DOWN, SWT.SIMPLE};
 	for (int i = 0; i < cases.length; i++) {
 		combo = new Combo(shell, cases[i]);
-		assertTrue(":a:" + String.valueOf(i), combo.getStyle() == cases[i]);
+		assertTrue(":a:" + String.valueOf(i), (combo.getStyle() & cases[i]) == cases[i]);
 	}
 }
 
