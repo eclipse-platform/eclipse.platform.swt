@@ -175,6 +175,7 @@ int processKeyDown (int callData) {
 	byte [] buffer = new byte [1];
 	int [] keysym = new int [1];
 	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+	
 	switch (keysym [0]) {
 		case OS.XK_Left:
 		case OS.XK_Right:
@@ -207,24 +208,54 @@ int processKeyDown (int callData) {
 				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
 			}
 			if (newX == lastX && newY == lastY) return 0;
+			
+			/* Ensure that the pointer image does not change */
+			int xDisplay = getDisplay().xDisplay;
+			int xWindow = OS.XtWindow (parent.handle);
+			int ptrGrabResult = OS.XGrabPointer (
+				xDisplay,
+				xWindow,
+				1,
+				OS.None,
+				OS.GrabModeAsync,
+				OS.GrabModeAsync,
+				OS.None,
+				OS.None,
+				OS.CurrentTime);
+			OS.XChangeActivePointerGrab (
+				xDisplay,
+				OS.None,
+				cursor,
+				OS.CurrentTime);
+
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
 			event.time = xEvent.time;
 			event.x = newX;  event.y = newY;
 			event.width = width;  event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+					
 			/*
 			 * It is possible (but unlikely) that client code could have disposed
 			 * the widget in the selection event.  If this happens end the processing
 			 * of this message by returning.
 			 */
-			sendEvent (SWT.Selection, event);
 			if (isDisposed ()) break;
 			if (event.doit) {
 				lastX = event.x;  lastY = event.y;
+				/* Adjust the pointer position */
+				int cursorX = newX;  int cursorY = newY;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, cursorX, cursorY);
 			}
 			break;
 	}
-	
+
 	return 0;
 }
 
