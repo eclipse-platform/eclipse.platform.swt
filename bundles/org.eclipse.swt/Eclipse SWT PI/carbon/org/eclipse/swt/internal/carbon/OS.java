@@ -12,9 +12,10 @@ import org.eclipse.swt.internal.Library;
 
 public class OS {
 
-    static {
-		Library.loadLibrary("swt");
-	}	
+	/* Load the SWT library. */
+	static {
+		Library.loadLibrary ("swt");
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Carbon Toolbox native API
@@ -360,8 +361,8 @@ public class OS {
 	public static native int GetWindowFromPort(int pHandle);
 	public static native void SetPort(int portHandle);
 	public static native void NormalizeThemeDrawingState();
-	public static native void RGBForeColor(int packed);
-	public static native void RGBBackColor(int packed);
+	public static native void RGBForeColor(short red, short green, short blue);
+	public static native void RGBBackColor(short red, short green, short blue);
 	public static native void GlobalToLocal(short[] point);
 	public static native void LocalToGlobal(short[] point);
 	public static native void ScrollRect(short[] rect, short dh, short dv, int updateRgn);
@@ -916,16 +917,12 @@ public class OS {
 	public static native void SetControl32BitValue(int cHandle, int value);
 	public static native int GetControlViewSize(int cHandle);
 	public static native void SetControlViewSize(int cHandle, int viewSize);
-	//public static native void IdleControls(int wHandle);
 	public static native int GetBestControlRect(int cHandle, short[] outRect, short[] outBaseLineOffset);
 	public static native int GetControlKind(int cHandle, int[] outControlKind);
 	public static native int GetControlData(int cHandle, short part, int tag, short[] data);
 	public static native int GetControlData(int cHandle, short part, int tag, int[] data);
 	public static native int SetControlData(int cHandle, short part, int tag, int data);
 	public static native int SetControlData(int cHandle, short part, int tag, short[] data);
-	//public static native int NewControlActionUPP(Object target, String method);
-	//public static native int NewControlUserPaneDrawUPP(Object target, String method);
-	//public static native int NewUserPaneHitTestUPP(Object target, String method);
 	public static native short HandleControlKey(int cHandle, short keyCode, char charCode, int modifiers);
 	public static native int SetControlFontStyle(int cHandle, short font, short size, short style);
 	public static native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
@@ -947,10 +944,43 @@ public class OS {
 	public static final short kControlSliderNonDirectional	= (1 << 3);
 
 	// Data Browser
+	public static final int kDataBrowserItemNoProperty = 0;   /* The anti-property (no associated data) */
+	public static final int kDataBrowserItemIsActiveProperty = 1; /* Boolean typed data (defaults to true) */
+	public static final int kDataBrowserItemIsSelectableProperty = 2; /* Boolean typed data (defaults to true) */
+	public static final int kDataBrowserItemIsEditableProperty = 3; /* Boolean typed data (defaults to false, used for editable properties) */
+	public static final int kDataBrowserItemIsContainerProperty = 4; /* Boolean typed data (defaults to false) */
+	public static final int kDataBrowserContainerIsOpenableProperty = 5; /* Boolean typed data (defaults to true) */
+	public static final int kDataBrowserContainerIsClosableProperty = 6; /* Boolean typed data (defaults to true) */
+	public static final int kDataBrowserContainerIsSortableProperty = 7; /* Boolean typed data (defaults to true) */
+	public static final int kDataBrowserItemSelfIdentityProperty = 8; /* kDataBrowserIconAndTextType (display property; ColumnView only) */
+	public static final int kDataBrowserContainerAliasIDProperty = 9; /* DataBrowserItemID (alias/symlink an item to a container item) */
+	public static final int kDataBrowserColumnViewPreviewProperty = 10; /* kDataBrowserCustomType (display property; ColumnView only) */
+	public static final int kDataBrowserItemParentContainerProperty = 11; /* DataBrowserItemID (the parent of the specified item, used by ColumnView) */
+
+	// Notifications used in DataBrowserItemNotificationProcPtr
+	public static final int kDataBrowserItemAdded         = 1;    /* The specified item has been added to the browser */
+	public static final int kDataBrowserItemRemoved       = 2;    /* The specified item has been removed from the browser */
+	public static final int kDataBrowserEditStarted       = 3;    /* Starting an EditText session for specified item */
+	public static final int kDataBrowserEditStopped       = 4;    /* Stopping an EditText session for specified item */
+	public static final int kDataBrowserItemSelected      = 5;    /* Item has just been added to the selection set */
+	public static final int kDataBrowserItemDeselected    = 6;    /* Item has just been removed from the selection set */
+	public static final int kDataBrowserItemDoubleClicked = 7;
+	public static final int kDataBrowserContainerOpened   = 8;    /* Container is open */
+	public static final int kDataBrowserContainerClosing  = 9;    /* Container is about to close (and will real soon now, y'all) */
+	public static final int kDataBrowserContainerClosed   = 10;   /* Container is closed (y'all come back now!) */
+	public static final int kDataBrowserContainerSorting  = 11;   /* Container is about to be sorted (lock any volatile properties) */
+	public static final int kDataBrowserContainerSorted   = 12;   /* Container has been sorted (you may release any property locks) */
+	public static final int kDataBrowserUserToggledContainer = 16; /* _User_ requested container open/close state to be toggled */
+	public static final int kDataBrowserTargetChanged     = 15;   /* The target has changed to the specified item */
+	public static final int kDataBrowserUserStateChanged  = 13;   /* The user has reformatted the view for the target */
+	public static final int kDataBrowserSelectionSetChanged = 14;  /* The selection set has been modified (net result may be the same) */
+
 	public static final int kDataBrowserNoItem= 0;
 	public static final int kDataBrowserDefaultPropertyFlags = 0;
+	
 	public static final int kDataBrowserTextType= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';	/* CFStringRef */
-	public static final int kDataBrowserItemNoProperty= 0;	/* The anti-property (no associated data) */
+	public static final int kDataBrowserIconAndTextType= ('t'<<24) + ('i'<<16) + ('c'<<8) + 'n';	/* IconRef, CFStringRef, etc */
+
 	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
 	
 	public static final int kDataBrowserDragSelect        = 1 << 0;
@@ -964,9 +994,7 @@ public class OS {
 	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
 	public static final int kDataBrowserListViewSelectionColumn= 1 << kDataBrowserViewSpecificFlagsOffset;
  
- 	// data browser item states
- 	public static final int kDataBrowserItemIsSelected = 1 << 0;
- 
+ 	// data browser item states 
 	public static native int newColumnDesc(int propertyID, int propertyType, int propertyFlags,
 			short minimumWidth, short maximumWidth);
 			
@@ -975,18 +1003,19 @@ public class OS {
 	public static native int createDataBrowserControl(int wHandle);
 	
 	public static native int AutoSizeDataBrowserListViewColumns(int cHandle);
-	
-	//public static native int NewDataBrowserDataCallbackUPP(Object target, String method);
-	//public static native int NewDataBrowserCompareCallbackUPP(Object target, String method);
-	//public static native int NewDataBrowserItemNotificationCallbackUPP(Object target, String method);
-	
+		
 	public static native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP,
 										int compareCallbackUPP, int itemNotificationCallbackUPP);
 	
 	public static native int SetDataBrowserActiveItems(int cHandle, boolean active);
 	public static native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
 	public static native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
-	public static native int SetDataBrowserItemDataText(int itemID, int sHandle);
+
+	public static native int SetDataBrowserItemDataText(int itemRef, int sHandle);
+	public static native int SetDataBrowserItemDataBooleanValue(int itemRef, boolean data);
+	public static native int SetDataBrowserItemDataItemID(int itemRef, int itemID);
+	public static native int SetDataBrowserItemDataIcon(int itemRef, int iconRef);
+
 	public static native int SetDataBrowserHasScrollBars(int cHandle, boolean hScroll, boolean vScroll);
 	public static native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
 	public static native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
@@ -1006,6 +1035,31 @@ public class OS {
 	public static native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
 	public static native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 	
+	public static native int SetDataBrowserTarget(int cHandle, int rootID);
+	public static native int SetDataBrowserListViewDisclosureColumn(int cHandle, int colID, boolean b);
+
+	public static final int kDataBrowserPropertyEnclosingPart = 0;
+//	public static final int kDataBrowserPropertyContentPart = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
+//	public static final int kDataBrowserPropertyDisclosurePart = ('d'<<24) + ('i'<<16) + ('s'<<8) + 'c';
+//	public static final int kDataBrowserPropertyTextPart = kDataBrowserTextType;
+//	public static final int kDataBrowserPropertyIconPart = kDataBrowserIconType;
+//	public static final int kDataBrowserPropertySliderPart = kDataBrowserSliderType;
+//	public static final int kDataBrowserPropertyCheckboxPart = kDataBrowserCheckboxType;
+//	public static final int kDataBrowserPropertyProgressBarPart = kDataBrowserProgressBarType;
+//	public static final int kDataBrowserPropertyRelevanceRankPart = kDataBrowserRelevanceRankType;
+
+	public static native int GetDataBrowserItemPartBounds(int cHandle, int item, int property,
+			int part, short[] bounds);
+			
+	public static native int OpenDataBrowserContainer(int cHandle, int container);
+	public static native int CloseDataBrowserContainer(int cHandle, int container);
+ 
+ 	public static final int kDataBrowserItemIsSelected = 1 << 0;
+ 	public static final int kDataBrowserContainerIsOpen = 1 << 1;
+ 	public static final int kDataBrowserItemIsDragTarget = 1 << 2; /* During a drag operation */
+
+	public static native int GetDataBrowserItemState(int cHandle, int item, int[] state);
+ 
 	//---- User Pane
 	
 	// feature bits
@@ -1242,5 +1296,7 @@ public class OS {
 	public static native void SysBeep(short duration);
 	public static native int GetDblTime();
 	public static native int GetCaretTime();
-	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);	
+	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
+	
+	public static native int GetIconRef(short vRefNum, int creator, int iconType, int[] iconRef);
 }
