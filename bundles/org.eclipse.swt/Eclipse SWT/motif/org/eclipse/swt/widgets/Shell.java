@@ -864,23 +864,27 @@ public boolean getMaximized () {
 	int xWindow = OS.XtWindow (shellHandle);
 	if (xWindow != 0) {
 		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
-		int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atoms = new int[1];
-		OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atoms);
-		boolean result = false;
-		if (type [0] != OS.None) {
-			int maximizedHorz = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
-			int maximizedVert = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
-			int[] atom = new int[1];
-			for (int i=0; i<nitems [0]; i++) {
-				OS.memmove(atom, atoms [0] + i * 4, 4);
-				if (atom [0] == maximizedHorz || atom [0] == maximizedVert) {
-					result = true;
-					break;
+		if (property != 0) { 
+			int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atoms = new int[1];
+			OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atoms);
+			boolean result = false;
+			if (type [0] != OS.None) {
+				int maximizedHorz = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
+				int maximizedVert = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
+				if (maximizedHorz != 0 && maximizedVert != 0) {
+					int[] atom = new int[1];
+					for (int i=0; i<nitems [0]; i++) {
+						OS.memmove(atom, atoms [0] + i * 4, 4);
+						if (atom [0] == maximizedHorz || atom [0] == maximizedVert) {
+							result = true;
+							break;
+						}
+					}
 				}
 			}
+			if (atoms [0] != 0) OS.XFree (atoms [0]);
+			return result;
 		}
-		if (atoms [0] != 0) OS.XFree (atoms [0]);
-		return result;
 	}
 	return super.getMaximized ();
 }
