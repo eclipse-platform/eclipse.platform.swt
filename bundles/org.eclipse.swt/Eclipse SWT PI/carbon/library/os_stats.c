@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 792;
-int OS_nativeFunctionCallCount[792];
+int OS_nativeFunctionCount = 793;
+int OS_nativeFunctionCallCount[793];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -329,6 +329,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetDataBrowserItemPartBounds",
 	"GetDataBrowserItemState",
 	"GetDataBrowserItems",
+	"GetDataBrowserListViewDisclosureColumn",
 	"GetDataBrowserListViewHeaderBtnHeight",
 	"GetDataBrowserListViewHeaderDesc",
 	"GetDataBrowserScrollBarInset",

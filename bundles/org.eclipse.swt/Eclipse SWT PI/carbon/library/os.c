@@ -4303,6 +4303,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserItems)
 }
 #endif
 
+#ifndef NO_GetDataBrowserListViewDisclosureColumn
+JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserListViewDisclosureColumn)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jbooleanArray arg2)
+{
+	jint *lparg1=NULL;
+	jboolean *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDataBrowserListViewDisclosureColumn_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)GetDataBrowserListViewDisclosureColumn((ControlRef)arg0, (DataBrowserTableViewColumnID *)lparg1, (Boolean *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetDataBrowserListViewDisclosureColumn_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserListViewHeaderBtnHeight
 JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserListViewHeaderBtnHeight)
 	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)

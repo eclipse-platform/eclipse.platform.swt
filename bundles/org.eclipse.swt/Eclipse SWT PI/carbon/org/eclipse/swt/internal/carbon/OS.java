@@ -1004,6 +1004,7 @@ public static final native int GetDataBrowserItemDataButtonValue(int itemData, s
 public static final native int GetDataBrowserItemPartBounds(int cHandle, int item, int property, int part, Rect bounds);
 public static final native int GetDataBrowserItems(int browser, int container, boolean recurse, int state, int items);
 public static final native int GetDataBrowserItemState(int browser, int item, int [] state);
+public static final native int GetDataBrowserListViewDisclosureColumn(int browser, int [] column, boolean [] expandableRows);
 public static final native int GetDataBrowserListViewHeaderBtnHeight(int browser, short [] height);
 public static final native int GetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
 public static final native int GetDataBrowserTableViewItemID(int browser, int row, int [] item);

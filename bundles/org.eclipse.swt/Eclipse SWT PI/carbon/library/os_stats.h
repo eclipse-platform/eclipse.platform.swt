@@ -333,6 +333,7 @@ typedef enum {
 	GetDataBrowserItemPartBounds_FUNC,
 	GetDataBrowserItemState_FUNC,
 	GetDataBrowserItems_FUNC,
+	GetDataBrowserListViewDisclosureColumn_FUNC,
 	GetDataBrowserListViewHeaderBtnHeight_FUNC,
 	GetDataBrowserListViewHeaderDesc_FUNC,
 	GetDataBrowserScrollBarInset_FUNC,
