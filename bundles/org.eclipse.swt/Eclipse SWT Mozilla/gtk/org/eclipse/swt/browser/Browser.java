@@ -68,7 +68,6 @@ public class Browser extends Composite {
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 
 	static nsIAppShell AppShell;
-	static AppFileLocProvider LocProvider; 
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
@@ -135,8 +134,6 @@ public Browser(Composite parent, int style) {
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			if (LocProvider != null) LocProvider.Release();
-			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]");
 		}
@@ -893,8 +890,6 @@ void onDispose() {
 //			AppShell.Release();
 //			AppShell = null;
 //		}
-//		if (LocProvider != null) LocProvider.Release();
-//		LocProvider = null;
 //		WindowCreator.Release();
 //		WindowCreator = null;
 //		PromptService.Release();
