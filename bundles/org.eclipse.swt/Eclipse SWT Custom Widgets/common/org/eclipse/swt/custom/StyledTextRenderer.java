@@ -24,7 +24,7 @@ abstract class StyledTextRenderer {
 	private Device device;					// device to render on
 	protected Font regularFont, boldFont, italicFont, boldItalicFont;
 	private int tabWidth;					// width in pixels of a tab character
-	private int lineHeight;					// height in pixels of a line
+	private int ascent, descent;
 	private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
 	
 /**
@@ -44,18 +44,26 @@ StyledTextRenderer(Device device, Font regularFont) {
 void calculateLineHeight() {
 	GC gc = getGC();
 	Font originalFont = gc.getFont();
+	FontMetrics metrics = gc.getFontMetrics();
 	
-	lineHeight = gc.getFontMetrics().getHeight();	
+	ascent = metrics.getAscent() + metrics.getLeading();
+	ascent = metrics.getDescent();
 	lineEndSpaceWidth = gc.stringExtent(" ").x;
 	
 	// don't assume that bold and normal fonts have the same height
 	// fixes bug 41773
 	gc.setFont(getFont(SWT.BOLD));
-	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	metrics = gc.getFontMetrics();
+	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+	descent = Math.max(descent, metrics.getDescent());
 	gc.setFont(getFont(SWT.ITALIC));
-	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	metrics = gc.getFontMetrics();
+	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+	descent = Math.max(descent, metrics.getDescent());
 	gc.setFont(getFont(SWT.BOLD | SWT.ITALIC));
-	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	metrics = gc.getFontMetrics();
+	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+	descent = Math.max(descent, metrics.getDescent());
 	gc.setFont(originalFont);
 	disposeGC(gc);
 	
@@ -122,7 +130,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		// completely selected
 		gc.setBackground(lineBackground);
 		gc.setForeground(lineBackground);
-		gc.fillRectangle(client.x + leftMargin, paintY, client.width, lineHeight);
+		gc.fillRectangle(client.x + leftMargin, paintY, client.width, ascent + descent);
 	}
 	int paintX = client.x + leftMargin - getHorizontalPixel();
 	if (selectionStart != selectionEnd) {
@@ -262,7 +270,7 @@ protected abstract StyledTextEvent getLineBackgroundData(int lineOffset, String 
  * @return the height in pixels of a line.
  */
 int getLineHeight() {
-	return lineHeight;
+	return ascent + descent;
 }
 /**
  * Returns the line style data for the specified line.
@@ -398,6 +406,8 @@ void setTabLength(int tabLength) {
 TextLayout getTextLayout(String line, int lineOffset) {
 	TextLayout layout = createTextLayout(lineOffset);
 	layout.setFont(regularFont);
+	layout.setAscent(ascent);
+	layout.setDescent(descent);
 	layout.setText(line);
 	layout.setOrientation(getOrientation());
 	layout.setSegments(getBidiSegments(lineOffset, line));
