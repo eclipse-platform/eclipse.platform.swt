@@ -284,11 +284,28 @@ public Rectangle getImageBounds (int index) {
 	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
+	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_get_iter (parent.modelHandle, iter, path);
+	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, iter, false, false);
+	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
-	int [] w = new int[1], h = new int[1];
-	OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, h);
+	/*
+	* The OS call gtk_cell_renderer_get_size provides the width of image to be drawn
+	* by the cell renderer.  If there is no image in the cell, the width is zero.  If the table contains
+	* images of varying widths, gtk_cell_renderer_get_size will return the width of the image, 
+	* not the width of the area in which the image is drawn.
+	* New API was added in GTK 2.1.3 for determining the full width of the renderer area.
+	* For earlier versions of GTK, the result is only correct if all rows have images of the same
+	* width.
+	*/
+	int [] w = new int[1];
+	if (OS.gtk_major_version () * 100 + OS.gtk_minor_version ()  * 10 + OS.gtk_micro_version () < 213) {
+		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
+	} else {
+		OS.gtk_tree_view_column_cell_get_position(column, pixbufRenderer, null, w);
+	}
 	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x, rect.y + headerHeight, w [0], h [0]);
+	return new Rectangle (rect.x, rect.y + headerHeight, w [0], rect.height);
 }
 
 /**

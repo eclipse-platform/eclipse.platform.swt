@@ -310,6 +310,35 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1ythickness)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1position
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1position)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1cell_1get_1position\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	//rc = (jboolean)gtk_tree_view_column_cell_get_position((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
+	{
+	void *handle = NULL;
+	gboolean (*fptr)(GtkTreeViewColumn *, GtkCellRenderer *, gint *, gint*);
+	rc = 0;
+	handle = dlopen("libgtk-x11-2.0.so", RTLD_LAZY);
+	if (handle != NULL) {
+		fptr = (gboolean (*)(GtkTreeViewColumn *, GtkCellRenderer *, gint *, gint*))dlsym(handle, "gtk_tree_view_column_cell_get_position");
+		if (fptr != NULL) {
+			rc = (jboolean)(*fptr)((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
+		}
+	}
+	}
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1cell_1get_1position\n")
+	return rc;
+}
+#endif
 
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2)

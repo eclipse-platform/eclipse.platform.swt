@@ -5257,6 +5257,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1add_1attribute)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1cell_1set_1cell_1data
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1set_1cell_1data)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4)
+{
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1cell_1set_1cell_1data\n")
+	gtk_tree_view_column_cell_set_cell_data((GtkTreeViewColumn *)arg0, (GtkTreeModel *)arg1, (GtkTreeIter *)arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1cell_1set_1cell_1data\n")
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1clear
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1clear)
 	(JNIEnv *env, jclass that, jint arg0)

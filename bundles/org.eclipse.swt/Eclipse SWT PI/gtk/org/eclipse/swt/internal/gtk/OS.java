@@ -749,6 +749,8 @@ public static final synchronized native void gtk_tree_store_set(int store, int i
 public static final synchronized native void gtk_tree_store_set(int store, int iter, int column, boolean value, int terminator);
 public static final synchronized native boolean gtk_tree_view_collapse_row(int view, int path);
 public static final synchronized native void gtk_tree_view_column_add_attribute(int treeColumn, int cellRenderer, String attribute, int column);
+public static final synchronized native boolean gtk_tree_view_column_cell_get_position(int tree_column, int cell_renderer, int[] start_pos, int[] width);
+public static final synchronized native void gtk_tree_view_column_cell_set_cell_data(int tree_column, int tree_model, int iter, boolean is_expander, boolean is_expanded);
 public static final synchronized native void gtk_tree_view_column_clear(int tree_column);
 public static final synchronized native int gtk_tree_view_column_get_cell_renderers(int tree_column);
 public static final synchronized native boolean gtk_tree_view_column_get_resizable(int column);
