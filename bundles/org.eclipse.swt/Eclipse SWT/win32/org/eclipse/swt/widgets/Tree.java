@@ -1446,11 +1446,6 @@ void releaseHandle () {
 
 void releaseWidget () {
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
@@ -1458,6 +1453,11 @@ void releaseWidget () {
 		}
 	}
 	items = null;
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	/*
 	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
 	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW

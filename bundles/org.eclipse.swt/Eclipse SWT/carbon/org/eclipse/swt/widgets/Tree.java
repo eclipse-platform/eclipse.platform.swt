@@ -1501,11 +1501,6 @@ void releaseItems (TreeItem [] nodes) {
 }
 
 void releaseWidget () {
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
@@ -1513,6 +1508,11 @@ void releaseWidget () {
 		}
 	}
 	items = null;
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	super.releaseWidget ();
 }
 
