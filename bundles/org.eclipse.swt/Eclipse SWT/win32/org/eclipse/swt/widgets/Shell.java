@@ -520,6 +520,7 @@ void fixShell (Shell newShell, Control control) {
 	if (toolTipHandle != 0) {
 		setToolTipText (control.handle, null);
 	}
+	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
 /**
