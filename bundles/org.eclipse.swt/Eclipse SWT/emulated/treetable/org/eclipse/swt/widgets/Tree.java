@@ -1311,31 +1311,75 @@ void onKeyDown (Event event) {
 	switch (event.keyCode) {
 		case SWT.ARROW_UP:
 			onArrowUp (event.stateMask);
-			break;
+			return;
 		case SWT.ARROW_DOWN:
 			onArrowDown (event.stateMask);
-			break;
+			return;
 		case SWT.ARROW_LEFT:
 			onArrowLeft (event.stateMask);
-			break;
+			return;
 		case SWT.ARROW_RIGHT:
 			onArrowRight (event.stateMask);
-			break;			
+			return;
 		case SWT.PAGE_UP:
 			onPageUp (event.stateMask);
-			break;		
+			return;
 		case SWT.PAGE_DOWN:
 			onPageDown (event.stateMask);
-			break;
+			return;
 		case SWT.HOME:
 			onHome (event.stateMask);
-			break;
+			return;
 		case SWT.END:
 			onEnd (event.stateMask);
-			break;
+			return;
 	}
-	if (event.character == ' ') onSpace ();
-	if (event.character == SWT.CR) onCR ();
+	if (event.character == ' ') {
+		onSpace ();
+		return;
+	}
+	if (event.character == SWT.CR) {
+		onCR ();
+		return;
+	}
+	if ((event.stateMask & SWT.CTRL) != 0) return;
+	
+	int initialIndex = focusItem.availableIndex;
+	char character = Character.toLowerCase (event.character);
+	/* check available items from current focus item to bottom */
+	for (int i = initialIndex + 1; i < availableItems.length; i++) {
+		TreeItem item = availableItems [i];
+		String text = item.getText ();
+		if (text.length() > 0) {
+			if (Character.toLowerCase (text.charAt (0)) == character) {
+				selectItem (item, false);
+				setFocusItem (item, true);
+				redrawItem (i, true);
+				showItem (item);
+				Event newEvent = new Event ();
+				newEvent.item = this;
+				sendEvent (SWT.Selection, newEvent);
+				return;
+			}
+		}
+	}
+	/* check available items from top to current focus item */
+	for (int i = 0; i < initialIndex; i++) {
+		TreeItem item = availableItems [i];
+		String text = item.getText ();
+		if (text.length() > 0) {
+			if (Character.toLowerCase (text.charAt (0)) == character) {
+				selectItem (item, false);
+				setFocusItem (item, true);
+				redrawItem (i, true);
+				showItem (item);
+				Event newEvent = new Event ();
+				newEvent.item = this;
+				sendEvent (SWT.Selection, newEvent);
+				return;
+			}
+		}
+	}
 }
 void onMouseDoubleClick (Event event) {
 	if (!isFocusControl ()) setFocus ();
