@@ -239,7 +239,7 @@ public void dispose() {
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = null;
-//		if (image.transparentPixel != -1) image.createMask();
+		if (image.transparentPixel != -1) image.createMask();
 	}
 	int layout = data.layout;
 	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
@@ -1389,15 +1389,7 @@ void init(Drawable drawable, GCData data, int context) {
 	OS.DisposePtr(ptr);
 
 	Image image = data.image;
-	if (image != null) {
-		image.memGC = this;
-		/*
-		 * The transparent pixel mask might change when drawing on
-		 * the image.  Destroy it so that it is regenerated when
-		 * necessary.
-		 */
-//		if (image.transparentPixel != -1) image.destroyMask();
-	}
+	if (image != null) image.memGC = this;
 	this.drawable = drawable;
 	this.data = data;
 	handle = context;

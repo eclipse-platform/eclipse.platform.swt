@@ -463,6 +463,21 @@ public Image(Device display, String filename) {
 	init(device, new ImageData(filename));
 }
 
+void createMask () {
+	if (transparentPixel == -1) return;
+	int width = OS.CGImageGetWidth(handle);
+	int height = OS.CGImageGetHeight(handle);
+	int bpr = OS.CGImageGetBytesPerRow(handle);
+	int dataSize = height * bpr;
+	byte[] srcData = new byte[dataSize];
+	OS.memcpy(srcData, data, dataSize);
+	for (int i=0; i<dataSize; i+=4) {
+		int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
+		srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+	}
+	OS.memcpy(data, srcData, dataSize);
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the image. Applications must dispose of all images which
@@ -731,7 +746,24 @@ void init(Device device, ImageData image) {
 	/* Initialize transparency */
 	if (transparency == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
 		this.type = image.transparentPixel != -1 ? SWT.BITMAP : SWT.ICON;
-		if (image.transparentPixel != -1) {}
+		if (image.transparentPixel != -1) {
+			int transRed = 0, transGreen = 0, transBlue = 0;
+			if (palette.isDirect) {
+				RGB rgb = palette.getRGB(image.transparentPixel);
+				transRed = rgb.red;
+				transGreen = rgb.green;
+				transBlue = rgb.blue;
+			} else {
+				RGB[] rgbs = palette.getRGBs();
+				if (image.transparentPixel < rgbs.length) {
+					RGB rgb = rgbs[image.transparentPixel];
+					transRed = rgb.red;
+					transGreen = rgb.green;
+					transBlue = rgb.blue;				
+				}
+			}
+			transparentPixel = transRed << 16 | transGreen << 8 | transBlue;
+		}
 		ImageData maskImage = image.getTransparencyMask();
 		byte[] maskData = maskImage.data;
 		int maskBpl = maskImage.bytesPerLine;
