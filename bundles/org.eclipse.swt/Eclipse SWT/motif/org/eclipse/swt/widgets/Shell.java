@@ -713,8 +713,6 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
-void fixParentTraversal () {
-}
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -1143,6 +1141,9 @@ public void setMinimized (boolean minimized) {
 	/* Force the XWindowAttributes to be up to date */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay != 0) OS.XSync (xDisplay, false);
+}
+void setParentTraversal () {
+	/* Do nothing - Child shells do not affect the traversal of their parent shell */
 }
 public void setText (String string) {
 	checkWidget();
