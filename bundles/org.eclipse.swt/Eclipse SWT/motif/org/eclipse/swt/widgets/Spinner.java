@@ -635,7 +635,7 @@ void updateText () {
 			OS.XmNposition, 0};		/* 7 */
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int ptr = OS.XmTextGetString (argList [1]);
-	int position;
+	int position = argList [7];
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
@@ -646,19 +646,21 @@ void updateText () {
 			int value = Integer.parseInt (string);			
 			if (argList [3] <= value && value <= argList [5]) {
 				position = value;
-			} else {
-				position = argList [3];
 			}
 		} catch (NumberFormatException e) {
-			position = argList [7];
-			int [] argList2 = {OS.XmNposition, position + 1};
-			OS.XtSetValues (handle, argList2, argList2.length / 2);
 		}
-	} else {
-		position = argList [3];
 	}
-	int [] argList2 = {OS.XmNposition, position};
-	OS.XtSetValues (handle, argList2, argList2.length / 2);	
+	if (position == argList [7]) {
+		String string = String.valueOf (position);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
+		OS.XmTextSetString (argList [1], buffer);
+		display.setWarnings(warnings);	
+	} else {
+		int [] argList2 = {OS.XmNposition, position};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.DefaultSelection);
@@ -672,7 +674,20 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	int result = super.XmNmodifyVerifyCallback (w, client_data, call_data);
 	if (result != 0) return result;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
+	
+	/*
+	* Feature in Motif.  When XtManageChild() is called for
+	* a text widget that has just been created, the contents
+	* are assigned and an XmNmodifyVerifyCallback is sent.
+	* When this happens, the widget has not been fully
+	* initialized null pointer exceptions can occur.  The
+	* fix is to check for this case and avoid the callback.
+	* Note that application code could never have seen it
+	* in the first place.
+	*/
+	if (font == null) return result;
+	
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
 	XmTextVerifyCallbackStruct textVerify = new XmTextVerifyCallbackStruct ();
 	OS.memmove (textVerify, call_data, XmTextVerifyCallbackStruct.sizeof);
 	XmTextBlockRec textBlock = new XmTextBlockRec ();
@@ -690,8 +705,13 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	}
 	event.start = textVerify.startPos;
 	event.end = textVerify.endPos;
-	event.doit = textVerify.doit == 1;
 	event.text = text;
+	int index = 0;
+	while (index < text.length ()) {
+		if (!Character.isDigit (text.charAt (index))) break;
+		index++;
+	}
+	event.doit = index == text.length ();
 	sendEvent (SWT.Verify, event);
 	String newText = event.text;
 	textVerify.doit = (byte) ((event.doit && newText != null) ? 1 : 0);
