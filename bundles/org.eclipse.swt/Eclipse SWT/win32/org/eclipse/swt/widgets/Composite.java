@@ -70,7 +70,6 @@ Composite () {
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
-
 Control [] _getChildren () {
 	int count = 0;
 	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
@@ -93,10 +92,6 @@ Control [] _getChildren () {
 	Control [] newChildren = new Control [index];
 	System.arraycopy (children, 0, newChildren, 0, index);
 	return newChildren;
-}
-
-Item [] _getItems () {
-	return new Item [0];
 }
 
 Control [] _getTabList () {
@@ -331,15 +326,6 @@ void releaseWidget () {
 	int oldHdwp = hdwp;
 	hdwp = 0;
 	if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
-}
-
-void sendDispose () {
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control control = children [i];
-		if (!control.isDisposed ()) control.sendDispose ();
-	}
-	if (!isDisposed ()) super.sendDispose ();
 }
 
 public boolean setFocus () {
