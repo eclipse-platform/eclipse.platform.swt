@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles MULTI and SINGLE may be specified.
+ * Note: Only one of the styles MULTI and SINGLE may be specified. 
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -1314,7 +1314,9 @@ void setTabStops (int tabs) {
 }
 
 /**
- * Sets the contents of the receiver to the given string.
+ * Sets the contents of the receiver to the given string. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
  *
  * @param text the new text
  *
