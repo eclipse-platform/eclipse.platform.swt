@@ -510,7 +510,6 @@ public void setThumb (int value) {
  */
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget ();
-	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
@@ -531,6 +530,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.gtk_adjustment_value_changed (hAdjustment);
 	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	if (minimum > getSelection()) setSelection (minimum);
+	if (maximum < selection + thumb) setSelection (maximum - thumb);
 }
 
 }
