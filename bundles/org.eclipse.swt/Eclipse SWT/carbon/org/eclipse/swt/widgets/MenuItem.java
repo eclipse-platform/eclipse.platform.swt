@@ -7,6 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+import java.io.StreamTokenizer;
+import java.util.StringTokenizer;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -30,10 +33,11 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int id, accelerator;
+	int id; // AW , accelerator;
 	
 	// AW
 	private int fCIconHandle;
+	private int fAccelerator;
 	// AW
 
 /**
@@ -250,7 +254,7 @@ void fillAccel (ACCEL accel) {
  */
 public int getAccelerator () {
 	checkWidget ();
-	return accelerator;
+	return fAccelerator;
 }
 
 public Display getDisplay () {
@@ -373,10 +377,10 @@ void releaseWidget () {
 	}
 	menu = null;
 	super.releaseWidget ();
-	if (accelerator != 0) {
+	if (fAccelerator != 0) {
 		parent.destroyAcceleratorTable ();
 	}
-	accelerator = 0;
+	fAccelerator = 0;
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
@@ -475,7 +479,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget ();
 	
-	this.accelerator = accelerator;
+	this.fAccelerator = accelerator;
 	parent.destroyAcceleratorTable ();
 		
 	int hMenu= parent.handle;
@@ -666,7 +670,7 @@ public void setText (String string) {
 		} finally {
 			OS.CFRelease(sHandle);
 		}
-		setAccelerator(hMenu, index[0], accelerator);
+		setAccelerator(hMenu, index[0], parseShortcut(string));
 	} else
 		error (SWT.ERROR_CANNOT_SET_TEXT);
 }
@@ -779,6 +783,78 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	
 	if (modifiers != 0)
 		OS.SetMenuItemModifiers(menu, index, modifiers);
+}
+
+private static int parseShortcut(String text) {
+	int accelerator= 0;
+	
+	int pos= text.indexOf('\t');
+	if (pos >= 0) {
+		text= text.substring(pos+1);
+		
+		/*
+		 * This parsing code is wrong because it works only for the english version of eclipse
+		 */
+		StringTokenizer st= new StringTokenizer(text, "+");
+		while (st.hasMoreTokens()) {
+			String t= st.nextToken().toUpperCase();
+			if ("SHIFT".equals(t))
+				accelerator |= SWT.SHIFT;
+			else if ("CTRL".equals(t))
+				accelerator |= SWT.CONTROL;
+			else if ("ALT".equals(t))
+				accelerator |= SWT.ALT;
+			else if ("F1".equals(t))
+				accelerator |= SWT.F1;
+			else if ("F2".equals(t))
+				accelerator |= SWT.F2;
+			else if ("F3".equals(t))
+				accelerator |= SWT.F3;
+			else if ("F4".equals(t))
+				accelerator |= SWT.F4;
+			else if ("F5".equals(t))
+				accelerator |= SWT.F5;
+			else if ("F6".equals(t))
+				accelerator |= SWT.F6;
+			else if ("F7".equals(t))
+				accelerator |= SWT.F7;
+			else if ("F8".equals(t))
+				accelerator |= SWT.F8;
+			else if ("F9".equals(t))
+				accelerator |= SWT.F9;
+			else if ("F10".equals(t))
+				accelerator |= SWT.F10;
+			else if ("F11".equals(t))
+				accelerator |= SWT.F11;
+			else if ("F12".equals(t))
+				accelerator |= SWT.F12;
+			else if ("DELETE".equals(t))
+				accelerator |= SWT.DEL;
+			else if ("ENTER".equals(t))
+				accelerator |= SWT.CR;
+			else if ("ARROW UP".equals(t))
+				accelerator |= SWT.ARROW_UP;
+			else if ("ARROW DOWN".equals(t))
+				accelerator |= SWT.ARROW_DOWN;
+			else if ("ARROW LEFT".equals(t))
+				accelerator |= SWT.ARROW_LEFT;
+			else if ("ARROW RIGHT".equals(t))
+				accelerator |= SWT.ARROW_RIGHT;
+			else if ("SPACE".equals(t))
+				accelerator |= ' ';
+			else if ("TAB".equals(t))
+				accelerator |= '\t';
+			else {
+				if (t.length() > 1)
+					System.out.println("unknown: <" + t + ">");
+				else {
+					accelerator |= t.charAt(0);
+					break;	// must be last
+				}
+			}
+		}
+	}
+	return accelerator;
 }
 
 private static short keyGlyph(int key) {
