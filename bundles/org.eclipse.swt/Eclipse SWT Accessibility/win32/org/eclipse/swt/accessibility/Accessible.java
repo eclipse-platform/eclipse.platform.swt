@@ -33,7 +33,7 @@ public class Accessible {
 
 	Accessible(Control control) {
 		int[] ppvObject = new int[1];
-		int result = OSACC.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
+		int result = COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
 		if (result == COM.E_NOTIMPL) return;
 		if (result != COM.S_OK)
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
@@ -44,10 +44,10 @@ public class Accessible {
 			public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 			public int method1(int[] args) {return AddRef();}
 			public int method2(int[] args) {return Release();}
-			public int method3(int[] args) {return GetTypeInfoCount(args[0]);}
-			public int method4(int[] args) {return GetTypeInfo(args[0], args[1], args[2]);}
-			public int method5(int[] args) {return GetIDsOfNames(args[0], args[1], args[2], args[3], args[4]);}
-			public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+			// method3 GetTypeInfoCount - not implemented
+			// method4 GetTypeInfo - not implemented
+			// method5 GetIDsOfNames - not implemented
+			// method6 Invoke - not implemented
 			public int method7(int[] args) {return get_accParent(args[0]);}
 			public int method8(int[] args) {return get_accChildCount(args[0]);}
 			public int method9(int[] args) {return get_accChild(args[0], args[1], args[2], args[3], args[4]);}
@@ -119,7 +119,7 @@ public class Accessible {
 	public int internal_WM_GETOBJECT (int wParam, int lParam) {
 		if (objIAccessible == null) return 0;
 		if (lParam == COM.OBJID_CLIENT) {
-			return OSACC.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
+			return COM.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
 		}
 		return 0;
 	}
@@ -158,15 +158,9 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) {
 			if (debug)
 				System.out.println("IEnumVARIANT");
-			AccessibleControlEvent event = new AccessibleControlEvent(this);
-			for (int i = 0; i < accessibleControlListeners.size(); i++) {
-				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-				listener.getChildren(event);
-			}
-			variants = event.children;
-			enumIndex = 0;
 			COM.MoveMemory(arg2, new int[] { objIEnumVARIANT.getAddress()}, 4);
 			AddRef();
+			enumIndex = 0;
 			return COM.S_OK;
 		}
 
@@ -202,30 +196,6 @@ public class Accessible {
 		return refCount;
 	}
 
-	int GetTypeInfoCount(int pctinfo) {
-		if (debug)
-			System.out.println("GetTypeInfoCount");
-		return COM.E_NOTIMPL;
-	}
-
-	int GetTypeInfo(int iTInfo, int lcid, int ppTInfo) {
-		if (debug)
-			System.out.println("GetTypeInfo");
-		return COM.E_NOTIMPL;
-	}
-
-	int GetIDsOfNames(int riid, int rgszNames, int cNames, int lcid, int rgDispId) {
-		if (debug)
-			System.out.println("GetIDsOfNames");
-		return COM.E_NOTIMPL;
-	}
-
-	int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispParams, int pVarResult, int pExcepInfo, int pArgErr) {
-		if (debug)
-			System.out.println("Invoke");
-		return COM.E_NOTIMPL;
-	}
-
 	int accDoDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
 		if (debug)
 			System.out.println("accDoDefaultAction " + varChild_vt + " " + varChild_lVal);
@@ -241,6 +211,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = ACC.CHILDID_NONE;
 		event.x = xLeft;
 		event.y = yTop;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -285,7 +256,7 @@ public class Accessible {
 			return iaccessible.accNavigate(navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
 		}
 
-		if (varStart_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varStart_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		switch (navDir) {
 			case ACC.NAVDIR_FIRSTCHILD:
 			case ACC.NAVDIR_LASTCHILD:
@@ -425,6 +396,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = ACC.CHILDID_NONE;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getFocus(event);
@@ -661,7 +633,14 @@ public class Accessible {
 
 		if (rgvar == 0) return COM.E_INVALIDARG;
 		if (pceltFetched == 0 && celt != 1) return COM.E_INVALIDARG;
-			
+		if (enumIndex == 0) {
+			AccessibleControlEvent event = new AccessibleControlEvent(this);
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getChildren(event);
+			}
+			variants = event.children;
+		}	
 		Object[] nextItems = null;
 		if (variants != null && celt >= 1) {
 			int endIndex = enumIndex + celt - 1;
