@@ -3287,6 +3287,43 @@ void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct
 }
 #endif
 
+#ifndef NO_NMUPDOWN
+typedef struct NMUPDOWN_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iPos, iDelta;
+} NMUPDOWN_FID_CACHE;
+
+NMUPDOWN_FID_CACHE NMUPDOWNFc;
+
+void cacheNMUPDOWNFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMUPDOWNFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMUPDOWNFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMUPDOWNFc.iPos = (*env)->GetFieldID(env, NMUPDOWNFc.clazz, "iPos", "I");
+	NMUPDOWNFc.iDelta = (*env)->GetFieldID(env, NMUPDOWNFc.clazz, "iDelta", "I");
+	NMUPDOWNFc.cached = 1;
+}
+
+NMUPDOWN *getNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct)
+{
+	if (!NMUPDOWNFc.cached) cacheNMUPDOWNFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->iPos = (*env)->GetIntField(env, lpObject, NMUPDOWNFc.iPos);
+	lpStruct->iDelta = (*env)->GetIntField(env, lpObject, NMUPDOWNFc.iDelta);
+	return lpStruct;
+}
+
+void setNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct)
+{
+	if (!NMUPDOWNFc.cached) cacheNMUPDOWNFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMUPDOWNFc.iPos, (jint)lpStruct->iPos);
+	(*env)->SetIntField(env, lpObject, NMUPDOWNFc.iDelta, (jint)lpStruct->iDelta);
+}
+#endif
+
 #ifndef NO_NONCLIENTMETRICS
 typedef struct NONCLIENTMETRICS_FID_CACHE {
 	int cached;

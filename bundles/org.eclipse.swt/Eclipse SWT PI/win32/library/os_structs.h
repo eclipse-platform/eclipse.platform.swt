@@ -779,6 +779,18 @@ void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct
 #define NMTVDISPINFO_sizeof() 0
 #endif
 
+#ifndef NO_NMUPDOWN
+void cacheNMUPDOWNFields(JNIEnv *env, jobject lpObject);
+NMUPDOWN *getNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct);
+void setNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct);
+#define NMUPDOWN_sizeof() sizeof(NMUPDOWN)
+#else
+#define cacheNMUPDOWNFields(a,b)
+#define getNMUPDOWNFields(a,b,c) NULL
+#define setNMUPDOWNFields(a,b,c)
+#define NMUPDOWN_sizeof() 0
+#endif
+
 #ifndef NO_NONCLIENTMETRICS
 void cacheNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject);
 NONCLIENTMETRICS *getNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICS *lpStruct);

@@ -641,8 +641,10 @@ public class OS extends Platform {
 	public static final int LM_GETITEM = 0x703;
 	public static final int LCID_SUPPORTED = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
+	public static final int LOCALE_SDECIMAL = 14;	
 	public static final int LOCALE_SISO3166CTRYNAME = 0x5a;
 	public static final int LOCALE_SISO639LANGNAME = 0x59;
+	public static final int LOCALE_USER_DEFAULT = 1024;
 	public static final int LOGPIXELSX = 0x58;
 	public static final int LOGPIXELSY = 0x5a;
 	public static final int LPSTR_TEXTCALLBACK = 0xffffffff;
@@ -1318,8 +1320,7 @@ public class OS extends Platform {
 	public static final int UDM_SETRANGE32 = 0x046f;
 	public static final int UDM_SETPOS = 0x467;
 	public static final int UDM_SETPOS32 = 0x0471;
-	public static final int UDS_AUTOBUDDY = 0x0010;
-	public static final int UDS_SETBUDDYINT = 0x0002;
+	public static final int UDN_DELTAPOS = -722;
 	public static final int UDS_WRAP = 0x0001;
 	public static final int UIS_INITIALIZE = 3;
 	public static final String UPDOWN_CLASS = "msctls_updown32"; //$NON-NLS-1$
@@ -2766,6 +2767,7 @@ public static final native void MoveMemory (NMCUSTOMDRAW Destination, int Source
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTBHOTITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
+public static final native void MoveMemory (NMUPDOWN Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVDISPINFO Source, int Length);
