@@ -243,10 +243,12 @@ public class Display extends Device {
 	int checkResizeProc, resizeWidth, resizeHeight, resizeCount, resizeWindow;
 	XConfigureEvent xConfigureEvent = new XConfigureEvent ();
 	
-	/* Wake */
+	/* Wake and Sleep */
 	Callback wakeCallback;
 	int wakeProc, read_fd, write_fd, inputID;
 	byte [] wake_buffer = new byte [1];
+	int [] timeout = new int [2];
+	byte [] fd_set;
 	
 	/* Display Data */
 	Object data;
@@ -407,8 +409,11 @@ void createDisplay (DeviceData data) {
 	/* Initialize X and Xt */
 	synchronized (XInitLock) {
 		if (!XtInitialized) {
-			OS.XInitThreads ();
-			OS.XtToolkitThreadInitialize ();
+			/*
+			* This code is intentionally commented.
+			*/
+//			OS.XInitThreads ();
+//			OS.XtToolkitThreadInitialize ();
 			OS.XtToolkitInitialize ();
 		}
 		XtInitialized = true;
@@ -1112,9 +1117,10 @@ void initializeDisplay () {
 	int [] filedes = new int [2];
 	if (OS.pipe (filedes) != 0) error (SWT.ERROR_NO_HANDLES);
 	read_fd = filedes [0];  write_fd = filedes [1];
-	int xtAppContext = OS.XtDisplayToApplicationContext (xDisplay);
-	inputID = OS.XtAppAddInput (xtAppContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
-	
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	inputID = OS.XtAppAddInput (xtContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
+	fd_set = new byte [4 * OS.FD_SETSIZE() / OS.NFDBITS()];
+
 	/*
 	* Use dynamic Drag and Drop Protocol styles.
 	* Preregistered protocol is not supported.
@@ -1795,16 +1801,29 @@ void showToolTip (int handle, String toolTipText) {
  */
 public boolean sleep () {
 	checkDevice ();
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	/*
-	* Bug in Xt.  Under certain circumstances Xt waits
-	* forever looking for X events, ignoring alternate
-	* inputs.  The fix is to never sleep forever.
+	* This code is intentionally commented.
 	*/
-	int sleepID = OS.XtAppAddTimeOut (xtContext, 100, 0, 0);
-	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
-	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
-	return result;
+//	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+//	/*
+//	* Bug in Xt.  Under certain circumstances Xt waits
+//	* forever looking for X events, ignoring alternate
+//	* inputs.  The fix is to never sleep forever.
+//	*/
+//	int sleepID = OS.XtAppAddTimeOut (xtContext, 100, 0, 0);
+//	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
+//	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+//	return result;
+	
+	int display_fd = OS.ConnectionNumber (xDisplay);
+	int max_fd = display_fd > read_fd ? display_fd : read_fd;
+	OS.FD_ZERO (fd_set);
+	OS.FD_SET (display_fd, fd_set);
+	OS.FD_SET (read_fd, fd_set);
+	timeout [0] = 0;
+	timeout [1] = 100;
+	OS.select (max_fd + 1, fd_set, null, null, timeout);
+	return OS.FD_ISSET (display_fd, fd_set);
 }
 /**
  * Causes the <code>run()</code> method of the runnable to

@@ -8162,6 +8162,138 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    FD_SETSIZE
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SETSIZE
+  (JNIEnv *env, jclass that)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "FD_SETSIZE\n");
+#endif
+
+  return FD_SETSIZE;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    NFDBITS
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_NFDBITS
+  (JNIEnv *env, jclass that)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "NFDBITS\n");
+#endif
+
+  return NFDBITS;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    FD_SET
+ * Signature: (I[B)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SET
+  (JNIEnv *env, jclass that, jint fd, jbyteArray set)
+{
+    jbyte *set1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "FD_SET\n");
+#endif
+
+    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
+    FD_SET(fd, (fd_set*)set1);
+    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    FD_ISSET
+ * Signature: (I[B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1ISSET
+  (JNIEnv *env, jclass that, jint fd, jbyteArray set)
+{
+    jbyte *set1=NULL;
+    jboolean rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "FD_ISSET\n");
+#endif
+
+    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
+    rc = (jboolean)FD_ISSET(fd, (fd_set*)set1);
+    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
+    return rc;
+}
+
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    FD_ZERO
+ * Signature: ([B)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1ZERO
+  (JNIEnv *env, jclass that, jbyteArray set)
+{
+    jbyte *set1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "FD_ZERO\n");
+#endif
+
+    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
+    FD_ZERO((fd_set*)set1);
+    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    ConnectionNumber
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_ConnectionNumber
+  (JNIEnv *env, jclass that, jint display)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "ConnectionNumber\n");
+#endif
+
+   return (jint)ConnectionNumber((Display*)display);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    select
+ * Signature: (I[B[B[B[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_select__I_3B_3B_3B_3I
+  (JNIEnv *env, jclass that, int n, jbyteArray readfds, jbyteArray writefds, jbyteArray exceptfds, jintArray timeout)
+{
+    jbyte *readfds1=NULL;
+    jbyte *writefds1=NULL;
+    jbyte *exceptfds1=NULL;
+    jint *timeout1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "select\n");
+#endif
+
+    if (readfds) readfds1 = (*env)->GetByteArrayElements(env, readfds, NULL);
+    if (writefds) writefds1 = (*env)->GetByteArrayElements(env, writefds, NULL);
+    if (exceptfds) exceptfds1 = (*env)->GetByteArrayElements(env, exceptfds, NULL);
+    if (timeout) timeout1 = (*env)->GetIntArrayElements(env, timeout, NULL);
+    rc = (jint) select(n, (fd_set*)readfds1, (fd_set*)writefds1, (fd_set*)exceptfds1, (struct timeval*)timeout1);
+    if (readfds) (*env)->ReleaseByteArrayElements(env, readfds, readfds1, 0);
+    if (writefds) (*env)->ReleaseByteArrayElements(env, writefds, writefds1, 0);
+    if (exceptfds) (*env)->ReleaseByteArrayElements(env, exceptfds, exceptfds1, 0);
+    if (timeout) (*env)->ReleaseIntArrayElements(env, timeout, timeout1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    close
  * Signature: (I)I
  */
