@@ -1769,6 +1769,8 @@ void onDispose() {
 	 */
 	inDispose = true;
 	
+	hideToolTip();
+
 	if (showMenu != null && !showMenu.isDisposed()) {
 		showMenu.dispose();
 		showMenu = null;
