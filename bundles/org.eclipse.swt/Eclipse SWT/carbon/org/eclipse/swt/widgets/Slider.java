@@ -207,8 +207,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	OS.SetControl32BitMaximum (handle, maximum);
 	OS.SetControlViewSize (handle, thumb);
 	OS.SetControl32BitValue (handle, selection);
-	increment= increment;
-	pageIncrement= pageIncrement;
+	increment = increment;
+	pageIncrement = pageIncrement;
 }
 
 }
