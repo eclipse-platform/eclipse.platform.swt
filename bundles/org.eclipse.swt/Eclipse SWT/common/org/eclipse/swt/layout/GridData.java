@@ -447,7 +447,7 @@ void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 	if (cacheWidth != -1 && cacheHeight != -1) return;
 	if (wHint == this.widthHint && hHint == this.heightHint) {
 		if (defaultWidth == -1 || defaultHeight == -1) {
-			Point size =  control.computeSize (wHint, hHint, flushCache);
+			Point size = control.computeSize (wHint, hHint, flushCache);
 			defaultWhint = wHint;
 			defaultHhint = hHint;
 			defaultWidth = size.x;
@@ -458,7 +458,7 @@ void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 		return;
 	}
 	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
-		Point size =  control.computeSize (wHint, hHint, flushCache);
+		Point size = control.computeSize (wHint, hHint, flushCache);
 		currentWhint = wHint;
 		currentHhint = hHint;
 		currentWidth = size.x;
