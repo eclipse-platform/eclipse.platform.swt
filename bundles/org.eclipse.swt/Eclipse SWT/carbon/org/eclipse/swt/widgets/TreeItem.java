@@ -653,6 +653,15 @@ void redraw (int propertyID) {
 	if (parent.ignoreRedraw) return;
 	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
+	/*
+	 * Bug in Carbon.  Calling UpdateDataBrowserItems with kDataBrowserNoItem
+	 * updates all columns associated with the items in the items array.
+	 * This is much slower than updating the items array for a specific column.
+	 * The fix is to give the specific column id if no columns are created.
+	 */
+	if (propertyID == OS.kDataBrowserNoItem && parent.columnCount == 0) {
+		propertyID = parent.column_id;
+	}
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
 }
 
