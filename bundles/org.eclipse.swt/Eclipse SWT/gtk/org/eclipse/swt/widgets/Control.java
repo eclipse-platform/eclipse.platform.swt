@@ -154,8 +154,8 @@ void hookEvents () {
 	OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
 	OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
-	OS.g_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
-	OS.g_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+	OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+	OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
