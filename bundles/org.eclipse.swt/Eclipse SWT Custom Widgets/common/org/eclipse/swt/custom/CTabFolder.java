@@ -462,6 +462,8 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	// Don't perform anti-aliasing on Mac because the platform
 	// already does it.  The simple style also does not require anti-aliasing.
 	if (simple || "carbon".equals(SWT.getPlatform())) return; //$NON-NLS-1$
+	// Don't perform anti-aliasing on low resolution displays
+	if (getDisplay().getDepth() < 15) return;
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
