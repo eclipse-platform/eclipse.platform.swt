@@ -14,6 +14,7 @@ import junit.framework.*;
 import junit.textui.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -50,15 +51,74 @@ public void test_Constructor() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceData not written");
+	Display disp;
+	disp = new Display(null);
+	disp.dispose();
+	
+	disp = new Display(new DeviceData());
+	disp.dispose();
 }
 
 public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
-	warnUnimpl("Test test_addFilterILorg_eclipse_swt_widgets_Listener not written");
+	final int CLOSE_CALLBACK = 0;
+	final int DISPOSE_CALLBACK = 1;
+	final boolean[] callbackReceived = new boolean[] {false, false};
+	
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			if (e.type == SWT.Close)
+				callbackReceived[CLOSE_CALLBACK] = true;
+			else if (e.type == SWT.Dispose)
+				callbackReceived[DISPOSE_CALLBACK] = true;
+		};
+	};
+	
+	Display display = new Display();
+	try {
+		try {
+			display.addFilter(SWT.Dispose, null);
+			fail("No exception thrown for addFilter with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for addFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		display.addFilter(SWT.Close, listener);
+	} finally {
+		display.close();
+	}
+	assertTrue(callbackReceived[CLOSE_CALLBACK]);
+	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
 public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
-	warnUnimpl("Test test_addListenerILorg_eclipse_swt_widgets_Listener not written");
+	final int CLOSE_CALLBACK = 0;
+	final int DISPOSE_CALLBACK = 1;
+	final boolean[] callbackReceived = new boolean[] {false, false};
+	
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			if (e.type == SWT.Close)
+				callbackReceived[CLOSE_CALLBACK] = true;
+			else if (e.type == SWT.Dispose)
+				callbackReceived[DISPOSE_CALLBACK] = true;
+		};
+	};
+	
+	Display display = new Display();
+	try {
+		try {
+			display.addListener(SWT.Close, null);
+			fail("No exception thrown for addListener with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for addListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		display.addListener(SWT.Dispose, listener);
+	} finally {
+		display.close();
+	}
+	assertFalse(callbackReceived[CLOSE_CALLBACK]);
+	assertTrue(callbackReceived[DISPOSE_CALLBACK]);
 }
 
 public void test_asyncExecLjava_lang_Runnable() {
@@ -84,7 +144,9 @@ public void test_beep() {
 }
 
 public void test_close() {
-	warnUnimpl("Test test_close not written");
+	Display display = new Display();
+	display.close();
+	assertTrue(display.isDisposed());
 }
 
 public void test_disposeExecLjava_lang_Runnable() {
@@ -103,7 +165,14 @@ public void test_disposeExecLjava_lang_Runnable() {
 }
 
 public void test_findDisplayLjava_lang_Thread() {
-	warnUnimpl("Test test_findDisplayLjava_lang_Thread not written");
+	assertNull(Display.findDisplay(new Thread()));
+	
+	Display display = new Display();
+	try {
+		assertEquals(display, Display.findDisplay(Thread.currentThread()));
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_findWidgetI() {
@@ -224,7 +293,13 @@ public void test_getFocusControl() {
 }
 
 public void test_getIconDepth() {
-	warnUnimpl("Test test_getIconDepth not written");
+	Display display = new Display();
+	try {
+		int depth = display.getIconDepth();
+		assertTrue(depth > 0);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getMonitors() {
@@ -258,7 +333,51 @@ public void test_getShells() {
 }
 
 public void test_getSyncThread() {
-	warnUnimpl("Test test_getSyncThread not written");
+	final Display display = new Display();
+	try {
+		final boolean[] threadRan = new boolean[] {false};
+		Thread nonUIThread = new Thread(new Runnable() {
+			public void run() {
+				// Assume no syncExec runnable is currently being invoked.
+				assertNull(display.getSyncThread());
+				
+				// Create a runnable and invoke with syncExec to verify that
+				// the invoking thread is the syncThread.
+				final Thread invokingThread = Thread.currentThread();
+				display.syncExec(new Runnable() {
+					public void run() {
+						assertEquals(invokingThread, display.getSyncThread());
+					}
+				});
+				
+				// Create a runnable and invoke with asyncExec to verify that
+				// the syncThread is null while it's running.
+				final boolean[] asyncExecRan = new boolean[] {false};
+				display.asyncExec(new Runnable() {
+					public void run() {
+						assertNull(display.getSyncThread());
+						asyncExecRan[0] = true;
+					}
+				});
+				
+				try {
+					while (!asyncExecRan[0]) {
+						Thread.sleep(100);
+					}
+				} catch (InterruptedException ex) {
+				}
+				threadRan[0] = true;
+				display.wake();
+			}
+		});
+		nonUIThread.start();
+		
+		while (!threadRan[0]) {
+			if (!display.readAndDispatch()) display.sleep ();
+		}
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getSystemColorI() {
@@ -300,43 +419,466 @@ public void test_getThread() {
 }
 
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
+	// do not test internal API
 }
 
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
+	// do not test internal API
 }
 
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII() {
-	warnUnimpl("Test test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlII not written");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display, SWT.NO_TRIM);
+		Button button1 = new Button(shell, SWT.PUSH);
+		button1.setBounds(0,0,100,100);
+		Button button2 = new Button(shell, SWT.PUSH);
+		button2.setBounds(200,100,100,100);
+		shell.setBounds(0,0,400,400);
+		shell.open();
+		
+		Point result;
+		
+		result = display.map(button1, button2, 0, 0);
+		assertEquals(new Point(-200,-100), result);
+		result = display.map(button1, button2, -10, -20);
+		assertEquals(new Point(-210,-120), result);
+		result = display.map(button1, button2, 30, 40);
+		assertEquals(new Point(-170,-60), result);
+		
+		result = display.map(button2, button1, 0, 0);
+		assertEquals(new Point(200,100), result);
+		result = display.map(button2, button1, -5, -15);
+		assertEquals(new Point(195,85), result);
+		result = display.map(button2, button1, 25, 35);
+		assertEquals(new Point(225,135), result);
+		
+		result = display.map(null, button2, 0, 0);
+		assertEquals(new Point(-200,-100), result);
+		result = display.map(null, button2, -2, -4);
+		assertEquals(new Point(-202,-104), result);
+		result = display.map(null, button2, 6, 8);
+		assertEquals(new Point(-194,-92), result);
+		
+		result = display.map(button2, null, 0, 0);
+		assertEquals(new Point(200,100), result);
+		result = display.map(button2, null, -3, -6);
+		assertEquals(new Point(197,94), result);
+		result = display.map(button2, null, 9, 12);
+		assertEquals(new Point(209,112), result);
+		
+		button1.dispose();
+		try {
+			result = display.map(button1, button2, 0, 0);
+			fail("No exception thrown for map from control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		try {
+			result = display.map(button2, button1, 0, 0);
+			fail("No exception thrown for map to control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		
+		shell.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII() {
-	warnUnimpl("Test test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII not written");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display, SWT.NO_TRIM);
+		Button button1 = new Button(shell, SWT.PUSH);
+		button1.setBounds(0,0,100,100);
+		Button button2 = new Button(shell, SWT.PUSH);
+		button2.setBounds(200,100,100,100);
+		shell.setBounds(0,0,400,400);
+		shell.open();
+		
+		Rectangle result;
+		
+		result = display.map(button1, button2, 0, 0, 100, 100);
+		assertEquals(new Rectangle(-200,-100,100,100), result);
+		result = display.map(button1, button2, -10, -20, 130, 140);
+		assertEquals(new Rectangle(-210,-120,130,140), result);
+		result = display.map(button1, button2, 50, 60, 170, 180);
+		assertEquals(new Rectangle(-150,-40,170,180), result);
+		
+		result = display.map(button2, button1, 0, 0, 100, 100);
+		assertEquals(new Rectangle(200,100,100,100), result);
+		result = display.map(button2, button1, -5, -15, 125, 135);
+		assertEquals(new Rectangle(195,85,125,135), result);
+		result = display.map(button2, button1, 45, 55, 165, 175);
+		assertEquals(new Rectangle(245,155,165,175), result);
+		
+		result = display.map(null, button2, 0, 0, 100, 100);
+		assertEquals(new Rectangle(-200,-100,100,100), result);
+		result = display.map(null, button2, -2, -4, 106, 108);
+		assertEquals(new Rectangle(-202,-104,106,108), result);
+		result = display.map(null, button2, 10, 12, 114, 116);
+		assertEquals(new Rectangle(-190,-88,114,116), result);
+		
+		result = display.map(button2, null, 0, 0, 100, 100);
+		assertEquals(new Rectangle(200,100,100,100), result);
+		result = display.map(button2, null, -3, -6, 109, 112);
+		assertEquals(new Rectangle(197,94,109,112), result);
+		result = display.map(button2, null, 15, 18, 121, 124);
+		assertEquals(new Rectangle(215,118,121,124), result);
+		
+		button1.dispose();
+		try {
+			result = display.map(button1, button2, 0, 0, 100, 100);
+			fail("No exception thrown for map from control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		try {
+			result = display.map(button2, button1, 0, 0, 100, 100);
+			fail("No exception thrown for map to control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		
+		shell.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point not written");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display, SWT.NO_TRIM);
+		Button button1 = new Button(shell, SWT.PUSH);
+		button1.setBounds(0,0,100,100);
+		Button button2 = new Button(shell, SWT.PUSH);
+		button2.setBounds(200,100,100,100);
+		shell.setBounds(0,0,400,400);
+		shell.open();
+		
+		Point result;
+		Point point = new Point(0,0);
+		
+		result = display.map(button1, button2, point);
+		assertEquals(new Point(-200,-100), result);
+		result = display.map(button1, button2, new Point(-10,-20));
+		assertEquals(new Point(-210,-120), result);
+		result = display.map(button1, button2, new Point(30,40));
+		assertEquals(new Point(-170,-60), result);
+		
+		result = display.map(button2, button1, point);
+		assertEquals(new Point(200,100), result);
+		result = display.map(button2, button1, new Point(-5,-15));
+		assertEquals(new Point(195,85), result);
+		result = display.map(button2, button1, new Point(25,35));
+		assertEquals(new Point(225,135), result);
+		
+		result = display.map(null, button2, point);
+		assertEquals(new Point(-200,-100), result);
+		result = display.map(null, button2, new Point(-2,-4));
+		assertEquals(new Point(-202,-104), result);
+		result = display.map(null, button2, new Point(6,8));
+		assertEquals(new Point(-194,-92), result);
+		
+		result = display.map(button2, null, point);
+		assertEquals(new Point(200,100), result);
+		result = display.map(button2, null, new Point(-3,-6));
+		assertEquals(new Point(197,94), result);
+		result = display.map(button2, null, new Point(9,12));
+		assertEquals(new Point(209,112), result);
+		
+		button1.dispose();
+		try {
+			result = display.map(button1, button2, point);
+			fail("No exception thrown for map from control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		try {
+			result = display.map(button2, button1, point);
+			fail("No exception thrown for map to control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		
+		try {
+			result = display.map(button2, button1, (Point) null);
+			fail("No exception thrown for null point");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for point being null", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		shell.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle not written");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display, SWT.NO_TRIM);
+		Button button1 = new Button(shell, SWT.PUSH);
+		button1.setBounds(0,0,100,100);
+		Button button2 = new Button(shell, SWT.PUSH);
+		button2.setBounds(200,100,100,100);
+		shell.setBounds(0,0,400,400);
+		shell.open();
+		
+		Rectangle result;
+		Rectangle rect = new Rectangle(0,0,100,100);
+		
+		result = display.map(button1, button2, rect);
+		assertEquals(new Rectangle(-200,-100,100,100), result);
+		result = display.map(button1, button2, new Rectangle(-10, -20, 130, 140));
+		assertEquals(new Rectangle(-210,-120,130,140), result);
+		result = display.map(button1, button2, new Rectangle(50, 60, 170, 180));
+		assertEquals(new Rectangle(-150,-40,170,180), result);
+		
+		result = display.map(button2, button1, rect);
+		assertEquals(new Rectangle(200,100,100,100), result);
+		result = display.map(button2, button1, new Rectangle(-5, -15, 125, 135));
+		assertEquals(new Rectangle(195,85,125,135), result);
+		result = display.map(button2, button1, new Rectangle(45, 55, 165, 175));
+		assertEquals(new Rectangle(245,155,165,175), result);
+		
+		result = display.map(null, button2, rect);
+		assertEquals(new Rectangle(-200,-100,100,100), result);
+		result = display.map(null, button2, new Rectangle(-2, -4, 106, 108));
+		assertEquals(new Rectangle(-202,-104,106,108), result);
+		result = display.map(null, button2, new Rectangle(10, 12, 114, 116));
+		assertEquals(new Rectangle(-190,-88,114,116), result);
+		
+		result = display.map(button2, null, rect);
+		assertEquals(new Rectangle(200,100,100,100), result);
+		result = display.map(button2, null, new Rectangle(-3, -6, 109, 112));
+		assertEquals(new Rectangle(197,94,109,112), result);
+		result = display.map(button2, null, new Rectangle(15, 18, 121, 124));
+		assertEquals(new Rectangle(215,118,121,124), result);
+		
+	
+		button1.dispose();
+		try {
+			result = display.map(button1, button2, rect);
+			fail("No exception thrown for map from control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map from control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		try {
+			result = display.map(button2, button1, rect);
+			fail("No exception thrown for map to control being disposed");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for map to control being disposed", SWT.ERROR_INVALID_ARGUMENT, e);
+		}
+		
+		try {
+			result = display.map(button2, button1, (Rectangle) null);
+			fail("No exception thrown for null point");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for rectangle being null", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		shell.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_postLorg_eclipse_swt_widgets_Event() {
-	warnUnimpl("Test test_postLorg_eclipse_swt_widgets_Event not written");
+	boolean success;
+	final boolean verifiedEvent[] = new boolean[5];
+	
+	final int KEYUP = 0;
+	final int KEYDOWN = 1;
+	final int MOUSEUP = 2;
+	final int MOUSEDOWN = 3;
+	final int MOUSEMOVE = 4;
+	final int CHARACTER = ' '; 	// space character works both in bidi language and western
+	
+	Display display = new Display();
+	try {
+		try {
+			display.post(null);
+			fail("No exception thrown for post with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for post with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		Shell shell = new Shell(display, SWT.NO_TRIM);
+		shell.setBounds(display.getBounds());
+		shell.open();
+		
+		shell.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == CHARACTER)
+					verifiedEvent[KEYDOWN] = true;
+			}
+			
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == SWT.F5)
+					verifiedEvent[KEYUP] = true;
+			}
+		});
+		shell.addMouseListener(new MouseListener() {
+			public void mouseDoubleClick(MouseEvent e) {
+				fail("Unsupported mouse double-click event was received");
+			}
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 1)
+					verifiedEvent[MOUSEDOWN] = true;
+			}
+			public void mouseUp(MouseEvent e) {
+				if (e.button == 1)
+					verifiedEvent[MOUSEUP] = true;
+			}
+		});
+		shell.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent e) {
+				verifiedEvent[MOUSEMOVE] = true;
+			}
+		});
+		
+		Event event;
+		
+		// Test key events (down/up)
+		event = new Event();
+		event.type = SWT.KeyDown;
+		event.character = (char) -1;  	// bogus character
+		assertFalse(display.post(event));
+		event.character = CHARACTER;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		event.type = SWT.KeyUp;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		event = new Event();
+		event.type = SWT.KeyUp;
+		event.character = (char) -1;  	// bogus character
+		event.keyCode = -1;  			// bogus keyCode
+		assertFalse(display.post(event));
+
+		event.type = SWT.KeyDown;
+		event.keyCode = SWT.F5;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		event.type = SWT.KeyUp;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		// Test mouse events (down/up/move)
+		event = new Event();
+		event.type = SWT.MouseDown;
+		assertFalse(display.post(event));  // missing button
+		event.button = 1;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		event = new Event();
+		event.type = SWT.MouseUp;
+		assertFalse(display.post(event));  // missing button
+		event.button = 1;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		event = new Event();
+		event.type = SWT.MouseMove;
+		event.x = 50;
+		event.y = 100;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		// Test unsupported event
+		event = new Event();
+		event.type = SWT.MouseDoubleClick;
+		assertFalse(display.post(event));
+		
+		// Verify expected events were posted
+		while (display.readAndDispatch()) {}
+		shell.dispose();
+		
+		assertTrue("posted KeyDown event not received", verifiedEvent[KEYDOWN]);
+		assertTrue("posted KeyUp event not received", verifiedEvent[KEYUP]);
+		assertTrue("posted MouseDown event not received", verifiedEvent[MOUSEDOWN]);
+		assertTrue("posted MouseUp event not received", verifiedEvent[MOUSEUP]);
+		assertTrue("posted MouseMove event not received", verifiedEvent[MOUSEMOVE]);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_readAndDispatch() {
-	warnUnimpl("Test test_readAndDispatch not written");
+	// The following tests rely on readAndDispatch in order to succeed,
+	// thus no test is needed here.
+	//    test_getSyncThread()
+	//    test_postLorg_eclipse_swt_widgets_Event()
 }
 
 public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
-	warnUnimpl("Test test_removeFilterILorg_eclipse_swt_widgets_Listener not written");
+	final int CLOSE_CALLBACK = 0;
+	final int DISPOSE_CALLBACK = 1;
+	final boolean[] callbackReceived = new boolean[] {false, false};
+	
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			if (e.type == SWT.Close)
+				callbackReceived[CLOSE_CALLBACK] = true;
+			else if (e.type == SWT.Dispose)
+				callbackReceived[DISPOSE_CALLBACK] = true;
+		};
+	};
+	
+	Display display = new Display();
+	try {
+		try {
+			display.removeFilter(SWT.Dispose, null);
+			fail("No exception thrown for removeFilter with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for removeFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		display.addFilter(SWT.Close, listener);
+		display.removeFilter(SWT.Close, listener);
+	} finally {
+		display.close();
+	}
+	assertFalse(callbackReceived[CLOSE_CALLBACK]);
+	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
 public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
-	warnUnimpl("Test test_removeListenerILorg_eclipse_swt_widgets_Listener not written");
+	final int CLOSE_CALLBACK = 0;
+	final int DISPOSE_CALLBACK = 1;
+	final boolean[] callbackReceived = new boolean[] {false, false};
+	
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			if (e.type == SWT.Close)
+				callbackReceived[CLOSE_CALLBACK] = true;
+			else if (e.type == SWT.Dispose)
+				callbackReceived[DISPOSE_CALLBACK] = true;
+		};
+	};
+	
+	Display display = new Display();
+	try {
+		try {
+			display.removeListener(SWT.Close, null);
+			fail("No exception thrown for removeListener with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for removeListener with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		display.addListener(SWT.Dispose, listener);
+		display.removeListener(SWT.Dispose, listener);
+	} finally {
+		display.close();
+	}
+	assertFalse(callbackReceived[CLOSE_CALLBACK]);
+	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
 
 public void test_release() {
@@ -344,7 +886,7 @@ public void test_release() {
 }
 
 public void test_setAppNameLjava_lang_String() {
-	warnUnimpl("Test test_setAppNameLjava_lang_String not written");
+	Display.setAppName("My Application Name");
 }
 
 public void test_setCursorLocationII() {
@@ -365,6 +907,7 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 			fail("No exception thrown for null argument");
 		}
 		catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 	} finally {
 		display.dispose();
@@ -400,11 +943,92 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 }
 
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
-	warnUnimpl("Test test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer not written");
+	final Display display = new Display();
+	final boolean[] asyncExecRan = new boolean[] {false};
+	
+	try {
+		try {
+			display.setSynchronizer(null);
+			fail("No exception thrown for post with null argument");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for set synchronizer with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		class MySynchronizer extends Synchronizer {
+			boolean invoked = false;
+			MySynchronizer(Display d) {
+				super(d);
+			}
+			protected void asyncExec (Runnable runnable) {
+				invoked = true;
+				super.asyncExec(runnable);
+			}
+		}
+		
+		MySynchronizer mySynchronizer = new MySynchronizer(display);
+		display.setSynchronizer(mySynchronizer);
+		display.asyncExec(new Runnable() {
+			public void run() {
+				asyncExecRan[0] = true;
+			}
+		});
+		while (display.readAndDispatch()) {}
+		assertTrue(mySynchronizer.invoked);
+		assertTrue(asyncExecRan[0]);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_sleep() {
-	warnUnimpl("Test test_sleep not written");
+	final Display display = new Display();
+	try {
+		Thread thread;
+		boolean eventQueued;
+		
+		// Ensure event queue is empty, otherwise sleep() will just return.
+		while(display.readAndDispatch()) {}
+		thread = new Thread() {
+			public void run() {
+				try {
+					// Delay to ensure the UI thread has been put to sleep.
+					sleep(3000);
+				} catch (InterruptedException ex) {
+				}
+				// Use wake() to revive from sleep().
+				display.wake();
+			}
+		};
+		thread.start();
+		// Note that sleep seems to always return true, at least
+		// on Windows, since wake() uses a null event. 
+		eventQueued = display.sleep();
+		
+		// Ensure event queue is empty, otherwise sleep() will just return.
+		while(display.readAndDispatch()) {}
+		thread = new Thread() {
+			public void run() {
+				try {
+					// Delay to ensure the UI thread has been put to sleep.
+					sleep(3000);
+				} catch (InterruptedException ex) {
+				}
+				// Cause OS to generate an event to revive from sleep().
+				display.syncExec(new Runnable() {
+					public void run() {
+						Shell s = new Shell(display);
+						s.open();
+						s.dispose();
+					}
+				});
+			}
+		};
+		thread.start();
+		eventQueued = display.sleep();
+		assertTrue(eventQueued);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_syncExecLjava_lang_Runnable() {
@@ -421,15 +1045,57 @@ public void test_syncExecLjava_lang_Runnable() {
 }
 
 public void test_timerExecILjava_lang_Runnable() {
-	warnUnimpl("Test test_timerExecILjava_lang_Runnable not written");
+	final Display display = new Display();
+	try {
+		final boolean[] timerExecRan = new boolean[] {false};
+		final boolean[] threadRan = new boolean[] {false};
+		
+		try {
+			display.timerExec(0, null);
+			fail("No exception thrown for timerExec with null runnable");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Incorrect exception thrown for timerExec with null runnable", SWT.ERROR_NULL_ARGUMENT, e);
+		}
+		
+		display.timerExec(-100, new Runnable() {
+			public void run() {
+				timerExecRan[0] = true;
+			}
+		});
+				
+		final int delay = 3000;
+		final long startTime = System.currentTimeMillis();
+		display.timerExec(delay, new Runnable() {
+			public void run() {
+				long endTime = System.currentTimeMillis();
+				assertTrue(endTime >= (startTime + delay));
+				threadRan[0] = true;
+			}
+		});
+		while (!threadRan[0]) {
+			// The read and dispatch loop must be running in order
+			// for the runnable in the timer exec to be executed.
+			display.readAndDispatch();
+		}
+		
+		// Verify the timerExec with less than zero milliseconds didn't execute.
+		assertFalse(timerExecRan[0]);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_update() {
-	warnUnimpl("Test test_update not written");
+	Display display = new Display();
+	try {
+		display.update();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_wake() {
-	warnUnimpl("Test test_wake not written");
+	// tested in sleep() method
 }
 
 public static Test suite() {
@@ -556,4 +1222,68 @@ protected void runTest() throws Throwable {
 
 /* custom */
 boolean disposeExecRan;
+
+/* Overloaded tests from Test_org_eclipse_swt_graphics_Device */
+public void test_getDPI() {
+	Display display = new Display();
+	try {
+		Point p = display.getDPI();
+		assertTrue("horizontal DPI not greater than zero", p.x > 0);
+		assertTrue("vertical DPI not greater than zero", p.y > 0);
+	} finally {
+		display.dispose();
+	}
+}
+
+public void test_getDepth() {
+	Display display = new Display();
+	try {
+		int d = display.getDepth();
+		assertTrue("depth not greater than zero", d > 0);
+	} finally {
+		display.dispose();
+	}
+}
+
+public void test_getFontListLjava_lang_StringZ() {
+	Display display = new Display();
+	try {
+		FontData[] scalable = display.getFontList(null, true);
+		FontData[] non_scalable = display.getFontList(null, false);
+		assertTrue("no fonts detected", (scalable.length + non_scalable.length) > 0);
+	} finally {
+		display.dispose();
+	}
+}
+
+public void test_getWarnings() {
+	Display display = new Display();
+	try {
+		boolean result = display.getWarnings();
+		// Since the behavior is platform specific, there's
+		// no good test for the result value.
+	} finally {
+		display.dispose();
+	}
+}
+
+public void test_isDisposed() {
+	Display disp = new Display();
+	assertFalse(disp.isDisposed());
+	disp.dispose();
+	assertTrue(disp.isDisposed());
+}
+
+public void test_setWarningsZ() {
+	Display display = new Display();
+	try {
+		display.setWarnings(true);
+		display.setWarnings(false);
+		// Since the behavior is platform specific, there's
+		// no good test for invoking this method.
+		// Note that on Windows, the implementation is a no-op.
+	} finally {
+		display.dispose();
+	}
+}
 }
