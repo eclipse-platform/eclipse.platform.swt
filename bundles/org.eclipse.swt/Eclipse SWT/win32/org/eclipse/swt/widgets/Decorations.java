@@ -22,6 +22,11 @@ import org.eclipse.swt.graphics.*;
  * shares a significant amount of code with this class,
  * and is a subclass.
  * <p>
+ * IMPORTANT: This class was intended to be abstract and
+ * should <em>never</em> be referenced or instantiated.
+ * Instead, the class <code>Shell</code> should be used.
+ * </p>
+ * <p>
  * Instances are always displayed in one of the maximized, 
  * minimized or normal states:
  * <ul>
