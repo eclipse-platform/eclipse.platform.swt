@@ -110,7 +110,7 @@ public class Browser extends Composite {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String URL_CAB = ".cab"; //$NON-NLS-1$
 	static final String URL_DIRECTOR = "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab"; //$NON-NLS-1$
-	static final String URL_JAVA = "http://java.sun.com/products/plugin/autodl/jinstall"; //$NON-NLS-1$
+	static final String URL_JAVA = "http://java.sun.com/products/plugin/"; //$NON-NLS-1$
 	static final String URL_JAVA_15 = "http://java.sun.com/update"; //$NON-NLS-1$
 
 	/* Package Name */
