@@ -33,6 +33,8 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
 				XTEST_LIB_PATH=/usr/X11R6/lib64
+				KDE_LIB_PATH=/usr/lib64
+				KDE_INCLUDE_PATH=/usr/include/kde
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
 				makefile="make_linux.mak"
@@ -46,6 +48,8 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
+				KDE_LIB_PATH=/usr/lib
+				KDE_INCLUDE_PATH=/usr/include/kde
 				if [ "${GECKO_SDK}" = "" ]; then
 					GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 				fi
@@ -61,6 +65,8 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
+				KDE_LIB_PATH=/opt/kde3/lib
+				KDE_INCLUDE_PATH=/opt/kde3/include
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc
 				;;
 			"ppc64")
@@ -71,6 +77,8 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
+				KDE_LIB_PATH=/opt/kde3/lib
+				KDE_INCLUDE_PATH=/opt/kde3/include
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc64
 				;;
@@ -102,6 +110,6 @@ case $OS in
 	;;
 esac
 
-export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS OUTPUT_DIR
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
 
 make -f $makefile ${1} ${2} ${3} ${4}
