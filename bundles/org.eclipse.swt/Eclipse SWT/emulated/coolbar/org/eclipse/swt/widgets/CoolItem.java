@@ -192,7 +192,13 @@ public void dispose () {
 	super.dispose ();
 	parent = null;
 	control = null;
-	if (arrowImage != null) arrowImage.dispose();
+	
+	/* The parent for the chevron is the coolbar (coolItem can not be the parent)
+	 * but it has to be disposed with the item 
+	 */
+	if (chevron != null && !chevron.isDisposed()) chevron.dispose();
+	chevron = null;
+	if (arrowImage != null && !arrowImage.isDisposed()) arrowImage.dispose();
 	arrowImage = null;
 }
 
