@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -32,9 +33,12 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
-	canvas = new Canvas(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+	canvas = new Canvas(shell, SWT.H_SCROLL);
 	scrollBar = canvas.getHorizontalBar();
+	canvas.setSize(100,100);
 	setWidget(scrollBar);
+	shell.pack();
+	shell.open();
 }
 
 protected void tearDown() {
@@ -44,67 +48,103 @@ protected String valueString(int[] intArray) {
 	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
 }
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	boolean exceptionThrown = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent event) {
+			listenerCalled = true;
+		}
+		public void widgetDefaultSelected(SelectionEvent event) {
+		}
+	};
+	try {
+		scrollBar.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	scrollBar.addSelectionListener(listener);
+	scrollBar.setSelection(100);
+	assertTrue(":a:", listenerCalled == false);
+	scrollBar.removeSelectionListener(listener);
+	try {
+		scrollBar.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
+	// tested in tearDown
 }
 
 public void test_getEnabled() {
-	warnUnimpl("Test test_getEnabled not written");
+	// tested in test_setEnabled() method
 }
 
 public void test_getIncrement() {
-	warnUnimpl("Test test_getIncrement not written");
+	// tested in test_setIncrement() method
 }
 
 public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
+	// tested in test_setMaximum() method
 }
 
 public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
+	// tested in test_setMinimum() method
 }
 
 public void test_getPageIncrement() {
-	warnUnimpl("Test test_getPageIncrement not written");
+	// tested in test_setPageIncrement() method
 }
 
 public void test_getParent() {
-	warnUnimpl("Test test_getParent not written");
+	assertEquals(canvas, scrollBar.getParent());
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	// tested in test_setSelection() method
 }
 
 public void test_getSize() {
-	warnUnimpl("Test test_getSize not written");
+	assertTrue(scrollBar.getSize().x > 0);
+	assertTrue(scrollBar.getSize().y > 0);
 }
 
 public void test_getThumb() {
-	warnUnimpl("Test test_getThumb not written");
+	// tested in test_setThumb() method
 }
 
 public void test_getVisible() {
-	warnUnimpl("Test test_getVisible not written");
+	// tested in test_setVisible() method
 }
 
 public void test_isEnabled() {
-	warnUnimpl("Test test_isEnabled not written");
+	scrollBar.setEnabled(true);
+	assertTrue(scrollBar.isEnabled());
+
+	scrollBar.setEnabled(false);
+	assertTrue(!scrollBar.isEnabled());
 }
 
 public void test_isVisible() {
-	warnUnimpl("Test test_isVisible not written");
+	scrollBar.setVisible(true);
+	assertTrue(scrollBar.isVisible()); 
+	scrollBar.setVisible(false);
+	assertTrue(!scrollBar.isVisible());
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in addSelectionListener method
 }
 
 public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
+	scrollBar.setEnabled(true);
+	assertTrue(scrollBar.getEnabled());
+
+	scrollBar.setEnabled(false);
+	assertTrue(!scrollBar.getEnabled());
 }
 
 public void test_setIncrementI() {
@@ -180,11 +220,21 @@ public void test_setThumbI(){
 }
 
 public void test_setValuesIIIIII() {
-	warnUnimpl("Test test_setValuesIIIIII not written");
+	scrollBar.setValues(10, 10, 50, 2, 5, 10);
+	assertTrue(":a:", scrollBar.getSelection() == 10);
+	assertTrue(":b:", scrollBar.getMinimum() == 10);
+	assertTrue(":c:", scrollBar.getMaximum() == 50);
+	assertTrue(":d:", scrollBar.getThumb() == 2);
+	assertTrue(":e:", scrollBar.getIncrement() == 5);
+	assertTrue(":f:", scrollBar.getPageIncrement() == 10);
 }
 
 public void test_setVisibleZ() {
-	warnUnimpl("Test test_setVisibleZ not written");
+	scrollBar.setVisible(true);
+	assertTrue(scrollBar.getVisible());
+
+	scrollBar.setVisible(false);
+	assertTrue(!scrollBar.getVisible());
 }
 
 public static Test suite() {
