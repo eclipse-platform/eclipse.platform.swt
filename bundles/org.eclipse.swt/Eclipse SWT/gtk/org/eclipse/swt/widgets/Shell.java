@@ -1293,14 +1293,14 @@ public void dispose () {
 	* The fix is to make the parent be the active top level
 	* shell when the child shell is disposed.
 	*/
-		OS.gtk_widget_hide (shellHandle);
-		if (parent != null) {
-			Shell activeShell = display.getActiveShell ();
-			if (activeShell == this) {
-				Shell shell = parent.getShell ();	
-				shell.bringToTop (false);
-			}
+	OS.gtk_widget_hide (shellHandle);
+	if (parent != null) {
+		Shell activeShell = display.getActiveShell ();
+		if (activeShell == this) {
+			Shell shell = parent.getShell ();	
+			shell.bringToTop (false);
 		}
+	}
 	super.dispose ();
 }
 
