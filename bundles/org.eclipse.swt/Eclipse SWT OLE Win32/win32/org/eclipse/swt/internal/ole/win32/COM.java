@@ -18,7 +18,7 @@ public class COM extends OS {
 	
 	/* Constants */
 
-	// !!!! GUIDs for Home Page Browser !!!!
+	// GUIDs for Home Page Browser
 	public static final GUID IIDIEditorSiteTime = IIDFromString("{6BD2AEFE-7876-45e6-A6E7-3BFCDF6540AA}");
 	public static final GUID IIDIEditorSiteProperty = IIDFromString("{D381A1F4-2326-4f3c-AFB9-B7537DB9E238}");
 	public static final GUID IIDIEditorBaseProperty = IIDFromString("{61E55B0B-2647-47c4-8C89-E736EF15D636}");
