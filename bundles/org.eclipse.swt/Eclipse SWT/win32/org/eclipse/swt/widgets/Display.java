@@ -138,6 +138,10 @@ public class Display extends Device {
 	MSG hookMsg = new MSG ();
 	boolean ignoreMsgFilter;
 	
+	/* Idle Hook */
+	Callback foregroundIdleCallback;
+	int foregroundIdleProc, idleHook;
+	
 	/* Message Hook */
 	Callback getMsgCallback, embeddedCallback;
 	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
@@ -769,6 +773,15 @@ boolean filterMessage (MSG msg) {
 	return false;
 }
 
+Control findControl (int handle) {
+	if (handle == 0) return null;
+	do {
+		Control control = getControl (handle);
+		if (control != null) return control;
+	} while ((handle = OS.GetParent (handle)) != 0);
+	return null;
+}
+
 /**
  * Given the operating system handle for a widget, returns
  * the instance of the <code>Widget</code> subclass which
@@ -788,13 +801,11 @@ public Widget findWidget (int handle) {
 	return getControl (handle);
 }
 
-Control findControl (int handle) {
-	if (handle == 0) return null;
-	do {
-		Control control = getControl (handle);
-		if (control != null) return control;
-	} while ((handle = OS.GetParent (handle)) != 0);
-	return null;
+int foregroundIdleProc (int code, int wParam, int lParam) {
+	if (code >= 0) {
+		if (getMessageCount () > 0) wakeThread ();
+	}
+	return OS.CallNextHookEx (idleHook, code, wParam, lParam);
 }
 
 /**
@@ -1852,6 +1863,14 @@ protected void init () {
 		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
 	
+	/* Create the idle hook */
+	if (!OS.IsWinCE) {
+		foregroundIdleCallback = new Callback (this, "foregroundIdleProc", 3); //$NON-NLS-1$
+		foregroundIdleProc = foregroundIdleCallback.getAddress ();
+		if (foregroundIdleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
+	}
+	
 	/* Register the task bar created message */
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
 
@@ -2529,7 +2548,16 @@ void releaseDisplay () {
 		msgFilterCallback = null;
 		msgFilterProc = 0;
 	}
-
+	
+	/* Unhook the idle hook */
+	if (!OS.IsWinCE) {
+		if (idleHook != 0) OS.UnhookWindowsHookEx (idleHook);
+		idleHook = 0;
+		foregroundIdleCallback.dispose ();
+		foregroundIdleCallback = null;
+		foregroundIdleProc = 0;
+	}
+	
 	/* Destroy the message only HWND */
 	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
 	hwndMessage = 0;
