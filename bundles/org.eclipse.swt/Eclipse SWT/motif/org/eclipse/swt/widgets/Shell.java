@@ -1049,6 +1049,7 @@ void manageChildren () {
 public void open () {
 	checkWidget();
 	setVisible (true);
+	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 void propagateWidget (boolean enabled) {
@@ -1224,12 +1225,14 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		oldX = x + trimLeft ();
 		oldY = y + trimTop ();
 		sendEvent (SWT.Move);
+		if (isDisposed ()) return false;
 	}
 	if (resize && (width != oldWidth || height != oldHeight)) {
 		resized = true;
 		oldWidth = width;
 		oldHeight = height;
 		sendEvent (SWT.Resize);
+		if (isDisposed ()) return false;
 		if (layout != null) layout.layout (this, false);
 	}
 	return move || resize;
@@ -1435,6 +1438,7 @@ public void setVisible (boolean visible) {
 			oldX = location.x + trimLeft ();
 			oldY = location.x + trimTop ();
 			sendEvent (SWT.Move);
+			if (isDisposed ()) return;
 		}
 		if (!resized) {
 			resized = true;
@@ -1442,6 +1446,7 @@ public void setVisible (boolean visible) {
 			oldWidth = size.x - trimWidth ();
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
 			if (layout != null) layout.layout (this, false);
 		}
 	} else {
@@ -1639,6 +1644,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 				oldX = root_x [0];
 				oldY = root_y [0];
 				sendEvent (SWT.Move);
+				if (isDisposed ()) return 0;
 			}
 			updateResizable (xEvent.width, xEvent.height);
 			if (!resized || oldWidth != xEvent.width || oldHeight != xEvent.height) {
@@ -1655,6 +1661,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 					oldWidth = xEvent.width;
 					oldHeight = xEvent.height;
 					sendEvent (SWT.Resize);
+					if (isDisposed ()) return 0;
 					if (layout != null) layout.layout (this, false);
 				}
 			}
