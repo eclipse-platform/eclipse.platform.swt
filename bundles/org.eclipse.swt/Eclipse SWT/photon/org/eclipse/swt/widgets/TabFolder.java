@@ -164,13 +164,14 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	parentingHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int clazz = Display.PtPanelGroup;
+	int clazz = display.PtPanelGroup;
 	args = new int []{
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};

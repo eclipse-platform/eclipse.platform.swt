@@ -121,7 +121,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	int clazz = Display.PtContainer;
+	Display display = getDisplay ();
+	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
 	int cursor = ((style & SWT.HORIZONTAL) != 0) ? OS.Ph_CURSOR_DRAG_VERTICAL : OS.Ph_CURSOR_DRAG_HORIZONTAL;
 	int [] args = {

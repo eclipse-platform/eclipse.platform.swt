@@ -185,7 +185,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	int clazz = Display.PtComboBox;
+	Display display = getDisplay ();
+	int clazz = display.PtComboBox;
 	int parentHandle = parent.parentingHandle ();
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	int [] args = {

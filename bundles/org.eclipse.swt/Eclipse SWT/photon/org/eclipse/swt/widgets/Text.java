@@ -158,11 +158,12 @@ public void clearSelection () {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	if ((style & SWT.SINGLE) != 0) {
-		int clazz = Display.PtText;
+		int clazz = display.PtText;
 		int [] args = {	
 			OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 			OS.Pt_ARG_FLAGS, OS.Pt_CALLBACKS_ACTIVE, OS.Pt_CALLBACKS_ACTIVE,
@@ -173,7 +174,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
-	int clazz = Display.PtMultiText;
+	int clazz = display.PtMultiText;
 	int wrapFlags = (style & SWT.WRAP) != 0 ? OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR : 0;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,

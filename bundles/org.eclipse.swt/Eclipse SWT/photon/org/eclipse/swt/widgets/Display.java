@@ -90,7 +90,7 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 
 	/* TEMPORARY CODE FOR EMULATED TABLE */
-	static int textHighlightThickness = 0;
+	int textHighlightThickness = 0;
 	
 	/* TEMPORARY HACK FOR PHOTON */
 	public boolean embedded;
@@ -202,25 +202,25 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Window Classes */
-	static int ClassesPtr;
-	static int PtButton;
-	static int PtList;
-	static int PtLabel;
-	static int PtWindow;
-	static int PtToggleButton;
-	static int PtComboBox;
-	static int PtText;
-	static int PtMultiText;
-	static int PtScrollbar;
-	static int PtScrollContainer;
-	static int PtScrollArea;
-	static int PtContainer;
-	static int PtProgress;
-	static int PtPanelGroup;
-	static int PtPane;
-	static int PtSlider;
-	static int PtSeparator;
-	static int PtToolbar;
+	int ClassesPtr;
+	int PtButton;
+	int PtList;
+	int PtLabel;
+	int PtWindow;
+	int PtToggleButton;
+	int PtComboBox;
+	int PtText;
+	int PtMultiText;
+	int PtScrollbar;
+	int PtScrollContainer;
+	int PtScrollArea;
+	int PtContainer;
+	int PtProgress;
+	int PtPanelGroup;
+	int PtPane;
+	int PtSlider;
+	int PtSeparator;
+	int PtToolbar;
 				
 	/* Colors */
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;

@@ -161,7 +161,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	int clazz = Display.PtScrollbar;
+	Display display = getDisplay ();
+	int clazz = display.PtScrollbar;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_MAXIMUM, 100, 0,

@@ -108,7 +108,8 @@ protected void checkSubclass () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	int clazz = Display.PtContainer;
+	Display display = getDisplay ();
+	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,

@@ -215,7 +215,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	int clazz = Display.PtList;
+	Display display = getDisplay ();
+	int clazz = display.PtList;
 	int parentHandle = parent.parentingHandle ();
 	int mode = OS.Pt_SELECTION_MODE_SINGLE | OS.Pt_SELECTION_MODE_AUTO;
 	if ((style & SWT.MULTI) != 0) {

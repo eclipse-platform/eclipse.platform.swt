@@ -207,7 +207,7 @@ void createScrolledHandle (int parentHandle) {
 		};
 		cornerHandle = OS.PtCreateWidget (OS.PtContainer (), scrolledHandle, args.length / 3, args);
 	}
-	int clazz = Display.PtContainer;
+	int clazz = display.PtContainer;
 	args = new int [] {
 		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
