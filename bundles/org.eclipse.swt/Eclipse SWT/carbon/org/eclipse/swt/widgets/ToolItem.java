@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolItem extends Item {
 	int handle, iconHandle, labelHandle, arrowHandle;
 	int cIcon, labelCIcon, arrowCIcon;
+	int visibleRgn;
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
@@ -467,6 +468,16 @@ public int getWidth () {
 	return rect.right - rect.left;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (control, visibleRgn, false);
+	}
+	int result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
@@ -542,6 +553,11 @@ void hookEvents () {
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
+}
+
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	parent.resetVisibleRegion (control);
 }
 
 /**
@@ -673,6 +689,8 @@ void releaseWidget () {
 	if (labelCIcon != 0) destroyCIcon (labelCIcon);
 	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
 	cIcon = labelCIcon = arrowCIcon = 0;
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	parent = null;
 	control = null;
 	toolTipText = null;
@@ -702,6 +720,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+
+void resetVisibleRegion (int control) {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
 }
 
 void selectRadio () {

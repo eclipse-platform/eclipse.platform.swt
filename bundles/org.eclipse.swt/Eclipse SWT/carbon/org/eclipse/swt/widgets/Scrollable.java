@@ -336,6 +336,12 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void resetVisibleRegion (int control) {
+	if (verticalBar != null) verticalBar.resetVisibleRegion (control);
+	if (horizontalBar != null) horizontalBar.resetVisibleRegion (control);
+	super.resetVisibleRegion (control);
+}
+
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds(control, x, y, width, height, move, resize, false);
 	if ((result & MOVED) != 0) {

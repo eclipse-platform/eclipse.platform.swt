@@ -302,6 +302,14 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
+void invalidateChildrenVisibleRegion (int control) {
+	super.invalidateChildrenVisibleRegion (control);
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		item.resetVisibleRegion (control);
+	}
+}
+
 int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = 2;
 	int marginWidth = 0, marginHeight = 0;

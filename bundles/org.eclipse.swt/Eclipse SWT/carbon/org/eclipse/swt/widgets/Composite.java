@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
+	int scrolledVisibleRgn, siblingsVisibleRgn;
 
 Composite () {
 	/* Do nothing */
@@ -301,6 +302,29 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (!clipChildren && control == handle) {
+		if (siblingsVisibleRgn == 0) {
+			siblingsVisibleRgn = OS.NewRgn ();
+			calculateVisibleRegion (control, siblingsVisibleRgn, clipChildren);
+		}
+		int result = OS.NewRgn ();
+		OS.CopyRgn (siblingsVisibleRgn, result);
+		return result;
+	}
+	if (control == scrolledHandle) {
+		if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
+		if (scrolledVisibleRgn == 0) {
+			scrolledVisibleRgn = OS.NewRgn ();
+			calculateVisibleRegion (control, scrolledVisibleRgn, clipChildren);
+		}
+		int result = OS.NewRgn ();
+		OS.CopyRgn (scrolledVisibleRgn, result);
+		return result;
+	}
+	return super.getVisibleRegion (control, clipChildren);
+}
+
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -436,8 +460,23 @@ void releaseChildren () {
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
+	if (scrolledVisibleRgn != 0) OS.DisposeRgn (scrolledVisibleRgn);
+	if (siblingsVisibleRgn != 0) OS.DisposeRgn (siblingsVisibleRgn);
+	siblingsVisibleRgn = scrolledVisibleRgn = 0;
 	layout = null;
 	tabList = null;
+}
+
+void resetVisibleRegion (int control) {
+	if (scrolledVisibleRgn != 0) {
+		OS.DisposeRgn (scrolledVisibleRgn);
+		scrolledVisibleRgn = 0;
+	}
+	if (siblingsVisibleRgn != 0) {
+		OS.DisposeRgn (siblingsVisibleRgn);
+		siblingsVisibleRgn = 0;
+	}
+	super.resetVisibleRegion (control);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {

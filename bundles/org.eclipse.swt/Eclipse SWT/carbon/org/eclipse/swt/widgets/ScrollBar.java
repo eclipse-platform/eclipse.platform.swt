@@ -83,6 +83,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ScrollBar extends Widget {
 	int handle;
+	int visibleRgn;
 	Scrollable parent;
 	boolean dragging;
 	int increment = 1;
@@ -390,6 +391,16 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (control, visibleRgn, clipChildren);
+	}
+	int result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int controlProc = display.controlProc;
@@ -398,6 +409,12 @@ void hookEvents () {
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+}
+
+
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	parent.resetVisibleRegion (control);
 }
 
 /**
@@ -500,7 +517,16 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	parent = null;
+}
+
+void resetVisibleRegion (int control) {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
 }
 
 /**

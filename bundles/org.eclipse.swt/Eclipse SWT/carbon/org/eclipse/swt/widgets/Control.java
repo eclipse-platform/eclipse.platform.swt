@@ -51,7 +51,7 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	String toolTipText;
 	Object layoutData;
-	int drawCount;
+	int drawCount, visibleRgn;
 	Menu menu;
 	float [] foreground, background;
 	Font font;
@@ -887,6 +887,17 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (control, visibleRgn, clipChildren);
+	}
+	int result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 boolean hasFocus () {
 	return this == display.getFocusControl ();
 }
@@ -1118,20 +1129,6 @@ void invalidateVisibleRegion (int control) {
 		sibling.invalidateChildrenVisibleRegion (control);
 	}
 	parent.resetVisibleRegion (control);
-}
-
-void resetVisibleRegion (int control) {
-	if (gcs != null) {
-		int visibleRgn = getVisibleRegion (handle, true);
-		for (int i=0; i<gcs.length; i++) {
-			GCData data = gcs [i];
-			if (data != null) {
-				data.updateClip = true;
-				OS.CopyRgn (visibleRgn, data.visibleRgn);
-			}
-		}
-		OS.DisposeRgn (visibleRgn);
-	}
 }
 
 /**
@@ -1562,6 +1559,8 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	menu = null;
 	parent = null;
 	layoutData = null;
@@ -1788,6 +1787,24 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
+}
+
+void resetVisibleRegion (int control) {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
+	if (gcs != null) {
+		int visibleRgn = getVisibleRegion (handle, true);
+		for (int i=0; i<gcs.length; i++) {
+			GCData data = gcs [i];
+			if (data != null) {
+				data.updateClip = true;
+				OS.CopyRgn (visibleRgn, data.visibleRgn);
+			}
+		}
+		OS.DisposeRgn (visibleRgn);
+	}
 }
 
 void sendFocusEvent (boolean focusIn, boolean post) {
@@ -2321,9 +2338,13 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
+			invalidateVisibleRegion (handle);
 			redrawWidget (handle, true);
 		}
 	} else {
+		if (drawCount == 0) {
+			invalidateVisibleRegion (handle);
+		}
 		drawCount++;
 	}
 }

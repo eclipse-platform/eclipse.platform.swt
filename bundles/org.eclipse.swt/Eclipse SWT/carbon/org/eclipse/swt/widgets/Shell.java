@@ -411,7 +411,7 @@ void createHandle () {
 			* kWindowLiveResizeAttribute in this case.  It's inconsistent with other
 			* windows, but at least the user will get feedback when resizing.
 			*/
-			if ((style & SWT.ON_TOP) != 0) attributes |= OS.kWindowLiveResizeAttribute;
+			if (true || (style & SWT.ON_TOP) != 0) attributes |= OS.kWindowLiveResizeAttribute;
 		}
 	}
 	int windowClass = OS.kDocumentWindowClass;
