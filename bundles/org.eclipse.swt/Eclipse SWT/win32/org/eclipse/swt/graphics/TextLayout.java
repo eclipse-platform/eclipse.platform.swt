@@ -542,7 +542,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					int drawRunY = drawY + (baseline - run.ascent);
 					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
 					if ((run.style != null) && (run.style.underline || run.style.strikeout)) {
-						int newPen = fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
+						int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
 						int oldPen = OS.SelectObject(hdc, newPen);
 						if (run.style.underline) {
 							int underlineY = drawY + baseline + 1;
@@ -555,7 +555,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							OS.LineTo(hdc, drawX + run.width, strikeoutY);	
 						}
 						OS.SelectObject(hdc, oldPen);
-						if (fg != selectionForeground.handle) OS.DeleteObject(newPen);
+						if (hasSelection && fg != selectionForeground.handle) OS.DeleteObject(newPen);
 					}
 					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
