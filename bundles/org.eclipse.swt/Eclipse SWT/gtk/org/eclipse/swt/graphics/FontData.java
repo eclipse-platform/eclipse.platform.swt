@@ -97,6 +97,11 @@ public FontData(String string) {
 	int end = string.indexOf('|');
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	String version1 = string.substring(start, end);
+	try {
+		if (Integer.parseInt(version1) != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	} catch (NumberFormatException e) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	
 	start = end + 1;
 	end = string.indexOf('|', start);

@@ -141,7 +141,12 @@ public FontData(String string) {
 	int end = string.indexOf('|');
 	if (end == -1) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	String version1 = string.substring(start, end);
-	
+	try {
+		if (Integer.parseInt(version1) != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	} catch (NumberFormatException e) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -443,6 +448,7 @@ public void setStyle(int style) {
 		slant = "i";
 	else
 		slant = "r";
+	averageWidth = 0;
 }
 void setXlfd(String xlfd) {
 	int start, stop;

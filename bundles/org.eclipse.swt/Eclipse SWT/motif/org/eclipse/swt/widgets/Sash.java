@@ -195,10 +195,10 @@ int processKeyDown (int callData) {
 				yChange = keysym [0] == OS.XK_Up ? -stepSize : stepSize;
 			}
 			
-			int [] argList1 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+			int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 			OS.XtGetValues (handle, argList1, argList1.length / 2);
-			int border = argList1 [9], x = ((short) argList1 [1]) - border, y = ((short) argList1 [3]) - border;
-			int width = argList1 [5] + (border * 2), height = argList1 [7] + (border * 2);
+			int border = argList1 [5];
+			int width = argList1 [1] + (border * 2), height = argList1 [3] + (border * 2);
 			int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 			OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
 			int parentBorder = argList2 [5];
