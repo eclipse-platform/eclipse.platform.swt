@@ -683,9 +683,11 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-	if ((bits & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
-	if ((bits & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
+	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
+	int bits2 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits2 & OS.WS_BORDER) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
 	return 0;
 }
 
@@ -1079,25 +1081,32 @@ public void internal_dispose_GC (int hDC, GCData data) {
 }
 
 boolean isActive () {
-	Shell modal = display.getModalShell ();
-	if (modal != null && modal != this) {
-		if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
-			Shell shell = getShell ();
-			if (modal.parent == shell) {
-				return false;
-			}
-		}
+	Shell shell = null;
+	Shell [] modalShells = display.modalShells;
+	if (modalShells != null) {
 		int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-		if ((modal.style & bits) != 0) {
-			Control control = this;
-			while (control != null) {
-				if (control == modal) break;
-				control = control.parent;
+		int index = modalShells.length;
+		while (--index >= 0) {
+			Shell modal = modalShells [index];
+			if (modal != null && modal != this) {
+				if ((modal.style & bits) != 0) {
+					Control control = this;
+					while (control != null) {
+						if (control == modal) break;
+						control = control.parent;
+					}
+					if (control != modal) return false;
+					break;
+				}
+				if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
+					if (shell == null) shell = getShell ();
+					if (modal.parent == shell) return false;
+				}
 			}
-			if (control != modal) return false;
 		}
 	}
-	return getShell ().getEnabled ();
+	if (shell == null) shell = getShell ();
+	return shell.getEnabled ();
 }
 
 /**
@@ -2815,6 +2824,9 @@ CREATESTRUCT widgetCreateStruct () {
 int widgetExtStyle () {
 	int bits = 0;
 	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
+//	if ((style & SWT.BORDER) != 0) {
+//		if ((style & SWT.FLAT) == 0) bits |= OS.WS_EX_CLIENTEDGE;
+//	}
 	/*
 	* Feature in Windows NT.  When CreateWindowEx() is called with
 	* WS_EX_LAYOUTRTL or WS_EX_NOINHERITLAYOUT, CreateWindowEx()
@@ -2834,7 +2846,11 @@ int widgetParent () {
 
 int widgetStyle () {
 	/* Force clipping of siblings by setting WS_CLIPSIBLINGS */
-	return OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS;
+	int bits = OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS;
+//	if ((style & SWT.BORDER) != 0) {
+//		if ((style & SWT.FLAT) != 0) bits |= OS.WS_BORDER;
+//	}
+	return bits;
 	
 	/*
 	* This code is intentionally commented.  When clipping
