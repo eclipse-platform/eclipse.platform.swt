@@ -17,8 +17,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * WARNING 3.0 API STILL UNDER CONSTRUCTION
- * 
  * 
  * Instances of this class implement the notebook user interface
  * metaphor.  It allows the user to select a notebook page from
@@ -37,7 +35,7 @@ import org.eclipse.swt.widgets.*;
  * <dd>CLOSE, TOP, BOTTOM, FLAT, BORDER, SINGLE, MULTI</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
- * <dd>"CTabFolder"</dd>
+ * <dd>"CTabFolder2"</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles TOP and BOTTOM 
@@ -382,7 +380,9 @@ static void fillRegion(GC gc, Region region) {
 /**
  * 
  * Adds the listener to the collection of listeners who will
- * be notified when a tab item is closed.
+ * be notified when a tab item is closed, minimized, maximized,
+ * restored, or to show the list of items that are not 
+ * currently visible.
  *
  * @param listener the listener which should be notified
  *
@@ -397,9 +397,6 @@ static void fillRegion(GC gc, Region region) {
  *
  * @see CTabFolder2Listener
  * @see #removeCTabFolder2Listener(CTabFolder2Listener)
- * 
- * UNDER CONSTRUCTION
- * @since 3.0
  */
 public void addCTabFolder2Listener(CTabFolder2Listener listener) {
 	checkWidget();
@@ -428,7 +425,7 @@ public void addCTabFolder2Listener(CTabFolder2Listener listener) {
  * @see CTabFolderListener
  * @see #removeCTabFolderListener(CTabFolderListener)
  * 
- * @deprecated use addCTabFolderCloseListener
+ * @deprecated use addCTabFolder2Listener(CTabFolder2Listener)
  */
 public void addCTabFolderListener(CTabFolderListener listener) {
 	checkWidget();
@@ -597,6 +594,7 @@ void createItem (CTabItem item, int index) {
 	}
 	if (items.length == 1) {
 		firstIndex = 0;
+		
 		if (!updateTabHeight(false)) updateItems();
 		redraw();
 	} else {
@@ -1168,8 +1166,15 @@ void drawTabArea(Event event) {
 //	}
 }
 /**
+ * Returns <code>true</code> if the receiver's border is visible.
+ *
+ * @return the receiver's border visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getBorderVisible() {
@@ -1281,18 +1286,15 @@ char getMnemonic (String string) {
  	return '\0';
 }
 /**
- * Returns <code>true</code> if the receiver is minimized,
- * and false otherwise.
- * <p>
+ * Returns <code>true</code> if the receiver is minimized.
  *
- * @return the minimized state
+ * @return the receiver's minimized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMinimized() {
@@ -1300,7 +1302,16 @@ public boolean getMinimized() {
 	return minimized;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the minimize button
+ * is visible.
+ *
+ * @return the visibility of the minimized button
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public boolean getMinimizeVisible() {
@@ -1308,7 +1319,11 @@ public boolean getMinimizeVisible() {
 	return showMin;
 }
 /** 
- * UNDER CONSTRUCTION
+ * Returns the number of characters that will
+ * appear in a fully compressed tab.
+ * 
+ * @return number of characters that will appear in a fully compressed tab
+ * 
  * @since 3.0
  */
 public int getMinimumCharacters() {
@@ -1316,18 +1331,16 @@ public int getMinimumCharacters() {
 	return minChars;
 }
 /**
- * Returns <code>true</code> if the receiver is maximized,
- * and false otherwise.
+ * Returns <code>true</code> if the receiver is maximized.
  * <p>
  *
- * @return the maximized state
+ * @return the receiver's maximized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMaximized() {
@@ -1335,7 +1348,16 @@ public boolean getMaximized() {
 	return maximized;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the maximize button
+ * is visible.
+ *
+ * @return the visibility of the maximized button
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public boolean getMaximizeVisible() {
@@ -1367,7 +1389,15 @@ public CTabItem getSelection() {
 	return items[selectedIndex];
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns the receiver's selection background color.
+ *
+ * @return the selection background color of the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public Color getSelectionBackground() {
@@ -1375,7 +1405,15 @@ public Color getSelectionBackground() {
 	return selectionBackground;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns the receiver's selection foreground color.
+ *
+ * @return the selection foreground color of the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public Color getSelectionForeground() {
@@ -1398,7 +1436,11 @@ public int getSelectionIndex() {
 	return selectedIndex;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the CTabFolder is rendered
+ * with a simple, traditional shape.
+ * 
+ * @return <code>true</code> if the CTabFolder is rendered with a simple shape
+ * 
  * @since 3.0
  */
 public boolean getSimple() {
@@ -1406,7 +1448,11 @@ public boolean getSimple() {
 	return simple;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the CTabFolder only displys the selected tab
+ * and <code>false</code> if the CTabFolder displays multiple tabs.
+ * 
+ * @return <code>true</code> if the CTabFolder only displys the selected tab and <code>false</code> if the CTabFolder displays multiple tabs
+ * 
  * @since 3.0
  */
 public boolean getSingle() {
@@ -1456,21 +1502,25 @@ public int getTabPosition(){
  * Returns the control in the top right corner of the tab folder. 
  * Typically this is a close button or a composite with a menu and close button.
  *
- * @since 2.1
- *
  * @return the control in the top right corner of the tab folder or null
  * 
  * @exception  SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
+ *
+ * @since 2.1
  */
 public Control getTopRight() {
 	checkWidget();
 	return topRight;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the close button appears 
+ * when the user hovers over an unselected tabs.
+ * 
+ * @return <code>true</code> if the close button appears on unselected tabs
+ * 
  * @since 3.0
  */
 public boolean getUnselectedCloseVisible() {
@@ -1478,7 +1528,11 @@ public boolean getUnselectedCloseVisible() {
 	return showUnselectedClose;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if an image appears 
+ * in unselected tabs.
+ * 
+ * @return <code>true</code> if an image appears in unselected tabs
+ * 
  * @since 3.0
  */
 public boolean getUnselectedImageVisible() {
@@ -2138,17 +2192,22 @@ void redrawTabs() {
 		redraw(0, 0, size.x, borderTop + tabHeight + highlight_header + 1, false);
 	}
 }
-/**
- * 
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
+ * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- *
- * UNDER CONSTRUCTION
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @see #addCTabFolder2Listener(CTabFolder2Listener)
+ * 
  * @since 3.0
  */
 public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
@@ -2260,7 +2319,6 @@ public void setBackground (Color color) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 void setBackground(Color[] colors, int[] percents) {
@@ -2293,7 +2351,6 @@ void setBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 void setBackground(Color[] colors, int[] percents, boolean vertical) {
@@ -2375,7 +2432,6 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 void setBackground(Image image) {
@@ -2825,7 +2881,16 @@ void setLastIndex(int index) {
 	redrawTabs();
 }
 /**
- * UNDER CONSTRUCTION
+ * Marks the receiver's maximize button as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setMaximizeVisible(boolean visible) {
@@ -2837,7 +2902,15 @@ public void setMaximizeVisible(boolean visible) {
 	redraw();
 }
 /**
- * UNDER CONSTRUCTION
+ * Sets the maximized state of the receiver.
+ *
+ * @param maximize the new maximized state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
  * @since 3.0
  */
 public void setMaximized(boolean maximize) {
@@ -2848,7 +2921,16 @@ public void setMaximized(boolean maximize) {
 	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 }
 /**
- * UNDER CONSTRUCTION
+ * Marks the receiver's minimize button as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setMinimizeVisible(boolean visible) {
@@ -2860,7 +2942,15 @@ public void setMinimizeVisible(boolean visible) {
 	redraw();
 }
 /**
- * UNDER CONSTRUCTION
+ * Sets the minimized state of the receiver.
+ *
+ * @param minimize the new minimized state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
  * @since 3.0
  */
 public void setMinimized(boolean minimize) {
@@ -2872,7 +2962,17 @@ public void setMinimized(boolean minimize) {
 }
 
 /**
- * UNDER CONSTRUCTION
+ * Sets the minimum number of characters that will 
+ * be displayed in a fully compressed tab.
+ * 
+ * @param count the minimum number of characters that will be displayed in a fully compressed tab
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_RANGE - if the count is less than zero</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setMinimumCharacters(int count) {
@@ -2952,7 +3052,20 @@ void setSelection(int index, boolean notify) {
 	}
 }
 /**
- * UNDER CONSTRUCTION
+ * Sets the receiver's selection background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
  * @since 3.0
  */
 public void setSelectionBackground (Color color) {
@@ -3017,7 +3130,6 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
@@ -3127,13 +3239,15 @@ public void setSelectionForeground (Color color) {
 	if (selectedIndex > -1) redraw();
 }
 /**
+ * Sets the shape that the CTabFolder will use to render itself.  
+ * 
+ * @param simple <code>true</code> if the CTabFolder should render itself in a simple, traditional style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * UNDER CONSTRUCTION
+ *
  * @since 3.0
  */
 public void setSimple(boolean simple) {
@@ -3150,13 +3264,15 @@ public void setSimple(boolean simple) {
 	}
 }
 /**
+ * Sets the number of tabs that the CTabFolder should display
+ * 
+ * @param single <code>true</code> if only the selected tab should be displayed otherwise, multiple tabs will be shown.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setSingle(boolean single) {
@@ -3201,6 +3317,10 @@ public void setTabHeight(int height) {
 	updateTabHeight(false);
 }
 /**
+ * Specify whether the tabs should appear along the top of the folder 
+ * or along the bottom of the folder.
+ * 
+ * @param position <code>SWT.TOP</code> for tabs along the top or <code>SWT.BOTTOM</code> for tabs along the bottom
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3208,7 +3328,6 @@ public void setTabHeight(int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the position value is not either SWT.TOP or SWT.BOTTOM</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setTabPosition(int position) {
@@ -3233,9 +3352,8 @@ public void setTabPosition(int position) {
 /**
  * Set the control that appears in the top right corner of the tab folder.
  * Typically this is a close button or a composite with a Menu and close button. 
- * The topRight control is optional.  Setting the top right control to null will remove it from the tab folder.
- *
- * @since 2.1
+ * The topRight control is optional.  Setting the top right control to null will 
+ * remove it from the tab folder.
  * 
  * @param control the control to be displayed in the top right corner or null
  *
@@ -3245,11 +3363,33 @@ public void setTabPosition(int position) {
  *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
  * </ul>
  * 
+ * @since 2.1
  */
 public void setTopRight(Control control) {
 	setTopRight(control, SWT.RIGHT);
 }
 /**
+ * Set the control that appears in the top right corner of the tab folder.
+ * Typically this is a close button or a composite with a Menu and close button. 
+ * The topRight control is optional.  Setting the top right control to null 
+ * will remove it from the tab folder.
+ * <p>
+ * The alignment parameter sets the layout of the control in the tab area.
+ * <code>SWT.RIGHT</code> will cause the control to be positioned on the far 
+ * right of the folder and it will have its default size.  <code>SWT.FILL</code> 
+ * will size the control to fill all the available space to the right of the
+ * last tab.  If there is no available space, the control will not be visible.
+ * </p>
+ *
+ * @param control the control to be displayed in the top right corner or null
+ * @param alignment <code>SWT.RIGHT</code> or <code>SWT.FILL</code> 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setTopRight(Control control, int alignment) {
@@ -3265,7 +3405,16 @@ public void setTopRight(Control control, int alignment) {
 	if (updateItems()) redraw();
 }
 /**
- * UNDER CONSTRUCTION
+ * Specify whether the close button appears 
+ * when the user hovers over an unselected tabs.
+ * 
+ * @param visible <code>true</code> makes the close button appear
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setUnselectedCloseVisible(boolean visible) {
@@ -3277,7 +3426,15 @@ public void setUnselectedCloseVisible(boolean visible) {
 	redraw();
 }
 /**
- * UNDER CONSTRUCTION
+ * Specify whether the image appears on unselected tabs.
+ * 
+ * @param visible <code>true</code> makes the image appear
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public void setUnselectedImageVisible(boolean visible) {
@@ -3292,7 +3449,7 @@ public void setUnselectedImageVisible(boolean visible) {
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
  * the item is visible.
- *
+ * 
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
@@ -3305,7 +3462,7 @@ public void setUnselectedImageVisible(boolean visible) {
  * </ul>
  *
  * @see CTabFolder#showSelection()
- * 
+ *
  * @since 2.0
  */
 public void showItem (CTabItem item) {
@@ -3373,7 +3530,6 @@ void showList (Rectangle rect) {
  * @see CTabFolder#showItem(CTabItem)
  * 
  * @since 2.0
- * 
  */
 public void showSelection () {
 	checkWidget (); 
