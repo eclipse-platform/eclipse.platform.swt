@@ -155,24 +155,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	width = dim.w; height = dim.h;
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		int [] args = {
-			OS.Pt_ARG_MARGIN_WIDTH, 0, 0,	// 1
-			OS.Pt_ARG_MARGIN_HEIGHT, 0, 0,	// 4
-			OS.Pt_ARG_MARGIN_LEFT, 0, 0,	// 7
-			OS.Pt_ARG_MARGIN_RIGHT, 0, 0,	// 10
-			OS.Pt_ARG_MARGIN_TOP, 0, 0,		// 13
-			OS.Pt_ARG_MARGIN_BOTTOM, 0, 0,	// 16
+			OS.Pt_ARG_MARGIN_LEFT, 0, 0,	// 1
+			OS.Pt_ARG_MARGIN_RIGHT, 0, 0,	// 4
+			OS.Pt_ARG_MARGIN_TOP, 0, 0,		// 7
+			OS.Pt_ARG_MARGIN_BOTTOM, 0, 0,	// 10
+//			OS.Pt_ARG_MARGIN_WIDTH, 0, 0,	// 13
+//			OS.Pt_ARG_MARGIN_HEIGHT, 0, 0,	// 16
 		};
 		OS.PtGetResources (handle, args.length / 3, args);
-		PhRect_t rect = new PhRect_t ();
 		PhArea_t area = new PhArea_t ();
-		rect.lr_x = (short) (wHint - 1);
-		rect.lr_y = (short) (hHint - 1);
-		OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
+		area.size_w = (short) wHint;
+		area.size_h = (short) hHint;
+
+		/*
+		* This code is intentionally commented. Bug compatible with Windows.
+		*/
+//		PhRect_t rect = new PhRect_t ();
+//		rect.lr_x = (short) (wHint - 1);
+//		rect.lr_y = (short) (hHint - 1);
+//		OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
 		if (wHint != SWT.DEFAULT) {
-			width = area.size_w + (args [1] * 2) + args [7] + args [10];
+			width = area.size_w + /*(args [13] * 2)*/ + args [1] + args [4];
 		}
 		if (hHint != SWT.DEFAULT) {
-			height = area.size_h + (args [4] * 2) + args [13] + args [16];
+			height = area.size_h + /*(args [16] * 2)*/ + args [7] + args [10];
 		}
 	}
 	return new Point (width, height);
