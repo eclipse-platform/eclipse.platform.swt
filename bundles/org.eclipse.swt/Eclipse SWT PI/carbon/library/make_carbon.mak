@@ -12,7 +12,7 @@ CLASSPATH= ../../../bin
 OSCLASS= $(CLASSPATH)/org/eclipse/swt/internal/carbon/OS.class
 OSHEADER= org_eclipse_swt_internal_carbon_OS.h
 JNI= /System/Library/Frameworks/JavaVM.framework/Headers
-LIBNAME= swt-carbon-2103
+LIBNAME= swt-carbon-2104
 LIB= lib$(LIBNAME).jnilib
 
 
