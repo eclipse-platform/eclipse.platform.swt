@@ -1325,8 +1325,10 @@ public boolean getGrayed() {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ())
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (background != null && background.equals (color)) return;
 	background = color;	
 	redraw();
 }
@@ -1367,8 +1369,10 @@ void setExpanding(boolean expanding){
  */
 public void setFont (Font font){
 	checkWidget ();
-	if (font != null && font.isDisposed ())
+	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
 	redraw ();
 }
@@ -1394,8 +1398,10 @@ public void setFont (Font font){
  */
 public void setForeground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ())
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
 	redraw(); 
 }
