@@ -269,8 +269,9 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			delta.y = (short)deltaY;
 			int clipRects = data.clipRects;
 			short[] unused = new short[1];
-			int[] child_tiles = new int[1];
-			int child_clip = getClipping(widget, data.topWidget, true, true, child_tiles);
+			int[] child_tiles_buffer = new int[1];
+			int child_clip = getClipping(widget, data.topWidget, true, true, child_tiles_buffer);
+			int child_tiles = child_tiles_buffer[0];
 			if (clipRects == 0 && child_clip == 0) {
 				OS.PhBlit(rid, rect, delta);
 			} else {
@@ -298,7 +299,9 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				OS.PhTranslateTiles(dest_tiles, inverseDelta);
 				
 				/* Exclude rectangles obscured by widgets. */
-				dest_tiles = OS.PhClipTilings(dest_tiles, child_tiles[0], null);
+				if (child_tiles != 0) {
+					dest_tiles = OS.PhClipTilings(dest_tiles, child_tiles, null);
+				}
 				
 				/* Copy rectangles. */
 				int[] src_rects_count = new int[1];
@@ -318,8 +321,11 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			*/
 			int src = OS.PhGetTile();
 			OS.memmove(src, rect, PhRect_t.sizeof);
-			int widget_damage_tiles = OS.PhIntersectTilings(src, child_tiles[0], unused);
-			OS.PhTranslateTiles(widget_damage_tiles, delta);
+			int widget_damage_tiles = 0;
+			if (child_tiles != 0) {
+				widget_damage_tiles = OS.PhIntersectTilings(src, child_tiles, unused);
+				OS.PhTranslateTiles(widget_damage_tiles, delta);
+			}
 			
 			/*
 			* Damage the source rectangle excluding the intersecting area
@@ -337,12 +343,25 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			}
 			
 			/* Merge all damage rectangles. */
-			int damage_tiles = OS.PhAddMergeTiles(src_damage_tiles, widget_damage_tiles, null);
+			int damage_tiles = src_damage_tiles;
+			if (widget_damage_tiles != 0) {
+				damage_tiles = OS.PhAddMergeTiles(src_damage_tiles, widget_damage_tiles, null);
+			}
+			
+//			NOT SURE			
+//			src = OS.PhGetTile();
+//			OS.memmove(src, rect, PhRect_t.sizeof);
+//			int widget_tile = OS.PhGetTile();
+//			OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
+//			OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
+//			src = OS.PhClipTilings(src, widget_tile, null);
+//			OS.PhTranslateTiles(src, delta);
+//			damage_tiles = OS.PhAddMergeTiles(damage_tiles, src, null);
 
 			/* Exclude damage rectangles obscured by widgets. */
-			damage_tiles = OS.PhClipTilings(damage_tiles, child_tiles[0], null);
+			damage_tiles = OS.PhClipTilings(damage_tiles, child_tiles, null);
 
-			OS.PhFreeTiles (child_tiles[0]);
+			OS.PhFreeTiles (child_tiles);
 
 			/* Damage rectangles. */			
 			int[] damage_rects_count = new int[1];
@@ -2373,12 +2392,14 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
 	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
 
-	if (child_tiles != null) child_tiles[0] = child_tile;
 
 	/* Clip the widget's rectangle from the child/siblings rectangle's */
 	if (child_tile != 0) {
+		if (child_tiles != null) {
+			child_tiles[0] = OS.PhIntersectTilings(widget_tile, child_tile, new short[1]);
+		}
 		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
-		if (child_tiles == null) OS.PhFreeTiles(child_tile);
+		OS.PhFreeTiles(child_tile);
 		return clip_tile;
 	}
 	return widget_tile;
