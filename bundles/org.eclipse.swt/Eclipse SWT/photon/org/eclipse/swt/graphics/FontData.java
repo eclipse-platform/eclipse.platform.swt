@@ -40,19 +40,19 @@ public final class FontData {
 	 * the font name
 	 * (Warning: This field is platform dependent)
 	 */
-	String name;
+	public String name;
 
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
 	 */
-	int    height;
+	public int height;
 
 	/**
 	 * the font style
 	 * (Warning: This field is platform dependent)
 	 */
-	int    style;
+	public int style;
 	
 	/**
 	 * A Photon stem
@@ -67,24 +67,57 @@ public final class FontData {
 	String lang, country, variant;
 	
 FontData(byte[] stem) {
+	this.stem = stem;
+	int fontID = OS.PfDecomposeStemToID(stem);
+	if (fontID != 0) {
+		int desc = OS.PfFontDescription(fontID);
+		int size = OS.PfFontSize(fontID);
+		int flags = OS.PfFontFlags(fontID);
+		int length = OS.strlen(desc);
+		byte[] buffer = new byte[length];
+		OS.memmove(buffer, desc, length);
+		name = new String(Converter.mbcsToWcs(null, buffer));
+		height = size;
+		style = SWT.NORMAL;
+		if ((flags & OS.PF_STYLE_BOLD) != 0) style |= SWT.BOLD;
+		if ((flags & OS.PF_STYLE_ITALIC) != 0) style |= SWT.ITALIC;
+		OS.PfFreeFont(fontID);
+		return;
+	}
+	/*
+	* For some reason, PfDecomposeStemToID sometimes fails to decompose
+	* a valid stem (e.g. TextFont09bi).
+	*/
 	FontQueryInfo info = new FontQueryInfo();
 	if (OS.PfQueryFontInfo(stem, info) == 0) {
 		this.stem = info.font;
-		name = new String(Converter.mbcsToWcs(null, info.desc)).trim();
+		char[] chars = Converter.mbcsToWcs(null, info.desc);
+		int index = 0;
+		while (index < chars.length) {
+			if (chars[index] == 0) break;
+			index++;
+		}
+		name = new String(chars, 0, index);
 		if ((info.style & OS.PHFONT_INFO_PLAIN) != 0) style = SWT.NORMAL;
 		else if ((info.style & OS.PHFONT_INFO_BOLD) != 0) style = SWT.BOLD;
 		else if ((info.style & OS.PHFONT_INFO_ITALIC) != 0) style = SWT.ITALIC;
 		else if ((info.style & OS.PHFONT_INFO_BLDITC) != 0) style = SWT.BOLD | SWT.ITALIC;
 		else style = SWT.NORMAL;
 		/*
-		* For some reason, sometimes PfQueryFontInfo does not
+		* For some reason, PfQueryFontInfo sometimes does not
 		* set the size of the font.  In that case, the size is
 		* parsed from the stem.
 		*/
 		if (info.size != 0) {
 			height = info.size;
 		} else {
-			String fontName = new String(Converter.mbcsToWcs(null, this.stem)).trim();
+			chars = Converter.mbcsToWcs(null, this.stem);
+			index = 0;
+			while (index < chars.length) {
+				if (chars[index] == 0) break;
+				index++;
+			}
+			String fontName = new String(chars, 0, index);
 			int end = fontName.length();
 			for (int i = end - 1; i >= 0; i--) {
 				if (Character.isDigit(fontName.charAt(i))) break;
@@ -99,8 +132,6 @@ FontData(byte[] stem) {
 				height = Integer.parseInt(fontName.substring(start, end));
 			} catch (NumberFormatException e) {}
 		}
-	} else {
-		this.stem = stem;
 	}
 }
 
@@ -284,6 +315,7 @@ public int hashCode () {
 public void setHeight(int height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
+	this.stem = null;
 }
 
 /**
@@ -314,6 +346,7 @@ public void setHeight(int height) {
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.name = name;
+	this.stem = null;
 }
 
 /**
@@ -364,6 +397,7 @@ public void setLocale(String locale) {
  */
 public void setStyle(int style) {
 	this.style = style;
+	this.stem = null;
 }
 
 /**

@@ -35,8 +35,13 @@ public final class Font {
 	 */
 	Device device;
 	
-	static final byte[] DefaultFontName = {(byte)'h', (byte)'e', (byte)'l', (byte)'v'};
-	static final byte[] DefaultFont = {(byte)'h', (byte)'e', (byte)'l', (byte)'v', (byte)'1', (byte)'2'};
+	static final byte[] DefaultFontName;
+	static final byte[] DefaultFont;
+
+	static {
+		DefaultFontName = Converter.wcsToMbcs(null, "TextFont", true);
+		DefaultFont = Converter.wcsToMbcs(null, "TextFont09", true);
+	}
 
 Font() {
 }
@@ -124,9 +129,10 @@ public boolean equals(Object object) {
 	byte[] h = ((Font)object).handle;
 	if (h == handle) return true;
 	if (h == null || handle == null) return false;
-	if (h.length != handle.length) return false;
-	for (int i = 0; i < handle.length; i++) {
+	int end = Math.min(h.length, handle.length);
+	for (int i=0; i<end; i++) {
 		if (handle[i] != h[i]) return false;
+		if (handle[i] == 0) break;
 	}
 	return true;
 }
@@ -211,7 +217,13 @@ public static Font photon_new(Device device, byte[] stem) {
  */
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
-	return "Font {" + new String(handle).trim() + "}";
+	int index = 0;
+	while (index < handle.length) {
+		if (handle[index] == 0) break;
+		index++;
+	}
+	String text = new String(handle, 0, index);
+	return "Font {" + text + "}";
 }
 
 }

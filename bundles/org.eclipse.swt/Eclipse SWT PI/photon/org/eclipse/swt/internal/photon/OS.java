@@ -2567,11 +2567,12 @@ public static final native PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos,
 public static final native int PfQueryFonts(int symbol, int flags, int list, int n);
 public static final native byte[] PfGenerateFontName(byte[] pkucDescription, int kuiFlags, int kuiSize, byte[] pucBuff);
 //public static final native int PfFindFont(byte[] pkucDescription, int kulFlags, int kulSize);
-//public static final native int PfFreeFont(int ptsID);
-//public static final native int PfFontDescription(int ptsID);
-//public static final native int PfFontSize(int ptsID);
-//public static final native int PfFontFlags(int ptsID);
+public static final native int PfFreeFont(int ptsID);
+public static final native int PfFontDescription(int ptsID);
+public static final native int PfFontSize(int ptsID);
+public static final native int PfFontFlags(int ptsID);
 //public static final native int PfConvertFontID(int ptsID);
+public static final native int PfDecomposeStemToID(byte [] pkszStem);
 
 public static final native PhRect_t PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
 
