@@ -184,6 +184,7 @@
 #define NO_GetCharacterPlacementA
 #define NO_GetCharacterPlacementW
 #define NO_GetClassInfoA
+#define NO_GetClassNameA
 #define NO_GetClipboardFormatNameA
 #define NO_GetComboBoxInfo
 #define NO_GetDIBColorTable
@@ -341,6 +342,7 @@
 #define NO_SetMenuDefaultItem
 #define NO_SetMenuInfo
 #define NO_SetMenuItemInfoA
+#define NO_SetMetaRgn
 #define NO_SetPropA
 #define NO_SetPropW
 #define NO_SetStretchBltMode

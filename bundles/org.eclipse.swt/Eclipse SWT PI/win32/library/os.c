@@ -2355,6 +2355,38 @@ fail:
 }
 #endif
 
+#ifndef NO_GetClassNameA
+JNIEXPORT jint JNICALL OS_NATIVE(GetClassNameA)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetClassNameA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetClassNameA((HWND)arg0, lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetClassNameA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetClassNameW
+JNIEXPORT jint JNICALL OS_NATIVE(GetClassNameW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetClassNameW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetClassNameW((HWND)arg0, lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetClassNameW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetClientRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetClientRect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -8893,6 +8925,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenuItemInfoW)
 fail:
 	if (arg3 && lparg3) setMENUITEMINFOFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SetMenuItemInfoW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetMetaRgn
+JNIEXPORT jint JNICALL OS_NATIVE(SetMetaRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetMetaRgn_FUNC);
+	rc = (jint)SetMetaRgn((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, SetMetaRgn_FUNC);
 	return rc;
 }
 #endif

@@ -1710,6 +1710,15 @@ public static final boolean GetClassInfo (int hInstance, TCHAR lpClassName, WNDC
 	return GetClassInfoA (hInstance, lpClassName1, lpWndClass);
 }
 
+public static final int GetClassName (int hWnd, TCHAR lpClassName, int nMaxCount) {
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		return GetClassNameW (hWnd, lpClassName1, nMaxCount);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	return GetClassNameA (hWnd, lpClassName1, nMaxCount);
+}
+
 public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName, int cchMaxCount) {
 	if (IsUnicode) {
 		char [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.chars;
@@ -2470,6 +2479,8 @@ public static final native boolean GetCharWidthA (int hdc, int iFirstChar, int i
 public static final native boolean GetCharWidthW (int hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
 public static final native boolean GetClassInfoW (int hInstance, char [] lpClassName, WNDCLASS lpWndClass);
 public static final native boolean GetClassInfoA (int hInstance, byte [] lpClassName, WNDCLASS lpWndClass);
+public static final native int GetClassNameW (int hWnd, char [] lpClassName, int nMaxCount);
+public static final native int GetClassNameA (int hWnd, byte [] lpClassName, int nMaxCount);
 public static final native boolean GetClientRect (int hWnd, RECT lpRect);
 public static final native int GetClipboardData (int uFormat);
 public static final native int GetClipboardFormatNameA (int format, byte[] lpszFormatName, int cchMaxCount);
