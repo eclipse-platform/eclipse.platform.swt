@@ -635,11 +635,10 @@ public Rectangle getBounds (int columnIndex) {
 	 * If there are no columns then this is the bounds of the receiver's content.
 	 */
 	if (columnCount == 0) {
-		int width = getContentWidth (0);
 		return new Rectangle (
 			getContentX (0),
 			parent.getItemY (this),
-			width,
+			getContentWidth (0),
 			parent.itemHeight - 1);
 	}
 	
@@ -704,9 +703,14 @@ public boolean getChecked () {
 }
 int getContentWidth (int columnIndex) {
 	int width = textWidths [columnIndex] + 2 * MARGIN_TEXT;
-	Image image = getImage (columnIndex);
-	if (image != null) {
-		width += Tree.MARGIN_IMAGE + image.getBounds ().width;
+	if (columnIndex == 0) {
+		width += parent.col0ImageWidth;
+		if (parent.col0ImageWidth > 0) width += Tree.MARGIN_IMAGE;
+	} else {
+		Image image = getImage (columnIndex);
+		if (image != null) {
+			width += image.getBounds ().width + Tree.MARGIN_IMAGE;
+		}
 	}
 	return width;
 }
@@ -719,7 +723,7 @@ int getContentWidth (int columnIndex) {
 int getContentX (int columnIndex) {
 	if (columnIndex > 0) {
 		TreeColumn column = parent.columns [columnIndex];
-		int contentX = column.getX () + Tree.MARGIN_IMAGE;
+		int contentX = column.getX () + parent.getCellPadding ();
 		if ((column.style & SWT.LEFT) != 0) return contentX;
 		
 		/* column is not left-aligned */
@@ -788,31 +792,21 @@ Rectangle getExpanderBounds () {
  * Returns the bounds that should be used for drawing a focus rectangle on the receiver
  */
 Rectangle getFocusBounds () {
-	int x = getFocusX ();
+	int x = getTextX (0);
 	int width;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
+		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			TreeColumn lastColumn = columns [columns.length - 1];
-			width = lastColumn.getX () + lastColumn.width - x - 1;
+			column = columns [columns.length - 1];
 		} else {
-			width = columns [0].width - parent.horizontalOffset - x - 1;
+			column = columns [0];
 		}
+		width = column.getX () + column.width - x - 1;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
-}
-/*
- * Returns the x value of the receiver's focus rectangle.
- */
-int getFocusX () {
-	int result = getContentX (0) - 2;
-	int imageSpace = parent.col0ImageWidth;
-	if (imageSpace > 0) {
-		result += imageSpace + Tree.MARGIN_IMAGE;
-	}
-	return result;
 }
 /**
  * Returns the font that the receiver will use to paint textual information for this item.
@@ -944,23 +938,19 @@ Rectangle getHitBounds () {
 	int width = 0;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
-		/* 
-		 * If there are no columns then this spans from the beginning of the receiver's
-		 * image or text to the end of its text.
-		 */
-		int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
-		width = getFocusX () + textPaintWidth - contentX; 
+		width = getContentWidth (0); 
 	} else {
 		/* 
 		 * If there are columns then this spans from the beginning of the receiver's column 0
 		 * image or text to the end of either column 0 or the last column (FULL_SELECTION).
 		 */
+		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			TreeColumn column = columns [columns.length - 1];
-			width = column.getX () + column.width - contentX;
+			column = columns [columns.length - 1];
 		} else {
-			width = columns [0].width - contentX - parent.horizontalOffset;
+			column = columns [0];
 		}
+		width = column.getX () + column.width - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
@@ -1158,16 +1148,17 @@ public String getText (int columnIndex) {
  * Returns the x value where the receiver's text begins.
  */
 int getTextX (int columnIndex) {
-	if (columnIndex > 0) {
-		int textX = getContentX (columnIndex);
-		Image image = images [columnIndex];
+	int textX = getContentX (columnIndex);
+	if (columnIndex == 0) {
+		textX += parent.col0ImageWidth;
+		if (parent.col0ImageWidth > 0) textX += Tree.MARGIN_IMAGE;
+	} else {
+		Image image = getImage (columnIndex);
 		if (image != null) {
-			textX += Tree.MARGIN_IMAGE + image.getBounds ().width;
+			textX += image.getBounds ().width + Tree.MARGIN_IMAGE;	
 		}
-		return textX;
 	}
-	/* column 0 */
-	return getFocusX () + MARGIN_TEXT;
+	return textX;
 }
 /*
  * Returns true if the receiver descends from (or is identical to) the item.
@@ -1387,7 +1378,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 				foregroundChanged = true;
 			}
 		}
-		gc.drawString (text, getTextX (columnIndex), y + (itemHeight - fontHeight) / 2, true);
+		x = getTextX (columnIndex) + MARGIN_TEXT;
+		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
 		if (foregroundChanged) gc.setForeground (oldForeground);
 		if (fontChanged) gc.setFont (oldFont);
 	}
