@@ -190,6 +190,14 @@ public GridData(int style) {
 		grabExcessVerticalSpace = false;
 		
 }
+/*
+* @since 3.0
+*/
+public GridData (int width, int height) {
+	super();
+	this.widthHint = width;
+	this.heightHint = height;
+}
 boolean isItemData() {
 	return isItemData;
 }
