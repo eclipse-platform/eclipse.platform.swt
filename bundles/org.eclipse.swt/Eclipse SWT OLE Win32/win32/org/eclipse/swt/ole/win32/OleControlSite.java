@@ -150,16 +150,16 @@ public OleControlSite(Composite parent, int style, String progId) {
  */
 public void addEventListener(int eventID, OleListener listener) {
 	if (listener == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	GUID riid = getDefaultEventSinkGUID();
+	GUID riid = getDefaultEventSinkGUID(objIUnknown);
 	if (riid != null) {
 		addEventListener(objIUnknown.getAddress(), riid, eventID, listener);
 	}
 	
 }
-GUID getDefaultEventSinkGUID() {
+static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo2
 	int[] ppvObject = new int[1];
-	if (objIUnknown.QueryInterface(COM.IIDIProvideClassInfo2, ppvObject) == COM.S_OK) {
+	if (unknown.QueryInterface(COM.IIDIProvideClassInfo2, ppvObject) == COM.S_OK) {
 		IProvideClassInfo2 pci2 = new IProvideClassInfo2(ppvObject[0]);
 		GUID riid = new GUID();
 		int result = pci2.GetGUID(COM.GUIDKIND_DEFAULT_SOURCE_DISP_IID, riid);
@@ -168,7 +168,7 @@ GUID getDefaultEventSinkGUID() {
 	}
 
 	// get Event Sink I/F from IProvideClassInfo
-	if (objIUnknown.QueryInterface(COM.IIDIProvideClassInfo, ppvObject) == COM.S_OK) {
+	if (unknown.QueryInterface(COM.IIDIProvideClassInfo, ppvObject) == COM.S_OK) {
 		IProvideClassInfo pci = new IProvideClassInfo(ppvObject[0]);
 		int[] ppTI = new int[1];
 		int[] ppEI = new int[1];
@@ -217,10 +217,12 @@ GUID getDefaultEventSinkGUID() {
 	}
 	return null;
 }
+
 /**	 
  * Adds the listener to receive events.
  *
  * @since 2.0
+ * @deprecated - use OleControlSite.addEventListener(OleAutomation, int, OleListener)
  * 
  * @param automation the automation object that provides the event notification
  * 
@@ -236,6 +238,28 @@ GUID getDefaultEventSinkGUID() {
 public void addEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || automation == null || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
 	addEventListener(automation.getAddress(), guid, eventID, listener);
+	
+}
+/**	 
+ * Adds the listener to receive events.
+ *
+ * @since 2.0
+ * 
+ * @param automation the automation object that provides the event notification
+ * 
+ * @param eventID the id of the event
+ * 
+ * @param listener the listener
+ *
+ * @exception SWTError 
+ *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
+public void addEventListener(OleAutomation automation, int eventID, OleListener listener) {
+	if (listener == null || automation == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
+	int address = automation.getAddress();
+	IUnknown unknown = new IUnknown(address);
+	GUID guid = getDefaultEventSinkGUID(unknown);
+	addEventListener(address, guid, eventID, listener);
 	
 }
 void addEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
@@ -573,7 +597,7 @@ protected void releaseObjectInterfaces() {
 public void removeEventListener(int eventID, OleListener listener) {
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	
-	GUID riid = getDefaultEventSinkGUID();
+	GUID riid = getDefaultEventSinkGUID(objIUnknown);
 	if (riid != null) {
 		removeEventListener(objIUnknown.getAddress(), riid, eventID, listener);
 	}
@@ -582,6 +606,7 @@ public void removeEventListener(int eventID, OleListener listener) {
  * Removes the listener.
  *
  * @since 2.0
+ * @deprecated - use OleControlSite.removeEventListener(OleAutomation, int, OleListener)
  * 
  * @param automation the automation object that provides the event notification
  * 
@@ -597,6 +622,27 @@ public void removeEventListener(int eventID, OleListener listener) {
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
 	if (automation == null || listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	removeEventListener(automation.getAddress(), guid, eventID, listener);
+}
+/**	 
+ * Removes the listener.
+ *
+ * @since 2.0
+ * 
+ * @param automation the automation object that provides the event notification
+ * 
+ * @param eventID the event identifier
+ * 
+ * @param listener the listener
+ *
+ * @exception SWTError
+ *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
+public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
+	if (automation == null || listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	int address = automation.getAddress();
+	IUnknown unknown = new IUnknown(address);
+	GUID guid = getDefaultEventSinkGUID(unknown);
+	removeEventListener(address, guid, eventID, listener);
 }
 void removeEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);

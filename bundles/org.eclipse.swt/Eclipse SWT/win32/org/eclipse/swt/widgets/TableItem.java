@@ -426,7 +426,7 @@ public void setBackground (Color color) {
 			}
 		}
 	}
-	background = color.handle;
+	background = (color == null) ? -1 : color.handle;
 }
 
 /**
@@ -507,7 +507,7 @@ public void setForeground (Color color){
 			}
 		}
 	}
-	foreground = color.handle;	
+	foreground = (color == null) ? -1 : color.handle;	
 }
 
 /**
