@@ -19,586 +19,588 @@ char* OS_nativeFunctionNames[];
 #define OS_NATIVE_EXIT(env, that, func) 
 #endif
 
-#define AbortDoc_FUNC 0
-#define ActivateKeyboardLayout_FUNC 1
-#define AdjustWindowRectEx_FUNC 2
-#define Arc_FUNC 3
-#define BeginDeferWindowPos_FUNC 4
-#define BeginPaint_FUNC 5
-#define BitBlt_FUNC 6
-#define BringWindowToTop_FUNC 7
-#define Call_FUNC 8
-#define CallNextHookEx_FUNC 9
-#define CallWindowProcA_FUNC 10
-#define CallWindowProcW_FUNC 11
-#define CharLowerA_FUNC 12
-#define CharLowerW_FUNC 13
-#define CharUpperA_FUNC 14
-#define CharUpperW_FUNC 15
-#define CheckMenuItem_FUNC 16
-#define ChooseColorA_FUNC 17
-#define ChooseColorW_FUNC 18
-#define ChooseFontA_FUNC 19
-#define ChooseFontW_FUNC 20
-#define ClientToScreen_FUNC 21
-#define CloseClipboard_FUNC 22
-#define CoCreateInstance_FUNC 23
-#define CombineRgn_FUNC 24
-#define CommDlgExtendedError_FUNC 25
-#define CommandBar_1AddAdornments_FUNC 26
-#define CommandBar_1Create_FUNC 27
-#define CommandBar_1Destroy_FUNC 28
-#define CommandBar_1DrawMenuBar_FUNC 29
-#define CommandBar_1Height_FUNC 30
-#define CommandBar_1InsertMenubarEx_FUNC 31
-#define CommandBar_1Show_FUNC 32
-#define CopyImage_FUNC 33
-#define CreateAcceleratorTableA_FUNC 34
-#define CreateAcceleratorTableW_FUNC 35
-#define CreateBitmap_FUNC 36
-#define CreateCaret_FUNC 37
-#define CreateCompatibleBitmap_FUNC 38
-#define CreateCompatibleDC_FUNC 39
-#define CreateCursor_FUNC 40
-#define CreateDCA_FUNC 41
-#define CreateDCW_FUNC 42
-#define CreateDIBSection_FUNC 43
-#define CreateFontIndirectA__I_FUNC 44
-#define CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC 45
-#define CreateFontIndirectW__I_FUNC 46
-#define CreateFontIndirectW__Lorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC 47
-#define CreateIconIndirect_FUNC 48
-#define CreateMenu_FUNC 49
-#define CreatePalette_FUNC 50
-#define CreatePatternBrush_FUNC 51
-#define CreatePen_FUNC 52
-#define CreatePolygonRgn_FUNC 53
-#define CreatePopupMenu_FUNC 54
-#define CreateRectRgn_FUNC 55
-#define CreateSolidBrush_FUNC 56
-#define CreateStreamOnHGlobal_FUNC 57
-#define CreateWindowExA_FUNC 58
-#define CreateWindowExW_FUNC 59
-#define DefFrameProcA_FUNC 60
-#define DefFrameProcW_FUNC 61
-#define DefMDIChildProcA_FUNC 62
-#define DefMDIChildProcW_FUNC 63
-#define DefWindowProcA_FUNC 64
-#define DefWindowProcW_FUNC 65
-#define DeferWindowPos_FUNC 66
-#define DeleteDC_FUNC 67
-#define DeleteMenu_FUNC 68
-#define DeleteObject_FUNC 69
-#define DestroyAcceleratorTable_FUNC 70
-#define DestroyCaret_FUNC 71
-#define DestroyCursor_FUNC 72
-#define DestroyIcon_FUNC 73
-#define DestroyMenu_FUNC 74
-#define DestroyWindow_FUNC 75
-#define DispatchMessageA_FUNC 76
-#define DispatchMessageW_FUNC 77
-#define DragDetect_FUNC 78
-#define DragFinish_FUNC 79
-#define DragQueryFileA_FUNC 80
-#define DragQueryFileW_FUNC 81
-#define DrawEdge_FUNC 82
-#define DrawFocusRect_FUNC 83
-#define DrawFrameControl_FUNC 84
-#define DrawIconEx_FUNC 85
-#define DrawMenuBar_FUNC 86
-#define DrawStateA_FUNC 87
-#define DrawStateW_FUNC 88
-#define DrawTextA_FUNC 89
-#define DrawTextW_FUNC 90
-#define Ellipse_FUNC 91
-#define EnableMenuItem_FUNC 92
-#define EnableScrollBar_FUNC 93
-#define EnableWindow_FUNC 94
-#define EndDeferWindowPos_FUNC 95
-#define EndDoc_FUNC 96
-#define EndPage_FUNC 97
-#define EndPaint_FUNC 98
-#define EnumDisplayMonitors_FUNC 99
-#define EnumFontFamiliesA_FUNC 100
-#define EnumFontFamiliesExA_FUNC 101
-#define EnumFontFamiliesExW_FUNC 102
-#define EnumFontFamiliesW_FUNC 103
-#define EnumSystemLanguageGroupsA_FUNC 104
-#define EnumSystemLanguageGroupsW_FUNC 105
-#define EnumSystemLocalesA_FUNC 106
-#define EnumSystemLocalesW_FUNC 107
-#define EqualRect_FUNC 108
-#define EqualRgn_FUNC 109
-#define ExpandEnvironmentStringsA_FUNC 110
-#define ExpandEnvironmentStringsW_FUNC 111
-#define ExtTextOutA_FUNC 112
-#define ExtTextOutW_FUNC 113
-#define ExtractIconExA_FUNC 114
-#define ExtractIconExW_FUNC 115
-#define FillRect_FUNC 116
-#define FindWindowA_FUNC 117
-#define FindWindowW_FUNC 118
-#define FormatMessageA_FUNC 119
-#define FormatMessageW_FUNC 120
-#define FreeLibrary_FUNC 121
-#define GdiSetBatchLimit_FUNC 122
-#define GetACP_FUNC 123
-#define GetActiveWindow_FUNC 124
-#define GetBkColor_FUNC 125
-#define GetCapture_FUNC 126
-#define GetCaretPos_FUNC 127
-#define GetCharABCWidthsA_FUNC 128
-#define GetCharABCWidthsW_FUNC 129
-#define GetCharWidthA_FUNC 130
-#define GetCharWidthW_FUNC 131
-#define GetCharacterPlacementA_FUNC 132
-#define GetCharacterPlacementW_FUNC 133
-#define GetClassInfoA_FUNC 134
-#define GetClassInfoW_FUNC 135
-#define GetClientRect_FUNC 136
-#define GetClipBox_FUNC 137
-#define GetClipRgn_FUNC 138
-#define GetClipboardData_FUNC 139
-#define GetClipboardFormatNameA_FUNC 140
-#define GetClipboardFormatNameW_FUNC 141
-#define GetComboBoxInfo_FUNC 142
-#define GetCurrentObject_FUNC 143
-#define GetCurrentProcessId_FUNC 144
-#define GetCurrentThreadId_FUNC 145
-#define GetCursor_FUNC 146
-#define GetCursorPos_FUNC 147
-#define GetDC_FUNC 148
-#define GetDCEx_FUNC 149
-#define GetDIBColorTable_FUNC 150
-#define GetDIBits_FUNC 151
-#define GetDesktopWindow_FUNC 152
-#define GetDeviceCaps_FUNC 153
-#define GetDialogBaseUnits_FUNC 154
-#define GetDlgItem_FUNC 155
-#define GetDoubleClickTime_FUNC 156
-#define GetFocus_FUNC 157
-#define GetFontLanguageInfo_FUNC 158
-#define GetIconInfo_FUNC 159
-#define GetKeyNameTextA_FUNC 160
-#define GetKeyNameTextW_FUNC 161
-#define GetKeyState_FUNC 162
-#define GetKeyboardLayout_FUNC 163
-#define GetKeyboardLayoutList_FUNC 164
-#define GetKeyboardState_FUNC 165
-#define GetLastActivePopup_FUNC 166
-#define GetLastError_FUNC 167
-#define GetLayout_FUNC 168
-#define GetLibraryHandle_FUNC 169
-#define GetLocaleInfoA_FUNC 170
-#define GetLocaleInfoW_FUNC 171
-#define GetMenu_FUNC 172
-#define GetMenuBarInfo_FUNC 173
-#define GetMenuDefaultItem_FUNC 174
-#define GetMenuInfo_FUNC 175
-#define GetMenuItemCount_FUNC 176
-#define GetMenuItemInfoA_FUNC 177
-#define GetMenuItemInfoW_FUNC 178
-#define GetMenuItemRect_FUNC 179
-#define GetMessageA_FUNC 180
-#define GetMessagePos_FUNC 181
-#define GetMessageTime_FUNC 182
-#define GetMessageW_FUNC 183
-#define GetModuleHandleA_FUNC 184
-#define GetModuleHandleW_FUNC 185
-#define GetMonitorInfoA_FUNC 186
-#define GetMonitorInfoW_FUNC 187
-#define GetNearestPaletteIndex_FUNC 188
-#define GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC 189
-#define GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC 190
-#define GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC 191
-#define GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC 192
-#define GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC 193
-#define GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC 194
-#define GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC 195
-#define GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC 196
-#define GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC 197
-#define GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC 198
-#define GetOpenFileNameA_FUNC 199
-#define GetOpenFileNameW_FUNC 200
-#define GetPaletteEntries_FUNC 201
-#define GetParent_FUNC 202
-#define GetPixel_FUNC 203
-#define GetProcAddress_FUNC 204
-#define GetProcessHeap_FUNC 205
-#define GetProfileStringA_FUNC 206
-#define GetProfileStringW_FUNC 207
-#define GetROP2_FUNC 208
-#define GetRandomRgn_FUNC 209
-#define GetRegionData_FUNC 210
-#define GetRgnBox_FUNC 211
-#define GetSaveFileNameA_FUNC 212
-#define GetSaveFileNameW_FUNC 213
-#define GetScrollInfo_FUNC 214
-#define GetStockObject_FUNC 215
-#define GetSysColor_FUNC 216
-#define GetSysColorBrush_FUNC 217
-#define GetSystemMenu_FUNC 218
-#define GetSystemMetrics_FUNC 219
-#define GetSystemPaletteEntries_FUNC 220
-#define GetTextCharset_FUNC 221
-#define GetTextColor_FUNC 222
-#define GetTextExtentPoint32A_FUNC 223
-#define GetTextExtentPoint32W_FUNC 224
-#define GetTextMetricsA_FUNC 225
-#define GetTextMetricsW_FUNC 226
-#define GetTickCount_FUNC 227
-#define GetUpdateRect_FUNC 228
-#define GetUpdateRgn_FUNC 229
-#define GetVersionExA_FUNC 230
-#define GetVersionExW_FUNC 231
-#define GetWindow_FUNC 232
-#define GetWindowLongA_FUNC 233
-#define GetWindowLongW_FUNC 234
-#define GetWindowPlacement_FUNC 235
-#define GetWindowRect_FUNC 236
-#define GetWindowRgn_FUNC 237
-#define GetWindowTextA_FUNC 238
-#define GetWindowTextLengthA_FUNC 239
-#define GetWindowTextLengthW_FUNC 240
-#define GetWindowTextW_FUNC 241
-#define GetWindowThreadProcessId_FUNC 242
-#define GlobalAlloc_FUNC 243
-#define GlobalFree_FUNC 244
-#define GlobalLock_FUNC 245
-#define GlobalSize_FUNC 246
-#define GlobalUnlock_FUNC 247
-#define GradientFill_FUNC 248
-#define HeapAlloc_FUNC 249
-#define HeapFree_FUNC 250
-#define HideCaret_FUNC 251
-#define IIDFromString_FUNC 252
-#define ImageList_1Add_FUNC 253
-#define ImageList_1AddMasked_FUNC 254
-#define ImageList_1Create_FUNC 255
-#define ImageList_1Destroy_FUNC 256
-#define ImageList_1GetIcon_FUNC 257
-#define ImageList_1GetIconSize_FUNC 258
-#define ImageList_1GetImageCount_FUNC 259
-#define ImageList_1Remove_FUNC 260
-#define ImageList_1Replace_FUNC 261
-#define ImageList_1ReplaceIcon_FUNC 262
-#define ImageList_1SetIconSize_FUNC 263
-#define ImmAssociateContext_FUNC 264
-#define ImmCreateContext_FUNC 265
-#define ImmDestroyContext_FUNC 266
-#define ImmGetCompositionFontA_FUNC 267
-#define ImmGetCompositionFontW_FUNC 268
-#define ImmGetCompositionStringA_FUNC 269
-#define ImmGetCompositionStringW_FUNC 270
-#define ImmGetContext_FUNC 271
-#define ImmGetConversionStatus_FUNC 272
-#define ImmGetDefaultIMEWnd_FUNC 273
-#define ImmGetOpenStatus_FUNC 274
-#define ImmReleaseContext_FUNC 275
-#define ImmSetCompositionFontA_FUNC 276
-#define ImmSetCompositionFontW_FUNC 277
-#define ImmSetCompositionWindow_FUNC 278
-#define ImmSetConversionStatus_FUNC 279
-#define ImmSetOpenStatus_FUNC 280
-#define InitCommonControls_FUNC 281
-#define InitCommonControlsEx_FUNC 282
-#define InsertMenuA_FUNC 283
-#define InsertMenuItemA_FUNC 284
-#define InsertMenuItemW_FUNC 285
-#define InsertMenuW_FUNC 286
-#define IntersectRect_FUNC 287
-#define InvalidateRect_FUNC 288
-#define InvalidateRgn_FUNC 289
-#define IsDBCSLeadByte_FUNC 290
-#define IsIconic_FUNC 291
-#define IsPPC_FUNC 292
-#define IsSP_FUNC 293
-#define IsWindowEnabled_FUNC 294
-#define IsWindowVisible_FUNC 295
-#define IsZoomed_FUNC 296
-#define KillTimer_FUNC 297
-#define LineTo_FUNC 298
-#define LoadBitmapA_FUNC 299
-#define LoadBitmapW_FUNC 300
-#define LoadCursorA_FUNC 301
-#define LoadCursorW_FUNC 302
-#define LoadIconA_FUNC 303
-#define LoadIconW_FUNC 304
-#define LoadImageA__IIIIII_FUNC 305
-#define LoadImageA__I_3BIIII_FUNC 306
-#define LoadImageW__IIIIII_FUNC 307
-#define LoadImageW__I_3CIIII_FUNC 308
-#define LoadLibraryA_FUNC 309
-#define LoadLibraryW_FUNC 310
-#define LoadStringA_FUNC 311
-#define LoadStringW_FUNC 312
-#define LocalFree_FUNC 313
-#define MapVirtualKeyA_FUNC 314
-#define MapVirtualKeyW_FUNC 315
-#define MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC 316
-#define MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC 317
-#define MessageBeep_FUNC 318
-#define MessageBoxA_FUNC 319
-#define MessageBoxW_FUNC 320
-#define MonitorFromWindow_FUNC 321
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC 322
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC 323
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC 324
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I_FUNC 325
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I_FUNC 326
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I_FUNC 327
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC 328
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC 329
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I_FUNC 330
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I_FUNC 331
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I_FUNC 332
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I_FUNC 333
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I_FUNC 334
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I_FUNC 335
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I_FUNC 336
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I_FUNC 337
-#define MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I_FUNC 338
-#define MoveMemory__I_3BI_FUNC 339
-#define MoveMemory__I_3CI_FUNC 340
-#define MoveMemory__I_3DI_FUNC 341
-#define MoveMemory__I_3FI_FUNC 342
-#define MoveMemory__I_3II_FUNC 343
-#define MoveMemory__I_3SI_FUNC 344
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC 345
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II_FUNC 346
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II_FUNC 347
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II_FUNC 348
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II_FUNC 349
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II_FUNC 350
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II_FUNC 351
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II_FUNC 352
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II_FUNC 353
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II_FUNC 354
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II_FUNC 355
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II_FUNC 356
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II_FUNC 357
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II_FUNC 358
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II_FUNC 359
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II_FUNC 360
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II_FUNC 361
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II_FUNC 362
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II_FUNC 363
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II_FUNC 364
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II_FUNC 365
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II_FUNC 366
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II_FUNC 367
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II_FUNC 368
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II_FUNC 369
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II_FUNC 370
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC 371
-#define MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II_FUNC 372
-#define MoveMemory___3BII_FUNC 373
-#define MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I_FUNC 374
-#define MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I_FUNC 375
-#define MoveMemory___3CII_FUNC 376
-#define MoveMemory___3DII_FUNC 377
-#define MoveMemory___3FII_FUNC 378
-#define MoveMemory___3III_FUNC 379
-#define MoveMemory___3SII_FUNC 380
-#define MoveToEx_FUNC 381
-#define MsgWaitForMultipleObjectsEx_FUNC 382
-#define MultiByteToWideChar__IIII_3CI_FUNC 383
-#define MultiByteToWideChar__II_3BI_3CI_FUNC 384
-#define NotifyWinEvent_FUNC 385
-#define OffsetRgn_FUNC 386
-#define OleInitialize_FUNC 387
-#define OleUninitialize_FUNC 388
-#define OpenClipboard_FUNC 389
-#define PatBlt_FUNC 390
-#define PeekMessageA_FUNC 391
-#define PeekMessageW_FUNC 392
-#define Pie_FUNC 393
-#define Polygon_FUNC 394
-#define Polyline_FUNC 395
-#define PostMessageA_FUNC 396
-#define PostMessageW_FUNC 397
-#define PostThreadMessageA_FUNC 398
-#define PostThreadMessageW_FUNC 399
-#define PrintDlgA_FUNC 400
-#define PrintDlgW_FUNC 401
-#define PtInRect_FUNC 402
-#define PtInRegion_FUNC 403
-#define RealizePalette_FUNC 404
-#define RectInRegion_FUNC 405
-#define Rectangle_FUNC 406
-#define RedrawWindow_FUNC 407
-#define RegCloseKey_FUNC 408
-#define RegEnumKeyExA_FUNC 409
-#define RegEnumKeyExW_FUNC 410
-#define RegOpenKeyExA_FUNC 411
-#define RegOpenKeyExW_FUNC 412
-#define RegQueryInfoKeyA_FUNC 413
-#define RegQueryInfoKeyW_FUNC 414
-#define RegQueryValueExA_FUNC 415
-#define RegQueryValueExW_FUNC 416
-#define RegisterClassA_FUNC 417
-#define RegisterClassW_FUNC 418
-#define RegisterClipboardFormatA_FUNC 419
-#define RegisterClipboardFormatW_FUNC 420
-#define RegisterWindowMessageA_FUNC 421
-#define RegisterWindowMessageW_FUNC 422
-#define ReleaseCapture_FUNC 423
-#define ReleaseDC_FUNC 424
-#define RemoveMenu_FUNC 425
-#define RestoreDC_FUNC 426
-#define RoundRect_FUNC 427
-#define SHBrowseForFolderA_FUNC 428
-#define SHBrowseForFolderW_FUNC 429
-#define SHCreateMenuBar_FUNC 430
-#define SHGetMalloc_FUNC 431
-#define SHGetPathFromIDListA_FUNC 432
-#define SHGetPathFromIDListW_FUNC 433
-#define SHHandleWMSettingChange_FUNC 434
-#define SHRecognizeGesture_FUNC 435
-#define SHSendBackToFocusWindow_FUNC 436
-#define SHSetAppKeyWndAssoc_FUNC 437
-#define SHSipPreference_FUNC 438
-#define SaveDC_FUNC 439
-#define ScreenToClient_FUNC 440
-#define ScriptBreak_FUNC 441
-#define ScriptCPtoX_FUNC 442
-#define ScriptCacheGetHeight_FUNC 443
-#define ScriptFreeCache_FUNC 444
-#define ScriptGetFontProperties_FUNC 445
-#define ScriptGetLogicalWidths_FUNC 446
-#define ScriptGetProperties_FUNC 447
-#define ScriptItemize_FUNC 448
-#define ScriptLayout_FUNC 449
-#define ScriptPlace_FUNC 450
-#define ScriptShape_FUNC 451
-#define ScriptTextOut_FUNC 452
-#define ScriptXtoCP_FUNC 453
-#define ScrollWindowEx_FUNC 454
-#define SelectClipRgn_FUNC 455
-#define SelectObject_FUNC 456
-#define SelectPalette_FUNC 457
-#define SendInput_FUNC 458
-#define SendMessageA__IIII_FUNC 459
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC 460
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC 461
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC 462
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC 463
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC 464
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC 465
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC 466
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC 467
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC 468
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC 469
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC 470
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC 471
-#define SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC 472
-#define SendMessageA__III_3B_FUNC 473
-#define SendMessageA__III_3I_FUNC 474
-#define SendMessageA__III_3S_FUNC 475
-#define SendMessageA__II_3II_FUNC 476
-#define SendMessageA__II_3I_3I_FUNC 477
-#define SendMessageW__IIII_FUNC 478
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC 479
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC 480
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC 481
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC 482
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC 483
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC 484
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC 485
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC 486
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC 487
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC 488
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC 489
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC 490
-#define SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC 491
-#define SendMessageW__III_3C_FUNC 492
-#define SendMessageW__III_3I_FUNC 493
-#define SendMessageW__III_3S_FUNC 494
-#define SendMessageW__II_3II_FUNC 495
-#define SendMessageW__II_3I_3I_FUNC 496
-#define SetActiveWindow_FUNC 497
-#define SetBkColor_FUNC 498
-#define SetBkMode_FUNC 499
-#define SetCapture_FUNC 500
-#define SetCaretPos_FUNC 501
-#define SetClipboardData_FUNC 502
-#define SetCursor_FUNC 503
-#define SetCursorPos_FUNC 504
-#define SetDIBColorTable_FUNC 505
-#define SetErrorMode_FUNC 506
-#define SetFocus_FUNC 507
-#define SetForegroundWindow_FUNC 508
-#define SetLayout_FUNC 509
-#define SetMenu_FUNC 510
-#define SetMenuDefaultItem_FUNC 511
-#define SetMenuInfo_FUNC 512
-#define SetMenuItemInfoA_FUNC 513
-#define SetMenuItemInfoW_FUNC 514
-#define SetPaletteEntries_FUNC 515
-#define SetParent_FUNC 516
-#define SetPixel_FUNC 517
-#define SetROP2_FUNC 518
-#define SetRect_FUNC 519
-#define SetRectRgn_FUNC 520
-#define SetScrollInfo_FUNC 521
-#define SetStretchBltMode_FUNC 522
-#define SetTextAlign_FUNC 523
-#define SetTextColor_FUNC 524
-#define SetTimer_FUNC 525
-#define SetWindowLongA_FUNC 526
-#define SetWindowLongW_FUNC 527
-#define SetWindowPlacement_FUNC 528
-#define SetWindowPos_FUNC 529
-#define SetWindowRgn_FUNC 530
-#define SetWindowTextA_FUNC 531
-#define SetWindowTextW_FUNC 532
-#define SetWindowsHookExA_FUNC 533
-#define SetWindowsHookExW_FUNC 534
-#define ShellExecuteExA_FUNC 535
-#define ShellExecuteExW_FUNC 536
-#define Shell_1NotifyIconA_FUNC 537
-#define Shell_1NotifyIconW_FUNC 538
-#define ShowCaret_FUNC 539
-#define ShowOwnedPopups_FUNC 540
-#define ShowScrollBar_FUNC 541
-#define ShowWindow_FUNC 542
-#define SipGetInfo_FUNC 543
-#define StartDocA_FUNC 544
-#define StartDocW_FUNC 545
-#define StartPage_FUNC 546
-#define StretchBlt_FUNC 547
-#define SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I_FUNC 548
-#define SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I_FUNC 549
-#define SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC 550
-#define SystemParametersInfoA__II_3II_FUNC 551
-#define SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I_FUNC 552
-#define SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I_FUNC 553
-#define SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC 554
-#define SystemParametersInfoW__II_3II_FUNC 555
-#define ToAscii_FUNC 556
-#define ToUnicode_FUNC 557
-#define TrackMouseEvent_FUNC 558
-#define TrackPopupMenu_FUNC 559
-#define TranslateAcceleratorA_FUNC 560
-#define TranslateAcceleratorW_FUNC 561
-#define TranslateCharsetInfo_FUNC 562
-#define TranslateMDISysAccel_FUNC 563
-#define TranslateMessage_FUNC 564
-#define TransparentImage_FUNC 565
-#define UnhookWindowsHookEx_FUNC 566
-#define UnregisterClassA_FUNC 567
-#define UnregisterClassW_FUNC 568
-#define UpdateWindow_FUNC 569
-#define ValidateRect_FUNC 570
-#define VkKeyScanA_FUNC 571
-#define VkKeyScanW_FUNC 572
-#define VtblCall__II_FUNC 573
-#define VtblCall__III_FUNC 574
-#define VtblCall__IIIII_3I_FUNC 575
-#define VtblCall__II_3CII_3I_3I_FUNC 576
-#define WaitMessage_FUNC 577
-#define WideCharToMultiByte__II_3CIII_3B_3Z_FUNC 578
-#define WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC 579
-#define WindowFromDC_FUNC 580
-#define WindowFromPoint_FUNC 581
-#define wcslen_FUNC 582
+typedef enum {
+	AbortDoc_FUNC,
+	ActivateKeyboardLayout_FUNC,
+	AdjustWindowRectEx_FUNC,
+	Arc_FUNC,
+	BeginDeferWindowPos_FUNC,
+	BeginPaint_FUNC,
+	BitBlt_FUNC,
+	BringWindowToTop_FUNC,
+	Call_FUNC,
+	CallNextHookEx_FUNC,
+	CallWindowProcA_FUNC,
+	CallWindowProcW_FUNC,
+	CharLowerA_FUNC,
+	CharLowerW_FUNC,
+	CharUpperA_FUNC,
+	CharUpperW_FUNC,
+	CheckMenuItem_FUNC,
+	ChooseColorA_FUNC,
+	ChooseColorW_FUNC,
+	ChooseFontA_FUNC,
+	ChooseFontW_FUNC,
+	ClientToScreen_FUNC,
+	CloseClipboard_FUNC,
+	CoCreateInstance_FUNC,
+	CombineRgn_FUNC,
+	CommDlgExtendedError_FUNC,
+	CommandBar_1AddAdornments_FUNC,
+	CommandBar_1Create_FUNC,
+	CommandBar_1Destroy_FUNC,
+	CommandBar_1DrawMenuBar_FUNC,
+	CommandBar_1Height_FUNC,
+	CommandBar_1InsertMenubarEx_FUNC,
+	CommandBar_1Show_FUNC,
+	CopyImage_FUNC,
+	CreateAcceleratorTableA_FUNC,
+	CreateAcceleratorTableW_FUNC,
+	CreateBitmap_FUNC,
+	CreateCaret_FUNC,
+	CreateCompatibleBitmap_FUNC,
+	CreateCompatibleDC_FUNC,
+	CreateCursor_FUNC,
+	CreateDCA_FUNC,
+	CreateDCW_FUNC,
+	CreateDIBSection_FUNC,
+	CreateFontIndirectA__I_FUNC,
+	CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
+	CreateFontIndirectW__I_FUNC,
+	CreateFontIndirectW__Lorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
+	CreateIconIndirect_FUNC,
+	CreateMenu_FUNC,
+	CreatePalette_FUNC,
+	CreatePatternBrush_FUNC,
+	CreatePen_FUNC,
+	CreatePolygonRgn_FUNC,
+	CreatePopupMenu_FUNC,
+	CreateRectRgn_FUNC,
+	CreateSolidBrush_FUNC,
+	CreateStreamOnHGlobal_FUNC,
+	CreateWindowExA_FUNC,
+	CreateWindowExW_FUNC,
+	DefFrameProcA_FUNC,
+	DefFrameProcW_FUNC,
+	DefMDIChildProcA_FUNC,
+	DefMDIChildProcW_FUNC,
+	DefWindowProcA_FUNC,
+	DefWindowProcW_FUNC,
+	DeferWindowPos_FUNC,
+	DeleteDC_FUNC,
+	DeleteMenu_FUNC,
+	DeleteObject_FUNC,
+	DestroyAcceleratorTable_FUNC,
+	DestroyCaret_FUNC,
+	DestroyCursor_FUNC,
+	DestroyIcon_FUNC,
+	DestroyMenu_FUNC,
+	DestroyWindow_FUNC,
+	DispatchMessageA_FUNC,
+	DispatchMessageW_FUNC,
+	DragDetect_FUNC,
+	DragFinish_FUNC,
+	DragQueryFileA_FUNC,
+	DragQueryFileW_FUNC,
+	DrawEdge_FUNC,
+	DrawFocusRect_FUNC,
+	DrawFrameControl_FUNC,
+	DrawIconEx_FUNC,
+	DrawMenuBar_FUNC,
+	DrawStateA_FUNC,
+	DrawStateW_FUNC,
+	DrawTextA_FUNC,
+	DrawTextW_FUNC,
+	Ellipse_FUNC,
+	EnableMenuItem_FUNC,
+	EnableScrollBar_FUNC,
+	EnableWindow_FUNC,
+	EndDeferWindowPos_FUNC,
+	EndDoc_FUNC,
+	EndPage_FUNC,
+	EndPaint_FUNC,
+	EnumDisplayMonitors_FUNC,
+	EnumFontFamiliesA_FUNC,
+	EnumFontFamiliesExA_FUNC,
+	EnumFontFamiliesExW_FUNC,
+	EnumFontFamiliesW_FUNC,
+	EnumSystemLanguageGroupsA_FUNC,
+	EnumSystemLanguageGroupsW_FUNC,
+	EnumSystemLocalesA_FUNC,
+	EnumSystemLocalesW_FUNC,
+	EqualRect_FUNC,
+	EqualRgn_FUNC,
+	ExpandEnvironmentStringsA_FUNC,
+	ExpandEnvironmentStringsW_FUNC,
+	ExtTextOutA_FUNC,
+	ExtTextOutW_FUNC,
+	ExtractIconExA_FUNC,
+	ExtractIconExW_FUNC,
+	FillRect_FUNC,
+	FindWindowA_FUNC,
+	FindWindowW_FUNC,
+	FormatMessageA_FUNC,
+	FormatMessageW_FUNC,
+	FreeLibrary_FUNC,
+	GdiSetBatchLimit_FUNC,
+	GetACP_FUNC,
+	GetActiveWindow_FUNC,
+	GetBkColor_FUNC,
+	GetCapture_FUNC,
+	GetCaretPos_FUNC,
+	GetCharABCWidthsA_FUNC,
+	GetCharABCWidthsW_FUNC,
+	GetCharWidthA_FUNC,
+	GetCharWidthW_FUNC,
+	GetCharacterPlacementA_FUNC,
+	GetCharacterPlacementW_FUNC,
+	GetClassInfoA_FUNC,
+	GetClassInfoW_FUNC,
+	GetClientRect_FUNC,
+	GetClipBox_FUNC,
+	GetClipRgn_FUNC,
+	GetClipboardData_FUNC,
+	GetClipboardFormatNameA_FUNC,
+	GetClipboardFormatNameW_FUNC,
+	GetComboBoxInfo_FUNC,
+	GetCurrentObject_FUNC,
+	GetCurrentProcessId_FUNC,
+	GetCurrentThreadId_FUNC,
+	GetCursor_FUNC,
+	GetCursorPos_FUNC,
+	GetDC_FUNC,
+	GetDCEx_FUNC,
+	GetDIBColorTable_FUNC,
+	GetDIBits_FUNC,
+	GetDesktopWindow_FUNC,
+	GetDeviceCaps_FUNC,
+	GetDialogBaseUnits_FUNC,
+	GetDlgItem_FUNC,
+	GetDoubleClickTime_FUNC,
+	GetFocus_FUNC,
+	GetFontLanguageInfo_FUNC,
+	GetIconInfo_FUNC,
+	GetKeyNameTextA_FUNC,
+	GetKeyNameTextW_FUNC,
+	GetKeyState_FUNC,
+	GetKeyboardLayout_FUNC,
+	GetKeyboardLayoutList_FUNC,
+	GetKeyboardState_FUNC,
+	GetLastActivePopup_FUNC,
+	GetLastError_FUNC,
+	GetLayout_FUNC,
+	GetLibraryHandle_FUNC,
+	GetLocaleInfoA_FUNC,
+	GetLocaleInfoW_FUNC,
+	GetMenu_FUNC,
+	GetMenuBarInfo_FUNC,
+	GetMenuDefaultItem_FUNC,
+	GetMenuInfo_FUNC,
+	GetMenuItemCount_FUNC,
+	GetMenuItemInfoA_FUNC,
+	GetMenuItemInfoW_FUNC,
+	GetMenuItemRect_FUNC,
+	GetMessageA_FUNC,
+	GetMessagePos_FUNC,
+	GetMessageTime_FUNC,
+	GetMessageW_FUNC,
+	GetModuleHandleA_FUNC,
+	GetModuleHandleW_FUNC,
+	GetMonitorInfoA_FUNC,
+	GetMonitorInfoW_FUNC,
+	GetNearestPaletteIndex_FUNC,
+	GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+	GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
+	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+	GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+	GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
+	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+	GetOpenFileNameA_FUNC,
+	GetOpenFileNameW_FUNC,
+	GetPaletteEntries_FUNC,
+	GetParent_FUNC,
+	GetPixel_FUNC,
+	GetProcAddress_FUNC,
+	GetProcessHeap_FUNC,
+	GetProfileStringA_FUNC,
+	GetProfileStringW_FUNC,
+	GetROP2_FUNC,
+	GetRandomRgn_FUNC,
+	GetRegionData_FUNC,
+	GetRgnBox_FUNC,
+	GetSaveFileNameA_FUNC,
+	GetSaveFileNameW_FUNC,
+	GetScrollInfo_FUNC,
+	GetStockObject_FUNC,
+	GetSysColor_FUNC,
+	GetSysColorBrush_FUNC,
+	GetSystemMenu_FUNC,
+	GetSystemMetrics_FUNC,
+	GetSystemPaletteEntries_FUNC,
+	GetTextCharset_FUNC,
+	GetTextColor_FUNC,
+	GetTextExtentPoint32A_FUNC,
+	GetTextExtentPoint32W_FUNC,
+	GetTextMetricsA_FUNC,
+	GetTextMetricsW_FUNC,
+	GetTickCount_FUNC,
+	GetUpdateRect_FUNC,
+	GetUpdateRgn_FUNC,
+	GetVersionExA_FUNC,
+	GetVersionExW_FUNC,
+	GetWindow_FUNC,
+	GetWindowLongA_FUNC,
+	GetWindowLongW_FUNC,
+	GetWindowPlacement_FUNC,
+	GetWindowRect_FUNC,
+	GetWindowRgn_FUNC,
+	GetWindowTextA_FUNC,
+	GetWindowTextLengthA_FUNC,
+	GetWindowTextLengthW_FUNC,
+	GetWindowTextW_FUNC,
+	GetWindowThreadProcessId_FUNC,
+	GlobalAlloc_FUNC,
+	GlobalFree_FUNC,
+	GlobalLock_FUNC,
+	GlobalSize_FUNC,
+	GlobalUnlock_FUNC,
+	GradientFill_FUNC,
+	HeapAlloc_FUNC,
+	HeapFree_FUNC,
+	HideCaret_FUNC,
+	IIDFromString_FUNC,
+	ImageList_1Add_FUNC,
+	ImageList_1AddMasked_FUNC,
+	ImageList_1Create_FUNC,
+	ImageList_1Destroy_FUNC,
+	ImageList_1GetIcon_FUNC,
+	ImageList_1GetIconSize_FUNC,
+	ImageList_1GetImageCount_FUNC,
+	ImageList_1Remove_FUNC,
+	ImageList_1Replace_FUNC,
+	ImageList_1ReplaceIcon_FUNC,
+	ImageList_1SetIconSize_FUNC,
+	ImmAssociateContext_FUNC,
+	ImmCreateContext_FUNC,
+	ImmDestroyContext_FUNC,
+	ImmGetCompositionFontA_FUNC,
+	ImmGetCompositionFontW_FUNC,
+	ImmGetCompositionStringA_FUNC,
+	ImmGetCompositionStringW_FUNC,
+	ImmGetContext_FUNC,
+	ImmGetConversionStatus_FUNC,
+	ImmGetDefaultIMEWnd_FUNC,
+	ImmGetOpenStatus_FUNC,
+	ImmReleaseContext_FUNC,
+	ImmSetCompositionFontA_FUNC,
+	ImmSetCompositionFontW_FUNC,
+	ImmSetCompositionWindow_FUNC,
+	ImmSetConversionStatus_FUNC,
+	ImmSetOpenStatus_FUNC,
+	InitCommonControls_FUNC,
+	InitCommonControlsEx_FUNC,
+	InsertMenuA_FUNC,
+	InsertMenuItemA_FUNC,
+	InsertMenuItemW_FUNC,
+	InsertMenuW_FUNC,
+	IntersectRect_FUNC,
+	InvalidateRect_FUNC,
+	InvalidateRgn_FUNC,
+	IsDBCSLeadByte_FUNC,
+	IsIconic_FUNC,
+	IsPPC_FUNC,
+	IsSP_FUNC,
+	IsWindowEnabled_FUNC,
+	IsWindowVisible_FUNC,
+	IsZoomed_FUNC,
+	KillTimer_FUNC,
+	LineTo_FUNC,
+	LoadBitmapA_FUNC,
+	LoadBitmapW_FUNC,
+	LoadCursorA_FUNC,
+	LoadCursorW_FUNC,
+	LoadIconA_FUNC,
+	LoadIconW_FUNC,
+	LoadImageA__IIIIII_FUNC,
+	LoadImageA__I_3BIIII_FUNC,
+	LoadImageW__IIIIII_FUNC,
+	LoadImageW__I_3CIIII_FUNC,
+	LoadLibraryA_FUNC,
+	LoadLibraryW_FUNC,
+	LoadStringA_FUNC,
+	LoadStringW_FUNC,
+	LocalFree_FUNC,
+	MapVirtualKeyA_FUNC,
+	MapVirtualKeyW_FUNC,
+	MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+	MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+	MessageBeep_FUNC,
+	MessageBoxA_FUNC,
+	MessageBoxW_FUNC,
+	MonitorFromWindow_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I_FUNC,
+	MoveMemory__I_3BI_FUNC,
+	MoveMemory__I_3CI_FUNC,
+	MoveMemory__I_3DI_FUNC,
+	MoveMemory__I_3FI_FUNC,
+	MoveMemory__I_3II_FUNC,
+	MoveMemory__I_3SI_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II_FUNC,
+	MoveMemory___3BII_FUNC,
+	MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I_FUNC,
+	MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I_FUNC,
+	MoveMemory___3CII_FUNC,
+	MoveMemory___3DII_FUNC,
+	MoveMemory___3FII_FUNC,
+	MoveMemory___3III_FUNC,
+	MoveMemory___3SII_FUNC,
+	MoveToEx_FUNC,
+	MsgWaitForMultipleObjectsEx_FUNC,
+	MultiByteToWideChar__IIII_3CI_FUNC,
+	MultiByteToWideChar__II_3BI_3CI_FUNC,
+	NotifyWinEvent_FUNC,
+	OffsetRgn_FUNC,
+	OleInitialize_FUNC,
+	OleUninitialize_FUNC,
+	OpenClipboard_FUNC,
+	PatBlt_FUNC,
+	PeekMessageA_FUNC,
+	PeekMessageW_FUNC,
+	Pie_FUNC,
+	Polygon_FUNC,
+	Polyline_FUNC,
+	PostMessageA_FUNC,
+	PostMessageW_FUNC,
+	PostThreadMessageA_FUNC,
+	PostThreadMessageW_FUNC,
+	PrintDlgA_FUNC,
+	PrintDlgW_FUNC,
+	PtInRect_FUNC,
+	PtInRegion_FUNC,
+	RealizePalette_FUNC,
+	RectInRegion_FUNC,
+	Rectangle_FUNC,
+	RedrawWindow_FUNC,
+	RegCloseKey_FUNC,
+	RegEnumKeyExA_FUNC,
+	RegEnumKeyExW_FUNC,
+	RegOpenKeyExA_FUNC,
+	RegOpenKeyExW_FUNC,
+	RegQueryInfoKeyA_FUNC,
+	RegQueryInfoKeyW_FUNC,
+	RegQueryValueExA_FUNC,
+	RegQueryValueExW_FUNC,
+	RegisterClassA_FUNC,
+	RegisterClassW_FUNC,
+	RegisterClipboardFormatA_FUNC,
+	RegisterClipboardFormatW_FUNC,
+	RegisterWindowMessageA_FUNC,
+	RegisterWindowMessageW_FUNC,
+	ReleaseCapture_FUNC,
+	ReleaseDC_FUNC,
+	RemoveMenu_FUNC,
+	RestoreDC_FUNC,
+	RoundRect_FUNC,
+	SHBrowseForFolderA_FUNC,
+	SHBrowseForFolderW_FUNC,
+	SHCreateMenuBar_FUNC,
+	SHGetMalloc_FUNC,
+	SHGetPathFromIDListA_FUNC,
+	SHGetPathFromIDListW_FUNC,
+	SHHandleWMSettingChange_FUNC,
+	SHRecognizeGesture_FUNC,
+	SHSendBackToFocusWindow_FUNC,
+	SHSetAppKeyWndAssoc_FUNC,
+	SHSipPreference_FUNC,
+	SaveDC_FUNC,
+	ScreenToClient_FUNC,
+	ScriptBreak_FUNC,
+	ScriptCPtoX_FUNC,
+	ScriptCacheGetHeight_FUNC,
+	ScriptFreeCache_FUNC,
+	ScriptGetFontProperties_FUNC,
+	ScriptGetLogicalWidths_FUNC,
+	ScriptGetProperties_FUNC,
+	ScriptItemize_FUNC,
+	ScriptLayout_FUNC,
+	ScriptPlace_FUNC,
+	ScriptShape_FUNC,
+	ScriptTextOut_FUNC,
+	ScriptXtoCP_FUNC,
+	ScrollWindowEx_FUNC,
+	SelectClipRgn_FUNC,
+	SelectObject_FUNC,
+	SelectPalette_FUNC,
+	SendInput_FUNC,
+	SendMessageA__IIII_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+	SendMessageA__III_3B_FUNC,
+	SendMessageA__III_3I_FUNC,
+	SendMessageA__III_3S_FUNC,
+	SendMessageA__II_3II_FUNC,
+	SendMessageA__II_3I_3I_FUNC,
+	SendMessageW__IIII_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+	SendMessageW__III_3C_FUNC,
+	SendMessageW__III_3I_FUNC,
+	SendMessageW__III_3S_FUNC,
+	SendMessageW__II_3II_FUNC,
+	SendMessageW__II_3I_3I_FUNC,
+	SetActiveWindow_FUNC,
+	SetBkColor_FUNC,
+	SetBkMode_FUNC,
+	SetCapture_FUNC,
+	SetCaretPos_FUNC,
+	SetClipboardData_FUNC,
+	SetCursor_FUNC,
+	SetCursorPos_FUNC,
+	SetDIBColorTable_FUNC,
+	SetErrorMode_FUNC,
+	SetFocus_FUNC,
+	SetForegroundWindow_FUNC,
+	SetLayout_FUNC,
+	SetMenu_FUNC,
+	SetMenuDefaultItem_FUNC,
+	SetMenuInfo_FUNC,
+	SetMenuItemInfoA_FUNC,
+	SetMenuItemInfoW_FUNC,
+	SetPaletteEntries_FUNC,
+	SetParent_FUNC,
+	SetPixel_FUNC,
+	SetROP2_FUNC,
+	SetRect_FUNC,
+	SetRectRgn_FUNC,
+	SetScrollInfo_FUNC,
+	SetStretchBltMode_FUNC,
+	SetTextAlign_FUNC,
+	SetTextColor_FUNC,
+	SetTimer_FUNC,
+	SetWindowLongA_FUNC,
+	SetWindowLongW_FUNC,
+	SetWindowPlacement_FUNC,
+	SetWindowPos_FUNC,
+	SetWindowRgn_FUNC,
+	SetWindowTextA_FUNC,
+	SetWindowTextW_FUNC,
+	SetWindowsHookExA_FUNC,
+	SetWindowsHookExW_FUNC,
+	ShellExecuteExA_FUNC,
+	ShellExecuteExW_FUNC,
+	Shell_1NotifyIconA_FUNC,
+	Shell_1NotifyIconW_FUNC,
+	ShowCaret_FUNC,
+	ShowOwnedPopups_FUNC,
+	ShowScrollBar_FUNC,
+	ShowWindow_FUNC,
+	SipGetInfo_FUNC,
+	StartDocA_FUNC,
+	StartDocW_FUNC,
+	StartPage_FUNC,
+	StretchBlt_FUNC,
+	SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I_FUNC,
+	SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I_FUNC,
+	SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+	SystemParametersInfoA__II_3II_FUNC,
+	SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I_FUNC,
+	SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I_FUNC,
+	SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+	SystemParametersInfoW__II_3II_FUNC,
+	ToAscii_FUNC,
+	ToUnicode_FUNC,
+	TrackMouseEvent_FUNC,
+	TrackPopupMenu_FUNC,
+	TranslateAcceleratorA_FUNC,
+	TranslateAcceleratorW_FUNC,
+	TranslateCharsetInfo_FUNC,
+	TranslateMDISysAccel_FUNC,
+	TranslateMessage_FUNC,
+	TransparentImage_FUNC,
+	UnhookWindowsHookEx_FUNC,
+	UnregisterClassA_FUNC,
+	UnregisterClassW_FUNC,
+	UpdateWindow_FUNC,
+	ValidateRect_FUNC,
+	VkKeyScanA_FUNC,
+	VkKeyScanW_FUNC,
+	VtblCall__II_FUNC,
+	VtblCall__III_FUNC,
+	VtblCall__IIIII_3I_FUNC,
+	VtblCall__II_3CII_3I_3I_FUNC,
+	WaitMessage_FUNC,
+	WideCharToMultiByte__II_3CIII_3B_3Z_FUNC,
+	WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC,
+	WindowFromDC_FUNC,
+	WindowFromPoint_FUNC,
+	wcslen_FUNC,
+} OS_FUNCS;
