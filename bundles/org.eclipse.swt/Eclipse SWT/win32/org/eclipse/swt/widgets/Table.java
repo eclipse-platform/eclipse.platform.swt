@@ -2690,9 +2690,9 @@ public void setTopIndex (int index) {
 	* failure on different machines or on different versions
 	* of Windows.  It may depend on the font and any number
 	* of other factors.  For example, setting the font to
-	* anything but the default seems to sometimes fixes the
-	* problem.  The fix is to use LVM_GETCOUNTPERPAGE to detect
-	* the case when the number of visible items is zero and
+	* anything but the default sometimes fixes the problem.
+	* The fix is to use LVM_GETCOUNTPERPAGE to detect the
+	* case when the number of visible items is zero and
 	* use LVM_ENSUREVISIBLE to scroll the table to make the
 	* index visible.
 	*/
