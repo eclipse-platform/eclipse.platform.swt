@@ -160,7 +160,13 @@ int callWindowProc (int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
-	if (OS.IsPPC) style |= SWT.BOTTOM;
+	
+	/* Force tabs to be on the bottom for tab folders on PPC */
+	if (OS.IsPPC) {
+		style |= SWT.BOTTOM;
+		style &= ~SWT.TOP;
+	}
+	
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -245,10 +251,8 @@ void createItem (TabItem item, int index) {
 
 void createHandle () {
 	super.createHandle ();
-	/*
-	* Feature in WinCE Pocket PC.  Tab folder must have a flat look
-	* that is enabled by specifying the version of the Pocket PC library.  
-	*/
+	
+	/* Enable the flat look for tab folders on PPC */
 	if (OS.IsPPC) {
 		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
 	}
