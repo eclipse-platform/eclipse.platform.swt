@@ -5402,7 +5402,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHBrowseForFolderW
 }
 #endif // _WIN32_WCE
 
-#ifdef WIN32_PLATFORM_PSPC
+#if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHCreateMenuBar
 	(JNIEnv *env, jclass that, jobject arg0)
 {
@@ -5420,7 +5420,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHCreateMenuBa
 	
 	return rc;
 }
-#endif // WIN32_PLATFORM_PSPC
+#endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetMalloc
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -5477,7 +5477,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetPathFromI
 }
 #endif // _WIN32_WCE
 
-#ifdef WIN32_PLATFORM_PSPC
+#if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHSetAppKeyWndAssoc
 	(JNIEnv *env, jclass that, jbyte arg0, jint arg1)
 {
@@ -5485,7 +5485,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHSetAppKeyWnd
 
 	return (jboolean) SHSetAppKeyWndAssoc((BYTE)arg0, (HWND)arg1);
 }
-#endif // WIN32_PLATFORM_PSPC
+#endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ScreenToClient
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

@@ -59,9 +59,9 @@ TVINSERTSTRUCT_FID_CACHE TVINSERTSTRUCTFc;
 TVITEM_FID_CACHE TVITEMFc;
 WINDOWPOS_FID_CACHE WINDOWPOSFc;
 WNDCLASS_FID_CACHE WNDCLASSFc;
-#ifdef WIN32_PLATFORM_PSPC
+#if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
 	SHMENUBARINFO_FID_CACHE SHMENUBARINFOFc;
-#endif // WIN32_PLATFORM_PSPC
+#endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP
 #ifndef _WIN32_WCE
 	BROWSEINFO_FID_CACHE BROWSEINFOFc;
 	CHOOSEFONT_FID_CACHE CHOOSEFONTFc;
@@ -2638,7 +2638,7 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 	(*env)->SetIntField(env, lpObject, lpCache->hProcess, (jint)lpStruct->hProcess);
 }
 
-#ifdef WIN32_PLATFORM_PSPC
+#if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
 void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache)
 {
 	if (lpCache->cached) return;
@@ -2680,7 +2680,7 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 	(*env)->SetIntField(env, lpObject, lpCache->cBmpImages, (jint)lpStruct->cBmpImages);
 	(*env)->SetIntField(env, lpObject, lpCache->hwndMB, (jint)lpStruct->hwndMB);
 }
-#endif // WIN32_PLATFORM_PSPC
+#endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WSP
 
 void cacheSIZEFids(JNIEnv *env, jobject lpObject, PSIZE_FID_CACHE lpCache)
 {

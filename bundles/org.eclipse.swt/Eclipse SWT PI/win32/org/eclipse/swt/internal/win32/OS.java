@@ -76,7 +76,7 @@ public class OS {
 		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;
 		IsSP = IsSP();
 		IsPPC = IsPPC();
-		IsHPC = IsWinCE && !IsPPC;	
+		IsHPC = IsWinCE && !IsPPC && !IsSP;	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
 		
@@ -830,6 +830,7 @@ public class OS {
 	public static final int SYNCHRONIZE = 0x100000;
 	public static final int SYSTEM_FONT = 0xd;
 	public static final int S_OK = 0x0;
+	public static final int TBIF_COMMAND = 0x20;
 	public static final int TBIF_STATE = 0x4;
 	public static final int TBIF_IMAGE = 0x1;
 	public static final int TBIF_LPARAM = 0x10;

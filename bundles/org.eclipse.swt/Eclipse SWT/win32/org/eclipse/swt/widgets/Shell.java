@@ -1142,9 +1142,11 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			return LRESULT.ZERO;			
 		}
-		/* 
-		* Note in WinCE PPC.  Menu events originate from the command bar.
-		*/
+	}
+	/* 
+	* Note in WinCE PPC.  Menu events originate from the command bar.
+	*/
+	if (OS.IsPPC || OS.IsSP) {
 		if (menuBar != null) {
 			int hwndCB = menuBar.hwndCB;
 			if (hwndCB != 0 && lParam == hwndCB) {

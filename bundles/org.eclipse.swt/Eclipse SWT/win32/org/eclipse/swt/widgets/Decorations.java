@@ -97,8 +97,11 @@ public class Decorations extends Canvas {
 	/*
 	* The start value for WM_COMMAND id's.
 	* Windows reserves the values 0..100.
+	* 
+	* The SmartPhone SWT resource file reserves
+	* the values 101..107.
 	*/
-	static final int ID_START = 100;
+	static final int ID_START = 108;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -939,6 +942,11 @@ public void setMenuBar (Menu menu) {
 				menuBar = menu;
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
 				if (resize) setMaximized (true);
+			}
+			if (OS.IsSP) {
+				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
+				menuBar = menu;
+				OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
 			}
 		} 
 	} else {
