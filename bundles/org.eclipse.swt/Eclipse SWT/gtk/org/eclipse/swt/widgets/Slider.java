@@ -156,6 +156,7 @@ void createHandle (int index) {
 		handle = OS.gtk_vscrollbar_new (hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
