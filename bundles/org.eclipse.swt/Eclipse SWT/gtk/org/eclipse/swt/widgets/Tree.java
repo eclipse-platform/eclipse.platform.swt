@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	int modelHandle, checkRenderer;
+	int modelHandle, checkRenderer, columnHandle;
 	TreeItem[] items;
 	ImageList imageList;
 	
@@ -194,8 +194,9 @@ void createHandle (int index) {
 	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_tree_view_new_with_model (modelHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int columnHandle = OS.gtk_tree_view_column_new ();
+	columnHandle = OS.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.g_object_ref (columnHandle);
 	if ((style & SWT.CHECK) != 0) {
 		checkRenderer = OS.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
@@ -228,7 +229,6 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
-	OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
@@ -248,6 +248,8 @@ void createHandle (int index) {
 }
 
 void createItem (TreeItem item, int iter, int index) {
+	int column = OS.gtk_tree_view_get_column (handle, 0);
+	if (column == 0) OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, iter);
 	if (index == -1) index = count;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
@@ -325,6 +327,8 @@ void destroyItem (TreeItem item) {
 	releaseItems (item.getItems (), index);
 	releaseItem (item, index);
 	OS.gtk_tree_store_remove (modelHandle, item.handle);
+	int childCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (childCount == 0) removeColumn ();
 }
 
 void destroyWidget () {
@@ -755,6 +759,8 @@ void releaseWidget () {
 	super.releaseWidget();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;
+	if (columnHandle != 0) OS.g_object_unref (columnHandle);
+	columnHandle = 0;
 	if (imageList != null) {
 		imageList.dispose ();
 		imageList = null;
@@ -777,6 +783,13 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TreeItem[4];
+	removeColumn ();
+}
+
+void removeColumn () {
+	int column = OS.gtk_tree_view_get_column (handle, 0);
+	if (column == 0) return;
+	OS.gtk_tree_view_remove_column (handle, column);
 }
 
 /**
