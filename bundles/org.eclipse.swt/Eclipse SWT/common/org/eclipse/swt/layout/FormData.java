@@ -12,6 +12,7 @@ package org.eclipse.swt.layout;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are used to define the attachments 
@@ -89,10 +90,11 @@ FormAttachment getBottomAttachment () {
 		if (top == null) return cacheBottom = new FormAttachment (0, cacheHeight);
 		return cacheBottom = getTopAttachment ().plus (cacheHeight);
 	}
-	if (bottom.control != null && bottom.control.isDisposed ()) bottom.control = null;
-	if (bottom.control == null) return cacheBottom = bottom;
+	Control control = bottom.control;
+	if (control != null && control.isDisposed ()) bottom.control = control = null;
+	if (control == null) return cacheBottom = bottom;
 	isVisited = true;
-	FormData bottomData = (FormData) bottom.control.getLayoutData ();
+	FormData bottomData = (FormData) control.getLayoutData ();
 	FormAttachment topAttachment = bottomData.getTopAttachment ();
 	FormAttachment bottomAttachment = bottomData.getBottomAttachment ();
 	isVisited = false;
@@ -112,10 +114,11 @@ FormAttachment getLeftAttachment () {
 		if (right == null) return cacheLeft = new FormAttachment (0, 0);
 		return cacheLeft = getRightAttachment ().minus (cacheWidth);
 	}
-	if (left.control != null && left.control.isDisposed ()) left.control = null;
-	if (left.control == null) return cacheLeft = left;
+	Control control = left.control;
+	if (control != null && control.isDisposed ()) left.control = control = null;
+	if (control == null) return cacheLeft = left;
 	isVisited = true;
-	FormData leftData = (FormData) left.control.getLayoutData ();
+	FormData leftData = (FormData) control.getLayoutData ();
 	FormAttachment rightAttachment = leftData.getRightAttachment ();
 	FormAttachment leftAttachment = leftData.getLeftAttachment ();
 	isVisited = false; 
@@ -135,10 +138,11 @@ FormAttachment getRightAttachment () {
 		if (left == null) return cacheRight = new FormAttachment (0, cacheWidth);
 		return cacheRight = getLeftAttachment ().plus (cacheWidth);
 	}
-	if (right.control != null && right.control.isDisposed ()) right.control = null;
-	if (right.control == null) return cacheRight = right;
+	Control control = right.control;
+	if (control != null && control.isDisposed ()) right.control = control = null;
+	if (control == null) return cacheRight = right;
 	isVisited = true;
-	FormData rightData = (FormData) right.control.getLayoutData ();
+	FormData rightData = (FormData) control.getLayoutData ();
 	FormAttachment leftAttachment = rightData.getLeftAttachment ();
 	FormAttachment rightAttachment = rightData.getRightAttachment ();
 	isVisited = false;
@@ -158,10 +162,11 @@ FormAttachment getTopAttachment () {
 		if (bottom == null) return cacheTop = new FormAttachment (0, 0);
 		return cacheTop = getBottomAttachment ().minus (cacheHeight);
 	}
-	if (top.control != null && top.control.isDisposed ()) top.control = null;
-	if (top.control == null) return cacheTop = top;
+	Control control = top.control;
+	if (control != null && control.isDisposed ()) top.control = control = null;
+	if (control == null) return cacheTop = top;
 	isVisited = true;
-	FormData topData = (FormData) top.control.getLayoutData ();
+	FormData topData = (FormData) control.getLayoutData ();
 	FormAttachment topAttachment = topData.getTopAttachment ();
 	FormAttachment bottomAttachment = topData.getBottomAttachment ();
 	isVisited = false;
