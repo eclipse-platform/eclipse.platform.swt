@@ -718,6 +718,12 @@ public void setVisible (boolean visible) {
 			*/
 			int flags = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
 			if ((mask [0] & flags) == 0) OS._XmSetMenuTraversal (handle, true);
+
+			/* Run an event loop */
+			Display display = getDisplay ();
+			while (!isDisposed () && getVisible ()) {
+				if (!display.readAndDispatch()) display.sleep ();
+			}
 		} else {
 			sendEvent (SWT.Hide);
 		}

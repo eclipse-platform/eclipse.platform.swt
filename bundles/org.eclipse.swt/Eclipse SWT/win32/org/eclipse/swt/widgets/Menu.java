@@ -912,8 +912,12 @@ public void setVisible (boolean visible) {
 	* before the SWT.Selection event is delivered.  The fix is
 	* to run the deferred events after the menu is hidden. 
 	*/
-	Display display = getDisplay ();
-	display.runDeferredEvents ();
+	MSG msg = new MSG ();
+	if (OS.PeekMessage (msg, hwndParent, OS.WM_COMMAND, OS.WM_COMMAND, OS.PM_REMOVE)) {
+		OS.DispatchMessage (msg);
+		Display display = getDisplay ();
+		display.runDeferredEvents ();
+	}
 }
 
 }

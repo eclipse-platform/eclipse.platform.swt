@@ -375,12 +375,8 @@ int processActivate (int info) {
 }
 
 int processSelection (int info) {
-	if ((style & SWT.CASCADE) != 0) {
-		int [] args = {OS.Pt_ARG_BUTTON_TYPE, 0, 0};
-		OS.PtGetResources (handle, args.length / 3, args);
-		if ((args [1] & (OS.Pt_MENU_RIGHT | OS.Pt_MENU_DOWN)) != 0) {
-			return OS.Pt_CONTINUE;
-		}
+	if ((style & SWT.CASCADE) != 0 && menu != null) {
+		return OS.Pt_CONTINUE;
 	}
 	Event event = new Event ();
 	if (info != 0) {

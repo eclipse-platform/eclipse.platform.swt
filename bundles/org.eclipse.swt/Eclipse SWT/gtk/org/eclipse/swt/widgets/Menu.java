@@ -265,6 +265,19 @@ public MenuItem [] getItems () {
 	return items;
 }
 
+String getNameText () {
+	String result = "";
+	MenuItem [] items = getItems ();
+	int length = items.length;
+	if (length > 0) {
+		for (int i=0; i<length-1; i++) {
+			result = result + items [i].getNameText() + ", ";
+		}
+		result = result + items [length-1].getNameText ();
+	}
+	return result;
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
@@ -360,6 +373,18 @@ public boolean getVisible () {
 int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
 	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
 	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
+	return 0;
+}
+
+int GtkMenuBarEventFunc (int widget, int event, int user_data) {
+	if (user_data == SWT.MouseDown) return 1;
+	if (user_data == 0) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove(gdkEvent, event, GdkEvent.sizeof);
+		if (gdkEvent.type == OS.GDK_BUTTON_RELEASE) {
+			OS.gtk_menu_popdown (handle);
+		}
+	}
 	return 0;
 }
 
@@ -620,14 +645,50 @@ public void setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
+			/*
+			* Feature in GTK.  When gtk_menu_popup() is called with no parent menu shell
+			* and parent menu item, the menu temporarily takes focus from the top level shell
+			* and then restores the focus when the menu pops down.  This behavior is not
+			* incorrect but is unwanted.  The fix is to create a temporary menu bar and item
+			* to pass to gtk_menu_popup().  This requires special code to pop down the
+			* menu when the user clicks outside of the menu and special code to ensure
+			* that an item is selected when it is pressed.
+			*/ 
+			int parentHandle = parent.fixedHandle;
+			int width = OS.GTK_WIDGET_WIDTH (parentHandle);
+			int height = OS.GTK_WIDGET_HEIGHT (parentHandle);
+			int barHandle = OS.gtk_menu_bar_new ();
+			OS.gtk_container_add (parentHandle, barHandle);
+			OS.gtk_fixed_move (parentHandle, barHandle, width, height);
+			OS.gtk_widget_show (barHandle);
+			int itemHandle = OS.gtk_image_menu_item_new_with_label (new byte[1]);
+			OS.gtk_menu_shell_insert (barHandle, itemHandle, 0);
+			OS.gtk_widget_show (itemHandle);
+			OS.gtk_menu_shell_select_item (barHandle, itemHandle);
+			Callback GtkMenuBarEventFunc = new Callback (this, "GtkMenuBarEventFunc", 3);
+			OS.gtk_signal_connect (barHandle, OS.event_after, GtkMenuBarEventFunc.getAddress(), 0);
+			OS.gtk_signal_connect (barHandle, OS.button_press_event, GtkMenuBarEventFunc.getAddress(), SWT.MouseDown);
+			
+			/* Pop up the menu */
 			int address = 0;
 			Callback GtkMenuPositionFunc = null;
 			if (hasLocation) {
 				GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
 				address = GtkMenuPositionFunc.getAddress ();
 			}
-			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, OS.gtk_get_current_event_time());
+			OS.gtk_menu_popup (handle, barHandle, itemHandle, address, 0, 0, OS.gtk_get_current_event_time());
 			if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
+			
+			/* Run an event loop */
+			Display display = getDisplay ();
+			while (!isDisposed () && getVisible ()) {
+				if (!display.readAndDispatch()) display.sleep ();
+			}
+			
+			/* Release resources and unwanted grabs */
+			OS.gdk_pointer_ungrab (0);
+			OS.gtk_widget_destroy (barHandle);			
+			GtkMenuBarEventFunc.dispose ();
 		} else {
 			sendEvent (SWT.Hide);
 		}
