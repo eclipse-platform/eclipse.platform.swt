@@ -1040,7 +1040,12 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 		case OS.Pk_Num_Lock:
 		case OS.Pk_Scroll_Lock:	break;
 		default:
-			if (event.keyCode == 0) event.character = (char) key;
+			if (event.keyCode == 0 && key != 0) {
+				event.character = (char) key;
+				if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
+					event.keyCode = ke.key_cap;
+				}
+			}
 	}
 	setInputState(event, ke.key_mods, ke.button_state);
 	switch (event.type) {
