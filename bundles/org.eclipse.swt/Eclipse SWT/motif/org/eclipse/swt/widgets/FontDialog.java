@@ -410,7 +410,7 @@ FontData getFontData (String charsetName, String faceName, String extStyle, int 
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData set for the selected font, or null
- * @since 3.0
+ * @since 2.1.1
  */
 public FontData [] getFontSet () {
 	return fontData;
@@ -996,7 +996,7 @@ public void setFontData (FontData fontData) {
  * the platform choose one.
  * 
  * @param fontData the set of FontData objects to use initially, or null
- * @since 3.0
+ * @since 2.1.1
  */
 public void setFontSet (FontData [] fontData) {
 	this.fontData = fontData;
