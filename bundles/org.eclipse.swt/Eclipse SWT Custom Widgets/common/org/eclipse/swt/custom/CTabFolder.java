@@ -1212,7 +1212,7 @@ public CTabItem [] getItems() {
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
 }
-char findMnemonic (String string) {
+char _findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
 	do {
@@ -1570,7 +1570,7 @@ void initAccessible() {
 			if (childID >= 0 && childID < items.length) {
 				String text = items[childID].getText();
 				if (text != null) {
-					char mnemonic = findMnemonic(text);	
+					char mnemonic = _findMnemonic(text);	
 					if (mnemonic != '\0') {
 						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
 					}
@@ -1816,7 +1816,7 @@ boolean onMnemonic (Event event) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
-			char mnemonic = findMnemonic (items[i].getText ());
+			char mnemonic = _findMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
 					setSelection(i, true);
