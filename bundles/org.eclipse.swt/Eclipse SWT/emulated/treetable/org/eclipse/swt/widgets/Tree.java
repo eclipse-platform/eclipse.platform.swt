@@ -1833,7 +1833,11 @@ void onResize (Event event) {
 	ScrollBar vBar = getVerticalBar ();
 	vBar.setThumb (value);
 	vBar.setPageIncrement (value);
-	topIndex = vBar.getSelection ();
+	int index = vBar.getSelection ();
+	if (index != topIndex) {
+		topIndex = index;
+		redraw ();
+	}
 	/* horizontal scrollbar */
 	ScrollBar hBar = getHorizontalBar ();
 	hBar.setThumb (clientArea.width);
