@@ -666,12 +666,12 @@ public int indexOf (String string, int start) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-	if (!((0 <= start) && (start < count))) return -1;
-	int index = start - 1, last;
+	if (!(0 <= start && start < count)) return -1;
+	int index = start - 1, last = 0;
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	do {
 		index = OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
-		if ((index == OS.CB_ERR) || (index <= last)) return -1;
+		if (index == OS.CB_ERR || index <= last) return -1;
 	} while (!string.equals (getItem (index)));
 	return index;
 }
@@ -1057,11 +1057,8 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if ((style & SWT.READ_ONLY) != 0) {
-		int code = OS.SendMessage (handle, OS.CB_SELECTSTRING, -1, buffer);
-		if (code != OS.CB_ERR) {
-			sendEvent (SWT.Modify);
-			// widget could be disposed at this point
-		}
+		int index = indexOf (string);
+		if (index != -1) select (index);
 		return;
 	}
 	if (OS.SetWindowText (handle, buffer)) {
