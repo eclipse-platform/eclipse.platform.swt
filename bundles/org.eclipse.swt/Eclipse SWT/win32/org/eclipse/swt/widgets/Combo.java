@@ -1030,7 +1030,8 @@ public void setSelection (Point selection) {
 	int bits = selection.x | (selection.y << 16);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
-protected boolean setTabGroupFocus () {
+
+boolean setTabGroupFocus () {
 	return setFocus ();
 }
 
