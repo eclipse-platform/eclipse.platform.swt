@@ -990,9 +990,11 @@ void doResize (Event event) {
 	ScrollBar vBar = getVerticalBar ();
 	vBar.setThumb (value);
 	vBar.setPageIncrement (value);
+	topIndex = vBar.getSelection ();
 	ScrollBar hBar = getHorizontalBar ();
 	hBar.setThumb (clientArea.width);
 	hBar.setPageIncrement (clientArea.width);
+	horizontalOffset = hBar.getSelection ();
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
 }
@@ -1651,19 +1653,27 @@ void removeColumn (TreeColumn column) {
 		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
 	}
 	
-	int lastColumnIndex = columns.length - 1;
-	if (lastColumnIndex < 0) {	/* no more columns */
-		updateHorizontalBar ();
-	} else {
-		TreeColumn lastColumn = columns[lastColumnIndex];
-		getHorizontalBar ().setMaximum (lastColumn.getX () + lastColumn.width);
-	}
-	
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
 		items [i].columnRemoved (column, index);
 	}
-
+	
+	int lastColumnIndex = columns.length - 1;
+	if (lastColumnIndex < 0) {	/* no more columns */
+		updateHorizontalBar ();
+	} else {
+		int newWidth = 0;
+		for (int i = 0; i < columns.length; i++) {
+			newWidth += columns[i].width;
+		}
+		ScrollBar hBar = getHorizontalBar (); 
+		hBar.setMaximum (newWidth);
+		int selection = hBar.getSelection ();
+		if (selection != horizontalOffset) {
+			horizontalOffset = selection;
+			redraw ();
+		}
+	}
 }
 void removeSelectedItem (int index) {
 	TreeItem[] newSelectedItems = new TreeItem[selectedItems.length - 1];
@@ -1744,6 +1754,12 @@ public void setFont (Font value) {
 	gc.dispose ();
 	
 	if (header.isVisible ()) header.redraw ();
+	updateHorizontalBar ();
+	ScrollBar vBar = getVerticalBar ();
+	int pageSize = getClientArea ().height / itemHeight;
+	vBar.setThumb (pageSize);
+	vBar.setPageIncrement (pageSize);
+	topIndex = vBar.getSelection ();
 	redraw ();
 }
 void setHeaderImageHeight (int value) {
@@ -1892,6 +1908,8 @@ void updateColumnWidth (TreeColumn column, int width) {
 	TreeColumn lastColumn = columns[columns.length - 1]; 
 	hBar.setMaximum (lastColumn.getX () + lastColumn.width);
 	hBar.setThumb (bounds.width);
+	hBar.setPageIncrement (bounds.width);
+	horizontalOffset = hBar.getSelection ();
 	int x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);
 	if (getHeaderVisible ()) {
@@ -1914,16 +1932,23 @@ void updateHorizontalBar () {
 		int rightmostX = itemBounds.x + itemBounds.width;
 		maxX = Math.max (maxX, rightmostX);
 	}
-	
+	maxX += horizontalOffset;
 	hBar.setMaximum (maxX);
-	int thumb = Math.min (maxX, getClientArea ().width);
-	hBar.setThumb (thumb);
+	int pageSize = Math.min (maxX, getClientArea ().width);
+	hBar.setThumb (pageSize);
+	hBar.setPageIncrement (pageSize);
 	
 	/* reclaim any space now left on the right */
-	if (maxX < horizontalOffset + thumb) {
-		horizontalOffset = maxX - thumb;
+	if (maxX < horizontalOffset + pageSize) {
+		horizontalOffset = maxX - pageSize;
 		hBar.setSelection (horizontalOffset);
 		redraw ();
+	} else {
+		int selection = hBar.getSelection ();
+		if (selection != horizontalOffset) {
+			horizontalOffset = selection;
+			redraw ();
+		}
 	}
 	
 	/* 
@@ -1961,13 +1986,20 @@ void updateVerticalBar () {
 	int maximum = Math.max (1,availableItems.length);
 	if (maximum == vBar.getMaximum ()) return;
 	vBar.setMaximum (maximum);
-	int thumb = Math.min (maximum, getClientArea ().height / itemHeight);
-	vBar.setThumb (thumb);
+	int pageSize = Math.min (maximum, getClientArea ().height / itemHeight);
+	vBar.setThumb (pageSize);
+	vBar.setPageIncrement (pageSize);
 	/* reclaim any space now left on the bottom */
-	if (maximum < topIndex + thumb) {
-		topIndex = maximum - thumb;
+	if (maximum < topIndex + pageSize) {
+		topIndex = maximum - pageSize;
 		vBar.setSelection (topIndex);
 		redraw ();
+	} else {
+		int selection = vBar.getSelection ();
+		if (selection != topIndex) {
+			topIndex = selection;
+			redraw ();
+		}
 	}
 }
 }

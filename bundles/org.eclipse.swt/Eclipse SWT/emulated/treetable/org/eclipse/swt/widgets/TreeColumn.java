@@ -154,7 +154,7 @@ public void pack () {
 	for (int i = 0; i < availableItems.length; i++) {
 		width = Math.max (width, availableItems [i].getPreferredWidth (index));
 	}
-	setWidth (width);
+	parent.updateColumnWidth (this, width);
 }
 public void removeControlListener (ControlListener listener) {
 	checkWidget ();

@@ -1032,6 +1032,7 @@ public void setFont (Font value) {
 	recomputeTextWidths (gc);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
+	parent.updateHorizontalBar ();
 	redrawItem ();
 }
 public void setFont (int columnIndex, Font value) {
@@ -1158,6 +1159,7 @@ public void setImage (int columnIndex, Image value) {
 public void setText (String value) {
 	checkWidget ();
 	setText (0, value);
+	parent.updateHorizontalBar ();
 }
 public void setText (String[] value) {
 	checkWidget ();
@@ -1167,6 +1169,8 @@ public void setText (String[] value) {
 	for (int i = 0; i < value.length; i++) {
 		if (value[i] != null) setText (i, value[i]);
 	}
+	
+	parent.updateHorizontalBar ();
 }
 public void setText (int columnIndex, String value) {
 	checkWidget ();
