@@ -358,7 +358,7 @@ void onPaint(PaintEvent event) {
 	boolean shortenText = false;
 	String t = text;
 	Image img = image;
-	int availableWidth = rect.width - 2*hIndent;
+	int availableWidth = Math.max(0, rect.width - 2*hIndent);
 	Point extent = getTotalSize(img, t);
 	if (extent.x > availableWidth) {
 		img = null;

@@ -45,10 +45,12 @@ public TCHAR (int codePage, char [] chars, boolean terminate) {
 	this.codePage = codePage;
 	int charCount = chars.length;
 	if (OS.IsUnicode) {
-		if (terminate && charCount > 0 && chars [charCount - 1] != 0) {
-			char [] newChars = new char [charCount + 1];
-			System.arraycopy (chars, 0, newChars, 0, charCount);
-			chars = newChars;
+		if (terminate) {
+			if (charCount == 0 || (charCount > 0 && chars [charCount - 1] != 0)) {
+				char [] newChars = new char [charCount + 1];
+				System.arraycopy (chars, 0, newChars, 0, charCount);
+				chars = newChars;
+			}
 		}
 		this.chars = chars;
 	} else {

@@ -34,7 +34,7 @@ public class TableItem extends Item {
 	String [] strings;
 	Image [] images;
 	boolean checked, grayed, cached;
-	int background = -1, foreground = -1, font = -1, imageIndent;
+	int imageIndent, background = -1, foreground = -1, font = -1;
 	int [] cellBackground, cellForeground, cellFont;
 
 /**
@@ -225,21 +225,20 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > column || column > count - 1) return new RECT ();
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
-	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	rect.top = column;
 	rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
 	if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
-		/*
-		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
-		* and zero for the column number gives the bounds of the first item
-		* without including the bounds of the icon.  This is undocumented.
-		* When called with values greater than zero, the icon bounds are
-		* included and this behavior is documented.
-		*/
-		if (column == 0) {
-			if (getText && getImage) {
+		if (getText && getImage) {
+			/*
+			* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
+			* and zero for the column number gives the bounds of the first item
+			* without including the bounds of the icon.  This is undocumented.
+			* When called with values greater than zero, the icon bounds are
+			* included and this behavior is documented.
+			*/
+			if (column == 0) {
 				RECT iconRect = new RECT ();
 				iconRect.left = OS.LVIR_ICON;
 				iconRect.top = column;
@@ -248,24 +247,24 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 					rect.right = Math.max (rect.right, iconRect.right);
 				}
 			}
-			rect.left -= gridWidth;
 		} else {
-			if (getText && !getImage && images != null) {
-				RECT iconRect = new RECT ();
-				iconRect.left = OS.LVIR_ICON;
-				iconRect.top = column;
-				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-					/*
-					* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
-					* value even when the subitem does not contain an image.  The
-					* fix is to detect this case adjust the rectangle accordingly.
-					*/
-					LVITEM lvItem = new LVITEM ();
-					lvItem.mask = OS.LVIF_IMAGE;
-					lvItem.iItem = row;
-					lvItem.iSubItem = column;
-					OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-					if (lvItem.iImage >= 0) rect.left = iconRect.right + 2;	
+			if (column != 0) {
+				/*
+				* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
+				* even when the subitem does not contain an image.  The fix is to
+				* adjust the rectangle to represent the area the table is drawing.
+				*/
+				if (images != null && images [column] != null) {
+					if (getText) {
+						RECT iconRect = new RECT ();
+						iconRect.left = OS.LVIR_ICON;
+						iconRect.top = column;		
+						if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+							rect.left = iconRect.right + Table.INSET / 2;
+						}
+					}
+				} else {
+					if (getImage) rect.right = rect.left;
 				}
 			}
 		}
@@ -277,8 +276,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
+	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
 	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) rect.top -= gridWidth;
-	rect.left += gridWidth;
+	if (column != 0) rect.left += gridWidth;
+	rect.right = Math.max (rect.right, rect.left);
 	rect.top += gridWidth;
 	rect.bottom = Math.max (rect.bottom - gridWidth, rect.top);
 	return rect;
@@ -778,7 +779,7 @@ public void setFont (int index, Font font) {
 		}
 		parent.setScrollWidth (this, false);
 	}	
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 /**
@@ -853,7 +854,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 /**
@@ -936,7 +937,7 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image);
 	
 	if (index == 0) parent.setScrollWidth (this, false);
-	redraw (index, false, true);
+	redraw (index, true, true);
 }
 
 public void setImage (Image image) {
@@ -1051,7 +1052,7 @@ public void setText (int index, String string) {
 		}
 		parent.setScrollWidth (this, false);
 	}
-	redraw (index, true, false);
+	redraw (index, true, true);
 }
 
 public void setText (String string) {
