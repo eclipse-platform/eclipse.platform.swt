@@ -316,7 +316,7 @@ public CTabFolder(Composite parent, int style) {
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		iaccessible = new IAccessible(ppvObject[0]);
 		iaccessible.AddRef();
-		new TypeInfoBrowser(ppvObject[0]);
+		//new TypeInfoBrowser(ppvObject[0]);
 /* End ACCESSIBILITY */
 }
 private static int checkStyle (int style) {
@@ -1794,7 +1794,7 @@ public void setTabHeight(int height) {
 			}
 		}
 		if (debug)
-			System.out.println("accHitTest ChildID=" + childID + ", bounds=" + (childID == 0?getClientArea():items[childID-1].getBounds()));
+			System.out.println("accHitTest ChildID=" + childID + ", bounds=" + (childID == 0?getBounds():items[childID-1].getBounds()));
 		if (childID == COM.CHILDID_SELF && !getBounds().contains(testPoint)) {
 			COM.MoveMemory(pvarChild, new short[] { COM.VT_EMPTY }, 2);
 			return OLE.S_FALSE;
@@ -1810,13 +1810,14 @@ public void setTabHeight(int height) {
 		if (varChild_vt != COM.VT_I4 || varChild_lVal > items.length) return COM.E_INVALIDARG;
 		Rectangle location;
 		if (varChild_lVal == COM.CHILDID_SELF) {
-			location = getClientArea();
+			location = getBounds();
 		} else {
 			CTabItem childItem = items[varChild_lVal - 1];
 			location = childItem.getBounds();
 		}
-		OS.MoveMemory(pxLeft, new int[] { toDisplay(new Point(location.x, 0)).x }, 4);
-		OS.MoveMemory(pyTop, new int[] { toDisplay(new Point(0, location.y)).y }, 4);
+		Point pt = toDisplay(new Point(location.x, location.y));
+		OS.MoveMemory(pxLeft, new int[] { pt.x }, 4);
+		OS.MoveMemory(pyTop, new int[] { pt.y }, 4);
 		OS.MoveMemory(pcxWidth, new int[] { location.width }, 4);
 		OS.MoveMemory(pcyHeight, new int[] { location.height }, 4);
 		return OLE.S_OK;
@@ -1825,8 +1826,45 @@ public void setTabHeight(int height) {
 	int accNavigate(int navDir, int varStart_vt, int varStart_reserved1, int varStart_lVal, int varStart_reserved2, int pvarEndUpAt) {
 		if (debug)
 			System.out.println("accNavigate " + navDir + " " + varStart_vt + " " + varStart_lVal + " " + pvarEndUpAt);
-		// must implement this (somehow)
-		return iaccessible.accNavigate(navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
+		int childID = -1;
+		switch (navDir) {
+			case COM.NAVDIR_UP:
+			case COM.NAVDIR_DOWN:
+				if (varStart_lVal == COM.CHILDID_SELF) childID = COM.CHILDID_SELF;
+				break;
+			case COM.NAVDIR_FIRSTCHILD:
+				if (varStart_lVal != COM.CHILDID_SELF) return COM.E_INVALIDARG;
+				if (items.length > 0) childID = 1;
+				break;
+			case COM.NAVDIR_LASTCHILD:
+				if (varStart_lVal != COM.CHILDID_SELF) return COM.E_INVALIDARG;
+				if (items.length > 0) childID = items.length;
+				break;
+			case COM.NAVDIR_LEFT:
+			case COM.NAVDIR_PREVIOUS:
+				if (varStart_lVal == COM.CHILDID_SELF) childID = COM.CHILDID_SELF;
+				if (items.length > 0 && varStart_lVal > 1) childID = varStart_lVal - 1;
+				break;
+			case COM.NAVDIR_RIGHT:
+			case COM.NAVDIR_NEXT:
+				if (varStart_lVal == COM.CHILDID_SELF) childID = COM.CHILDID_SELF;
+				if (items.length > 0 && varStart_lVal < items.length) childID = varStart_lVal + 1;
+				break;
+			default: return COM.E_INVALIDARG;
+		}
+		if (childID == -1) {
+			COM.MoveMemory(pvarEndUpAt, new short[] { COM.VT_EMPTY }, 2);
+			return OLE.S_FALSE;
+		}
+		if (childID == COM.CHILDID_SELF) {
+			COM.MoveMemory(pvarEndUpAt, new short[] { COM.VT_DISPATCH }, 2);
+			COM.MoveMemory(pvarEndUpAt + 8, new int[] { objIAccessible.getAddress() }, 4);
+			return OLE.S_OK;
+		}
+		COM.MoveMemory(pvarEndUpAt, new short[] { COM.VT_I4 }, 2);
+		COM.MoveMemory(pvarEndUpAt + 8, new int[] { childID }, 4);
+		return OLE.S_OK;
+		//return iaccessible.accNavigate(navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
 	}
 	
 	int accSelect(int flagsSelect, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {

@@ -557,6 +557,16 @@ public static final int ROLE_SYSTEM_PUSHBUTTON = 0x2b;
 public static final int ROLE_SYSTEM_PAGETAB = 0x25;
 public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
 public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;
+//public static final int NAVDIR_MIN = 0;
+public static final int NAVDIR_UP = 0x1;
+public static final int NAVDIR_DOWN = 0x2;
+public static final int NAVDIR_LEFT = 0x3;
+public static final int NAVDIR_RIGHT = 0x4;
+public static final int NAVDIR_NEXT = 0x5;
+public static final int NAVDIR_PREVIOUS = 0x6;
+public static final int NAVDIR_FIRSTCHILD = 0x7;
+public static final int NAVDIR_LASTCHILD = 0x8;
+//public static final int NAVDIR_MAX = 0x9;
 
 public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
 public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
