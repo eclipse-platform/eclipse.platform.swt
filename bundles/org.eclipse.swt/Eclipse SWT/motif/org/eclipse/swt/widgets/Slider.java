@@ -149,8 +149,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	Display display = getDisplay ();
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
+		OS.XmNhighlightThickness, display.textHighlightThickness,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
 	};

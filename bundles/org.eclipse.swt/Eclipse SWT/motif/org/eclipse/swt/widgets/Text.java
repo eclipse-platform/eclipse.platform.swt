@@ -1501,8 +1501,17 @@ public void showSelection () {
 	OS.XmTextShowPosition (handle, position);
 	display.setWarnings (warnings);
 }
-int traversalCode () {
-	if ((style & SWT.SINGLE) != 0) return super.traversalCode ();
-	return SWT.TRAVERSE_ESCAPE;
+int traversalCode (int key, XKeyEvent xEvent) {
+	int bits = super.traversalCode (key, xEvent);
+	if ((style & SWT.MULTI) != 0) {
+		bits &= ~SWT.TRAVERSE_RETURN;
+		if (key == OS.XK_Tab && xEvent != null) {
+			boolean next = (xEvent.state & OS.ShiftMask) == 0;
+			if (next && (xEvent.state & OS.ControlMask) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
+	}
+	return bits;
 }
 }

@@ -97,7 +97,7 @@ public CoolBar (Composite parent, int style) {
 	}
 }
 private static int checkStyle (int style) {
-	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
+	return (style | SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);

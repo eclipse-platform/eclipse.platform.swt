@@ -687,7 +687,7 @@ public void setText (String string) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
 }
-int traversalCode () {
-	return super.traversalCode () | SWT.TRAVERSE_MNEMONIC;
+int traversalCode (int key, XKeyEvent xEvent) {
+	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;
 }
 }

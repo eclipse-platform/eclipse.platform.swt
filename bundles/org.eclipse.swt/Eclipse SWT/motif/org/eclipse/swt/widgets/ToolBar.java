@@ -426,7 +426,7 @@ public void setSize (int width, int height) {
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
-int traversalCode () {
-	return super.traversalCode () | SWT.TRAVERSE_MNEMONIC;
+int traversalCode (int key, XKeyEvent xEvent) {
+	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;
 }
 }

@@ -183,6 +183,7 @@ public Shell (Display display, int style) {
 }
 Shell (Display display, Shell parent, int style, int handle) {
 	super ();
+	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {

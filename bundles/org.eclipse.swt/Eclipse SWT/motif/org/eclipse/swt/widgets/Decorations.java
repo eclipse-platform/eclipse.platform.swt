@@ -161,6 +161,15 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+
+Control computeTabGroup () {
+	return this;
+}
+
+Control computeTabRoot () {
+	return this;
+}
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -579,4 +588,9 @@ public void setVisible (boolean visible) {
 	}
 	savedFocus = null;
 }
+
+boolean traverseItem (boolean next) {
+	return false;
+}
+
 }

@@ -201,6 +201,10 @@ public ScrollBar getVerticalBar () {
 	checkWidget();
 	return verticalBar;
 }
+boolean isTabGroup () {
+	if ((state & CANVAS) != 0) return true;
+	return super.isTabGroup ();
+}
 void manageChildren () {
 	if (scrolledHandle != 0) {	
 		OS.XtSetMappedWhenManaged (scrolledHandle, false);
