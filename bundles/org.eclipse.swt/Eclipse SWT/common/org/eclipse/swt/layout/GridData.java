@@ -360,7 +360,7 @@ public final class GridData {
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
 	int cacheWidth = -1, cacheHeight = -1;
-	int defaultWidth = -1, defaultHeight = -1;
+	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
 	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
 
 /**
@@ -446,8 +446,10 @@ public GridData (int width, int height) {
 void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 	if (cacheWidth != -1 && cacheHeight != -1) return;
 	if (wHint == this.widthHint && hHint == this.heightHint) {
-		if (defaultWidth == -1 || defaultHeight == -1) {
+		if (defaultWidth == -1 || defaultHeight == -1 || wHint != defaultWhint || hHint != defaultHhint) {
 			Point size = control.computeSize (wHint, hHint, flushCache);
+			defaultWhint = wHint;
+			defaultHhint = hHint;
 			defaultWidth = size.x;
 			defaultHeight = size.y;
 		}
