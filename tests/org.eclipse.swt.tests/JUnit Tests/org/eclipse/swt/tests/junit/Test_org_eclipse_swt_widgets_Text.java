@@ -216,12 +216,12 @@ public void test_copy(){
 }
 
 public void test_cut(){
-	text.cut();
+	text.cut();
 	text.setText("01234567890");
 	text.setSelection(2, 5);
 	text.cut();
 	assertEquals("01567890", text.getText());
-
+
 	text.selectAll();
 	text.cut();
 	assertEquals("", text.getText());
@@ -689,7 +689,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point(){
 	catch (IllegalArgumentException e) {
 	}
 
-	text.setText("01234567890");
+	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
 	assertEquals(new Point(2, 2), text.getSelection());
 
@@ -843,7 +843,7 @@ public void test_showSelection(){
 
 	text.setText("00000");
 	text.selectAll();
-	text.showSelection();
+	text.showSelection();
 	text.clearSelection();
 	text.showSelection();
 	

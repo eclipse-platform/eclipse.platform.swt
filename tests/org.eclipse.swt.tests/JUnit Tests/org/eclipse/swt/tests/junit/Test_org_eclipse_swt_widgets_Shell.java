@@ -103,7 +103,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 }
 
 public void test_close(){
-
+
 	// bogus line that 'enabled' gpfs
 	//	Shell newShell = new Shell();
 	testShell.setBounds(20,30,200, 200);

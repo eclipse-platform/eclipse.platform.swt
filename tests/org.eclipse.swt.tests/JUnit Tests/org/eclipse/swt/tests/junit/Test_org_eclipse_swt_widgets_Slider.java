@@ -53,7 +53,7 @@ private void report(String call, int set, int minExpected, int maxExpected, int 
 		//System.out.println(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + slider.getSelection());
 	//if (slider.getThumb() != thumbExpected)
 		//System.out.println(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + slider.getThumb());
-
+
 	check(call, set, minExpected, maxExpected, selectionExpected, thumbExpected);
 }
 // this method must be private or protected so the auto-gen tool keeps it
@@ -500,12 +500,12 @@ return new int[][] {
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private void setDefaults() {
-
+
 	slider.setMaximum(100);
 	slider.setMinimum(10);
 	slider.setThumb(10);
 	slider.setSelection(50);
-
+
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private int[][] getSetSelectionValues() {
@@ -730,9 +730,9 @@ public void test_setIncrementI() {
 }
 
 public void test_setMaximumI(){
-
+
 	int [][] testValues = getSetMaximumValues();
-
+
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();
@@ -742,9 +742,9 @@ public void test_setMaximumI(){
 }
 
 public void test_setMinimumI(){
-
+
 	int [][] testValues = getSetMinimumValues();
-
+
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();
@@ -768,9 +768,9 @@ public void test_setSelectionI(){
 }
 
 public void test_setThumbI(){
-
+
 	int [][] testValues = getSetThumbValues();
-
+
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();

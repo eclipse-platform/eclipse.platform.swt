@@ -131,10 +131,10 @@ public void test_getItems(){
 	
 	menu.getItems()[0].dispose();
 	assertEquals(":b:", new MenuItem[]{items[1], items[2], items[3], items[4]}, menu.getItems());
-
+
 	menu.getItems()[3].dispose();
 	assertEquals(":c:", new MenuItem[]{items[1], items[2], items[3]}, menu.getItems());
-
+
 	menu.getItems()[1].dispose();
 	assertEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
 }
@@ -235,7 +235,7 @@ public void test_isVisible(){
 	if (true) return;
 	menu.setVisible(true);
 	assertTrue(menu.isVisible());
-
+
 	// api not implemented yet
 	if (fCheckVisibility) {
 		menu.setVisible(false);

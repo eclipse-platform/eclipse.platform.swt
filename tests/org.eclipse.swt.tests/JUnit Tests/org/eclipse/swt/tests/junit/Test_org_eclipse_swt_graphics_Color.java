@@ -76,7 +76,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		color.dispose();
 		fail("No exception thrown for rgb > 255");
 	} catch (IllegalArgumentException e) {
-	}
+	}
 	// illegal argument, blue > 255
 	try {
 		color = new Color(display, 10, 10, 256);
@@ -117,7 +117,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		fail("No exception thrown for rgb < 0");
 	}
 	catch (IllegalArgumentException e) {
-	}
+	}
 	// illegal argument, rgb > 255
 	try {
 		color = new Color(display, new RGB(1000, 2000, 3000));
@@ -125,7 +125,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		fail("No exception thrown for rgb > 255");
 	}
 	catch (IllegalArgumentException e) {
-	}
+	}
 	// illegal argument, blue > 255
 	try {
 		color = new Color(display, new RGB(10, 10, 256));

@@ -144,10 +144,10 @@ public void test_getItems() {
 	
 	tabFolder.getItems()[0].dispose();
 	assertEquals(new TabItem[]{items[1], items[2], items[3], items[4]}, tabFolder.getItems());
-
+
 	tabFolder.getItems()[3].dispose();
 	assertEquals(new TabItem[]{items[1], items[2], items[3]}, tabFolder.getItems());
-
+
 	tabFolder.getItems()[1].dispose();
 	assertEquals(new TabItem[]{items[1], items[3]}, tabFolder.getItems());
 }
@@ -209,12 +209,12 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem(){
 	makeCleanEnvironment();	
 	number = 20;
 	TabItem[] items = new TabItem[number];
-
+
 	for (int i = 0; i < number; i++) {
 		items[i] = new TabItem(tabFolder, 0);
 		items[i].setText(String.valueOf(i));
 	}
-
+
 	//another tabFolder
 	TabFolder tabFolder_2 = new TabFolder(shell, 0);
 	TabItem[] items_2 = new TabItem[number];
@@ -222,7 +222,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem(){
 		items_2[i] = new TabItem(tabFolder_2, 0);
 		items_2[i].setText(String.valueOf(i));
 	}
-
+
 	for (int i = 0; i < number; i++) {
 		assertTrue(":a:" + String.valueOf(i), tabFolder.indexOf(items_2[i])==-1);
 	}
@@ -284,28 +284,28 @@ public void test_setSelectionI(){
 	items = new TabItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
-
+
 	tabFolder.setSelection(0);
 	assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(4);
 	assertEquals(new TabItem[]{items[4]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(2);
 	assertEquals(new TabItem[]{items[2]}, tabFolder.getSelection());	
-
+
 	tabFolder.setSelection(1);
 	assertEquals(new TabItem[]{items[1]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(number + 1);
 	assertEquals(new TabItem[]{items[1]}, tabFolder.getSelection());	
-
+
 	tabFolder.setSelection(-1);
 	assertEquals(0, tabFolder.getSelection().length);	
 	
 	tabFolder.setSelection(3);
 	assertEquals(new TabItem[]{items[3]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(-2);
 	assertEquals(0, tabFolder.getSelection().length);	
 
@@ -314,22 +314,22 @@ public void test_setSelectionI(){
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
-
+
 	tabFolder.setSelection(new TabItem[]{});
 	assertEquals(new TabItem[]{}, tabFolder.getSelection());
 		
 	tabFolder.setSelection(new TabItem[] {items[0]});
 	assertEquals(new TabItem[] {items[0]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(new TabItem[] {items[3]});
 	assertEquals(new TabItem[] {items[3]}, tabFolder.getSelection());	
-
+
 	tabFolder.setSelection(new TabItem[] {items[4]});
 	assertEquals(new TabItem[] {items[4]}, tabFolder.getSelection());
-
+
 	tabFolder.setSelection(new TabItem[] {items[2]});
 	assertEquals(new TabItem[] {items[2]}, tabFolder.getSelection());	
-
+
 	tabFolder.setSelection(new TabItem[] {items[1]});
 	assertEquals(new TabItem[] {items[1]}, tabFolder.getSelection());	
 

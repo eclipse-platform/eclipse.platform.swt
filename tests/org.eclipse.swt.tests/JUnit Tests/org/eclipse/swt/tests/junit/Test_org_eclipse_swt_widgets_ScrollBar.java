@@ -54,7 +54,7 @@ private void report(String call, int set, int minExpected, int maxExpected, int 
 	//if (scrollBar.getSelection() != selectionExpected)
 		//System.out.println(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + scrollBar.getSelection());
 	//if (scrollBar.getThumb() != thumbExpected)
-		//System.out.println(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + scrollBar.getThumb());
+		//System.out.println(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + scrollBar.getThumb());
 	check(minExpected, maxExpected, selectionExpected, thumbExpected);
 }
 // this method must be private or protected so the auto-gen tool keeps it
@@ -810,7 +810,7 @@ public void test_setSelectionI(){
  * argument which must be at least one.
  */
 public void test_setThumbI(){
-	int [][] testValues = getSetThumbValues();
+	int [][] testValues = getSetThumbValues();
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();

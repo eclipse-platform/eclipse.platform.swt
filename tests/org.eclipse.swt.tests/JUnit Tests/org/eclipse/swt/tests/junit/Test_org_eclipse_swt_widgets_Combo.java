@@ -69,7 +69,7 @@ public void test_addLjava_lang_String() {
 	assertEquals(":b:", new String[]{"", ""}, combo.getItems());
 	combo.add("fred");
 	assertEquals(":c:", new String[]{"", "", "fred"}, combo.getItems());
-
+
 }
 
 public void test_addLjava_lang_StringI() {
@@ -500,7 +500,7 @@ public void test_setItemILjava_lang_String() {
 		fail("No exception thrown for illegal index argument");
 	}
 	catch (IllegalArgumentException e) {
-	}
+	}
 	combo.add("joe");
 	combo.setItem(0, "fred");	
 	assertTrue("fred", combo.getItem(0).equals("fred"));

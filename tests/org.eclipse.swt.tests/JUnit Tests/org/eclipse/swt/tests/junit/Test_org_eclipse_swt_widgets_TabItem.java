@@ -63,7 +63,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII(){
 				
 	tItem = new TabItem(tabFolder, SWT.NULL, 1);	
 	assertTrue(":c:", tabFolder.getItems()[1] == tItem);
-
+
 	if (fCheckOutOfRangeBehaviour) {
 		try {
 			new TabItem(tabFolder, SWT.NULL, -1);	

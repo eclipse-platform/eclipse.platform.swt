@@ -51,7 +51,7 @@ private void report(String call, int set, int minExpected, int maxExpected, int 
 		//System.out.println(call + "(" + set + "): Maximum Expected: " + maxExpected + "  Actual: " + progressBar.getMaximum());
 	//if (progressBar.getSelection() != selectionExpected)
 		//System.out.println(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + progressBar.getSelection());
-
+
 	check(minExpected, maxExpected, selectionExpected);
 }
 // this method must be private or protected so the auto-gen tool keeps it
@@ -548,9 +548,9 @@ public void test_getSelection() {
  * equal to zero.
  */
 public void test_setMaximumI(){
-
+
 	int [][] testValues = getSetMaximumValues();
-
+
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();
@@ -565,9 +565,9 @@ public void test_setMaximumI(){
  * equal to zero.
  */
 public void test_setMinimumI(){
-
+
 	int [][] testValues = getSetMinimumValues();
-
+
 	for (int i = 0; i < testValues.length; i++) {
 		int[] intArray = testValues[i];
 		setDefaults();

@@ -200,7 +200,7 @@ public void test_setMenuLorg_eclipse_swt_widgets_Menu(){
  * it is selected when it is checked.
  */
 public void test_setSelectionZ(){
-
+
 	int[] itemStyles = {SWT.CHECK, SWT.RADIO};
 	for (int i=0; i<itemStyles.length; i++)
 	{

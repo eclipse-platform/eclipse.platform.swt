@@ -61,7 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_getChildren() {
-	assertEquals(":a:", new Control[]{}, composite.getChildren());
+	assertEquals(":a:", new Control[]{}, composite.getChildren());
 	Composite c1 = new Composite(composite, 0);
 	assertEquals(":b:", new Control[]{c1}, composite.getChildren());
 

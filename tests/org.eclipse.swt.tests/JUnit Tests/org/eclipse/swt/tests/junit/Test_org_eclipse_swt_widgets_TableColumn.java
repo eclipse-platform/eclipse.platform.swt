@@ -180,7 +180,7 @@ public void test_setAlignmentI(){
 	
 	column2.setAlignment(SWT.CENTER);
 	assertTrue(":e:", column2.getAlignment() == SWT.CENTER);	
-
+
 	column2.setAlignment(SWT.LEFT);
 	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);	
 }

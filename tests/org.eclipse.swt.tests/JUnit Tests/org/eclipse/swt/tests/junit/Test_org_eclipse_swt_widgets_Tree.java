@@ -468,7 +468,7 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem(){
 public void test_showSelection() {
 	TreeItem item;
 	
-	tree.showSelection();
+	tree.showSelection();
 	item = new TreeItem(tree, 0);
 	tree.setSelection(new TreeItem[]{item});
 	tree.showSelection();	
