@@ -590,6 +590,35 @@ int gtk_toggled (int renderer, int pathStr) {
 	return 0;
 }
 
+int gtk_button_press_event (int widget, int event) {
+	int result = super.gtk_button_press_event (widget, event);
+	if (result != 0) return result;
+	
+	/*
+	* Note on GTK. When multiple items are already selected, the default handler
+	* toggles the selection state of the item and clears any former selection.
+	* This is not the desired behaviour when bringing up a popup menu. The
+	* workaround is to detect that case and not run the default handler when the
+	* item is already part of the current selection.
+	*/
+	if (menu != null && (style & SWT.MULTI) != 0) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+		int button = gdkEvent.button;
+		if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+			int [] path = new int [1];
+			if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+				if (path [0] != 0) {
+					int selection = OS.gtk_tree_view_get_selection (handle);
+					if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) result = 1;
+					OS.gtk_tree_path_free (path [0]);
+				}
+			}
+		}
+	}
+	return result;
+}
+	
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
