@@ -2823,6 +2823,9 @@ public void setClipping (int x, int y, int width, int height) {
 	OS.DeleteObject(hRgn);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setClipping (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
