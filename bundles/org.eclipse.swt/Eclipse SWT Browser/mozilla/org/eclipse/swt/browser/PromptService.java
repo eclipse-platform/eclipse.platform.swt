@@ -130,8 +130,7 @@ Browser getBrowser(int aDOMWindow) {
 	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
 	embeddingSiteWindow.Release();
 	
-	Display display = Display.getCurrent();
-	return (Browser)display.findWidget(result[0]); 
+	return Browser.findBrowser(result[0]); 
 }
 
 String getLabel(int buttonFlag, int index, int buttonTitle) {

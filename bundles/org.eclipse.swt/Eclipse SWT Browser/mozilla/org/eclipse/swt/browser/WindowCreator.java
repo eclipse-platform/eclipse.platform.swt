@@ -113,7 +113,7 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 	baseWindow.Release();
 
 	Display display = Display.getCurrent();
-	Browser src = (Browser)display.findWidget(aParentNativeWindow[0]);
+	Browser src = Browser.findBrowser(aParentNativeWindow[0]);
 	final Browser browser;
 	boolean doit = false;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {

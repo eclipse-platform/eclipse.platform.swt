@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 
@@ -32,7 +33,7 @@ import org.eclipse.swt.layout.*;
  * @since 3.0
  */
 public class Browser extends Composite {
-	
+	int /*long*/ embedHandle;
 	nsIWebBrowser webBrowser;
 
 	/* Interfaces for this Mozilla embedding notification */
@@ -70,15 +71,11 @@ public class Browser extends Composite {
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
-	static boolean IsWindows;
+	
+	static boolean flash = System.getProperty("org.eclipse.swt.browser.internal.flash") != null; //$NON-NLS-1$
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-	
-	static {
-		String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-		IsWindows = osName.startsWith("windows");
-	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -134,22 +131,9 @@ public Browser(Composite parent, int style) {
 		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-
-		/*
-		* Feature on Mozilla.  On Windows, the mozilla libraries are split
-		* up into 2 locations indicated by the GRE and Mozilla paths.  The
-		* default nsIDirectoryServiceProvider only works when the libraries
-		* are in the same folder.  The workaround is to provide a custom
-		* nsIDirectoryServiceProvider on this platform.  It provides the 
-		* 2 locations set by Mozilla in the Windows registry.
-		*/
-		if (IsWindows) {
-			LocProvider = new AppFileLocProvider();
-			LocProvider.AddRef();
-		}
 		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), IsWindows ? LocProvider.getAddress() : 0);
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
 			if (LocProvider != null) LocProvider.Release();
@@ -258,11 +242,30 @@ public Browser(Composite parent, int style) {
 		rect.width = 1;
 		rect.height = 1;
 	}
+
+	/*
+	* Bug in Mozilla Linux GTK.  Embedding Mozilla into a GtkFixed
+	* handle causes problems with some Mozilla plug-ins.  For some
+	* reason, the Flash plug-in causes the child of the GtkFixed
+	* handle to be resized to 1 when the Flash document is loaded.
+	* That could be due to gtk_container_resize_children being called
+	* by Mozilla - or one of its plug-ins - on the GtkFixed handle,
+	* causing the child of the GtkFixed handle to be resized to 1.
+	* The workaround is to embed Mozilla into a GtkHBox handle.
+	*/
+	if (!flash) {
+		embedHandle = handle;
+	} else {
+		embedHandle = OS.gtk_hbox_new (false, 0);
+		OS.gtk_container_add (handle, embedHandle);
+		OS.gtk_widget_show (embedHandle);
+	}
+	
 	/*
 	* Note. The following code compiles without warning on a 
 	* 64 bit platform but won't run. 
 	*/
-	rc = baseWindow.InitWindow((int)/*64*/handle, 0, 0, 0, rect.width, rect.height);
+	rc = baseWindow.InitWindow((int)/*64*/embedHandle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
@@ -692,6 +695,16 @@ void disposeCOMInterfaces() {
 	}
 }
 
+static Browser findBrowser(int /*long*/ handle) {
+	/*
+	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
+	* and not directly into the parent Composite handle.
+	*/
+	if (flash) handle = OS.gtk_widget_get_parent(handle);
+	Display display = Display.getCurrent();
+	return (Browser)display.findWidget(handle); 
+}
+
 /**
  * Navigate to the next session history item.
  *
@@ -919,7 +932,8 @@ void onResize() {
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
+
+	if (flash) OS.gtk_widget_set_size_request(embedHandle, rect.width, rect.height);
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.SetPositionAndSize(rect.x, rect.y, rect.width, rect.height, true);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1876,7 +1890,7 @@ int GetSiteWindow(int aSiteWindow) {
 	* Note. The following code compiles without warning on a 
 	* 64 bit platform but won't run. 
 	*/
-	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/handle}, 4);
+	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/embedHandle}, 4);
 	return XPCOM.NS_OK;     	
 }  
  
