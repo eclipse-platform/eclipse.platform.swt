@@ -1287,9 +1287,9 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 	}
 	if (event.button == 3) {
 		Event menuEvent = new Event ();
-		menuEvent.x = event.x;
-		menuEvent.y = event.y;
-		sendEvent (SWT.MenuDetect);
+		menuEvent.x = pe.pos_x;
+		menuEvent.y = pe.pos_y;
+		sendEvent (SWT.MenuDetect, menuEvent);
 		if (menuEvent.doit) {
 			if (menu != null && !menu.isDisposed ()) {
 				if (menuEvent.x != event.x || menuEvent.y != event.y) {
