@@ -621,11 +621,11 @@ int processModify (int arg0, int arg1, int int2) {
 }
 int processMouse (int callData, int arg1, int int2) {
 	switch (OS.GDK_EVENT_TYPE(callData)) {
+		case OS.GDK_KEY_PRESS: return processKeyDown (callData, arg1, int2);
+		case OS.GDK_KEY_RELEASE: return processKeyUp (callData, arg1, int2);
 		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_2BUTTON_PRESS:
-			return processMouseDown (callData, arg1, int2);
-		case OS.GDK_BUTTON_RELEASE:
-			return processMouseUp (callData, arg1, int2);
+		case OS.GDK_2BUTTON_PRESS: return processMouseDown (callData, arg1, int2);
+		case OS.GDK_BUTTON_RELEASE: return processMouseUp (callData, arg1, int2);
 	}
 	return 0;
 }
