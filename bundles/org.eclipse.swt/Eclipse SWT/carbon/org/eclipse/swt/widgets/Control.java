@@ -305,8 +305,8 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
-	display.lastModifiers = modifiers [0];
 	sendKeyEvent (type, theEvent);
+	display.lastModifiers = modifiers [0];
 	return OS.eventNotHandledErr;
 }
 					
