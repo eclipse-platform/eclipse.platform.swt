@@ -80,7 +80,7 @@ public PopupList(Shell parent, int style) {
 	});
 	
 }
-private static int checkStyle (int style) {               //b36679 start
+private static int checkStyle (int style) {
 	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
