@@ -446,6 +446,36 @@ public int indexOf (TabItem item) {
 	return -1;
 }
 
+boolean mnemonicHit (char key) {
+	if (!setFocus ()) return false;
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			char mnemonic = findMnemonic (items[i].getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					setSelection(i);
+					sendEvent(SWT.Selection, new Event());
+				}
+			}
+		}
+	}
+	return true;
+}
+
+boolean mnemonicMatch (char key) {
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			char mnemonic = findMnemonic (items[i].getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void releaseWidget () {
 	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
@@ -512,6 +542,19 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
+boolean setTabGroupFocus () {
+	return setTabItemFocus();
+}
+
+boolean setTabItemFocus () {
+	Control [] path = getPath ();
+	for (int i=0; i<path.length; i++) {
+		Point size = path [i].getSize ();
+		if (size.x == 0 || size.y == 0) return false;
+	}
+	return forceFocus ();
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
@@ -575,7 +618,7 @@ int widgetStyle () {
 	* this cannot happen by setting WS_CLIPCHILDREN.
 	*/
 	int bits = super.widgetStyle () | OS.WS_CLIPCHILDREN;
-	return bits | OS.TCS_TABS | OS.TCS_FOCUSNEVER | OS.TCS_TOOLTIPS;
+	return bits | OS.TCS_TABS /*| OS.TCS_FOCUSNEVER*/ | OS.TCS_TOOLTIPS;
 }
 
 TCHAR windowClass () {
@@ -584,6 +627,13 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return TabFolderProc;
+}
+
+LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
+	// ALT Key
+	if (result != null) return result;
+	return new LRESULT (OS.DLGC_BUTTON);
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
