@@ -609,7 +609,7 @@ void headerOnPaint (Event event) {
 	}
 
 	/* paint the column header shadow that spans the full header width */
-	Rectangle paintBounds = new Rectangle (clipping.x, 0, clipping.width, getSize ().y);
+	Rectangle paintBounds = new Rectangle (clipping.x, 0, clipping.width, header.getSize ().y);
 	headerPaintShadow (gc, paintBounds, true, false);
 
 	/* if all damage is to the right of the last column then finished */
@@ -1765,6 +1765,7 @@ void onPaint (Event event) {
 		int rightX = clipping.x + clipping.width;
 		int headerHeight = getHeaderHeight ();
 		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
+		if (y == headerHeight) y += itemHeight;		/* do not paint line at very top */
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;

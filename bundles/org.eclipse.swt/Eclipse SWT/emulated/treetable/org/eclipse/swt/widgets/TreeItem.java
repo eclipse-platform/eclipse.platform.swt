@@ -881,7 +881,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		if (columnIndex == 0) {
 			Rectangle focusBounds = getFocusBounds ();
 			int fillWidth = focusBounds.width;
-			if (parent.columns.length == 1 || (parent.style & SWT.FULL_SELECTION) == 0) {
+			if (parent.columns.length < 2 || (parent.style & SWT.FULL_SELECTION) == 0) {
 				fillWidth -= 2;	/* space for right bound of focus rect */
 			}
 			gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
