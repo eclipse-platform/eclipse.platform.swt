@@ -128,13 +128,18 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index <= OS.gtk_tree_model_iter_n_children (modelHandle, 0))) {
+	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.gtk_list_store_insert (modelHandle, iter, index);
+	if (index == count) {
+		OS.gtk_list_store_append (modelHandle, iter);
+	} else {
+		OS.gtk_list_store_insert (modelHandle, iter, index);
+	}
 	OS.gtk_list_store_set (modelHandle, iter, 0, buffer, -1);
 	OS.g_free (iter);
 }
