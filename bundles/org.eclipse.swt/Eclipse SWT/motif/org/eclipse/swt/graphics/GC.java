@@ -62,7 +62,12 @@ public GC (Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	int xGC = drawable.internal_new_GC(data);
+	Device device = data.device;
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	data.device = device;
 	init(drawable, data, xGC);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -156,16 +161,18 @@ public void dispose () {
 	if (renderTable != 0) OS.XmRenderTableFree(renderTable);
 
 	/* Dispose the GC */
+	Device device = data.device;
 	drawable.internal_dispose_GC(handle, data);
 
 	data.display = data.drawable = data.colormap = data.fontList = 
 		data.clipRgn = data.renderTable = 0;
 	drawable = null;
-	data.device = null;
+	handle = 0;
 	data.image = null;
 	data.codePage = null;
+	if (device.tracking) device.dispose_Object(this);
+	data.device = null;
 	data = null;
-	handle = 0;
 }
 /**
  * Draws the outline of a circular or elliptical arc 

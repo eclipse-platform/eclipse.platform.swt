@@ -66,8 +66,11 @@ Font () {
  * </ul>
  */
 public Font (Device device, FontData fd) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new FontData[] {fd});
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -91,12 +94,15 @@ public Font (Device device, FontData fd) {
  * </ul>
  */
 public Font (Device device, FontData[] fds) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	init(device, fds);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -122,8 +128,11 @@ public Font (Device device, FontData[] fds) {
  * </ul>
  */
 public Font (Device device, String name, int height, int style) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new FontData[]{new FontData(name, height, style)});
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -155,8 +164,9 @@ public void dispose () {
 	
 	/* Free the font list */
 	OS.XmFontListFree (handle);
-	device = null;
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 
 /**
@@ -408,8 +418,6 @@ String getXlfds(int fontSet) {
 }
 
 void init (Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	int xDisplay = device.xDisplay;
 	

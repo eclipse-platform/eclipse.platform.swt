@@ -145,7 +145,10 @@ Image() {
  * </ul>
  */
 public Image(Device device, int width, int height) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, width, height);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs a new instance of this class based on the
@@ -221,6 +224,7 @@ public Image(Device device, Image srcImage, int flag) {
 				alphaData = new byte[srcImage.alphaData.length];
 				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 			}
+			if (device.tracking) device.new_Object(this);
 			return;
 		case SWT.IMAGE_DISABLE:
 			/* Get src image data */
@@ -390,6 +394,7 @@ public Image(Device device, Image srcImage, int flag) {
 			OS.XDestroyImage(srcXImagePtr);
 			OS.XFreeGC(xDisplay, gc);
 			this.pixmap = destPixmap;
+			if (device.tracking) device.new_Object(this);
 			return;
 		case SWT.IMAGE_GRAY:
 			ImageData data = srcImage.getImageData();
@@ -448,6 +453,7 @@ public Image(Device device, Image srcImage, int flag) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs an empty instance of this class with the
@@ -480,8 +486,11 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, bounds.width, bounds.height);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs an instance of this class from the given
@@ -499,7 +508,10 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData image) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, image);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs an instance of this class, whose type is 
@@ -531,6 +543,8 @@ public Image(Device device, ImageData image) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -541,6 +555,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
 	init(device, image);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs an instance of this class by loading its representation
@@ -575,7 +590,10 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </ul>
  */
 public Image(Device device, InputStream stream) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new ImageData(stream));
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Constructs an instance of this class by loading its representation
@@ -603,7 +621,10 @@ public Image(Device device, InputStream stream) {
  * </ul>
  */
 public Image(Device device, String filename) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new ImageData(filename));
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Create the receiver's mask if necessary.
@@ -633,9 +654,10 @@ public void dispose () {
 	int xDisplay = device.xDisplay;
 	if (pixmap != 0) OS.XFreePixmap (xDisplay, pixmap);
 	if (mask != 0) OS.XFreePixmap (xDisplay, mask);
-	device = null;
 	memGC = null;
 	pixmap = mask = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 /**
  * Destroy the receiver's mask if it exists.
@@ -936,8 +958,6 @@ public int hashCode () {
 	return pixmap;
 }
 void init(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (width <= 0 | height <= 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -960,8 +980,6 @@ void init(Device device, int width, int height) {
 	this.pixmap = pixmap;
 }
 void init(Device device, ImageData image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int xDisplay = device.xDisplay;

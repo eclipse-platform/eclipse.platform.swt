@@ -121,6 +121,7 @@ public Cursor (Device device, int style) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.handle = OS.XCreateFontCursor(device.xDisplay, shape);
+	if (device.tracking) device.new_Object(this);
 }
 /**	 
  * Constructs a new cursor given a device, image and mask
@@ -225,6 +226,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	OS.XFreePixmap(xDisplay, sourcePixmap);
 	OS.XFreePixmap(xDisplay, maskPixmap);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Disposes of the operating system resources associated with
@@ -235,8 +237,9 @@ public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
 	OS.XFreeCursor(device.xDisplay, handle);
-	device = null;
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 /**
  * Compares the argument to the receiver, and returns true

@@ -62,7 +62,10 @@ Color() {
  * @see #dispose
  */
 public Color (Device device, int red, int green, int blue) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, red, green, blue);
+	if (device.tracking) device.new_Object(this);
 }
 /**	 
  * Constructs a new instance of this class given a device and an
@@ -87,8 +90,11 @@ public Color (Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color (Device device, RGB rgb) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
+	if (device.tracking) device.new_Object(this);
 }
 /**
  * Disposes of the operating system resources associated with
@@ -108,8 +114,9 @@ public void dispose() {
 	}
 	int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
 	OS.XFreeColors(xDisplay, colormap, new int[] { pixel }, 1, 0);
-	device = null;
 	handle = null;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -195,8 +202,6 @@ public int hashCode () {
 	return handle.red ^ handle.green ^ handle.blue;
 }
 void init(Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if ((red > 255) || (red < 0) ||
 		(green > 255) || (green < 0) ||
