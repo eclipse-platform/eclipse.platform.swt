@@ -495,7 +495,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0) return;
+	if (value < 0 || value <= getMinimum()) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
 	adjustment.upper = (float) value;
@@ -519,7 +519,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0) return;
+	if (value < 0 || value >= getMaximum()) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
 	adjustment.lower = (float) value;
@@ -569,6 +569,7 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	if (value < 0) return;
+	value = Math.min(value, getMaximum() - getThumb());
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_set_value (handle, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -590,7 +591,7 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget ();
-	if (value < 1) return;
+	if (value < 1 || value > getMaximum() - getMinimum()) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
 	adjustment.page_size = (float) value;
