@@ -61,11 +61,10 @@ considered to be a preliminary implementation only.
 <h4>
 1.6 Cursor constructor arguments</h4>
 
-In the constructor <code>Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)</code>,
-when both a source and mask argument are specified (i.e. mask is not null), the meaning of the two arguments is
-reversed. That is, the "mask" argument should be the source image and the "source" argument should be the
-mask image. This problem was discovered too late in the development cycle to be fixed for R1.0. The intent is to
-fix this in a future release, potentially by introducing a new more general constructor.
+In the constructor Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY), 
+when both a source and mask argument are specified (i.e. mask is not null), the meaning of the two arguments 
+is reversed. That is, the "mask" argument should be the source image and the "source" argument should be 
+the mask image. For a description of this issue see bugzilla report #4809.
 
 <h4>
 1.7  ToolBar on Windows</h4>
@@ -87,6 +86,40 @@ On Photon and AIX, the SWT library will not be found when running with
 the J9 VM (version 1.5). This is a bug in the J9 classes library. You
 can workaround this problem by adding the SWT library directory to your
 load library path.
+
+<h4>
+1.10 Javadoc not consistent across platforms</h4>
+
+Because of a bug in the way we updated the javadoc in our source code,
+the javadoc for protected methods is not consistent across platforms.
+The javadoc for the Windows platform, which is used to generate the 
+documentation that appears in the Platform Plug-in Developer guide,
+is the definitive source. This will be fixed in a future release.
+
+<h4>
+1.11 JAWS requires MSAA for List Views to read checkboxes in Tables</h4>
+
+In order for JAWS to detect the checkbox information in Tables, 
+MSAA support for List Views must be activated as follows:
+
+<ol>
+<li>Open Eclipse and hit INSERT + F2.
+<li>In the "Run JAWS Manager" dialog select "Configuration Manager".
+<li>In the "Jaws Configuration Manager" that opens up, select "Set Options" and then select "Advanced Options".
+<li>Check "Rely on MSAA for List views".
+<li>Hit the OK button.
+<li>Choose File -> Save from the menu bar.
+</ol>
+
+<h4>
+1.12 No accelerators or mnemonics on Solaris</h4>
+
+The Solaris implementation of Motif has a long standing bug w.r.t. adding and
+removing accelerators and mnemonics. The behavior is such that, the time to do
+so becomes increasingly longer each time it occurs, to the point that, in 
+Eclipse's case, it can take more than a minute to switch between editors and
+views. Because of this, accelerators and mnemonics are explicitely ignored on
+Solaris.
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
