@@ -483,13 +483,20 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
-	if (images.length > 0) {
-		Image image = images [0];
-		if (image != null) {
-			OS.SetApplicationDockTileImage (image.handle);
-		} else {
-			OS.RestoreApplicationDockTileImage ();
+	if (images != null) {
+		int index = -1, width = 0, height = 0;
+		for (int i = 0; i < images.length; i++) {
+			Image image = images[i];
+			Rectangle bounds = image.getBounds();
+			if (bounds.width > width || bounds.height > height) {
+				width = bounds.width;
+				height = bounds.height;
+				index = i;
+			}
 		}
+		OS.SetApplicationDockTileImage (images [index].handle);
+	} else {
+		OS.RestoreApplicationDockTileImage ();
 	}
 }
 
