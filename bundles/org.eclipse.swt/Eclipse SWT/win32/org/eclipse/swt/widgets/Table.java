@@ -2889,6 +2889,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		if (index != -1) {
 			TableItem item = _getItem (index);
 			item.setChecked (!item.getChecked (), true);
+			if (!OS.IsWinCE) {
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
+			}
 		}
 	}
 	return result;
@@ -2942,6 +2945,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (index != -1 && pinfo.flags == OS.LVHT_ONITEMSTATEICON) {
 			TableItem item = _getItem (index);
 			item.setChecked (!item.getChecked (), true);
+			if (!OS.IsWinCE) {
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
+			}
 		}	
 	}
 	

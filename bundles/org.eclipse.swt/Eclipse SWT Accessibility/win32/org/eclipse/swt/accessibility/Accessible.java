@@ -361,8 +361,8 @@ public class Accessible {
 			* Feature of Windows XP: The following line is intentionally commented.
 			* In Windows XP tree item ids are 1-based indices. Previous versions of
 			* Windows use the tree item handle for the accessible child ID. Despite
-			* this, the call to NotifyWinEvent still takes the handle, so we will
-            * not do the mapping from handle to 1-based index.
+			* this, the call to NotifyWinEvent on XP still takes the handle, so we
+            * do not map from id to handle.
 			*/
 			//if (OS.COMCTL32_MAJOR >= 6) id = OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, childID, 0);
 		}

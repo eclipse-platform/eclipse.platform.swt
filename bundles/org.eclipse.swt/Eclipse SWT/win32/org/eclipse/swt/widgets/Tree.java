@@ -1397,6 +1397,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					}
 					tvItem.state = state << 12;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					if (!OS.IsWinCE) {
+						int id = hItem;
+						if (OS.COMCTL32_MAJOR >= 6) {
+							id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, hItem, 0);
+						}
+						OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
+					}
 				}
 				tvItem.stateMask = OS.TVIS_SELECTED;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
@@ -1634,6 +1641,13 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 			tvItem.state = state << 12;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			if (!OS.IsWinCE) {	
+				int id = tvItem.hItem;
+				if (OS.COMCTL32_MAJOR >= 6) {
+					id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+				}
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
+			}
 			Event event = new Event ();
 			event.item = items [tvItem.lParam];
 			event.detail = SWT.CHECK;
