@@ -454,7 +454,6 @@ int parentingHandle () {
 }
 
 int processMouse (int info) {
-	int result = super.processMouse (info);
 	if ((state & CANVAS) != 0) {
 		if (info == 0) return OS.Pt_END;
 		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -469,16 +468,20 @@ int processMouse (int info) {
 			OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	
 			/* Grab pointer */
-			PhRect_t rect = new PhRect_t ();
-			PhPoint_t pos = new PhPoint_t();
-			pos.x = pe.pos_x;
-			pos.y = pe.pos_y;
-			rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
-			rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
-			int rid = OS.PtWidgetRid (handle);
-			int input_group = OS.PhInputGroup (0);
-			int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
-			OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+			if (!(menu != null && pe.buttons == OS.Ph_BUTTON_MENU)) {
+				PhRect_t rect = new PhRect_t ();
+				PhPoint_t pos = new PhPoint_t();
+				pos.x = pe.pos_x;
+				pos.y = pe.pos_y;
+				rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
+				rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
+				int rid = OS.PtWidgetRid (handle);
+				int input_group = OS.PhInputGroup (0);
+				int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
+				OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+			}
+	
+			int result = super.processMouse (info);
 	
 			/* Set focus for the a CANVAS with no children */
 			if ((style & SWT.NO_FOCUS) == 0) {
@@ -488,9 +491,10 @@ int processMouse (int info) {
 					}
 				}
 			}
+			return result;
 		}
 	}
-	return result;
+	return super.processMouse (info);
 }
 
 int processPaint (int damage) {
@@ -640,6 +644,16 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (layout != null) layout (false);
 	}
 	return changed;
+}
+
+public boolean setFocus () {
+	checkWidget();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.getVisible () && child.setFocus ()) return true;
+	}
+	return super.setFocus ();
 }
 
 /**
