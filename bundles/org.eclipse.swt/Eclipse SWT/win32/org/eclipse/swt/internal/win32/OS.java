@@ -1717,7 +1717,7 @@ public class OS {
 //	public static final int HWND_DESKTOP = 0x0;
 //	public static final int HWND_NOTOPMOST = 0xFFFFFFFE;
 	public static final int HWND_TOP = 0x0;
-//	public static final int HWND_TOPMOST = 0xFFFFFFFF;
+	public static final int HWND_TOPMOST = 0xFFFFFFFF;
 //	public static final int I_CHILDRENCALLBACK = -1;
 //	public static final int ICM_LEVEL2 = 0x0002;
 //	public static final int ICM_LEVEL2_5 = 0x0003;
@@ -3949,7 +3949,7 @@ public class OS {
 //	public static final int WS_EX_RTLREADING = 0x2000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
-//	public static final int WS_EX_TOPMOST = 0x8;
+	public static final int WS_EX_TOPMOST = 0x8;
 //	public static final int WS_EX_TRANSPARENT = 0x20;
 //	public static final int WS_EX_WINDOWEDGE = 0x100;
 //	public static final int WS_GROUP = 0x20000;

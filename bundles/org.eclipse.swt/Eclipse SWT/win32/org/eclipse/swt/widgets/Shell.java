@@ -750,7 +750,7 @@ void setParent () {
 void setToolTipText (int hwnd, String text) {
 	if (toolTipHandle == 0) {
 		toolTipHandle = OS.CreateWindowEx (
-			0,
+			OS.WS_EX_TOPMOST,
 			OS.TOOLTIPS_CLASS,
 			null,
 			OS.TTS_ALWAYSTIP,
@@ -832,6 +832,12 @@ public void setVisible (boolean visible) {
 void updateModal () {
 	if (!display.TrimEnabled) return;
 	setItemEnabled (OS.SC_CLOSE, isActive ());
+}
+
+int widgetExtStyle () {
+	int bits = super.widgetExtStyle ();
+	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
+	return bits;
 }
 
 int widgetStyle () {
