@@ -212,7 +212,7 @@ public void addVerifyListener (VerifyListener listener) {
  */
 public void append (String string) {
 	checkWidget ();
-	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string);	
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_entry_append_text(handle, buffer);
@@ -221,7 +221,7 @@ public void append (String string) {
 		int [] position = new int [] {length};
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
 		OS.gtk_editable_set_position (handle, position [0]);
-	}*/
+	}
 }
 
 /**
@@ -582,12 +582,14 @@ public int getTabs () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		/* FIXME - MIXING LENGTH WITH SIZE! */
+		/*
+		 * The GTK documentation explicitly states
+		 * that this address should not be freed.
+		 */
 		int address = OS.gtk_entry_get_text (handle);
 		int length = OS.strlen (address);
 		byte [] buffer1 = new byte [length];
 		OS.memmove (buffer1, address, length);
-		OS.g_free (address);
 		char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
 		return new String (buffer2, 0, buffer2.length);
 	}

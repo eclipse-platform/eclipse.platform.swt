@@ -515,16 +515,14 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
+	/*
+	 * The GTK documentation explicitly states
+	 * that this address should not be freed.
+	 */
 	int address = OS.gtk_entry_get_text (entryHandle);
 	int length = OS.strlen (address);
 	byte [] buffer1 = new byte [length];
 	OS.memmove (buffer1, address, length);
-	/*
-	* This code is intentionally commented.
-	* The GTK documentation explicitly states
-	* that this address should not be freed.
-	*/
-//	OS.g_free (address);
 	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
 	return new String (buffer2, 0, buffer2.length);
 }
