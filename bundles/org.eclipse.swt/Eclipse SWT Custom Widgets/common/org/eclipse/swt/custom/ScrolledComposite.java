@@ -173,6 +173,27 @@ private static int checkStyle (int style) {
 	return style & mask;
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	/*
+	* When a composite does layout without using a layout
+	* manager, it must take into account the preferred size
+	* of it's children when computing it's preferred size in
+	* the same way that a layout manager would.  In particular,
+	* when a scrolled composite hides the scroll bars and
+	* places a child to fill the client area, then repeated
+	* calls to compute the preferred size of the scrolled
+	* composite should not keep adding in the space used by
+	* the scroll bars.
+	*/
+	if (content == null) {
+		return super.computeSize (wHint, hHint, changed);
+	}
+	Point size = content.computeSize (wHint, hHint, changed);
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	return new Point (trim.width, trim.height);
+}
+
 /**
  * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
  * always shown even if they are not required.  False if the scrollbars are only 
