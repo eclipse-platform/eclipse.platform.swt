@@ -106,10 +106,11 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	int scrolledHandle = scrolledHandle ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int bits1 = OS.GetWindowLong (scrolledHandle, OS.GWL_STYLE);
+	int bits2 = OS.GetWindowLong (scrolledHandle, OS.GWL_EXSTYLE);
 	OS.AdjustWindowRectEx (rect, bits1, false, bits2);
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
@@ -150,7 +151,8 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
+	int scrolledHandle = scrolledHandle ();
+	OS.GetClientRect (scrolledHandle, rect);
 	return new Rectangle (0, 0, rect.right, rect.bottom);
 }
 
@@ -191,6 +193,10 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
+}
+
+int scrolledHandle () {
+	return handle;
 }
 
 int widgetExtStyle () {
@@ -234,7 +240,7 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* both.
 	*/
 	if (horizontalBar != null && (lParam == 0 || lParam == handle)) {
-		return wmScroll (horizontalBar, handle, OS.WM_HSCROLL, wParam, lParam);
+		return wmScroll (horizontalBar, (state & CANVAS) != 0, handle, OS.WM_HSCROLL, wParam, lParam);
 	}
 	return result;
 }
@@ -327,14 +333,14 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* both.
 	*/
 	if (verticalBar != null && (lParam == 0 || lParam == handle)) {
-		return wmScroll (verticalBar, handle, OS.WM_VSCROLL, wParam, lParam);
+		return wmScroll (verticalBar, (state & CANVAS) != 0, handle, OS.WM_VSCROLL, wParam, lParam);
 	}
 	return result;
 }
 
-LRESULT wmScroll (ScrollBar bar, int hwnd, int msg, int wParam, int lParam) {
+LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, int lParam) {
 	LRESULT result = null;
-	if ((state & CANVAS) != 0) {
+	if (update) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;

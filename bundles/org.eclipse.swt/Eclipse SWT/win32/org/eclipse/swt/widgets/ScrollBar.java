@@ -203,7 +203,7 @@ Rectangle getBounds () {
 //	checkWidget ();
 	parent.forceResize ();
 	RECT rect = new RECT ();
-	OS.GetClientRect (parent.handle, rect);
+	OS.GetClientRect (parent.scrolledHandle (), rect);
 	int x = 0, y = 0, width, height;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		y = rect.bottom - rect.top;
@@ -366,7 +366,7 @@ public Point getSize () {
 	checkWidget();
 	parent.forceResize ();
 	RECT rect = new RECT ();
-	OS.GetClientRect (parent.handle, rect);
+	OS.GetClientRect (parent.scrolledHandle (), rect);
 	int width, height;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		width = rect.right - rect.left;
@@ -426,7 +426,7 @@ public boolean getVisible () {
 }
 
 int hwndScrollBar () {
-	return parent.handle;
+	return parent.scrolledHandle ();
 }
 
 /**

@@ -240,6 +240,10 @@ void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
+int borderHandle () {
+	return hwndText;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;

@@ -332,6 +332,14 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
+int borderHandle () {
+	return handle;
+}
+
+void checkBorder () {
+	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
+}
+
 boolean checkHandle (int hwnd) {
 	return hwnd == handle;
 }
@@ -481,6 +489,7 @@ void createWidget () {
 	subclass ();
 	setDefaultFont ();
 	checkMirrored ();
+	checkBorder ();
 }
 
 int defaultBackground () {
@@ -501,7 +510,7 @@ void deregister () {
 }
 
 void destroyWidget () {
-	int hwnd = handle;
+	int hwnd = topHandle ();
 	releaseHandle ();
 	if (hwnd != 0) {
 		OS.DestroyWindow (hwnd);
@@ -511,10 +520,10 @@ void destroyWidget () {
 void drawBackground (int hDC) {
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
-	drawBackground (hDC, rect);
+	drawBackground (hDC, getBackgroundPixel (), rect);
 }
 
-void drawBackground (int hDC, RECT rect) {
+void drawBackground (int hDC, int pixel, RECT rect) {
 	Control control = null;
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		control = findThemeControl ();
@@ -525,7 +534,6 @@ void drawBackground (int hDC, RECT rect) {
 			OS.SelectPalette (hDC, hPalette, false);
 			OS.RealizePalette (hDC);
 		}
-		int pixel = getBackgroundPixel ();
 		int hBrush = findBrush (pixel);
 		OS.FillRect (hDC, rect, hBrush);
 	} else {
@@ -534,6 +542,10 @@ void drawBackground (int hDC, RECT rect) {
 		OS.MapWindowPoints (0, handle, rect2, 2);
 		control.drawThemeBackground (hDC, rect2);	
 	}
+}
+
+void drawBackground (int hDC, RECT rect) {
+	drawBackground (hDC, getBackgroundPixel (), rect);
 }
 
 void drawThemeBackground (int hDC, RECT rect) {
@@ -711,10 +723,11 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	int bits1 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int borderHandle = borderHandle ();
+	int bits1 = OS.GetWindowLong (borderHandle, OS.GWL_EXSTYLE);
 	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
 	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
-	int bits2 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits2 = OS.GetWindowLong (borderHandle, OS.GWL_STYLE);
 	if ((bits2 & OS.WS_BORDER) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
 	return 0;
 }
@@ -736,7 +749,7 @@ public Rectangle getBounds () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
+	OS.GetWindowRect (topHandle (), rect);
 	int hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	int width = rect.right - rect.left;
@@ -867,7 +880,7 @@ public Point getLocation () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
+	OS.GetWindowRect (topHandle (), rect);
 	int hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	return new Point (rect.left, rect.top);
@@ -993,7 +1006,7 @@ public Point getSize () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
+	OS.GetWindowRect (topHandle (), rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Point (width, height);
@@ -1356,12 +1369,12 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
-	int hwndAbove = OS.HWND_TOP;
+	int topHandle = topHandle (), hwndAbove = OS.HWND_TOP;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		int hwnd = control.handle;
-		if (hwnd == 0 || hwnd == handle) return;
+		int hwnd = control.topHandle ();
+		if (hwnd == 0 || hwnd == topHandle) return;
 		hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
 		* Bug in Windows.  For some reason, when GetWindow ()
@@ -1375,7 +1388,7 @@ public void moveAbove (Control control) {
 		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
+	SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 /**
@@ -1400,15 +1413,15 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
-	int hwndAbove = OS.HWND_BOTTOM;
+	int topHandle = topHandle (), hwndAbove = OS.HWND_BOTTOM;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		hwndAbove = control.handle;
+		hwndAbove = control.topHandle ();
 	}
-	if (hwndAbove == 0 || hwndAbove == handle) return;
+	if (hwndAbove == 0 || hwndAbove == topHandle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
+	SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 Accessible new_Accessible (Control control) {
@@ -1796,6 +1809,10 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+void showWidget (boolean visible) {
+	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+}
+
 boolean sendFocusEvent (int type) {
 	Shell shell = getShell ();
 	
@@ -1903,6 +1920,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	int topHandle = topHandle ();
 	if (defer && parent != null) {
 		forceResize ();
 		WINDOWPOS [] lpwp = parent.lpwp;
@@ -1917,7 +1935,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 //				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
 //			}
-			SetWindowPos (handle, 0, x, y, width, height, flags);
+			SetWindowPos (topHandle, 0, x, y, width, height, flags);
 		} else {
 			int index = 0;
 			while (index < lpwp.length) {
@@ -1930,7 +1948,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 				parent.lpwp = lpwp = newLpwp;
 			}
 			WINDOWPOS wp = new WINDOWPOS ();
-			wp.hwnd = handle;
+			wp.hwnd = topHandle;
 			wp.x = x;
 			wp.y = y;
 			wp.cx = width;
@@ -1939,7 +1957,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 			lpwp [index] = wp;
 		}
 	} else {
-		SetWindowPos (handle, 0, x, y, width, height, flags);
+		SetWindowPos (topHandle, 0, x, y, width, height, flags);
 	}
 }
 
@@ -2420,11 +2438,6 @@ public void setVisible (boolean visible) {
 		if (((bits & OS.WS_VISIBLE) != 0) == visible) return;
 	}
 	if (visible) {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the show
-		* event.  If this happens, just return.
-		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 	}
@@ -2447,21 +2460,10 @@ public void setVisible (boolean visible) {
 	if (drawCount != 0) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
 	} else {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in an event
-		* triggered by ShowWindow().  If this happens, just
-		* return.
-		*/
-		OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+		showWidget (visible);
 		if (isDisposed ()) return;
 	}
 	if (!visible) {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the hide
-		* event.  If this happens, just return.
-		*/
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
@@ -2581,6 +2583,10 @@ public Point toDisplay (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
+}
+
+int topHandle () {
+	return handle;
 }
 
 boolean translateAccelerator (MSG msg) {
@@ -2986,10 +2992,11 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-	if (OS.SetParent (handle, parent.handle) == 0) return false;
+	int topHandle = topHandle ();
+	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	return true;
 }
 

@@ -322,8 +322,7 @@ public void setControl (Control control) {
 	}
 	Control oldControl = this.control, newControl = control;
 	int hwnd = parent.handle;
-	int hwndChild = 0;
-	if (newControl != null) hwndChild = control.handle;
+	int hwndChild = newControl != null ? control.topHandle () : 0;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILD;
