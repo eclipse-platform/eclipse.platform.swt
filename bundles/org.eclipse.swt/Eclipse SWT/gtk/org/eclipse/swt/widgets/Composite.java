@@ -755,7 +755,7 @@ boolean setTabItemFocus (boolean next) {
 	if (socketHandle != 0) {
 		int direction = next ? OS.GTK_DIR_TAB_FORWARD : OS.GTK_DIR_TAB_BACKWARD;
 		OS.GTK_WIDGET_UNSET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
-		boolean result = OS.gtk_widget_child_focus (socketHandle, direction);
+		OS.gtk_widget_child_focus (socketHandle, direction);
 		OS.GTK_WIDGET_SET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
 	}
 	return true;
