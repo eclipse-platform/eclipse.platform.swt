@@ -1368,8 +1368,8 @@ public static final int /*long*/ g_malloc(int /*long*/ size) {
 		lock.unlock();
 	}
 }
-public static final native void _g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int terminator);
-public static final void g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int terminator) {
+public static final native void _g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int /*long*/ terminator);
+public static final void g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_get(object, first_property_name, value, terminator);
@@ -1404,8 +1404,8 @@ public static final int /*long*/ g_object_ref(int /*long*/ object) {
 		lock.unlock();
 	}
 }
-public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int terminator);
-public static final void g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int terminator) {
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, boolean data, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_set(object, first_property_name, data, terminator);
@@ -1413,8 +1413,8 @@ public static final void g_object_set(int /*long*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
-public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, int data, int terminator);
-public static final void g_object_set(int /*long*/ object, byte[] first_property_name, int data, int terminator) {
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, int data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, int data, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_set(object, first_property_name, data, terminator);
@@ -1422,8 +1422,8 @@ public static final void g_object_set(int /*long*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
-public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, float data, int terminator);
-public static final void g_object_set(int /*long*/ object, byte[] first_property_name, float data, int terminator) {
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, float data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, float data, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_set(object, first_property_name, data, terminator);
@@ -1431,8 +1431,8 @@ public static final void g_object_set(int /*long*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
-public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, long data, int terminator);
-public static final void g_object_set(int /*long*/ object, byte[] first_property_name, long data, int terminator) {
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, long data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, long data, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_set(object, first_property_name, data, terminator);
@@ -4536,8 +4536,8 @@ public static final void gtk_list_store_remove(int /*long*/ list_store, int /*lo
 		lock.unlock();
 	}
 }
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -4545,8 +4545,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -4554,8 +4554,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -4563,8 +4563,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -4572,8 +4572,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -5778,8 +5778,8 @@ public static final void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int terminator);
-public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int terminator) {
+public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator);
+public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
@@ -5787,8 +5787,8 @@ public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int terminator);
-public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int terminator) {
+public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator);
+public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
@@ -6084,8 +6084,8 @@ public static final void gtk_tree_store_remove(int /*long*/ store, int /*long*/ 
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -6093,8 +6093,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -6102,8 +6102,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -6111,8 +6111,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -6120,8 +6120,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
 		lock.unlock();
 	}
 }
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -7002,20 +7002,20 @@ public static final void gtk_widget_size_request(int /*long*/ widget, GtkRequisi
 		lock.unlock();
 	}
 }
-public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int null_terminator);
-public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int null_terminator) {
+public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int /*long*/ terminator);
+public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
-		_gtk_widget_style_get(widget, property_name, value, null_terminator);
+		_gtk_widget_style_get(widget, property_name, value, terminator);
 	} finally {
 		lock.unlock();
 	}
 }
-public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int null_terminator);
-public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int null_terminator) {
+public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator);
+public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
-		_gtk_widget_style_get(widget, property_name, value, null_terminator);
+		_gtk_widget_style_get(widget, property_name, value, terminator);
 	} finally {
 		lock.unlock();
 	}
