@@ -277,7 +277,9 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget();
+	if (start < 0 && end < 0) return;
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (start >= count && end >= count) return;
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -845,13 +847,13 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	int count =  OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (!(0 < start && start <= end && end < count)) {
+	if (!(0 <= start && start <= end && end < count)) {
 		 error (SWT.ERROR_INVALID_RANGE);
 	}
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	for (int index=start; index<=end; index++) {
+	for (int index=end; index>=start; index--) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_list_store_remove (modelHandle, iter);
 	}
@@ -881,7 +883,7 @@ public void remove (int start, int end) {
 public void remove (String string) {
 	checkWidget();
 	int index = indexOf (string, 0);
-	if (index == -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);
 }
 
@@ -912,12 +914,19 @@ public void remove (int [] indices) {
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int last = -1;
+	int itemCount = getItemCount() ;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
+		if (index < 0 || index > itemCount -1) {
+			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_free (iter);			
+			error(SWT.ERROR_INVALID_RANGE);
+		}
 		if (index != last || i == 0) {
 			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 			OS.gtk_list_store_remove (modelHandle, iter);
 			last = index;
+			itemCount--;
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1140,7 +1149,7 @@ public void setItems (String [] items) {
 		String string = items [i];
 		if (string == null) {
 			OS.g_free (iter);
-			error (SWT.ERROR_NULL_ARGUMENT);
+			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		OS.gtk_list_store_append (modelHandle, iter);
