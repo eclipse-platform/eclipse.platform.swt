@@ -150,7 +150,7 @@ Image() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-public Image(Device display, int width, int height) {
+public Image(Device device, int width, int height) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, width, height);
@@ -328,7 +328,7 @@ public Image(Device device, Image srcImage, int flag) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-public Image(Device display, Rectangle bounds) {
+public Image(Device device, Rectangle bounds) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -388,7 +388,7 @@ public Image(Device device, ImageData data) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-public Image(Device display, ImageData source, ImageData mask) {
+public Image(Device device, ImageData source, ImageData mask) {
 	if (device == null) device = Device.getDevice();
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -467,7 +467,7 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-public Image(Device display, String filename) {
+public Image(Device device, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new ImageData(filename));

@@ -31,11 +31,6 @@ public final class Region {
 	 */
 	public int handle;
 	
-	/**
-	 * the device where this region was created
-	 */
-	Device device;
-
 /**
  * Constructs a new empty region.
  * 
@@ -69,13 +64,11 @@ public Region() {
 public Region(Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	handle = OS.NewRgn();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 Region(Device device, int handle) {
-	this.device = device;
 	this.handle = handle;
 }
 
@@ -228,7 +221,6 @@ public void dispose() {
 	if (handle == 0) return;
 	OS.DisposeRgn(handle);
 	handle = 0;
-	device = null;
 }
 
 /**

@@ -54,11 +54,6 @@ public final class Font {
 	public short size;
 
 	/**
-	 * The device where this font was created.
-	 */
-	Device device;
-	
-	/**
 	 * The ATSUI style for the font.
 	 */
 	int atsuiStyle;
@@ -217,7 +212,6 @@ public void dispose() {
 	id = -1;
 	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
 	atsuiStyle = 0;
-	device = null;
 }
 
 /**
@@ -286,7 +280,6 @@ public static Font carbon_new(Device device, int handle, short id, short style, 
 	font.id = id;
 	font.style = style;
 	font.size = size;
-	font.device = device;
 	return font;
 }
 

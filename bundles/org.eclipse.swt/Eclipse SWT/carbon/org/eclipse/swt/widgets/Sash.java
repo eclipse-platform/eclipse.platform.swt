@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
  */
 public class Sash extends Control {
 	Cursor sizeCursor;
-	int startX, startY, lastX, lastY;
+	int lastX, lastY;
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
 
@@ -272,9 +272,9 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 			int parentHeight = parentBounds.height;
 			int newX = lastX, newY = lastY;
 			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, lastX + xChange - startX), parentWidth - width);
+				newX = Math.min (Math.max (0, lastX + xChange), parentWidth - width);
 			} else {
-				newY = Math.min (Math.max (0, lastY + yChange - startY), parentHeight - height);
+				newY = Math.min (Math.max (0, lastY + yChange), parentHeight - height);
 			}
 			if (newX == lastX && newY == lastY) return result;
 			Event event = new Event ();

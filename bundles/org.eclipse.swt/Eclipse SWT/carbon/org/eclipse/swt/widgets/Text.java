@@ -1028,7 +1028,7 @@ public void paste () {
 			Point selection = getSelection ();
 			String newText = verifyText (oldText, selection.x, selection.y, null);
 			if (newText == null) return;
-			if (newText != oldText) {
+			if (!newText.equals (oldText)) {
 				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
 				OS.TXNShowSelection (txnObject, false);
 				paste = false;
