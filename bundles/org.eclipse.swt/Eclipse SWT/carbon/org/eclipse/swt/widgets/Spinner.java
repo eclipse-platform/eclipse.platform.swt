@@ -672,45 +672,44 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	String oldText = "", newText = "";
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int [] actualSize = new int [1];
-		int [] ptr = new int [1];
-		int charCount = 0;
-		if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
-			charCount = OS.CFStringGetLength (ptr [0]);
-			OS.CFRelease (ptr [0]);
-		} 
-		short [] selection = new short [2];
-		OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
-		int start = selection [0], end = selection [1];
-		switch (event.character) {
-			case SWT.BS:
-				if (start == end) {
-					if (start == 0) return true;
-					start = Math.max (0, start - 1);
-				}
-				break;
-			case SWT.DEL:
-				if (start == end) {
-					if (start == charCount) return true;
-					end = Math.min (end + 1, charCount);
-				}
-				break;
-			case SWT.CR:
-				return true;
-			default:
-				if (event.character != '\t' && event.character < 0x20) return true;
-				oldText = new String (new char [] {event.character});
-		}
-		newText = verifyText (oldText, start, end, event);
-		if (newText == null) return false;
-		if (newText != oldText) {
-			setText (newText, start, end, false);
-			start += newText.length ();
-			selection = new short [] {(short)start, (short)start };
-			OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
-		}
+	int [] actualSize = new int [1];
+	int [] ptr = new int [1];
+	int charCount = 0;
+	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
+		charCount = OS.CFStringGetLength (ptr [0]);
+		OS.CFRelease (ptr [0]);
+	} 
+	short [] selection = new short [2];
+	OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
+	int start = selection [0], end = selection [1];
+	switch (event.character) {
+		case SWT.BS:
+			if (start == end) {
+				if (start == 0) return true;
+				start = Math.max (0, start - 1);
+			}
+			break;
+		case SWT.DEL:
+			if (start == end) {
+				if (start == charCount) return true;
+				end = Math.min (end + 1, charCount);
+			}
+			break;
+		case SWT.CR:
+			return true;
+		default:
+			if (event.character != '\t' && event.character < 0x20) return true;
+			oldText = new String (new char [] {event.character});
+	}
+	newText = verifyText (oldText, start, end, event);
+	if (newText == null) return false;
+	if (newText != oldText) {
+		setText (newText, start, end, false);
+		start += newText.length ();
+		selection = new short [] {(short)start, (short)start };
+		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
 	}
 	/*
 	* Post the modify event so that the character will be inserted
@@ -953,6 +952,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
+	int index = 0;
+	while (index < string.length ()) {
+		if (!Character.isDigit (string.charAt (index))) break;
+		index++;
+	}
+	event.doit = index == string.length ();	
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify
