@@ -63,7 +63,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		//TODO - add CHECK column
+		//TODO - add CHECK column + extra space
 		TreeItem [] items = getItems ();
 		GC gc = new GC (this);
 		for (int i=0; i<items.length; i++) {
@@ -76,7 +76,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max (width, itemWidth);
 		}
 		gc.dispose ();
-		width = width * 2;
+		width += 20;
+		if ((style & SWT.CHECK) != 0) width += 35 + 20;
 	} else {
 		width = wHint;
 	}
