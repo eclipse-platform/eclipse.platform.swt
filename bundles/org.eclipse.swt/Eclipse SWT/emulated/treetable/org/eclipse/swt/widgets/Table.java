@@ -2332,9 +2332,6 @@ void setFirstColumnWidth(TableItem item) {
 		}
 	}
 }
-public boolean setFocus() {
-	return forceFocus();
-}
 public void setFont(Font font) {
 	checkWidget();
 	int itemCount = getItemCount();
