@@ -102,10 +102,14 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimWidth = width + left [0] + right [0];
 	int trimHeight = height + top [0] + bottom [0];
 	if (menuBar != null) {
-		args = new int [] {OS.Pt_ARG_HEIGHT, 0, 0};
-		OS.PtGetResources (menuBar.handle, args.length / 3, args);
-		trimHeight += args [1];
-		trimY -= args [1];
+		PhDim_t dim = new PhDim_t ();
+		int menuHandle = menuBar.handle;
+		if (!OS.PtWidgetIsRealized (menuHandle)) {
+			OS.PtExtentWidgetFamily (menuHandle);
+		}
+		OS.PtWidgetPreferredSize (menuHandle, dim);
+		trimHeight += dim.h;
+		trimY -= dim.h;
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
@@ -475,7 +479,6 @@ public void setMenuBar (Menu menu) {
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	int width = args [1], height = args [4];
-	PhArea_t area = new PhArea_t ();
 	if (menuBar != null) {
 		int menuHandle = menu.handle;
 		args = new int [] {
@@ -483,22 +486,9 @@ public void setMenuBar (Menu menu) {
 			OS.Pt_ARG_FLAGS, 0, OS.Pt_DELAY_REALIZE,
 		};
 		OS.PtSetResources (menuHandle, args.length / 3, args);	
-		args = new int [] {OS.Pt_ARG_HEIGHT, 0, 0};
-		OS.PtGetResources (menuHandle, args.length / 3, args);
-		area.pos_y = (short) args [1];
-		area.size_w = (short) width;
-		area.size_h = (short) Math.max (0, (height - args [1]));
-		OS.PtRealizeWidget (menuBar.handle);
-	} else { 
-		area.size_w = (short) width;
-		area.size_h = (short) height;
+		OS.PtRealizeWidget (menuHandle);
 	}
-	int ptr = OS.malloc (PhArea_t.sizeof);
-	OS.memmove (ptr, area, PhArea_t.sizeof);
-	args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
-	OS.PtSetResources (scrolledHandle, args.length / 3, args);
-	OS.free (ptr);
-	resizeClientArea();
+	resizeBounds(width, height);
 }
 
 public void setMinimized (boolean minimized) {
