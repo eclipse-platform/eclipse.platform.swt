@@ -406,6 +406,38 @@ public Rectangle getBounds(int start, int end) {
 	int /*long*/ clipRegion = OS.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle();
+	
+	/* 
+	* Bug in Pango. The region returned by gdk_pango_layout_get_clip_region()
+	* includes areas from lines outside of the requested range.  The fix
+	* is to subtract these areas from the clip region.
+	*/
+	PangoRectangle pangoRect = new PangoRectangle();
+	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ linesRegion = OS.gdk_region_new();
+	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int lineStart = 0, lineEnd = 0;
+	do {
+		OS.pango_layout_iter_get_line_extents(iter, null, pangoRect);
+		if (OS.pango_layout_iter_next_line(iter)) {
+			lineEnd = OS.pango_layout_iter_get_index(iter) - 1;
+		} else {
+			lineEnd = OS.strlen(ptr);
+		}
+		if (lineStart <= byteStart || byteEnd <= lineEnd) {
+			rect.x = OS.PANGO_PIXELS(pangoRect.x);
+			rect.y = OS.PANGO_PIXELS(pangoRect.y);
+			rect.width = OS.PANGO_PIXELS(pangoRect.width);
+			rect.height = OS.PANGO_PIXELS(pangoRect.height);
+			OS.gdk_region_union_with_rect(linesRegion, rect);
+		}
+		lineStart = lineEnd + 1;
+	} while (lineStart <= byteEnd);
+	OS.gdk_region_intersect(clipRegion, linesRegion);
+	OS.gdk_region_destroy(linesRegion);
+	OS.pango_layout_iter_free(iter);
+	
 	OS.gdk_region_get_clipbox(clipRegion, rect);
 	OS.gdk_region_destroy(clipRegion);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
