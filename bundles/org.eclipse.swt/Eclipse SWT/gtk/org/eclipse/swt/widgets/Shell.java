@@ -1236,6 +1236,7 @@ public void setVisible (boolean visible) {
 			OS.GDK_UNMAP,
 			OS.GDK_NO_EXPOSE,
 		};
+		Display display = this.display;
 		display.putGdkEvents();
 		boolean iconic = false;
 		Shell shell = parent != null ? parent.getShell() : null;
