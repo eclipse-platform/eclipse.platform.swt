@@ -161,7 +161,8 @@ void add (Menu menu) {
 	menus = newMenus;
 }
 
-void bringToTop () {
+void bringToTop (boolean force) {
+	moveAbove (null);
 }
 
 protected void checkSubclass () {

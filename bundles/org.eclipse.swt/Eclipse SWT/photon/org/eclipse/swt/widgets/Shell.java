@@ -348,8 +348,11 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deactivate, typedListener);
 }
 
-void bringToTop () {
-	OS.PtWidgetToFront (shellHandle);
+void bringToTop (boolean force) {
+	if (!force) {
+		if (display.getActiveShell () == null) return;
+	}
+	OS.PtWindowToFront (shellHandle);
 }
 
 static int checkStyle (int style) {
@@ -512,7 +515,7 @@ void deregister () {
  */
 public void forceActive () {
 	checkWidget ();
-	bringToTop ();
+	bringToTop (true);
 }
 
 public Rectangle getBounds () {
@@ -699,7 +702,6 @@ int hotkeyProc (int w, int data, int info) {
  */
 public void open () {
 	checkWidget();
-	bringToTop ();
 	setVisible (true);
 	traverseGroup (true);
 }
@@ -843,7 +845,7 @@ public void removeShellListener (ShellListener listener) {
  */
 public void setActive () {
 	checkWidget ();
-	bringToTop ();
+	bringToTop (false);
 }
 
 void setActiveControl (Control control) {

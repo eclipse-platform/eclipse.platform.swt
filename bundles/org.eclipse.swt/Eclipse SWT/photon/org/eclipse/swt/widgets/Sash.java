@@ -243,7 +243,7 @@ void processMouse (int info) {
 			/* Draw the banding rectangle */
 			if (event.doit) {
 				dragging = true;
-				menuShell ().bringToTop ();
+				menuShell ().bringToTop (true);
 				OS.PtFlush ();
 				drawBand (lastX = event.x, lastY = event.y, width, height);
 			}

@@ -348,8 +348,7 @@ public boolean forceFocus () {
 	*/
 	Shell shell = getShell ();
 	if (shell.activeMenu != null) return false;
-	int shellHandle = shell.shellHandle;
-	OS.PtWindowToFront (shellHandle);
+	shell.bringToTop (false);
 	OS.PtContainerGiveFocus (handle, null);
 	return hasFocus ();
 }
