@@ -323,14 +323,23 @@ public void setControl (Control control) {
 
 	/*
 	* Feature in Windows.  When Windows sets the rebar band child,
-	* it makes the new child visible and hides the old child.  The
-	* fix is to save and restore the visibility of the controls.
-	*/		
+	* it makes the new child visible and hides the old child and
+	* moves the new child to the top of the Z-order.  The fix is
+	* to save and restore the visibility and Z-order.
+	*/	
+	int hwndAbove = 0;
+	if (newControl != null) {
+		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
+	}		
 	boolean hideNew = newControl != null && !newControl.getVisible ();
 	boolean showOld = oldControl != null && oldControl.getVisible ();
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 	if (hideNew) newControl.setVisible (false);
 	if (showOld) oldControl.setVisible (true);
+	if (hwndAbove != 0 && hwndAbove != hwndChild) {
+		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
+		OS.SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
+	}
 }
 
 /**
