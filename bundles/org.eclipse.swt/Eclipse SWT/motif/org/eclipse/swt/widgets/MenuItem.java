@@ -832,6 +832,14 @@ public void setText (String string) {
 			0,
 			0);
 		if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	} else {
+		/*
+		* Bug in motif.  In some versions of linux motif, setting a menu item's
+		* accelerator to NULL will cause a GP.  The workaround is to instead
+		* set these accelerators to a functionally equivalent non-null value.
+		*/
+		xmString2 = OS.XmStringGenerate (new byte[1], null, OS.XmCHARSET_TEXT, null);
+		if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	}
 	while (j < text.length) text [j++] = 0;
 	/* Use the character encoding for the default locale */
