@@ -459,10 +459,11 @@ void doDispose() {
 void drawColumnResizeLine(int xPosition) {
 	GC gc = new GC(this);
 	int lineHeight = getClientArea().height;
-
-	redraw(getColumnResizeX(), 0, 1, lineHeight, false);
+	int lineWidth = getGridLineWidth();
+	
+	redraw(getColumnResizeX() - lineWidth, 0, 1, lineHeight, false);
 	setColumnResizeX(xPosition);
-	gc.drawLine(xPosition, 0, xPosition, lineHeight);
+	gc.drawLine(xPosition - lineWidth, 0, xPosition - lineWidth, lineHeight);
 	gc.dispose();
 }
 /**
@@ -1535,11 +1536,11 @@ void mouseUp(Event event) {
 		oldColumnBounds = resizeColumn.getBounds();
 		resizeXPosition = getColumnResizeX();	
 		widthChange = resizeXPosition - (oldColumnBounds.x + oldColumnBounds.width);
+		if (widthChange >= 0) {
+			redraw(resizeXPosition - getGridLineWidth(), 0, 1, getClientArea().height, false);		// remove resize line
+			update();															// to avoid cheese caused by scrolling the resize line
+		}
 		if (widthChange != 0) {
-			if (widthChange > 0) {
-				redraw(resizeXPosition, 0, 1, getClientArea().height, false);		// remove resize line
-				update();															// to avoid cheese caused by scrolling the resize line
-			}
 			resizeColumn.setWidth(oldColumnBounds.width + widthChange);
 		}
 		setResizeColumn(null);
