@@ -1682,7 +1682,7 @@ boolean onArrowTraversal (Event event) {
 	int index = selectedIndex + offset;
 	if (index < 0 || index >= count) return false;
 	setSelection (index, true);
-	//setFocus();
+	forceFocus();
 	return true;
 }
 void onDispose() {
@@ -1823,7 +1823,6 @@ void onMouse(Event event) {
 				int index = indexOf(item);
 				if (item.isShowing()){
 					setSelection(index, true);
-					setFocus();
 				}
 				return;
 			}
@@ -2008,7 +2007,7 @@ boolean onPageTraversal(Event event) {
 		index = (selectedIndex + offset + count) % count;
 	}
 	setSelection (index, true);
-	//setFocus();
+	forceFocus();
 	return true;
 }
 void onPaint(Event event) {
