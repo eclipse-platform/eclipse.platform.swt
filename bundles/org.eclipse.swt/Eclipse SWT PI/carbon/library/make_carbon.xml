@@ -5,7 +5,7 @@
 <!-- http://www.eclipse.org/legal/cpl-v10.html                                     -->
 <!-- ============================================================================= --> 
 
-<project default="build_lib" basedir=".">
+<project default="build_macosx_ppc_lib" basedir=".">
 
 	<target name="init">
 		<tstamp/>
@@ -14,6 +14,7 @@
         <property name="lib_destdir" value="${fragment_dir}/os/macosx/ppc" />
 		<property name="plugin" value="org.eclipse.swt" />
 		<property name="bin_dir" value="../../../bin" />
+		<property name="lib_extension" value=".jnilib" />
         <mkdir dir="${jar_destdir}" />
         <mkdir dir="${lib_destdir}" />
 	</target>
@@ -22,13 +23,12 @@
     	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
 	</target>
 	
-	<target name="build_lib" depends="build">
-	
-		<exec dir="${bin_dir}/library/" executable="csh">
-  			<arg line='build.csh' />
+	<target name="build_macosx_ppc_lib" depends="build">
+		<exec dir="${bin_dir}/library/" executable="sh">
+  			<arg line='build.sh' />
 		</exec>
 		<copy todir="${lib_destdir}">
-		    <fileset dir="${bin_dir}/library" includes="**/*.jnilib"/>
+		    <fileset dir="${bin_dir}/library" includes="**/*${lib_extension}"/>
 		</copy>
 	</target>
 		
@@ -41,13 +41,10 @@
     
 	<target name="clean" depends="init">
 	
-		<exec dir="${bin_dir}/library/" executable="csh">
-  			<arg line='build.csh' />
+		<exec dir="${bin_dir}/library/" executable="sh">
+  			<arg line='build.sh' />
   			<arg line='clean' />
 		</exec>
 	</target>
-
-    <target name="export" depends="build_jar,build_lib">
-    </target>
 	
 </project>
