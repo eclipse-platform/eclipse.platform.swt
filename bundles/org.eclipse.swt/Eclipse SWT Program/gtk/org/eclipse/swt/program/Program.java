@@ -218,7 +218,7 @@ static Hashtable gnome_getMimeInfo(Display display) {
 			Vector extensions = new Vector();
 			int /*long*/ extensionElement = extensionList;
 			while (extensionElement != 0) {
-				OS.memmove(extensionData, extensionElement, 4);
+				OS.memmove(extensionData, extensionElement, OS.PTR_SIZEOF);
 				int /*long*/ extensionPtr = extensionData[0];
 				int extensionLength = OS.strlen(extensionPtr);
 				byte[] extensionBuffer = new byte[extensionLength];
