@@ -331,18 +331,18 @@ public void setBounds (int x, int y, int width, int height) {
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
 	if (sameExtent) {
-			moved = true;
-			if (isVisible ()) {
-				moved = false;
-				parent.updateCaret ();
-			}
+		moved = true;
+		if (isVisible ()) {
+			moved = false;
+			parent.updateCaret ();
+		}
 	} else {
-			resized = true;
-			if (isVisible ()) {
-				moved = false;
-				parent.updateCaret ();
-				resized = false;
-			}
+		resized = true;
+		if (isVisible ()) {
+			moved = false;
+			parent.updateCaret ();
+			resized = false;
+		}
 	}
 	if (isShowing) showCaret ();
 }
