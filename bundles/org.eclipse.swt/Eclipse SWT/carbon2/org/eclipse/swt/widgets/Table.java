@@ -940,7 +940,7 @@ public void setSelection (int start, int end) {
 	}
 	if (count != 0) return;
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
 	showIndex (ids [0] - 1);
 }
@@ -956,7 +956,7 @@ public void setSelection (int [] indices) {
 	}
 	if (count != 0) return;
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
 	if (ids.length > 0) showIndex (ids [0] - 1);
 }
@@ -973,7 +973,7 @@ public void setSelection (TableItem [] items) {
 	}
 	if (count != 0) return;
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
 	if (ids.length > 0) showIndex (ids [0] - 1);
 }
