@@ -395,6 +395,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>Group</code></li>
+	 * <li><code>ToolBar</code></li>
 	 * </ul></p>
 	 */
 	public static final int SHADOW_OUT = 1 << 3;
