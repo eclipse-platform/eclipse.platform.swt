@@ -448,6 +448,11 @@ final class GIFFileFormat extends FileFormat {
 			writeGraphicsControlBlock(image);
 		}
 		writeImageBlock(image);
+		try {
+			outputStream.write(0x3B);
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_IO, e);
+		}
 	}
 
 	/**
@@ -520,7 +525,7 @@ final class GIFFileFormat extends FileFormat {
 			bytes[offset] = (byte)color.red;
 			bytes[offset + 1] = (byte)color.green;
 			bytes[offset + 2] = (byte)color.blue;
-			offset += 3;;
+			offset += 3;
 		}
 		try {
 			outputStream.write(bytes);
