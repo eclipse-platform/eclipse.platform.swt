@@ -453,10 +453,10 @@ void fixAlignment () {
 public int getBorderWidth () {
 	checkWidget ();
 	/*
-	* Feature in Windows.  Despite the fact that WS_BORDER is set
-	* when the edit control is created, the style bit is cleared.
-	* The fix is to avoid the check for WS_BORDER and use the SWT
-	* widget style bits instead.
+	* Feature in Windows 2000 and XP.  Despite the fact that WS_BORDER
+	* is set when the edit control is created, the style bit is cleared.
+	* The fix is to avoid the check for WS_BORDER and use the SWT widget
+	* style bits instead.
 	*/
 //	if ((style & SWT.BORDER) != 0 && (style & SWT.FLAT) != 0) {
 //		return OS.GetSystemMetrics (OS.SM_CXBORDER);
