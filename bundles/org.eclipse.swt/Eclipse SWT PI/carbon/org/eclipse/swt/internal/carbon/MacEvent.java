@@ -18,6 +18,7 @@ public class MacEvent {
 	private static final boolean EMULATE_RIGHT_BUTTON= true;
 
 	private int fEventRef;
+	private int fNextHandler;
 		
 	public MacEvent() {
 		fEventRef= -1;
@@ -25,6 +26,19 @@ public class MacEvent {
 
 	public MacEvent(int eventRef) {
 		fEventRef= eventRef;
+	}
+	
+	public MacEvent(int eventRef, int nextHandler) {
+		fEventRef= eventRef;
+		fNextHandler= nextHandler;
+	}
+	
+	public int getEventRef() {
+		return fEventRef;
+	}
+	
+	public int getNextHandler() {
+		return fNextHandler;
 	}
 	
 	public int[] toOldMacEvent() {
