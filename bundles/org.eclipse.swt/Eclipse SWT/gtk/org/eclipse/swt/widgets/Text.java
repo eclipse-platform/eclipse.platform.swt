@@ -105,10 +105,10 @@ void createHandle (int index) {
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
-/*	signal_connect_after (handle, "changed", SWT.Modify, 2);
+	signal_connect_after (handle, "changed", SWT.Modify, 2);
 	signal_connect (handle, "insert-text", SWT.Verify, 5);
 	signal_connect (handle, "delete-text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.Selection, 2);*/
+	signal_connect (handle, "activate", SWT.Selection, 2);
 }
 
 /**
