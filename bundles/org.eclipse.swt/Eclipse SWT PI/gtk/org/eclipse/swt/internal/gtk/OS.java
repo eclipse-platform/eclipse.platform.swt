@@ -930,4 +930,6 @@ public static final native int gdk_pointer_grab(int window, boolean owner_events
 public static final native int gdk_pointer_ungrab(int time);
 public static final native int g_signal_connect_swapped(int instance, byte[] detailed_sigal, int c_handler, int data);
 public static final native void gtk_window_set_default(int window, int widget);
+public static final native int gtk_window_get_default(int window);
+public static final native boolean gtk_window_activate_default(int window);
 }
