@@ -72,6 +72,10 @@ public class ToolBar extends Composite {
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	/*
+	* ??
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
 int callWindowProc (int msg, int wParam, int lParam) {
@@ -80,6 +84,12 @@ int callWindowProc (int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	/*
+	* A vertical tool bar cannot wrap because TB_SETROWS
+	* fails when the toobar has TBSTYLE_WRAPABLE.
+	*/
+	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
+	
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -96,7 +106,9 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (layout != null) return super.computeSize (wHint, hHint, changed);
+	if (layout != null) {
+		return super.computeSize (wHint, hHint, changed);
+	}
 	int width = 0, height = 0;
 	RECT oldRect = new RECT ();
 	OS.GetWindowRect (handle, oldRect);
@@ -220,6 +232,9 @@ void createItem (ToolItem item, int index) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	items [item.id = id] = item;
+	if ((style & SWT.VERTICAL) != 0) {
+		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
+	}
 }
 
 void createWidget () {
@@ -266,6 +281,9 @@ void destroyItem (ToolItem item) {
 		}
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
+	}
+	if ((style & SWT.VERTICAL) != 0) {
+		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
 	}
 }
 

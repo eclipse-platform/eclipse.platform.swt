@@ -3009,7 +3009,7 @@ public class OS {
 //	public static final int TB_SETINDENT = (WM_USER + 47);
 //	public static final int TB_SETMAXTEXTROWS = (WM_USER + 60);
 //	public static final int TB_SETPARENT = 0x425;
-//	public static final int TB_SETROWS = 0x427;
+	public static final int TB_SETROWS = 0x427;
 	public static final int TB_SETSTATE = 0x411;
 //	public static final int TB_SETSTYLE = (WM_USER + 56);
 //	public static final int TB_SETTOOLTIPS = 0x424;
