@@ -74,8 +74,6 @@ public class DropTarget extends Widget {
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 	private DragUnderEffect effect;
-
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	
 	// interfaces
 	private COMObject iDropTarget;
@@ -87,8 +85,9 @@ public class DropTarget extends Widget {
 	private TransferData[] dataTypes;
 	private int lastOperation;
 	private int keyState;
-
 	private int iDataObject;
+	
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -236,17 +235,21 @@ private void disposeCOMInterfaces() {
 		iDropTarget.dispose();
 	iDropTarget = null;
 }
-private int DragEnter(  
-	int pDataObject, //Pointer to the interface of the source data object
-	int grfKeyState, //Current state of keyboard modifier keys
-	int pt_x,        //Current cursor coordinates
-	int pt_y,        //Current cursor coordinates
-	int pdwEffect    //Pointer to the effect of the drag-and-drop operation
-){
-	
+private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	selectedDataType = null;
 	dataTypes = new TransferData[0];
 	iDataObject = 0;
+	
+	// get allowed operations
+	int style = getStyle();
+	int[] allowedEffects = new int[1];
+	OS.MoveMemory(allowedEffects, pdwEffect, 4);
+	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
+	if (allowedEffects[0] == 0) {
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
 	
 	// Get allowed transfer types
 	// Get enumerator of dragged types
@@ -286,11 +289,10 @@ private int DragEnter(
 	OS.GlobalFree(rgelt);
 	enum.Release();
 	
-	// get allowed operations
-	int style = getStyle();
-	int[] allowedEffects = new int[1];
-	OS.MoveMemory(allowedEffects, pdwEffect, 4);
-	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	if (dataTypes.length == 0) {
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
 	
 	// get current operation
 	keyState = getOperationFromKeyState(grfKeyState);
@@ -338,8 +340,11 @@ private int DragEnter(
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(lastOperation)}, 4);
 	return COM.S_OK;
 }
-private int DragLeave()
-{
+private int DragLeave() {
+	if (dataTypes.length == 0) {
+		return COM.S_OK;
+	}
+	
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	keyState = DND.DROP_NONE;
 	
@@ -354,17 +359,23 @@ private int DragLeave()
 
 	return COM.S_OK;
 }
-private int DragOver(  
-	int grfKeyState, //Current state of keyboard modifier keys
-	int pt_x,        //Current cursor coordinates
-	int pt_y,
-	int pdwEffect    //Pointer to the effect of the drag-and-drop operation
-){
+private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
+	if (dataTypes.length == 0) {
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
+	
 	// get allowed operations
 	int[] allowedEffects = new int[1];
 	int style = getStyle();
 	OS.MoveMemory(allowedEffects, pdwEffect, 4);
 	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
+	if (allowedEffects[0] == 0) {
+		dataTypes = new TransferData[0];
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
 	
 	// get current operation
 	int oldKeyState = keyState;
@@ -419,16 +430,26 @@ private int DragOver(
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(lastOperation)}, 4);
 	return COM.S_OK;
 }
-private int Drop(
-	int pDataObject, //Pointer to the interface for the source data
-	int grfKeyState, //Current state of keyboard modifier keys
-	int pt_x,        //Current cursor coordinates
-	int pt_y,
-	int pdwEffect    //Pointer to the effect of the drag-and-drop operation
-){
-		
+private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
+	
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	keyState = DND.DROP_NONE;
+	
+	if (dataTypes.length == 0) {
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
+	
+	int[] allowedEffects = new int[1];
+	int style = getStyle();
+	OS.MoveMemory(allowedEffects, pdwEffect, 4);
+	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
+	if (allowedEffects[0] == 0) {
+		dataTypes = new TransferData[0];
+		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+		return COM.S_OK;
+	}
 	
 	// Send a DragLeave event to be consistant with Motif
 	DNDEvent event = new DNDEvent();
@@ -438,12 +459,6 @@ private int Drop(
 	try {
 		notifyListeners(DND.DragLeave, event);
 	} catch (Throwable e) {}
-
-	// get allowed operations
-	int[] allowedEffects = new int[1];
-	int style = getStyle();
-	OS.MoveMemory(allowedEffects, pdwEffect, 4);
-	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
 	
 	// Send a DropAccept event to be consistant with Motif
 	event = new DNDEvent();
@@ -595,7 +610,6 @@ private int osToOp(int osOperation){
 		operation |= DND.DROP_MOVE;
 	}
 	return operation;
-
 }
 private int QueryInterface(int riid, int ppvObject) {
 	

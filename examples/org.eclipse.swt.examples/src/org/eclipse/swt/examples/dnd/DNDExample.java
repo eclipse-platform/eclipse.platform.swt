@@ -437,8 +437,8 @@ private void createDropOperations(Composite parent) {
 				dropOperation |= DND.DROP_MOVE;			
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_MOVE;
-				if (dropOperation == 0) {
-					dropOperation = DND.DROP_MOVE;
+				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_MOVE) != 0) {
+					dropOperation |= DND.DROP_MOVE;
 					moveButton.setSelection(true);
 				}
 			}
@@ -449,18 +449,18 @@ private void createDropOperations(Composite parent) {
 	});
 	
 
-	Button b = new Button(parent, SWT.CHECK);
-	b.setText("DND.DROP_COPY");
-	b.addSelectionListener(new SelectionAdapter() {
+	final Button copyButton = new Button(parent, SWT.CHECK);
+	copyButton.setText("DND.DROP_COPY");
+	copyButton.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropOperation |= DND.DROP_COPY;			
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_COPY;
-				if (dropOperation == 0) {
-					dropOperation = DND.DROP_MOVE;
-					moveButton.setSelection(true);
+				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_COPY) != 0) {
+					dropOperation = DND.DROP_COPY;
+					copyButton.setSelection(true);
 				}
 			}
 			if (dropEnabled) {
@@ -469,18 +469,18 @@ private void createDropOperations(Composite parent) {
 		}
 	});
 
-	b = new Button(parent, SWT.CHECK);
-	b.setText("DND.DROP_LINK");
-	b.addSelectionListener(new SelectionAdapter() {
+	final Button linkButton = new Button(parent, SWT.CHECK);
+	linkButton.setText("DND.DROP_LINK");
+	linkButton.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropOperation |= DND.DROP_LINK;			
 			} else {
 				dropOperation = dropOperation & ~DND.DROP_LINK;
-				if (dropOperation == 0) {
-					dropOperation = DND.DROP_MOVE;
-					moveButton.setSelection(true);
+				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_LINK) != 0) {
+					dropOperation = DND.DROP_LINK;
+					linkButton.setSelection(true);
 				}
 			}
 			if (dropEnabled) {
@@ -489,7 +489,7 @@ private void createDropOperations(Composite parent) {
 		}
 	});
 	
-	b = new Button(parent, SWT.CHECK);
+	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DND.DROP_DEFAULT");
 	defaultParent = new Composite(parent, SWT.NONE);
 	b.addSelectionListener(new SelectionAdapter() {
@@ -521,6 +521,8 @@ private void createDropOperations(Composite parent) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropDefaultOperation = DND.DROP_MOVE;
+				dropOperation |= DND.DROP_MOVE;
+				moveButton.setSelection(true);
 			}
 		}
 	});
@@ -532,6 +534,8 @@ private void createDropOperations(Composite parent) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropDefaultOperation = DND.DROP_COPY;
+				dropOperation |= DND.DROP_COPY;
+				copyButton.setSelection(true);
 			}
 		}
 	});
@@ -543,6 +547,8 @@ private void createDropOperations(Composite parent) {
 			Button b = (Button)e.widget;
 			if (b.getSelection()) {
 				dropDefaultOperation = DND.DROP_LINK;
+				dropOperation |= DND.DROP_LINK;
+				linkButton.setSelection(true);
 			}
 		}
 	});
