@@ -81,6 +81,10 @@ public class OS {
 	public static final int GDK_End = 0xFF57;
 	public static final int GDK_Insert = 0xFF63;
 	public static final int GDK_Delete = 0xFFFF;
+	public static final int GDK_Return = 0xFF0D;
+	public static final int GDK_Escape = 0xFF1B;
+	public static final int GDK_Cancel = 0xFF69;
+	public static final int GDK_Tab = 0xFF09;
 	/* Functions Keys */
 	public static final int GDK_F1 = 0xFFBE;
 	public static final int GDK_F2 = 0xFFBF;
@@ -94,7 +98,6 @@ public class OS {
 	public static final int GDK_F10 = 0xFFC7;
 	public static final int GDK_F11 = 0xFFC8;
 	public static final int GDK_F12 = 0xFFC9;
-	public static final int GDK_Return = 0xFF0D;
 	/* Numeric Keypad */
 	public static final int GDK_KP_Add = 0xFFAB;
 	public static final int GDK_KP_Subtract = 0xFFAD;
