@@ -2142,7 +2142,7 @@ public void removeCTabFolderCloseListener(CTabFolderCloseListener listener) {
 		// hide close button
 		closeListeners = new CTabFolderCloseListener[0];
 		showClose = false;
-		setButtonBounds();
+		if (setButtonBounds()) redraw();
 		return;
 	}
 	CTabFolderCloseListener[] newTabListeners = new CTabFolderCloseListener[closeListeners.length - 1];
@@ -2178,8 +2178,7 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		// hide expand button
 		expandListeners = new CTabFolderExpandListener[0];
 		showExpand = false;
-		updateItems();
-		redraw();
+		if (setButtonBounds()) redraw();
 		return;
 	}
 	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length - 1];
@@ -2309,6 +2308,7 @@ boolean setButtonBounds() {
 	oldY = expandRect.y;
 	oldWidth = expandRect.width;
 	oldHeight = expandRect.height;
+	expandRect.x = expandRect.y = expandRect.width = expandRect.height = 0;
 	if (showExpand) {
 		expandRect.x = size.x - borderRight - closeRect.width - decoratorWidth;
 		if (borderRight > 0) expandRect.x += 1;
