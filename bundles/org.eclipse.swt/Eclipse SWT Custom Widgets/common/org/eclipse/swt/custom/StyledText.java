@@ -5019,7 +5019,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 		} 	
  	}
 	defaultLineStyler.setStyleRanges(ranges);
-	redraw(); // bogus! only redraw affected area to avoid flashing
+	redraw(); // should only redraw affected area to avoid flashing
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP

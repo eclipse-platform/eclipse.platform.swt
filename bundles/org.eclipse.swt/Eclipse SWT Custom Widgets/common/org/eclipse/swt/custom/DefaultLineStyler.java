@@ -227,7 +227,7 @@ StyleRange [] getStyleRanges() {
  */
 public void lineGetBackground(LineBackgroundEvent event) {
 	int lineIndex = content.getLineAtOffset(event.lineOffset);
-	// hack for 1GDX9PN
+	// 1GDX9PN
 	if (lineIndex > (lineBackgrounds.length - 1)) event.lineBackground = null;
 	else event.lineBackground = lineBackgrounds[lineIndex];
 }
