@@ -65,6 +65,7 @@ public class ControlExample {
 			new SashTab (this),
 			shellTab = new ShellTab(this),
 			new SliderTab (this),
+			new TabFolderTab (this),
 			new TableTab (this),
 			new TextTab (this),
 			new ToolBarTab (this),

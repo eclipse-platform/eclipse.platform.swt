@@ -12,29 +12,26 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-class CTabFolderTab extends Tab {
-	int lastSelectedTab = 0;
-	
+class TabFolderTab extends Tab {
 	/* Example widgets and groups that contain them */
-	CTabFolder tabFolder1;
+	TabFolder tabFolder1;
 	Group tabFolderGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button topButton, bottomButton, flatButton;
+	Button topButton, bottomButton;
 
-	static String [] CTabItems1 = {ControlExample.getResourceString("CTabItem1_0"),
-								  ControlExample.getResourceString("CTabItem1_1"),
-								  ControlExample.getResourceString("CTabItem1_2")};
+	static String [] TabItems1 = {ControlExample.getResourceString("TabItem1_0"),
+								  ControlExample.getResourceString("TabItem1_1"),
+								  ControlExample.getResourceString("TabItem1_2")};
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
-	CTabFolderTab(ControlExample instance) {
+	TabFolderTab(ControlExample instance) {
 		super(instance);
 	}
 	
@@ -44,11 +41,11 @@ class CTabFolderTab extends Tab {
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
-		/* Create a group for the CTabFolder */
+		/* Create a group for the TabFolder */
 		tabFolderGroup = new Group (exampleGroup, SWT.NONE);
 		tabFolderGroup.setLayout (new GridLayout ());
 		tabFolderGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		tabFolderGroup.setText ("CTabFolder");
+		tabFolderGroup.setText ("TabFolder");
 	}
 	
 	/**
@@ -60,24 +57,16 @@ class CTabFolderTab extends Tab {
 		int style = getDefaultStyle();
 		if (topButton.getSelection ()) style |= SWT.TOP;
 		if (bottomButton.getSelection ()) style |= SWT.BOTTOM;
-		if (borderButton.getSelection ()) style |= SWT.BORDER;
-		if (flatButton.getSelection ()) style |= SWT.FLAT;
 
 		/* Create the example widgets */
-		tabFolder1 = new CTabFolder (tabFolderGroup, style);
-		for (int i = 0; i < CTabItems1.length; i++) {
-			CTabItem item = new CTabItem(tabFolder1, SWT.NONE);
-			item.setText(CTabItems1[i]);
+		tabFolder1 = new TabFolder (tabFolderGroup, style);
+		for (int i = 0; i < TabItems1.length; i++) {
+			TabItem item = new TabItem(tabFolder1, SWT.NONE);
+			item.setText(TabItems1[i]);
 			Label label = new Label(tabFolder1, SWT.NONE);
-			label.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
+			label.setText(ControlExample.getResourceString("TabItem_content") + ": " + i);
 			item.setControl(label);
 		}
-		tabFolder1.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				lastSelectedTab = tabFolder1.getSelectionIndex();
-			}
-		});
-		tabFolder1.setSelection(lastSelectedTab);
 	}
 	
 	/**
@@ -92,39 +81,16 @@ class CTabFolderTab extends Tab {
 		topButton.setSelection(true);
 		bottomButton = new Button (styleGroup, SWT.RADIO);
 		bottomButton.setText ("SWT.BOTTOM");
-		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText ("SWT.BORDER");
-		flatButton = new Button (styleGroup, SWT.CHECK);
-		flatButton.setText ("SWT.FLAT");
-		flatButton.setEnabled(false);
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent event) {
-				if ((event.widget.getStyle() & SWT.RADIO) != 0) {
-					if (!((Button) event.widget).getSelection ()) return;
-				}
+				if (!((Button) event.widget).getSelection ()) return;
 				recreateExampleWidgets ();
 			};
 		};
 		topButton.addSelectionListener (selectionListener);
 		bottomButton.addSelectionListener (selectionListener);
-		borderButton.addSelectionListener (selectionListener);
-		flatButton.addSelectionListener (selectionListener);
-		borderButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				flatButton.setEnabled(borderButton.getSelection());
-			}
-		});
-	}
-	
-	/**
-	 * Gets the list of custom event names.
-	 * 
-	 * @return an array containing custom event names
-	 */
-	String [] getCustomEventNames () {
-		return new String [] {"CTabFolderEvent"};
 	}
 	
 	/**
@@ -147,19 +113,6 @@ class CTabFolderTab extends Tab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return "CTabFolder";
-	}
-
-	/**
-	 * Hooks the custom listener specified by eventName.
-	 */
-	void hookCustomListener (final String eventName) {
-		if (eventName == "CTabFolderEvent") {
-			tabFolder1.addCTabFolderListener (new CTabFolderAdapter () {
-				public void itemClosed (CTabFolderEvent event) {
-					log (eventName, event);
-				}
-			});
-		}
+		return "TabFolder";
 	}
 }
