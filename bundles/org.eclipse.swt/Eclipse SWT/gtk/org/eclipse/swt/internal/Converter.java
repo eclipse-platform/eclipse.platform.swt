@@ -62,8 +62,9 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 	int [] items_read = new int [1], items_written = new int [1];
 	int ptr = OS.g_utf16_to_utf8 (buffer, buffer.length, items_read, items_written, null);
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
-	//TEMPORARY CODE - convertion stops at the first NULL
 	int written = items_written [0];
+	//TEMPORARY CODE - convertion stops at the first NULL
+	if (items_read [0] != buffer.length && !terminate) written++;
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];
 	OS.memmove (bytes, ptr, written);
 	OS.g_free (ptr);
