@@ -349,12 +349,6 @@ public int indexOf (ToolItem item) {
 }
 
 void layoutItems () {
-	/*
-	* Force the toolbar to allocate the size of its children.
-	* This ensures that getBounds() returns accurate information for
-	* toolItems immediately.
-	*/
-	forceResize ();
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];

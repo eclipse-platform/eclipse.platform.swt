@@ -282,6 +282,7 @@ public void dispose () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int y = OS.GTK_WIDGET_Y (topHandle);
@@ -431,6 +432,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
+	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
 	return OS.GTK_WIDGET_WIDTH (topHandle);
 }
