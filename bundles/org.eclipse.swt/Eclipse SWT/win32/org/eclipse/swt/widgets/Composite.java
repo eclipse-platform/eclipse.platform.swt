@@ -566,7 +566,8 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) != 0) return LRESULT.ONE;
+		/* Return zero to indicate that the background was not erased */
+		if ((style & SWT.NO_BACKGROUND) != 0) return LRESULT.ZERO;
 	}
 	return result;
 }
