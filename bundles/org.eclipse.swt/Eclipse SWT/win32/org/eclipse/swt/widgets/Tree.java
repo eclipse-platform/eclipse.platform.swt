@@ -46,6 +46,7 @@ public class Tree extends Composite {
 	ImageList imageList;
 	boolean dragStarted, gestureCompleted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
+	boolean lockSelection, oldSelected, newSelected;
 	boolean customDraw;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
@@ -347,18 +348,18 @@ public void deselectAll () {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 		}
-		return;
-	}
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+	} else {
+		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			}
 		}
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
 void destroyItem (TreeItem item) {
@@ -387,7 +388,9 @@ void destroyItem (TreeItem item) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	releaseItems (item.getItems (), tvItem);
 	releaseItem (item, tvItem);
+	ignoreDeselect = ignoreSelect = lockSelection = true;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	ignoreDeselect = ignoreSelect = lockSelection = false;
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
@@ -1408,7 +1411,8 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			postEvent (SWT.DefaultSelection, event);
 			//FALL THROUGH
 		case SWT.ESC:
-		case ' ': return LRESULT.ZERO;
+		case ' ':
+			return LRESULT.ZERO;
 	}
 	return result;
 }
@@ -1671,8 +1675,53 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEM) == 0) {
 		sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+		/*
+		* In a multi-select tree, if the user is collapsing a subtree that
+		* contains selected items, clear the selection from these items and
+		* issue a selection event.  Only items that are selected and visible
+		* are cleared.
+		*/
+		boolean fixSelection = false, deselected = false;
+		if ((style & SWT.MULTI) != 0) {
+			if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
+				int hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				if (hSelection != 0) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+					tvItem.hItem = lpht.hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					if ((tvItem.state & OS.TVIS_EXPANDED) != 0) {
+						fixSelection = true;
+						tvItem.stateMask = OS.TVIS_SELECTED;
+						int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lpht.hItem);
+						int hLast = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, lpht.hItem);
+						int hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
+						while (hNext != 0 && hNext != hLast) {
+							tvItem.hItem = hNext;
+							OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+							if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
+							tvItem.state = 0;
+							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+							if ((hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext)) == 0) break;
+							if (hParent == OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNext)) break;
+						}
+					}
+				}
+			}
+		}
+		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
 		int code = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (deselected) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_PARAM;
+			tvItem.hItem = lpht.hItem;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			Event event = new Event ();
+			event.item = items [tvItem.lParam];
+			postEvent (SWT.Selection, event);
+		}
 		return new LRESULT (code);
 	}
 	
@@ -1972,7 +2021,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT:
 					/*
-					* Feature on Windows.  When a new tree item is inserted
+					* Feature in Windows.  When a new tree item is inserted
 					* using TVM_INSERTITEM and the tree is using custom draw,
 					* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
 					* and before the item is added to the items array.  The
@@ -2022,12 +2071,33 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 				postEvent (SWT.DefaultSelection, event);
 			}
-			if (hooks (SWT.DefaultSelection)) {
-				return LRESULT.ONE;
-			}
+			if (hooks (SWT.DefaultSelection)) return LRESULT.ONE;
 		}
 		case OS.TVN_SELCHANGEDA:
 		case OS.TVN_SELCHANGEDW: {
+			if ((style & SWT.MULTI) != 0) {
+				if (lockSelection) {
+					/* Restore the old selection state of both items */
+					if (oldSelected) {
+						TVITEM tvItem = new TVITEM ();
+						int offset = NMHDR.sizeof + 4;
+						OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
+						tvItem.mask = OS.TVIF_STATE;
+						tvItem.stateMask = OS.TVIS_SELECTED;
+						tvItem.state = OS.TVIS_SELECTED;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					}
+					if (!newSelected && ignoreSelect) {
+						TVITEM tvItem = new TVITEM ();
+						int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
+						OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
+						tvItem.mask = OS.TVIF_STATE;
+						tvItem.stateMask = OS.TVIS_SELECTED;
+						tvItem.state = 0;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					}
+				}
+			}
 			if (!ignoreSelect) {
 				TVITEM tvItem = new TVITEM ();
 				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
@@ -2041,6 +2111,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_SELCHANGINGA:
 		case OS.TVN_SELCHANGINGW: {
+			if ((style & SWT.MULTI) != 0) {
+				if (lockSelection) {
+					/* Save the old selection state for both items */
+					TVITEM tvItem = new TVITEM ();
+					int offset1 = NMHDR.sizeof + 4;
+					OS.MoveMemory (tvItem, lParam + offset1, TVITEM.sizeof);
+					oldSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+					int offset2 = NMHDR.sizeof + 4 + TVITEM.sizeof;
+					OS.MoveMemory (tvItem, lParam + offset2, TVITEM.sizeof);
+					newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+				}
+			}
 			if (!ignoreSelect && !ignoreDeselect) {
 				hAnchor = 0;
 				if ((style & SWT.MULTI) != 0) deselectAll ();
@@ -2053,10 +2135,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				TVITEM tvItem = new TVITEM ();
 				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
 				OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
-				int [] action = new int [1];
-				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
 				/*
-				* Feature on Windows.  In some cases, TVM_ITEMEXPANDING
+				* Feature in Windows.  In some cases, TVM_ITEMEXPANDING
 				* is sent from within TVM_DELETEITEM for the tree item
 				* being destroyed.  By the time the message is sent,
 				* the item has already been removed from the list of
@@ -2073,6 +2153,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				* processing of the Windows message by returning
 				* zero as the result of the window proc.
 				*/
+				int [] action = new int [1];
+				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
 				if (action [0] == OS.TVE_EXPAND) {
 					sendEvent (SWT.Expand, event);
 					if (isDisposed ()) return LRESULT.ZERO;
@@ -2101,7 +2183,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_RECOGNIZEGESTURE: {
 			/* 
-			* Feature on Pocket PC.  The tree and table controls detect the tap
+			* Feature in Pocket PC.  The tree and table controls detect the tap
 			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
 			* the popup menu.  This default behaviour is unwanted on Pocket PC 2002
 			* when no menu has been set, as it still draws a red circle.  The fix

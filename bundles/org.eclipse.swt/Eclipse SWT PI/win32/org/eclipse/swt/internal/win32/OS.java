@@ -1138,6 +1138,7 @@ public class OS {
 	public static final int TVGN_PREVIOUSVISIBLE = 0x7;
 	public static final int TVGN_ROOT = 0x0;
 	public static final int TVHT_ONITEM = 0x46;
+	public static final int TVHT_ONITEMBUTTON = 16;
 	public static final int TVHT_ONITEMICON = 0x2;
 	public static final int TVHT_ONITEMLABEL = 0x4;
 	public static final int TVHT_ONITEMSTATEICON = 0x40;
