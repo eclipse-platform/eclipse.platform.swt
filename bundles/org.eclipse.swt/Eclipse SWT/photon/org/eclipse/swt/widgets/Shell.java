@@ -1117,6 +1117,7 @@ public void setVisible (boolean visible) {
 	} else {
 		OS.PtUnrealizeWidget (shellHandle);
 		sendEvent(SWT.Hide);
+		if (isDisposed ()) return;
 	}
 
 	/*
