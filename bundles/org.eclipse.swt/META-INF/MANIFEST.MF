@@ -1,6 +1,6 @@
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
-Bundle-SymbolicName: org.eclipse.swt
+Bundle-SymbolicName: org.eclipse.swt; singleton=true
 Bundle-Version: 3.0.0
 Manifest-Version: 1.0
 Provide-Package: 
