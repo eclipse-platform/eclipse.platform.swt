@@ -53,7 +53,7 @@ public class Accessible {
 		this.control = control;
 		int[] ppvObject = new int[1];
 		int result = COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
-		if (result == COM.E_NOTIMPL) return;
+		if (ppvObject[0] == 0) return;
 		if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		iaccessible = new IAccessible(ppvObject[0]);
 		iaccessible.AddRef();
