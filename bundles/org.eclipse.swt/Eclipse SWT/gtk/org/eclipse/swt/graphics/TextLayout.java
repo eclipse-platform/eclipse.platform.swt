@@ -569,7 +569,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int /*long*/ font = this.font != null ? this.font.handle : device.getSystemFont().handle;
+	int /*long*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
 	int /*long*/ lang = OS.pango_context_get_language(context);
 	int ascent = 0, descent = 0, averageCharWidth = 0, height = 0;
 	int /*long*/ metrics = OS.pango_context_get_metrics(context, font, lang);

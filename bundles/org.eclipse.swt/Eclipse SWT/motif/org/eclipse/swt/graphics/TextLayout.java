@@ -688,7 +688,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns();
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	GC gc = new GC(device);
-	Font font = this.font != null ? this.font : device.getSystemFont();
+	Font font = this.font != null ? this.font : device.systemFont;
 	FontMetrics metrics = null;
 	if (text.length() == 0) {
 		gc.setFont(font);
@@ -1297,7 +1297,7 @@ public void setFont (Font font) {
 	if (font != null && font.equals(this.font)) return;
 	freeRuns();
 	this.font = font;
-	XFontStruct fontStruct = getFontHeigth(font != null ? font : device.getSystemFont());
+	XFontStruct fontStruct = getFontHeigth(font != null ? font : device.systemFont);
 	defaultAscent = fontStruct.ascent;
 	defaultDescent = fontStruct.descent;
 }

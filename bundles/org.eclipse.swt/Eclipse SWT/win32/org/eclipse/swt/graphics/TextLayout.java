@@ -915,8 +915,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	if (text.length() == 0) {
-		Font font = this.font != null ? this.font : device.getSystemFont();
-		OS.SelectObject(srcHdc, font.handle);
+		OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont);
 		OS.GetTextMetrics(srcHdc, lptm);
 		lptm.tmAscent = Math.max(lptm.tmAscent, this.ascent);
 		lptm.tmDescent = Math.max(lptm.tmDescent, this.descent);		
