@@ -32,7 +32,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	boolean resizable;
+	boolean resizable, moveable;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -220,6 +220,29 @@ public Table getParent () {
 }
 
 /**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * 
+ * @since 3.1
+ */
+public boolean getMoveable () {
+	checkWidget ();
+	return moveable;
+}
+
+/**
  * Gets the resizable attribute. A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
@@ -332,11 +355,15 @@ public void pack () {
 	if (oldWidth != newWidth) {
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return;
+		boolean moved = false;
+		int [] order = parent.getColumnOrder ();
 		TableColumn [] columns = parent.getColumns ();
-		for (int i=index + 1; i<columns.length; i++) {
-			if (!columns [i].isDisposed ()) {
-				columns [i].sendEvent (SWT.Move);
+		for (int i=0; i<order.length; i++) {
+			TableColumn column = columns [order [i]];
+			if (moved && !column.isDisposed ()) {
+				column.sendEvent (SWT.Move);
 			}
+			if (column == this) moved = true;
 		}
 	}
 }
@@ -455,9 +482,35 @@ public void setImage (Image image) {
 }
 
 /**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#setColumnOrder(int[])
+ * @see Table#getColumnOrder()
+ * 
+ * @since 3.1
+ */
+public void setMoveable (boolean moveable) {
+	checkWidget ();
+	this.moveable = moveable;
+}
+
+/**
  * Sets the resizable attribute.  A column that is
- * not resizable cannot be dragged by the user but
- * may be resized by the programmer.
+ * resizable can be resized by the user dragging the
+ * edge of the header.  A column that is not resizable 
+ * cannot be dragged by the user but may be resized 
+ * by the programmer.
  *
  * @param resizable the resize attribute
  *

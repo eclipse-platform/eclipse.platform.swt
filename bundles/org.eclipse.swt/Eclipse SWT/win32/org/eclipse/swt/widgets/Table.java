@@ -579,7 +579,7 @@ void createHandle () {
 	OS.HeapFree (hHeap, 0, pszText);
 
 	/* Set the extended style bits */
-	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
+	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP | OS.LVS_EX_HEADERDRAGDROP;
 	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
 	
@@ -1099,6 +1099,39 @@ public int getColumnCount () {
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count == 1 && columns [0] == null) count = 0;
 	return count;
+}
+
+/**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int[] getColumnOrder () {
+	checkWidget ();
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
+	if (count == 1 && columns [0] == null) return new int [0];
+	int [] order = new int [count];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+	return order;
 }
 
 /**
@@ -2080,6 +2113,74 @@ void setBackgroundPixel (int pixel) {
 	* WM_PAINT.  The fix is to force a redraw.
 	*/
 	OS.InvalidateRect (handle, null, true);
+}
+
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param itemOrder the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
+	if (count == 1 && columns [0] == null) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = new int [count];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, oldOrder);
+	boolean reorder = false;
+	boolean [] seen = new boolean [count];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (index != oldOrder [i]) reorder = true;
+	}
+	if (reorder) {
+		RECT [] oldRects = new RECT [count];
+		for (int i=0; i<count; i++) {
+			oldRects [i] = new RECT ();
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+		}
+		OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, order.length, order);
+		/*
+		* Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
+		* the column order, the header redraws correctly but the table does
+		* not.  The fix is to force a redraw.
+		*/
+		OS.InvalidateRect (handle, null, true);
+		TableColumn[] newColumns = new TableColumn [count];
+		System.arraycopy (columns, 0, newColumns, 0, count);
+		RECT newRect = new RECT ();
+		for (int i=0; i<count; i++) {
+			TableColumn column = newColumns [i];
+			if (!column.isDisposed ()) {
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+				if (newRect.left != oldRects [i].left) {
+					column.sendEvent (SWT.Move);
+				}
+			}
+		}
+	}
 }
 
 void setCheckboxImageListColor () {
@@ -3152,8 +3253,50 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				TableColumn column = columns [phdn.iItem];
-				if (column != null && !column.getResizable ()) {
+				if (column == null || !column.getResizable ()) {
 					return LRESULT.ONE;
+				}
+				break;
+			}
+			case OS.HDN_BEGINDRAG: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1) {
+					TableColumn column = columns [phdn.iItem];
+					if (column == null || !column.getMoveable ()) {
+						OS.ReleaseCapture ();
+						return LRESULT.ONE;
+					}
+				}
+				break;
+			}
+			case OS.HDN_ENDDRAG: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1 && phdn.pitem != 0) {
+					HDITEM pitem = new HDITEM ();
+					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						if (count == 1 && columns [0] == null) break;
+						int [] order = new int [count];
+						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+						int index = 0;
+						while (index < order.length) {
+						 	if (order [index] == phdn.iItem) break;
+							index++;
+						}
+						if (index == order.length) index = 0;
+						if (index == pitem.iOrder) break;
+						int start = Math.min (index, pitem.iOrder);
+						int end = Math.max (index, pitem.iOrder);
+						for (int i=start; i<=end; i++) {
+							TableColumn column = columns [order [i]];
+							if (!column.isDisposed ()) {
+								column.postEvent (SWT.Move);
+							}
+						}
+					}
 				}
 				break;
 			}
@@ -3206,10 +3349,15 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 								*/
 								TableColumn [] newColumns = new TableColumn [count];
 								System.arraycopy (columns, 0, newColumns, 0, count);
-								for (int i=phdn.iItem+1; i<count; i++) {
-									if (!newColumns [i].isDisposed ()) {
-										newColumns [i].sendEvent (SWT.Move);
+								int [] order = new int [count];
+								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+								boolean moved = false;
+								for (int i=0; i<count; i++) {
+									TableColumn nextColumn = newColumns [order [i]];
+									if (moved && !nextColumn.isDisposed ()) {
+										nextColumn.sendEvent (SWT.Move);
 									}
+									if (nextColumn == column) moved = true;
 								}
 							}
 						}
