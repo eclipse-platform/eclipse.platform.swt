@@ -199,9 +199,17 @@ void createHandle (int index) {
 	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_tree_view_new_with_model (modelHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	/*
+	* Bug in ATK. For some reason, ATK segments fault if 
+	* the GtkTreeView has a column and does not have items.
+	* The fix is to insert the column only when an item is 
+	* created.
+	*/
 	columnHandle = OS.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_object_ref (columnHandle);
+	
 	if ((style & SWT.CHECK) != 0) {
 		checkRenderer = OS.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
@@ -445,9 +453,10 @@ public int getItemHeight () {
 	checkWidget ();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (itemCount == 0) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
 		int [] w = new int [1], h = new int [1];
-		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
+		OS.gtk_tree_view_column_cell_get_size (columnHandle, null, null, null, w, h);
+		OS.gtk_tree_view_remove_column (handle, columnHandle);
 		return h [0];
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
