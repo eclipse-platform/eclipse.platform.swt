@@ -1014,15 +1014,21 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 		height = rect.height;
 	} else {
 		/*
-		* Bug in Windows.  When a menu item has a check and a string
-		* that includes a label and accelerator text but does not have
-		* a bitmap, when the string is the longest string in the menu,
-		* the label and accelerator text overlap.  The fix is to use
-		* SetMenuItemInfo() to indicate that the item has a bitmap
-		* and then answer the width of the widest bitmap in the menu
-		* from WM_MEASURECHILD.
+		* Bug in Windows.  If a menu contains items that have
+		* images and can be checked, Windows does not include
+		* the width of the image and the width of the check when
+		* computing the width of the menu.  When the longest item
+		* does not have an image, the label and the accelerator
+		* text can overlap.  The fix is to use SetMenuItemInfo()
+		* to indicate that all items have a bitmap and then include
+		* the width of the widest bitmap in WM_MEASURECHILD.
 		*/
-		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		MENUINFO lpcmi = new MENUINFO ();
+		lpcmi.cbSize = MENUINFO.sizeof;
+		lpcmi.fMask = OS.MIM_STYLE;
+		int hMenu = parent.handle;
+		OS.GetMenuInfo (hMenu, lpcmi);
+		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
 			MenuItem [] items = parent.getItems ();
 			for (int i=0; i<items.length; i++) {
 				MenuItem item = items [i];

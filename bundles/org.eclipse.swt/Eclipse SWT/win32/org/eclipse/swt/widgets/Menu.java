@@ -1282,24 +1282,23 @@ void update () {
 	}
 	
 	/*
-	* Bug in Windows.  When a menu item has a check and a string
-	* that includes a label and accelerator text but does not have
-	* a bitmap, when the string is the longest string in the menu,
-	* the label and accelerator text overlap.  The fix is to use
-	* SetMenuItemInfo() to indicate that the item has a bitmap
-	* and then answer the width of the widest bitmap in the menu
-	* from WM_MEASURECHILD.
+	* Bug in Windows.  If a menu contains items that have
+	* images and can be checked, Windows does not include
+	* the width of the image and the width of the check when
+	* computing the width of the menu.  When the longest item
+	* does not have an image, the label and the accelerator
+	* text can overlap.  The fix is to use SetMenuItemInfo()
+	* to indicate that all items have a bitmap and then include
+	* the width of the widest bitmap in WM_MEASURECHILD.
 	*/	
-	if (hasCheck) {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_BITMAP;
-		for (int i=0; i<items.length; i++) {
-			MenuItem item = items [i];
-			if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
-				info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
-				OS.SetMenuItemInfo (handle, item.id, false, info);
-			}
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_BITMAP;
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item.getImage () == null) {
+			info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
+			OS.SetMenuItemInfo (handle, item.id, false, info);
 		}
 	}
 
