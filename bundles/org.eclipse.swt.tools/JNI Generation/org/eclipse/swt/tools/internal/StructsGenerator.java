@@ -41,6 +41,16 @@ public void generateIncludes() {
 }
 
 public void generate(Class clazz) {
+	int j = 0;
+	Field[] fields = clazz.getDeclaredFields();
+	for (; j < fields.length; j++) {
+		Field field = fields[j];
+		int mods = field.getModifiers();
+		if ((mods & Modifier.PUBLIC) != 0 && (mods & Modifier.STATIC) == 0) {
+			break;
+		}
+	}
+	if (j == fields.length) return;
 	if (header) {
 		generateHeaderFile(clazz);
 	} else {
