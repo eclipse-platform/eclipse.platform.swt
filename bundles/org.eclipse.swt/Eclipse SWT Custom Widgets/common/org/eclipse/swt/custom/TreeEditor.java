@@ -85,22 +85,22 @@ public TreeEditor (Tree tree) {
 	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				if (TreeEditor.this.tree.isDisposed() || editor == null) return;
-				resize();
 				if (editor == null || editor.isDisposed()) return;
+				if (TreeEditor.this.tree.isDisposed()) return;
+				resize();
 				editor.setVisible(true);
 			}
 		};
 		public void treeCollapsed(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			editor.setVisible(false);
 			Display display = TreeEditor.this.tree.getDisplay();
+			editor.setVisible(false);
 			display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			editor.setVisible(false);
 			Display display = TreeEditor.this.tree.getDisplay();
+			editor.setVisible(false);
 			display.asyncExec(runnable);
 		}
 	};

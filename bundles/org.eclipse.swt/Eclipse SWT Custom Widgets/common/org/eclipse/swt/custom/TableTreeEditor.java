@@ -97,22 +97,22 @@ public TableTreeEditor (TableTree tableTree) {
 	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				if (TableTreeEditor.this.tableTree.isDisposed() || editor == null) return;
-				resize();
 				if (editor == null || editor.isDisposed()) return;
+				if (TableTreeEditor.this.tableTree.isDisposed()) return;
+				resize();
 				editor.setVisible(true);
 			}
 		};
 		public void treeCollapsed(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			editor.setVisible(false);
 			Display display = TableTreeEditor.this.tableTree.getDisplay();
+			editor.setVisible(false);
 			display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			editor.setVisible(false);
 			Display display = TableTreeEditor.this.tableTree.getDisplay();
+			editor.setVisible(false);
 			display.asyncExec(runnable);
 		}
 	};
