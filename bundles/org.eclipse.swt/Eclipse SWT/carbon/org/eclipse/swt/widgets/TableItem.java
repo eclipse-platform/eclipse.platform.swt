@@ -485,7 +485,7 @@ public String getText (int index) {
 
 void redraw (int propertyID) {
 	cached = true;
-	if (parent.ignoreRedraw) return;
+	if (parent.currentItem == this) return;
 	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
 	int itemIndex = parent.indexOf (this);
 	int [] id = new int [] {itemIndex + 1};

@@ -48,11 +48,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Table extends Composite {
 	TableItem [] items;
-	int lastIndexOf;
 	TableColumn [] columns;
+	TableItem currentItem;
 	GC paintGC;
-	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
-	boolean ignoreRedraw, ignoreSelect, wasSelected;
+	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, lastIndexOf;
+	boolean  ignoreSelect, wasSelected, fixScrollWidth;
 	Rectangle imageBounds;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
@@ -144,7 +144,12 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		data.visibleRgn = visibleRgn;
 		paintGC = GC.carbon_new (this, data);
 	} 
+	fixScrollWidth = false;
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (fixScrollWidth) {
+		fixScrollWidth = false;
+		if (setScrollWidth (items, true)) redraw ();
+	}
 	if (currentGC == null) {
 		paintGC.dispose ();
 		paintGC = null;
@@ -158,10 +163,10 @@ boolean checkData (TableItem item, boolean redraw) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
-		ignoreRedraw = true;
+		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
-		ignoreRedraw = false;
+		currentItem = null;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) {
 			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
@@ -250,9 +255,11 @@ public void clear (int index) {
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
 	if (item != null) {
-		item.clear ();
-		item.cached = false;
-		if (!ignoreRedraw && drawCount == 0) {
+		if (currentItem != item) {
+			item.clear ();
+			item.cached = false;
+		}
+		if (currentItem == null && drawCount == 0) {
 			int [] id = new int [] {index + 1};
 			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 		}
@@ -359,10 +366,10 @@ public void clearAll () {
 			item.cached = false;
 		}
 	}
-	if (!ignoreRedraw && drawCount == 0) {
+	if (currentItem == null && drawCount == 0) {
 		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-		setScrollWidth (items, true);
 	}
+	setScrollWidth (items, true);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -2068,8 +2075,12 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth (TableItem item) {
-	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0) return false;
+	if (currentItem != null) {
+		if (currentItem != item) fixScrollWidth = true;
+		return false;
+	}
+	if (drawCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (0, gc);
 	gc.dispose ();
@@ -2084,8 +2095,12 @@ boolean setScrollWidth (TableItem item) {
 }
 
 boolean setScrollWidth (TableItem [] items, boolean set) {
-	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0) return false;
+	if (currentItem != null) {
+		fixScrollWidth = true;
+		return false;
+	}
+	if (drawCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = 0;
 	for (int i = 0; i < items.length; i++) {
