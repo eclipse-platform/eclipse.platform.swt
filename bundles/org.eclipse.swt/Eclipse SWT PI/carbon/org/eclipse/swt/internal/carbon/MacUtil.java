@@ -13,7 +13,9 @@ import org.eclipse.swt.graphics.*;
 public class MacUtil {
 
 	public static boolean DEBUG;
-	public static boolean REVERSE;	// if true 
+	public static boolean REVERSE;	// if true
+	
+	static final char MNEMONIC = '&';
 	
 	static {
 		DEBUG= false;
@@ -22,7 +24,7 @@ public class MacUtil {
 	
 	public static void embedControl(int controlHandle, int parentControlHandle) {
 		if (REVERSE) {
-			int count= OS.CountSubControls(parentControlHandle);
+			int count= countSubControls(parentControlHandle);
 			OS.EmbedControl(controlHandle, parentControlHandle);
 			int[] outControl= new int[1];
 			for (int i= 0; i < count; i++) {
@@ -81,7 +83,7 @@ public class MacUtil {
 	
 	// clipping regions
 	
-	public static void getVisibleRegion(int cHandle, int result, boolean includingTop) {
+	public static int getVisibleRegion(int cHandle, int result, boolean includingTop) {
 		int tmpRgn= OS.NewRgn();
 		
 		getControlRegion(cHandle, OS.kControlEntireControl, result);
@@ -93,7 +95,7 @@ public class MacUtil {
 		}
 		
 		if (includingTop) {
-			int n= OS.CountSubControls(cHandle);
+			int n= countSubControls(cHandle);
 			if (n > 0) {
 				//System.out.println("have children on top");
 				int[] outHandle= new int[1];
@@ -111,6 +113,8 @@ public class MacUtil {
 		}
 				
 		OS.DisposeRgn(tmpRgn);
+                
+                return OS.kNoErr;
 	}
 	
 	private static void getControlRegion(int cHandle, short part, int rgn) {
@@ -128,12 +132,32 @@ public class MacUtil {
 
 	public static int findControlUnderMouse(MacPoint where, int wHandle, short[] cpart) {
 		Point w= where.toPoint();
-		int cHandle= find(OS.GetRootControl(wHandle), null, new MacRect(), w);
+		int[] rootHandle= new int[1];
+		int rc= OS.GetRootControl(wHandle, rootHandle);
+		if (rc != OS.kNoErr) {
+			System.out.println("MacUtil.findControlUnderMouse: " + rc);
+			return 0;
+		}
+		int cHandle= find(rootHandle[0], null, new MacRect(), w);
 		if (cHandle != 0) {
 			cpart[0]= OS.TestControl(cHandle, where.getData());
 			//System.out.println("findControlUnderMouse: " + cpart[0]);
 		}
 		return cHandle;
+	}
+	
+	private static int countSubControls(int cHandle) {
+		short[] cnt= new short[1];
+		switch (OS.CountSubControls(cHandle, cnt)) {
+		case OS.kNoErr:
+			return cnt[0];			
+		case OS.errControlIsNotEmbedder:
+			break;
+		default:
+			System.out.println("MacUtil.countSubControls");
+			break;
+		}
+		return 0;
 	}
 	
 	private static int find(int cHandle, Rectangle parentBounds, MacRect tmp, Point where) {
@@ -148,14 +172,16 @@ public class MacUtil {
 		if (parentBounds != null)
 			rr= parentBounds.intersection(rr);
 
-		int n= OS.CountSubControls(cHandle);
-		int[] outHandle= new int[1];
-		for (int i= 0; i < n; i++) {
-			int index= REVERSE ? (n-i) : (i+1);
-			if (OS.GetIndexedSubControl(cHandle, (short)index, outHandle) == 0) {
-				int result= find(outHandle[0], rr, tmp, where);
-				if (result != 0)
-					return result;
+		int n= countSubControls(cHandle);
+		if (n > 0) {
+			int[] outHandle= new int[1];
+			for (int i= 0; i < n; i++) {
+				int index= REVERSE ? (n-i) : (i+1);
+				if (OS.GetIndexedSubControl(cHandle, (short)index, outHandle) == 0) {
+					int result= find(outHandle[0], rr, tmp, where);
+					if (result != 0)
+						return result;
+				}
 			}
 		}
 
@@ -234,17 +260,32 @@ public class MacUtil {
 	}
 	
 	/**
-	 * Returns the parent of the given control.
+	 * Returns the parent of the given control or null if the control is a root control.
 	 */
 	public static int getSuperControl(int cHandle) {
+        
+		int wHandle= OS.GetControlOwner(cHandle);
+		if (wHandle == 0) {
+			System.out.println("MacUtil.getSuperControl: GetControlOwner error");
+			return 0;
+		}
+		int[] rootHandle= new int[1];
+		OS.GetRootControl(wHandle, rootHandle);
+		if (cHandle == rootHandle[0])
+			return 0;
+                
 		int[] parentHandle= new int[1];
-		OS.GetSuperControl(cHandle, parentHandle);
+		int rc= OS.GetSuperControl(cHandle, parentHandle);
+		if (rc != OS.kNoErr)
+			System.out.println("MacUtil.getSuperControl: " + rc);
 		return parentHandle[0];
 	}
 
 	public static void dump(int matchHandle) {
 		int wHandle= OS.GetControlOwner(matchHandle);
-		dump(OS.GetRootControl(wHandle), 0, matchHandle);
+		int[] rootHandle= new int[1];
+		OS.GetRootControl(wHandle, rootHandle);
+		dump(rootHandle[0], 0, matchHandle);
 		System.out.println();
 	}
 	
@@ -265,12 +306,14 @@ public class MacUtil {
 			System.out.println(" ******************");
 		else
 			System.out.println();
-			
-		int n= OS.CountSubControls(cHandle);
-		int[] outHandle= new int[1];
-		for (int i= 0; i < n; i++) {
-			if (OS.GetIndexedSubControl(cHandle, (short)(i+1), outHandle) == 0)
-				dump(outHandle[0], level+1, matchHandle);
+                    
+		int n= countSubControls(cHandle);
+		if (n > 0) {
+			int[] outHandle= new int[1];
+			for (int i= 0; i < n; i++) {
+				if (OS.GetIndexedSubControl(cHandle, (short)(i+1), outHandle) == 0)
+					dump(outHandle[0], level+1, matchHandle);
+			}
 		}
 	}
 	
@@ -306,5 +349,22 @@ public class MacUtil {
 		sb.append((char)((i & 0x0000ff00) >> 8));
 		sb.append((char)((i & 0x000000ff) >> 0));
 		return sb.toString();
+	}
+	
+	public static String removeMnemonics(String s) {
+		if (s != null) {
+			int l= s.length();
+			if (l > 0) {
+				char[] buf= new char[l];
+				int j= 0;
+				for (int i= 0; i < l; i++) {
+					char c= s.charAt(i);
+					if (c != MNEMONIC)
+						buf[j++]= c;
+				}
+				return new String(buf, 0, j);
+			}
+		}
+		return s;
 	}
 }
