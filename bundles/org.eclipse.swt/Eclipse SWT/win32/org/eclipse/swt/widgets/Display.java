@@ -916,7 +916,18 @@ public Point getCursorLocation () {
 	return new Point (pt.x, pt.y);
 }
 
+/**
+ * Returns the maximum allowed size of cursors on this display.
+ *
+ * @return the maximum cursor size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Point getCursorSize () {
+	checkDevice ();
 	return new Point (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR));
 }
 
