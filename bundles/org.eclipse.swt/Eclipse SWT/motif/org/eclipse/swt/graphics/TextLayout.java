@@ -96,8 +96,10 @@ void computeRuns () {
 					if (j == tabsLength) {
 						int tabX = tabs[tabsLength-1];
 						int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
-						while (tabX <= lineWidth) tabX += lastTabWidth;
-						run.width = tabX - lineWidth;
+						if (lastTabWidth > 0) {
+							while (tabX <= lineWidth) tabX += lastTabWidth;
+							run.width = tabX - lineWidth;
+						}
 					}
 					break;
 				}

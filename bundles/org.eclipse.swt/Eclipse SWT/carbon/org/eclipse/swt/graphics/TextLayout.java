@@ -690,7 +690,7 @@ public void setTabs(int[] tabs) {
 			OS.memcpy(offset, tab, ATSUTab.sizeof);
 		}
 		int width = i - 2 >= 0 ? tabs[i - 1] - tabs[i - 2] : tabs[i - 1];
-		if (width != 0) {
+		if (width > 0) {
 			for (; i<length; i++, offset += ATSUTab.sizeof) {
 				tab.tabType = OS.kATSULeftTab;
 				tab.tabPosition += OS.Long2Fix(width);
