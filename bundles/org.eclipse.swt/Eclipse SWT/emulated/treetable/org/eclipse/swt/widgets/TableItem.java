@@ -190,7 +190,7 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
 				destinationPosition.x, destinationPosition.y,			
 				destinationImageExtent.x, destinationImageExtent.y);
 		}
-		imageOffset = parent.getItemHeight() - destinationImageExtent.y) / 2;
+		imageOffset = (parent.getItemHeight() - destinationImageExtent.y) / 2;
 		gc.drawImage(
 			image, 0, 0, 													// source x, y
 			sourceImageBounds.width, sourceImageBounds.height, 				// source width, height
@@ -439,7 +439,6 @@ public Rectangle getImageBounds(int index) {
 	int itemIndex = parent.indexOf (this);
 	int imageWidth = 0;
 	Point imageExtent = parent.getImageExtent();
-	Rectangle checkboxBounds;
 	Rectangle imageBounds = getBounds(index);
 	
 	if (itemIndex == -1) {
