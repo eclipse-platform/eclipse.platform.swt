@@ -497,7 +497,8 @@ int caretProc (int id, int clientData) {
 }
 
 protected void checkDevice () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
