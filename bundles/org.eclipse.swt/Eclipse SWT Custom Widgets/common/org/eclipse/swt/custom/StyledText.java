@@ -7707,7 +7707,8 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
  */
 void wordWrapResize(int oldClientAreaWidth) {
 	String oldCaretLine = content.getLine(caretLine);
-	int topOffset = content.getOffsetAtLine(topIndex);
+	String topLine = content.getLine(topIndex);	
+	int topOffset = content.getOffsetAtLine(topIndex) + topLine.length();
 	int newTopIndex;
 	WrappedContent wrappedContent = (WrappedContent) content;
 
@@ -7717,7 +7718,7 @@ void wordWrapResize(int oldClientAreaWidth) {
 	if (oldClientAreaWidth != 0 && clientAreaWidth > oldClientAreaWidth &&
 		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
 		return;
-	}	
+	}
     wrappedContent.wrapLines();
     // has word wrap changed on the caret line? 
     if (caretLine >= content.getLineCount() || 
@@ -7725,8 +7726,11 @@ void wordWrapResize(int oldClientAreaWidth) {
     	// caret may now be on a different line
 	    caretLine = content.getLineAtOffset(caretOffset);
 	    setCaretLocation();
-    }
+    }    
 	// make sure top line remains the same
+	// topOffset is the end of the top line. otherwise top index would be 
+	// set to the preceeding visual line if top line is wrapped (because 
+	// end of preceeding line == start of next line). fixes 8503.
     newTopIndex = content.getLineAtOffset(topOffset);
     if (newTopIndex != topIndex) {
     	ScrollBar verticalBar = getVerticalBar();
@@ -7734,6 +7738,12 @@ void wordWrapResize(int oldClientAreaWidth) {
     	// setVerticalScrollOffset because the widget does not actually need
     	// to be scrolled. causes flash otherwise.
     	verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
+    	// verticalScrollOffset may become negative if first line was 
+    	// partially visible and second line was top line. prevent this from 
+    	// happening to fix 8503.
+    	if (verticalScrollOffset < 0) {
+    		verticalScrollOffset = 0;
+    	}
     	topIndex = newTopIndex;
     	if (verticalBar != null) {
 			verticalBar.setSelection(verticalScrollOffset);
