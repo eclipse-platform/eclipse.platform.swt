@@ -155,9 +155,6 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
-void createHandle () {
-}
-
 void createWidget () {
 	super.createWidget ();
 	setZOrder ();

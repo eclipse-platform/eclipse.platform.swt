@@ -265,7 +265,8 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.SetClip (clipRgn);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
 	OS.SetClip (oldRgn);
-	OS.DisposeRgn (clipRgn);	
+	OS.DisposeRgn (clipRgn);
+	OS.DisposeRgn (oldRgn);
 	return result;
 }
 
