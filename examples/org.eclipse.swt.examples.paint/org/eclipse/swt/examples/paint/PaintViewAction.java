@@ -38,7 +38,7 @@ public class PaintViewAction implements IViewActionDelegate, IExecutableExtensio
 	 */
 	public void run(IAction action) {
 		final Display display = paintView.getDisplay();
-		action.setId(id); // temporary workaround since ID field not set by default
+		action.setId(id); // Eclipse Platform does not set ID field by default, yet
 		display.syncExec(new ActionRunnable(action));
 	}
 	private class ActionRunnable implements Runnable {

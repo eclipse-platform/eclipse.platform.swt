@@ -11,40 +11,30 @@ import java.io.*;import java.text.*;import java.util.*;import org.eclipse.sw
  */
 public class FileViewer { 
  	private static ResourceBundle resourceBundle;
-	private static final String
-		COMBODATA_PREVIOUS_INDEX = "Combo.previousIndex", // Integer: last selected combo index so we can revoke a selection
-		COMBODATA_ROOTS          = "Combo.roots",         // File[]: filesystem root entries
-		TREEDATA_PREVIOUS_ITEM   = "Tree.previousItem",   // TreeItem: last selected tree item so we can revoke a selection
-		TREEITEMDATA_FILE        = "TreeItem.file",       // File: File associated with tree item
-		TREEITEMDATA_SUBFILES    = "TreeItem.subfiles",   // File[]: cached directory listing
-		TREEITEMDATA_IMAGEEXPANDED  = "TreeItem.imageExpanded",  // Image: shown when item is expanded
-		TREEITEMDATA_IMAGECOLLAPSED = "TreeItem.imageCollapsed", // Image: shown when item is collapsed
-		TABLEDATA_FILE           = "Table.file",          // File: dir currently being shown in details table
-		TABLEITEMDATA_FILE       = "TableItem.file";      // File: File associated with table row
 
-	private final static String DRIVE_A = "a:"+File.separator;
-	private final static String DRIVE_B = "b:"+File.separator;
+	private final static String DRIVE_A = "a:" + File.separator;
+	private final static String DRIVE_B = "b:" + File.separator;
 
 	/* Important UI elements */ 	  
  	/* package */ Display display;
 	private Shell   shell;
-	private Combo   combo;
 	private ToolBar toolBar;
-	private Tree    tree;
-	private Table   table;
 	private Sash    sash;
+
+	private TreeView treeView;
+	private TableView tableView;
+	private ComboView comboView;
 
 	private Label numObjectsLabel;
 	private Label diskSpaceLabel;
 	private Label allFoldersLabel;
 	private Label contentLabel;
-
-	/* Worker thread control */
-	private UpdateWorker tableUpdateWorker;
 	
+	private File currentDirectory = null;
+
 	/* Simulate only flag */
 	// when true, disables actual filesystem manipulations and outputs results to standard out
-	private static boolean simulateOnly = false;
+	private static boolean simulateOnly = true;
 
 	/**
 	 * Runs main program.
@@ -57,12 +47,13 @@ public class FileViewer {
 	/**
 	 * Opens the main program.
 	 */
-	public void open() {		
+	/* package */ void open() {		
 		// Create the window
 		display = new Display();
 		Images.loadAll(display);
 		shell = new Shell();
 		createShellContents();
+		notifyRefreshFiles(null);
 		shell.open();
 
 		// Event loop
@@ -70,7 +61,7 @@ public class FileViewer {
 			if (! display.readAndDispatch()) display.sleep();
 		}
 		// Cleanup
-		tableUpdateWorker.syncStop();
+		tableView.dispose();
 		Images.freeAll();
 		display.dispose();
 	}
@@ -78,7 +69,7 @@ public class FileViewer {
 	/**
 	 * Closes the main program.
 	 */
-	public void close() {
+	/* package */ void close() {
 		shell.close();
 	}
 	
@@ -87,7 +78,7 @@ public class FileViewer {
 	 * We don't want to crash because of a missing String.
 	 * Returns the key if not found.
 	 */
-	public static String getResourceString(String key) {
+	/* package */ static String getResourceString(String key) {
 		try {
 			return resourceBundle.getString(key);
 		} catch (MissingResourceException e) {
@@ -102,7 +93,7 @@ public class FileViewer {
 	 * with the given arguments. If the key is not found,
 	 * return the key.
 	 */
-	public static String getResourceString(String key, Object[] args) {
+	/* package */ static String getResourceString(String key, Object[] args) {
 		try {
 			return MessageFormat.format(getResourceString(key), args);
 		} catch (MissingResourceException e) {
@@ -117,7 +108,7 @@ public class FileViewer {
 	 * 
 	 * @param container the ShellContainer managing the Shell we are rendering inside
 	 */
-	public void createShellContents() {
+	/* package */ void createShellContents() {
 		shell.setText(getResourceString("Title", new Object[] { "" }));	
 		shell.setImage(Images.ShellIcon);
 		Menu bar = new Menu(shell, SWT.BAR);
@@ -129,14 +120,14 @@ public class FileViewer {
 		
 		createStatusLine(shell);
 
-		createDetailsTable(shell);
-		createTree(shell); // creating Tree depends on Table already existing
+		tableView = new TableView(this, shell);
+		treeView = new TreeView(this, shell);
 		createSash(shell);
 	
 		shell.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				Rectangle rect = shell.getClientArea ();
-				Point comboSize = combo.computeSize(combo.getSize().x, SWT.DEFAULT);
+				Point comboSize = comboView.combo.computeSize(comboView.combo.getSize().x, SWT.DEFAULT);
 				Point toolBarSize = toolBar.computeSize (rect.width, SWT.DEFAULT);
 				int toolHeight = Math.max(comboSize.y, toolBarSize.y) + 2;
 				toolBar.setBounds (0, 0, rect.width, toolHeight);		
@@ -149,45 +140,13 @@ public class FileViewer {
 				contentLabel.setBounds(sashX + sashWidth, toolHeight, rect.width - (sashX + sashWidth), size.y);
 			
 				sash.setBounds(sashX, toolHeight, sashWidth, rect.height - toolHeight - size.y);	
-				tree.setBounds(0, toolHeight + size.y, sashX, rect.height - toolHeight - (size.y * 2));
-				table.setBounds(sashX + sashWidth, toolHeight + size.y, rect.width - (sashX + sashWidth), rect.height - toolHeight - (size.y * 2));
+				treeView.tree.setBounds(0, toolHeight + size.y, sashX, rect.height - toolHeight - (size.y * 2));
+				tableView.table.setBounds(sashX + sashWidth, toolHeight + size.y, rect.width - (sashX + sashWidth), rect.height - toolHeight - (size.y * 2));
 				
 				numObjectsLabel.setBounds(0, rect.height - size.y, size.x, size.y);
 				diskSpaceLabel.setBounds(size.x, rect.height - size.y, rect.width - size.x, size.y);
 			}
 		});
-		refreshAll();
-	}
-
-	/**
-	 * Refresh the entire tree.
-	 */
-	public void refreshAll() {
-		File[] roots = listRoots();
-		
-		for (int i = 0; i < roots.length; ++i) {
-			final File file = roots[i];
-			combo.add(file.getPath());
-			
-			TreeItem item = new TreeItem(tree, SWT.NULL);
-			initTreeItemVolume(item, file);
-
-			// add a placeholder child item so we get the "expand" button
-			TreeItem placeholderItem = new TreeItem(item, SWT.NULL);
-		}
-		combo.setData(COMBODATA_ROOTS, roots);
-		refreshTreeStructure(tree.getItems());
-	}
-	public void refresh() {
-	}
-	public void markDirtyFile(File file) {
-	}
-	
-	private void refreshTreeStructure(TreeItem[] items) {
-		for (int i = 0; i < items.length; i++) {
-			final TreeItem item = items[i];
-			refreshTreeStructure(item.getItems());
-		}
 	}
 	
 	/**
@@ -241,40 +200,27 @@ public class FileViewer {
 	private void createToolBar(Shell shell) {
 		toolBar = new ToolBar(shell, SWT.NULL);
 		ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
-		final Combo combo = new Combo(toolBar, SWT.READ_ONLY);
-		this.combo = combo;
-		item.setControl(combo);
+		comboView = new ComboView(this, toolBar);
+		item.setControl(comboView.combo);
 		item.setWidth(185);
 
-		combo.setData(COMBODATA_ROOTS, null);
-		combo.setData(COMBODATA_PREVIOUS_INDEX, null);
-		combo.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				final File[] roots = (File[]) combo.getData(COMBODATA_ROOTS);
-				int selection = combo.getSelectionIndex();
-				if (selection >= 0 && selection < roots.length) {
-					selectFile(roots[selection], null);
-				}
-			}
-		});
-		
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(Images.UpDirectory);
-		item.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				TreeItem[] items = tree.getSelection();
-				if (items.length == 0) return;
-
-				if (items[0].getParentItem() != null) {
-					TreeItem parent = items[0].getParentItem();
-					if (parent == null) return;
-					
-					tree.setSelection(new TreeItem[] { parent });
-					selectFile((File) parent.getData(TREEITEMDATA_FILE), null);
-				}
-			}
-		});
+//		item.addSelectionListener(new SelectionAdapter () {
+//			public void widgetSelected(SelectionEvent e) {
+//				TreeItem[] items = tree.getSelection();
+//				if (items.length == 0) return;
+//
+//				if (items[0].getParentItem() != null) {
+//					TreeItem parent = items[0].getParentItem();
+//					if (parent == null) return;
+//					
+//					tree.setSelection(new TreeItem[] { parent });
+//					selectFile((File) parent.getData(TREEITEMDATA_FILE), null);
+//				}
+//			}
+//		});
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(Images.MapNetwork);
@@ -323,204 +269,6 @@ public class FileViewer {
 	}
 
 	/**
-	 * Creates the file details table.
-	 * 
-	 * @param shell the shell on which to attach the details table
-	 */
-	private void createDetailsTable(Shell shell) {
-		table = new Table(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		String[] titles = new String [] {
-			getResourceString("Name"),
-			getResourceString("Size"),
-			getResourceString("Type"),
-			getResourceString("Modified")
-		};
-		int[] widths = new int[] {150, 60, 75, 150};
-		for (int i = 0; i < titles.length; i++) {
-			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText(titles [i]);
-			column.setWidth(widths [i]);
-		}
-		table.setHeaderVisible(true);
-		table.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent event) {
-				final TableItem[] items = table.getSelection();
-				final File[] files = new File[items.length];
-				
-				for (int i = 0; i < items.length; ++i) {
-					files[i] = (File) items[i].getData(TABLEITEMDATA_FILE);
-				}
-				doDefaultFileAction(files);
-			}
-		});
-		createTableDragSource(table);
-		createTableDropTarget(table);
-		
-		tableUpdateWorker = new TableUpdateWorker();
-	}
-
-	/**
-	 * Updates the table with file information in the background.
-	 * <p>
-	 * It is designed such that it can be interrupted cleanly.  Rather than put all the code
-	 * to manage this here, the balance has been pushed out to UpdateWorker so it can be re-used.
-	 * </p>
-	 */
-	private class TableUpdateWorker extends UpdateWorker {
-		public TableUpdateWorker() {
-			super(FileViewer.this.display);
-		}
-		/**
-		 * Updates the table's contents
-		 * 
-		 * @param data arguments in an Object[]
-		 * <ul>
-		 * <li>File data[0] the file/dir to detail in the table
-		 * <li>File[] data[1] the cached directory listing, or null if not cached or not appropriate
-		 * </ul>
-		 */
-		protected void execute(Object data) {
-			/*
-			 * Note the use of asyncExec() below to ensure that SWT Widgets are manipulated in the
-			 * right thread.  syncExec() would be inappropriate here as it would require a full pair
-			 * of context switches between each operation -- which is inefficient.
-			 */
-			// Clear existing information
-			display.asyncExec(new Runnable() {
-				public void run() {
-					diskSpaceLabel.setText("");
-					numObjectsLabel.setText("");
-					table.setRedraw(false);
-					table.removeAll();
-				}
-			});
-
-			// Get arguments
-			if (data == null) return;
-			final Object[] args = (Object[]) data;
-			final File file = (File) args[0];
-			final File[] cache = (File[]) args[1];
-
-			// Set current file
-			display.asyncExec(new Runnable() {
-				public void run() {
-					table.setData(TABLEDATA_FILE, file);
-				}
-			});
-			if (! file.exists()) return;
-			
-			// Show disk usage
-			final long folderSize = file.length();
-			final long diskFreeSize = 0;
-			display.asyncExec(new Runnable() {
-				public void run() {
-					diskSpaceLabel.setText(getResourceString("Filesize",
-						new Object[] { new Long(folderSize), new Long(diskFreeSize) }));
-				}
-			});
-
-			// Show directory listing
-			if (!file.isDirectory()) return;
-			
-			final DateFormat dateFormat = DateFormat.getDateTimeInstance(
-				DateFormat.MEDIUM, DateFormat.MEDIUM);
-			final File[] list = (cache != null) ? cache : file.listFiles();
-
-			// Show object count
-			display.asyncExec(new Runnable() {
-				public void run() {
-					numObjectsLabel.setText(getResourceString("Objects", new Object[] {
-						new Integer((list != null) ? list.length : 0) }));
-				}
-			});
-
-			// Show directory listing
-			if (list != null) {
-				if (list != cache) sort(list);
-				for (int i = 0; i < list.length; i++) {
-					final File theFile = list[i];
-					if (isCancelled()) break;
-
-					final String date = dateFormat.format(new Date(theFile.lastModified()));
-					final Image image;
-					final String[] strings;
-					if (list[i].isDirectory ()) {
-						strings = new String [] {
-							theFile.getName(),
-							"",
-							getResourceString("File_folder"),
-							date
-						};
-						image = Images.Folder;
-					} else {
-						strings = new String [] {
-							theFile.getName(),
-							getResourceString("KB", new Object[] { new Long((theFile.length() + 512) / 1024) }),
-							getResourceString("System_file"),
-							date
-						};
-						image = Images.File;
-					}
-					final boolean doIncrementalRefresh = ((i & 127) == 127);
-					display.asyncExec(new Runnable() {
-						public void run () {
-							TableItem tableItem = new TableItem(table, 0);
-							tableItem.setText(strings);
-							tableItem.setImage(image);
-							tableItem.setData(TABLEITEMDATA_FILE, theFile);
-							if (doIncrementalRefresh) {
-								table.setRedraw(true);
-								table.setRedraw(false);
-							}
-						}
-					});
-				}
-			}
-			// Allow the table to refresh itself
-			display.asyncExec(new Runnable() {
-				public void run() {
-					table.setRedraw(true);
-				}
-			});
-		}
-	}
-
-	/** Creates the directory tree.
-	 * 
-	 * @param shell the shell on which to attach the tree
-	 */
-	private void createTree(Shell shell) {
-		tree = new Tree(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		tree.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent event) {
-				final TreeItem[] selection = tree.getSelection();
-				if (selection == null || selection.length == 0) return;
-	
-				TreeItem item = selection[0];
-				File file = (File) item.getData(TREEITEMDATA_FILE);
-				selectFile(file, (File[]) item.getData(TREEITEMDATA_SUBFILES));
-			}
-			public void widgetDefaultSelected(SelectionEvent event) {
-			}
-		});
-		tree.addTreeListener(new TreeAdapter() {
-			public void treeExpanded(TreeEvent event) {
-				final TreeItem item = (TreeItem) event.item;
-				final Image image = (Image) item.getData(TREEITEMDATA_IMAGEEXPANDED);
-				if (image != null) item.setImage(image);
-				expandTreeItem(item);
-			}
-			public void treeCollapsed(TreeEvent event) {
-				final TreeItem item = (TreeItem) event.item;
-				final Image image = (Image) item.getData(TREEITEMDATA_IMAGECOLLAPSED);
-				if (image != null) item.setImage(image);
-			}
-		});
-		createTreeDragSource(tree);
-		createTreeDropTarget(tree);
-	}
-
-	/**
 	 * Creates the sash.
 	 * 
 	 * @param shell the shell to 
@@ -541,10 +289,10 @@ public class FileViewer {
 						rect.width - (event.x + event.width), size.y);
 			
 			
-					size = tree.getSize ();
-					tree.setSize (event.x, size.y);
-					Rectangle bounds = table.getBounds ();
-					table.setBounds (event.x + event.width, bounds.y,
+					size = treeView.tree.getSize ();
+					treeView.tree.setSize (event.x, size.y);
+					Rectangle bounds = tableView.table.getBounds ();
+					tableView.table.setBounds (event.x + event.width, bounds.y,
 						rect.width - (event.x + event.width), bounds.height);
 				} else {
 					Rectangle rect = shell.getClientArea ();
@@ -557,134 +305,6 @@ public class FileViewer {
 	}
 
 	/**
-	 * Creates the Drag & Drop DragSource for items being dragged from the table.
-	 * 
-	 * @return the DragSource for the table
-	 */
-	private DragSource createTableDragSource(final Table table) {
-		DragSource dragSource = new DragSource(table, DND.DROP_MOVE | DND.DROP_COPY);
-		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
-		dragSource.addDragListener(new DragSourceListener() {
-			public void dragStart(DragSourceEvent e) {
-				e.doit = table.getSelectionCount() > 0;
-			}
-			public void dragSetData(DragSourceEvent event){
-				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
-				
-				final TableItem[] tableDragItems = table.getSelection();
-				if (tableDragItems == null || tableDragItems.length == 0) return;
-				
-				final String[] data = new String[tableDragItems.length];
-				for (int i = 0; i < tableDragItems.length; i++) {
-					File file = (File) tableDragItems[i].getData(TABLEITEMDATA_FILE);
-					data[i] = file.getAbsolutePath();
-				}
-				event.data = data;
-			}
-			public void dragFinished(DragSourceEvent event) {
-			}
-		});
-		return dragSource;
-	}
-
-	/**
-	 * Creates the Drag & Drop DragSource for items being dragged from the tree.
-	 * 
-	 * @return the DragSource for the tree
-	 */
-	private DragSource createTreeDragSource(final Tree tree){
-		DragSource dragSource = new DragSource(tree, DND.DROP_MOVE | DND.DROP_COPY);
-		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
-		dragSource.addDragListener(new DragSourceListener() {
-			public void dragStart(DragSourceEvent event){
-				event.doit = table.getSelectionCount() > 0;
-			}
-			public void dragFinished(DragSourceEvent event){
-			}
-			public void dragSetData(DragSourceEvent event){
-				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
-				
-				final TreeItem[] treeDragItems = tree.getSelection();
-				if (treeDragItems == null || treeDragItems.length == 0) return;
-				
-				final String[] data = new String[treeDragItems.length];
-				for (int i = 0; i < treeDragItems.length; i++) {
-					File file = (File) treeDragItems[i].getData(TREEITEMDATA_FILE);
-					data[i] = file.getAbsolutePath();
-				}
-				event.data = data;
-			}
-		});
-		return dragSource;
-	}
-	
-	/**
-	 * Creates the Drag & Drop DropTarget for items being dropped onto the table.
-	 * 
-	 * @return the DropTarget for the table
-	 */
-	private DropTarget createTableDropTarget(final Table table){
-		DropTarget dropTarget = new DropTarget(table, DND.DROP_MOVE | DND.DROP_COPY);
-		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			public void dragOver(DropTargetEvent event) {
-				validateDrop(event, getTargetFile(event));
-			}
-			public void drop(DropTargetEvent event) {
-				performDrop(event, getTargetFile(event));
-			}				
-			private File getTargetFile(DropTargetEvent event) {
-				// Determine the target File for the drop 
-				final TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
-				final File targetFile;
-				if (item == null) {
-					// We dropped on an unoccupied area of the table, use the table's root file
-					targetFile = (File) table.getData(TABLEDATA_FILE);
-				} else {
-					// We dropped on a particular item in the table, use the item's file
-					targetFile = (File) item.getData(TABLEITEMDATA_FILE);
-				}
-				return targetFile;
-			}
-		});
-		return dropTarget;
-	}
-	
-	/**
-	 * Creates the Drag & Drop DropTarget for items being dropped onto the tree.
-	 * 
-	 * @return the DropTarget for the tree
-	 */
-	private DropTarget createTreeDropTarget(final Tree tree) {
-		DropTarget dropTarget = new DropTarget(tree, DND.DROP_MOVE | DND.DROP_COPY);
-		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
-		dropTarget.addDropListener(new TreeScrollDropListener(tree));
-		dropTarget.addDropListener(new TreeExpandDropListener(tree));
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			public void dragOver(DropTargetEvent event) {
-				validateDrop(event, getTargetFile(event));
-			}
-			public void drop(DropTargetEvent event) {
-				performDrop(event, getTargetFile(event));
-			}				
-			private File getTargetFile(DropTargetEvent event) {
-				// Determine the target File for the drop 
-				final TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
-				final File targetFile;
-				if (item == null) {
-					// We dropped on an unoccupied area of the tree, we have no recourse. Quit.
-					targetFile = null;
-				} else {
-					// We dropped on a particular item in the tree, use the item's file
-					targetFile = (File) item.getData(TREEITEMDATA_FILE);
-				}
-				return targetFile;
-			}
-		});
-		return dropTarget;	
-	}
-
-	/**
 	 * Validate a drop target event
 	 * <p>
 	 * Note event.detail is modified by this method
@@ -694,7 +314,7 @@ public class FileViewer {
 	 *        under inspection, or null if none
 	 * @return an array of files to be operated on, or null on error
 	 */
-	private File[] validateDrop(DropTargetEvent event, File targetFile) {
+	/* package */ File[] validateDrop(DropTargetEvent event, File targetFile) {
 		final int dropMode = (event.detail != DND.DROP_NONE) ? event.detail : DND.DROP_MOVE;
 		event.detail = DND.DROP_NONE; // simplify error reporting
 
@@ -729,7 +349,8 @@ public class FileViewer {
 	 * @param targetFile the File representing the drop target location
 	 *        under inspection, or null if none
 	 */
-	private void performDrop(DropTargetEvent event, File targetFile) {
+	/* package */ void performDrop(DropTargetEvent event, File targetFile) {
+		Vector /* of File */ dirtyFiles = new Vector();
 		try {
 			final File[] sourceFiles = validateDrop(event, targetFile);
 			final int dropMode = event.detail;
@@ -737,7 +358,7 @@ public class FileViewer {
 			event.detail = DND.DROP_NONE; // simplify error reporting
 			if (sourceFiles == null) return;
 		
-			markDirtyFile(targetFile);
+			dirtyFiles.add(targetFile);
 			for (int i = 0; i < sourceFiles.length; i++){
 				final File source = sourceFiles[i];
 				final File dest = new File(targetFile, source.getName());
@@ -748,7 +369,7 @@ public class FileViewer {
 						if (! copyFileStructure(source, dest)) return;
 						break;
 					case DND.DROP_MOVE:
-						markDirtyFile(source);
+						dirtyFiles.add(source);
 						if (! moveFileStructure(source, dest)) return;
 						break;
 					default:
@@ -758,73 +379,48 @@ public class FileViewer {
 			}
 			event.detail = dropMode;
 		} finally {
-			refresh();
+			notifyRefreshFiles((File[]) dirtyFiles.toArray(new File[dirtyFiles.size()]));
 		}
 	}
 
 	/**
-	 * Select a File
+	 * Notifies the application components that a new current directory has been selected
 	 * 
-	 * @param file the File to select
-	 * @param cachedChildren the children of the File, or null if not known
+	 * @param dir the directory that was selected, null clears the selection
 	 */
-	private void selectFile(final File file, final File[] cachedChildren) {
-		if (file == null) return;
+	/* package */ void notifySelectedDirectory(File dir) {
+		if (dir == null) return;
+		if (currentDirectory != null && dir.equals(currentDirectory)) return;
+		currentDirectory = dir;
+
+		// Notify the other components
+		comboView.selectedDirectory(dir);
+		treeView.selectedDirectory(dir);
+		tableView.selectedDirectory(dir);
+	}
+	
+	/**
+	 * Notifies the application components that files have been selected
+	 * 
+	 * @param files the files that were selected, null clears the selection
+	 */
+	/* package */ void notifySelectedFiles(File[] files) {
+		if (files == null || files.length == 0) return;
+		notifySelectedDirectory(getEnclosingDirectory(files[0]));
+	}
+
+	/**
+	 * Notifies the application components that files must be refreshed
+	 * 
+	 * @param files the files that need refreshing, empty array is a no-op, null refreshes all
+	 */
+	/* package */ void notifyRefreshFiles(File[] files) {
+		if (files != null && files.length == 0) return;
 		
-		/*
-		 * Loop until the file is selected appropriately, or we abort
-		 */
-		for(;;) {
-			// Special case: if drive a or b is selected and does not contain a disk
-			// then prompt user to retry
-			String path = file.getAbsolutePath();
-			if (! file.exists () && (path.equals(DRIVE_A) ||  path.equals(DRIVE_B))) {
-				if (messageBoxRetry(path)) {
-					continue;
-				} else {
-					Integer index = (Integer) combo.getData(COMBODATA_PREVIOUS_INDEX);
-					if (index != null) {
-						combo.select(index.intValue());
-					}
-					TreeItem[] items = (TreeItem[]) tree.getData(TREEDATA_PREVIOUS_ITEM);
-					if (items != null) {
-						tree.setSelection(items);
-					}
-					return;
-				}
-			}
-			break;
-		}
-
-		/* Clean up some UI artifacts */
-
-	// Update the combo box if a new drive is selected
-//	String drive = file.getAbsolutePath();
-//	int end = drive.indexOf(File.separator);
-//	drive = drive.substring(0, end + 1);
-//	if (!combo.getText().equals(drive)){
-//		combo.select (combo.indexOf(drive));
-//	}
-
-		/* Store this as our previous selection */
-		combo.setData(COMBODATA_PREVIOUS_INDEX, new Integer(combo.getSelectionIndex()));
-		tree.setData(TREEDATA_PREVIOUS_ITEM, tree.getSelection());
-
-		/*
-		 * Update file details
-		 */
-
-		// Update title bar
-		String name = file.getName();
-		if (name.length() == 0) name = file.getPath();
-		shell.setText(getResourceString("Title", new Object[] { name }));
-
-		// Update file details content-of label
-		name = file.isDirectory() ? file.getPath() : file.getParent();
-		contentLabel.setText(getResourceString("Content_of", new Object[] { name }));
-
-		/*** Spawn a thread to update more time-consuming information ***/
-		tableUpdateWorker.asyncUpdate(new Object[] { file, cachedChildren });
+		// Notify the other components
+		comboView.refreshFiles(files);
+		treeView.refreshFiles(files);
+		tableView.refreshFiles(files);
 	}
 
 	/**
@@ -832,10 +428,14 @@ public class FileViewer {
 	 * 
 	 * @param files the array of files to process
 	 */
-	private void doDefaultFileAction(File[] files) {
+	/* package */ void doDefaultFileAction(File[] files) {
 		// only uses the 1st file (for now)
 		if (files.length == 0) return;
 		final File file = files[0];
+		if (file.isDirectory()) {
+			notifySelectedDirectory(file);
+		}
+		
 		final String fileName = file.getAbsolutePath();
 		if (! Program.launch(fileName)) {	
 			MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -846,88 +446,53 @@ public class FileViewer {
 	}
 
 	/**
-	 * Populate an item in the tree with a complete directory listing.
+	 * Sets the diskspace label
 	 * 
-	 * @param item the TreeItem to fill in
+	 * @param text the new text
 	 */
-	private void expandTreeItem(TreeItem item) {
-		final File file = (File) item.getData(TREEITEMDATA_FILE);
-		File[] subFiles = (File[]) item.getData(TREEITEMDATA_SUBFILES);
-
-		/* Get directory listing */
-		shell.setCursor(Images.CursorWait);
-		if (subFiles == null) {
-			if (file != null) {
-				subFiles = file.listFiles();
-				item.setData(TREEITEMDATA_SUBFILES, subFiles);
-			}
-		}
-		
-		/* Eliminate any existing (possibly placeholder) children */
-		final TreeItem[] oldChildren = item.getItems();
-		for (int i = 0; i < oldChildren.length; ++i) {
-			oldChildren[i].dispose();
-		}
-
-		if (subFiles != null && subFiles.length > 0) {
-			/* Add subdirectory entries */
-			sort(subFiles);			
-			for (int i = 0; i < subFiles.length; ++i) {
-				final File folder = subFiles[i];
-				if (! folder.isDirectory()) continue;
-				
-				// add the directory to the tree
-				TreeItem newItem = new TreeItem(item, SWT.NULL);
-				initTreeItemFolder(newItem, folder);
-				
-				// add a placeholder child item so we get the "expand" button
-				TreeItem placeholderItem = new TreeItem(newItem, SWT.NULL);
-			}
-		} else {
-			/* Error or nothing found -- collapse the item */
-			item.setExpanded(false);
-		}			
-		shell.setCursor(null);
+	/* package */ void setDiskSpaceText(String text) {
+		diskSpaceLabel.setText(text);
 	}
 
 	/**
-	 * Initialize a volume item
+	 * Sets the number of objects label
 	 * 
-	 * @param item the TreeItem to initialize
-	 * @param volume the File associated with this TreeItem
+	 * @param text the new text
 	 */
-	private void initTreeItemVolume(TreeItem item, File volume) {
-		item.setText(volume.getPath());
-		item.setImage(Images.Drive);
-		item.setData(TREEITEMDATA_FILE, volume);
+	/* package */ void setNumberOfObjectsText(String text) {
+		numObjectsLabel.setText(text);
 	}
 
 	/**
-	 * Initialize a folder item
+	 * Sets the titlebar text
 	 * 
-	 * @param item the TreeItem to initialize
-	 * @param folder the File associated with this TreeItem
+	 * @param text the new text
 	 */
-	private void initTreeItemFolder(TreeItem item, File folder) {
-		item.setText(folder.getName());
-		item.setImage(Images.Folder);
-		item.setData(TREEITEMDATA_FILE, folder);
-		item.setData(TREEITEMDATA_IMAGEEXPANDED, Images.FolderOpen);
-		item.setData(TREEITEMDATA_IMAGECOLLAPSED, Images.Folder);
+	/* package */ void setTitleText(String text) {
+		shell.setText(getResourceString("Title", new Object[] { text }));
 	}
 
 	/**
-	 * Displays a RETRY/CANCEL dialog box
+	 * Sets the contents-of label
 	 * 
-	 * @param s the name of the resource that is not available
-	 * @return true iff RETRY is selected
+	 * @param text the new text
 	 */
-	protected boolean messageBoxRetry(String s) {	
-		MessageBox box = new MessageBox(shell, SWT.RETRY | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-		box.setMessage(getResourceString("Unavailable", new Object[] { s }));
-		box.setText(shell.getText ());
-		return box.open() == SWT.RETRY;
+	/* package */ void setContentsOfText(String text) {
+		contentLabel.setText(getResourceString("Content_of", new Object[] { text }));
 	}
+
+//	/**
+//	 * Displays a RETRY/CANCEL dialog box
+//	 * 
+//	 * @param s the name of the resource that is not available
+//	 * @return true iff RETRY is selected
+//	 */
+//	protected boolean messageBoxRetry(String s) {	
+//		MessageBox box = new MessageBox(shell, SWT.RETRY | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+//		box.setMessage(getResourceString("Unavailable", new Object[] { s }));
+//		box.setText(shell.getText ());
+//		return box.open() == SWT.RETRY;
+//	}
 
 	/**
 	 * Moves a file or entire directory structure.
@@ -1060,11 +625,12 @@ public class FileViewer {
 	}
 
 	/**
-	 * List file roots
+	 * Gets filesystem root entries
 	 * 
-	 * @return an array of Files corresponding to the root directories on the platform
+	 * @return an array of Files corresponding to the root directories on the platform,
+	 *         may be empty but not null
 	 */
-	protected File[] listRoots() {
+	/* package */ static File[] getRoots() {
 		/*
 		 * On JDK 1.22 only...
 		 */
@@ -1075,15 +641,17 @@ public class FileViewer {
 		 * -- PORTABILITY ISSUES HERE --
 		 */
 		if (System.getProperty ("os.name").indexOf ("Windows") != -1) {
-			File[] roots = null;
-			roots = (File[]) addToFileArray(roots, new File(DRIVE_A));
-			roots = (File[]) addToFileArray(roots, new File(DRIVE_B));
+			Vector /* of File */ list = new Vector();
+			list.add(new File(DRIVE_A));
+			list.add(new File(DRIVE_B));
 			for (char i = 'c'; i <= 'z'; ++i) {
 				File drive = new File(i + ":" + File.separator);
 				if (drive.isDirectory() && drive.exists()) {
-					roots = (File[]) addToFileArray(roots, drive);
+					list.add(drive);
 				}
 			}
+			File[] roots = (File[]) list.toArray(new File[list.size()]);
+			sort(roots);
 			return roots;
 		} else {
 			return new File[] { new File(File.separator) };
@@ -1091,19 +659,27 @@ public class FileViewer {
 	}
 
 	/**
-	 * Extends a File array and adds an element to its tail
-	 *
-	 * @param array the array, null if the array should be created from scratch
-	 * @param object the object to add
-	 * @return the new array
+	 * Gets the enclosing directory
+	 * 
+	 * @param file the file whose enclosing directory is to be locate, null is valid
+	 * @return the original file if it was a directory, or its parent, null on failure
 	 */
-	private static File[] addToFileArray(File[] array, File object) {
-		if (array == null) {
-			return new File[] { object };
-		}
-		File[] newArray = new File[array.length + 1];
-		System.arraycopy(array, 0, newArray, 0, array.length);
-		newArray[array.length] = object;
-		return newArray;
+	/* package */ static File getEnclosingDirectory(File file) {
+		if (file == null) return null;
+		if (file.isDirectory()) return file;
+		return file.getParentFile();
+	}
+	
+	/**
+	 * Gets a directory listing
+	 * 
+	 * @param file the directory to be listed
+	 * @return an array of files this directory contains, may be empty but not null
+	 */
+	/* package */ static File[] getDirectoryList(File file) {
+		File[] list = file.listFiles();
+		if (list == null) return new File[0];
+		sort(list);
+		return list;
 	}
 }

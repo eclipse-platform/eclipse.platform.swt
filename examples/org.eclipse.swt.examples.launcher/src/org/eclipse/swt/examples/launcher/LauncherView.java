@@ -138,8 +138,8 @@ public class LauncherView extends ViewPart {
 				treeItem.setText(item.getName());
 				treeItem.setData(item);
 				if (node.getDescriptor().isFolder()) {
-					treeItem.setExpanded(true);
-					treeItem.setImage(LauncherPlugin.images[LauncherPlugin.liOpenFolder]);
+					treeItem.setExpanded(false);
+					treeItem.setImage(LauncherPlugin.images[LauncherPlugin.liClosedFolder]);
 				} else {
 					treeItem.setImage(node.getDescriptor().getIcon());
 				}

@@ -43,7 +43,7 @@
          name="%launchitem.OLEWebBrowserExample.name"
          description="%launchitem.OLEWebBrowserExample.description"
          category="org.eclipse.swt.examples.launchWin32OnlyCategory"
-         source="olewebbrowsersrc.zip"
+         source="olewin32src.zip"
          id="org.eclipse.swt.examples.ole.win32.viewlauncher"
          icon="icons/webbrowser_example.gif">
    </viewItem>

@@ -145,11 +145,8 @@ void openFile() {
 		String message = MessageFormat.format(resources.getString("Err_not_found"), new String[] {file.getName()});
 		displayError(message);
 		return;
-	}	
-	// Workaround for superfluous mouse move event that is being sent
-	// by the WIN platform when a file is selected via a double click in
-	// in the file dialog (PR 1G80JJV).  If the extra move event was not 
-	// being generated, the asyncExec would not be necessary.
+	}
+	// Guard against superfluous mouse move events -- defer action until later
 	Display display = text.getDisplay();
 	display.asyncExec(new Runnable() {
 		public void run() {
