@@ -80,14 +80,7 @@ public FontDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
 }
-int cancelFunc (int widget, int callData) {
-	OS.gtk_widget_destroy (callData);
-	return 0;
-}
-int destroyFunc (int widget, int colorInfo) {
-	OS.gtk_main_quit ();
-	return 0;
-}
+
 /**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
@@ -97,19 +90,7 @@ int destroyFunc (int widget, int colorInfo) {
 public FontData getFontData() {
 	return fontData;
 }
-int okFunc (int widget, int callData) {
-	int fontName = OS.gtk_font_selection_dialog_get_font_name (callData);
-	int length = OS.strlen (fontName);
-	byte [] buffer = new byte [length + 1];
-	OS.memmove (buffer, fontName, length);
-	int fontDesc = OS.pango_font_description_from_string (buffer);
-	Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
-	Font font = Font.gtk_new (display, fontDesc);
-	fontData = font.getFontData () [0];
-	OS.pango_font_description_free (fontDesc);
-	OS.gtk_widget_destroy (callData);
-	return 0;
-}
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -128,7 +109,6 @@ public FontData open () {
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
 	if (parent!=null) {
-		OS.gtk_window_set_modal(handle, true);
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
 	if (fontData != null) {
@@ -142,23 +122,20 @@ public FontData open () {
 		OS.g_free (fontName);
 		OS.gtk_font_selection_dialog_set_font_name (handle, buffer);
 	}
-	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
-	int destroyFunc = destroyCallback.getAddress ();
-	byte [] destroy = Converter.wcsToMbcs (null, "destroy", true);
-	OS.gtk_signal_connect (handle, destroy, destroyFunc, handle);
-	byte [] clicked = Converter.wcsToMbcs (null, "clicked", true);
-	Callback okCallback = new Callback (this, "okFunc", 2);
-	int okFunc = okCallback.getAddress ();
-	Callback cancelCallback = new Callback (this, "cancelFunc", 2);
-	int cancelFunc = cancelCallback.getAddress ();
-	OS.gtk_signal_connect (OS.GTK_FONT_SELECTION_DIALOG_OK_BUTTON(handle), clicked, okFunc, handle);
-	OS.gtk_signal_connect (OS.GTK_FONT_SELECTION_DIALOG_CANCEL_BUTTON(handle), clicked, cancelFunc, handle);
 	fontData = null;
-	OS.gtk_widget_show_now (handle);
-	OS.gtk_main ();	
-	destroyCallback.dispose ();
-	okCallback.dispose ();
-	cancelCallback.dispose ();
+	int response = OS.gtk_dialog_run(handle);
+	if (response == OS.GTK_RESPONSE_OK) {
+		int fontName = OS.gtk_font_selection_dialog_get_font_name (handle);
+		int length = OS.strlen (fontName);
+		byte [] buffer = new byte [length + 1];
+		OS.memmove (buffer, fontName, length);
+		int fontDesc = OS.pango_font_description_from_string (buffer);
+		Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
+		Font font = Font.gtk_new (display, fontDesc);
+		fontData = font.getFontData () [0];
+		OS.pango_font_description_free (fontDesc);		
+	}
+	OS.gtk_widget_destroy(handle);
 	return fontData;
 }
 /**
