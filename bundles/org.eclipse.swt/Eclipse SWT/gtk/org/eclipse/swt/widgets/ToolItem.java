@@ -203,6 +203,10 @@ void createHandle (int index) {
 			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
 			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
 			OS.gtk_container_set_border_width(arrowButtonHandle,0);
+			int style = OS.gtk_style_copy(OS.gtk_widget_get_style(arrowButtonHandle));
+			OS.gtk_style_set_xthickness(style, 0);
+			OS.gtk_widget_set_style(arrowButtonHandle, style);
+			// when the arrow gets destroyed, it will dereference the clone
 			
 			OS.gtk_toolbar_insert_widget (
 				parent.handle,
