@@ -219,16 +219,12 @@ public static boolean launch (String fileName) {
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpFile, buffer, byteCount);
-	
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
 	info.cbSize = SHELLEXECUTEINFO.sizeof;
 	info.lpFile = lpFile;
 	info.nShow = OS.SW_SHOW;
-	
 	boolean result = OS.ShellExecuteEx (info);
-		
 	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
-	
 	return result;
 }
 

@@ -717,23 +717,23 @@ public MenuItem [] getItems () {
 		}
 		return result;
 	}
-	int index = 0;
+	int count = 0;
 	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
 	MenuItem [] items = new MenuItem [length];
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_DATA;
-	while (OS.GetMenuItemInfo (handle, index, true, info)) {
-		if (index == items.length) {
-			MenuItem [] newItems = new MenuItem [index + 4];
-			System.arraycopy (items, 0, newItems, 0, index);
+	while (OS.GetMenuItemInfo (handle, count, true, info)) {
+		if (count == items.length) {
+			MenuItem [] newItems = new MenuItem [count + 4];
+			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		items [index++] = display.getMenuItem (info.dwItemData);
+		items [count++] = display.getMenuItem (info.dwItemData);
 	}
-	if (index == items.length) return items;
-	MenuItem [] result = new MenuItem [index];
-	System.arraycopy (items, 0, result, 0, index);
+	if (count == items.length) return items;
+	MenuItem [] result = new MenuItem [count];
+	System.arraycopy (items, 0, result, 0, count);
 	return result;
 }
 
