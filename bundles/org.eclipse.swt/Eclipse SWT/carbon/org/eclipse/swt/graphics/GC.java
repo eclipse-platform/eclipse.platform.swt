@@ -43,9 +43,10 @@ public final class GC {
 	private boolean fIsFocused= false;
 	private int fLineWidth= 1;
 	private boolean fXorMode= false;
-	private int fClipCache;
 	private short fOffsetX;
 	private short fOffsetY;
+	private int fDamageRgn;
+	private boolean fPendingClip;
 	//---- AW
 
 GC() {
@@ -99,20 +100,20 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 		
-	focus(true);
-	
 	Rectangle src= new Rectangle(x, y, width, height);
 	src= src.union(new Rectangle(destX, destY, width, height));
 	MacRect r= new MacRect(src);
 	
-	int wHandle= OS.GetWindowFromPort(handle);
-
-	int rgn= OS.NewRgn();
-	OS.ScrollRect(r.getData(), (short)deltaX, (short)deltaY, rgn);
-
-	org.eclipse.swt.widgets.Display.getDefault().repairWindow(wHandle, rgn, fOffsetX, fOffsetY);
-
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			int rgn= OS.NewRgn();
+			OS.ScrollRect(r.getData(), (short)deltaX, (short)deltaY, rgn);
+			OS.InvalWindowRgn(OS.GetWindowFromPort(handle), rgn);
+			OS.DisposeRgn(rgn);
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /**
  * Copies a rectangular area of the receiver at the specified
@@ -133,8 +134,8 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle rect = image.getBounds();
 	/* AW
+	Rectangle rect = image.getBounds();
 	int xDisplay = data.display;
 	int xGC = OS.XCreateGC(xDisplay, image.pixmap, 0, null);
 	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -156,10 +157,7 @@ public void dispose () {
 	/* Free resources */
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
-	
-	if (fClipCache != 0) OS.DisposeRgn(fClipCache);
-	fClipCache= 0;
-	
+		
 	Image image = data.image;
 	if (image != null) image.memGC = null;
 	/* AW
@@ -251,8 +249,8 @@ public void drawFocus (int x, int y, int width, int height) {
 	* When the drawable is not a widget, the highlight
 	* color is zero.
 	*/
-	int highlightColor = 0;
 	/* AW
+	int highlightColor = 0;
 	int widget = OS.XtWindowToWidget (xDisplay, xDrawable);
 	if (widget != 0) {
 		int [] argList = {OS.XmNhighlightColor, 0};
@@ -412,7 +410,9 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	srcWidth = sx2 - sx1;
 	srcHeight = sy2 - sy1;
 	
+	/* AW
 	int xDestImagePtr = 0, xSrcImagePtr = 0;
+	*/
 	try {
 		/* Get the background pixels */
 		/* AW
@@ -576,18 +576,22 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	*/
 	
 	// AW
-	focus(true);
-	int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
-	int maskBits= OS.getBitMapForCopyBits(srcImage.mask);
-	int destBits= OS.GetPortBitMapForCopyBits(handle);
-	if (srcBits != 0 && maskBits != 0 && destBits != 0) {
-		MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-		fRect.set(destX, destY, destWidth, destHeight);
-		OS.RGBBackColor(0x00FFFFFF);
-		OS.RGBForeColor(0x00000000);
-		OS.CopyDeepMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData(), (short)0, 0);
+	try {
+		if (focus(true, null)) {
+			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
+			int maskBits= OS.getBitMapForCopyBits(srcImage.mask);
+			int destBits= OS.GetPortBitMapForCopyBits(handle);
+			if (srcBits != 0 && maskBits != 0 && destBits != 0) {
+				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
+				fRect.set(destX, destY, destWidth, destHeight);
+				OS.RGBBackColor(0x00FFFFFF);
+				OS.RGBForeColor(0x00000000);
+				OS.CopyDeepMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData(), (short)0, 0);
+			}
+		}
+	} finally {
+		unfocus(true);
 	}
-	unfocus(true);
 	// AW
 
 	/* Destroy scaled pixmaps */
@@ -619,18 +623,21 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	*/
 
 	// AW
-	focus(true);
-	int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
-	int destBits= OS.GetPortBitMapForCopyBits(handle);
-	if (srcBits != 0 && destBits != 0) {
-		//System.out.println("  copybits");
-		MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-		fRect.set(destX, destY, destWidth, destHeight);
-		OS.RGBBackColor(0x00FFFFFF);
-		OS.RGBForeColor(0x00000000);
-		OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
-	}	
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
+			int destBits= OS.GetPortBitMapForCopyBits(handle);
+			if (srcBits != 0 && destBits != 0) {
+				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
+				fRect.set(destX, destY, destWidth, destHeight);
+				OS.RGBBackColor(0x00FFFFFF);
+				OS.RGBForeColor(0x00000000);
+				OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
+			}
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /** 
  * Draws a line, using the foreground color, between the points 
@@ -650,12 +657,16 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	/* AW
 	OS.XDrawLine (data.display, data.drawable, handle, x1, y1, x2, y2);
 	*/
-	focus(true);
-	installForeColor(data.foreground);
-	OS.PenSize((short) fLineWidth, (short) fLineWidth);
-	OS.MoveTo((short)x1, (short)y1);
-	OS.LineTo((short)x2, (short)y2);
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			installForeColor(data.foreground);
+			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.MoveTo((short)x1, (short)y1);
+			OS.LineTo((short)x2, (short)y2);
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /** 
  * Draws the outline of an oval, using the foreground color,
@@ -688,12 +699,16 @@ public void drawOval(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	focus(true);
-	installForeColor(data.foreground);
-	OS.PenSize((short) fLineWidth, (short) fLineWidth);
-	fRect.set(x, y, width+1, height+1);
-	OS.FrameOval(fRect.getData());
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			installForeColor(data.foreground);
+			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			fRect.set(x, y, width+1, height+1);
+			OS.FrameOval(fRect.getData());
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /** 
  * Draws the closed polygon which is defined by the specified array
@@ -784,21 +799,27 @@ public void drawPolyline(int[] pointArray) {
 	
 	if (pointArray.length < 4)
 		return;
+	
+	int poly= 0;
+	try {
+		if (focus(true, null)) {
 		
-	focus(true);
-
-	int poly= OS.OpenPoly();
-	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i= 2; i < pointArray.length; i+= 2)
-		OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
-	OS.ClosePoly();
+			poly= OS.OpenPoly();
+			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+			for (int i= 2; i < pointArray.length; i+= 2)
+				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
+			OS.ClosePoly();
+			
+			installForeColor(data.foreground);
+			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			OS.FramePoly(poly);
+		}
+	} finally {
+		unfocus(true);
+	}
 	
-	installForeColor(data.foreground);
-	OS.PenSize((short) fLineWidth, (short) fLineWidth);
-	OS.FramePoly(poly);
-	unfocus(true);
-	
-	OS.KillPoly(poly);
+	if (poly != 0)
+		OS.KillPoly(poly);
 }
 /** 
  * Draws the outline of the rectangle specified by the arguments,
@@ -825,12 +846,16 @@ public void drawRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	focus(true);
-	installForeColor(data.foreground);
-	OS.PenSize((short) fLineWidth, (short) fLineWidth);
-	fRect.set(x, y, width+1, height+1);
-	OS.FrameRect(fRect.getData());
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			installForeColor(data.foreground);
+			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			fRect.set(x, y, width+1, height+1);
+			OS.FrameRect(fRect.getData());
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /** 
  * Draws the outline of the specified rectangle, using the receiver's
@@ -881,12 +906,16 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		y = y + height;
 		height = -height;
 	}
-	focus(true);
-	installForeColor(data.foreground);
-	OS.PenSize((short) fLineWidth, (short) fLineWidth);
-	fRect.set(x, y, width+1, height+1);
-	OS.FrameRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
-	unfocus(true);
+	try {
+		if (focus(true, null)) {
+			installForeColor(data.foreground);
+			OS.PenSize((short) fLineWidth, (short) fLineWidth);
+			fRect.set(x, y, width+1, height+1);
+			OS.FrameRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
+		}
+	} finally {
+		unfocus(true);
+	}
 }
 /** 
  * Draws the given string, using the receiver's current font and
@@ -943,25 +972,29 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 //	OS.XmStringDrawUnderline (display, drawable, fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, 0);
 	OS.XmStringFree (xmString);
 	*/
-	focus(true);
-	installFont();
-	installForeColor(data.foreground);
-	if (isTransparent) {
-		OS.TextMode(OS.srcOr);
-	} else {
-		if ((data.background & 0xff000000) == 0) {
-			OS.RGBBackColor(data.background);
-			OS.TextMode(OS.srcCopy);
-		} else {
-			//System.out.println("GC.drawString: " + Integer.toHexString(data.background));
-			OS.TextMode(OS.srcOr);
+	try {
+		if (focus(true, null)) {
+			installFont();
+			installForeColor(data.foreground);
+			if (isTransparent) {
+				OS.TextMode(OS.srcOr);
+			} else {
+				if ((data.background & 0xff000000) == 0) {
+					OS.RGBBackColor(data.background);
+					OS.TextMode(OS.srcCopy);
+				} else {
+					//System.out.println("GC.drawString: " + Integer.toHexString(data.background));
+					OS.TextMode(OS.srcOr);
+				}
+			}
+			short[] fontInfo= new short[4];
+			OS.GetFontInfo(fontInfo);	// FontInfo
+			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
+			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
 		}
+	} finally {
+		unfocus(true);
 	}
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-	OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
-	unfocus(true);
 }
 /** 
  * Draws the given string, using the receiver's current font and
@@ -1078,25 +1111,29 @@ public void drawText (String string, int x, int y, int flags) {
 	}
 	OS.XmStringFree(xmString);
 	*/
-	focus(true);
-	installFont();
-	installForeColor(data.foreground);
-	if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-		OS.TextMode(OS.srcOr);
-	} else {
-		if ((data.background & 0xff000000) == 0) {
-			OS.RGBBackColor(data.background);
-			OS.TextMode(OS.srcCopy);
-		} else {
-			//System.out.println("GC.drawText: " + Integer.toHexString(data.background));
-			OS.TextMode(OS.srcOr);
+	try {
+		if (focus(true, null)) {
+			installFont();
+			installForeColor(data.foreground);
+			if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
+				OS.TextMode(OS.srcOr);
+			} else {
+				if ((data.background & 0xff000000) == 0) {
+					OS.RGBBackColor(data.background);
+					OS.TextMode(OS.srcCopy);
+				} else {
+					//System.out.println("GC.drawText: " + Integer.toHexString(data.background));
+					OS.TextMode(OS.srcOr);
+				}
+			}
+			short[] fontInfo= new short[4];
+			OS.GetFontInfo(fontInfo);	// FontInfo
+			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
+			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
 		}
+	} finally {
+		unfocus(true);
 	}
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-	OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
-	unfocus(true);
 }
 
 /**
@@ -1196,94 +1233,97 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
 	
-	focus(true);
-	
-	/* AW
-	int xDisplay = data.display;
-	int xScreenNum = OS.XDefaultScreen(xDisplay);
-	XGCValues values = new XGCValues();
-	*/
-	int fromColor, toColor;
-	/* AW
-	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
-	fromColor = values.foreground;
-	toColor = values.background;
-	*/
-	fromColor = data.foreground;
-	toColor = data.background;
-	
-	boolean swapColors = false;
-	if (width < 0) {
-		x += width; width = -width;
-		if (! vertical) swapColors = true;
-	}
-	if (height < 0) {
-		y += height; height = -height;
-		if (vertical) swapColors = true;
-	}
-	if (swapColors) {
-		final int t = fromColor;
-		fromColor = toColor;
-		toColor = t;
-	}
-	if (fromColor == toColor) {
-		/* AW
-		OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
-		*/
-		installForeColor(data.foreground);
-		fRect.set(x, y, width, height);
-		OS.PaintRect(fRect.getData());
+	try {
+		if (! focus(true, null))
+			return;
 		
-		unfocus(true);
-		return;
-	}
-	/* X Window deals with a virtually limitless array of color formats
-	 * but we only distinguish between paletted and direct modes
-	 */	
-	/* AW
-	final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
-	final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
-	Visual visual = new Visual();
-	OS.memmove(visual, xVisual, visual.sizeof);
-	final int depth = OS.XDefaultDepthOfScreen(xScreen);
-	*/
-	int depth= 32;
-	final boolean directColor = (depth > 8);
-
-	// This code is intentionally commented since elsewhere in SWT we
-	// assume that depth <= 8 means we are in a paletted mode though
-	// this is not always the case.
-	//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
-
-	/* AW
-	XColor xColor = new XColor();
-	xColor.pixel = fromColor;
-	OS.XQueryColor(xDisplay, data.colormap, xColor);
-	final RGB fromRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
-	xColor.pixel = toColor;
-	OS.XQueryColor(xDisplay, data.colormap, xColor);
-	final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
-	*/
+		/* AW
+		int xDisplay = data.display;
+		int xScreenNum = OS.XDefaultScreen(xDisplay);
+		XGCValues values = new XGCValues();
+		*/
+		int fromColor, toColor;
+		/* AW
+		OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
+		fromColor = values.foreground;
+		toColor = values.background;
+		*/
+		fromColor = data.foreground;
+		toColor = data.background;
+		
+		boolean swapColors = false;
+		if (width < 0) {
+			x += width; width = -width;
+			if (! vertical) swapColors = true;
+		}
+		if (height < 0) {
+			y += height; height = -height;
+			if (vertical) swapColors = true;
+		}
+		if (swapColors) {
+			final int t = fromColor;
+			fromColor = toColor;
+			toColor = t;
+		}
+		
+		if (fromColor == toColor) {
+			/* AW
+			OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
+			*/
+			installForeColor(data.foreground);
+			fRect.set(x, y, width, height);
+			OS.PaintRect(fRect.getData());
+			return;
+		}
+		/* X Window deals with a virtually limitless array of color formats
+		 * but we only distinguish between paletted and direct modes
+		 */	
+		/* AW
+		final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
+		final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
+		Visual visual = new Visual();
+		OS.memmove(visual, xVisual, visual.sizeof);
+		final int depth = OS.XDefaultDepthOfScreen(xScreen);
+		*/
+		int depth= 32;
+		final boolean directColor = (depth > 8);
 	
-	RGB fromRGB = Color.carbon_new(data.device, fromColor).getRGB();
-	RGB toRGB = Color.carbon_new(data.device, toColor).getRGB();
-
-	final int redBits, greenBits, blueBits;
-	if (directColor) {
-		// RGB mapped display
-		redBits = getChannelWidth(0x00ff0000 /* AW visual.red_mask */);
-		greenBits = getChannelWidth(0x0000ff00 /* AW visual.green_mask */);
-		blueBits = getChannelWidth(0x000000ff /* AW visual.blue_mask */);
-	} else {
-		// Index display
-		redBits = greenBits = blueBits = 0;
+		// This code is intentionally commented since elsewhere in SWT we
+		// assume that depth <= 8 means we are in a paletted mode though
+		// this is not always the case.
+		//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
+	
+		/* AW
+		XColor xColor = new XColor();
+		xColor.pixel = fromColor;
+		OS.XQueryColor(xDisplay, data.colormap, xColor);
+		final RGB fromRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+		xColor.pixel = toColor;
+		OS.XQueryColor(xDisplay, data.colormap, xColor);
+		final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+		*/
+		
+		RGB fromRGB = Color.carbon_new(data.device, fromColor).getRGB();
+		RGB toRGB = Color.carbon_new(data.device, toColor).getRGB();
+	
+		final int redBits, greenBits, blueBits;
+		if (directColor) {
+			// RGB mapped display
+			redBits = getChannelWidth(0x00ff0000 /* AW visual.red_mask */);
+			greenBits = getChannelWidth(0x0000ff00 /* AW visual.green_mask */);
+			blueBits = getChannelWidth(0x000000ff /* AW visual.blue_mask */);
+		} else {
+			// Index display
+			redBits = greenBits = blueBits = 0;
+		}
+	
+		ImageData.fillGradientRectangle(this, data.device,
+			x, y, width, height, vertical, fromRGB, toRGB,
+			redBits, greenBits, blueBits);
+			
+	} finally {
+		unfocus(true);
 	}
-
-	ImageData.fillGradientRectangle(this, data.device,
-		x, y, width, height, vertical, fromRGB, toRGB,
-		redBits, greenBits, blueBits);
-
-	unfocus(true);
 }
 
 /**
@@ -1324,15 +1364,19 @@ public void fillOval (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	focus(true);
-	if ((data.background & 0xff000000) == 0) {
-		OS.RGBForeColor(data.background);
-		fRect.set(x, y, width, height);
-		OS.PaintOval(fRect.getData());
-	} else {
-		//	System.out.println("GC.fillOval: " + Integer.toHexString(data.background));
+	try {
+		if (focus(true, null)) {
+			if ((data.background & 0xff000000) == 0) {
+				OS.RGBForeColor(data.background);
+				fRect.set(x, y, width, height);
+				OS.PaintOval(fRect.getData());
+			} else {
+				//	System.out.println("GC.fillOval: " + Integer.toHexString(data.background));
+			}
+		}
+	} finally {
+		unfocus(true);
 	}
-	unfocus(true);
 }
 /** 
  * Fills the interior of the closed polygon which is defined by the
@@ -1369,20 +1413,23 @@ public void fillPolygon(int[] pointArray) {
 	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Complex, OS.CoordModeOrigin);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 	*/
-	
-	focus(true);
-
-	int poly= OS.OpenPoly();
-	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i= 2; i < pointArray.length; i+= 2)
-		OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
-	OS.ClosePoly();
-	
-	installForeColor(data.background);
-	OS.PaintPoly(poly);
-	unfocus(true);
-	
-	OS.KillPoly(poly);
+	int poly= 0;
+	try {
+		if (focus(true, null)) {
+			poly= OS.OpenPoly();
+			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+			for (int i= 2; i < pointArray.length; i+= 2)
+				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
+			OS.ClosePoly();
+			
+			installForeColor(data.background);
+			OS.PaintPoly(poly);
+		}
+	} finally {
+		unfocus(true);
+	}
+	if (poly != 0)
+		OS.KillPoly(poly);
 }
 /** 
  * Fills the interior of the rectangle specified by the arguments,
@@ -1409,24 +1456,27 @@ public void fillRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	focus(true);
-	fRect.set(x, y, width, height);
-	if ((data.background & 0xff000000) == 0) {
-		OS.RGBForeColor(data.background);
-		OS.PaintRect(fRect.getData());
-	} else {
-		/*
-		OS.RGBForeColor(0xffffff);
-		OS.PaintRect(fRect.getData());
-		*/
-		int[] state= new int[1];
-		OS.GetThemeDrawingState(state);
-		OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, (short)32, true);
-		OS.EraseRect(fRect.getData());
-		OS.SetThemeDrawingState(state[0], true);
-		//	System.out.println("GC.fillRectangle: " + Integer.toHexString(data.background));
+	try {
+		if (focus(true, null)) {
+			fRect.set(x, y, width, height);
+			if ((data.background & 0xff000000) == 0) {
+				OS.RGBForeColor(data.background);
+				OS.PaintRect(fRect.getData());
+			} else {
+				/*
+				OS.RGBForeColor(0xffffff);
+				OS.PaintRect(fRect.getData());
+				*/
+				int[] state= new int[1];
+				OS.GetThemeDrawingState(state);
+				OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, (short)32, true);
+				OS.EraseRect(fRect.getData());
+				OS.SetThemeDrawingState(state[0], true);
+			}
+		}
+	} finally {
+		unfocus(true);
 	}
-	unfocus(true);
 }
 /** 
  * Fills the interior of the specified rectangle, using the receiver's
@@ -1466,15 +1516,19 @@ public void fillRectangle (Rectangle rect) {
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	focus(true);
-	if ((data.background & 0xff000000) == 0) {
-		OS.RGBForeColor(data.background);
-		fRect.set(x, y, width, height);
-		OS.PaintRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
-	} else {
-		//	System.out.println("GC.fillRoundRectangle: " + Integer.toHexString(data.background));
+	try {
+		if (focus(true, null)) {
+			if ((data.background & 0xff000000) == 0) {
+				OS.RGBForeColor(data.background);
+				fRect.set(x, y, width, height);
+				OS.PaintRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
+			} else {
+				//	System.out.println("GC.fillRoundRectangle: " + Integer.toHexString(data.background));
+			}
+		}
+	} finally {
+		unfocus(true);
 	}
-	unfocus(true);
 }
 /**
  * Returns the <em>advance width</em> of the specified character in
@@ -1493,11 +1547,13 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	focus(false);
-	installFont();
-	int width= OS.CharWidth((byte) ch);
-	unfocus(false);
-	return width;
+	try {
+		focus(false, null);
+		installFont();
+		return OS.CharWidth((byte) ch);
+	} finally {
+		unfocus(false);
+	}
 }
 /** 
  * Returns the background color.
@@ -1555,8 +1611,8 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
 	/* AW
+	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
 		int[] unused = new int[1];
@@ -1642,13 +1698,15 @@ public Font getFont () {
 	return Font.carbon_new(data.device, data.font);
 }
 int getFontHeight () {
-	focus(false);
-	installFont();
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	int height= fontInfo[0] + fontInfo[1];
-	unfocus(false);
-	return height;
+	try {
+		focus(false, null);
+		installFont();
+		short[] fontInfo= new short[4];
+		OS.GetFontInfo(fontInfo);	// FontInfo
+		return fontInfo[0] + fontInfo[1];
+	} finally {
+		unfocus(false);
+	}
 }
 /**
  * Returns a FontMetrics which contains information
@@ -1664,13 +1722,15 @@ int getFontHeight () {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	
-	focus(false);
-	installFont();
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	unfocus(false);	
-	
-	return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], fontInfo[2], fontInfo[3], fontInfo[0]+fontInfo[1]);
+	try {
+		focus(false, null);
+		installFont();
+		short[] fontInfo= new short[4];
+		OS.GetFontInfo(fontInfo);	// FontInfo
+		return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], fontInfo[2], fontInfo[3], fontInfo[0]+fontInfo[1]);
+	} finally {
+		unfocus(false);	
+	}
 }
 /** 
  * Returns the receiver's foreground color.
@@ -1876,6 +1936,7 @@ public void setClipping (int x, int y, int width, int height) {
 	if (data.clipRgn == 0)
 		data.clipRgn = OS.NewRgn ();
 	OS.SetRectRgn(data.clipRgn, (short) x, (short) y, (short) (x+width), (short) (y+height));
+	fPendingClip= true;
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -1895,6 +1956,7 @@ public void setClipping (Rectangle rect) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn= 0;
 		}
+		fPendingClip= true;
 		return;
 	}
 	setClipping (rect.x, rect.y, rect.width, rect.height);
@@ -1922,6 +1984,7 @@ public void setClipping (Region region) {
 			data.clipRgn = OS.NewRgn();
 		OS.CopyRgn(region.handle, data.clipRgn);
 	}
+	fPendingClip= true;
 }
 /** 
  * Sets the font which will be used by the receiver
@@ -2094,14 +2157,16 @@ public Point stringExtent(String string) {
 	int height = OS.XmStringHeight(fontList, xmString);
 	OS.XmStringFree(xmString);
 	*/
-	focus(false);
-	installFont();
-	int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	int height= fontInfo[0] + fontInfo[1];
-	unfocus(false);
-	return new Point(width, height);
+	try {
+		focus(false, null);
+		installFont();
+		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
+		short[] fontInfo= new short[4];
+		OS.GetFontInfo(fontInfo);	// FontInfo
+		return new Point(width, fontInfo[0] + fontInfo[1]);
+	} finally {
+		unfocus(false);
+	}
 }
 /**
  * Returns the extent of the given string. Tab expansion and
@@ -2181,13 +2246,16 @@ public Point textExtent(String string, int flags) {
 	OS.XmStringFree(xmString);
 	return new Point(width, height);
 	*/
-	focus(false);
-	installFont();
-	int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
-	short[] fontInfo= new short[4];
-	OS.GetFontInfo(fontInfo);	// FontInfo
-	unfocus(false);
-	return new Point(width, fontInfo[0] + fontInfo[1]);
+	try {
+		focus(false, null);
+		installFont();
+		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
+		short[] fontInfo= new short[4];
+		OS.GetFontInfo(fontInfo);	// FontInfo
+		return new Point(width, fontInfo[0] + fontInfo[1]);
+	} finally {
+		unfocus(false);
+	}
 }
 /**
  * Returns a string containing a concise, human-readable
@@ -2207,76 +2275,100 @@ public String toString () {
 			data.font.installInGrafPort();
 	}
 
-	private void focus(boolean clip) {
-	
+	private boolean focus(boolean doClip, MacRect bounds) {
+		
+		if (fIsFocused && !fPendingClip) {
+			return true;
+		}
+
 		// save global state
 		OS.GetGWorld(fSavePort, fSaveGWorld);		
 		OS.SetGWorld(handle, fSaveGWorld[0]);
 		
-		fOffsetX= 0;
-		fOffsetY= 0;
+		if (!doClip)
+			return true;
+		
+		fOffsetX= fOffsetY= 0;
+
+		// set origin of port using drawable bounds
+		if (data.controlHandle != 0) {
+			OS.GetControlBounds(data.controlHandle, fRect.getData());
+			fOffsetX= (short)fRect.getX();
+			fOffsetY= (short)fRect.getY();
+			OS.SetOrigin((short)-fOffsetX, (short)-fOffsetY);
+		}
+		// save clip region 
+		OS.GetClip(fSaveClip);
+		
+		// calculate new clip based on the controls bound and GC clipping region
+		if (data.controlHandle != 0) {
+			
+			int result= OS.NewRgn();
+			MacUtil.getVisibleRegion(data.controlHandle, result, true);
+			OS.OffsetRgn(result, (short)-fRect.getX(), (short)-fRect.getY());
+
+			// clip against damage 
+			if (fDamageRgn != 0) {
+				int dRgn= OS.NewRgn();
+				OS.CopyRgn(fDamageRgn, dRgn);
+				OS.OffsetRgn(dRgn, (short)-fRect.getX(), (short)-fRect.getY());
+				OS.SectRgn(result, dRgn, result);
+			}
+			
+			// clip against GC clipping region
+			if (data.clipRgn != 0) {
+				OS.SectRgn(result, data.clipRgn, result);
+			}
+				
+			OS.SetClip(result);
+			if (bounds != null)
+				OS.GetRegionBounds(result, bounds.getData());
+			OS.DisposeRgn(result);
+			
+		} else {
+			// clip against GC clipping region
+			if (data.clipRgn != 0) {
+				OS.SetClip(data.clipRgn);
+				if (bounds != null)
+					OS.GetRegionBounds(data.clipRgn, bounds.getData());
+			} else {
+				if (bounds != null)
+					bounds.set(0, 0, 0x8fff, 0x8fff);
+			}
+		}
+		fPendingClip= false;
+		
+		return true;
+	}
+
+	private void unfocus(boolean doClip) {
 		
 		if (fIsFocused)
 			return;
-
-		if (clip) {
-			// set origin of port using drawable bounds
-			if (data.controlHandle != 0) {
-				OS.GetControlBounds(data.controlHandle, fRect.getData());
-				fOffsetX= (short)fRect.getX();
-				fOffsetY= (short)fRect.getY();
-				OS.SetOrigin((short)-fOffsetX, (short)-fOffsetY);
-			}
-			// save clip region 
-			OS.GetClip(fSaveClip);
-			
-			// calculate new clip based on the controls bound and GC clipping region
-			if (data.controlHandle != 0) {
-				if (fClipCache == 0) {
-					fClipCache= OS.NewRgn();
-					MacUtil.getVisibleRegion(data.controlHandle, fClipCache, true);
-					OS.OffsetRgn(fClipCache, (short)-fRect.getX(), (short)-fRect.getY());
-				}
-				if (data.clipRgn != 0) {
-					int rgn= OS.NewRgn();
-					OS.SectRgn(fClipCache, data.clipRgn, rgn);
-					OS.SetClip(rgn);
-					OS.DisposeRgn(rgn);
-				} else 
-					OS.SetClip(fClipCache);
-				// caching doesn't work yet
-				OS.DisposeRgn(fClipCache);
-				fClipCache= 0;
-			} else {
-				if (data.clipRgn != 0)
-					OS.SetClip(data.clipRgn);
-			}
-		}
-	}
-
-	private void unfocus(boolean clip) {
 		
-		if (! fIsFocused) {
-			if (clip) {
-				// restore clipping and origin of port
-				OS.SetClip(fSaveClip);
-				OS.SetOrigin((short)0, (short)0);
-			}
+		if (doClip) {
+			// restore clipping and origin of port
+			OS.SetClip(fSaveClip);
+			OS.SetOrigin((short)0, (short)0);
 		}
 		
 		// restore globals
 		OS.SetGWorld(fSavePort[0], fSaveGWorld[0]);
 	}
 	
-	public void carbon_focus() {
+	public Rectangle carbon_focus(int damageRgn) {
 		OS.LockPortBits(handle);
-		//focus(true);
-		//fIsFocused= true;
+		fDamageRgn= damageRgn;
+		MacRect bounds= new MacRect();
+		focus(true, bounds);
+		fIsFocused= true;
+		return bounds.toRectangle();
 	}
 	
 	public void carbon_unfocus() {
-		//fIsFocused= false;
-		//unfocus(true);
+		fIsFocused= false;
+		unfocus(true);
+		fDamageRgn= 0;
 		OS.UnlockPortBits(handle);
 	}
 	
