@@ -59,15 +59,6 @@ public class ACC {
 	public static final int ROLE_SLIDER = 0x33;
 	public static final int ROLE_PAGETABLIST = 0x3c;
 
-	public static final int NAVDIR_UP = 0x1;
-	public static final int NAVDIR_DOWN = 0x2;
-	public static final int NAVDIR_LEFT = 0x3;
-	public static final int NAVDIR_RIGHT = 0x4;
-	public static final int NAVDIR_NEXT = 0x5;
-	public static final int NAVDIR_PREVIOUS = 0x6;
-	public static final int NAVDIR_FIRSTCHILD = 0x7;
-	public static final int NAVDIR_LASTCHILD = 0x8;
-	
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
 	public static final int CHILDID_MULTIPLE = -3; // look for a better solution...
