@@ -230,8 +230,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_CDE_DtActionInvoke
     arg.argClass = DtACTION_FILE;
     arg.u.file.name = (char*) fileName1;
 
+/*
 	printf("Invoking action: %d %s %s 1 %X %X %X %X %X %X\n", topWidget, action1, fileName1,
 	        termOpts1, execHost1, contextDir1, useIndicator, callback, clientData );
+*/
     actionID = (jint) DtActionInvoke( (Widget) topWidget, (char*) action1, 
         &arg, 1, (char*) termOpts1,(char*)  execHost1, (char*) contextDir1,
         useIndicator, (DtActionCallbackProc) callback, (XtPointer) clientData );
