@@ -627,7 +627,8 @@ public boolean isVisible () {
 }
 
 int processHide (Object callData) {
-	sendEvent (SWT.Hide);
+	//sendEvent (SWT.Hide);
+	postEvent (SWT.Hide);	// fix for #23947
 	return 0;
 }
 
