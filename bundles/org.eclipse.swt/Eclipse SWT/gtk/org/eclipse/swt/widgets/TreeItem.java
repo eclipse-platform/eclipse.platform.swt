@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.*;
 public class TreeItem extends Item {
 	Tree parent;
 	boolean cached;
+	boolean grayed;
 	Font font;
 	Font[] cellFont;
 	static final int EXPANDER_EXTRA_PADDING = 4;
@@ -545,9 +546,7 @@ public boolean getGrayed() {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr, -1);
-	return ptr [0] != 0;
+	return grayed;
 }
 
 public Image getImage () {
@@ -895,6 +894,12 @@ public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.CHECKED_COLUMN, checked, -1);
+	/*
+	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.  To
+	* show checked+grayed differently from unchecked+grayed, we must toggle the
+	* grayed state on check and uncheck. 
+	*/
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, !checked ? false : grayed, -1);
 	cached = true;
 }
 
@@ -1110,7 +1115,11 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, grayed, -1);
+	this.grayed = grayed;
+	// Render checked+grayed as "inconsistent", unchcked+grayed as blank.
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr [0] == 0 ? false : grayed, -1);
 	cached = true;
 }
 
