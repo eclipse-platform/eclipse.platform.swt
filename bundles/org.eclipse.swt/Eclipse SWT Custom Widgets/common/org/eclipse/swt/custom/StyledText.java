@@ -9,6 +9,7 @@ import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.printing.*;
 import java.util.*;
 
 /**
@@ -3385,15 +3386,32 @@ public void paste(){
 /** 
  * Prints the widget's text to the default printer.
  * <p>
+ * This method may be called from a non-UI thread.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void print()  {
-	checkWidget();	
+public void print() {
+	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	new StyledTextPrinter(this).print();
+}
+
+/** 
+ * Prints the widget's text to the specified printer.
+ * <p>
+ * This method may be called from a non-UI thread.
+ * </p>
+ * 
+ * @param printer the printer to print to
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void print(Printer printer) {
+	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	new StyledTextPrinter(this).print(printer);
 }
 
 /** 
