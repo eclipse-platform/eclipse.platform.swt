@@ -116,8 +116,16 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 	} finally {
 		display.close();
 	}
-	assertFalse(callbackReceived[CLOSE_CALLBACK]);
-	assertTrue(callbackReceived[DISPOSE_CALLBACK]);
+	assertFalse(":a:", callbackReceived[CLOSE_CALLBACK]);
+	assertTrue(":b:", callbackReceived[DISPOSE_CALLBACK]);
+
+	display = new Display();
+	try {
+		display.addListener(SWT.Close, listener);
+	} finally {
+		display.close();
+	}
+	assertTrue(":c:", callbackReceived[CLOSE_CALLBACK]);
 }
 
 public void test_asyncExecLjava_lang_Runnable() {
