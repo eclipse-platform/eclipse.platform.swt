@@ -402,6 +402,15 @@ public void setAlignment(int align) {
 		redraw();
 	}
 }
+
+public void setBackground (Color color) {
+	super.setBackground (color);
+	backgroundImage = null;
+	gradientColors = null;
+	gradientPercents = null;
+	redraw ();
+}
+
 /**
  * Specify a gradient of colours to be drawn in the background of the CLabel.
  * <p>For example, to draw a gradient that varies from dark blue to blue and then to
