@@ -228,6 +228,13 @@ void createHandle (int index) {
 			handle = OS.gtk_separator_menu_item_new ();
 			break;
 		case SWT.RADIO:
+			/*
+			* This code is intentionally commented.  Because GTK
+			* enforces radio behavior in a button group a radio group
+			* is not created for each set of contiguous buttons, each
+			* radio button will not draw unpressed.  The fix is to use
+			* toggle buttons instead.
+			*/
 //			handle = OS.gtk_radio_menu_item_new_with_label (0, buffer);
 //			break;
 		case SWT.CHECK:
