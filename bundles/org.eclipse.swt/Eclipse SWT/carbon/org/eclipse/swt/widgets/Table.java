@@ -2047,21 +2047,34 @@ public void setColumnOrder (int [] order) {
 		if (order [i] != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
+		int x = 0;
+		short [] width = new short [1];
+		int [] oldX = new int [oldOrder.length];
+		for (int i=0; i<oldOrder.length; i++) {
+			int index = oldOrder [i];
+			TableColumn column = columns [index];
+			oldX [index] =  x;
+			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+			x += width [0];
+		}
+		x = 0;
+		int [] newX = new int [order.length];
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
 			TableColumn column = columns [index];
 			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
 			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
-			if (position != column.lastPosition) {
-				column.lastPosition = position;
-			}
+			column.lastPosition = position;
+			newX [index] =  x;
+			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+			x += width [0];
 		}
 		TableColumn[] newColumns = new TableColumn [columnCount];
 		System.arraycopy (columns, 0, newColumns, 0, columnCount);
 		for (int i=0; i<columnCount; i++) {
-			TableColumn column = newColumns [oldOrder [i]];
+			TableColumn column = newColumns [i];
 			if (!column.isDisposed ()) {
-				if (order [i] != oldOrder [i]) {
+				if (newX [i] != oldX [i]) {
 					column.sendEvent (SWT.Move);
 				}
 			}
