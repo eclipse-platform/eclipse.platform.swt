@@ -645,6 +645,12 @@ void hookEvents () {
 	}
 }
 
+boolean isItemVisible (int path) {
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+	return !(rect.y == 0 && rect.height == 0);
+}
+
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_tree_view_get_bin_window (handle);
@@ -871,6 +877,7 @@ public void showSelection () {
 }
 
 void showItem (int path) {
+	if (isItemVisible (path)) return;
 	int depth = OS.gtk_tree_path_get_depth (path);
 	if (depth > 1) {
 		int [] indices = new int [depth - 1];
