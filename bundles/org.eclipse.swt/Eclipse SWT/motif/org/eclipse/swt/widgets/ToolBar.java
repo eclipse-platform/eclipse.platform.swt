@@ -148,10 +148,12 @@ void destroyItem (ToolItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	if (lastFocus == item) lastFocus = null;
 }
 public boolean forceFocus () {
 	checkWidget ();
+	Decorations shell = menuShell ();
+	shell.setSavedFocus (this);
+	shell.bringToTop (false);
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items [i];

@@ -514,6 +514,7 @@ void releaseChild () {
 void releaseWidget () {
 	display.releaseToolTipHandle (handle);
 	super.releaseWidget ();
+	if (parent.lastFocus == this) parent.lastFocus = null;
 	parent = null;
 	control = null;
 	toolTipText = null;
@@ -674,9 +675,6 @@ public void setDisabledImage (Image image) {
 }
 boolean setFocus () {
 	if ((style & SWT.SEPARATOR) != 0) return false;
-	Decorations shell = parent.menuShell ();
-	shell.setSavedFocus (parent);
-	shell.bringToTop (false);
 	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 /**
@@ -934,6 +932,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	return 0;
 }
 int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = 0;
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
 	int [] keysym = new int [1];
@@ -942,10 +941,13 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 	switch (keysym [0]) {
 		case OS.XK_space:
 			click (false, xEvent.state);
+			result = 1;
 			break;
 		case OS.XK_KP_Enter:
 		case OS.XK_Return:
+		case OS.XK_Down:
 			click (true, xEvent.state);
+			result = 1;
 			break;
 	}
 	/*
@@ -959,7 +961,10 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 	xEvent.window = OS.XtWindow (parent.handle);
 //	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
 	parent.XKeyPress (w, client_data, call_data, continue_to_dispatch);
-	return 0;
+	if (result == 1) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+	}
+	return result;
 }
 int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XKeyEvent xEvent = new XKeyEvent ();
