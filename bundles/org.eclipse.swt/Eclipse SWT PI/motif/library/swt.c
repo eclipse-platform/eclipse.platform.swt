@@ -8855,3 +8855,46 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_ecl
     }
     memmove((void *)dest, (void *)src1, count);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_getenv
+  (JNIEnv *env, jobject that, jbyteArray name)
+{
+    char *name1=NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "getenv\n");
+#endif
+
+    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
+    result = (jint)getenv(name1);
+    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
+
+	return result;
+}
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XOpenDisplay
+  (JNIEnv *env, jobject that, jbyteArray name)
+{
+    char *name1=NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "XOpenDisplay\n");
+#endif
+
+    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
+    result = (jint)XOpenDisplay(name1);
+    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
+	return result;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XCloseDisplay
+  (JNIEnv *env, jobject that, jint display)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "XCloseDisplay\n");
+#endif
+    XCloseDisplay((Display*)display);
+}

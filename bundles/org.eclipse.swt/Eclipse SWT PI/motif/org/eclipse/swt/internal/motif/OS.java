@@ -1351,6 +1351,9 @@ public static final synchronized native int XScreenNumberOfScreen(int screen);
 public static final synchronized native int XCreateWindow(int display, int parent, int x, int y, int width, int height,
 		int border_width, int depth, int clazz, int visual, long value_mask, int attributes);	
 public static final synchronized native void XDestroyWindow(int display, int w);
+public static final native int getenv(byte[] name);
+public static final native int XOpenDisplay(byte[] display_name);
+public static final native void XCloseDisplay(int display);
 
 /*
  * ======== End of printing constants and functions ========
