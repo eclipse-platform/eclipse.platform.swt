@@ -150,7 +150,7 @@ public Shell (int style) {
  * </ul>
  */
 public Shell (Display display) {
-	this (display, SWT.SHELL_TRIM);
+	this (display, (OS.IsWinCE ? SWT.NULL : SWT.SHELL_TRIM));
 }
 
 /**
@@ -223,7 +223,7 @@ Shell (Display display, Shell parent, int style, int handle) {
  * </ul>
  */
 public Shell (Shell parent) {
-	this (parent, SWT.DIALOG_TRIM);
+	this (parent, (OS.IsWinCE ? SWT.NULL : SWT.DIALOG_TRIM));
 }
 
 /**
@@ -356,22 +356,12 @@ void createHandle () {
 //	if ((style & SWT.ON_TOP) != 0)  display.lockActiveWindow = false;
 	
 	if (!embedded) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		/*
-		* Note on WinCE Pocket PC. Remove the WS_CAPTION style to avoid 
-		* getting an additional title bar. Title is already displayed
-		* in the top navigation bar when using a virtual machine built
-		* for Pocket PC WinCE 3.0.
-		*/
-		if (OS.IsWinCE) {
-			bits &= ~OS.WS_CAPTION;
-		} else {
-			bits &= ~OS.WS_OVERLAPPED;
-			bits |= OS.WS_POPUP;
-			if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
-			if ((style & SWT.NO_TRIM) == 0) {
-				if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
-			}
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
+		bits &= ~OS.WS_OVERLAPPED;
+		bits |= OS.WS_POPUP;
+		if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
@@ -693,7 +683,16 @@ void setActiveControl (Control control) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	if (!OS.IsWinCE) {
+	if (OS.IsWinCE) {
+		if ((style & SWT.NO_TRIM) == 0) {
+			/* insert caption when no longer maximized */
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.WS_CAPTION) != OS.WS_CAPTION) {
+				bits |= OS.WS_CAPTION;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
+		}
+	} else {
 		if (OS.IsIconic (handle)) {
 			super.setBounds (x, y, width, height, flags);
 			return;

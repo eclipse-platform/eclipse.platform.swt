@@ -177,9 +177,6 @@ void bringToTop () {
 }
 
 static int checkStyle (int style) {
-	if (OS.IsWinCE) {
-		return style & ~(SWT.SHELL_TRIM | SWT.DIALOG_TRIM);
-	}
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
 		style |= SWT.TITLE;
 	}
@@ -777,13 +774,52 @@ public void setImage (Image image) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	swFlags = OS.SW_RESTORE;
-	if (maximized) swFlags = OS.SW_SHOWMAXIMIZED;
-	if (!OS.IsWindowVisible (handle)) return;
-	if (maximized == OS.IsZoomed (handle)) return;
-	OS.ShowWindow (handle, swFlags);
-	OS.UpdateWindow (handle);
+	if (OS.IsWinCE) {
+		/*
+		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
+		* workaround is to resize the window to fit the parent client area.
+		* PocketPC windows typically don't have a caption when they are
+		* maximized. They usually have one when they are not occupying all the
+		* space. We implement this behavior by default - it can be overriden by
+		* setting SWT.TITLE or SWT.NO_TRIM.
+		*/
+		if (maximized) {
+			if ((style & SWT.TITLE) == 0) {
+				/* remove caption when maximized */
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				bits &= ~OS.WS_CAPTION;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
+			
+			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+			if (parent != null) {
+				Rectangle rect = parent.getClientArea ();
+				OS.SetWindowPos (handle, 0, rect.x, rect.y, rect.width, rect.height, flags);						
+			} else {
+				RECT rect = new RECT ();
+				OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+				int width = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+				OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);			
+			}
+		} else {
+			if ((style & SWT.NO_TRIM) == 0) {
+				/* insert caption when no longer maximized */
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				bits |= OS.WS_CAPTION;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+				int flags = OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME;
+				OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+			}
+		}
+	} else {
+		swFlags = OS.SW_RESTORE;
+		if (maximized) swFlags = OS.SW_SHOWMAXIMIZED;
+		if (!OS.IsWindowVisible (handle)) return;
+		if (maximized == OS.IsZoomed (handle)) return;
+		OS.ShowWindow (handle, swFlags);
+		OS.UpdateWindow (handle);
+	}
 }
 
 /**

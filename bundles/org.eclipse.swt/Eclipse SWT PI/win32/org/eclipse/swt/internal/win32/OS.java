@@ -1078,7 +1078,7 @@ public class OS {
 	public static final int WS_HSCROLL = 0x100000;
 	public static final int WS_MAXIMIZEBOX = 0x10000;
 	public static final int WS_MINIMIZEBOX = 0x20000;
-	public static final int WS_OVERLAPPED = 0x0;
+	public static final int WS_OVERLAPPED = OS.IsWinCE ? WS_BORDER | WS_CAPTION : 0x0;
 	public static final int WS_OVERLAPPEDWINDOW = 0xcf0000;
 	public static final int WS_POPUP = 0x80000000;
 	public static final int WS_SYSMENU = 0x80000;
