@@ -98,6 +98,46 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 }
 #endif
 
+#ifndef NO_ATSUCaret
+typedef struct ATSUCaret_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fX, fY, fDeltaX, fDeltaY;
+} ATSUCaret_FID_CACHE;
+
+ATSUCaret_FID_CACHE ATSUCaretFc;
+
+void cacheATSUCaretFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSUCaretFc.cached) return;
+	ATSUCaretFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSUCaretFc.fX = (*env)->GetFieldID(env, ATSUCaretFc.clazz, "fX", "I");
+	ATSUCaretFc.fY = (*env)->GetFieldID(env, ATSUCaretFc.clazz, "fY", "I");
+	ATSUCaretFc.fDeltaX = (*env)->GetFieldID(env, ATSUCaretFc.clazz, "fDeltaX", "I");
+	ATSUCaretFc.fDeltaY = (*env)->GetFieldID(env, ATSUCaretFc.clazz, "fDeltaY", "I");
+	ATSUCaretFc.cached = 1;
+}
+
+ATSUCaret *getATSUCaretFields(JNIEnv *env, jobject lpObject, ATSUCaret *lpStruct)
+{
+	if (!ATSUCaretFc.cached) cacheATSUCaretFields(env, lpObject);
+	lpStruct->fX = (*env)->GetIntField(env, lpObject, ATSUCaretFc.fX);
+	lpStruct->fY = (*env)->GetIntField(env, lpObject, ATSUCaretFc.fY);
+	lpStruct->fDeltaX = (*env)->GetIntField(env, lpObject, ATSUCaretFc.fDeltaX);
+	lpStruct->fDeltaY = (*env)->GetIntField(env, lpObject, ATSUCaretFc.fDeltaY);
+	return lpStruct;
+}
+
+void setATSUCaretFields(JNIEnv *env, jobject lpObject, ATSUCaret *lpStruct)
+{
+	if (!ATSUCaretFc.cached) cacheATSUCaretFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSUCaretFc.fX, (jint)lpStruct->fX);
+	(*env)->SetIntField(env, lpObject, ATSUCaretFc.fY, (jint)lpStruct->fY);
+	(*env)->SetIntField(env, lpObject, ATSUCaretFc.fDeltaX, (jint)lpStruct->fDeltaX);
+	(*env)->SetIntField(env, lpObject, ATSUCaretFc.fDeltaY, (jint)lpStruct->fDeltaY);
+}
+#endif
+
 #ifndef NO_ATSUTab
 typedef struct ATSUTab_FID_CACHE {
 	int cached;
@@ -129,6 +169,49 @@ void setATSUTabFields(JNIEnv *env, jobject lpObject, ATSUTab *lpStruct)
 	if (!ATSUTabFc.cached) cacheATSUTabFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, ATSUTabFc.tabPosition, (jint)lpStruct->tabPosition);
 	(*env)->SetShortField(env, lpObject, ATSUTabFc.tabType, (jshort)lpStruct->tabType);
+}
+#endif
+
+#ifndef NO_ATSUUnhighlightData
+typedef struct ATSUUnhighlightData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dataType, red, green, blue, alpha;
+} ATSUUnhighlightData_FID_CACHE;
+
+ATSUUnhighlightData_FID_CACHE ATSUUnhighlightDataFc;
+
+void cacheATSUUnhighlightDataFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSUUnhighlightDataFc.cached) return;
+	ATSUUnhighlightDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSUUnhighlightDataFc.dataType = (*env)->GetFieldID(env, ATSUUnhighlightDataFc.clazz, "dataType", "I");
+	ATSUUnhighlightDataFc.red = (*env)->GetFieldID(env, ATSUUnhighlightDataFc.clazz, "red", "F");
+	ATSUUnhighlightDataFc.green = (*env)->GetFieldID(env, ATSUUnhighlightDataFc.clazz, "green", "F");
+	ATSUUnhighlightDataFc.blue = (*env)->GetFieldID(env, ATSUUnhighlightDataFc.clazz, "blue", "F");
+	ATSUUnhighlightDataFc.alpha = (*env)->GetFieldID(env, ATSUUnhighlightDataFc.clazz, "alpha", "F");
+	ATSUUnhighlightDataFc.cached = 1;
+}
+
+ATSUUnhighlightData *getATSUUnhighlightDataFields(JNIEnv *env, jobject lpObject, ATSUUnhighlightData *lpStruct)
+{
+	if (!ATSUUnhighlightDataFc.cached) cacheATSUUnhighlightDataFields(env, lpObject);
+	lpStruct->dataType = (*env)->GetIntField(env, lpObject, ATSUUnhighlightDataFc.dataType);
+	lpStruct->unhighlightData.backgroundColor.red = (*env)->GetFloatField(env, lpObject, ATSUUnhighlightDataFc.red);
+	lpStruct->unhighlightData.backgroundColor.green = (*env)->GetFloatField(env, lpObject, ATSUUnhighlightDataFc.green);
+	lpStruct->unhighlightData.backgroundColor.blue = (*env)->GetFloatField(env, lpObject, ATSUUnhighlightDataFc.blue);
+	lpStruct->unhighlightData.backgroundColor.alpha = (*env)->GetFloatField(env, lpObject, ATSUUnhighlightDataFc.alpha);
+	return lpStruct;
+}
+
+void setATSUUnhighlightDataFields(JNIEnv *env, jobject lpObject, ATSUUnhighlightData *lpStruct)
+{
+	if (!ATSUUnhighlightDataFc.cached) cacheATSUUnhighlightDataFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSUUnhighlightDataFc.dataType, (jint)lpStruct->dataType);
+	(*env)->SetFloatField(env, lpObject, ATSUUnhighlightDataFc.red, (jfloat)lpStruct->unhighlightData.backgroundColor.red);
+	(*env)->SetFloatField(env, lpObject, ATSUUnhighlightDataFc.green, (jfloat)lpStruct->unhighlightData.backgroundColor.green);
+	(*env)->SetFloatField(env, lpObject, ATSUUnhighlightDataFc.blue, (jfloat)lpStruct->unhighlightData.backgroundColor.blue);
+	(*env)->SetFloatField(env, lpObject, ATSUUnhighlightDataFc.alpha, (jfloat)lpStruct->unhighlightData.backgroundColor.alpha);
 }
 #endif
 

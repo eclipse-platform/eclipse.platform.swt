@@ -260,6 +260,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_int
 }
 #endif
 
+#ifndef NO_ATSUGetLayoutControl
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetLayoutControl)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUGetLayoutControl\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)ATSUGetLayoutControl((ATSUTextLayout)arg0, (ATSUAttributeTag)arg1, arg2, (ATSUAttributeValuePtr)lparg3, (ByteCount *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "ATSUGetLayoutControl\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUGetSoftLineBreaks
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
@@ -274,6 +292,114 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	NATIVE_EXIT(env, that, "ATSUGetSoftLineBreaks\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUGetUnjustifiedBounds
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetUnjustifiedBounds)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUGetUnjustifiedBounds\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)ATSUGetUnjustifiedBounds((ATSUTextLayout)arg0, arg1, arg2, (ATSUTextMeasurement *)lparg3, (ATSUTextMeasurement *)lparg4, (ATSUTextMeasurement *)lparg5, (ATSUTextMeasurement *)lparg6);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "ATSUGetUnjustifiedBounds\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUHighlightText
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUHighlightText)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUHighlightText\n")
+	rc = (jint)ATSUHighlightText((ATSUTextLayout)arg0, (ATSUTextMeasurement)arg1, (ATSUTextMeasurement)arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "ATSUHighlightText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUNextCursorPosition
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUNextCursorPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUNextCursorPosition\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)ATSUNextCursorPosition((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (ATSUCursorMovementType)arg2, (UniCharArrayOffset *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "ATSUNextCursorPosition\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUOffsetToPosition
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUOffsetToPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3, jobject arg4, jbooleanArray arg5)
+{
+	ATSUCaret _arg3, *lparg3=NULL;
+	ATSUCaret _arg4, *lparg4=NULL;
+	jboolean *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUOffsetToPosition\n")
+	if (arg3) lparg3 = getATSUCaretFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = getATSUCaretFields(env, arg4, &_arg4);
+	if (arg5) lparg5 = (*env)->GetBooleanArrayElements(env, arg5, NULL);
+	rc = (jint)ATSUOffsetToPosition((ATSUTextLayout)arg0, arg1, arg2, lparg3, lparg4, (Boolean *)lparg5);
+	if (arg5) (*env)->ReleaseBooleanArrayElements(env, arg5, lparg5, 0);
+	if (arg4) setATSUCaretFields(env, arg4, lparg4);
+	if (arg3) setATSUCaretFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "ATSUOffsetToPosition\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUPositionToOffset
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUPositionToOffset)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jbooleanArray arg4, jintArray arg5)
+{
+	jint *lparg3=NULL;
+	jboolean *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUPositionToOffset\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetBooleanArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)ATSUPositionToOffset((ATSUTextLayout)arg0, arg1, arg2, (UniCharArrayOffset *)lparg3, (Boolean *)lparg4, (UniCharArrayOffset *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseBooleanArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "ATSUPositionToOffset\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUPreviousCursorPosition
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUPreviousCursorPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUPreviousCursorPosition\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)ATSUPreviousCursorPosition((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (ATSUCursorMovementType)arg2, (UniCharArrayOffset *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "ATSUPreviousCursorPosition\n")
 	return rc;
 }
 #endif
@@ -313,6 +439,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetFontFeatures)
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "ATSUSetFontFeatures\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetHighlightingMethod
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetHighlightingMethod)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	ATSUUnhighlightData _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUSetHighlightingMethod\n")
+	if (arg2) lparg2 = getATSUUnhighlightDataFields(env, arg2, &_arg2);
+	rc = (jint)ATSUSetHighlightingMethod((ATSUTextLayout)arg0, arg1, lparg2);
+	if (arg2) setATSUUnhighlightDataFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "ATSUSetHighlightingMethod\n")
 	return rc;
 }
 #endif
