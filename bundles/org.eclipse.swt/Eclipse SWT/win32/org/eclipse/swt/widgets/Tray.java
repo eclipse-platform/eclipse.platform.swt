@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent the system tray that is part
@@ -49,15 +48,6 @@ void createItem (TrayItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	if (!OS.IsWinCE) {
-		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-		iconData.cbSize = NOTIFYICONDATA.sizeof;
-		iconData.uID = display.nextTrayId++;
-		iconData.hWnd = display.hwndMessage;
-		iconData.uFlags = OS.NIF_MESSAGE;
-		iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-		OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 }
@@ -69,13 +59,6 @@ void destroyItem (TrayItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	if (!OS.IsWinCE) {
-		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-		iconData.cbSize = NOTIFYICONDATA.sizeof;
-		iconData.uID = item.id;
-		iconData.hWnd = display.hwndMessage;
-		OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-	}
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 }

@@ -74,6 +74,14 @@ public TrayItem (Tray parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
+	if (OS.IsWinCE) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	iconData.cbSize = NOTIFYICONDATA.sizeof;
+	iconData.uID = display.nextTrayId++;
+	iconData.hWnd = display.hwndMessage;
+	iconData.uFlags = OS.NIF_MESSAGE;
+	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
 }
 
 /**
