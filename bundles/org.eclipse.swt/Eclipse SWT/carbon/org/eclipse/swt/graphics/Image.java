@@ -222,7 +222,7 @@ public Image(Device device, Image srcImage, int flag) {
 		int srcBitsPerPixel= srcDepth;
 		
 		byte[] srcData = new byte[srcRowBytes * height];
-		OS.copyPixmapData(srcImage.pixmap, srcData);
+		copyPixMapData(srcImage.pixmap, srcData);
 
 		/* Create destination image */
 		int destPixmap = createPixMap(width, height, srcDepth);
@@ -256,13 +256,15 @@ public Image(Device device, Image srcImage, int flag) {
 			for (int i= 0; i < 256; i++)
 				colors[i]= -1;
 				
+			short[] colorTable= getColorTable(srcImage.pixmap);
+			
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < srcRowBytes; x++) {
 					srcPixel = srcData[index + x] & 0xFF;
 					/* Get the RGB values of srcPixel */
 					int color= colors[srcPixel];
 					if (color == -1)			
-						colors[srcPixel]= color= OS.getRGB(srcImage.pixmap, srcPixel);
+						colors[srcPixel]= color= getRGB(colorTable, srcPixel);
 					r = (color >> 16) & 0xFF;
 					g = (color >> 8) & 0xFF;
 					b = (color) & 0xFF;
@@ -365,7 +367,7 @@ public Image(Device device, Image srcImage, int flag) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
-		OS.setBitMapData(destPixmap, destData);
+		setPixMapData(destPixmap, destData);
 		this.pixmap = destPixmap;
 		return;
 
@@ -607,7 +609,7 @@ private static int createMaskImage(ImageData image) {
 		data, 1, rowBytes, ImageData.MSB_FIRST, 0, 0, w, h, null, null, null,
 		false, false);
 	
-	OS.setBitMapData(bitmap, data);
+	setPixMapData(bitmap, data);
 
 	return bitmap;
 }
@@ -729,7 +731,7 @@ public ImageData getImageData() {
 
 	/* Get the data for the source image. */
 	byte[] srcData = new byte[srcRowBytes * height];
- 	OS.copyPixmapData(pixmap, srcData);
+ 	copyPixMapData(pixmap, srcData);
 	
 	switch (srcDepth) {
 		case 1:
@@ -766,13 +768,15 @@ public ImageData getImageData() {
 				}
 				index += srcRowBytes;
 			}
+			
+			short[] colorTable= getColorTable(pixmap);
 
 			/* Create a palette with only the RGB values used in the image. */
 			RGB[] rgbs = new RGB[ numPixels ];
 			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
 				// If the pixel value was used in the image, get its RGB values.
 				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
-					int packed= OS.getRGB(pixmap, srcPixel);
+					int packed= getRGB(colorTable, srcPixel);
 					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
 					rgbs[ rgbIndex ] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);					
 				}
@@ -823,7 +827,7 @@ public ImageData getImageData() {
 		data.maskPad = 4;
 		int maskRowBytes= rowBytes(width, getDepth(mask));
 		data.maskData = new byte[maskRowBytes * height];
-		OS.copyPixmapData(mask, data.maskData);
+		copyPixMapData(mask, data.maskData);
 	}
 	data.transparentPixel = transparentPixel;
 	data.alpha = alpha;
@@ -1177,7 +1181,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 				flipX, flipY);
 		}
 	}
-	OS.setBitMapData(drawable, buf);
+	setPixMapData(drawable, buf);
 	return 0;
 }
 /**
@@ -1267,11 +1271,11 @@ public String toString () {
 			System.out.println("Image.createBitMap: rowBytes >= 0x4000");
 			return 0;
 		}
-		int bitmap= OS.NewBitMap((short)width, (short)height, (short)rowBytes);
+		int bitmap= newBitMap(width, height, rowBytes);
 		if (bitmap == 0)
 			SWT.error(SWT.ERROR_NO_HANDLES);
 			
-		OS.initBitMapData(bitmap, rowBytes * height, (byte)0);
+		initPixMapData(bitmap, rowBytes * height, 0);
 		
 		return bitmap;
 	}
@@ -1286,7 +1290,7 @@ public String toString () {
 		if (pixmap == 0)
 			SWT.error(SWT.ERROR_NO_HANDLES);
 			
-		OS.initBitMapData(pixmap, rowBytes * height, (byte)0);
+		initPixMapData(pixmap, rowBytes * height, 0);
 
 		return pixmap;
 	}
@@ -1333,15 +1337,16 @@ public String toString () {
 
 		if (handle == 0)
 			return;
-
 		if ((OS.getRowBytes(handle) & 0x8000) != 0) {	// Pixmap
 			OS.DisposePixMap(handle);
 			return;
 		}
 		
 		int baseAddr= OS.getBaseAddr(handle);
-		if (baseAddr != 0)
+		if (baseAddr != 0) {
 			OS.DisposePtr(baseAddr);
+			OS.setBaseAddr(handle, 0);
+		}
 		
 		OS.DisposeHandle(handle);
 	}
@@ -1399,7 +1404,7 @@ public String toString () {
 			}
 			pm= NewPixMap(w, h, depth, bytesPerRow);
 			setColorTable(pm, reds, greens, blues);
-			OS.setBitMapData(pm, data);
+			setPixMapData(pm, data);
 		} else {
 			System.out.println("---> CIcon: can use pixmap");
 		}
@@ -1410,8 +1415,8 @@ public String toString () {
 			if (mask == 0) {
 				//System.out.println("---> creating mask");
 				int rowBytes= rowBytes(w, 1);
-				mask= OS.NewBitMap(w, h, (short)rowBytes);
-				OS.initBitMapData(mask, rowBytes*h, (byte)0xff);
+				mask= newBitMap(w, h, rowBytes);
+				initPixMapData(mask, rowBytes*h, 0xff);
 			}
 			
 			int icon= OS.NewCIcon(pm, mask);
@@ -1427,7 +1432,6 @@ public String toString () {
 	}
 	
 	public static void DisposeCIcon(int iconHandle) {
-		
 		int iconData= OS.getCIconIconData(iconHandle);
 		if (iconData != 0)
 			OS.DisposeHandle(iconData);
@@ -1437,7 +1441,6 @@ public String toString () {
 			OS.DisposeHandle(colorTable);
 				
 		OS.DisposeHandle(iconHandle);
-		
 		//fgIconCount--;
 	}
 	
@@ -1478,8 +1481,20 @@ public String toString () {
 	}
 	
 	private static int duplicate(int handle) {
-		if (isBitMap(handle))
-			return OS.duplicateBitMap(handle);
+		int rowBytes= OS.getRowBytes(handle);
+		if ((rowBytes & 0x8000) == 0) {
+			MacRect bounds= new MacRect();
+			OS.GetPixBounds(handle, bounds.getData());
+			int copy= newBitMap(bounds.getWidth(), bounds.getHeight(), rowBytes);
+			int baseAddr= OS.getBaseAddr(handle);
+			if (baseAddr != 0) {
+				int size= OS.GetPtrSize(baseAddr);
+				int data= OS.NewPtr(size);
+				OS.memcpy(data, baseAddr, size);
+				OS.setBaseAddr(copy, data);
+			}
+			return copy;
+		}
 		return OS.duplicatePixMap(handle);
 	}
 	
@@ -1514,5 +1529,67 @@ public String toString () {
 			return 0x0000ff;
 		}
 		return -1;
+	}
+	
+	private static void setPixMapData(int destPixMap, byte[] data) {
+		int addr= OS.getBaseAddr(destPixMap);
+		if (addr != 0) {
+			OS.DisposePtr(addr);
+		}
+		addr= OS.NewPtr(data.length);
+		OS.memcpy(addr, data, data.length);
+		OS.setBaseAddr(destPixMap, addr);
+	}
+	
+	private static void initPixMapData(int destPixMap, int size, int value) {
+		int addr= OS.getBaseAddr(destPixMap);
+		if (addr != 0) {
+			OS.DisposePtr(addr);
+		}
+		if (value != 0) {
+			addr= OS.NewPtr(size);
+			OS.memset(addr, value, size);
+		} else {
+			addr= OS.NewPtrClear(size);
+		}
+		OS.setBaseAddr(destPixMap, addr);
+	}
+	
+	private static void copyPixMapData(int srcPixMap, byte[] data) {
+		int baseAddr= OS.getBaseAddr(srcPixMap);
+		if (baseAddr != 0) {
+			int l= OS.GetPtrSize(baseAddr);
+			if (l == data.length) {
+  				OS.memcpy(data, baseAddr, data.length);
+   			} else {
+   				System.err.println("Image.copyPixmapData: wrong lengths: " + l + " " + data.length);
+			}
+		}
+	}
+	
+	private static int newBitMap(int width, int height, int rowBytes) {
+		int bmh= OS.NewHandleClear(/* sizeof(BitMap) */ 14);
+		OS.setRowBytes(bmh, (short) rowBytes);
+		OS.setPixBounds(bmh, (short)0, (short)0, (short)height, (short)width);
+		return bmh;
+	}
+	
+	private static short[] getColorTable(int pixmapHandle) {
+		int n= OS.getColorTableSize(pixmapHandle);
+		if (n < 1)
+			return null;
+		short[] data= new short[n*4];
+		OS.getColorTable(pixmapHandle, data);
+		return data;
+	}
+	
+	private static int getRGB(short[] colorTable, int pixel) {
+		if (colorTable == null)
+			return 0;
+		int base= pixel*4;
+		int red= colorTable[base+1] >> 8;
+		int green= colorTable[base+2] >> 8;
+		int blue= colorTable[base+3] >> 8;
+		return (red << 16) + (green << 8) + blue;
 	}
 }
