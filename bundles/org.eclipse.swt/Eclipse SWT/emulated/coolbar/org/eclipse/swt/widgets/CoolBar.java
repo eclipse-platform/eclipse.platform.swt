@@ -120,19 +120,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int rowWidth = 0, rowHeight = 0;
 		for (int i = 0; i < items[row].length; i++) {
 			CoolItem item = items[row][i];
-			Point itemSize;
-			if (item.ideal) {
-				itemSize = new Point (item.preferredWidth, item.preferredHeight);
-			} else {
-				if (item.control != null) {
-					itemSize = item.control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-					itemSize = item.computeSize(itemSize.x, itemSize.y);
-				} else {
-					itemSize = item.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				}
-			}
-			rowWidth += itemSize.x;
-			rowHeight = Math.max(rowHeight, itemSize.y);			
+			rowWidth += item.preferredWidth;
+			rowHeight = Math.max(rowHeight, item.preferredHeight);
 		}
 		height += rowHeight;
 		if (!flat && row > 0) height += ROW_SPACING;
