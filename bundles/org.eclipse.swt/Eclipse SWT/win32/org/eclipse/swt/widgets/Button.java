@@ -613,7 +613,7 @@ public void setText (String string) {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.BS_NOTIFY;
+	int bits = super.widgetStyle ();
 	if ((style & SWT.FLAT) != 0) bits |= OS.BS_FLAT;
 	if ((style & SWT.ARROW) != 0) return bits | OS.BS_OWNERDRAW;
 	if ((style & SWT.LEFT) != 0) bits |= OS.BS_LEFT;
