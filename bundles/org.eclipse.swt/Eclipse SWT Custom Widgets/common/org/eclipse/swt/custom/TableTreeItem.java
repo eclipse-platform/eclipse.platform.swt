@@ -781,6 +781,7 @@ public void setImage (Image image) {
  */
 public void setText(int index, String text) {
 	checkWidget();
+	if (text == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int columnCount = Math.max(parent.getTable().getColumnCount(), 1);
 	if (index < 0 || index >= columnCount) return;
 	if (texts.length < columnCount) {

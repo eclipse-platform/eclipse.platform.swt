@@ -959,6 +959,7 @@ public void setImage (Image image) {
  */
 public void setText (String string) {
 	checkWidget();
+	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals(getText())) return;
 	super.setText(string);
 	shortenedText = null;
