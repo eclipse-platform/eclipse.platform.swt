@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -16,9 +16,9 @@ import org.eclipse.swt.events.*;
  * areas of a <code>CoolBar</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
- * <dd>(none)</dd>
+ * <dd>Selection</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -101,6 +101,42 @@ public CoolItem (CoolBar parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
+}
+
+/**
+ * Adds the listener to the collection of listeners that will
+ * be notified when the control is selected, by sending it one
+ * of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * If <code>widgetSelected</code> is called when the mouse is over
+ * the drop-down arrow (or 'chevron') portion of the cool item,
+ * the event object detail field contains the value <code>SWT.ARROW</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ * 
+ * @since 2.0
+ */
+public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Selection,typedListener);
+	addListener (SWT.DefaultSelection,typedListener);
 }
 
 protected void checkSubclass () {
@@ -309,6 +345,12 @@ public void setPreferredSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
+	
+	/* Get the child size fields first so we don't overwrite them. */
+	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+	
+	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cxIdeal = width - rect.left - rect.right;
 	rbBand.cyMinChild = rbBand.cyMaxChild = height;
@@ -342,6 +384,12 @@ public void setSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
+	
+	/* Get the child size fields first so we don't overwrite them. */
+	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+	
+	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cx = width;
 	rbBand.cxIdeal = width - rect.left - rect.right;
@@ -352,6 +400,51 @@ public void setSize (int width, int height) {
 public void setSize (Point size) {
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
+}
+
+/**
+ * Returns the minimum width that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @return the minimum width of the cool item, in pixels
+ * 
+ * @since 2.0
+ */
+public int getMinimumWidth () {
+	checkWidget ();
+	int index = parent.indexOf (this);
+	if (index == -1) return 0;
+	int hwnd = parent.handle;
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+	return rbBand.cxMinChild;
+}
+
+/**
+ * Sets the minimum width that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @param width the minimum width of the cool item, in pixels
+ * 
+ * @since 2.0
+ */
+public void setMinimumWidth (int width) {
+	checkWidget ();
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int hwnd = parent.handle;
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	
+	/* Get the child size fields first so we don't overwrite them. */
+	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+	
+	/* Set the size fields we are currently modifying. */
+	rbBand.cxMinChild = width;
+	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
 boolean getWrap() {
@@ -376,6 +469,33 @@ void setWrap(boolean wrap) {
 		rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
 	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+}
+
+/**
+ * Removes the listener from the collection of listeners that
+ * will be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ * 
+ * @since 2.0
+ */
+public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
 }
