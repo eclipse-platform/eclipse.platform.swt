@@ -68,7 +68,7 @@ final public class OleFrame extends Composite
  *
  * @exception SWTError
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
  *
  */
@@ -194,14 +194,21 @@ static int getMsgProc(int code, int wParam, int lParam) {
 				OleClientSite site = (OleClientSite)widget;
 				if (site.handle == hwnd) {
 					OleFrame frame = site.frame;
-					if (frame.translateOleAccelerator(msg)) {
-						// In order to prevent this message from also being processed
-						// by the application, zero out message, wParam and lParam
-						msg.message = OS.WM_NULL;
-						msg.wParam = 0;
-						msg.lParam = 0;
-						OS.MoveMemory(lParam, msg, MSG.sizeof);
-						return 0;
+					/*
+					 * Do not allow the activeX control to translate key down arrow 
+					 * events because this interferes with context menu traversal.
+					 */
+					if (message != OS.WM_KEYDOWN ||
+						(msg.wParam != OS.VK_UP && msg.wParam != OS.VK_DOWN && msg.wParam != OS.VK_LEFT && msg.wParam != OS.VK_RIGHT)) {
+						if (frame.translateOleAccelerator(msg)) {
+							// In order to prevent this message from also being processed
+							// by the application, zero out message, wParam and lParam
+							msg.message = OS.WM_NULL;
+							msg.wParam = 0;
+							msg.lParam = 0;
+							OS.MoveMemory(lParam, msg, MSG.sizeof);
+							return 0;
+						}
 					}
 				}
 			}
