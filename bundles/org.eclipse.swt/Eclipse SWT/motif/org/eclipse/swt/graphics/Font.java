@@ -144,25 +144,6 @@ public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
 	if (handle == device.systemFont.handle) return;
-	
-	/* Free the fonts associated with the font list */
-	int [] buffer = new int [1];
-	int xDisplay = device.xDisplay;
-	if (OS.XmFontListInitFontContext (buffer, handle)) {
-		int context = buffer [0];
-		int fontListEntry;
-		while ((fontListEntry = OS.XmFontListNextEntry (context)) != 0) {
-			int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
-			if (buffer [0] == OS.XmFONT_IS_FONT) {
-				OS.XFreeFont(xDisplay, fontPtr);
-			} else {
-				OS.XFreeFontSet(xDisplay, fontPtr);
-			}
-		}
-		OS.XmFontListFreeFontContext (context);
-	}	
-	
-	/* Free the font list */
 	OS.XmFontListFree (handle);
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
@@ -250,7 +231,7 @@ static String getCodePage (int xDisplay, int fontList) {
 			length = OS.strlen (codesetPtr);
 			byte [] codeset = new byte [length];
 			OS.memmove (codeset, codesetPtr, length);
-			codePage = new String (codeset);
+			codePage = new String(Converter.mbcsToWcs(null, codeset));
 			
 			/* Reset the locale */
 			OS.setlocale (OS.LC_CTYPE, new byte[1]);
@@ -382,44 +363,10 @@ public int hashCode () {
 	return handle;
 }
 
-String getXlfds(int fontSet) {
-	if (fontSet == 0) return "";
-	int[] fontStructPtr = new int[1];
-	int[] fontNamePtr = new int[1];
-	XFontStruct fontStruct = new XFontStruct();  
-	int nFonts = OS.XFontsOfFontSet(fontSet, fontStructPtr, fontNamePtr);
-	int [] fontStructs = new int[nFonts];
-	OS.memmove(fontStructs,fontStructPtr[0], nFonts * 4);
-	StringBuffer stringBuffer = new StringBuffer();
-	for (int i = 0; i < nFonts; i++) { // Go through each fontStruct in the font set.
-		OS.memmove(fontStruct,fontStructs[i],20 * 4);
-		int propPtr = fontStruct.properties;
-		for (int j = 0; j < fontStruct.n_properties; j++) {
-			// Reef through properties looking for XAFONT
-			int[] prop = new int[2];
-			OS.memmove(prop, propPtr, 8);
-			if (prop[0] == OS.XA_FONT) {
-				/* Found it, prop[1] points to the string */
-				int ptr = OS.XmGetAtomName(device.xDisplay, prop[1]);
-				int length = OS.strlen(ptr);
-				byte[] nameBuf = new byte[length];
-				OS.memmove(nameBuf, ptr, length);
-				if (stringBuffer.length() != 0) stringBuffer.append(','); 
-				stringBuffer.append(new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase());
-				OS.XFree(ptr);
-				break;
-			}
-			propPtr += 8;
-		}
-	}
-	return stringBuffer.toString();
-}
-
 void init (Device device, FontData[] fds) {
 	this.device = device;
-	int xDisplay = device.xDisplay;
 	
-	/* An alternative locale have to be set in the first font data */
+	/* Change current locale if needed. Note: only the first font data is used */
 	FontData firstFd = fds[0];
 	if (firstFd.lang != null) {
 		String lang = firstFd.lang;
@@ -434,98 +381,63 @@ void init (Device device, FontData[] fds) {
 			buffer[i] = (byte)osLocale.charAt(i);
 		}
 		OS.setlocale (OS.LC_CTYPE, buffer);
-	}		
+	}
 	
-	/* Copy font datas since they might be simplified. */
+	/* Generate desire font name */
 	Point dpi = null;
 	if (device.setDPI) dpi = device.getDPI();
-	FontData[] newFds = new FontData [fds.length];
+	StringBuffer stringBuffer = new StringBuffer();
 	for (int i = 0; i < fds.length; i++) {
-		FontData newFd = newFds[i] = new FontData();
 		FontData fd = fds[i];
-		newFd.foundry = fd.foundry;
-		newFd.fontFamily = fd.fontFamily;
-		newFd.weight = fd.weight;
-		newFd.slant = fd.slant;
-		newFd.setWidth = fd.setWidth;
-		newFd.addStyle = fd.addStyle;
-		newFd.pixels = fd.pixels;
-		newFd.points = fd.points;
+		int hRes = fd.horizontalResolution, vRes = fd.verticalResolution;
 		if (dpi != null) {
-			newFd.horizontalResolution = dpi.x;
-			newFd.verticalResolution = dpi.y;
-		} else {
-			newFd.horizontalResolution = fd.horizontalResolution;
-			newFd.verticalResolution = fd.verticalResolution;
+			fd.horizontalResolution = dpi.x;
+			fd.verticalResolution = dpi.y;
 		}
-		newFd.spacing = fd.spacing;
-		newFd.averageWidth = fd.averageWidth;
-		newFd.characterSetRegistry = fd.characterSetRegistry;
-		newFd.characterSetName = fd.characterSetName;
-	}
-	
-	/* Load desired font. */
-	int[] missingCharset = new int[1];
-	int[] missingCharsetCount = new int[1];
-	int[] defString = new int[1];
-	StringBuffer stringBuffer = new StringBuffer(newFds[0].getXlfd());	
-	for (int i=1; i<newFds.length; i++) {
+		stringBuffer.append(fd.getXlfd());
 		stringBuffer.append(',');
-		stringBuffer.append(newFds[i].getXlfd());
+		fd.horizontalResolution = hRes;
+		fd.verticalResolution = vRes;
 	}
-	byte[] buffer = Converter.wcsToMbcs(null, stringBuffer.toString() , true);
-	int fontSet = OS.XCreateFontSet(xDisplay, buffer, missingCharset, missingCharsetCount, defString);
-	
+
+	/* Append simplified font name */		
+	FontData newFd = new FontData();
+	newFd.points = firstFd.points;
 	/*
-	* If failed to load desired font or there are missing character
-	* sets, simplify XLFDs and try again.
+	* Bug in Motif.  In Japanese AIX only, in some cases loading a bold Japanese
+	* font takes a very long time (10 minutes) when there are no Japanese bold
+	* fonts available.  The fix is to wildcard the field weight.
 	*/
-	if (fontSet == 0 || missingCharsetCount[0] != 0) {
-		int index = 0;
-		int lastMissingCharsetCount = fontSet != 0 ? missingCharsetCount[0] : 0xFFFF;
-		String loadedXlfds = getXlfds(fontSet);
-		while ((index = wildcardXfld(newFds, index)) < newFds.length) {
-			stringBuffer.setLength(0);
-			stringBuffer.append(loadedXlfds);
-			if (stringBuffer.length() != 0) stringBuffer.append(",");
-			stringBuffer.append(newFds[index].getXlfd());
-			buffer = Converter.wcsToMbcs(null, stringBuffer.toString(), true);
-			if (missingCharset[0] != 0) OS.XFreeStringList (missingCharset[0]);
-			if (fontSet != 0) OS.XFreeFontSet(xDisplay, fontSet);
-			fontSet = OS.XCreateFontSet(xDisplay, buffer, missingCharset, missingCharsetCount, defString);
-	  		if (fontSet != 0) {
-	  			if (missingCharsetCount[0] == 0) {
-	  				break;
-	  			} else {
-	  				if (lastMissingCharsetCount > missingCharsetCount[0]) {
-		  				lastMissingCharsetCount = missingCharsetCount[0];
-		  				loadedXlfds = getXlfds(fontSet);
-	  				}				
-	  			}
-	  		}
-		}
+	if (OS.IsAIX && OS.IsDBLocale) {
+		stringBuffer.append(newFd.getXlfd());
+	} else {
+		newFd.weight = firstFd.weight;
+		newFd.slant = firstFd.slant;
+		stringBuffer.append(newFd.getXlfd());
+		newFd.weight = null;
+		newFd.slant = null;		
+		stringBuffer.append(',');
+		stringBuffer.append(newFd.getXlfd());
 	}
-	if (missingCharset[0] != 0) OS.XFreeStringList (missingCharset[0]);
 	
-	/* If no font could be loaded, use the system font. */
-	if (fontSet == 0) {
+	/* Load font list entry */		 
+	byte[] buffer = Converter.wcsToMbcs(null, stringBuffer.toString() , true);
+	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
+	if (fontListEntry != 0) {
+		handle = OS.XmFontListAppendEntry(0, fontListEntry);
+		OS.XmFontListEntryFree(new int[]{fontListEntry});
+		int codesetPtr = OS.nl_langinfo(OS.CODESET);
+		int length = OS.strlen(codesetPtr);
+		byte[] codeset = new byte[length];
+		OS.memmove(codeset, codesetPtr, length);
+		codePage = new String(Converter.mbcsToWcs(null, codeset));
+	} else {
 		Font systemFont = device.systemFont;
 		handle = systemFont.handle;
 		codePage = systemFont.codePage;
-	} else {
-		int fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
-		if (fontListEntry != 0) {
-			handle = OS.XmFontListAppendEntry(0, fontListEntry);
-			OS.XmFontListEntryFree(new int[]{fontListEntry});
-			int codesetPtr = OS.nl_langinfo(OS.CODESET);
-			int length = OS.strlen(codesetPtr);
-			byte[] codeset = new byte[length];
-			OS.memmove(codeset, codesetPtr, length);
-			codePage = new String(codeset);
-		}
 	}
-
-	/* Reset locale */
+	
+	/* Reset current locale if needed */
 	if (firstFd.lang != null) OS.setlocale(OS.LC_CTYPE, new byte[0]);
 
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -552,55 +464,6 @@ public static Font motif_new(Device device, int handle) {
 	font.handle = handle;
 	font.codePage = getCodePage(device.xDisplay, handle);
 	return font;
-}
-
-int wildcardXfld(FontData[] fds, int index) {
-	while (index < fds.length) {
-		FontData fd = fds[index];
-		
-		/*
-		* Bug in Motif. In Japanese AIX only, in some cases loading a
-		* bold Japanese font takes a very long time (10 minutes) when
-		* there are no Japanese bold fonts available. The fix is to
-		* wildcard the fields slant, setWidth, and weight first.
-		*/
-		if (OS.IsDBLocale && OS.IsAIX) {
-			fd.slant = null;
-			fd.setWidth = null;
-			fd.weight = null;
-		}	
-			
-		if (fd.characterSetName != null || fd.characterSetRegistry != null || fd.foundry != null) {
-			fd.characterSetName = null;
-			fd.characterSetRegistry = null;
-			fd.foundry = null;
-			return index;		
-		}
-		if (fd.fontFamily != null || fd.addStyle != null || fd.horizontalResolution != 0 ||
-			fd.verticalResolution != 0 || fd.pixels != 0 || fd.spacing != null || fd.averageWidth != 0) 
-		{
-			fd.fontFamily = null;
-			fd.addStyle = null;		
-			fd.horizontalResolution = 0;
-			fd.verticalResolution = 0;
-			fd.pixels = 0;		
-			fd.spacing = null;
-			fd.averageWidth = 0;
-			return index;
-		}
-		if (fd.slant != null || fd.setWidth != null || fd.weight != null) {
-			fd.slant = null;
-			fd.setWidth = null;					
-			fd.weight = null;
-			return index;
-		}
-		if (fd.points != 0) {
-			fd.points = 0;
-			return index;
-		}
-		index++;
-	}
-	return index;
 }
 
 /**

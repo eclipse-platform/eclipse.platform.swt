@@ -969,7 +969,7 @@ void updateSampleFont () {
 	 */
 	if (sampleFont != null) sampleFont.dispose ();
 	sampleFont = new Font (shell.getDisplay (), selectionFontData);
-	fontData = sampleFont.getFontData () [0];
+	fontData = selectionFontData;
 	sampleLabel.setFont (sampleFont);
 }
 
