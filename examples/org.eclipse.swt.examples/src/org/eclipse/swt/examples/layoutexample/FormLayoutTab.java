@@ -33,7 +33,7 @@ class FormLayoutTab extends Tab {
 	final int TOP_COL = 6;
 	final int BOTTOM_COL = 7;
 	
-	final int MODIFY_COLS = 4;	//The number of columns with combo or text editors
+	final int MODIFY_COLS = 4;	// The number of columns with combo or text editors
 	final int TOTAL_COLS = 8;
 
 	/**
@@ -43,9 +43,10 @@ class FormLayoutTab extends Tab {
 		super(instance);
 	}
 	
-	/** Update the attachment field in case the type of control
-	 *  has changed. 
-	 * */
+	/**
+	 * Update the attachment field in case the type of control
+	 * has changed. 
+	 */
 	String checkAttachment (String oldAttach, FormAttachment newAttach) {
 		String controlClass = newAttach.control.getClass().toString ();
 		String controlType = controlClass.substring (controlClass.lastIndexOf ('.') + 1);
@@ -54,8 +55,21 @@ class FormLayoutTab extends Tab {
 			i++;
 		}
 		String index = oldAttach.substring (i, oldAttach.indexOf (','));
-		return "[c]" + controlType + index + "," + newAttach.offset;
+		return controlType + index + "," + newAttach.offset + ":" + alignmentString (newAttach.alignment);
 	}
+	
+	String alignmentString (int align) {
+		switch (align) {
+			case SWT.LEFT: return "LEFT";
+			case SWT.RIGHT: return "RIGHT";
+			case SWT.TOP: return "TOP";
+			case SWT.BOTTOM: return "BOTTOM";
+			case SWT.CENTER: return "CENTER";
+		}
+		return "DEFAULT";
+	}
+	
+
 	
 	/**
 	 * Creates the widgets in the "child" group.
@@ -91,6 +105,7 @@ class FormLayoutTab extends Tab {
 				}
 				table.showSelection ();
 				
+				int index = table.indexOf (newItem);
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
 				
@@ -203,10 +218,10 @@ class FormLayoutTab extends Tab {
 		add.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem item = new TableItem (table, 0);
-				String [] insert = new String [] { 
+				String [] insert = new String [] {
 					String.valueOf (table.indexOf (item)), "Button", "-1", "-1",
-					"0,0 " + LayoutExample.getResourceString ("Default"), "", 
-					"0,0 " + LayoutExample.getResourceString ("Default"), ""};
+					"0,0 (" + LayoutExample.getResourceString ("Default") + ")", "", 
+					"0,0 (" + LayoutExample.getResourceString ("Default") + ")", ""};
 				item.setText (insert);
 				data.addElement (insert);
 				resetEditors ();
@@ -326,7 +341,7 @@ class FormLayoutTab extends Tab {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (LEFT_COL);
 						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
-						code.append ("\t\tdata.left = new FormAttachment (" + names [index] + ", " + data.left.offset + ");\n");
+						code.append ("\t\tdata.left = new FormAttachment (" + names [index] + ", " + data.left.offset + ", SWT." + alignmentString (data.left.alignment) + ");\n");
 					} else {
 						if (data.right != null || (data.left.numerator != 0 ||data.left.offset != 0)) {
 							code.append ("\t\tdata.left = new FormAttachment (" + data.left.numerator + ", " + data.left.offset + ");\n");
@@ -338,7 +353,7 @@ class FormLayoutTab extends Tab {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (RIGHT_COL);
 						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
-						code.append ("\t\tdata.right = new FormAttachment (" + names [index] + ", " + data.right.offset + ");\n");
+						code.append ("\t\tdata.right = new FormAttachment (" + names [index] + ", " + data.right.offset + ", SWT." + alignmentString (data.right.alignment) + ");\n");
 					} else {
 						code.append ("\t\tdata.right = new FormAttachment (" + data.right.numerator + ", " + data.right.offset + ");\n");
 					}
@@ -348,7 +363,7 @@ class FormLayoutTab extends Tab {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (TOP_COL);
 						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
-						code.append ("\t\tdata.top = new FormAttachment (" + names [index] + ", " + data.top.offset + ");\n");
+						code.append ("\t\tdata.top = new FormAttachment (" + names [index] + ", " + data.top.offset + ", SWT." + alignmentString (data.top.alignment) + ");\n");
 					} else {
 						if (data.bottom != null || (data.top.numerator != 0 ||data.top.offset != 0)) {
 							code.append ("\t\tdata.top = new FormAttachment (" + data.top.numerator + ", " + data.top.offset + ");\n");
@@ -360,7 +375,7 @@ class FormLayoutTab extends Tab {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (BOTTOM_COL);
 						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
-						code.append ("\t\tdata.bottom = new FormAttachment (" + names [index] + ", " + data.bottom.offset + ");\n");
+						code.append ("\t\tdata.bottom = new FormAttachment (" + names [index] + ", " + data.bottom.offset + ", SWT." + alignmentString (data.bottom.alignment) + ");\n");
 					} else {
 						code.append ("\t\tdata.bottom = new FormAttachment (" + data.bottom.numerator + ", " + data.bottom.offset + ");\n");
 					}
@@ -434,18 +449,13 @@ class FormLayoutTab extends Tab {
 	 * information in the table.
 	 */
 	FormAttachment setAttachment (String attachment) {
-		String control;
+		String control, align;
 		int position, offset;
 		int comma = attachment.indexOf (',');
-		try {
-			offset = new Integer (attachment.substring (comma + 1)).intValue ();
-		} catch (NumberFormatException e) {
-			offset = 0;
-		}
 		char first = attachment.charAt (0);
-		if (first == '[') {
+		if (Character.isLetter(first)) {
 			/* Case where there is a control */
-			control = attachment.substring (3, comma);
+			control = attachment.substring (0, comma);
 			int i = 0;
 			while (i < control.length () && !Character.isDigit (control.charAt (i))) {
 				i++;
@@ -453,16 +463,37 @@ class FormLayoutTab extends Tab {
 			String end = control.substring (i);
 			int index = new Integer (end).intValue ();
 			Control attachControl = children [index];
-			return new FormAttachment (attachControl, offset);
+			int colon = attachment.indexOf (':');
+			try {
+				offset = new Integer (attachment.substring (comma + 1, colon)).intValue ();
+			} catch (NumberFormatException e) {
+				offset = 0;
+			}
+			align = attachment.substring (colon + 1);
+			return new FormAttachment (attachControl, offset, alignmentConstant (align));
 		} else {
-			/* Case where there is no control */
+			/* Case where there is a position */
 			try {
 				position = new Integer (attachment.substring (0,comma)).intValue ();	
 			} catch (NumberFormatException e) {
 				position = 0;
 			}
+			try {
+				offset = new Integer (attachment.substring (comma + 1)).intValue ();
+			} catch (NumberFormatException e) {
+				offset = 0;
+			}
 			return new FormAttachment (position, offset);		
 		}
+	}
+	
+	int alignmentConstant (String align) {
+		if (align.equals("LEFT")) return SWT.LEFT;
+		if (align.equals("RIGHT")) return SWT.RIGHT;
+		if (align.equals("TOP")) return SWT.TOP;
+		if (align.equals("BOTTOM")) return SWT.BOTTOM;
+		if (align.equals("CENTER")) return SWT.CENTER;
+		return SWT.DEFAULT;
 	}
 	
 	/**
@@ -538,14 +569,13 @@ class FormLayoutTab extends Tab {
 	
 	
 	/**
-	 * <code>AttachDialog</code> is the class that creates a 
+	 * <code>AttachDialog</code> is the class that creates a
 	 * dialog specific for this example. It creates a dialog
-	 * with controls to create a FormAttachment that the user
-	 * can set.
+	 * with controls to set the values in a FormAttachment.
 	 */
 	public class AttachDialog extends Dialog {
 		String result = "";
-		String controlInput, positionInput, offsetInput;
+		String controlInput, positionInput, alignmentInput, offsetInput;
 		int col = 0;
 		
 		public AttachDialog (Shell parent, int style) {
@@ -573,32 +603,34 @@ class FormLayoutTab extends Tab {
 			TableItem newItem = leftEditor.getItem ();
 			result = newItem.getText (col);
 			String oldAttach = result;
-			String oldPos = "0", oldOffset = "0", oldControl = "";
-			boolean enablePos = true, enableControl = false;
+			String oldPos = "0", oldControl = "", oldAlign = "DEFAULT", oldOffset = "0";
+			boolean isControl = false;
 			if (oldAttach.length () != 0) {
 				char first = oldAttach.charAt (0);
-				if (first == '[') {
+				if (Character.isLetter(first)) {
 					/* We have a control */
-					oldControl = oldAttach.substring (3, oldAttach.indexOf (','));
-					enablePos = false;
-					enableControl = true;
+					isControl = true;
+					oldControl = oldAttach.substring (0, oldAttach.indexOf (','));
+					oldAlign = oldAttach.substring (oldAttach.indexOf (':') + 1);
+					oldOffset = oldAttach.substring (oldAttach.indexOf (',') + 1, oldAttach.indexOf (':'));
 				} else {
 					/* We have a position */
 					oldPos = oldAttach.substring (0, oldAttach.indexOf (','));
-				}
-				oldOffset = oldAttach.substring (oldAttach.indexOf (',') + 1);
-				if (oldOffset.endsWith (")")) {
-					oldOffset = oldAttach.substring (oldAttach.indexOf (',') + 1,oldAttach.indexOf (" "));
+					oldOffset = oldAttach.substring (oldAttach.indexOf (',') + 1);
+					if (oldOffset.endsWith (")")) { // i.e. (Default)
+						oldOffset = oldOffset.substring (0, oldOffset.indexOf (' '));
+					}
 				}
 			}
 			
 			/* Add position field */
 			final Button posButton = new Button (shell, SWT.RADIO);
 			posButton.setText (LayoutExample.getResourceString ("Position"));
-			posButton.setSelection (enablePos);			
+			posButton.setSelection (!isControl);			
 			final Combo position = new Combo (shell, SWT.NONE);
 			position.setItems (new String [] {"0","25","50","75","100"});
 			position.setText (oldPos);
+			position.setEnabled (!isControl);			
 			GridData data = new GridData (GridData.FILL_HORIZONTAL);
 			data.horizontalSpan = 2;
 			position.setLayoutData (data);
@@ -606,7 +638,7 @@ class FormLayoutTab extends Tab {
 			/* Add control field */
 			final Button contButton = new Button (shell, SWT.RADIO);
 			contButton.setText (LayoutExample.getResourceString ("Control"));
-			contButton.setSelection (enableControl);
+			contButton.setSelection (isControl);
 			final Combo control = new Combo (shell, SWT.READ_ONLY);
 			TableItem [] items = table.getItems ();
 			TableItem currentItem = leftEditor.getItem ();
@@ -619,10 +651,27 @@ class FormLayoutTab extends Tab {
 			}
 			if (oldControl.length () != 0) control.setText (oldControl);
 			else control.select (0);
-			control.setEnabled (enableControl);
+			control.setEnabled (isControl);
 			data = new GridData (GridData.FILL_HORIZONTAL);
 			data.horizontalSpan = 2;
 			control.setLayoutData (data);
+			
+			/* Add alignment field */
+			new Label (shell, SWT.NONE).setText (LayoutExample.getResourceString ("Alignment"));
+			final Combo alignment = new Combo (shell, SWT.NONE);
+			String[] alignmentValues;
+			if (col == LEFT_COL || col == RIGHT_COL) {
+				alignmentValues = new String [] {"SWT.LEFT", "SWT.RIGHT", "SWT.CENTER", "SWT.DEFAULT"};
+			} else {
+				// col == TOP_COL || col == BOTTOM_COL
+				alignmentValues = new String [] {"SWT.TOP", "SWT.BOTTOM", "SWT.CENTER", "SWT.DEFAULT"};
+			}
+			alignment.setItems (alignmentValues);
+			alignment.setText ("SWT." + oldAlign);
+			alignment.setEnabled (isControl);
+			data = new GridData (GridData.FILL_HORIZONTAL);
+			data.horizontalSpan = 2;
+			alignment.setLayoutData (data);
 			
 			/* Add offset field */
 			new Label (shell, SWT.NONE).setText (LayoutExample.getResourceString ("Offset"));
@@ -637,23 +686,34 @@ class FormLayoutTab extends Tab {
 				public void widgetSelected (SelectionEvent e) {
 					position.setEnabled (true);
 					control.setEnabled (false);
+					alignment.setEnabled(false);
 				}
 			});
 			contButton.addSelectionListener (new SelectionAdapter () {
 				public void widgetSelected (SelectionEvent e) {
 					position.setEnabled (false);
 					control.setEnabled (true);
+					alignment.setEnabled(true);
 				}
 			});
 			
-			/* Enter button sets data into table */
+			Button clear = new Button (shell, SWT.PUSH);
+			clear.setText (LayoutExample.getResourceString ("Clear"));
+			clear.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_END));
+			clear.addSelectionListener (new SelectionAdapter () {
+				public void widgetSelected (SelectionEvent e) {
+					result = "";
+					shell.close ();
+				}
+			});
+			/* OK button sets data into table */
 			Button ok = new Button (shell, SWT.PUSH);
 			ok.setText (LayoutExample.getResourceString ("OK"));
-			ok.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_END));
+			ok.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_CENTER));
 			ok.addSelectionListener (new SelectionAdapter () {
 				public void widgetSelected (SelectionEvent e) {
 					controlInput = control.getText ();
-					if (controlInput.length () == 0) posButton.setSelection (true);
+					alignmentInput = alignment.getText ().substring (4);
 					positionInput = position.getText ();
 					if (positionInput.length () == 0) positionInput = "0";
 					try {
@@ -668,28 +728,19 @@ class FormLayoutTab extends Tab {
 					} catch (NumberFormatException except) {
 						offsetInput = "0";
 					}
-					if (posButton.getSelection()) {
-						result = (positionInput + "," + offsetInput);
+					if (posButton.getSelection() || controlInput.length () == 0) {
+						result = positionInput + "," + offsetInput;
 					} else {
-						result = ("[c]" + controlInput + "," + offsetInput);
+						result = controlInput + "," + offsetInput + ":" + alignmentInput;
 					}
 					shell.close ();
 				}
 			});
 			Button cancel = new Button (shell, SWT.PUSH);
 			cancel.setText (LayoutExample.getResourceString ("Cancel"));
-			cancel.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_CENTER));
+			cancel.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING));
 			cancel.addSelectionListener (new SelectionAdapter () {
 				public void widgetSelected (SelectionEvent e) {
-					shell.close ();
-				}
-			});
-			Button clear = new Button (shell, SWT.PUSH);
-			clear.setText (LayoutExample.getResourceString ("Clear"));
-			clear.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING));
-			clear.addSelectionListener (new SelectionAdapter () {
-				public void widgetSelected (SelectionEvent e) {
-					result = "";
 					shell.close ();
 				}
 			});
