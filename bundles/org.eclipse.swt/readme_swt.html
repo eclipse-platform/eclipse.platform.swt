@@ -121,6 +121,13 @@ Eclipse's case, it can take more than a minute to switch between editors and
 views. Because of this, accelerators and mnemonics are explicitely ignored on
 Solaris.
 
+<h4>
+1.13 Combo boxes with multi-line items on Linux/Motif</h4>
+
+The Linux implementation of Motif has a bug that causes program execution to terminate
+if the value of an editable Combo is set through Combo.setText(String) to a string
+that contains five or more newline characters.
+
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
