@@ -1741,6 +1741,7 @@ public void remove(int indices[]) {
 	SelectableItem item;
 	int [] sortedIndices;
 	int last = -1;
+	int sortedIndex;
 	
 	if (indices == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -1749,15 +1750,21 @@ public void remove(int indices[]) {
 	System.arraycopy (indices, 0, sortedIndices, 0, indices.length);
 	sort(sortedIndices);								// sort indices in descending order
 	for (int i = 0; i < sortedIndices.length; i++) {
-		if (sortedIndices[i] != last) {
-			item = getVisibleItem(sortedIndices[i]);
+		sortedIndex = sortedIndices[i];
+		if (sortedIndex != last) {
+			item = getVisibleItem(sortedIndex);
 			if (item != null) {
 				item.dispose();
 			}
 			else {
-				error(SWT.ERROR_ITEM_NOT_REMOVED);
+				if (0 <= sortedIndex && sortedIndex < getItemVector().size()) {
+					error(SWT.ERROR_ITEM_NOT_REMOVED);
+				} 
+				else {
+					error(SWT.ERROR_INVALID_RANGE);
+				}          
 			}
-			last = sortedIndices[i];			
+			last = sortedIndex;
 		}
 	}
 }
@@ -1786,7 +1793,12 @@ public void remove(int index) {
 		item.dispose();
 	}
 	else {
-		error(SWT.ERROR_ITEM_NOT_REMOVED);
+		if (0 <= index && index < getItemVector().size()) {
+			error(SWT.ERROR_ITEM_NOT_REMOVED);
+		} 
+		else {
+			error(SWT.ERROR_INVALID_RANGE);
+		}          
 	}
 }
 /**
