@@ -899,7 +899,8 @@ int kEventRawKey (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	if (keyCode [0] == 36 /* Return */) {
 		if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;
-		if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;	
+		if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+		postEvent(SWT.DefaultSelection);
 	}
 	return OS.eventNotHandledErr;
 }
