@@ -209,7 +209,7 @@ class DialogTab extends Tab {
 	void createControlGroup () {
 		/*
 		 * Create the "Control" group.  This is the group on the
-		 * left half of each example tab.  It consists of the
+		 * right half of each example tab.  It consists of the
 		 * style group, the display group and the size group.
 		 */			
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
@@ -400,6 +400,12 @@ class DialogTab extends Tab {
 		textWidget.setLayoutData (gridData);	
 	}
 	
+	/**
+	 * The platform dialogs do not have SWT listeners.
+	 */
+	void createListenersGroup () {
+	}
+
 	/**
 	 * Handle a dialog type combo selection event.
 	 *

@@ -44,12 +44,12 @@ public class CustomControlExample extends ControlExample {
 	 * Invokes as a standalone program.
 	 */
 	public static void main(String[] args) {
-		standAlone = true;
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		CustomControlExample instance = new CustomControlExample(shell);
 		shell.setText(getResourceString("custom.window.title"));
+		setShellSize(display, shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();

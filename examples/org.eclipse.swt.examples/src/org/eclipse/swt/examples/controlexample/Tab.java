@@ -42,7 +42,7 @@ abstract class Tab {
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
-	Group exampleGroup, controlGroup, displayGroup, sizeGroup, styleGroup, colorGroup;
+	Group exampleGroup, controlGroup, listenersGroup, displayGroup, sizeGroup, styleGroup, colorGroup;
 
 	/* Controlling instance */
 	final ControlExample instance;
@@ -62,6 +62,28 @@ abstract class Tab {
 	Color backgroundColor, foregroundColor;
 	Font font;	
 
+	/* Event logging variables and controls */
+	Text eventConsole;
+	boolean logging = false;
+	boolean [] eventsFilter;
+
+	static final String [] EVENT_NAMES = {
+		"", // event types are sequentially numbered from 1, so add placeholder for 0
+		"KeyDown", "KeyUp",
+		"MouseDown", "MouseUp", "MouseMove", "MouseEnter", "MouseExit", "MouseDoubleClick",
+		"Paint", "Move", "Resize", "Dispose",
+		"Selection", "DefaultSelection",
+		"FocusIn", "FocusOut",
+		"Expand", "Collapse",
+		"Iconify", "Deiconify", "Close",
+		"Show", "Hide",
+		"Modify", "Verify",
+		"Activate", "Deactivate",
+		"Help", "DragDetect", "Arm", "Traverse", "MouseHover",
+		"HardKeyDown", "HardKeyUp",
+		"MenuDetect"
+	};
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -77,14 +99,11 @@ abstract class Tab {
 	
 		/*
 		 * Create the "Control" group.  This is the group on the
-		 * left half of each example tab.  It consists of the
+		 * right half of each example tab.  It consists of the
 		 * style group, the display group and the size group.
 		 */	
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
-		GridLayout gridLayout= new GridLayout ();
-		controlGroup.setLayout (gridLayout);
-		gridLayout.numColumns = 2;
-		gridLayout.makeColumnsEqualWidth = true;
+		controlGroup.setLayout (new GridLayout (2, true));
 		controlGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
 	
@@ -251,10 +270,48 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Create the event console popup menu.
+	 */
+	void createEventConsolePopup () {
+		Menu popup = new Menu (eventConsole.getShell (), SWT.POP_UP);
+		eventConsole.setMenu (popup);
+
+		MenuItem cut = new MenuItem (popup, SWT.PUSH);
+		cut.setText (ControlExample.getResourceString("MenuItem_Cut"));
+		cut.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				eventConsole.cut ();
+			}
+		});
+		MenuItem copy = new MenuItem (popup, SWT.PUSH);
+		copy.setText (ControlExample.getResourceString("MenuItem_Copy"));
+		copy.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				eventConsole.copy ();
+			}
+		});
+		MenuItem paste = new MenuItem (popup, SWT.PUSH);
+		paste.setText (ControlExample.getResourceString("MenuItem_Paste"));
+		paste.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				eventConsole.paste ();
+			}
+		});
+		new MenuItem (popup, SWT.SEPARATOR);
+		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
+		selectAll.setText(ControlExample.getResourceString("MenuItem_SelectAll"));
+		selectAll.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				eventConsole.selectAll ();
+			}
+		});
+	}
+
+	/**
 	 * Creates the "Example" group.  The "Example" group
 	 * is typically the left hand column in the tab.
 	 */
-	void createExampleGroup () {	
+	void createExampleGroup () {
 		exampleGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		exampleGroup.setLayout (gridLayout);
@@ -268,6 +325,136 @@ abstract class Tab {
 	 */
 	void createExampleWidgets () {
 		/* Do nothing */
+	}
+	
+	/**
+	 * Creates and opens the "Listener selection" dialog.
+	 */
+	void createListenerSelectionDialog () {
+		final Shell dialog = new Shell (tabFolderPage.getShell (), SWT.DIALOG_TRIM);
+		dialog.setText (ControlExample.getResourceString ("Select_Listeners"));
+		dialog.setLayout (new GridLayout (2, false));
+		final Table table = new Table (dialog, SWT.BORDER | SWT.V_SCROLL | SWT.CHECK);
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.verticalSpan = 2;
+		table.setLayoutData(data);
+		for (int i = 1; i < EVENT_NAMES.length; i++) {
+			TableItem item = new TableItem (table, SWT.NONE);
+			item.setText (EVENT_NAMES[i]);
+			item.setChecked (eventsFilter[i]);
+		}
+		Button selectAll = new Button (dialog, SWT.PUSH);
+		selectAll.setText(ControlExample.getResourceString ("Select_All"));
+		selectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		selectAll.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				TableItem [] items = table.getItems();
+				for (int i = 1; i < EVENT_NAMES.length; i++) {
+					items[i - 1].setChecked(true);
+				}
+			}
+		});
+		Button deselectAll = new Button (dialog, SWT.PUSH);
+		deselectAll.setText(ControlExample.getResourceString ("Deselect_All"));
+		deselectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
+		deselectAll.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				TableItem [] items = table.getItems();
+				for (int i = 1; i < EVENT_NAMES.length; i++) {
+					items[i - 1].setChecked(false);
+				}
+			}
+		});
+		Label filler = new Label(dialog, SWT.NONE);
+		Button ok = new Button (dialog, SWT.PUSH);
+		ok.setText(ControlExample.getResourceString ("OK"));
+		dialog.setDefaultButton(ok);
+		ok.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		ok.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				TableItem [] items = table.getItems();
+				for (int i = 1; i < EVENT_NAMES.length; i++) {
+					eventsFilter[i] = items[i - 1].getChecked();
+				}
+				dialog.dispose();
+			}
+		});
+		dialog.pack ();
+		dialog.open ();
+		while (! dialog.isDisposed()) {
+			if (! dialog.getDisplay().readAndDispatch()) dialog.getDisplay().sleep();
+		}
+	}
+
+	/**
+	 * Creates the "Listeners" group.  The "Listeners" group
+	 * goes below the "Example" and "Control" groups.
+	 */
+	void createListenersGroup () {
+		listenersGroup = new Group (tabFolderPage, SWT.NONE);
+		listenersGroup.setLayout (new GridLayout (3, false));
+		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_VERTICAL);
+		gridData.horizontalSpan = 2;
+		listenersGroup.setLayoutData (gridData);
+		listenersGroup.setText (ControlExample.getResourceString ("Listeners"));
+
+		/*
+		 * Create the button to access the 'Listeners' dialog.
+		 */
+		Button listenersButton = new Button (listenersGroup, SWT.PUSH);
+		listenersButton.setText (ControlExample.getResourceString ("Select_Listeners"));
+		listenersButton.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected (SelectionEvent e) {
+				createListenerSelectionDialog ();
+				recreateExampleWidgets ();
+			}
+		});
+		
+		/*
+		 * Create the checkbox to add/remove listeners to/from the example widgets.
+		 */
+		final Button listenCheckbox = new Button (listenersGroup, SWT.CHECK);
+		listenCheckbox.setText (ControlExample.getResourceString ("Listen"));
+		listenCheckbox.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				logging = listenCheckbox.getSelection ();
+				recreateExampleWidgets ();
+			}
+		});
+
+		/*
+		 * Create the button to clear the text.
+		 */
+		Button clearButton = new Button (listenersGroup, SWT.PUSH);
+		clearButton.setText (ControlExample.getResourceString ("Clear"));
+		clearButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		clearButton.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected (SelectionEvent e) {
+				eventConsole.setText ("");
+			}
+		});
+		
+		/* Initialize the eventsFilter to log all events. */
+		eventsFilter = new boolean [EVENT_NAMES.length];
+		for (int i = 1; i < EVENT_NAMES.length; i++) {
+			eventsFilter [i] = true;
+		}
+
+		/* Create the event console Text. */
+		eventConsole = new Text (listenersGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData data = new GridData (GridData.FILL_BOTH);
+		data.horizontalSpan = 3;
+		data.heightHint = 80;
+		eventConsole.setLayoutData (data);
+		createEventConsolePopup ();
+		eventConsole.addKeyListener (new KeyAdapter () {
+			public void keyPressed (KeyEvent e) {
+				if ((e.keyCode == 'A' || e.keyCode == 'a') && (e.stateMask & SWT.MOD1) != 0) {
+					eventConsole.selectAll ();
+					e.doit = false;
+				}
+			}
+		});
 	}
 	
 	void createOrientationGroup () {
@@ -357,15 +544,16 @@ abstract class Tab {
 		* Create a two column page.
 		*/
 		tabFolderPage = new Composite (tabFolder, SWT.NONE);
-		GridLayout gridLayout = new GridLayout ();
-		tabFolderPage.setLayout (gridLayout);
-		gridLayout.numColumns = 2;
+		tabFolderPage.setLayout (new GridLayout (2, false));
 	
-		/* Create the "Example" and "Control" columns */
+		/* Create the "Example" and "Control" groups. */
 		createExampleGroup ();
 		createControlGroup ();
-	
-		/* Create the widgets in the two columns */
+		
+		/* Create the "Listeners" group under the "Control" group. */
+		createListenersGroup ();
+		
+		/* Create and initialize the example and control widgets. */
 		createExampleWidgets ();
 		hookExampleWidgetListeners ();
 		createControlWidgets ();
@@ -427,25 +615,82 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Hook all listeners to all controls. 
+	 * Hooks all listeners to all example controls.
 	 */
 	void hookExampleWidgetListeners () {
-		if (instance.isLogging()) {
+		if (logging) {
 			Control[] exampleControls = getExampleWidgets();
-			Listener listener = new Listener() {
-				public void handleEvent (Event event) {
-					instance.log (event);
-				}
-			};
 			for (int i = 0; i < exampleControls.length; i++) {
-				Control control = exampleControls [i];
-				for (int j = SWT.KeyDown; j < SWT.HardKeyUp; j++) {
-					control.addListener (j, listener);
-				}
+				hookListeners (exampleControls [i]);
 			}
 		}
 	}
 	
+	/**
+	 * Hooks all listeners to the specified control.
+	 */
+	void hookListeners (Control control) {
+		if (logging) {
+			Listener listener = new Listener() {
+				public void handleEvent (Event event) {
+					log (event);
+				}
+			};
+			for (int j = 1; j < EVENT_NAMES.length; j++) {
+				control.addListener (j, listener);
+			}
+		}
+	}
+	
+	/**
+	 * Logs an event to the event console.
+	 */
+	void log(Event event) {
+		if (logging && eventsFilter [event.type]) {
+			String toString = EVENT_NAMES[event.type] + ": ";
+			switch (event.type) {
+				case SWT.KeyDown:
+				case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
+				case SWT.MouseDown:
+				case SWT.MouseUp:
+				case SWT.MouseMove:
+				case SWT.MouseEnter:
+				case SWT.MouseExit:
+				case SWT.MouseDoubleClick:
+				case SWT.MouseHover: toString += new MouseEvent (event).toString (); break;
+				case SWT.Paint: toString += new PaintEvent (event).toString (); break;
+				case SWT.Move:
+				case SWT.Resize: toString += new ControlEvent (event).toString (); break;
+				case SWT.Dispose: toString += new DisposeEvent (event).toString (); break;
+				case SWT.Selection:
+				case SWT.DefaultSelection: toString += new SelectionEvent (event).toString (); break;
+				case SWT.FocusIn:
+				case SWT.FocusOut: toString += new FocusEvent (event).toString (); break;
+				case SWT.Expand:
+				case SWT.Collapse: toString += new TreeEvent (event).toString (); break;
+				case SWT.Iconify:
+				case SWT.Deiconify:
+				case SWT.Close:
+				case SWT.Activate:
+				case SWT.Deactivate: toString += new ShellEvent (event).toString (); break;
+				case SWT.Show:
+				case SWT.Hide: toString += new MenuEvent (event).toString (); break;
+				case SWT.Modify: toString += new ModifyEvent (event).toString (); break;
+				case SWT.Verify: toString += new VerifyEvent (event).toString (); break;
+				case SWT.Help: toString += new HelpEvent (event).toString (); break;
+				case SWT.Arm: toString += new ArmEvent (event).toString (); break;
+				case SWT.Traverse: toString += new TraverseEvent (event).toString (); break;
+				case SWT.HardKeyDown:
+				case SWT.HardKeyUp:
+				case SWT.DragDetect:
+				case SWT.MenuDetect:
+				default: toString += event.toString ();
+			}
+			eventConsole.append (toString);
+			eventConsole.append ("\n");
+		}
+	}
+
 	/**
 	 * Recreates the "Example" widgets.
 	 */

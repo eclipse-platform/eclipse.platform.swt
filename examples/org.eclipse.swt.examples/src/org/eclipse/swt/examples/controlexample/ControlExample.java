@@ -12,7 +12,6 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -24,12 +23,7 @@ public class ControlExample {
 	private static ResourceBundle resourceBundle =
 		ResourceBundle.getBundle("examples_control");
 	private ShellTab shellTab;
-	private SashForm form;
 	private TabFolder tabFolder;
-	private Text eventConsole;
-	private boolean logging = false;
-	private boolean [] eventsFilter = new boolean [35];
-	static boolean standAlone = false;
 	Image images[];
 
 	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2;
@@ -37,20 +31,6 @@ public class ControlExample {
 		"closedFolder.gif",
 		"openFolder.gif",
 		"target.gif" };
-	static final String [] EVENT_TYPES = { "",
-		"KeyDown", "KeyUp", "MouseDown", "MouseUp", "MouseMove", "MouseEnter",		
-		"MouseExit", "MouseDoubleClick", "Paint", "Move", "Resize", "Dispose",
-		"Selection", "DefaultSelection", "FocusIn", "FocusOut", "Expand", "Collapse",
-		"Iconify", "Deiconify", "Close", "Show", "Hide", "Modify",
-		"Verify", "Activate", "Deactivate", "Help", "DragDetect", "Arm",
-		"Traverse", "MouseHover", "HardKeyDown", "HardKeyUp"
-	};
-	static final int [] DEFAULT_FILTER = {
-		SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.Selection,
-		SWT.DefaultSelection, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify, SWT.Close,
-		SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate, SWT.Deactivate,
-		SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse, SWT.HardKeyDown, SWT.HardKeyUp
-	};
 
 	/**
 	 * Creates an instance of a ControlExample embedded inside
@@ -60,8 +40,7 @@ public class ControlExample {
 	 */
 	public ControlExample(Composite parent) {
 		initResources();
-		form = new SashForm (parent,SWT.VERTICAL);
-		tabFolder = new TabFolder (form, SWT.NONE);
+		tabFolder = new TabFolder (parent, SWT.NONE);
 		Tab [] tabs = createTabs();
 		for (int i=0; i<tabs.length; i++) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
@@ -69,93 +48,6 @@ public class ControlExample {
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		    item.setData (tabs [i]);
 		}
-		if (standAlone) {
-			createControlExampleMenu (parent.getShell ());
-			eventConsole = new Text(form, SWT.MULTI | SWT.V_SCROLL);
-			form.setWeights(new int[] {100, 0});
-			createEventConsolePopup (eventConsole);
-			for (int i = 0; i < DEFAULT_FILTER.length; i++) {
-				eventsFilter [DEFAULT_FILTER [i]] = true;
-			}
-		}
-	}
-
-	/**
-	 * Hide the event logger.
-	 */
-	void closeEventConsole() {
-		logging = false;
-		form.setWeights(new int[] {100, 0});
-		eventConsole.setEnabled (false);
-		TabItem[] tabs = tabFolder.getItems ();
-		for (int i = 0; i < tabs.length; i++) {
-			Tab tab = (Tab) tabs[i].getData ();
-			tab.recreateExampleWidgets ();
-		}
-	}
-
-	/**
-	 * Create the menubar
-	 */
-	void createControlExampleMenu(final Shell shell) {
-		Menu bar = new Menu (shell, SWT.BAR);
-		MenuItem consoleItem = new MenuItem (bar, SWT.CASCADE);
-		consoleItem.setText (ControlExample.getResourceString("Menu_Controls"));
-		shell.setMenuBar (bar);
-		Menu dropDown = new Menu (bar);
-		consoleItem.setMenu (dropDown);
-
-		final MenuItem showEvents = new MenuItem (dropDown, SWT.CHECK);
-		showEvents.setText (ControlExample.getResourceString("MenuItem_Log"));
-		showEvents.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				if (showEvents.getSelection()) {
-					openEventConsole (shell);
-				} else {
-					closeEventConsole ();
-				}
-			}
-		});
-		
-		final MenuItem exit = new MenuItem (dropDown, SWT.NONE);
-		exit.setText (ControlExample.getResourceString("MenuItem_Exit"));
-		exit.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				shell.dispose();
-			}
-		});
-	}
-
-	/**
-	 * Create the menubar
-	 */
-	void createEventConsolePopup (final Text console) {
-		Menu popup = new Menu (console.getShell (), SWT.POP_UP);
-		console.setMenu (popup);
-
-		MenuItem copy = new MenuItem (popup, SWT.PUSH);
-		copy.setAccelerator(SWT.MOD1 + 'C');
-		copy.setText (ControlExample.getResourceString("MenuItem_Copy") + "\tCtrl+C");
-		copy.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event event) {
-				console.copy ();
-			}
-		});
-		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
-		selectAll.setAccelerator(SWT.MOD1 + 'A');
-		selectAll.setText(ControlExample.getResourceString("MenuItem_SelectAll"));
-		selectAll.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event event) {
-				console.selectAll ();
-			}
-		});
-		MenuItem clear = new MenuItem (popup, SWT.PUSH);
-		clear.setText (ControlExample.getResourceString("MenuItem_Clear"));
-		clear.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event event) {
-				console.setText ("");
-			}
-		});
 	}
 
 	/**
@@ -271,39 +163,15 @@ public class ControlExample {
 	}
 
 	/**
-	 * Answers true if this example is currently logging all
-	 * events, and false otherwise.
-	 */
-	public boolean isLogging () {
-		return logging;
-	}
-	/**
-	 * Logs an event to the event console.
-	 */
-	void log(Event event) {
-		if (logging && eventsFilter [event.type]) {
-			StringBuffer output = new StringBuffer (EVENT_TYPES[event.type]);
-			output.append (": ");
-			output.append (event.widget.toString ());
-			output.append (" X: ");
-			output.append (event.x);
-			output.append (" Y: ");
-			output.append (event.y);
-			output.append ("\n");
-			eventConsole.append (output.toString ());
-		}
-	}
-	
-	/**
 	 * Invokes as a standalone program.
 	 */
 	public static void main(String[] args) {
-		standAlone = true;
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		ControlExample instance = new ControlExample(shell);
 		shell.setText(getResourceString("window.title"));
+		setShellSize(display, shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -312,24 +180,23 @@ public class ControlExample {
 	}
 	
 	/**
-	 * Open the event logger.
-	 */
-	void openEventConsole(Shell shell) {
-		logging = true;
-		form.setWeights(new int[] {80,20});
-		eventConsole.setEnabled (true);
-		TabItem[] tabs = tabFolder.getItems ();
-		for (int i = 0; i < tabs.length; i++) {
-			Tab tab = (Tab) tabs[i].getData ();
-			tab.recreateExampleWidgets ();
-		}
-	}
-	
-	/**
 	 * Grabs input focus.
 	 */
 	public void setFocus() {
 		tabFolder.setFocus();
+	}
+	
+	/**
+	 * Sets the size of the shell to it's "packed" size,
+	 * unless that makes it bigger than the display,
+	 * in which case set it to 9/10 of display size.
+	 */
+	static void setShellSize (Display display, Shell shell) {
+		Rectangle bounds = display.getBounds();
+		Point size = shell.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+		if (size.x > bounds.width) size.x = bounds.width * 9 / 10;
+		if (size.y > bounds.height) size.y = bounds.height * 9 / 10;
+		shell.setSize (size);
 	}
 }
 

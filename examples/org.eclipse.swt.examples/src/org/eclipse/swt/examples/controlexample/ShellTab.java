@@ -101,6 +101,7 @@ class ShellTab extends Tab {
 		/* Set the size, title and open the shell */
 		currentShell.setSize (300, 100);
 		currentShell.setText (ControlExample.getResourceString("Title") + shellCount);
+		hookListeners (currentShell);
 		currentShell.open ();
 		shellCount++;
 	}
