@@ -205,7 +205,6 @@ static void removeLanguageListener(Control control) {
  */
 private void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
-	renderPositions[0] = StyledText.XINSET;
 	for (int i = 0; i < dx.length - 1; i++) {
 		renderPositions[i + 1] = renderPositions[i] + dx[i];
 	}
@@ -222,7 +221,7 @@ private void calculateRenderPositions() {
 private void calculateTabStops(String text, int tabWidth) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
-	int x = StyledText.XINSET;
+	int x = 0;
 	int spaceWidth = gc.stringExtent(" ").x;
 				
 	while (tabIndex != -1) {
@@ -419,7 +418,7 @@ int getCaretPosition(int logicalOffset, int direction) {
 	int caretX;
 	
 	if (getTextLength() == 0) {
-		return StyledText.XINSET;
+		return 0;
 	}
 	// at or past end of line?
 	if (logicalOffset >= order.length) {

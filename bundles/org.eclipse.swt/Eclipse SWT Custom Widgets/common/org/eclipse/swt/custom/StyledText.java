@@ -71,7 +71,6 @@ public class StyledText extends Canvas {
 	static final char TAB = '\t';
 	static final String PlatformLineDelimiter = System.getProperty("line.separator");
 	static final int BIDI_CARET_WIDTH = 4;		
-	static final int XINSET = BIDI_CARET_WIDTH - 1;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
 	
@@ -102,6 +101,10 @@ public class StyledText extends Canvas {
 	int tabLength = 4;					// number of characters in a tab
 	int tabWidth;						// width of a tab character in the current GC
 	int lineEndSpaceWidth;				// space, in pixel, used to indicated a selected line break
+	int leftMargin = 1;
+	int topMargin = 1;
+	int rightMargin = 2;
+	int bottomMargin = 2;
 	Cursor ibeamCursor;		
 	int caretOffset = 0;
 	int caretLine = 0;
@@ -1078,6 +1081,12 @@ public StyledText(Composite parent, int style) {
 		};
 		StyledTextBidi.addLanguageListener(this, runnable);
 	}
+	if ((style & SWT.BORDER) == 0 || (style & SWT.SINGLE) == 0) {
+		leftMargin = topMargin = rightMargin = bottomMargin = 0;
+	}
+	if (isBidi()) {
+		leftMargin = BIDI_CARET_WIDTH - 1;
+	}
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
 	createKeyBindings();
@@ -1423,7 +1432,7 @@ void claimBottomFreeSpace() {
  * Scrolls text to the right to use new space made available by a resize.
  */
 void claimRightFreeSpace() {
-	int newHorizontalOffset = Math.max(0, lineCache.getWidth() - getClientArea().width);
+	int newHorizontalOffset = Math.max(0, lineCache.getWidth() - (getClientArea().width - leftMargin - rightMargin));
 	
 	if (newHorizontalOffset < horizontalScrollOffset) {			
 		// item is no longer drawn past the right border of the client area
@@ -1499,7 +1508,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		// time-consuming process.
 		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
 		lineCache.calculate(0, visibleCount);
-		width = lineCache.getWidth();
+		width = lineCache.getWidth() + leftMargin + rightMargin;
 	}
 	// If a height or width has been specified (via hHint and wHint),
 	// use those values.  Otherwise calculate the size based on the
@@ -1508,7 +1517,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = hHint;
 	} 
 	else {
-		height = count * lineHeight;
+		height = count * lineHeight + topMargin + bottomMargin;
 	}
 	// Use default values if no text is defined.
 	if (width == 0) {
@@ -1522,7 +1531,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = DEFAULT_HEIGHT;
 		}
 	}
-	Rectangle rect = computeTrim(0,0,width,height);
+	Rectangle rect = computeTrim(0, 0, width, height);
 	return new Point (rect.width, rect.height);
 }
 /**
@@ -1769,7 +1778,7 @@ void doAutoScroll(Event event) {
 		doAutoScroll(SWT.LEFT);
 	}
 	else 
-	if (event.x > area.width && wordWrap == false) {
+	if (event.x > area.width - leftMargin - rightMargin && wordWrap == false) {
 		doAutoScroll(SWT.RIGHT);
 	}
 	else {
@@ -1957,7 +1966,7 @@ void doColumnLeft() {
 			}
 			else
 			if (offsetInLine == lineLength && 
-				bidi.getCaretPosition(lineLength) != XINSET) {
+				bidi.getCaretPosition(lineLength) != 0) {
 				// at logical line end in R2L segment but there's more text (a
 				// L2R segment) go to end of R2L segment (visually left of next
 				// L2R segment)/end of line
@@ -1998,7 +2007,7 @@ void doColumnLeft() {
 			// Beginning of line reached (auto scroll finished) but not scrolled 
 			// completely to the left? Fixes 1GKM193
 			if (caretOffset - lineOffset == 0 && horizontalScrollOffset > 0 && 
-				horizontalScrollOffset <= XINSET) {
+				horizontalScrollOffset <= 0) {
 				scrollHorizontalBar(-horizontalScrollOffset);
 			}
 		}
@@ -2874,10 +2883,6 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 			}
 		}
 	}	
-	// handle empty line case
-	if (bidi != null && (paintX == 0)) {
-		paintX = XINSET;	
-	}
 	// fill the background first since expanded tabs are not 
 	// drawn as spaces. tabs just move the draw position. 
 	gc.fillRectangle(paintX - horizontalScrollOffset, paintY, selectionBackgroundWidth, lineHeight);
@@ -4963,6 +4968,8 @@ void handleMouseDoubleClick(Event event) {
 	if (event.button != 1 || doubleClickEnabled == false) {
 		return;
 	}
+	event.x -= leftMargin;
+	event.y -= topMargin;
 	mouseDoubleClick = true;
 	caretOffset = getWordEndNoSpaces(caretOffset);
 	resetSelection();
@@ -4982,6 +4989,8 @@ void handleMouseDown(Event event) {
 		return;
 	}
 	mouseDoubleClick = false;
+	event.x -= leftMargin;
+	event.y -= topMargin;
 	if (isBidi()) {
 		doBidiMouseLocationChange(event.x, event.y, select);
 	}
@@ -4993,6 +5002,8 @@ void handleMouseDown(Event event) {
  * Autoscrolling ends when the mouse button is released.
  */
 void handleMouseUp(Event event) {
+	event.x -= leftMargin;
+	event.y -= topMargin;
 	endAutoScroll();
 }
 /** 
@@ -5003,6 +5014,8 @@ void handleMouseMove(Event event) {
 	if (mouseDoubleClick == true || (event.stateMask & SWT.BUTTON1) == 0) {
 		return;
 	}
+	event.x -= leftMargin;
+	event.y -= topMargin;
 	if (isBidi()) {
 		doBidiMouseLocationChange(event.x, event.y, true);
 	}
@@ -5072,7 +5085,7 @@ void handleKey(Event event) {
  * @param event paint event
  */
 void handlePaint(Event event) {
-	int startLine = (event.y + verticalScrollOffset) / lineHeight;
+	int startLine = (event.y - topMargin + verticalScrollOffset) / lineHeight;
 	int paintYFromTopLine = (startLine - topIndex) * lineHeight;
 	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
 	int startY = paintYFromTopLine + topLineOffset;	// adjust y position for pixel based scrolling
@@ -5101,23 +5114,35 @@ void handlePaint(Event event) {
 	}
 	font = event.gc.getFont();
 	fontData = font.getFontData()[0];
-	lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-	lineGC = new GC(lineBuffer);	
-	lineGC.setFont(font);
-	lineGC.setForeground(foreground);
-	lineGC.setBackground(background);
-	for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
-		String line = content.getLine(i);
-		drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
-	}
-	if (paintY < renderHeight) {
+	if (clientArea.width > (leftMargin + rightMargin)) {
+		lineBuffer = new Image(getDisplay(), clientArea.width - leftMargin - rightMargin, renderHeight);
+		lineGC = new GC(lineBuffer);	
+		lineGC.setFont(font);
+		lineGC.setForeground(foreground);
 		lineGC.setBackground(background);
-		lineGC.setForeground(background);
-		lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+			String line = content.getLine(i);
+			drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
+		}
+		if (paintY < renderHeight) {
+			lineGC.setBackground(background);
+			lineGC.setForeground(background);
+			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+		}
+		event.gc.drawImage(lineBuffer, leftMargin, topMargin + startY);
+		lineGC.dispose();
+		lineBuffer.dispose();
 	}
-	event.gc.drawImage(lineBuffer, 0, startY);
-	lineGC.dispose();
-	lineBuffer.dispose();
+	// clear the margin background
+	event.gc.setBackground(background);
+	event.gc.fillRectangle(0, 0, clientArea.width, topMargin);
+	event.gc.fillRectangle(0, 0, leftMargin, renderHeight);	
+	event.gc.fillRectangle(
+		0, clientArea.height - bottomMargin, 
+		clientArea.width, bottomMargin);
+	event.gc.fillRectangle(
+		clientArea.width - rightMargin, 0, 
+		rightMargin, renderHeight);
 }
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
@@ -5220,7 +5245,7 @@ void handleTextChanging(TextChangingEvent event) {
 		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
 	}
 	else {
-		super.redraw(0, textChangeY, getClientArea().width, lineHeight, true);	
+		super.redraw(leftMargin, textChangeY + topMargin, getClientArea().width - leftMargin - rightMargin, lineHeight, true);	
 	}
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
@@ -5672,6 +5697,8 @@ public void redraw() {
  * @see Control#update
  */
 public void redraw(int x, int y, int width, int height, boolean all) {
+	x += leftMargin;
+	y += topMargin;
 	super.redraw(x, y, width, height, all);
 	if (height > 0) {
 		int lineCount = content.getLineCount();
@@ -5702,7 +5729,6 @@ public void redraw(int x, int y, int width, int height, boolean all) {
  *  without invalidating the redraw area.
  */
 void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
-	Rectangle clientArea = getClientArea();
 	int lineCount = lastLine - firstLine + 1;
 	int redrawY = firstLine * lineHeight - verticalScrollOffset;
 	int firstLineOffset = content.getOffsetAtLine(firstLine);
@@ -5714,13 +5740,11 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	// redraw line break marker (either space or full client area width)
 	// if redraw range extends over more than one line and background should be redrawn
 	if (lastLine > firstLine && clearBackground) {
-		int lineBreakStartX = bidi.getTextWidth();
-		// handle empty line case
-		if (lineBreakStartX == 0) lineBreakStartX = XINSET;
-		lineBreakStartX = lineBreakStartX - horizontalScrollOffset;
+		int lineBreakStartX = bidi.getTextWidth() - horizontalScrollOffset;
 		int lineBreakWidth;		
+
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
-			lineBreakWidth = clientArea.width - lineBreakStartX;
+			lineBreakWidth = getClientArea().width - lineBreakStartX;
 		}
 		else {
 			lineBreakWidth = lineEndSpaceWidth;
@@ -5754,7 +5778,6 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
  *  without invalidating the redraw area.
  */
 void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
-	Rectangle clientArea = getClientArea();
 	String line = content.getLine(firstLine);
 	int lineCount = lastLine - firstLine + 1;
 	int redrawX = getXAtOffset(line, firstLine, offsetInFirstLine);
@@ -5764,7 +5787,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 
 	// calculate redraw stop location
 	if ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine) {
-		redrawStopX = clientArea.width;
+		redrawStopX = getClientArea().width;
 	}
 	else {
 		redrawStopX = getXAtOffset(line, firstLine, endOffset - firstLineOffset);
@@ -6142,10 +6165,38 @@ void scrollHorizontal(int pixels) {
 		return;
 	}
 	clientArea = getClientArea();
-	scroll(
-		pixels * -1, 0, 					// destination x, y
-		0, 0,						// source x, y
-		clientArea.width, clientArea.height, true);
+	if (pixels > 0) {
+		int sourceX = leftMargin + pixels;
+		int scrollWidth = clientArea.width - sourceX - rightMargin;
+		int scrollHeight = clientArea.height - topMargin - bottomMargin;
+		scroll(
+			leftMargin, topMargin, 						// destination x, y
+			sourceX, topMargin,							// source x, y
+			scrollWidth, scrollHeight, true);
+		if (sourceX > scrollWidth) {
+			// redraw from end of scrolled area to beginning of scroll 
+			// invalidated area
+			super.redraw(
+				leftMargin + scrollWidth, topMargin, 
+				pixels - scrollWidth, scrollHeight, true);
+		}
+	}
+	else {
+		int destinationX = leftMargin - pixels;
+		int scrollWidth = clientArea.width - destinationX - rightMargin;
+		int scrollHeight = clientArea.height - topMargin - bottomMargin;
+		scroll(
+			destinationX, topMargin,					// destination x, y
+			leftMargin, topMargin,						// source x, y
+			scrollWidth, scrollHeight, true);
+		if (destinationX > scrollWidth) {
+			// redraw from end of scroll invalidated area to scroll 
+			// destination
+			super.redraw(
+				leftMargin + scrollWidth, topMargin, 
+				-pixels - scrollWidth, scrollHeight, true);	
+		}
+	}
 	horizontalScrollOffset += pixels;
 	setCaretLocation();
 }
@@ -6331,7 +6382,9 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 			caretX -= (getCaretWidth() - 1);
 		}
 		createBidiCaret();
-		caret.setLocation(caretX, caretLine * lineHeight - verticalScrollOffset);
+		caret.setLocation(
+			caretX + leftMargin, 
+			caretLine * lineHeight - verticalScrollOffset + topMargin);
 		if (gc != null) {
 			gc.dispose();
 		}
@@ -6404,7 +6457,9 @@ void setCaretLocation(int caretX, int line) {
 	else {	
 		Caret caret = getCaret();		
 		if (caret != null) {
-			caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+			caret.setLocation(
+				caretX + leftMargin, 
+				line * lineHeight - verticalScrollOffset + topMargin);
 		}
 	}
 }
@@ -6419,8 +6474,12 @@ void setCaretLocation() {
 		Caret caret = getCaret();		
 		if (caret != null) {
 			int lineStartOffset = content.getOffsetAtLine(caretLine);
-			int caretX = getXAtOffset(content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
-			caret.setLocation(caretX, caretLine * lineHeight - verticalScrollOffset);
+			int caretX = getXAtOffset(
+				content.getLine(caretLine), 
+				caretLine, caretOffset - lineStartOffset);
+			caret.setLocation(
+				caretX + leftMargin, 
+				caretLine * lineHeight - verticalScrollOffset + topMargin);
 		}
 	}
 }
@@ -6689,10 +6748,10 @@ void setHorizontalScrollBar() {
 			horizontalBar.setValues(
 				horizontalBar.getSelection(),
 				horizontalBar.getMinimum(),
-				lineCache.getWidth(),		// maximum
-				clientArea.width,				// thumb size
+				lineCache.getWidth(),							// maximum
+				clientArea.width - leftMargin - rightMargin,	// thumb size
 				horizontalBar.getIncrement(),
-				clientArea.width);				// page size
+				clientArea.width - leftMargin - rightMargin);	// page size
 		}
 		else 
 		if (horizontalBar.getThumb() != INACTIVE || horizontalBar.getMaximum() != INACTIVE) {
@@ -6757,8 +6816,8 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 	}
 	startLine -= topIndex;
 	super.redraw(
-		0, startLine * lineHeight, 
-		getClientArea().width, lineCount * lineHeight, true);
+		leftMargin, startLine * lineHeight + topMargin, 
+		getClientArea().width - leftMargin - rightMargin, lineCount * lineHeight, true);
 }
 /** 
  * Sets the background of the specified GC for a line rendering operation,
@@ -7074,12 +7133,16 @@ public void setStyleRange(StyleRange range) {
 			String firstLineText = content.getLine(firstLine);
 			int redrawX = getXAtOffset(firstLineText, firstLine, range.start - firstLineOffset);
 			int redrawY = firstLine * lineHeight - verticalScrollOffset;
-			super.redraw(redrawX, redrawY, getClientArea().width, lineHeight, true);
+			super.redraw(
+				redrawX + leftMargin, redrawY + topMargin, 
+				getClientArea().width, lineHeight, true);
 		}
 		if (redrawLastLine) {
 			// redraw the whole line if the font style changed on the last line	
 			int redrawY = lastLine * lineHeight - verticalScrollOffset;
-			super.redraw(0, redrawY, getClientArea().width, lineHeight, true);
+			super.redraw(
+				leftMargin, redrawY + topMargin, 
+				getClientArea().width, lineHeight, true);
 		}
 	}
 	else {
@@ -7401,7 +7464,7 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
  *	not scrolled. 	
  */
 boolean showLocation(int x, int line) {
-	int clientAreaWidth = getClientArea().width;
+	int clientAreaWidth = getClientArea().width - leftMargin - rightMargin;
 	int verticalIncrement = getVerticalIncrement();
 	int horizontalIncrement = clientAreaWidth / 4;
 	boolean scrolled = false;		
