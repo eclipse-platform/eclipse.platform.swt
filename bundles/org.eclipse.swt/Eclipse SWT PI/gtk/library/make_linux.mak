@@ -78,6 +78,7 @@ CFLAGS = -O -Wall \
 		$(NATIVE_STATS) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
+		-I$(JAVA_HOME)/include/linux \
 		-fpic \
 		${SWT_PTR_CFLAGS}
 LIBS = -shared -fpic
