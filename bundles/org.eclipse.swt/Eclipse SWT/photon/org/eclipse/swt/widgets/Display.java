@@ -63,7 +63,14 @@ import org.eclipse.swt.graphics.*;
  * (only) when constructing multi-threaded applications to use the
  * inter-thread communication mechanisms which this class provides
  * when required.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose</dd>
+ * </dl>
+ * <p>
  * All SWT API methods which may only be called from the user-interface
  * thread are distinguished in their documentation by indicating that
  * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
@@ -94,6 +101,7 @@ public class Display extends Device {
 	
 	/* Deferred Events */
 	Event [] eventQueue;
+	EventTable eventTable;
 	
 	/* Events Dispatching and Callback */
 	Callback windowCallback, drawCallback, workCallback, inputCallback, hotkeyCallback;
@@ -288,6 +296,34 @@ public Display (DeviceData data) {
 }
 
 /**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs. When the
+ * event does occur in the display, the listener is notified by
+ * sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeListener
+ * 
+ * @since 2.0 
+ */
+public void addListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
+/**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
@@ -327,6 +363,25 @@ synchronized void checkDisplay () {
 
 protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+/**
+ * Requests that the connection between SWT and the underlying
+ * operating system be closed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 2.0
+ */
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
 }
 
 String convertToLf (String text) {
@@ -1180,6 +1235,7 @@ synchronized void register () {
 }
 
 protected void release () {
+	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1244,6 +1300,32 @@ void releaseDisplay () {
 	values = null;
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ * 
+ * @since 2.0 
+ */
+public void removeListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
@@ -1251,8 +1333,8 @@ boolean runAsyncMessages () {
 boolean runDeferredEvents () {
 	/*
 	* Run deferred events.  This code is always
-	* called  in the Display's thread so it must
-	* be re-enterant need not be synchronized.
+	* called in the Display's thread so it must
+	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
 		
@@ -1268,7 +1350,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
-				widget.notifyListeners (event.type, event);
+				widget.sendEvent (event);
 			}
 		}
 
@@ -1282,6 +1364,17 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
+	event.display = this;
+	event.type = eventType;
+	if (event.time == 0) {
+		event.time = (int) System.currentTimeMillis ();
+	}
+	eventTable.sendEvent (event);
 }
 
 /**

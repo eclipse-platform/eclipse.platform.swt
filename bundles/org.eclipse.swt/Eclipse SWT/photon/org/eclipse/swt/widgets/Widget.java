@@ -488,25 +488,24 @@ boolean isValidThread () {
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	sendEvent (eventType, event);
+}
+
+void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
 	event.widget = this;
-	eventTable.sendEvent (event);
+	event.display = display;
+	if (event.time == 0) {
+		event.time = (int) System.currentTimeMillis ();
+	}
+	getDisplay ().postEvent (event);
 }
 
 void postEvent (int eventType) {
 	if (eventTable == null) return;
 	postEvent (eventType, new Event ());
-}
-
-void postEvent (int eventType, Event event) {
-	if (eventTable == null) return;
-	event.type = eventType;
-	event.widget = this;
-	if (event.time == 0) {
-		event.time = (int) System.currentTimeMillis ();
-	}
-	getDisplay ().postEvent (event);
 }
 
 int processActivate (int info) {
@@ -715,18 +714,25 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	}
 }
 
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	Display display = getDisplay ();
+	event.widget = this;
+	event.type = eventType;
+	event.display = display;
+	if (event.time == 0) {
+		event.time = (int) System.currentTimeMillis ();
+	}
+	eventTable.sendEvent (event);
+}
+
 void sendEvent (int eventType) {
 	if (eventTable == null) return;
 	sendEvent (eventType, new Event ());
 }
 
-void sendEvent (int eventType, Event event) {
+void sendEvent (Event event) {
 	if (eventTable == null) return;
-	event.widget = this;
-	event.type = eventType;
-	if (event.time == 0) {
-		event.time = (int) System.currentTimeMillis ();
-	}
 	eventTable.sendEvent (event);
 }
 
