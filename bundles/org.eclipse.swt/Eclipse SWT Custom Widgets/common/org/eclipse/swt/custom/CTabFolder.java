@@ -500,39 +500,39 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	}
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
-	int minWidth = 0;
-	int minHeight = 0;
+	checkWidget();	
 	// preferred width of tab area to show all tabs
+	int tabW = 0;
 	GC gc = new GC(this);
-	int selectedMax = 0;
-	int selectedMaxIndex = -1;
 	for (int i = 0; i < items.length; i++) {
-		int width = items[i].preferredWidth(gc, true);
-		if ( width > selectedMax) {
-			selectedMax = width;
-			selectedMaxIndex = i;
+		if (single) {
+			tabW = Math.max(tabW, items[i].preferredWidth(gc, true));
+		} else {
+			tabW += items[i].preferredWidth(gc, i == selectedIndex);
 		}
 	}
-	for (int i = 0; i < items.length; i++) {
-		minWidth += items[i].preferredWidth(gc, i == selectedMaxIndex);
-	}
 	gc.dispose();
-
+	if (showMax) tabW += BUTTON_SIZE;
+	if (showMin) tabW += BUTTON_SIZE;
+	if (single) tabW += 3*BUTTON_SIZE/2; //chevron
+	if (topRight != null) tabW += topRight.computeSize(SWT.DEFAULT, tabHeight).x;
+	
+	int controlW = 0;
+	int controlH = 0;
 	// preferred size of controls in tab items
 	for (int i = 0; i < items.length; i++) {
 		Control control = items[i].getControl();
 		if (control != null && !control.isDisposed()){
 			Point size = control.computeSize (wHint, hHint);
-			minWidth = Math.max (minWidth, size.x);
-			minHeight = Math.max (minHeight, size.y);
+			controlW = Math.max (controlW, size.x);
+			controlH = Math.max (controlH, size.y);
 		}
 	}
 
+	int minWidth = Math.max(tabW, controlW);
+	int minHeight = (minimized) ? 0 : controlH;
 	if (minWidth == 0) minWidth = DEFAULT_WIDTH;
 	if (minHeight == 0) minHeight = DEFAULT_HEIGHT;
-
-	if (minimized) minHeight = 0;
 	
 	if (wHint != SWT.DEFAULT) minWidth  = wHint;
 	if (hHint != SWT.DEFAULT) minHeight = hHint;
@@ -789,6 +789,14 @@ void drawBody(Event event) {
 		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
 			gc.setBackground(getBackground());
 			gc.fillRectangle(xClient - marginWidth, yClient - marginHeight, width, height);
+		}
+	} else {
+		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+			int height = borderTop + tabHeight + highlight_header + borderBottom;
+			if (size.y > height) {
+				gc.setBackground(getParent().getBackground());
+				gc.fillRectangle(0, height, size.x, size.y - height);
+			}
 		}
 	}
 }
