@@ -1680,7 +1680,6 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 	timerCount++;
 	int timerID = OS.SetTimer (hwndShell, timerCount, milliseconds, 0);
-	System.out.println (timerID);
 	if (timerID != 0) {
 		timerList [index] = runnable;
 		timerIds [index] = timerID;
