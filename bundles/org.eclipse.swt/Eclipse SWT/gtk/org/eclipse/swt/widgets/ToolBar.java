@@ -88,8 +88,6 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
-/*	int relief = ((style&SWT.FLAT)!=0)? OS.GTK_RELIEF_NONE : OS.GTK_RELIEF_NORMAL;
-	OS.gtk_toolbar_set_button_relief(handle, relief);*/
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
