@@ -181,6 +181,7 @@ public class Display extends Device {
 		/* Virtual and Ascii Keys */
 		{OS.XK_BackSpace,	SWT.BS},
 		{OS.XK_Return,		SWT.CR},
+		{OS.XK_KP_Enter,	SWT.CR},
 		{OS.XK_Delete,		SWT.DEL},
 		{OS.XK_Escape,		SWT.ESC},
 		{OS.XK_Cancel,		SWT.ESC},
@@ -681,6 +682,7 @@ boolean filterEvent (XAnyEvent event) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return false;
 
+	/* Filter the event for the IME */
 	if (!OS.IsLinux) { 
 		if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
 	}
