@@ -91,6 +91,7 @@ public class Display extends Device {
 	static String APP_NAME = "SWT";
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
+	XKeyEvent keyEvent = new XKeyEvent ();
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	int defaultFont, defaultFontList;
@@ -240,8 +241,6 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 
-	static final byte[] _MOTIF_DEFAULT_LOCALE = Converter.wcsToMbcs(null, "_MOTIF_DEFAULT_LOCALE");
-
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
@@ -349,10 +348,12 @@ int caretProc (int clientData, int id) {
 }
 int checkExposeProc (int display, int event, int window) {
 	OS.memmove (xExposeEvent, event, XExposeEvent.sizeof);
-	if (xExposeEvent.window == window) {
-		if (xEvent.type == OS.Expose || xEvent.type == OS.GraphicsExpose) {
+	if (xExposeEvent.window != window) return 0;
+	switch (xExposeEvent.type) {
+		case OS.Expose:
+		case OS.GraphicsExpose:
 			exposeCount++;
-		}
+			break;
 	}
 	return 0;
 }
@@ -470,10 +471,9 @@ boolean filterEvent (XAnyEvent event) {
 	/* Check the event and find the widget */
 	if (event.type != OS.KeyPress) return false;
 	if (!OS.IsLinux && OS.XFilterEvent(event, OS.None)) return true;
-	XKeyEvent keyEvent = new XKeyEvent ();
 	
 	/* Move the any event into the key event */
-	OS.memmove (keyEvent, event, XAnyEvent.sizeof);
+	OS.memmove (keyEvent, event, XKeyEvent.sizeof);
 	if (keyEvent.keycode == 0) return false;
 	int xWindow = keyEvent.window;
 	if (xWindow == 0) return false;
@@ -483,8 +483,6 @@ boolean filterEvent (XAnyEvent event) {
 	if (handle == 0) return false;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return false;
-	if (!(widget instanceof Control)) return false;
-	Control control = (Control) widget;
 	
 	/* Get the unaffected character and keysym */
 	int oldState = keyEvent.state;
@@ -500,7 +498,7 @@ boolean filterEvent (XAnyEvent event) {
 	
 	/* Check for a mnemonic key */
 	if (key != 0) {
-		if (control.translateMnemonic (key, keyEvent)) return true;
+		if (widget.translateMnemonic (key, keyEvent)) return true;
 	}
 	
 	/* Check for a traversal key */
@@ -516,7 +514,7 @@ boolean filterEvent (XAnyEvent event) {
 		case OS.XK_Right:
 		case OS.XK_Page_Up:
 		case OS.XK_Page_Down:
-			if (control.translateTraversal (keysym, keyEvent)) return true;
+			if (widget.translateTraversal (keysym, keyEvent)) return true;
 	}
 
 	/* Answer false because the event was not processed */
@@ -1760,7 +1758,7 @@ int textWidth (String string, int fontList) {
 	if (string.length () == 0) return 0;
 	String codePage = Converter.getCodePage (xDisplay, fontList);
 	byte [] textBuffer = Converter.wcsToMbcs (codePage, string, true);
-	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
+	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, null);
 	int width = OS.XmStringWidth (fontList, xmString);
 	OS.XmStringFree (xmString);
 	return width;

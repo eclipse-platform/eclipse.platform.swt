@@ -876,6 +876,12 @@ public String toString () {
 int topHandle () {
 	return handle;
 }
+boolean translateMnemonic (int key, XKeyEvent xEvent) {
+	return false;
+}
+boolean translateTraversal (int key, XKeyEvent xEvent) {
+	return false;
+}
 char wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, null);
 }
