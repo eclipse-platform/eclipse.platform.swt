@@ -147,7 +147,7 @@ void createHandle (int index) {
 	event.data [4] = 0;
 	int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
 	OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
-	int result = OS.XSendEvent (OS.GDK_DISPLAY (), trayWindow, false, OS.NoEventMask, clientEvent);
+	OS.XSendEvent (OS.GDK_DISPLAY (), trayWindow, false, OS.NoEventMask, clientEvent);
 	OS.g_free (clientEvent);
 }
 
