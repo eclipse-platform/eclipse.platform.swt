@@ -101,11 +101,6 @@ TableTreeItem(TableTree parent, TableTreeItem parentItem, int style, int index) 
 	} else {
 		parentItem.addItem(this, index);
 	}
-	addDisposeListener(new DisposeListener() {
- 		public void widgetDisposed(DisposeEvent e) {
- 			TableTreeItem.this.widgetDisposed(e);
- 		}
- 	});	
 }
 void addCheck() {
 	Table table = parent.getTable();
@@ -351,10 +346,11 @@ int visibleChildrenCount () {
 	return count;
 }
 
-void widgetDisposed(DisposeEvent e) {
+public void dispose () {
 	for (int i = items.length - 1; i >= 0; i--) {
 		items[i].dispose();
 	}
+	super.dispose();
 	if (!parent.inDispose) {
 		if (parentItem != null) {
 			parentItem.removeItem(this);
