@@ -152,26 +152,36 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 					assertTrue(":20:", false);
 					break;
 				}
+				case 21: {
+					assertTrue(":21a:", event.start == 0);
+					assertTrue(":21b:", event.length == 16);
+					assertTrue(":21c:", event.replacedText.equals("L1\r\nL2\r\nL3\r\nL4\r\n"));
+					break;
+				}
 			}
 		}
 	};
 	styledText.addExtendedModifyListener(listener);
 	
 	boolean exceptionHandled = false;
-	verify = 1;
+	verify = 0;
 	styledText.setText("testing");
+	verify = 1;
 	styledText.replaceTextRange(0, 0, "\n");
 
-	verify = 2;
+	verify = 0;
 	styledText.setText("\n\n");
+	verify = 2;
 	styledText.replaceTextRange(0, 2, "a");
 
-	verify = 3;
+	verify = 0;
 	styledText.setText("a");
+	verify = 3;
 	styledText.replaceTextRange(0, 1, "\n\n");
 
-	verify = 4;
+	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
+	verify = 4;
 	try {styledText.replaceTextRange(3, 1, "test\n");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -179,28 +189,34 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":4: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 5;
+	verify = 0;
 	styledText.setText("Line 1\r\nLine 2");
+	verify = 5;
 	styledText.replaceTextRange(0, 0, "\r");
 
-	verify = 6;
+	verify = 0;
 	styledText.setText("This\nis a test\nline 3\nline 4");
+	verify = 6;
 	styledText.replaceTextRange(21, 7, "");
 
-	verify = 7;
+	verify = 0;
 	styledText.setText("This\nis a test\r");
+	verify = 7;
 	styledText.replaceTextRange(5, 9, "");
 
-	verify = 8;
+	verify = 0;
 	styledText.setText("\nL1\r\nL2\r\n");
+	verify = 8;
 	styledText.replaceTextRange(7, 2, "");
 
-	verify = 9;
+	verify = 0;
 	styledText.setText("L1\r\n");
+	verify = 9;
 	styledText.replaceTextRange(2, 2, "test");
 
-	verify = 10;
+	verify = 0;
 	styledText.setText("L1\r\n");
+	verify = 10;
 	try {styledText.replaceTextRange(3, 1, "");} 
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -208,8 +224,9 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":10: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 11;
+	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
+	verify = 11;
 	try {styledText.replaceTextRange(1, 2, "");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -217,16 +234,19 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":11: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 12;
+	verify = 0;
 	styledText.setText("L1\r");
+	verify = 12;
 	styledText.replaceTextRange(3, 0, "\n");
 
-	verify = 13;
+	verify = 0;
 	styledText.setText("L1\n");
+	verify = 13;
 	styledText.replaceTextRange(2, 0, "\r");
 
-	verify = 14;
+	verify = 0;
 	styledText.setText("L1\r\n");
+	verify = 14;
 	try {styledText.replaceTextRange(3, 0, "test");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -234,12 +254,14 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":14: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 15;
+	verify = 0;
 	styledText.setText("L1\r\n");
+	verify = 15;
 	styledText.replaceTextRange(2, 2, "test\n\n");
 
-	verify = 16;
+	verify = 0;
 	styledText.setText("L1\r\n");
+	verify = 16;
 	try {styledText.replaceTextRange(3, 1, "test\r\n");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -247,8 +269,9 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":16: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 17;
+	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
+	verify = 17;
 	try {styledText.replaceTextRange(1, 2, "test\n\n");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
@@ -256,22 +279,28 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	assertTrue(":17: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
 
-	verify = 18;
+	verify = 0;
  	styledText.setText("L1\r");
+	verify = 18;
 	styledText.replaceTextRange(3, 0, "\ntest\r\n");
 
-	verify = 19;
+	verify = 0;
 	styledText.setText("L1\n");
+	verify = 19;
 	styledText.replaceTextRange(2, 0, "test\r\r\r");
 
-	verify = 20;
+	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
+	verify = 20;
 	try {styledText.replaceTextRange(3, 1, "test\n");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
 	}
 	assertTrue(":20: exception not thrown", exceptionHandled);
 	exceptionHandled = false;
+
+	verify = 21;
+	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	styledText.removeExtendedModifyListener(listener);
 }
 
