@@ -941,7 +941,8 @@ void removeItem (TreeItem item, int index) {
 	/* second condition below handles creation of item within Expand callback */
 	if (items.length == 0 && !parent.inExpand) {
 		expanded = false;
-		redrawItem ();		/* expander box no longer needed */
+		Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 	}
 }
 public void setBackground (Color value) {
@@ -967,7 +968,8 @@ public void setBackground (int columnIndex, Color value) {
 	if (cellBackgrounds [columnIndex] == value) return;
 	if (cellBackgrounds [columnIndex] != null && cellBackgrounds [columnIndex].equals (value)) return;
 	cellBackgrounds [columnIndex] = value;
-	redrawItem ();
+	Rectangle bounds = getCellBounds (columnIndex);
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setChecked (boolean value) {
 	checkWidget ();
@@ -1098,7 +1100,8 @@ public void setFont (int columnIndex, Font value) {
 	}
 	gc.dispose ();
 
-	redrawItem ();
+	Rectangle bounds = getCellBounds (columnIndex);
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setForeground (Color value) {
 	checkWidget ();
@@ -1123,14 +1126,16 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForegrounds [columnIndex] == value) return;
 	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
 	cellForegrounds [columnIndex] = value;
-	redrawItem ();
+	Rectangle bounds = getCellBounds (columnIndex);
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setGrayed (boolean value) {
 	checkWidget ();
 	if ((parent.getStyle () & SWT.CHECK) == 0) return;
 	if (grayed == value) return;
 	grayed = value;
-	redrawItem ();
+	Rectangle bounds = getCheckboxBounds ();
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setImage (Image value) {
 	checkWidget ();
@@ -1236,7 +1241,9 @@ public void setText (int columnIndex, String value) {
 	gc.setFont (getFont (columnIndex));
 	textWidths [columnIndex] = gc.textExtent (value).x;
 	gc.dispose ();
-	redrawItem ();
+	
+	Rectangle bounds = getCellBounds (columnIndex);
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 /*
  * The parent's font has changed, so if this font was being used by the receiver then
