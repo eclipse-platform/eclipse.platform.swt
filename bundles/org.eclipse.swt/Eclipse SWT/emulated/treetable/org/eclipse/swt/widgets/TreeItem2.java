@@ -809,6 +809,7 @@ public void setExpanded(boolean value) {
 			Event newEvent = new Event();
 			newEvent.item = this;
 			parent.sendEvent(SWT.Selection, newEvent);
+			if (isDisposed()) return;
 			parent.showItem(this);
 		}
 		parent.redrawItems(availableIndex, oldAvailableLength - 1);
