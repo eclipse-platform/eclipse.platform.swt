@@ -84,7 +84,15 @@ static int getDesktop(Display display) {
  *	</ul>
  */
 public static Program findProgram(String extension) {
-	return findProgram(Display.getCurrent(), extension);
+	boolean disposeDisplay = false;
+	Display display = Display.getCurrent ();
+	if (display == null) {
+		display = new Display ();
+		disposeDisplay = true;
+	}
+	Program result = findProgram (display, extension);
+	if (disposeDisplay) display.dispose ();
+	return result;
 }
 
 /*
@@ -140,7 +148,15 @@ private static Program findProgram(Display display, String extension) {
  * @return an array of extensions
  */
 public static String[] getExtensions() {
-	return getExtensions(Display.getCurrent());
+	boolean disposeDisplay = false;
+	Display display = Display.getCurrent ();
+	if (display == null) {
+		display = new Display ();
+		disposeDisplay = true;
+	}
+	String [] result = getExtensions (display);
+	if (disposeDisplay) display.dispose ();
+	return result;
 }
 
 /*
@@ -181,7 +197,15 @@ private static String[] getExtensions(Display display) {
  * @return an array of programs
  */
 public static Program[] getPrograms() {
-	return getPrograms(Display.getCurrent());
+	boolean disposeDisplay = false;
+	Display display = Display.getCurrent ();
+	if (display == null) {
+		display = new Display ();
+		disposeDisplay = true;
+	}
+	Program [] result = getPrograms (display);
+	if (disposeDisplay) display.dispose ();
+	return result;
 }
 
 /*
@@ -403,7 +427,15 @@ private static String[] parseCommand(String cmd) {
  *	</ul>
  */
 public static boolean launch(String fileName) {
-	return launch(Display.getCurrent(), fileName);
+	boolean disposeDisplay = false;
+	Display display = Display.getCurrent ();
+	if (display == null) {
+		display = new Display ();
+		disposeDisplay = true;
+	}
+	boolean result = launch (display, fileName);
+	if (disposeDisplay) display.dispose ();
+	return result;
 }
 
 /*
