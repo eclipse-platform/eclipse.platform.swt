@@ -672,6 +672,22 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	
+	/*
+	* Bug in Windows.  For some reason, CB_FINDSTRINGEXACT
+	* will not find empty strings even though it is legal
+	* to insert an empty string into a combo.  The fix is
+	* to search the combo, an item at a time.
+	*/
+	if (string.length () == 0) {
+		int count = getItemCount ();
+		for (int i=start; i<count; i++) {
+			if (string.equals (getItem (i))) return i;
+		}
+		return -1;
+	}
+
+	/* Use CB_FINDSTRINGEXACT to search for the item */	
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last = 0;
@@ -1125,7 +1141,7 @@ boolean translateAccelerator (MSG msg) {
 	* in order to process accented keys properly.
 	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	if (msg.hwnd == hwndText) {
+	if (hwndText != 0 && msg.hwnd == hwndText) {
 		switch (msg.message) {
 			case OS.WM_CHAR:
 			case OS.WM_SYSCHAR:
@@ -1161,23 +1177,37 @@ boolean translateTraversal (MSG msg) {
 	* The fix is to look for these keys and not call
 	* the window proc.
 	*/
-	switch (msg.wParam) {
-		case OS.VK_ESCAPE:
-			/* Allow the escape key to close the combo box */
-			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-				return false;
-			}
-			// FALL THROUGH
-		case OS.VK_TAB:
-		case OS.VK_RETURN:
-			boolean translated = super.translateTraversal (msg);
-			if (!translated && msg.wParam == OS.VK_RETURN) {
-				sendEvent (SWT.DefaultSelection);
-				// widget could be disposed at this point
-			}
-			return true;
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0 && msg.hwnd == hwndText) {
+		switch (msg.wParam) {
+			case OS.VK_ESCAPE:
+				/* Allow the escape key to close the combo box */
+				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+					return false;
+				}
+				// FALL THROUGH
+			case OS.VK_TAB:
+			case OS.VK_RETURN:
+				boolean translated = super.translateTraversal (msg);
+				if (!translated) {
+					sendKeyEvent (SWT.KeyDown, msg.message, msg.wParam, msg.lParam);
+					if (msg.wParam == OS.VK_RETURN) {
+						sendEvent (SWT.DefaultSelection);
+						// widget could be disposed at this point
+					}
+				}
+				return true;
+		}
 	}
 	return super.translateTraversal (msg);
+}
+
+boolean traverseEscape () {
+	if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+		OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
+		return true;
+	}
+	return super.traverseEscape ();
 }
 
 int widgetStyle () {
