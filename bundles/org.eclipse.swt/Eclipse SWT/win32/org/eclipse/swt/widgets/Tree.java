@@ -390,7 +390,8 @@ public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = point.x;	 lpht.y = point.y;
+	lpht.x = point.x;
+	lpht.y = point.y;
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEM) != 0) {
 		TVITEM tvItem = new TVITEM ();
@@ -417,8 +418,13 @@ public TreeItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-	int count = 0;
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (hItem == 0) return 0;
+	return getItemCount (hItem);
+}
+
+int getItemCount (int hItem) {
+	int count = 0;
 	while (hItem != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		count++;
@@ -461,8 +467,13 @@ public int getItemHeight () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-	int count = 0;
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (hItem == 0) return new TreeItem [0];
+	return getItems (hItem);
+}
+
+TreeItem [] getItems (int hTreeItem) {
+	int count = 0, hItem = hTreeItem;
 	while (hItem != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		count++;
@@ -471,11 +482,24 @@ public TreeItem [] getItems () {
 	TreeItem [] result = new TreeItem [count];
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	tvItem.hItem = hTreeItem;
+	/*
+	* Feature in Windows.  In some cases an expand or collapse message
+	* can occurs from within TVM_DELETEITEM.  When this happens, the item
+	* being destroyed has been removed from the list of items but has not
+	* been deleted from the tree.  The fix is to check for null items and
+	* remove them from the list.
+	*/
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		result [index++] = items [tvItem.lParam];
+		TreeItem item = items [tvItem.lParam];
+		if (item != null) result [index++] = item;
 		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
+	}
+	if (index != count) {
+		TreeItem [] newResult = new TreeItem [index];
+		System.arraycopy (result, 0, newResult, 0, index);
+		result = newResult;
 	}
 	return result;
 }
@@ -627,7 +651,7 @@ public TreeItem getTopItem () {
 	tvItem.mask = OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
 	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
-	return items  [tvItem.lParam];
+	return items [tvItem.lParam];
 }
 
 int imageIndex (Image image) {
@@ -1786,7 +1810,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT:
-					TreeItem item = items [nmcd.lItemlParam];
 					/*
 					* Feature on Windows.  When a new tree item is inserted
 					* using TVM_INSERTITEM and the tree is using custom draw,
@@ -1797,6 +1820,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					* NOTE: This only happens on XP with the version 6.00 of
 					* COMCTL32.DLL,
 					*/
+					TreeItem item = items [nmcd.lItemlParam];
 					if (item == null) break;
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_STATE;
@@ -1871,17 +1895,16 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
 				int [] action = new int [1];
 				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
-				Event event = new Event ();
 				/*
-				* Feature on Windows.  In some cases, a 
-				* TVM_ITEMEXPANDING message is sent from
-				* within a TVM_DELETEITEM message, for the node
-				* being destroyed.  The TreeItem has already been
-				* removed from the items array and is no longer valid.
-				* The fix is to check for null. 
+				* Feature on Windows.  In some cases, TVM_ITEMEXPANDING
+				* is sent from within TVM_DELETEITEM for the tree item
+				* being destroyed.  By the time the message is sent,
+				* the item has already been removed from the list of
+				* items.  The fix is to check for null. 
 				*/
 				TreeItem item = items [tvItem.lParam];
 				if (item == null) break;
+				Event event = new Event ();
 				event.item = item;
 				/*
 				* It is possible (but unlikely), that application
