@@ -23,7 +23,7 @@
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="plugin.properties,plugin.xml,about.html,META-INF/" />
+			<fileset dir="${basedir}" includes="plugin.properties,about.html,META-INF/" />
 		</copy>
 	</target>
 
