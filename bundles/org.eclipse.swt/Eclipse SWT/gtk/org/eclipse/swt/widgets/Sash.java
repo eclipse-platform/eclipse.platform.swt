@@ -132,13 +132,8 @@ void createHandle (int index) {
 	handle = OS.gtk_drawing_area_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, handle);
-	OS.gtk_widget_show (handle);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
 	defaultCursor = OS.gdk_cursor_new (type);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
-	if (window != 0) OS.gdk_window_set_cursor (window, defaultCursor);
 }
 
 void drawBand (int x, int y, int width, int height) {

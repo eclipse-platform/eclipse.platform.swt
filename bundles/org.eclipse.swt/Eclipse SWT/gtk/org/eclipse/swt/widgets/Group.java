@@ -123,14 +123,8 @@ void createHandle(int index) {
 	OS.gtk_object_sink (labelHandle);
 	clientHandle = OS.gtk_fixed_new();
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (clientHandle);
-	OS.gtk_widget_show (labelHandle);
-	OS.gtk_widget_show (fixedHandle);	
 	if ((style & SWT.SHADOW_IN) != 0) {
 		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
 	}
@@ -305,4 +299,9 @@ public void setText (String string) {
 	fixGroup ();
 }
 
+void showWidget () {
+	super.showWidget ();
+	if (clientHandle != 0) OS.gtk_widget_show (clientHandle);
+	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+}
 }

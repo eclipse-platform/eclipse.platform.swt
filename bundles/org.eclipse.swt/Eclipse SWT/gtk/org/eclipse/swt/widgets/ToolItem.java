@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class ToolItem extends Item {
-	int /*long*/ boxHandle, arrowHandle, separatorHandle, labelHandle, imageHandle;
+	int /*long*/ boxHandle, arrowHandle, arrowBoxHandle, separatorHandle, labelHandle, imageHandle;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -159,6 +159,10 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+static int checkStyle (int style) {
+	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.SEPARATOR) == 0) {
@@ -170,7 +174,6 @@ void createHandle (int index) {
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (boxHandle, imageHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
-		OS.gtk_widget_show (boxHandle);
 	}	
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
 	switch (style & bits) {
@@ -182,12 +185,11 @@ void createHandle (int index) {
 			if (separatorHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_widget_set_size_request (separatorHandle, isVertical ? 15 : 6, isVertical ? 6 : 15);
 			OS.gtk_container_add (handle, separatorHandle);
-			OS.gtk_widget_show (separatorHandle);
 			break;
 		case SWT.DROP_DOWN:
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			int /*long*/ arrowBoxHandle = OS.gtk_hbox_new (false, 0);
+			arrowBoxHandle = OS.gtk_hbox_new (false, 0);
 			if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -195,8 +197,6 @@ void createHandle (int index) {
 			OS.gtk_container_add (handle, arrowBoxHandle);
 			OS.gtk_container_add (arrowBoxHandle, boxHandle);	
 			OS.gtk_container_add (arrowBoxHandle, arrowHandle);	
-			OS.gtk_widget_show (arrowBoxHandle);
-			OS.gtk_widget_show (arrowHandle);
 			break;
 		case SWT.RADIO:
 			/*
@@ -230,10 +230,14 @@ void createHandle (int index) {
 		OS.gtk_button_set_relief (handle, relief [0]);
 	}
 	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	OS.gtk_widget_show (handle);
 	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
 	setForegroundColor (parent.getForegroundColor ());
 	setFontDescription (parent.getFontDescription ());
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+	showWidget ();
 }
 
 void deregister() {
@@ -893,7 +897,11 @@ public void setWidth (int width) {
 	}
 }
 
-static int checkStyle (int style) {
-	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
+void showWidget () {
+	if (handle != 0) OS.gtk_widget_show (handle);
+	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
+	if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
+	if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
+	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
 }
 }

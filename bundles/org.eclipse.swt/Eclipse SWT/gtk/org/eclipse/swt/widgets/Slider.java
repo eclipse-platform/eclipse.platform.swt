@@ -157,11 +157,7 @@ void createHandle (int index) {
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 }
 
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {

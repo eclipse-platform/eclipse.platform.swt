@@ -78,9 +78,6 @@ void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, handle);
-	OS.gtk_widget_show (handle);
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_BOTTOM_TO_TOP : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
 	OS.gtk_progress_bar_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {

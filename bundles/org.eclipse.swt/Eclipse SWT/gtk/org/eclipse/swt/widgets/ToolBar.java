@@ -138,11 +138,7 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 	if ((style & SWT.FLAT) != 0) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);

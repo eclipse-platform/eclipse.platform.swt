@@ -126,11 +126,7 @@ void createHandle (int index) {
 		handle = OS.gtk_vscale_new (hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 	OS.gtk_scale_set_digits (handle, 0); 
 	OS.gtk_scale_set_draw_value (handle, false);
 }

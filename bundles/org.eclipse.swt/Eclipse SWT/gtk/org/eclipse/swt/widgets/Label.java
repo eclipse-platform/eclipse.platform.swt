@@ -142,7 +142,6 @@ void createHandle (int index) {
 		} else {
 			handle = OS.gtk_vseparator_new ();
 		}
-		OS.gtk_widget_show (handle);
 	} else {
 		handle = OS.gtk_hbox_new (false, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -152,8 +151,6 @@ void createHandle (int index) {
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, labelHandle);
 		OS.gtk_container_add (handle, imageHandle);
-		OS.gtk_widget_show (handle);
-		OS.gtk_widget_show (labelHandle);		
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.BORDER) != 0) {
@@ -161,15 +158,10 @@ void createHandle (int index) {
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (fixedHandle, frameHandle);
 		OS.gtk_container_add (frameHandle, handle);
-		OS.gtk_widget_show (frameHandle);
-		// CHECK THEME
 		OS.gtk_frame_set_shadow_type (frameHandle, OS.GTK_SHADOW_ETCHED_IN);
 	} else {
 		OS.gtk_container_add (fixedHandle, handle);
 	}
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_widget_show (fixedHandle);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (labelHandle, true);
 	if ((style & SWT.LEFT) != 0) {
@@ -524,4 +516,9 @@ public void setText (String string) {
 	OS.gtk_widget_show (labelHandle);
 }
 
+void showWidget () {
+	super.showWidget ();
+	if (frameHandle != 0) OS.gtk_widget_show (frameHandle);
+	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+}
 }

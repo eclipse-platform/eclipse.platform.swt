@@ -111,11 +111,9 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE | MENU;
-	int /*long*/ parentHandle = parent.parentingHandle ();
 	if ((style & SWT.SINGLE) != 0) {
 		handle = OS.gtk_entry_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (parentHandle, handle);
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
@@ -135,11 +133,8 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		bufferHandle = OS.gtk_text_view_get_buffer (handle);
 		if (bufferHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		OS.gtk_container_add (scrolledHandle, handle);
-		OS.gtk_widget_show (fixedHandle);
-		OS.gtk_widget_show (scrolledHandle);
 		OS.gtk_text_view_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.WRAP) != 0) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_WORD);
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
@@ -153,7 +148,6 @@ void createHandle (int index) {
 		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
 		OS.gtk_text_view_set_justification (handle, just);
 	}
-	OS.gtk_widget_show (handle);
 	/*
 	* Bug in GTK.  When the parent is realized before the GtkTextView
 	* widget is created, the GTK_TEXT_WINDOW_TEXT window does not have

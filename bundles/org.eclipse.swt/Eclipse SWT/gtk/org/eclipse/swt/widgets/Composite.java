@@ -173,10 +173,10 @@ Control [] computeTabList () {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0;
-	createHandle (index, parent.parentingHandle (), scrolled);
+	createHandle (index, scrolled);
 }
 
-void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
+void createHandle (int index, boolean scrolled) {
 	if (scrolled) {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -199,7 +199,6 @@ void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
 		}
 	}
 	if (scrolled) {
-		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		/*
 		* Force the scrolledWindow to have a single child that is
@@ -211,8 +210,6 @@ void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
 		OS.gtk_container_add (scrolledHandle, handle);
 		display.setWarnings (warnings);
 		
-		OS.gtk_widget_show (fixedHandle);
-		OS.gtk_widget_show (scrolledHandle);
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -220,22 +217,12 @@ void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
 		if (hasBorder ()) {
 			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
-	} else {
-		OS.gtk_container_add (parentHandle, handle);		
 	}
-	OS.gtk_widget_show (handle);
 	if ((style & SWT.EMBEDDED) != 0) {
 		socketHandle = OS.gtk_socket_new ();
 		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, socketHandle);
-		OS.gtk_widget_show (socketHandle);
 		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
-	}
-	if (imHandle != 0) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
-		if (window != 0) {
-			OS.gtk_im_context_set_client_window (imHandle, window);
-		}
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
@@ -775,6 +762,11 @@ public void setTabList (Control [] tabList) {
 		tabList = newList;
 	} 
 	this.tabList = tabList;
+}
+
+void showWidget () {
+	super.showWidget ();
+	if (socketHandle != 0) OS.gtk_widget_show (socketHandle);
 }
 
 boolean translateMnemonic (Event event, Control control) {

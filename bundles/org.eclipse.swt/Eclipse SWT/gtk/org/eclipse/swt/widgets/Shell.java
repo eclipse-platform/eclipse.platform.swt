@@ -499,7 +499,7 @@ void createHandle (int index) {
 	} else {
 		OS.gtk_window_set_resizable (shellHandle, false);
 	}
-	createHandle (index, shellHandle, true);
+	createHandle (index, true);
 	OS.gtk_widget_realize (shellHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	int decorations = 0;
@@ -1230,6 +1230,13 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 	mapped = true;
 	display.dispatchEvents = null;
 	return 0;
+}
+
+void showWidget () {
+	OS.gtk_container_add (shellHandle, fixedHandle);
+	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
+	if (handle != 0) OS.gtk_widget_show (handle);
+	if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
 }
 
 boolean traverseEscape () {

@@ -307,6 +307,7 @@ Control computeTabRoot () {
 void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
+	showWidget ();
 	setInitialSize ();
 	setZOrder (null, false);
 }
@@ -3001,6 +3002,14 @@ boolean showMenu (int x, int y) {
 		}
 	}
 	return false;
+}
+
+void showWidget () {
+	int /*long*/ topHandle = topHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, topHandle);
+	if (handle != 0) OS.gtk_widget_show (handle);
+	if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
 }
 
 void sort (int [] items) {

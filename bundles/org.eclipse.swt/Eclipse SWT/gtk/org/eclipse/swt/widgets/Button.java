@@ -191,7 +191,6 @@ void createHandle (int index) {
 	}
 	if ((style & SWT.ARROW) != 0) {
 		OS.gtk_container_add (handle, arrowHandle);
-		OS.gtk_widget_show (arrowHandle);
 	} else {
 		boxHandle = OS.gtk_hbox_new (false, 0);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -202,14 +201,8 @@ void createHandle (int index) {
 		OS.gtk_container_add (handle, boxHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
 		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_widget_show (boxHandle);
-		OS.gtk_widget_show (labelHandle);
 	}
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 	
 	if ((style & SWT.ARROW) != 0) return;
 	if ((style & SWT.LEFT) != 0) {
@@ -715,6 +708,13 @@ public void setText (String string) {
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
+}
+
+void showWidget () {
+	super.showWidget ();
+	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
+	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
 }
 
 int traversalCode (int key, GdkEventKey event) {

@@ -287,6 +287,11 @@ void resizeHandle (int width, int height) {
 	}
 }
 
+void showWidget () {
+	super.showWidget ();
+	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
+}
+
 int /*long*/ topHandle () {
 	if (fixedHandle != 0) return fixedHandle;
 	if (scrolledHandle != 0) return scrolledHandle;

@@ -343,11 +343,7 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_combo_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 	GtkCombo combo = new GtkCombo ();
 	OS.memmove (combo, handle);
 	entryHandle = combo.entry;

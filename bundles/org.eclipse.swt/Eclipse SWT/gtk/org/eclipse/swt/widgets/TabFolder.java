@@ -186,11 +186,7 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_notebook_set_scrollable (handle, true);
 	OS.gtk_notebook_set_show_tabs (handle, true);
 	if ((style & SWT.BOTTOM) != 0) {
