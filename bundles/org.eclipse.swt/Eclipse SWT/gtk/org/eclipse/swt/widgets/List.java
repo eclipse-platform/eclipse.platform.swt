@@ -234,14 +234,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
-GdkColor defaultBackground () {
-	return display.COLOR_LIST_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_LIST_FOREGROUND;
-}
-
 void deregister() {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
