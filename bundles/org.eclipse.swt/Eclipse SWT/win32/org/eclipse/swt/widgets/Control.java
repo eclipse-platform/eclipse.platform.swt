@@ -4133,14 +4133,28 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
 		return null;
 	}
+	
+	/* Process well known keys that are not system keys or mnemonics */
+	switch (wParam) {
+		case SWT.LF: 
+		case SWT.CR: {
+			if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam)) {
+				return LRESULT.ONE;
+			}
+			// widget could be disposed at this point
+			return null;
+		}
+	}
+	
+	/* Call the window proc to determine whether is was a system key or mnemonic */
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
 	boolean consumed = false;
 	if (!display.mnemonicKeyHit) {
 		consumed = !sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
+		// widget could be disposed at this point
 	}
 	consumed |= display.mnemonicKeyHit;
-	// widget could be disposed at this point
 	display.mnemonicKeyHit = false;
 	return consumed ? LRESULT.ONE : new LRESULT (result);
 }
