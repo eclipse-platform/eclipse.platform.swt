@@ -302,8 +302,12 @@ void setBackgroundPixel (int pixel) {
 		if (argList1 [3] != 0) OS.XmChangeColor (argList1 [3], pixel);
 	}
 }
-void setScrollbarVisible (int barHandle, boolean visible) {
+void setScrollbarVisible (ScrollBar bar, boolean visible) {
 	if (scrolledHandle == 0) return;
+	int barHandle = bar.handle;
+	boolean managed = OS.XtIsManaged (barHandle);
+	if (managed == visible) return;
+
 	/*
 	* Feature in Motif.  Hiding or showing a scroll bar
 	* can cause the widget to automatically resize in
@@ -324,6 +328,7 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
 
 	sendEvent (SWT.Resize);
+	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;

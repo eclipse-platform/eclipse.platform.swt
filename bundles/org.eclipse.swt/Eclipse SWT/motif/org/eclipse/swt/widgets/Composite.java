@@ -623,7 +623,7 @@ boolean setTabItemFocus () {
 	}
 	return super.setTabItemFocus ();
 }
-void setScrollbarVisible (int barHandle, boolean visible) {
+void setScrollbarVisible (ScrollBar bar, boolean visible) {
 	/*
 	* Bug in Motif.  When XtDestroyWidget() is called from
 	* within a FocusOut event handler, Motif GP's.  The fix
@@ -646,7 +646,7 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 			}
 		}
 	}
-	super.setScrollbarVisible(barHandle, visible);
+	super.setScrollbarVisible (bar, visible);
 	for (int i=0; i<children.length; i++) {
 		argList [1] = traversals [i];
 		Control control = children [i];
