@@ -89,28 +89,30 @@ public abstract class Widget {
 	static final int KEY_PRESS_EVENT = 20;
 	static final int KEY_RELEASE_EVENT = 21;
 	static final int LEAVE_NOTIFY_EVENT = 22;
-	static final int MAP_EVENT = 23;
-	static final int MNEMONIC_ACTIVATE = 24;
-	static final int MOTION_NOTIFY_EVENT = 25;
-	static final int POPUP_MENU = 26;
-	static final int PREEDIT_CHANGED = 27;
-	static final int REALIZE = 28;
-	static final int ROW_ACTIVATED = 29;
-	static final int SCROLL_CHILD = 30;
-	static final int SELECT = 31;
-	static final int SHOW = 32;
-	static final int SHOW_HELP = 33;
-	static final int SIZE_ALLOCATE = 34;
-	static final int STYLE_SET = 35;
-	static final int SWITCH_PAGE = 36;
-	static final int TEST_COLLAPSE_ROW = 37;
-	static final int TEST_EXPAND_ROW = 38;
-	static final int TOGGLED = 39;
-	static final int UNMAP_EVENT = 40;
-	static final int UNREALIZE = 41;
-	static final int VALUE_CHANGED = 42;
-	static final int VISIBILITY_NOTIFY_EVENT = 43;
-	static final int WINDOW_STATE_EVENT = 44;
+	static final int MAP = 23;
+	static final int MAP_EVENT = 24;
+	static final int MNEMONIC_ACTIVATE = 25;
+	static final int MOTION_NOTIFY_EVENT = 26;
+	static final int POPUP_MENU = 27;
+	static final int PREEDIT_CHANGED = 28;
+	static final int REALIZE = 29;
+	static final int ROW_ACTIVATED = 30;
+	static final int SCROLL_CHILD = 31;
+	static final int SELECT = 32;
+	static final int SHOW = 33;
+	static final int SHOW_HELP = 34;
+	static final int SIZE_ALLOCATE = 35;
+	static final int STYLE_SET = 36;
+	static final int SWITCH_PAGE = 37;
+	static final int TEST_COLLAPSE_ROW = 38;
+	static final int TEST_EXPAND_ROW = 39;
+	static final int TOGGLED = 40;
+	static final int UNMAP = 41;
+	static final int UNMAP_EVENT = 42;
+	static final int UNREALIZE = 43;
+	static final int VALUE_CHANGED = 44;
+	static final int VISIBILITY_NOTIFY_EVENT = 45;
+	static final int WINDOW_STATE_EVENT = 46;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -588,6 +590,10 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
+int /*long*/ gtk_map (int /*long*/ widget) {
+	return 0;
+}
+
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
@@ -657,6 +663,10 @@ int /*long*/ gtk_timer () {
 }
 
 int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
+	return 0;
+}
+
+int /*long*/ gtk_unmap (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1171,12 +1181,14 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
 		case HIDE: return gtk_hide (handle);
+		case MAP: return gtk_map (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
 		case SELECT: return gtk_select (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed (handle);
+		case UNMAP: return gtk_unmap (handle);
 		case UNREALIZE: return gtk_unrealize (handle);
 		default: return 0;
 	}

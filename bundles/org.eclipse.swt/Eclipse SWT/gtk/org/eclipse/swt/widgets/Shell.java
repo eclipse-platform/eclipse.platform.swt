@@ -544,6 +544,7 @@ void hookEvents () {
 	super.hookEvents ();
 	int /*long*/ shellMapProc = display.shellMapProc;
 	int /*long*/ windowProc3 = display.windowProc3;
+	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.window_state_event, windowProc3, WINDOW_STATE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SIZE_ALLOCATE);
@@ -780,8 +781,12 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
+int /*long*/ gtk_map (int /*long*/ widget) {
 	if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
+	return 0;
+}
+
+int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
 	sendEvent (SWT.Deiconify);
 	return 0;

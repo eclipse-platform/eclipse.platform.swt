@@ -320,6 +320,7 @@ public class OS {
 	public static final byte[] key_press_event = signal("key_press_event");
 	public static final byte[] key_release_event = signal("key_release_event");
 	public static final byte[] leave_notify_event = signal("leave_notify_event");
+	public static final byte[] map = signal("map");
 	public static final byte[] map_event = signal("map_event");
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
@@ -338,6 +339,7 @@ public class OS {
 	public static final byte[] test_collapse_row = signal("test_collapse_row");
 	public static final byte[] test_expand_row = signal("test_expand_row");
 	public static final byte[] toggled = signal("toggled");
+	public static final byte[] unmap = signal("unmap");
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] unrealize = signal("unrealize");
 	public static final byte[] value_changed = signal("value_changed");

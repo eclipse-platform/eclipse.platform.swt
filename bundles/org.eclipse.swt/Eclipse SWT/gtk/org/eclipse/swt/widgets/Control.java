@@ -204,7 +204,7 @@ void hookEvents () {
 	}
 	
 	int /*long*/ topHandle = topHandle ();
-	OS.g_signal_connect (topHandle, OS.map_event, windowProc3, MAP_EVENT);
+	OS.g_signal_connect_after (topHandle, OS.map, windowProc2, MAP);
 }
 
 int /*long*/ hoverProc (int /*long*/ widget) {
@@ -1840,7 +1840,7 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
+int /*long*/ gtk_map (int /*long*/ widget) {
 	/*
 	* Feature in GTK. The gdk window is raised to the top of the stack
 	* when gdk_window_show() is called. The fix is restore the stacking 
@@ -1852,10 +1852,10 @@ int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 		if (children [index] == this) break;
 		index++;
 	}
-	if (index + 1== children.length) {
-		setZOrder (null, false);
+	if (index == 0) {
+		setZOrder (null, true);
 	} else {
-		setZOrder (children [index + 1], true);
+		setZOrder (children [index - 1], false);
 	}
 	return 0;
 }
