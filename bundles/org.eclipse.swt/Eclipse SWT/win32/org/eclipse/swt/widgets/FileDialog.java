@@ -202,19 +202,6 @@ public String open () {
 	TCHAR name = new TCHAR (0, fileName, true);
 
 	/*
-	* Bug/Feature in Windows.  Verify that the file name is valid.
-	* If an invalid file name is passed to the standard dialog, it
-	* does not open and returns an error code.  The fix is to avoid
-	* this behavior by verifying the file name before opening the
-	* dialog.  If the file name is not valid, use an empty string.
-	*/
-	if (!OS.IsWinCE) {
-		if (OS.GetFileTitle (name, null, (short) 0) < 0) {
-			name = new TCHAR (0, "", true);
-		}
-	}
-	
-	/*
 	* Copy the name into lpstrFile and ensure that the
 	* last byte is NULL and the buffer does not overrun.
 	* Note that the longest that a single path name can
@@ -307,7 +294,7 @@ public String open () {
 				index++;
 			}
 		}
-		if (nFileOffset != 0) {
+		if (nFileOffset > 0) {
 		
 			/* Use the character encoding for the default locale */
 			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
