@@ -1590,9 +1590,8 @@ void setScrollWidth (TableItem [] items, boolean set) {
 	int newWidth = 0;
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items [i];
-		if (item != null) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
-		}
+		if (item == null) break;
+		newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
 	}
 	gc.dispose ();
 	newWidth += EXTRA_WIDTH;
