@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
  * can override these defaults to augment a group or stop
  * a group from being created.
  */
-abstract class Tab {	
+abstract class Tab {
 	/* Common control buttons */
 	Button borderButton, enabledButton, visibleButton;
 	Button preferredButton, tooSmallButton, smallButton, largeButton, fillButton;
@@ -57,7 +57,7 @@ abstract class Tab {
 	Group orientationGroup;
 	Button rtlButton, ltrButton, defaultOrietationButton;
 
-	/* Common controls and resources for the "Colors" group */
+	/* Controls and resources for the "Colors" group */
 	Button foregroundButton, backgroundButton, fontButton;
 	Image foregroundImage, backgroundImage;
 	Color foregroundColor, backgroundColor;
@@ -160,7 +160,7 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Creates the "Color" group. This is typically
+	 * Creates the "Colors" group. This is typically
 	 * a child of the "Control" group. Subclasses override
 	 * this method to customize and set system colors.
 	 */
@@ -180,9 +180,9 @@ abstract class Tab {
 		Button defaultsButton = new Button (colorGroup, SWT.PUSH);
 		defaultsButton.setText(ControlExample.getResourceString("Defaults"));
 
-		Shell shell = backgroundButton.getShell ();
-		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		Shell shell = controlGroup.getShell ();
 		final ColorDialog foregroundDialog = new ColorDialog (shell);
+		final ColorDialog backgroundDialog = new ColorDialog (shell);
 		final FontDialog fontDialog = new FontDialog (shell);
 
 		/* Create images to display current colors */
@@ -200,10 +200,10 @@ abstract class Tab {
 					Control [] controls = getExampleWidgets ();
 					if (controls.length > 0) oldColor = controls [0].getForeground ();
 				}
-				if (oldColor != null) foregroundDialog.setRGB(oldColor.getRGB());
+				if (oldColor != null) foregroundDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
 				RGB rgb = foregroundDialog.open();
 				if (rgb == null) return;
-				oldColor = foregroundColor; // dispose old foreground color when done
+				oldColor = foregroundColor; // save old foreground color to dispose when done
 				foregroundColor = new Color (event.display, rgb);
 				setExampleWidgetForeground ();
 				if (oldColor != null) oldColor.dispose ();
@@ -215,12 +215,12 @@ abstract class Tab {
 				Color oldColor = backgroundColor;
 				if (oldColor == null) {
 					Control [] controls = getExampleWidgets ();
-					if (controls.length > 0) oldColor = controls [0].getBackground ();
+					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
 				}
 				if (oldColor != null) backgroundDialog.setRGB(oldColor.getRGB());
 				RGB rgb = backgroundDialog.open();
 				if (rgb == null) return;
-				oldColor = backgroundColor; // dispose old background color when done
+				oldColor = backgroundColor; // save old background color to dispose when done
 				backgroundColor = new Color (event.display, rgb);
 				setExampleWidgetBackground ();
 				if (oldColor != null) oldColor.dispose ();
@@ -233,7 +233,7 @@ abstract class Tab {
 					Control [] controls = getExampleWidgets ();
 					if (controls.length > 0) oldFont = controls [0].getFont ();
 				}
-				if (oldFont != null) fontDialog.setFontList(oldFont.getFontData());
+				if (oldFont != null) fontDialog.setFontList(oldFont.getFontData()); // seed dialog with current font
 				FontData fontData = fontDialog.open ();
 				if (fontData == null) return;
 				oldFont = font; // dispose old font when done
@@ -245,13 +245,7 @@ abstract class Tab {
 		});
 		defaultsButton.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
-				foregroundColor = null;
-				setExampleWidgetForeground ();
-				backgroundColor = null;
-				setExampleWidgetBackground ();
-				font = null;
-				setExampleWidgetFont ();
-				setExampleWidgetSize ();
+				resetColorsAndFonts ();
 			}
 		});
 		shell.addDisposeListener(new DisposeListener() {
@@ -747,14 +741,29 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Sets the foreground color, background color, and font
+	 * of the "Example" widgets to their default settings.
+	 * Subclasses may extend in order to reset other colors
+	 * and fonts to default settings as well.
+	 */
+	void resetColorsAndFonts () {
+		foregroundColor = null;
+		setExampleWidgetForeground ();
+		backgroundColor = null;
+		setExampleWidgetBackground ();
+		font = null;
+		setExampleWidgetFont ();
+		setExampleWidgetSize ();
+	}
+	
+	/**
 	 * Sets the background color of the "Example" widgets.
 	 */
 	void setExampleWidgetBackground () {
 		if (backgroundButton == null) return; // no background button on this tab
 		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {
-			Control control = controls[i];
-			control.setBackground (backgroundColor);
+			controls[i].setBackground (backgroundColor);
 		}
 		// Set the background button's color to match the color just set.
 		Color color = backgroundColor;
@@ -793,8 +802,7 @@ abstract class Tab {
 		if (foregroundButton == null) return; // no foreground button on this tab
 		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {
-			Control control = controls[i];
-			control.setForeground (foregroundColor);
+			controls[i].setForeground (foregroundColor);
 		}
 		// Set the foreground button's color to match the color just set.
 		Color color = foregroundColor;
