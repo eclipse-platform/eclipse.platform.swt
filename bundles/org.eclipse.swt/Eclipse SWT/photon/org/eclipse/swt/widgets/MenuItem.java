@@ -440,7 +440,7 @@ int Pt_CB_ACTIVATE (int widget, int info) {
 }
 
 int Pt_CB_ARM (int widget, int info) {
-	postEvent (SWT.Arm);
+	sendEvent (SWT.Arm);
 	showMenu ();
 	return OS.Pt_CONTINUE;
 }

@@ -418,7 +418,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 
 int /*long*/ gtk_select (int /*long*/ item) {
 	parent.selectedItem = this;
-	postEvent (SWT.Arm);
+	sendEvent (SWT.Arm);
 	return 0;
 }
 
