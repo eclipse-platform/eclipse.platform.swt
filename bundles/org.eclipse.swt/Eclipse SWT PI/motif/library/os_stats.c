@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 433;
-int OS_nativeFunctionCallCount[433];
+int OS_nativeFunctionCount = 434;
+int OS_nativeFunctionCallCount[434];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -118,6 +118,7 @@ char * OS_nativeFunctionNames[] = {
 	"XReconfigureWMWindow", 
 	"XRectInRegion", 
 	"XReparentWindow", 
+	"XResizeWindow", 
 	"XRootWindowOfScreen", 
 	"XSelectInput", 
 	"XSendEvent", 

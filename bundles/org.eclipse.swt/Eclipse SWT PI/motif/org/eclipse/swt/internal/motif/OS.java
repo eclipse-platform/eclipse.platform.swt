@@ -704,6 +704,7 @@ public static final synchronized native int XRaiseWindow(int display, int window
 public static final synchronized native int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XRectInRegion(int region, int x, int y, int width, int height);
 public static final synchronized native int XReparentWindow(int display, int win, int parent, int x, int y);
+public static final synchronized native void XResizeWindow(int display, int w, int width, int height);
 public static final synchronized native int XRootWindowOfScreen(int screen);
 public static final synchronized native void XSelectInput(int display, int window, int mask);
 public static final synchronized native int XSendEvent(int display, int window, boolean propagate, int event_mask, int event);

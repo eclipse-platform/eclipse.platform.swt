@@ -1346,6 +1346,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(XReparentWindow)
 }
 #endif
 
+#ifndef NO_XResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(XResizeWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, XResizeWindow_FUNC);
+	XResizeWindow((Display *)arg0, (Window)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, XResizeWindow_FUNC);
+}
+#endif
+
 #ifndef NO_XRootWindowOfScreen
 JNIEXPORT jint JNICALL OS_NATIVE(XRootWindowOfScreen)
 	(JNIEnv *env, jclass that, jint arg0)
