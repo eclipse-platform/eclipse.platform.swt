@@ -4264,15 +4264,21 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 
 LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	/*
-	* Feature in Windows.  WM_SYSKEYDOWN is sent when
-	* the user presses ALT-<aKey> or F10 without the ALT key.
-	* In order to issue events for F10 (without the ALT key)
-	* but ignore all other key presses without the ALT key,
-	* make F10 a special case.
+	* Feature in Windows.  When WM_SYSKEYDOWN is sent,
+	* the user pressed ALT+<key> or F10 to get to the
+	* menu bar.  In order to issue events for F10 but
+	* ignore other key presses when the ALT is not down,
+	* make sure that either F10 was pressed or that ALT
+	* is pressed.
 	*/
 	if (wParam != OS.VK_F10) {
 		/* Make sure WM_SYSKEYDOWN was sent by ALT-<aKey>. */
 		if ((lParam & 0x20000000) == 0) return null;
+	}
+	
+	/* Ignore well known system keys */
+	switch (wParam) {
+		case OS.VK_F4: return null;
 	}
 	
 	/* Ignore repeating modifier keys by testing key down state */
