@@ -87,9 +87,7 @@ class TextTab extends ScrollableTab {
 	
 		/* Create the example widgets */
 		text = new Text (textGroup, style);
-		text.setText (ControlExample.getResourceString("Example_string"));
-		text.append (text.DELIMITER);
-		text.append (ControlExample.getResourceString("One_Two_Three"));
+		text.setText (ControlExample.getResourceString("Example_string") + text.DELIMITER + ControlExample.getResourceString("One_Two_Three"));
 		styledText = new StyledText (styledTextGroup, style);
 		styledText.setText (ControlExample.getResourceString("Example_string"));
 		styledText.append ("\n");
