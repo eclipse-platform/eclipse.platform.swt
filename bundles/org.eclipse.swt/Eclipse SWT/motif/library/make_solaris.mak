@@ -9,7 +9,7 @@
 # MINOR_VER  - the minor version number 
 # BUILD_NUM  - the build number
 
-DLL_VERSION=$(MAJOR_VER)0$(MINOR_VER)
+DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
 
 
 # Define the installation directories for various products.
@@ -46,8 +46,7 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 #
 CFLAGS = -O -s \
 	-xarch=generic \
-	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
-	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
+	-DSWT_LIBRARY_VERSION=$(MAJOR_VER)$(MINOR_VER) \
 	-DSOLARIS -DMOTIF -DCDE \
 	-KPIC \
 	-I./ \

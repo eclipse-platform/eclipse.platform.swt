@@ -39,8 +39,7 @@ CDE_LIB      = -L$(CDE_HOME)/lib -G -bnoentry -bexpall -lDtSvc
 # library.
 #
 CFLAGS = -O -s \
-	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
-	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
+	-DSWT_LIBRARY_VERSION=$(MAJOR_VER)$(MINOR_VER) \
 	-DAIX -DMOTIF -DCDE -DNO_XPRINTING_EXTENSIONS \
 	-q mbcs -qlanglvl=extended -qarch=ppc -qtune=604 -qmaxmem=8192 \
 	-I$(IVE_HOME)/include \
