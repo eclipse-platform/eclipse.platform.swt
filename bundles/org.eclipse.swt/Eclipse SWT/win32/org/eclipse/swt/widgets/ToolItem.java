@@ -307,6 +307,16 @@ void releaseChild () {
 }
 
 void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	control = null;
+	toolTipText = null;
+	disabledImage = hotImage = null;
+	if (disabledImage2 != null) disabledImage2.dispose ();
+	disabledImage2 = null;
+}
+
+void releaseImages () {
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
@@ -330,13 +340,6 @@ void releaseWidget () {
 		if (hotImageList != null) hotImageList.put (info.iImage, null);
 		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
 	}
-	super.releaseWidget ();
-	parent = null;
-	control = null;
-	toolTipText = null;
-	disabledImage = hotImage = null;
-	if (disabledImage2 != null) disabledImage2.dispose ();
-	disabledImage2 = null;
 }
 
 /**

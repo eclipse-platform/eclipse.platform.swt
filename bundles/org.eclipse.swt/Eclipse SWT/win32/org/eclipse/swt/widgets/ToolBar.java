@@ -253,21 +253,21 @@ void destroyItem (ToolItem item) {
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
 	int index = OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
-//	/*
-//	* Feature in Windows.  For some reason, a tool item that has
-//	* the style BTNS_SEP does not return I_IMAGENONE when queried
-//	* for an image index, despite the fact that no attempt has been
-//	* made to assign an image to the item.  As a result, operations
-//	* on an image list that use the wrong index cause random results.	
-//	* The fix is to ensure that the tool item is not a separator
-//	* before using the image index.  Since separators cannot have
-//	* an image and one is never assigned, this is not a problem.
-//	*/
-//	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
-//		if (imageList != null) imageList.put (info.iImage, null);
-//		if (hotImageList != null) hotImageList.put (info.iImage, null);
-//		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
-//	}
+	/*
+	* Feature in Windows.  For some reason, a tool item that has
+	* the style BTNS_SEP does not return I_IMAGENONE when queried
+	* for an image index, despite the fact that no attempt has been
+	* made to assign an image to the item.  As a result, operations
+	* on an image list that use the wrong index cause random results.	
+	* The fix is to ensure that the tool item is not a separator
+	* before using the image index.  Since separators cannot have
+	* an image and one is never assigned, this is not a problem.
+	*/
+	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
+		if (imageList != null) imageList.put (info.iImage, null);
+		if (hotImageList != null) hotImageList.put (info.iImage, null);
+		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+	}
 	int result = OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
 	items [item.id] = null;
 	item.id = -1;
@@ -460,6 +460,7 @@ void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
+			item.releaseImages ();
 			item.releaseWidget ();
 		}
 	}
