@@ -284,6 +284,9 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
+	int maximum = OS.GetControl32BitMaximum (handle);
+	int viewSize = OS.GetControlViewSize (handle);
+	OS.SetControl32BitMaximum (handle, maximum + viewSize - value);
     OS.SetControlViewSize (handle, value);
 }
 
