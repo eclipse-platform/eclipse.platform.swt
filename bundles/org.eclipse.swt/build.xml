@@ -5,7 +5,7 @@
 		<initTemplate/>
 	</target>
 
-	<target name="init" depends="initTemplate, properties">
+	<target name="init" depends="initTemplate,properties">
 	</target>
 
 	<target name="build.update.jar" depends="init">
@@ -18,7 +18,7 @@
 		<delete>
 			<fileset dir="${base}" includes="**/*.bin.log"/>
 		</delete>
-		<zip zipfile="${basedir}/${plugin}_${version}.jar" basedir="${base}/plugins/${plugin}"/>
+		<zip zipfile="${basedir}/${plugin}_${version}.jar" basedir="${base}/plugins/${plugin}_${version}"/>
 		<delete dir="${base}"/>
 	</target>
 
@@ -38,12 +38,11 @@
 
 	<target name="clean" depends="init">
 	</target>
-
-	<target name="properties">
-		<property name="plugin" value="org.eclipse.swt"/>
-		<property name="version" value="1.9.0"/>
-		<property name="bin.includes" value="plugin.xml,plugin.properties,about.html"/>
-		<property name="bin.excludes" value=""/>
-	</target>
+   
+    <target name="properties">
+       <property name="plugin" value="org.eclipse.swt"/>
+       <property name="version" value="1.9.0"/>
+       <property name="bin.includes" value="plugin.properties,plugin.xml,about.html"/>
+    </target>
 
 </project>
