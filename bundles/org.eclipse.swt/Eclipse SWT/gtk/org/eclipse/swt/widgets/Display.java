@@ -1639,8 +1639,8 @@ public boolean post (Event event) {
 	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
 	int type = event.type;
 	switch (type) {
-		case SWT.KeyDown :
-		case SWT.KeyUp : {
+		case SWT.KeyDown:
+		case SWT.KeyUp: {
 			int keyCode = 0;
 			int /*long*/ keysym = untranslateKey (event.keyCode);
 			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
@@ -1656,18 +1656,17 @@ public boolean post (Event event) {
 			OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
 			return true;
 		}
-		case SWT.MouseDown :
-		case SWT.MouseMove : 
-		case SWT.MouseUp : {
+		case SWT.MouseDown:
+		case SWT.MouseMove: 
+		case SWT.MouseUp: {
 			if (type == SWT.MouseMove) {
 				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
-				return true;
 			} else {
 				int button = event.button;
 				if (button < 1 || button > 3) return false;
 				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
-			    return true;
 			}
+			return true;
 		}
 	}
 	return false;
