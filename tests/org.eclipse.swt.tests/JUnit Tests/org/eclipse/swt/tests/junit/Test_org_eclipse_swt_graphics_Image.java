@@ -117,13 +117,14 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	} catch (IllegalArgumentException e) {
 	}
 
-	data = new ImageData(10, 10, 1, new PaletteData(0xff0000, 0x00ff00, 0x0000ff));
-	try {
-		image = new Image(display, data);
-		image.dispose();
-		fail("Unsupported color depth");
-	} catch (SWTException e) {
-	}
+//	Platform-specific test.  
+//	data = new ImageData(10, 10, 1, new PaletteData(0xff0000, 0x00ff00, 0x0000ff));
+//	try {
+//		image = new Image(display, data);
+//		image.dispose();
+//		fail("Unsupported color depth");
+//	} catch (SWTException e) {
+//	}
 
 	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	image = new Image(null, data);
