@@ -229,7 +229,7 @@ public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-	return new Rectangle (rect.top, rect.left, rect.right - rect.left, rect.bottom - rect.top);
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Display getDisplay () {
@@ -246,7 +246,7 @@ public Point getLocation () {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-	return new Point (rect.top, rect.left);
+	return new Point (rect.left, rect.top);
 }
 
 public Shell getShell () {
