@@ -1856,7 +1856,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	return sendKeyEvent (SWT.KeyDown, gdkEvent) ? 0 : 1;
+	return super.gtk_key_press_event (widget, event);
 }
 
 int /*long*/ gtk_key_release_event (int /*long*/ widget, int /*long*/ event) {
@@ -1865,9 +1865,7 @@ int /*long*/ gtk_key_release_event (int /*long*/ widget, int /*long*/ event) {
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 1;
 	}
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	return sendKeyEvent (SWT.KeyUp, gdkEvent) ? 0 : 1;
+	return super.gtk_key_release_event (widget, event);
 }
 
 int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
@@ -2307,86 +2305,6 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 		control = control.parent;
 	}
 	return false;
-}
-
-char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
-	int index = 0, count = 0, state = 0, time = 0;
-	if (keyEvent == null) {
-		int /*long*/ ptr = OS.gtk_get_current_event ();
-		if (ptr != 0) {
-			keyEvent = new GdkEventKey ();
-			OS.memmove (keyEvent, ptr, GdkEventKey.sizeof);
-			OS.gdk_event_free (ptr);
-			switch (keyEvent.type) {
-				case OS.GDK_KEY_PRESS:
-				case OS.GDK_KEY_RELEASE:
-					state = keyEvent.state;
-					time =  keyEvent.time;
-					break;
-				default:
-					keyEvent = null;
-					break;
-			}
-		}
-	}
-	if (keyEvent == null) {
-		int [] buffer = new int [1];
-		OS.gtk_get_current_event_state (buffer);
-		state = buffer [0];
-		time = OS.gtk_get_current_event_time();
-	}
-	while (index < chars.length) {
-		Event event = new Event ();
-		event.time = time;
-		if (keyEvent != null && keyEvent.length <= 1) {
-			setKeyState (event, keyEvent);
-		} else {
-			setInputState (event, state);
-		}
-		event.character = chars [index];
-		sendEvent (type, event);
-	
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the key
-		* events.  If this happens, end the processing of
-		* the key by returning null.
-		*/
-		if (isDisposed ()) return null;
-		if (event.doit) chars [count++] = chars [index];
-		index++;
-	}
-	if (count == 0) return null;
-	if (index != count) {
-		char [] result = new char [count];
-		System.arraycopy (chars, 0, result, 0, count);
-		return result;
-	}
-	return chars;
-}
-
-boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
-	int length = keyEvent.length;
-	if (length <= 1) {
-		Event event = new Event ();
-		event.time = keyEvent.time;
-		if (!setKeyState (event, keyEvent)) return true;
-		sendEvent (type, event);
-		// widget could be disposed at this point
-	
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the key
-		* events.  If this happens, end the processing of
-		* the key by returning false.
-		*/
-		if (isDisposed ()) return false;
-		return event.doit;
-	}
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, keyEvent.string, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
-	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
 void sendMouseEvent (int type, int button, int /*long*/ eventPtr) {

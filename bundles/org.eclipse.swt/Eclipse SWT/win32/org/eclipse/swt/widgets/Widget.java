@@ -166,6 +166,10 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
+int callWindowProc (int msg, int wParam, int lParam) {
+	return 0;
+}
+
 /**
  * Returns a style with exactly one style bit set out of
  * the specified set of exclusive style bits. All other
@@ -823,6 +827,26 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
+boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
+	Event event = new Event ();
+	if (!setKeyState (event, type, wParam, lParam)) return true;
+	return sendKeyEvent (type, msg, wParam, lParam, event);
+}
+
+boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
+	sendEvent (type, event);
+	// widget could be disposed at this point
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the key
+	* events.  If this happens, end the processing of
+	* the key by returning false.
+	*/
+	if (isDisposed ()) return false;
+	return event.doit;
+}
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
@@ -1057,5 +1081,478 @@ public String toString () {
 		if (isValidThread ()) string = getNameText ();
 	}
 	return getName () + " {" + string + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+}
+
+LRESULT wmChar (int hwnd, int wParam, int lParam) {
+	/*
+	* Do not report a lead byte as a key pressed.
+	*/
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		byte lead = (byte) (wParam & 0xFF);
+		if (OS.IsDBCSLeadByte (lead)) return null;
+	}
+	display.lastAscii = wParam;
+	display.lastNull = wParam == 0;
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
+		return LRESULT.ONE;
+	}
+	// widget could be disposed at this point
+	return null;
+}
+
+LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
+	display.lastKey = 0;
+	display.lastAscii = wParam;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
+		return LRESULT.ONE;
+	}
+	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
+	return LRESULT.ONE;
+}
+
+LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+	
+	/* Ignore repeating modifier keys by testing key down state */
+	switch (wParam) {
+		case OS.VK_SHIFT:
+		case OS.VK_MENU:
+		case OS.VK_CONTROL:
+		case OS.VK_CAPITAL:
+		case OS.VK_NUMLOCK:
+		case OS.VK_SCROLL:
+			if ((lParam & 0x40000000) != 0) return null;
+	}
+	
+	/* Clear last key and last ascii because a new key has been typed */
+	display.lastAscii = display.lastKey = 0;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	
+	/*
+	* Do not report a lead byte as a key pressed.
+	*/
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		byte lead = (byte) (wParam & 0xFF);
+		if (OS.IsDBCSLeadByte (lead)) return null;
+	}
+	
+	/* Map the virtual key */
+	/*
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
+	*/
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
+
+	/*
+	* Bug in Windows 95 and NT.  When the user types an accent key such
+	* as ^ to get an accented character on a German keyboard, the accent
+	* key should be ignored and the next key that the user types is the
+	* accented key.  The fix is to detect the accent key stroke (called
+	* a dead key) by testing the high bit of the value returned by
+	* MapVirtualKey().  A further problem is that the high bit on
+	* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+	* They should both be bit 32.
+	*
+	* When the user types an accent key that does not correspond to a
+	* virtual key, MapVirtualKey() won't set the high bit to indicate
+	* a dead key.  This happens when an accent key, such as '^' is the
+	* result of a modifier such as Shift key and MapVirtualKey() always
+	* returns the unshifted key.  The fix is to peek for a WM_DEADCHAR
+	* and avoid issuing the event. 
+	*/
+	if (OS.IsWinNT) {
+		if ((mapKey & 0x80000000) != 0) return null;
+	} else {
+		if ((mapKey & 0x8000) != 0) return null;
+	}
+	MSG msg = new MSG ();
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+	if (OS.PeekMessage (msg, hwnd, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
+		display.lastDead = true;
+		display.lastVirtual = mapKey == 0;
+		display.lastKey = display.lastVirtual ? wParam : mapKey;
+		return null;
+	}
+	
+	/*
+	* If we are going to get a WM_CHAR, ensure that last key has
+	* the correct character value for the key down and key up
+	* events.  It is not sufficient to ignore the WM_KEYDOWN
+	* (when we know we are going to get a WM_CHAR) and compute
+	* the key in WM_CHAR because there is not enough information
+	* by the time we get the WM_CHAR.  For example, when the user
+	* types Ctrl+Shift+6 on a US keyboard, we get a WM_CHAR with 
+	* wParam=30.  When the user types Ctrl+Shift+6 on a German 
+	* keyboard, we also get a WM_CHAR with wParam=30.  On the US
+	* keyboard Shift+6 is ^, on the German keyboard Shift+6 is &.
+	* There is no way to map wParam=30 in WM_CHAR to the correct
+	* value.  Also, on international keyboards, the control key
+	* may be down when the user has not entered a control character.
+	* 
+	* NOTE: On Windows 98, keypad keys are virtual despite the
+	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
+	* they are not virtual.  Therefore it is necessary to force
+	* numeric keypad keys to be virtual.
+	*/
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	if (display.lastVirtual) {
+		display.lastKey = wParam;
+		/*
+		* Feature in Windows.  The virtual key VK_DELETE is not
+		* treated as both a virtual key and an ASCII key by Windows.
+		* Therefore, we will not receive a WM_CHAR for this key.
+		* The fix is to treat VK_DELETE as a special case and map
+		* the ASCII value explictly (Delete is 0x7F).
+		*/
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
+
+		/*
+		* It is possible to get a WM_CHAR for a virtual key when
+		* Num Lock is on.  If the user types Home while Num Lock 
+		* is down, a WM_CHAR is issued with WPARM=55 (for the
+		* character 7).  If we are going to get a WM_CHAR we need
+		* to ensure that the last key has the correct value.  Note
+		* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
+		* down.
+		*/
+		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
+			/*
+			* Feature in Windows.  Calling to ToAscii() or ToUnicode(), clears
+			* the accented state such that the next WM_CHAR loses the accent.
+			* This makes is critical that the accent key is detected.  Also,
+			* these functions clear the character that is entered using the
+			* special Windows keypad sequence when NumLock is down (ie. typing 
+			* ALT+0231 should gives 'c' with a cedilla when NumLock is down).
+			*/
+			if (display.asciiKey (display.lastKey) != 0) return null;
+			display.lastAscii = display.numpadKey (display.lastKey);
+		}
+	} else {
+		/*
+		* Convert LastKey to lower case because Windows non-virtual
+		* keys that are also ASCII keys, such as like VK_A, are have
+		* upper case values in WM_KEYDOWN despite the fact that the 
+		* Shift was not pressed.
+		*/
+	 	display.lastKey = OS.CharLower ((short) mapKey);
+
+		/*
+		* Feature in Windows. The virtual key VK_CANCEL is treated
+		* as both a virtual key and ASCII key by Windows.  This
+		* means that a WM_CHAR with WPARAM=3 will be issued for
+		* this key.  In order to distinguish between this key and
+		* Ctrl+C, mark the key as virtual.
+		*/
+		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
+		
+		/*
+		* Some key combinations map to Windows ASCII keys depending
+		* on the keyboard.  For example, Ctrl+Alt+Q maps to @ on a
+		* German keyboard.  If the current key combination is special,
+		* the correct character is placed in wParam for processing in
+		* WM_CHAR.  If this is the case, issue the key down event from
+		* inside WM_CHAR.
+		*/
+		int asciiKey = display.asciiKey (wParam);
+		if (asciiKey != 0) {
+			/*
+			* When the user types Ctrl+Space, ToAscii () maps this to
+			* Space.  Normally, ToAscii () maps a key to a different
+			* key if both a WM_KEYDOWN and a WM_CHAR will be issued.
+			* To avoid the extra SWT.KeyDown, look for a space and
+			* issue the event from WM_CHAR.
+			*/
+			if (asciiKey == ' ') return null;
+			if (asciiKey != wParam) return null;
+			/*
+			* Feature in Windows. The virtual key VK_CANCEL is treated
+			* as both a virtual key and ASCII key by Windows.  This
+			* means that a WM_CHAR with WPARAM=3 will be issued for
+			* this key. To avoid the extra SWT.KeyDown, look for
+			* VK_CANCEL and issue the event from WM_CHAR.
+			*/
+			if (wParam == OS.VK_CANCEL) return null;
+		}
+		
+		/*
+		* If the control key is not down at this point, then
+		* the key that was pressed was an accent key or a regular
+		* key such as 'A' or Shift+A.  In that case, issue the
+		* key event from WM_CHAR.
+		*/
+		if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return null;
+		
+		/*
+		* Get the shifted state or convert to lower case if necessary.
+		* If the user types Ctrl+A, LastAscii should be 'a', not 'A'. 
+		* If the user types Ctrl+Shift+A, LastAscii should be 'A'.
+		* If the user types Ctrl+Shift+6, the value of LastAscii will
+		* depend on the international keyboard.
+		*/
+	 	if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
+			display.lastAscii = display.shiftedKey (wParam);
+			if (display.lastAscii == 0) display.lastAscii = mapKey;
+	 	} else {
+	 		display.lastAscii = OS.CharLower ((short) mapKey);
+	 	}
+	 			
+		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
+		if (display.lastAscii == '@') return null;
+		display.lastAscii = display.controlKey (display.lastAscii);
+	}
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_KEYDOWN, wParam, lParam)) {
+		return LRESULT.ONE;
+	}
+	// widget could be disposed at this point
+	return null;
+}
+
+LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
+	
+	/* Check for hardware keys */
+	if (OS.IsWinCE) {
+		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
+			display.lastKey = display.lastAscii = 0;
+			display.lastVirtual = display.lastNull = display.lastDead = false;
+			Event event = new Event ();
+			event.detail = wParam - OS.VK_APP1 + 1;
+			/* Check the bit 30 to get the key state */
+			int type = (lParam & 0x40000000) != 0 ? SWT.HardKeyUp : SWT.HardKeyDown;
+			if (setInputState (event, type)) sendEvent (type, event);
+			// widget could be disposed at this point
+			return null;
+		}
+	}
+	
+	/*
+	* If the key up is not hooked, reset last key
+	* and last ascii in case the key down is hooked.
+	*/
+	if (!hooks (SWT.KeyUp) && !display.filters (SWT.KeyUp)) {
+		display.lastKey = display.lastAscii = 0;
+		display.lastVirtual = display.lastNull = display.lastDead = false;
+		return null;
+	}
+	
+	/* Map the virtual key. */
+	/*
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
+	*/
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
+
+	/*
+	* Bug in Windows 95 and NT.  When the user types an accent key such
+	* as ^ to get an accented character on a German keyboard, the accent
+	* key should be ignored and the next key that the user types is the
+	* accented key. The fix is to detect the accent key stroke (called
+	* a dead key) by testing the high bit of the value returned by
+	* MapVirtualKey ().  A further problem is that the high bit on
+	* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+	* They should both be bit 32.
+	*/
+	if (OS.IsWinNT) {
+		if ((mapKey & 0x80000000) != 0) return null;
+	} else {
+		if ((mapKey & 0x8000) != 0) return null;
+	}
+	if (display.lastDead) return null;
+
+	/*
+	* NOTE: On Windows 98, keypad keys are virtual despite the
+	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
+	* they are not virtual.  Therefore it is necessary to force
+	* numeric keypad keys to be virtual.
+	*/
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	if (display.lastVirtual) {
+		display.lastKey = wParam;
+	} else {
+		/*
+		* Feature in Windows. The virtual key VK_CANCEL is treated
+		* as both a virtual key and ASCII key by Windows.  This
+		* means that a WM_CHAR with WPARAM=3 will be issued for
+		* this key.  In order to distingush between this key and
+		* Ctrl+C, mark the key as virtual.
+		*/
+		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
+		if (display.lastKey == 0) {
+			display.lastAscii = 0;
+			display.lastNull = display.lastDead = false;
+			return null;
+		}
+	}
+	LRESULT result = null;
+	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
+		result = LRESULT.ONE;
+	}
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	return result;
+}
+
+LRESULT wmSysChar (int windowProc, int hwnd, int wParam, int lParam) {
+	Display display = this.display;
+	display.lastAscii = wParam;
+	display.lastNull = wParam == 0;
+
+	/* Do not issue a key down if a menu bar mnemonic was invoked */
+	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
+		return null;
+	}
+	
+	/* Call the window proc to determine whether it is a system key or mnemonic */
+	boolean oldKeyHit = display.mnemonicKeyHit;
+	display.mnemonicKeyHit = true;
+	//TEMPORARY CODE
+	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
+	boolean consumed = false;
+	if (!display.mnemonicKeyHit) {
+		consumed = !sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
+		// widget could be disposed at this point
+	}
+	consumed |= display.mnemonicKeyHit;
+	display.mnemonicKeyHit = oldKeyHit;
+	return consumed ? LRESULT.ONE : new LRESULT (result);
+}
+
+LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When WM_SYSKEYDOWN is sent,
+	* the user pressed ALT+<key> or F10 to get to the
+	* menu bar.  In order to issue events for F10 but
+	* ignore other key presses when the ALT is not down,
+	* make sure that either F10 was pressed or that ALT
+	* is pressed.
+	*/
+	if (wParam != OS.VK_F10) {
+		/* Make sure WM_SYSKEYDOWN was sent by ALT-<aKey>. */
+		if ((lParam & 0x20000000) == 0) return null;
+	}
+	
+	/* Ignore well known system keys */
+	switch (wParam) {
+		case OS.VK_F4: return null;
+	}
+	
+	/* Ignore repeating modifier keys by testing key down state */
+	switch (wParam) {
+		case OS.VK_SHIFT:
+		case OS.VK_MENU:
+		case OS.VK_CONTROL:
+		case OS.VK_CAPITAL:
+		case OS.VK_NUMLOCK:
+		case OS.VK_SCROLL:
+			if ((lParam & 0x40000000) != 0) return null;
+	}
+	
+	/* Clear last key and last ascii because a new key has been typed */
+	display.lastAscii = display.lastKey = 0;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+
+	/* If are going to get a WM_SYSCHAR, ignore this message. */
+	/*
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
+	*/
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	if (display.lastVirtual) {
+	 	display.lastKey = wParam;
+		/*
+		* Feature in Windows.  The virtual key VK_DELETE is not
+		* treated as both a virtual key and an ASCII key by Windows.
+		* Therefore, we will not receive a WM_SYSCHAR for this key.
+		* The fix is to treat VK_DELETE as a special case and map
+		* the ASCII value explictly (Delete is 0x7F).
+		*/
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
+
+		/* When a keypad key is typed, a WM_SYSCHAR is not issued */
+		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
+			display.lastAscii = display.numpadKey (display.lastKey);
+		}
+	} else {
+		/*
+		* Convert LastKey to lower case because Windows non-virtual
+		* keys that are also ASCII keys, such as like VK_A, are have
+		* upper case values in WM_SYSKEYDOWN despite the fact that the 
+		* Shift was not pressed.
+		*/
+	 	display.lastKey = OS.CharLower ((short) mapKey);
+
+		/*
+		* Feature in Windows 98.  MapVirtualKey() indicates that
+		* a WM_SYSCHAR message will occur for Alt+Enter but
+		* this message never happens.  The fix is to issue the
+		* event from WM_SYSKEYDOWN and map VK_RETURN to '\r'.
+		*/
+		if (OS.IsWinNT) return null;
+		if (wParam != OS.VK_RETURN) return null;
+		display.lastAscii = '\r';
+	}
+
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {
+		return LRESULT.ONE;
+	}
+	// widget could be disposed at this point
+	return null;
+}
+
+LRESULT wmSysKeyUp (int hwnd, int wParam, int lParam) {
+	return wmKeyUp (hwnd, wParam, lParam);
 }
 }

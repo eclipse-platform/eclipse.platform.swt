@@ -37,11 +37,12 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Composite parent;
-	boolean tracking, stippled;
+	boolean tracking, cancelled, stippled;
 	Rectangle [] rectangles, proportions;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
-	int cursor;
+	int cursor, window, oldX, oldY;
+
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
 
@@ -152,8 +153,34 @@ public void addControlListener (ControlListener listener) {
 	addListener (SWT.Resize, typedListener);
 	addListener (SWT.Move, typedListener);
 }
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard, by sending
+ * it one of the messages defined in the <code>KeyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #removeKeyListener
+ */
+public void addKeyListener(KeyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener(SWT.KeyUp,typedListener);
+	addListener(SWT.KeyDown,typedListener);
+}
 
-Point adjustMoveCursor (int xDisplay, int xWindow) {
+Point adjustMoveCursor () {
 	final int unused[] = new int[1];
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
@@ -161,16 +188,17 @@ Point adjustMoveCursor (int xDisplay, int xWindow) {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	
-	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, newX, newY);
+	int xDisplay = display.xDisplay;
+	OS.XWarpPointer (xDisplay, OS.None, window, 0, 0, 0, 0, newX, newY);
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
 	 * actual location of the pointer after it has been moved.
 	 */
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, actualX, actualY, unused, unused, unused);
+	OS.XQueryPointer (xDisplay, window, unused, unused, actualX, actualY, unused, unused, unused);
 	return new Point (actualX[0], actualY[0]);
 }
-Point adjustResizeCursor (int xDisplay, int xWindow) {
+Point adjustResizeCursor () {
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -192,13 +220,14 @@ Point adjustResizeCursor (int xDisplay, int xWindow) {
 	final int unused[] = new int[1];
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
-	OS.XWarpPointer (xDisplay, 0, xWindow, 0, 0, 0, 0, newX, newY);
+	int xDisplay = display.xDisplay;
+	OS.XWarpPointer (xDisplay, 0, window, 0, 0, 0, 0, newX, newY);
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
 	 * actual location of the pointer after it has been moved.
 	 */
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, actualX, actualY, unused, unused, unused);
+	OS.XQueryPointer (xDisplay, window, unused, unused, actualX, actualY, unused, unused, unused);
 	return new Point (actualX[0], actualY[0]);
 }
 static int checkStyle (int style) {
@@ -365,17 +394,17 @@ public boolean open () {
 	checkWidget ();
 	if (rectangles == null) return false;
 	int xDisplay = display.xDisplay;
-	int xWindow = OS.XDefaultRootWindow (xDisplay);
+	window = OS.XDefaultRootWindow (xDisplay);
 	if (parent != null) {
-		xWindow = OS.XtWindow (parent.handle);
-		if (xWindow == 0) return false;
+		window = OS.XtWindow (parent.handle);
+		if (window == 0) return false;
 	}
-	boolean cancelled = false;
+	cancelled = false;
 	tracking = true;
 	drawRectangles (rectangles, stippled);
 	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1], mask = new int [1];
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
+	OS.XQueryPointer (xDisplay, window, unused, unused, oldX, oldY, unused, unused, mask);
 	
 	/*
 	* If exactly one of UP/DOWN is specified as a style then set the cursor
@@ -395,288 +424,37 @@ public boolean open () {
 	boolean mouseDown = (mask [0] & mouseMasks) != 0;
 	if (!mouseDown) {
 		if ((style & SWT.RESIZE) != 0) {
-			cursorPos = adjustResizeCursor (xDisplay, xWindow);
+			cursorPos = adjustResizeCursor ();
 		} else {
-			cursorPos = adjustMoveCursor (xDisplay, xWindow);
+			cursorPos = adjustMoveCursor ();
 		}
 		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
 	}
+	this.oldX = oldX [0];
+	this.oldY = oldY [0];
 
-	int xEvent = OS.XtMalloc (XEvent.sizeof);
-	XEvent anyEvent = new XEvent();
-	int [] newX = new int [1], newY = new int [1];
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	
-	int ptrGrabResult = OS.XGrabPointer (
-		xDisplay,
-		xWindow,
-		0,
+	int ptrGrabResult = OS.XGrabPointer (xDisplay, window, 0,
 		OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
-		OS.GrabModeAsync,
-		OS.GrabModeAsync,
-		OS.None,
-		OS.None,
-		OS.CurrentTime);
-	int kbdGrabResult = OS.XGrabKeyboard (
-		xDisplay,
-		xWindow,
-		0,
-		OS.GrabModeAsync,
-		OS.GrabModeAsync,
-		OS.CurrentTime);
+		OS.GrabModeAsync, OS.GrabModeAsync, OS.None, OS.None, OS.CurrentTime);
+	int kbdGrabResult = OS.XGrabKeyboard (xDisplay, window, 0,
+		OS.GrabModeAsync, OS.GrabModeAsync, OS.CurrentTime);
 				
-	/*
-	 * Tracker behaves like a Dialog with its own OS event loop.
-	 */
+	/* Tracker behaves like a Dialog with its own OS event loop. */
+	XAnyEvent anyEvent = new XAnyEvent();
+	int xEvent = OS.XtMalloc (XEvent.sizeof);
+	int dispatch = OS.XtMalloc (4);
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.XtAppNextEvent (xtContext, xEvent);
-		OS.memmove (anyEvent, xEvent, XEvent.sizeof);
+		OS.memmove (anyEvent, xEvent, XAnyEvent.sizeof);
+		int widget = OS.XtWindowToWidget (anyEvent.display, anyEvent.window);
 		switch (anyEvent.type) {
-			case OS.MotionNotify:
-				if (cursor != 0) {
-					OS.XChangeActivePointerGrab (
-						xDisplay,
-						OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
-						cursor,
-						OS.CurrentTime);
-				}
-				// fall through
-			case OS.ButtonRelease:
-				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
-				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
-					Rectangle [] oldRectangles = rectangles;
-					boolean oldStippled = stippled;
-					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
-					for (int i = 0; i < rectangles.length; i++) {
-						Rectangle current = rectangles [i];
-						rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
-					}
-					Event event = new Event ();
-					event.x = newX [0];
-					event.y = newY [0];
-					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
-						sendEvent (SWT.Resize, event);
-						/*
-						 * It is possible (but unlikely) that application code
-						 * could have disposed the widget in the resize event.
-						 * If this happens then return false to indicate that
-						 * the move failed.
-						 */
-						if (isDisposed ()) {
-							cancelled = true;
-							break;
-						}
-						boolean draw = false;
-						/*
-						 * It is possible that application code could have
-						 * changed the rectangles in the resize event.  If this
-						 * happens then only redraw the tracker if the rectangle
-						 * values have changed.
-						 */
-						if (rectangles != oldRectangles) {
-							int length = rectangles.length;
-							if (length != rectsToErase.length) {
-								draw = true;
-							} else {
-								for (int i = 0; i < length; i++) {
-									if (!rectangles [i].equals (rectsToErase [i])) {
-										draw = true;
-										break;
-									}
-								}
-							}
-						} else {
-							draw = true;
-						}
-						if (draw) {
-							drawRectangles (rectsToErase, oldStippled);
-							drawRectangles (rectangles, stippled);
-						}
-						cursorPos = adjustResizeCursor (xDisplay, xWindow);
-						newX [0] = cursorPos.x;  newY [0] = cursorPos.y;
-					} else {
-						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
-						sendEvent (SWT.Move, event);
-						/*
-						 * It is possible (but unlikely) that application code
-						 * could have disposed the widget in the move event.
-						 * If this happens then return false to indicate that
-						 * the move failed.
-						 */
-						if (isDisposed ()) {
-							cancelled = true;
-							break;
-						}
-						boolean draw = false;
-						/*
-						 * It is possible that application code could have
-						 * changed the rectangles in the move event.  If this
-						 * happens then only redraw the tracker if the rectangle
-						 * values have changed.
-						 */
-						if (rectangles != oldRectangles) {
-							int length = rectangles.length;
-							if (length != rectsToErase.length) {
-								draw = true;
-							} else {
-								for (int i = 0; i < length; i++) {
-									if (!rectangles [i].equals (rectsToErase [i])) {
-										draw = true;
-										break;
-									}
-								}
-							}
-						} else {
-							draw = true;
-						}
-						if (draw) {
-							drawRectangles (rectsToErase, oldStippled);
-							drawRectangles (rectangles, stippled);
-						}
-					}
-					oldX [0] = newX [0];  oldY [0] = newY [0];
-				}
-				tracking = anyEvent.type != OS.ButtonRelease;
-				break;
-			case OS.KeyPress:
-				XKeyEvent keyEvent = new XKeyEvent ();
-				OS.memmove (keyEvent, xEvent, XKeyEvent.sizeof);
-				if (keyEvent.keycode != 0) {
-					int [] keysym = new int [1];
-					OS.XLookupString (keyEvent, null, 0, keysym, null);
-					keysym [0] &= 0xFFFF;
-					int xChange = 0, yChange = 0;
-					int stepSize = ((keyEvent.state & OS.ControlMask) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
-					switch (keysym [0]) {
-						case OS.XK_KP_Enter:
-						case OS.XK_Return:
-							tracking = false;
-							/*
-							 * Eat the subsequent KeyRelease event
-							 */
-							OS.XtAppNextEvent (xtContext, xEvent);
-							break;
-						case OS.XK_Escape:
-							tracking = false;
-							cancelled = true;
-							/*
-							 * Eat the subsequent KeyRelease event
-							 */
-							OS.XtAppNextEvent (xtContext, xEvent);
-							break;
-						case OS.XK_Left:
-							xChange = -stepSize;
-							break;
-						case OS.XK_Right:
-							xChange = stepSize;
-							break;
-						case OS.XK_Up:
-							yChange = -stepSize;
-							break;
-						case OS.XK_Down:
-							yChange = stepSize;
-							break;
-					}
-					if (xChange != 0 || yChange != 0) {
-						Rectangle [] oldRectangles = rectangles;
-						boolean oldStippled = stippled;
-						Rectangle [] rectsToErase = new Rectangle [rectangles.length];
-						for (int i = 0; i < rectangles.length; i++) {
-							Rectangle current = rectangles [i];
-							rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
-						}
-						Event event = new Event ();
-						event.x = oldX [0] + xChange;
-						event.y = oldY [0] + yChange;
-						if ((style & SWT.RESIZE) != 0) {
-							resizeRectangles (xChange, yChange);
-							sendEvent (SWT.Resize, event);
-							/*
-							 * It is possible (but unlikely) that application code
-							 * could have disposed the widget in the resize event.
-							 * If this happens then return false to indicate that
-							 * the move failed.
-							 */
-							if (isDisposed ()) {
-								cancelled = true;
-								break;
-							}
-							boolean draw = false;
-							/*
-							 * It is possible that application code could have
-							 * changed the rectangles in the resize event.  If this
-							 * happens then only redraw the tracker if the rectangle
-							 * values have changed.
-							 */
-							if (rectangles != oldRectangles) {
-								int length = rectangles.length;
-								if (length != rectsToErase.length) {
-									draw = true;
-								} else {
-									for (int i = 0; i < length; i++) {
-										if (!rectangles [i].equals (rectsToErase [i])) {
-											draw = true;
-											break;
-										}
-									}
-								}
-							} else {
-								draw = true;
-							}
-							if (draw) {
-								drawRectangles (rectsToErase, oldStippled);
-								drawRectangles (rectangles, stippled);
-							}
-							cursorPos = adjustResizeCursor (xDisplay, xWindow);
-						} else {
-							moveRectangles (xChange, yChange);
-							sendEvent (SWT.Move, event);
-							/*
-							 * It is possible (but unlikely) that application code
-							 * could have disposed the widget in the move event.
-							 * If this happens then return false to indicate that
-							 * the move failed.
-							 */
-							if (isDisposed ()) {
-								cancelled = true;
-								break;
-							}
-							boolean draw = false;
-							/*
-							 * It is possible that application code could have
-							 * changed the rectangles in the move event.  If this
-							 * happens then only redraw the tracker if the rectangle
-							 * values have changed.
-							 */
-							if (rectangles != oldRectangles) {
-								int length = rectangles.length;
-								if (length != rectsToErase.length) {
-									draw = true;
-								} else {
-									for (int i = 0; i < length; i++) {
-										if (!rectangles [i].equals (rectsToErase [i])) {
-											draw = true;
-											break;
-										}
-									}
-								}
-							} else {
-								draw = true;
-							}
-							if (draw) {
-								drawRectangles (rectsToErase, oldStippled);
-								drawRectangles (rectangles, stippled);
-							}
-							cursorPos = adjustMoveCursor (xDisplay, xWindow);
-						}
-						oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
-					}
-				}
-				break;
+			case OS.MotionNotify: XPointerMotion (widget, 0, xEvent, dispatch); break;
+			case OS.ButtonRelease: XButtonRelease (widget, 0, xEvent, dispatch); break;
+			case OS.KeyPress: XKeyPress (widget, 0, xEvent, dispatch); break;
+			case OS.KeyRelease: XKeyRelease (widget, 0, xEvent, dispatch); break;
 			case OS.ButtonPress:
-			case OS.KeyRelease:
 			case OS.EnterNotify:
 			case OS.LeaveNotify:
 				/* Do not dispatch these */
@@ -685,10 +463,12 @@ public boolean open () {
 				OS.XtDispatchEvent (xEvent);
 		}
 	}
-	OS.XtFree (xEvent);
+	if (xEvent != 0) OS.XtFree (xEvent);
+	if (dispatch != 0) OS.XtFree (dispatch);
 	if (!isDisposed()) drawRectangles (rectangles, stippled);
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
+	window = 0;
 	return !cancelled;
 }
 /**
@@ -714,6 +494,30 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Resize, listener);
 	eventTable.unhook (SWT.Move, listener);
+}
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #addKeyListener
+ */
+public void removeKeyListener(KeyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook(SWT.KeyUp, listener);
+	eventTable.unhook(SWT.KeyDown, listener);
 }
 void resizeRectangles (int xChange, int yChange) {
 	/*
@@ -879,4 +683,260 @@ public void setStippled (boolean stippled) {
 	checkWidget ();
 	this.stippled = stippled;
 }
+
+int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return xMouse (OS.ButtonRelease, w, client_data, call_data, continue_to_dispatch);
+}
+
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XKeyPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	XKeyEvent keyEvent = new XKeyEvent ();
+	OS.memmove (keyEvent, call_data, XKeyEvent.sizeof);
+	if (keyEvent.keycode != 0) {
+		int [] keysym = new int [1];
+		OS.XLookupString (keyEvent, null, 0, keysym, null);
+		keysym [0] &= 0xFFFF;
+		int xChange = 0, yChange = 0;
+		int stepSize = ((keyEvent.state & OS.ControlMask) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+		switch (keysym [0]) {
+			case OS.XK_KP_Enter:
+			case OS.XK_Return:
+				tracking = false;
+				/* Eat the subsequent KeyRelease event */
+				OS.XtAppNextEvent (OS.XtDisplayToApplicationContext (keyEvent.display), call_data);
+				break;
+			case OS.XK_Escape:
+				tracking = false;
+				cancelled = true;
+				/* Eat the subsequent KeyRelease event */
+				OS.XtAppNextEvent (OS.XtDisplayToApplicationContext (keyEvent.display), call_data);
+				break;
+			case OS.XK_Left:
+				xChange = -stepSize;
+				break;
+			case OS.XK_Right:
+				xChange = stepSize;
+				break;
+			case OS.XK_Up:
+				yChange = -stepSize;
+				break;
+			case OS.XK_Down:
+				yChange = stepSize;
+				break;
+		}
+		if (xChange != 0 || yChange != 0) {
+			Rectangle [] oldRectangles = rectangles;
+			boolean oldStippled = stippled;
+			Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+			for (int i = 0; i < rectangles.length; i++) {
+				Rectangle current = rectangles [i];
+				rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+			}
+			Event event = new Event ();
+			event.x = oldX + xChange;
+			event.y = oldY + yChange;
+			Point cursorPos;
+			if ((style & SWT.RESIZE) != 0) {
+				resizeRectangles (xChange, yChange);
+				sendEvent (SWT.Resize, event);
+				/*
+				 * It is possible (but unlikely) that application code
+				 * could have disposed the widget in the resize event.
+				 * If this happens then return false to indicate that
+				 * the move failed.
+				 */
+				if (isDisposed ()) {
+					cancelled = true;
+					return 1;
+				}
+				boolean draw = false;
+				/*
+				 * It is possible that application code could have
+				 * changed the rectangles in the resize event.  If this
+				 * happens then only redraw the tracker if the rectangle
+				 * values have changed.
+				 */
+				if (rectangles != oldRectangles) {
+					int length = rectangles.length;
+					if (length != rectsToErase.length) {
+						draw = true;
+					} else {
+						for (int i = 0; i < length; i++) {
+							if (!rectangles [i].equals (rectsToErase [i])) {
+								draw = true;
+								break;
+							}
+						}
+					}
+				} else {
+					draw = true;
+				}
+				if (draw) {
+					drawRectangles (rectsToErase, oldStippled);
+					drawRectangles (rectangles, stippled);
+				}
+				cursorPos = adjustResizeCursor ();
+			} else {
+				moveRectangles (xChange, yChange);
+				sendEvent (SWT.Move, event);
+				/*
+				 * It is possible (but unlikely) that application code
+				 * could have disposed the widget in the move event.
+				 * If this happens then return false to indicate that
+				 * the move failed.
+				 */
+				if (isDisposed ()) {
+					cancelled = true;
+					return 1;
+				}
+				boolean draw = false;
+				/*
+				 * It is possible that application code could have
+				 * changed the rectangles in the move event.  If this
+				 * happens then only redraw the tracker if the rectangle
+				 * values have changed.
+				 */
+				if (rectangles != oldRectangles) {
+					int length = rectangles.length;
+					if (length != rectsToErase.length) {
+						draw = true;
+					} else {
+						for (int i = 0; i < length; i++) {
+							if (!rectangles [i].equals (rectsToErase [i])) {
+								draw = true;
+								break;
+							}
+						}
+					}
+				} else {
+					draw = true;
+				}
+				if (draw) {
+					drawRectangles (rectsToErase, oldStippled);
+					drawRectangles (rectangles, stippled);
+				}
+				cursorPos = adjustMoveCursor ();
+			}
+			oldX = cursorPos.x;
+			oldY = cursorPos.y;
+		}
+	}
+	return result;
+}
+
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (cursor != 0) {
+		int xDisplay = display.xDisplay;
+		OS.XChangeActivePointerGrab (xDisplay,
+			OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
+			cursor, OS.CurrentTime);
+	}
+	return xMouse (OS.MotionNotify, w, client_data, call_data, continue_to_dispatch);
+}
+
+int xMouse (int type, int w, int client_data, int call_data, int continue_to_dispatch) {
+	int xDisplay = display.xDisplay;
+	int [] newX = new int [1], newY = new int [1], unused = new int [1];
+	OS.XQueryPointer (xDisplay, window, unused, unused, newX, newY, unused, unused, unused);
+	if (oldX != newX [0] || oldY != newY [0]) {
+		Rectangle [] oldRectangles = rectangles;
+		boolean oldStippled = stippled;
+		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+		for (int i = 0; i < rectangles.length; i++) {
+			Rectangle current = rectangles [i];
+			rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+		}
+		Event event = new Event ();
+		event.x = newX [0];
+		event.y = newY [0];
+		if ((style & SWT.RESIZE) != 0) {
+			resizeRectangles (newX [0] - oldX, newY [0] - oldY);
+			sendEvent (SWT.Resize, event);
+			/*
+			 * It is possible (but unlikely) that application code
+			 * could have disposed the widget in the resize event.
+			 * If this happens then return false to indicate that
+			 * the move failed.
+			 */
+			if (isDisposed ()) {
+				cancelled = true;
+				return 1;
+			}
+			boolean draw = false;
+			/*
+			 * It is possible that application code could have
+			 * changed the rectangles in the resize event.  If this
+			 * happens then only redraw the tracker if the rectangle
+			 * values have changed.
+			 */
+			if (rectangles != oldRectangles) {
+				int length = rectangles.length;
+				if (length != rectsToErase.length) {
+					draw = true;
+				} else {
+					for (int i = 0; i < length; i++) {
+						if (!rectangles [i].equals (rectsToErase [i])) {
+							draw = true;
+							break;
+						}
+					}
+				}
+			} else {
+				draw = true;
+			}
+			if (draw) {
+				drawRectangles (rectsToErase, oldStippled);
+				drawRectangles (rectangles, stippled);
+			}
+			Point cursorPos = adjustResizeCursor ();
+			newX [0] = cursorPos.x;
+			newY [0] = cursorPos.y;
+		} else {
+			moveRectangles (newX [0] - oldX, newY [0] - oldY);
+			sendEvent (SWT.Move, event);
+			/*
+			 * It is possible (but unlikely) that application code
+			 * could have disposed the widget in the move event.
+			 * If this happens then return false to indicate that
+			 * the move failed.
+			 */
+			if (isDisposed ()) {
+				cancelled = true;
+				return 1;
+			}
+			boolean draw = false;
+			/*
+			 * It is possible that application code could have
+			 * changed the rectangles in the move event.  If this
+			 * happens then only redraw the tracker if the rectangle
+			 * values have changed.
+			 */
+			if (rectangles != oldRectangles) {
+				int length = rectangles.length;
+				if (length != rectsToErase.length) {
+					draw = true;
+				} else {
+					for (int i = 0; i < length; i++) {
+						if (!rectangles [i].equals (rectsToErase [i])) {
+							draw = true;
+							break;
+						}
+					}
+				}
+			} else {
+				draw = true;
+			}
+			if (draw) {
+				drawRectangles (rectsToErase, oldStippled);
+				drawRectangles (rectangles, stippled);
+			}
+		}
+		oldX = newX [0];
+		oldY = newY [0];
+	}
+	tracking = type != OS.ButtonRelease;
+	return 0;
+}
+
 }

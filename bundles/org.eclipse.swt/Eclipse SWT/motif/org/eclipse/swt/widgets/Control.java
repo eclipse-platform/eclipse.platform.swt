@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -1705,106 +1704,6 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-boolean sendIMKeyEvent (int type, XKeyEvent xEvent) {
-	return sendIMKeyEvent (type, xEvent, 0);
-}
-boolean sendIMKeyEvent (int type, XKeyEvent xEvent, int textHandle) {
-	/*
-	* Bug in Motif. On Linux only, XmImMbLookupString () does not return 
-	* XBufferOverflow as the status if the buffer is too small. The fix
-	* is to pass a large buffer.
-	*/
-	byte [] buffer = new byte [512];
-	int [] status = new int [1], unused = new int [1];
-	int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
-	int length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, buffer.length, unused, status);
-	if (status [0] == OS.XBufferOverflow) {
-		buffer = new byte [length];
-		length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, length, unused, status);
-	}
-	if (length == 0) return true;
-	
-	/* Convert from MBCS to UNICODE and send the event */
-	/* Use the character encoding for the default locale */
-	char [] chars = Converter.mbcsToWcs (null, buffer);
-	int index = 0, count = 0;
-	while (index < chars.length) {
-		if (chars [index] == 0) {
-			chars [count] = 0;
-			break;
-		}
-		Event event = new Event ();
-		event.time = xEvent.time;
-		event.character = chars [index];
-		setInputState (event, xEvent.state);
-		sendEvent (type, event);
-		// widget could be disposed at this point
-	
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the key
-		* events.  If this happens, end the processing of
-		* the key by returning false.
-		*/
-		if (isDisposed ()) return false;
-		if (event.doit) chars [count++] = chars [index];
-		index++;
-	}
-	if (count == 0) return false;
-	if (textHandle != 0) {
-		/*
-		* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
-		* the characters from the IME. This causes the characters to be
-		* stolen from the text widget. The fix is to detect that the IME
-		* has been cleared and use XmTextInsert() to insert the stolen
-		* characters. This problem does not happen on AIX.
-		*/
-		byte [] testBuffer = new byte [5];
-		int testLength = OS.XmImMbLookupString (textHandle, xEvent, testBuffer, testBuffer.length, unused, unused);
-		if (testLength == 0 || index != count) {
-			int [] start = new int [1], end = new int [1];
-			OS.XmTextGetSelectionPosition (textHandle, start, end);
-			if (start [0] == end [0]) {
-				start [0] = end [0] = OS.XmTextGetInsertionPosition (textHandle);
-			}
-			boolean warnings = display.getWarnings ();
-			display.setWarnings (false);
-			if (index != count) {
-				buffer = Converter.wcsToMbcs (getCodePage (), chars, true);
-			}
-			OS.XmTextReplace (textHandle, start [0], end [0], buffer);
-			int position = start [0] + count;
-			OS.XmTextSetInsertionPosition (textHandle, position);
-			display.setWarnings (warnings);
-			return false;
-		}
-	}
-	return true;
-}
-boolean sendKeyEvent (int type, XKeyEvent xEvent) {
-	Event event = new Event ();
-	event.time = xEvent.time;
-	if (!setKeyState (event, xEvent)) return true;
-	Control control = this;
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) {
-			control = display.getFocusControl ();
-		}
-	}
-	if (control != null) {
-		control.sendEvent (type, event);
-		// widget could be disposed at this point
-	
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the key
-		* events.  If this happens, end the processing of
-		* the key by returning false.
-		*/
-		if (isDisposed ()) return false;
-	}
-	return event.doit;
-}
 void sendMouseEvent (int type) {
 	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
@@ -3121,21 +3020,6 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 	}
 	return 0;
 }
-int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
-	boolean doit = true;
-	if (xEvent.keycode != 0) {
-		doit = sendKeyEvent (SWT.KeyDown, xEvent);
-	} else {
-		doit = sendIMKeyEvent (SWT.KeyDown, xEvent);
-	}
-	if (!doit) {
-		OS.memmove (continue_to_dispatch, new int [1], 4);
-		return 1;
-	}
-	return 0;
-}
 int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
@@ -3147,11 +3031,7 @@ int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch
 			showMenu (xEvent.x_root, xEvent.y_root);
 		}
 	}
-	if (!sendKeyEvent (SWT.KeyUp, xEvent)) {
-		OS.memmove (continue_to_dispatch, new int [1], 4);
-		return 1;
-	}
-	return 0;
+	return super.XKeyRelease (w, client_data, call_data, continue_to_dispatch);
 }
 int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
 	display.removeMouseHoverTimeOut ();
