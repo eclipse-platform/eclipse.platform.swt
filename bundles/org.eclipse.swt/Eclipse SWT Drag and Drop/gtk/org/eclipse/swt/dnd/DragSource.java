@@ -110,9 +110,9 @@ public class DragSource extends Widget {
 	private static Callback DragEnd;
 	private static Callback DragDataDelete;
 	static {
-		DragGetData = new Callback(DragSource.class, "DragGetData", 6);	
-		DragEnd = new Callback(DragSource.class, "DragEnd", 3);
-		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 3);
+		DragGetData = new Callback(DragSource.class, "DragGetData", 5);	
+		DragEnd = new Callback(DragSource.class, "DragEnd", 2);
+		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 2);
 	}
 	
 /**
