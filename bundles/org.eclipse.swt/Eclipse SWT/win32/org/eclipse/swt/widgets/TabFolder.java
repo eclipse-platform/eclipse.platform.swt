@@ -160,6 +160,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
+	if (OS.IsPPC) style &= SWT.BOTTOM;
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -244,6 +245,14 @@ void createItem (TabItem item, int index) {
 
 void createHandle () {
 	super.createHandle ();
+	/*
+	* Feature in WinCE Pocket PC.  Tab folder must have a flat look
+	* that is enabled by specifying the version of the Pocket PC library.  
+	*/
+	if (OS.IsPPC) {
+		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
+	}
+
 	state &= ~CANVAS;
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -253,15 +262,7 @@ void createHandle () {
 	* a large value.
 	*/
 	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
-	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	
-	/*
-	* Feature in WinCE Pocket PC.  Tab folder must have a flat look
-	* that is enabled by specifying the version of the Pocket PC library.  
-	*/
-	if (OS.IsPPC) {
-		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
-	}
+	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);	
 }
 
 void createWidget () {
@@ -664,7 +665,6 @@ int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_CLIPCHILDREN;
 	if ((style & SWT.NO_FOCUS) != 0) bits |= OS.TCS_FOCUSNEVER;
 	if ((style & SWT.BOTTOM) != 0) bits |= OS.TCS_BOTTOM;
-	if (OS.IsPPC) bits |= OS.TCS_BOTTOM;
 	return bits | OS.TCS_TABS | OS.TCS_TOOLTIPS;
 }
 
