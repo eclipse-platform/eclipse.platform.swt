@@ -1885,8 +1885,12 @@ void removeColumn(TableColumn column) {
 		// SWT for Windows does the same.
 		if (columnCount > 0) {
 			removeColumnData(column);
+			removeColumnVisual(column);		
 		}
-		removeColumnVisual(column);		
+		else {
+			redraw();
+			getHeader().redraw();
+		}
 		if (index < columnCount) {					// is there a column after the removed one?
 			reindexColumns(index);
 		}
