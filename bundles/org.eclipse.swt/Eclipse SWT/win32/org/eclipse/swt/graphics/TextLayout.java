@@ -572,8 +572,10 @@ public int getAlignment () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- *  @see #getDescent()
- * 
+ * @see #getDescent()
+ * @see #setDescent()
+ * @see #setAscent()
+ * @see #getLineMetrics()
  */
 public int getAscent () {
 	checkLayout();
@@ -736,6 +738,9 @@ public Rectangle getBounds (int start, int end) {
  * </ul>
  * 
  * @see #getAscent()
+ * @see #setAscent()
+ * @see #setDescent()
+ * @see #getLineMetrics() 
  */
 public int getDescent () {
 	checkLayout();
@@ -1520,6 +1525,7 @@ public void setAlignment (int alignment) {
  * </ul>
  * 
  * @see #setDescent(int)
+ * @see #getLineMetrics()
  */
 public void setAscent(int ascent) {
 	checkLayout();
@@ -1545,6 +1551,7 @@ public void setAscent(int ascent) {
  * </ul>
  * 
  * @see #setAscent(int)
+ * @see #getLineMetrics()
  */
 public void setDescent(int descent) {
 	checkLayout();
