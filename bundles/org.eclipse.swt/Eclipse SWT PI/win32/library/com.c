@@ -23,10 +23,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(CLSIDFromProgID)
 	GUID _arg1, *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, CLSIDFromProgID_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)CLSIDFromProgID((LPCOLESTR)lparg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, CLSIDFromProgID_FUNC);
@@ -42,10 +42,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(CLSIDFromString)
 	GUID _arg1, *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, CLSIDFromString_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)CLSIDFromString((LPOLESTR)lparg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, CLSIDFromString_FUNC);
@@ -62,11 +62,11 @@ JNIEXPORT jint JNICALL COM_NATIVE(CoCreateInstance)
 	jint *lparg4=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, CoCreateInstance_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)CoCreateInstance(lparg0, (LPUNKNOWN)arg1, arg2, lparg3, (LPVOID *)lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
@@ -94,11 +94,11 @@ JNIEXPORT jint JNICALL COM_NATIVE(CoGetClassObject)
 	jint *lparg4=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, CoGetClassObject_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)CoGetClassObject(lparg0, arg1, (COSERVERINFO *)arg2, lparg3, (LPVOID *)lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
@@ -149,8 +149,8 @@ JNIEXPORT jint JNICALL COM_NATIVE(CreateStdAccessibleObject)
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, CreateStdAccessibleObject_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	rc = (jint)CreateStdAccessibleObject((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
 */
@@ -168,7 +168,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(CreateStdAccessibleObject)
 			rc = (jint)fp((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
 		}
 	}
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, CreateStdAccessibleObject_FUNC);
@@ -183,9 +183,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(DoDragDrop)
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, DoDragDrop_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)DoDragDrop((IDataObject *)arg0, (IDropSource *)arg1, arg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, DoDragDrop_FUNC);
 	return rc;
@@ -200,10 +200,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(GetClassFile)
 	GUID _arg1, *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, GetClassFile_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)GetClassFile((LPCWSTR)lparg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, GetClassFile_FUNC);
@@ -219,10 +219,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(IIDFromString)
 	GUID _arg1, *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, IIDFromString_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)IIDFromString((LPOLESTR)lparg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, IIDFromString_FUNC);
@@ -238,10 +238,10 @@ JNIEXPORT jboolean JNICALL COM_NATIVE(IsEqualGUID)
 	GUID _arg1, *lparg1=NULL;
 	jboolean rc = 0;
 	COM_NATIVE_ENTER(env, that, IsEqualGUID_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jboolean)IsEqualGUID(lparg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, IsEqualGUID_FUNC);
@@ -256,7 +256,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(LresultFromObject)
 	GUID _arg0, *lparg0=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, LresultFromObject_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
 /*
 	rc = (jint)LresultFromObject(lparg0, arg1, (LPUNKNOWN)arg2);
 */
@@ -274,7 +274,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(LresultFromObject)
 			rc = (jint)fp(lparg0, arg1, (LPUNKNOWN)arg2);
 		}
 	}
-failTag:
+fail:
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, LresultFromObject_FUNC);
 	return rc;
@@ -287,9 +287,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_ole_win
 {
 	FORMATETC _arg1, *lparg1=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_FORMATETC_2I_FUNC);
-	if (arg1) if ((lparg1 = getFORMATETCFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getFORMATETCFields(env, arg1, &_arg1)) == NULL) goto fail;
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-failTag:
+fail:
 	COM_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_FORMATETC_2I_FUNC);
 }
 #endif
@@ -300,9 +300,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_ole_win
 {
 	GUID _arg1, *lparg1=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_GUID_2I_FUNC);
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-failTag:
+fail:
 	COM_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_GUID_2I_FUNC);
 }
 #endif
@@ -313,9 +313,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_ole_win
 {
 	OLEINPLACEFRAMEINFO _arg1, *lparg1=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_OLEINPLACEFRAMEINFO_2I_FUNC);
-	if (arg1) if ((lparg1 = getOLEINPLACEFRAMEINFOFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getOLEINPLACEFRAMEINFOFields(env, arg1, &_arg1)) == NULL) goto fail;
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-failTag:
+fail:
 	COM_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_OLEINPLACEFRAMEINFO_2I_FUNC);
 }
 #endif
@@ -326,9 +326,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_ole_win
 {
 	STATSTG _arg1, *lparg1=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_STATSTG_2I_FUNC);
-	if (arg1) if ((lparg1 = getSTATSTGFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getSTATSTGFields(env, arg1, &_arg1)) == NULL) goto fail;
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-failTag:
+fail:
 	COM_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_STATSTG_2I_FUNC);
 }
 #endif
@@ -339,9 +339,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_ole_win
 {
 	STGMEDIUM _arg1, *lparg1=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2I_FUNC);
-	if (arg1) if ((lparg1 = getSTGMEDIUMFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getSTGMEDIUMFields(env, arg1, &_arg1)) == NULL) goto fail;
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-failTag:
+fail:
 	COM_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2I_FUNC);
 }
 #endif
@@ -352,9 +352,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	DISPPARAMS _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setDISPPARAMSFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2II_FUNC);
 }
@@ -366,9 +366,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	FORMATETC _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_FORMATETC_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setFORMATETCFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_FORMATETC_2II_FUNC);
 }
@@ -380,9 +380,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	FUNCDESC _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_FUNCDESC_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setFUNCDESCFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_FUNCDESC_2II_FUNC);
 }
@@ -394,9 +394,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	GUID _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC);
 }
@@ -408,9 +408,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	STATSTG _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STATSTG_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setSTATSTGFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STATSTG_2II_FUNC);
 }
@@ -422,9 +422,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	STGMEDIUM _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setSTGMEDIUMFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2II_FUNC);
 }
@@ -436,9 +436,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	TYPEATTR _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_TYPEATTR_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setTYPEATTRFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_TYPEATTR_2II_FUNC);
 }
@@ -450,9 +450,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win3
 {
 	VARDESC _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARDESC_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setVARDESCFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARDESC_2II_FUNC);
 }
@@ -464,9 +464,9 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_RE
 {
 	RECT _arg0, *lparg0=NULL;
 	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setRECTFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II_FUNC);
 }
@@ -482,12 +482,12 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleCreate)
 	jint *lparg6=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleCreate_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getFORMATETCFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getFORMATETCFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)OleCreate(lparg0, lparg1, arg2, lparg3, (IOleClientSite *)arg4, (IStorage *)arg5, (void **)lparg6);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg3 && lparg3) setFORMATETCFields(env, arg3, lparg3);
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
@@ -508,13 +508,13 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleCreateFromFile)
 	jint *lparg7=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleCreateFromFile_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto failTag;
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = getFORMATETCFields(env, arg4, &_arg4)) == NULL) goto failTag;
-	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getFORMATETCFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 	rc = (jint)OleCreateFromFile(lparg0, (LPCOLESTR)lparg1, lparg2, arg3, lparg4, (LPOLECLIENTSITE)arg5, (LPSTORAGE)arg6, (LPVOID *)lparg7);
-failTag:
+fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg4 && lparg4) setFORMATETCFields(env, arg4, lparg4);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
@@ -533,10 +533,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleCreatePropertyFrame)
 	jint *lparg5=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleCreatePropertyFrame_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jint)OleCreatePropertyFrame((HWND)arg0, arg1, arg2, (LPCOLESTR)lparg3, arg4, (LPUNKNOWN FAR*)lparg5, arg6, (LPCLSID)arg7, (LCID)arg8, arg9, (LPVOID)arg10);
-failTag:
+fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, OleCreatePropertyFrame_FUNC);
@@ -575,9 +575,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleGetClipboard)
 	jint *lparg0=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleGetClipboard_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)OleGetClipboard((IDataObject **)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, OleGetClipboard_FUNC);
 	return rc;
@@ -616,10 +616,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleLoad)
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleLoad_FUNC);
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)OleLoad((IStorage *)arg0, lparg1, (IOleClientSite *)arg2, (LPVOID *)lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	COM_NATIVE_EXIT(env, that, OleLoad_FUNC);
@@ -694,9 +694,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleTranslateColor)
 	jint *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, OleTranslateColor_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)OleTranslateColor((OLE_COLOR)arg0, (HPALETTE)arg1, (COLORREF *)lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, OleTranslateColor_FUNC);
 	return rc;
@@ -711,10 +711,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(ProgIDFromCLSID)
 	jint *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, ProgIDFromCLSID_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)ProgIDFromCLSID(lparg0, (LPOLESTR *)lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, ProgIDFromCLSID_FUNC);
@@ -764,10 +764,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(StgCreateDocfile)
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, StgCreateDocfile_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)StgCreateDocfile(lparg0, arg1, arg2, (IStorage **)lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, StgCreateDocfile_FUNC);
@@ -782,9 +782,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(StgIsStorageFile)
 	jchar *lparg0=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, StgIsStorageFile_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)StgIsStorageFile((const WCHAR *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, StgIsStorageFile_FUNC);
 	return rc;
@@ -799,10 +799,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(StgOpenStorage)
 	jint *lparg5=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, StgOpenStorage_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jint)StgOpenStorage((const WCHAR *)lparg0, (IStorage *)arg1, arg2, (SNB)arg3, arg4, (IStorage **)lparg5);
-failTag:
+fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, StgOpenStorage_FUNC);
@@ -818,10 +818,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(StringFromCLSID)
 	jint *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, StringFromCLSID_FUNC);
-	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = getGUIDFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)StringFromCLSID(lparg0, (LPOLESTR *)lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, StringFromCLSID_FUNC);
@@ -836,9 +836,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(SysAllocString)
 	jchar *lparg0=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, SysAllocString_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)SysAllocString((OLECHAR *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, SysAllocString_FUNC);
 	return rc;
@@ -981,10 +981,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIILorg_eclipse_swt_internal_ole_wi
 	SIZE _arg5, *lparg5=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_DVTARGETDEVICE_2Lorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
-	if (arg4) if ((lparg4 = getDVTARGETDEVICEFields(env, arg4, &_arg4)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = getSIZEFields(env, arg5, &_arg5)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = getDVTARGETDEVICEFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getSIZEFields(env, arg5, &_arg5)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, DVTARGETDEVICE *, SIZE *))(*(int **)arg1)[arg0])(arg1, arg2, arg3, lparg4, lparg5);
-failTag:
+fail:
 	if (arg5 && lparg5) setSIZEFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setDVTARGETDEVICEFields(env, arg4, lparg4);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_DVTARGETDEVICE_2Lorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
@@ -1000,10 +1000,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIILorg_eclipse_swt_internal_ole_wi
 	jint *lparg6=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_GUID_2I_3I_FUNC);
-	if (arg4) if ((lparg4 = getGUIDFields(env, arg4, &_arg4)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = getGUIDFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, GUID *, jint, jint *))(*(int **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, lparg6);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGUIDFields(env, arg4, lparg4);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_GUID_2I_3I_FUNC);
@@ -1018,9 +1018,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIII_3I)
 	jint *lparg4=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIII_3I_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIII_3I_FUNC);
 	return rc;
@@ -1035,10 +1035,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_ole_win
 	jint *lparg4=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3I_FUNC);
-	if (arg3) if ((lparg3 = getFORMATETCFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getFORMATETCFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, FORMATETC *, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setFORMATETCFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3I_FUNC);
@@ -1053,9 +1053,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_ole_win
 	GUID _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
-	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, GUID *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
 	return rc;
@@ -1069,9 +1069,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_ole_win
 	GUID _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC);
-	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, GUID *, jint, jint))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5);
-failTag:
+fail:
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC);
 	return rc;
@@ -1088,12 +1088,12 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_ole_win
 	jint *lparg9=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I_FUNC);
-	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = getDISPPARAMSFields(env, arg6, &_arg6)) == NULL) goto failTag;
-	if (arg8) if ((lparg8 = getEXCEPINFOFields(env, arg8, &_arg8)) == NULL) goto failTag;
-	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = getDISPPARAMSFields(env, arg6, &_arg6)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getEXCEPINFOFields(env, arg8, &_arg8)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, GUID *, jint, jint, DISPPARAMS *, jint, EXCEPINFO *, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, lparg6, arg7, lparg8, lparg9);
-failTag:
+fail:
 	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg8 && lparg8) setEXCEPINFOFields(env, arg8, lparg8);
 	if (arg6 && lparg6) setDISPPARAMSFields(env, arg6, lparg6);
@@ -1111,10 +1111,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_ole_win
 	jint *lparg4=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I_FUNC);
-	if (arg3) if ((lparg3 = getSTATSTGFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getSTATSTGFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, STATSTG *, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setSTATSTGFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I_FUNC);
@@ -1130,10 +1130,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_win32_M
 	RECT _arg7, *lparg7=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC);
-	if (arg3) if ((lparg3 = getMSGFields(env, arg3, &_arg3)) == NULL) goto failTag;
-	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getMSGFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, MSG *, jint, jint, jint, RECT *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, arg6, lparg7);
-failTag:
+fail:
 	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
 	if (arg3 && lparg3) setMSGFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC);
@@ -1148,9 +1148,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_win32_S
 	SIZE _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
-	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, SIZE *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) setSIZEFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
 	return rc;
@@ -1176,9 +1176,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3I)
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__III_3I_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__III_3I_FUNC);
 	return rc;
@@ -1193,10 +1193,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3II_3I)
 	jint *lparg5=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__III_3II_3I_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint *, jint, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, arg4, lparg5);
-failTag:
+fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__III_3II_3I_FUNC);
@@ -1214,12 +1214,12 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3I_3I_3I_3I)
 	jint *lparg6=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__III_3I_3I_3I_3I_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint *, jint *, jint *, jint *))(*(int **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -1236,9 +1236,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	CAUUID _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_CAUUID_2_FUNC);
-	if (arg2) if ((lparg2 = getCAUUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getCAUUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, CAUUID *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setCAUUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_CAUUID_2_FUNC);
 	return rc;
@@ -1252,9 +1252,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	CONTROLINFO _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_CONTROLINFO_2_FUNC);
-	if (arg2) if ((lparg2 = getCONTROLINFOFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getCONTROLINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, CONTROLINFO *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setCONTROLINFOFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_CONTROLINFO_2_FUNC);
 	return rc;
@@ -1268,9 +1268,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	FORMATETC _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_FUNC);
-	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, FORMATETC *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setFORMATETCFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_FUNC);
 	return rc;
@@ -1285,10 +1285,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	STGMEDIUM _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2_FUNC);
-	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getSTGMEDIUMFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getSTGMEDIUMFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, FORMATETC *, STGMEDIUM *))(*(int **)arg1)[arg0])(arg1, lparg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) setSTGMEDIUMFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setFORMATETCFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2_FUNC);
@@ -1304,10 +1304,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	STGMEDIUM _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2Z_FUNC);
-	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getSTGMEDIUMFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getSTGMEDIUMFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, FORMATETC *, STGMEDIUM *, jboolean))(*(int **)arg1)[arg0])(arg1, lparg2, lparg3, arg4);
-failTag:
+fail:
 	if (arg3 && lparg3) setSTGMEDIUMFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setFORMATETCFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_FORMATETC_2Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2Z_FUNC);
@@ -1322,9 +1322,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	GUID _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
 	return rc;
@@ -1338,9 +1338,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	GUID _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2IIII_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *, jint, jint, jint, jint))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6);
-failTag:
+fail:
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2IIII_FUNC);
 	return rc;
@@ -1355,10 +1355,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	jint *lparg6=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2III_3I_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *, jint, jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2III_3I_FUNC);
@@ -1375,11 +1375,11 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	OLECMDTEXT _arg5, *lparg5=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2ILorg_eclipse_swt_internal_ole_win32_OLECMD_2Lorg_eclipse_swt_internal_ole_win32_OLECMDTEXT_2_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = getOLECMDFields(env, arg4, &_arg4)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = getOLECMDTEXTFields(env, arg5, &_arg5)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getOLECMDFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getOLECMDTEXTFields(env, arg5, &_arg5)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *, jint, OLECMD *, OLECMDTEXT *))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
-failTag:
+fail:
 	if (arg5 && lparg5) setOLECMDTEXTFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setOLECMDFields(env, arg4, lparg4);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
@@ -1396,10 +1396,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	jint *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *, jint *))(*(int **)arg1)[arg0])(arg1, lparg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC);
@@ -1414,9 +1414,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win3
 	LICINFO _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_LICINFO_2_FUNC);
-	if (arg2) if ((lparg2 = getLICINFOFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getLICINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, LICINFO *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setLICINFOFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_LICINFO_2_FUNC);
 	return rc;
@@ -1430,9 +1430,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_MS
 	MSG _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2_FUNC);
-	if (arg2) if ((lparg2 = getMSGFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getMSGFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, MSG *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setMSGFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2_FUNC);
 	return rc;
@@ -1446,9 +1446,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_RE
 	RECT _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2_FUNC);
-	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, RECT *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2_FUNC);
 	return rc;
@@ -1462,9 +1462,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_RE
 	RECT _arg2, *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ_FUNC);
-	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, RECT *, jint, jboolean))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4);
-failTag:
+fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ_FUNC);
 	return rc;
@@ -1479,10 +1479,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_RE
 	RECT _arg3, *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2_FUNC);
-	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = getRECTFields(env, arg3, &_arg3)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getRECTFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, RECT *, RECT *))(*(int **)arg1)[arg0])(arg1, lparg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) setRECTFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2_FUNC);
@@ -1497,9 +1497,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3C)
 	jchar *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3C_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3C_FUNC);
 	return rc;
@@ -1513,9 +1513,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3CI)
 	jchar *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3CI_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint))(*(int **)arg1)[arg0])(arg1, lparg2, arg3);
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3CI_FUNC);
 	return rc;
@@ -1530,10 +1530,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3CIIII_3I)
 	jint *lparg7=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3CIIII_3I_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto failTag;
-	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jint, jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6, lparg7);
-failTag:
+fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3CIIII_3I_FUNC);
@@ -1549,10 +1549,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3CIII_3I)
 	jint *lparg6=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3CIII_3I_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3CIII_3I_FUNC);
@@ -1568,10 +1568,10 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3C_3C)
 	jchar *lparg3=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3C_3C_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jchar *))(*(int **)arg1)[arg0])(arg1, lparg2, lparg3);
-failTag:
+fail:
 	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3C_3C_FUNC);
@@ -1586,9 +1586,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3I)
 	jint *lparg2=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__II_3I_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint *))(*(int **)arg1)[arg0])(arg1, lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3I_FUNC);
 	return rc;
@@ -1602,9 +1602,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(WriteClassStg)
 	GUID _arg1, *lparg1=NULL;
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, WriteClassStg_FUNC);
-	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = getGUIDFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)WriteClassStg((IStorage *)arg0, lparg1);
-failTag:
+fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	COM_NATIVE_EXIT(env, that, WriteClassStg_FUNC);
 	return rc;

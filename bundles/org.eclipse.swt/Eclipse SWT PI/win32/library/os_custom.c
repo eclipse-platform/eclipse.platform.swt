@@ -86,8 +86,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	jint *lparg3=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 #ifdef _WIN32_WCE
 	/*
 	* Bug on WinCE.  SendMessage can fail (return 0) when being passed references
@@ -113,7 +113,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 #else
 	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
