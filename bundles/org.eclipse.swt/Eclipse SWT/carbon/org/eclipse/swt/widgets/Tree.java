@@ -423,6 +423,7 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TreeItem [4];
+	anchorFirst = anchorLast = 0;
 }
 
 public void removeSelectionListener (SelectionListener listener) {

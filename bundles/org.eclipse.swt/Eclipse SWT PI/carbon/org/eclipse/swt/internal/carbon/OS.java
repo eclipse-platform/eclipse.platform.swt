@@ -639,8 +639,6 @@ public static final native int GetCurrentEventQueue();
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int GetCurrentScrap(int[] scrap);
 public static final native int GetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
-public static final native int GetDataBrowserTableViewColumnPosition(int browser, int column, int [] position);
-public static final native int GetDataBrowserTableViewColumnWidth(int browser, short [] width);
 public static final native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
 public static final native int GetDataBrowserItemDataButtonValue(int itemData, short [] theData);
 public static final native int GetDataBrowserItemPartBounds(int cHandle, int item, int property, int part, Rect bounds);
@@ -650,6 +648,8 @@ public static final native int GetDataBrowserListViewHeaderBtnHeight(int browser
 public static final native int GetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
 public static final native int GetDataBrowserTableViewItemID(int browser, int row, int [] item);
 public static final native int GetDataBrowserTableViewItemRow(int browser, int item, int [] row);                         
+public static final native int GetDataBrowserTableViewColumnPosition(int browser, int column, int [] position);
+public static final native int GetDataBrowserTableViewNamedColumnWidth(int browser, int column, short [] width);
 public static final native int GetDataBrowserTableViewRowHeight(int browser, short [] height);
 public static final native int GetDataBrowserScrollBarInset(int browser, Rect insetRect);
 public static final native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
@@ -862,7 +862,6 @@ public static final native int SetControlTitleWithCFString(int cHandle, int sHan
 public static final native void SetControlViewSize(int cHandle, int viewSize);
 public static final native void SetCursor(int cursor);
 public static final native int SetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
-public static final native int SetDataBrowserTableViewColumnWidth(int browser, short width);
 public static final native int SetDataBrowserHasScrollBars(int cHandle, boolean hScroll, boolean vScroll);
 public static final native int SetDataBrowserItemDataBooleanValue(int itemRef, boolean data);
 public static final native int SetDataBrowserItemDataButtonValue(int itemRef, short themeButtonValue);
@@ -877,6 +876,7 @@ public static final native int SetDataBrowserSelectedItems(int cHandle, int numI
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
 public static final native int SetDataBrowserTableViewColumnPosition(int browser, int column, int position);
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
+public static final native int SetDataBrowserTableViewNamedColumnWidth(int browser, int column, short width);
 public static final native int SetDataBrowserTarget(int cHandle, int rootID);
 public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);

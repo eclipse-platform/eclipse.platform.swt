@@ -393,7 +393,7 @@ public void removeAll () {
 	checkWidget();
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
 	items = new String [4];
-	itemCount = 0;
+	itemCount = anchorFirst = anchorLast = 0;
 }
 
 public void removeSelectionListener(SelectionListener listener) {

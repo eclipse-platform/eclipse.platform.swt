@@ -2527,21 +2527,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTab
 }
 #endif /* NO_GetDataBrowserTableViewColumnPosition */
 
-#ifndef NO_GetDataBrowserTableViewColumnWidth
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewColumnWidth
-	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+#ifndef NO_GetDataBrowserTableViewNamedColumnWidth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewNamedColumnWidth
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2)
 {
-	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
 	jint rc;
 
-	DEBUG_CALL("GetDataBrowserTableViewColumnWidth\n")
+	DEBUG_CALL("GetDataBrowserTableViewNamedColumnWidth\n")
 
-	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
-	rc = (jint)GetDataBrowserTableViewColumnWidth((ControlRef)arg0, (UInt16 *)lparg1);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserTableViewNamedColumnWidth((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (UInt16 *)lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	return rc;
 }
-#endif /* NO_GetDataBrowserTableViewColumnWidth */
+#endif /* NO_GetDataBrowserTableViewNamedColumnWidth */
 
 #ifndef NO_GetDataBrowserItemCount
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemCount
@@ -5495,15 +5495,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserCal
 }
 #endif /* NO_SetDataBrowserCallbacks */
 
-#ifndef NO_SetDataBrowserTableViewColumnWidth
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewColumnWidth
-	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+#ifndef NO_SetDataBrowserTableViewNamedColumnWidth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewNamedColumnWidth
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2)
 {
-	DEBUG_CALL("SetDataBrowserTableViewColumnWidth\n")
+	DEBUG_CALL("SetDataBrowserTableViewNamedColumnWidth\n")
 
-	return (jint)SetDataBrowserTableViewColumnWidth((ControlRef)arg0, (UInt16)arg1);
+	return (jint)SetDataBrowserTableViewNamedColumnWidth((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (UInt16)arg2);
 }
-#endif /* NO_SetDataBrowserTableViewColumnWidth */
+#endif /* NO_SetDataBrowserTableViewNamedColumnWidth */
 
 #ifndef NO_SetDataBrowserHasScrollBars
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars
