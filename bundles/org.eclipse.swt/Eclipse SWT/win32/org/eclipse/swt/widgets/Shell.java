@@ -379,6 +379,8 @@ public void dispose () {
 	super.dispose ();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
+	eventTypes = null;
+	lastEventControls = null;
 }
 
 int findBrush (int pixel) {

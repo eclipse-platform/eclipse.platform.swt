@@ -1069,15 +1069,9 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	Event e = new Event();
+	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
 	e.item = this;
 	e.time = OS.GetMessageTime ();
-	e.x = (short) (lParam & 0xFFFF);
-	e.y = (short) (lParam >> 16);
-	e.button = 1;
-	if (OS.GetKeyState (OS.VK_MENU) < 0) e.stateMask |= SWT.ALT;
-	if ((wParam & OS.MK_SHIFT) != 0) e.stateMask |= SWT.SHIFT;
-	if ((wParam & OS.MK_CONTROL) != 0) e.stateMask |= SWT.CONTROL;
 	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	/*

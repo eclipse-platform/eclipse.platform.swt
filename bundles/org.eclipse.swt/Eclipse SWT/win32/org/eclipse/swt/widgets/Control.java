@@ -1457,7 +1457,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return true;
 }
 
-boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
+Event createMouseEvent (int type, int button, int wParam, int lParam) {
 	Event event = new Event ();
 	event.button = button;
 	event.x = (short) (lParam & 0xFFFF);
@@ -1480,6 +1480,10 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 			event.stateMask |= SWT.BUTTON3;
 		}
 	}
+	return event;
+}
+boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
+	Event event = createMouseEvent(type, button, wParam, lParam);
 	return sendMouseEvent (type, msg, wParam, lParam, event);
 }
 
@@ -2984,16 +2988,10 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	
-	Event event = new Event();
-	event.item = this;
-	event.time = OS.GetMessageTime ();
-	event.x = (short) (lParam & 0xFFFF);
-	event.y = (short) (lParam >> 16);
-	event.button = 1;
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
-	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	notifyParentListeners(SWT.ChildMouseDown, event);
+	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
+	e.item = this;
+	e.time = OS.GetMessageTime ();
+	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -3040,16 +3038,10 @@ LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
-	Event event = new Event();
-	event.item = this;
-	event.time = OS.GetMessageTime ();
-	event.x = (short) (lParam & 0xFFFF);
-	event.y = (short) (lParam >> 16);
-	event.button = 2;
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
-	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	notifyParentListeners(SWT.ChildMouseDown, event);
+	Event e = createMouseEvent(SWT.MouseDown, 2, wParam, lParam);
+	e.item = this;
+	e.time = OS.GetMessageTime ();
+	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 2, OS.WM_MBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_MBUTTONDOWN, wParam, lParam);
@@ -3359,16 +3351,11 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	Event event = new Event();
-	event.item = this;
-	event.time = OS.GetMessageTime ();
-	event.x = (short) (lParam & 0xFFFF);
-	event.y = (short) (lParam >> 16);
-	event.button = 3;
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
-	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	notifyParentListeners(SWT.ChildMouseDown, event);
+	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
+	e.type = SWT.ChildMouseDown;
+	e.item = this;
+	e.time = OS.GetMessageTime ();
+	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_RBUTTONDOWN, wParam, lParam);
