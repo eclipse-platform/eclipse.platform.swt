@@ -31,7 +31,7 @@ public class ClipboardExample {
 	Combo combo;
 	StyledText styledText;
 	Label status;
-	static final int SIZE = 100;
+	static final int SIZE = 60;
 	
 public static void main( String[] args) {
 	Display display = new Display();
@@ -48,13 +48,13 @@ public void open(Display display) {
 	copyGroup.setText("Copy From:");
 	GridData data = new GridData(GridData.FILL_BOTH);
 	copyGroup.setLayoutData(data);
-	copyGroup.setLayout(new GridLayout(4, false));
+	copyGroup.setLayout(new GridLayout(3, false));
 	
 	Group pasteGroup = new Group(shell, SWT.NONE);
 	pasteGroup.setText("Paste To:");
 	data = new GridData(GridData.FILL_BOTH);
 	pasteGroup.setLayoutData(data);
-	pasteGroup.setLayout(new GridLayout(4, false));
+	pasteGroup.setLayout(new GridLayout(3, false));
 	
 	Group controlGroup = new Group(shell, SWT.NONE);
 	controlGroup.setText("Control API:");
@@ -62,7 +62,14 @@ public void open(Display display) {
 	data.horizontalSpan = 2;
 	controlGroup.setLayoutData(data);
 	controlGroup.setLayout(new GridLayout(5, false));
-		
+	
+	Group typesGroup = new Group(shell, SWT.NONE);
+	typesGroup.setText("Available Types");
+	data = new GridData(GridData.FILL_BOTH);
+	data.horizontalSpan = 2;
+	typesGroup.setLayoutData(data);
+	typesGroup.setLayout(new GridLayout(2, false));
+	
 	status = new Label(shell, SWT.BORDER);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.horizontalSpan = 2;
@@ -74,6 +81,7 @@ public void open(Display display) {
 	createFileTransfer(copyGroup, pasteGroup);
 	createMyTransfer(copyGroup, pasteGroup);
 	createControlTransfer(controlGroup);
+	createAvailableTypes(typesGroup);
 	
 	shell.pack();
 	shell.open();
@@ -91,7 +99,6 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	copyText.setText("some\nplain\ntext");
 	GridData data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
 	copyText.setLayoutData(data);
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -112,7 +119,6 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	pasteText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
 	pasteText.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -136,7 +142,6 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	copyRtfText.setText("some\nrtf\ntext");
 	GridData data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
 	copyRtfText.setLayoutData(data);
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -158,7 +163,6 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	pasteRtfText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
 	pasteRtfText.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -178,14 +182,26 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	//File Transfer
 	Label l = new Label(copyParent, SWT.NONE);
 	l.setText("FileTransfer:"); //$NON-NLS-1$
-	Button b = new Button(copyParent, SWT.PUSH);
+	
+	Composite c = new Composite(copyParent, SWT.NONE);
+	c.setLayout(new GridLayout(2, false));
+	GridData data = new GridData(GridData.FILL_HORIZONTAL);
+	c.setLayoutData(data);
+	
+	copyFileTable = new Table(c, SWT.MULTI | SWT.BORDER);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	data.heightHint = data.widthHint = SIZE;
+	data.horizontalSpan = 2;
+	copyFileTable.setLayoutData(data);
+	
+	Button b = new Button(c, SWT.PUSH);
 	b.setText("Select file(s)");
 	b.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
-			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+			FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 			String result = dialog.open();
 			if (result != null && result.length() > 0){
-				copyFileTable.removeAll();
+				//copyFileTable.removeAll();
 				String separator = System.getProperty("file.separator");
 				String path = dialog.getFilterPath();
 				String[] names = dialog.getFileNames();
@@ -196,11 +212,19 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 			}
 		}
 	});
-	copyFileTable = new Table(copyParent, SWT.MULTI | SWT.BORDER);
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = SIZE;
-	data.widthHint = 2 * SIZE;
-	copyFileTable.setLayoutData(data);
+	b = new Button(c, SWT.PUSH);
+	b.setText("Select directory");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
+			String result = dialog.open();
+			if (result != null && result.length() > 0){
+				//copyFileTable.removeAll();
+				TableItem item = new TableItem(copyFileTable, SWT.NONE);
+				item.setText(result);
+			}
+		}
+	});
 	
 	b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -209,7 +233,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 			TableItem[] items = copyFileTable.getItems();
 			if (items.length > 0){
 				status.setText("");
-				String []data = new String[items.length];
+				String[] data = new String[items.length];
 				for (int i = 0; i < data.length; i++) {
 					data[i] = items[i].getText();
 				}
@@ -225,7 +249,6 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	pasteFileTable = new Table(pasteParent, SWT.MULTI | SWT.BORDER);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
 	pasteFileTable.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -326,5 +349,22 @@ void createControlTransfer(Composite parent){
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.heightHint = data.widthHint = SIZE;
 	styledText.setLayoutData(data);
+}
+void createAvailableTypes(Composite parent){
+	final List list = new List(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.heightHint = 100;
+	list.setLayoutData(data);
+	Button b = new Button(parent, SWT.PUSH);
+	b.setText("Get Available Types");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			list.removeAll();
+			String[] names = clipboard.getAvailableTypeNames();
+			for (int i = 0; i < names.length; i++) {
+				list.add(names[i]);
+			}
+		}
+	});
 }
 }

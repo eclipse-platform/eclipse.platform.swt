@@ -38,7 +38,9 @@ public class DNDExample {
 	private boolean dropEnabled = false;
 	
 	private Text dragConsole;
+	private boolean dragEventDetail = false;
 	private Text dropConsole;
+	private boolean dropEventDetail = false;
 	
 	private static final int BUTTON_TOGGLE = 0;
 	private static final int BUTTON_RADIO = 1;
@@ -91,8 +93,43 @@ private void open() {
 	createDropTypes(dropTypesGroup);
 	
 	dragConsole = new Text(shell, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	Menu menu = new Menu (shell, SWT.POP_UP);
+	MenuItem item = new MenuItem (menu, SWT.PUSH);
+	item.setText ("Clear");
+	item.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			dragConsole.setText("");
+		}
+	});
+	item = new MenuItem (menu, SWT.CHECK);
+	item.setText ("Show Event detail");
+	item.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			MenuItem item = (MenuItem)e.widget;
+			dragEventDetail = item.getSelection();
+		}
+	});
+	dragConsole.setMenu(menu);
+	
 	dropConsole = new Text(shell, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
-
+	menu = new Menu (shell, SWT.POP_UP);
+	item = new MenuItem (menu, SWT.PUSH);
+	item.setText ("Clear");
+	item.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			dropConsole.setText("");
+		}
+	});
+	item = new MenuItem (menu, SWT.CHECK);
+	item.setText ("Show Event detail");
+	item.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			MenuItem item = (MenuItem)e.widget;
+			dropEventDetail = item.getSelection();
+		}
+	});
+	dropConsole.setMenu(menu);
+	
 	int height = 300;
 	FormData data = new FormData();
 	data.top = new FormAttachment(0, 10);
@@ -725,29 +762,29 @@ private void createDropTarget() {
 	dropTarget.addDropListener(new DropTargetListener() {
 		public void dragEnter(DropTargetEvent event) {
 			dropConsole.append(">>dragEnter\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = dropDefaultOperation;
 			}
 		}
 		public void dragLeave(DropTargetEvent event) {
 			dropConsole.append(">>dragLeave\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 		}
 		public void dragOperationChanged(DropTargetEvent event) {
 			dropConsole.append(">>dragOperationChanged\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = dropDefaultOperation;
 			}
 		}
 		public void dragOver(DropTargetEvent event) {
 			dropConsole.append(">>dragOver\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 		}
 		public void drop(DropTargetEvent event) {
 			dropConsole.append(">>drop\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 			String[] strings = null;
 			if (TextTransfer.getInstance().isSupportedType(event.currentDataType)) {
 				strings = new String[]{(String)event.data};
@@ -821,7 +858,7 @@ private void createDropTarget() {
 		}
 		public void dropAccept(DropTargetEvent event) {
 			dropConsole.append(">>dropAccept\n");
-			dropConsole.append(event+"\n");
+			printEvent(event);
 		}
 	});
 }
@@ -833,7 +870,7 @@ private void createDragSource() {
 	dragSource.addDragListener(new DragSourceListener() {
 		public void dragFinished(org.eclipse.swt.dnd.DragSourceEvent event) {
 			dragConsole.append(">>dragFinished\n");
-			dragConsole.append(event+"\n");
+			printEvent(event);
 			dragData = null;
 			if (event.detail == DND.DROP_MOVE) {
 				switch(dragControlType) {
@@ -886,7 +923,7 @@ private void createDragSource() {
 		}
 		public void dragSetData(org.eclipse.swt.dnd.DragSourceEvent event) {
 			dragConsole.append(">>dragSetData\n");
-			dragConsole.append(event+"\n");
+			printEvent(event);
 			if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 				if (dragData instanceof String) {
 					event.data = dragData; 
@@ -913,7 +950,7 @@ private void createDragSource() {
 		}
 		public void dragStart(org.eclipse.swt.dnd.DragSourceEvent event) {
 			dragConsole.append(">>dragStart\n");
-			dragConsole.append(event+"\n");
+			printEvent(event);
 			switch(dragControlType) {
 				case BUTTON_CHECK:
 				case BUTTON_TOGGLE:
@@ -995,4 +1032,39 @@ private void createDragSource() {
 		}
 	});
 }
+private void printEvent(DragSourceEvent e) {
+	if (!dragEventDetail) return;
+	StringBuffer sb = new StringBuffer();
+	sb.append("widget: "); sb.append(e.widget);
+	sb.append(", time: "); sb.append(e.time);
+	sb.append(", operation: "); sb.append(e.detail);
+	sb.append(", type: "); sb.append(e.dataType != null ? e.dataType.type : 0);
+	sb.append(", doit: "); sb.append(e.doit);
+	sb.append(", data: "); sb.append(e.data);
+	sb.append("\n");
+	dragConsole.append(sb.toString());
+} 
+private void printEvent(DropTargetEvent e) {
+	if (!dropEventDetail) return;
+	StringBuffer sb = new StringBuffer();
+	sb.append("widget; "); sb.append(e.widget);
+	sb.append(", time: "); sb.append(e.time);
+	sb.append(", x: "); sb.append(e.x);
+	sb.append(", y: "); sb.append(e.y);
+	sb.append(", item: "); sb.append(e.item);
+	sb.append(", operations: "); sb.append(e.operations);
+	sb.append(", operation: "); sb.append(e.detail);
+	sb.append(", feedback: "); sb.append(e.feedback);
+	if (e.dataTypes != null) {
+		for (int i = 0; i < e.dataTypes.length; i++) {
+			sb.append(", dataType "); sb.append(i); sb.append(": "); sb.append(e.dataTypes[i].type);
+		}
+	} else {
+		sb.append(", dataTypes: none");
+	}
+	sb.append(", currentDataType: "); sb.append(e.currentDataType);
+	sb.append(", data: "); sb.append(e.data);
+	sb.append("\n");
+	dropConsole.append(sb.toString());
+} 
 }
