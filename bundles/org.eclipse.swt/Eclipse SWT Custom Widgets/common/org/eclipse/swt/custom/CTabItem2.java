@@ -307,58 +307,60 @@ void drawSelected(GC gc ) {
 	}
 	parent.drawBackground(gc, shape, true);
 	
-	// Limit drawing area of tab
-	Region r = new Region();
-	r.subtract(r); //clear
-	Region clipping = new Region();
-	gc.getClipping(clipping);
-	r.add(clipping);
-	r.intersect(new Rectangle(x, y, Math.min(width, rightTabEdge-x), height));
-	gc.setClipping(r);
-
-	// draw Image
-	int xDraw = x + LEFT_MARGIN;
-	Image image = getImage();
-	if (image != null) {
-		Rectangle imageBounds = image.getBounds();
-		int imageX = xDraw;
-		int imageHeight = imageBounds.height;
-		int imageY = y + (height - imageHeight) / 2;
-		imageY += parent.onBottom ? -1 : 1;
-		int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
-		gc.drawImage(image, 
-			         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
-			         imageX, imageY, imageWidth, imageHeight);
-		xDraw += imageWidth + INTERNAL_SPACING;
+	if ( x < rightTabEdge) {
+		// Limit drawing area of tab
+		Region r = new Region();
+		r.subtract(r); //clear
+		Region clipping = new Region();
+		gc.getClipping(clipping);
+		r.add(clipping);
+		r.intersect(new Rectangle(x, y, Math.min(width, rightTabEdge-x), height));
+		gc.setClipping(r);
+	
+		// draw Image
+		int xDraw = x + LEFT_MARGIN;
+		Image image = getImage();
+		if (image != null) {
+			Rectangle imageBounds = image.getBounds();
+			int imageX = xDraw;
+			int imageHeight = imageBounds.height;
+			int imageY = y + (height - imageHeight) / 2;
+			imageY += parent.onBottom ? -1 : 1;
+			int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
+			gc.drawImage(image, 
+				         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
+				         imageX, imageY, imageWidth, imageHeight);
+			xDraw += imageWidth + INTERNAL_SPACING;
+		}
+		
+		// draw Text
+		int textWidth = x + width - xDraw - RIGHT_MARGIN;
+		if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+		if (shortenedText == null || shortenedTextWidth != textWidth) {
+			shortenedText = shortenText(gc, getText(), textWidth);
+			shortenedTextWidth = textWidth;
+		}
+		Point extent = gc.textExtent(shortenedText, FLAGS);	
+		int textY = y + (height - extent.y) / 2;
+		textY += parent.onBottom ? -1 : 1;
+		
+		gc.setForeground(parent.selectionForeground);
+		gc.drawText(shortenedText, xDraw, textY, FLAGS);
+		
+		if (parent.showClose || showClose) drawClose(gc);
+		
+		// draw a Focus rectangle
+		if (parent.isFocusControl()) {
+			Display display = getDisplay();
+			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.drawFocus(xDraw-3, textY-2, extent.x+6, extent.y+4);
+		}
+		
+		gc.setClipping(clipping);
+		r.dispose();
+		clipping.dispose();
 	}
-	
-	// draw Text
-	int textWidth = x + width - xDraw - RIGHT_MARGIN;
-	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
-	if (shortenedText == null || shortenedTextWidth != textWidth) {
-		shortenedText = shortenText(gc, getText(), textWidth);
-		shortenedTextWidth = textWidth;
-	}
-	Point extent = gc.textExtent(shortenedText, FLAGS);	
-	int textY = y + (height - extent.y) / 2;
-	textY += parent.onBottom ? -1 : 1;
-	
-	gc.setForeground(parent.selectionForeground);
-	gc.drawText(shortenedText, xDraw, textY, FLAGS);
-	
-	if (parent.showClose || showClose) drawClose(gc);
-	
-	// draw a Focus rectangle
-	if (parent.isFocusControl()) {
-		Display display = getDisplay();
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.drawFocus(xDraw-3, textY-2, extent.x+6, extent.y+4);
-	}
-	
-	gc.setClipping(clipping);
-	r.dispose();
-	clipping.dispose();
 	
 	// draw outline
 	shape[0] = Math.max(0, parent.borderLeft - 1);
@@ -385,6 +387,7 @@ void drawUnselected(GC gc) {
 		parent.drawBackground(gc, shape, false);
 		return;
 	}
+	
 	// draw background
 	int[] shape = null;
 	if (parent.indexOf(this) == parent.topTabIndex) {
