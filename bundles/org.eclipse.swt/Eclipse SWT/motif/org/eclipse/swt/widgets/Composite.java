@@ -652,6 +652,8 @@ void manageChildren () {
 		Shell shell = getShell ();
 		shell.createFocusProxy ();
 		if (!OS.XtIsRealized (handle)) shell.realizeWidget ();
+		int xDisplay = OS.XtDisplay (handle);
+		OS.XSync (xDisplay, false);
 		embeddedHandle = OS.XtWindow (handle);
 	}
 }
