@@ -34,10 +34,14 @@ import org.eclipse.swt.graphics.*;
 public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
-	int id, index = -1, width = -1;
-	boolean checked, grayed;
+	String [] strings;
+	Image [] images;
+	boolean checked, grayed, cached;
 	Color foreground, background;
+	Color[] cellForeground, cellBackground;
 	Font font;
+	Font[] cellFont;
+	int id, index = -1, width = -1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -201,13 +205,14 @@ static TreeItem checkNull (TreeItem item) {
 	return item;
 }
 
-int calculateWidth (GC gc) {
-	if (width != -1) return width;
-	width = 0;
-	Image image = getImage ();
-	String text = getText ();
+int calculateWidth (int index, GC gc) {
+	if (index == 0 && this.width != -1) return this.width;
+	int width = 0;
+	Image image = getImage (index);
+	String text = getText (index);
 	if (image != null) width += image.getBounds ().width + 2;
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	if (index == 0) this.width = width;
 	return width;
 }
 
@@ -230,7 +235,30 @@ protected void checkSubclass () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return background != null ? background : parent.getBackground ();
+}
+
+/**
+ * Returns the background color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public Color getBackground (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getBackground ();
+	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
+	return cellBackground [index];
 }
 
 /**
@@ -247,7 +275,8 @@ public Color getBackground () {
 public Rectangle getBounds () {
 	checkWidget ();
 	Rect rect = new Rect();
-	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [0].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	int x = rect.left, y = rect.top;
@@ -268,6 +297,41 @@ public Rectangle getBounds () {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent at a column in the table.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding column rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.1
+ */
+public Rectangle getBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	Rect rect2 = new Rect();
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect2.left, y = rect2.top;
+	int width = rect.right - rect2.left;
+	int height = rect2.bottom - rect2.top;
+	OS.GetControlBounds (parent.handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	return new Rectangle (x, y, width + 1, height + 1);
+}
+
+/**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
  * the <code>CHECK style, return false.
@@ -282,6 +346,7 @@ public Rectangle getBounds () {
  */
 public boolean getChecked () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return checked;
 }
@@ -300,6 +365,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return (state & EXPANDING) != 0 ? false : _getExpanded ();
 }
 
@@ -317,7 +383,31 @@ public boolean getExpanded () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return font != null ? font : parent.getFont ();
+}
+
+/**
+ * Returns the font that the receiver will use to paint textual information
+ * for the specified cell in this item.
+ *
+ * @param index the column index
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public Font getFont (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getFont ();
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -335,7 +425,31 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return foreground != null ? foreground : parent.getForeground ();
+}
+
+/**
+ * 
+ * Returns the foreground color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public Color getForeground (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getForeground ();
+	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
+	return cellForeground [index];
 }
 
 /**
@@ -353,8 +467,78 @@ public Color getForeground () {
  */
 public boolean getGrayed () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return grayed;
+}
+
+public Image getImage () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getImage ();
+}
+
+/**
+ * Returns the image stored at the given column index in the receiver,
+ * or null if the image has not been set or if the column does not exist.
+ *
+ * @param index the column index
+ * @return the image stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public Image getImage (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getImage ();
+	if (images != null) {
+		if (0 <= index && index < images.length) return images [index];
+	}
+	return null;
+}
+
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of an image at a column in the
+ * table.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding image rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Rectangle getImageBounds (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect.left, y = rect.top;
+	int width = 0;
+	if (index == 0 && image != null) {
+		Rectangle bounds = image.getBounds ();
+		width += bounds.width;
+	}
+	if (index != 0 && images != null && images[index] != null) {
+		Rectangle bounds = images [index].getBounds ();
+		width += bounds.width;
+	}
+	int height = rect.bottom - rect.top + 1;
+	OS.GetControlBounds (parent.handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -370,6 +554,7 @@ public boolean getGrayed () {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItemCount (this);
 }
 
@@ -391,6 +576,7 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItems (this);
 }
 
@@ -426,7 +612,45 @@ public TreeItem getParentItem () {
 	return parentItem;
 }
 
+public String getText () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getText ();
+}
+
+/**
+ * Returns the text stored at the given column index in the receiver,
+ * or empty string if the text has not been set.
+ *
+ * @param index the column index
+ * @return the text stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public String getText (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getText ();
+	if (strings != null) {
+		if (0 <= index && index < strings.length) {
+			String string = strings [index];
+			return string != null ? string : "";
+		}
+	}
+	return "";
+}
+
 void redraw (int propertyID) {
+	cached = true;
+	if (parent.ignoreRedraw) return;
 	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
@@ -439,12 +663,16 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	background = foreground = null;
-	font = null;
 	parentItem = null;
 	parent = null;
 	id = 0;
 	index = -1;
+	strings = null;
+	images = null;
+	background = foreground = null;
+	font = null;
+	cellBackground = cellForeground = null;
+	cellFont = null;
 }
 
 /**
@@ -453,7 +681,7 @@ void releaseWidget () {
  * if the argument is null.
  *
  * @param color the new color (or null)
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
@@ -473,7 +701,42 @@ public void setBackground (Color color) {
 	if (background == color) return;
 	if (background != null && background.equals (color)) return;
 	background = color;
-	redraw (Tree.COLUMN_ID);
+	redraw (OS.kDataBrowserNoItem);
+}
+
+/**
+ * Sets the background color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ * 
+ */
+public void setBackground (int index, Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellBackground == null) {
+		cellBackground = new Color [count];
+	}
+	if (cellBackground [index] == color) return;
+	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
+	cellBackground [index] = color;
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -542,7 +805,42 @@ public void setFont (Font font) {
 	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
-	redraw (Tree.COLUMN_ID);
+	redraw (OS.kDataBrowserNoItem);
+}
+
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for the specified cell in this item to the font specified by the 
+ * argument, or to the default font for that kind of control if the 
+ * argument is null.
+ *
+ * @param index the column index
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setFont (int index, Font font) {
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellFont == null) {
+		cellFont = new Font [count];
+	}
+	if (cellFont [index] == font) return;
+	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	cellFont [index] = font;
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -552,8 +850,6 @@ public void setFont (Font font) {
  *
  * @param color the new color (or null)
  *
- * @since 2.0
- * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
@@ -573,7 +869,42 @@ public void setForeground (Color color) {
 	if (foreground == color) return;
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
-	redraw (Tree.COLUMN_ID);
+	redraw (OS.kDataBrowserNoItem);
+}
+
+/**
+ * Sets the foreground color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ * 
+ */
+public void setForeground (int index, Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellForeground == null) {
+		cellForeground = new Color [count];
+	}
+	if (cellForeground [index] == color) return;
+	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
+	cellForeground [index] = color;
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -595,22 +926,141 @@ public void setGrayed (boolean grayed) {
 	redraw (Tree.CHECK_COLUMN_ID);
 }
 
+/**
+ * Sets the image for multiple columns in the Table. 
+ * 
+ * @param images the array of new images
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setImage (Image [] images) {
+	checkWidget();
+	if (images == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<images.length; i++) {
+		setImage (i, images [i]);
+	}
+}
+
+/**
+ * Sets the receiver's image at a column.
+ *
+ * @param index the column index
+ * @param image the new image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setImage (int index, Image image) {
+	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int itemIndex = this.index;
+	if (itemIndex == -1) return;
+	if (parent.imageBounds == null && image != null) {
+		parent.setItemHeight (image);
+	}
+	if (index == 0)  {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (this.image)) return;
+		}
+		width = -1;
+		super.setImage (image);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 <= index && index < count) {
+		if (images == null) images = new Image [count];
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
+		images [index] = image;	
+	}
+	if (index == 0) parent.setScrollWidth (this);
+	redraw (OS.kDataBrowserNoItem);
+}
+
 public void setImage (Image image) {
 	checkWidget ();
-	super.setImage (image);
-	width = -1;
-	parent.setScrollWidth (this);
-	redraw (Tree.COLUMN_ID);
+	setImage (0, image);
+}
+
+/**
+ * Sets the text for multiple columns in the table. 
+ * 
+ * @param strings the array of new strings
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setText (String [] strings) {
+	checkWidget();
+	if (strings == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<strings.length; i++) {
+		String string = strings [i];
+		if (string != null) setText (i, string);
+	}
+}
+
+/**
+ * Sets the receiver's text at a column
+ *
+ * @param index the column index
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since3.1
+ */
+public void setText (int index, String string) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (index == 0) {
+		if (string.equals (text)) return;
+		width = -1;
+		super.setText (string);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 <= index && index < count) {
+		if (strings == null) strings = new String [count];
+		if (string.equals (strings [index])) return;
+		strings [index] = string;
+	}
+	if (index == 0) parent.setScrollWidth (this);
+	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setText (String string) {
-	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (string.equals (text)) return;
-	super.setText (string);
-	width = -1;
-	parent.setScrollWidth (this);
-	redraw (Tree.COLUMN_ID);
+	checkWidget();
+	setText (0, string);
 }
 
 }

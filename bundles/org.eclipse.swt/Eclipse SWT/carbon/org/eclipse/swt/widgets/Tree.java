@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -47,10 +48,13 @@ import org.eclipse.swt.graphics.*;
  */
 public class Tree extends Composite {
 	TreeItem [] items;
+	TreeColumn [] columns;
 	GC paintGC;
-	int anchorFirst, anchorLast, lastHittest;
-	boolean ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
+	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
+	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
+	Rectangle imageBounds;
 	TreeItem showItem;
+	int lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
 	static final int EXTRA_WIDTH = 30;
@@ -156,7 +160,7 @@ int calculateWidth (TreeItem [] items, GC gc) {
 	int width = 0;
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
-		width = Math.max (width, item.calculateWidth (gc));
+		width = Math.max (width, item.calculateWidth (0, gc));
 		if (item._getExpanded ()) {
 			width = Math.max (width, calculateWidth (item.getItems (), gc));
 		}
@@ -180,6 +184,24 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	return result;
 }
 
+boolean checkData (TreeItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		ignoreRedraw = true;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		ignoreRedraw = false;
+		if (isDisposed () || item.isDisposed ()) return false;
+		if (redraw) {
+			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
+		}
+	}
+	return true;
+}
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -191,6 +213,7 @@ static int checkStyle (int style) {
 	* widget that Windows creates.
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style &= ~SWT.VIRTUAL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -202,14 +225,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		TreeItem [] items = getItems ();
+		TreeItem [] items = getItems (null);
 		GC gc = new GC (this);
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			width = Math.max (width, item.calculateWidth (gc));
+		int columnCount = Math.max (this.columnCount, 1);
+		for (int j=0; j<columnCount; j++) {
+			int columnWidth = this.columnCount != 0 ? columns [j].getWidth () : 0;
+			for (int i=0; i<items.length; i++) {
+				columnWidth = Math.max (columnWidth, items [i].calculateWidth (j, gc));
+			}
+			width += columnWidth + EXTRA_WIDTH;
 		}
 		gc.dispose ();
-		width += EXTRA_WIDTH;
 		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH;
 	} else {
 		width = wHint;
@@ -217,7 +243,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
-		height = getItemCount () * getItemHeight ();
+		height = getItemCount () * getItemHeight () + getHeaderHeight();
 	} else {
 		height = hHint;
 	}
@@ -244,6 +270,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
+	column_id = COLUMN_ID;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -254,6 +281,9 @@ void createHandle () {
 	}
 	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
+	short [] height = new short [1];
+	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+	headerHeight = height [0];
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	int position = 0;
@@ -263,7 +293,7 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
-		//TODO - check column size
+		//TODO - CHECK column size
 		checkColumn.headerBtnDesc_minimumWidth = CHECK_COLUMN_WIDTH;
 		checkColumn.headerBtnDesc_maximumWidth = CHECK_COLUMN_WIDTH;
 		checkColumn.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
@@ -271,13 +301,14 @@ void createHandle () {
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
-	column.propertyDesc_propertyID = COLUMN_ID;
+	column.propertyDesc_propertyID = column_id;
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+	column.headerBtnDesc_maximumWidth = 0x7fff;
 	column.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
-	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, false);
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) 0);
+	OS.SetDataBrowserListViewDisclosureColumn (handle, column_id, false);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) 0);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -304,6 +335,91 @@ void createHandle () {
 	OS.DisposePtr (data);
 	rect.right = rect.bottom = (short) 0;
 	OS.SetControlBounds (handle, rect);
+}
+
+void createItem (TreeColumn column, int index) {
+	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (index == 0) {
+		// first column must be left aligned
+		column.style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+		column.style |= SWT.LEFT;
+	}
+	column.id = column_id + idCount++;
+	int position = index + ((style & SWT.CHECK) != 0 ? 1 : 0);
+	if (columnCount != 0) {
+		DataBrowserListViewColumnDesc desc = new DataBrowserListViewColumnDesc ();
+		desc.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
+		desc.propertyDesc_propertyID = column.id;
+		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
+		desc.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+		desc.headerBtnDesc_maximumWidth = 0x7fff;
+		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
+		desc.headerBtnDesc_btnFontStyle_just = OS.teFlushLeft;
+		if ((style & SWT.CENTER) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teCenter;
+		if ((style & SWT.RIGHT) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teFlushRight;
+		desc.headerBtnDesc_btnFontStyle_flags |= OS.kControlUseJustMask;
+		OS.AddDataBrowserListViewColumn (handle, desc, position);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column.id, (short)0);
+		
+		if (index == 0) {
+			int [] disclosure = new int [1];
+			boolean [] expandableRows = new boolean [1];
+			OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
+			OS.SetDataBrowserListViewDisclosureColumn (handle, column.id, expandableRows [0]);
+		}
+	} 
+	if (columnCount == columns.length) {
+		TreeColumn [] newColumns = new TreeColumn [columnCount + 4];
+		System.arraycopy (columns, 0, newColumns, 0, columns.length);
+		columns = newColumns;
+	}
+	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
+	columns [index] = column;
+	if (columnCount >= 1) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				String [] strings = item.strings;
+				if (strings != null) {
+					String [] temp = new String [columnCount];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+					temp [index] = "";
+					item.strings = temp;
+				}
+				if (index == 0) item.text = "";
+				Image [] images = item.images;
+				if (images != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+					item.images = temp;
+				}
+				if (index == 0) item.image = null;
+				Color [] cellBackground = item.cellBackground;
+				if (cellBackground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+					item.cellBackground = temp;
+				}
+				Color [] cellForeground = item.cellForeground;
+				if (cellForeground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+					item.cellForeground = temp;
+				}
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					Font [] temp = new Font [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+					item.cellFont = temp;
+				}
+			}
+		}
+	}
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
@@ -345,7 +461,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	} else {
-		if (count == 0 && parentItem != null) parentItem.redraw (COLUMN_ID);
+		if (count == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
 	}
 }
 
@@ -356,6 +472,7 @@ ScrollBar createScrollBar (int style) {
 void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
+	columns = new TreeColumn [4];
 }
 
 Color defaultBackground () {
@@ -395,7 +512,108 @@ public void deselectAll () {
 	ignoreSelect = false;
 }
 
+void destroyItem (TreeColumn column) {
+	int index = 0;
+	while (index < columnCount) {
+		if (columns [index] == column) break;
+		index++;
+	}
+	if (columnCount >= 1) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				String [] strings = item.strings;
+				if (strings != null) {
+					if (columnCount == 1) {
+						item.strings = null;
+					} else {
+						if (index == 0) item.text = strings [1];
+						String [] temp = new String [columnCount - 1];
+						System.arraycopy (strings, 0, temp, 0, index);
+						System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
+						item.strings = temp;
+					}
+				}
+				Image [] images = item.images;
+				if (images != null) {
+					if (columnCount == 1) {
+						item.images = null;
+					} else {
+						if (index == 0) item.image = images [1];
+						Image [] temp = new Image [columnCount - 1];
+						System.arraycopy (images, 0, temp, 0, index);
+						System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
+						item.images = temp;
+					}
+				}
+				Color [] cellBackground = item.cellBackground;
+				if (cellBackground != null) {
+					if (columnCount == 1) {
+						item.cellBackground = null;
+					} else {
+						Color [] temp = new Color [columnCount - 1];
+						System.arraycopy (cellBackground, 0, temp, 0, index);
+						System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
+						item.cellBackground = temp;
+					}
+				}
+				Color [] cellForeground = item.cellForeground;
+				if (cellForeground != null) {
+					if (columnCount == 1) {
+						item.cellForeground = null;
+					} else {
+						Color [] temp = new Color [columnCount - 1];
+						System.arraycopy (cellForeground, 0, temp, 0, index);
+						System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
+						item.cellForeground = temp;
+					}
+				}
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					if (columnCount == 1) {
+						item.cellFont = null;
+					} else {
+						Font [] temp = new Font [columnCount - 1];
+						System.arraycopy (cellFont, 0, temp, 0, index);
+						System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+						item.cellFont = temp;
+					}
+				}
+			}
+		}
+	}
+	if (columnCount == 1) {
+		column_id = column.id; idCount = 0;
+		DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
+		desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+		desc.minimumWidth = desc.maximumWidth = width [0];
+		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
+		desc.titleString = str;
+		OS.SetDataBrowserListViewHeaderDesc (handle, column_id, desc);
+		OS.CFRelease (str);
+	} else {
+		int [] disclosure = new int [1];
+		boolean [] expandableRows = new boolean [1];
+		OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
+		if (disclosure [0] == column.id) {
+			TreeColumn firstColumn = columns [1];
+			firstColumn.style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+			firstColumn.style |= SWT.LEFT;
+			firstColumn.updateHeader();
+			OS.SetDataBrowserListViewDisclosureColumn (handle, firstColumn.id, expandableRows [0]);
+		}
+		if (OS.RemoveDataBrowserTableViewColumn (handle, column.id) != OS.noErr) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+	}
+	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
+	columns [columnCount] = null;
+}
+
 void destroyItem (TreeItem item) {
+	//checkItems (true);
 	TreeItem parentItem = item.parentItem;
 	if (parentItem == null || parentItem.getExpanded ()) {
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
@@ -416,13 +634,33 @@ void destroyItem (TreeItem item) {
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
 	int index = id - 1;
 	if (!(0 <= index && index < items.length)) return OS.noErr;
+	int columnIndex = 0;
+	if (columnCount > 0) {
+		for (columnIndex=0; columnIndex<columnCount; columnIndex++) {
+			if (columns [columnIndex].id == property) break;
+		}
+		if (columnIndex == columnCount) return OS.noErr;
+	}
 	TreeItem item = items [index];
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (!item.cached) {
+			if (!checkData (item, false)) return OS.noErr;
+			if (setScrollWidth (item)) {
+				Rect rect = new Rect();
+				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+					redrawWidget (handle, rect.left, rect.top, rect.right, rect.bottom, false);
+				}
+				return OS.noErr;
+			}
+		}
+	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
+	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	Rect controlRect = new Rect ();
 	OS.GetControlBounds (handle, controlRect);
 	x -= controlRect.left;
@@ -439,31 +677,62 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.GetClip (clip);
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
 	gc.setClipping (Region.carbon_new (display, clip));
-	OS.DisposeRgn (clip);
-	Color background = item.getBackground ();
-	gc.setBackground (background);
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
-	gc.fillRectangle (x - 1, y, itemRect.right - x + 2, itemRect.bottom - y);
-	Image image = item.image;
-	if (image != null) {
-		Rectangle bounds = image.getBounds ();
-		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y + (height - bounds.height) / 2, bounds.width, bounds.height);
-		x += bounds.width + 2;
+	if (columnCount != 0) {
+		if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+		} else {
+			gc.setBackground (item.getBackground (columnIndex));			
+		}
+		if (columnIndex == 0) {
+			gc.fillRectangle (x - 1, y, itemRect.right - x + 2, itemRect.bottom - y);
+		} else {
+			gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+		}
 	}
-	Font font = item.getFont ();
-	gc.setFont (font);
-	Point extent = gc.stringExtent (item.text);
-	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
+	int rectRgn = OS.NewRgn ();
+	OS.RectRgn (rectRgn, rect);
+	OS.OffsetRgn (rectRgn, (short)-controlRect.left, (short)-controlRect.top);
+	OS.SectRgn (rectRgn, clip, clip);
+	OS.DisposeRgn (rectRgn);
+	gc.setClipping (Region.carbon_new (display, clip));
+	OS.DisposeRgn (clip);
+	Image image = item.getImage (columnIndex);
+	String text = item.getText (columnIndex);
+	gc.setFont (item.getFont (columnIndex));
+	Point extent = gc.stringExtent (text);
+	int itemWidth = extent.x;
+	Rectangle imageBounds = null;
+	if (image != null) {
+		imageBounds = image.getBounds ();
+		itemWidth += this.imageBounds.width + 2;
+	}
+	if (columnCount != 0) {
+		TreeColumn column = columns [columnIndex];
+		if ((column.style & SWT.CENTER) != 0) x += (width - itemWidth) / 2;
+		if ((column.style & SWT.RIGHT) != 0) x += width - itemWidth;
+	}
+	if (image != null) {
+		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
+		x += this.imageBounds.width + 2;
+	}
+	if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		gc.fillRectangle (x - 1, y, extent.x + 2, height);
+		if (columnCount == 0) {
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+			gc.fillRectangle (x - 1, y, extent.x + 2, height);
+		}
 	} else {
-		Color foreground = item.getForeground ();
+		if (columnCount == 0) {
+			gc.setBackground (item.getBackground ());
+			gc.fillRectangle (x - 1, y, extent.x + 2, height);
+		}
+		Color foreground = item.getForeground (columnIndex);
 		gc.setForeground (foreground);
 	}
-	gc.drawString (item.text, x, y + (height - extent.y) / 2, true);
+	gc.drawString (text, x, y + (height - extent.y) / 2, true);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
 }
@@ -482,6 +751,139 @@ public Rectangle getClientArea () {
 	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
 	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
 	return new Rectangle (inset.left, inset.top, width, height);
+}
+
+/**
+ * Returns the column at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ * If no <code>TreeColumn</code>s were created by the programmer,
+ * this method will throw <code>ERROR_INVALID_RANGE</code> despite
+ * the fact that a single column of data may be visible in the table.
+ * This occurs when the programmer uses the table like a list, adding
+ * items but never creating a column.
+ *
+ * @param index the index of the column to return
+ * @return the column at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public TreeColumn getColumn (int index) {
+	checkWidget ();
+	if (!(0 <=index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
+	return columns [index];
+}
+
+/**
+ * Returns the number of columns contained in the receiver.
+ * If no <code>TreeColumn</code>s were created by the programmer,
+ * this value is zero, despite the fact that visually, one column
+ * of items is may be visible. This occurs when the programmer uses
+ * the table like a list, adding items but never creating a column.
+ *
+ * @return the number of columns
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public int getColumnCount () {
+	checkWidget ();
+	return columnCount;
+}
+
+/**
+ * Returns an array of <code>TreeColumn</code>s which are the
+ * columns in the receiver. If no <code>TreeColumn</code>s were
+ * created by the programmer, the array is empty, despite the fact
+ * that visually, one column of items may be visible. This occurs
+ * when the programmer uses the table like a list, adding items but
+ * never creating a column.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public TreeColumn [] getColumns () {
+	checkWidget ();
+	TreeColumn [] result = new TreeColumn [columnCount];
+	System.arraycopy (columns, 0, result, 0, columnCount);
+	return result;
+}
+
+/**
+ * Returns the width in pixels of a grid line.
+ *
+ * @return the width of a grid line in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getGridLineWidth () {
+	checkWidget ();
+	return 0;
+}
+
+/**
+ * Returns the height of the receiver's header 
+ *
+ * @return the height of the header or zero if the header is not visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int getHeaderHeight () {
+	checkWidget ();
+	short [] height = new short [1];
+	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+	return height [0];
+}
+
+/**
+ * Returns <code>true</code> if the receiver's header is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's header's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getHeaderVisible () {
+	checkWidget ();
+	short [] height = new short [1];
+	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+	return height [0] != 0;
 }
 
 /**
@@ -508,11 +910,16 @@ public TreeItem getItem (Point point) {
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
 	//TODO - optimize
+	int columnId = (columnCount == 0) ? column_id : columns [0].id;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
-			if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if (OS.PtInRect (pt, rect)) return item;
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					if (rect.top <= pt.v && pt.v < rect.bottom) return item;
+				} else {
+					if (OS.PtInRect (pt, rect)) return item;
+				}
 			}
 		}
 	}
@@ -601,6 +1008,28 @@ TreeItem [] getItems (TreeItem item) {
 		}
 	}
 	return result;
+}
+
+/**
+ * Returns <code>true</code> if the receiver's lines are visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the visibility state of the lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getLinesVisible () {
+	checkWidget ();
+	return false;
 }
 
 /**
@@ -701,11 +1130,13 @@ public TreeItem getTopItem () {
 	offset += outMetric [0];
 	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
 	offset += outMetric [0];
+	if (getHeaderVisible ()) offset += getHeaderHeight ();
 	int y = rect.top + offset;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
-			if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			int columnId = (columnCount == 0) ? column_id : columns [0].id;
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 				if (rect.top <= y && y <= rect.bottom) return item;
 			}
 		}
@@ -734,6 +1165,32 @@ void hookEvents () {
 	custom.v1_hitTestCallback = display.hitTestProc;
 	custom.v1_trackingCallback = display.trackingProc;
 	OS.SetDataBrowserCustomCallbacks (handle, custom);
+}
+
+/**
+ * Searches the receiver's list starting at the first column
+ * (index 0) until a column is found that is equal to the 
+ * argument, and returns the index of that column. If no column
+ * is found, returns -1.
+ *
+ * @param column the search column
+ * @return the index of the column
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ int indexOf (TreeColumn column) {
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<columnCount; i++) {
+		if (columns [i] == column) return i;
+	}
+	return -1;
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
@@ -919,6 +1376,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 			postEvent (SWT.DefaultSelection);
 			break;
 		}
+
 	}
 	return result;
 }
@@ -1004,6 +1462,11 @@ void releaseItems (TreeItem [] nodes) {
 }
 
 void releaseWidget () {
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
@@ -1167,6 +1630,61 @@ void setFontStyle (Font font) {
 	setScrollWidth ();
 }
 
+/**
+ * Marks the receiver's header as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param show the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.1
+ */
+public void setHeaderVisible (boolean show) {
+	checkWidget ();
+	int height = show ? headerHeight : 0;
+	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short)height);
+}
+
+void setItemHeight (Image image) {
+	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
+	if (bounds == null) return;
+	imageBounds = bounds;
+	short [] height = new short [1];
+	if (OS.GetDataBrowserTableViewRowHeight (handle, height) == OS.noErr) {
+		if (height [0] < bounds.height) {
+			OS.SetDataBrowserTableViewRowHeight (handle, (short) bounds.height);
+		}
+	}
+}
+
+/**
+ * Marks the receiver's lines as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param show the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLinesVisible (boolean show) {
+	checkWidget ();
+}
+
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
@@ -1176,34 +1694,41 @@ public void setRedraw (boolean redraw) {
 }
 
 void setScrollWidth () {
-	setScrollWidth (getItems (), true);
+	setScrollWidth (getItems (null), true);
 }
 
-void setScrollWidth (TreeItem item) {
-	if (drawCount != 0) return;
+boolean setScrollWidth (TreeItem item) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0) return false;
 	TreeItem parentItem = item.parentItem;
-	if (parentItem != null && !parentItem._getExpanded ()) return;
+	if (parentItem != null && !parentItem._getExpanded ()) return false;
 	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (gc);
+	int newWidth = item.calculateWidth (0, gc);
 	gc.dispose ();
+	newWidth += EXTRA_WIDTH;
 	short [] width = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 	if (width [0] < newWidth) {
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+		return true;
 	}
+	return false;
 }
 
-void setScrollWidth (TreeItem [] items, boolean set) {
-	if (drawCount != 0) return;
+boolean setScrollWidth (TreeItem [] items, boolean set) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = calculateWidth (items, gc);
 	gc.dispose ();
+	newWidth += EXTRA_WIDTH;
 	if (!set) {
 		short [] width = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
-		if (width [0] >= newWidth) return;
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+		if (width [0] >= newWidth) return false;
 	}
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+	return true;
 }
 
 /**
@@ -1288,14 +1813,67 @@ public void setTopItem (TreeItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	showItem (item, false);	
-	OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+	showItem (item, false);
+	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
 //	Rect rect = new Rect ();
 //	OS.GetControlBounds (handle, rect);
 //	int x = rect.left, y = rect.top;
-//	if (OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//	if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 //		OS.SetDataBrowserScrollPosition (handle, rect.top - y - 3, 0);
 //	}
+}
+
+/**
+ * Shows the column.  If the column is already showing in the receiver,
+ * this method simply returns.  Otherwise, the columns are scrolled until
+ * the column is visible.
+ *
+ * @param column the column to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void showColumn (TreeColumn column) {
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (column.parent != this) return;
+	int index = indexOf (column);
+	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
+	// Get width and horizontal position of column
+	short [] w = new short [1];
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, w);
+	int width = w [0];
+	int x = 0;
+	for (int i = 0; i < index; i++) {
+		w = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, columns[i].id, w);
+		x += w [0];
+	}
+	// Get current scroll position
+	int [] top = new int [1], left = new int [1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);
+	// Scroll column into view
+	if (x < left[0]) {
+		OS.SetDataBrowserScrollPosition(handle, top [0], x);
+	} else {
+		Rectangle rect = getClientArea ();
+		int maxWidth = rect.width;
+		width = Math.min(width, maxWidth);
+		if (x + width > left [0] + maxWidth) {
+			left [0] = x + width - maxWidth;
+			OS.SetDataBrowserScrollPosition(handle, top [0], left [0]);
+		}
+	}
 }
 
 /**
@@ -1368,7 +1946,8 @@ void showItem (TreeItem item, boolean scroll) {
 		}
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		int columnId = (columnCount == 0) ? column_id : columns [0].id;
+		OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
 
 		/*
 		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
@@ -1396,6 +1975,7 @@ void showItem (TreeItem item, boolean scroll) {
  */
 public void showSelection () {
 	checkWidget ();
+	//checkItems (false);
 	//TODO - optimize
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);
