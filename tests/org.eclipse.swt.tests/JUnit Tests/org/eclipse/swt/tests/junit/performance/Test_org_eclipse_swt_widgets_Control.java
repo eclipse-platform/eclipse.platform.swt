@@ -42,10 +42,6 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	// abstract class
-}
-
 public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 	final int COUNT = 7500;
 	
@@ -682,39 +678,39 @@ public void test_redrawIIIIZ() {
 }
 
 public void test_removeControlListenerLorg_eclipse_swt_events_ControlListener() {
-	// tested in test_addControlListenerLorg_eclipse_swt_events_ControlListener
+	// TODO
 }
 
 public void test_removeFocusListenerLorg_eclipse_swt_events_FocusListener() {
-	// tested in test_addFocusListenerLorg_eclipse_swt_events_FocusListener
+	// TODO
 }
 
 public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	// tested in test_addHelpListenerLorg_eclipse_swt_events_HelpListener
+	// TODO
 }
 
 public void test_removeKeyListenerLorg_eclipse_swt_events_KeyListener() {
-	// tested in test_addKeyListenerLorg_eclipse_swt_events_KeyListener
+	// TODO
 }
 
 public void test_removeMouseListenerLorg_eclipse_swt_events_MouseListener() {
-	// tested in test_addMouseListenerLorg_eclipse_swt_events_MouseListener
+	// TODO
 }
 
 public void test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
-	// tested in test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener
+	// TODO
 }
 
 public void test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
-	// tested in test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
+	// TODO
 }
 
 public void test_removePaintListenerLorg_eclipse_swt_events_PaintListener() {
-	// tested in test_addPaintListenerLorg_eclipse_swt_events_PaintListener
+	// TODO
 }
 
 public void test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
-	// tested in test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
+	// TODO
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
@@ -740,7 +736,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 }
 
 public void test_setBoundsIIII() {
-	final int COUNT = 12000;
+	final int COUNT = 25000;
 	
 	int[] xs = new int[COUNT];
 	int[] ys = new int[COUNT];
@@ -763,7 +759,7 @@ public void test_setBoundsIIII() {
 }
 
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
-	final int COUNT = 12000;
+	final int COUNT = 25000;
 	
 	Rectangle[] rectangles = new Rectangle[COUNT];
 	Rectangle rectangle1 = new Rectangle(0,5,10,15);
@@ -783,7 +779,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_setCaptureZ() {
-	final int COUNT = 33000;
+	final int COUNT = 100000;
 	
 	boolean[] capture = new boolean [COUNT];
 	for (int i = 0; i < COUNT; i += 2) {
@@ -825,22 +821,23 @@ public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
 public void test_setEnabledZ() {
 	final int COUNT = 200000;
 	
-	boolean[] capture = new boolean [COUNT];
+	boolean[] enabled = new boolean [COUNT];
 	for (int i = 0; i < COUNT; i += 2) {
-		capture[i] = true;
-		capture[i+1] = false;
+		enabled[i] = true;
+		enabled[i+1] = false;
 	}
 	
 	PerformanceMeter meter = createMeter(getTypeString() + "setEnabled");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		control.setEnabled(capture[i]);
+		control.setEnabled(enabled[i]);
 	}
 	meter.stop();
 	disposeMeter(meter);
 }
 
 public void test_setFocus() {
+	// TODO
 	final int COUNT = 10000;
 	
 	PerformanceMeter meter = createMeter(getTypeString() + "setFocus");
@@ -901,7 +898,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 }
 
 public void test_setLocationII() {
-	final int COUNT = 13000;
+	final int COUNT = 25000;
 	
 	int[] xs = new int[COUNT];
 	int[] ys = new int[COUNT];
@@ -920,7 +917,7 @@ public void test_setLocationII() {
 }
 
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	final int COUNT = 13000;
+	final int COUNT = 25000;
 	
 	Point[] points = new Point[COUNT];
 	Point point1 = new Point(0,5);
@@ -982,7 +979,7 @@ public void test_setRedrawZ() {
 }
 
 public void test_setSizeII() {
-	final int COUNT = 13000;
+	final int COUNT = 25000;
 	
 	int[] widths = new int[COUNT];
 	int[] heights = new int[COUNT];
@@ -1001,7 +998,7 @@ public void test_setSizeII() {
 }
 
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
-	final int COUNT = 13000;
+	final int COUNT = 25000;
 	
 	Point[] points = new Point[COUNT];
 	Point point1 = new Point(20,15);
@@ -1226,7 +1223,6 @@ public static Test suite() {
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addControlListenerLorg_eclipse_swt_events_ControlListener");
 	methodNames.addElement("test_addFocusListenerLorg_eclipse_swt_events_FocusListener");
 	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
@@ -1300,8 +1296,7 @@ public static java.util.Vector methodNames() {
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
+	if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
 	else if (getName().equals("test_addFocusListenerLorg_eclipse_swt_events_FocusListener")) test_addFocusListenerLorg_eclipse_swt_events_FocusListener();
 	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
 	else if (getName().equals("test_addKeyListenerLorg_eclipse_swt_events_KeyListener")) test_addKeyListenerLorg_eclipse_swt_events_KeyListener();

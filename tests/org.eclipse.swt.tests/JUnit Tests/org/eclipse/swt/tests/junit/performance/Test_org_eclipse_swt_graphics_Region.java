@@ -39,18 +39,19 @@ protected void setUp() throws Exception {
 
 public void test_Constructor() {
 	final int COUNT = 9000;	// 10000 causes No More Handles error
-	Region[] regions = new Region [COUNT];
 	
 	PerformanceMeter meter = createMeter("Region constr.()");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		regions[i] = new Region ();
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Regions.  This is necessary because attempting to defer
+		* the region disposal until the timer has been stopped causes a No More
+		* Handles error.
+		*/
+		new Region().dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();
-	}
 
 	disposeMeter(meter);
 }
@@ -58,18 +59,18 @@ public void test_Constructor() {
 public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
 	final int COUNT = 9000;	// 10000 causes No More Handles error
 	
-	Region[] regions = new Region [COUNT];
-	
 	PerformanceMeter meter = createMeter("Region constr.(Device)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		regions[i] = new Region (display);
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Regions.  This is necessary because attempting to defer
+		* the region disposal until the timer has been stopped causes a No More
+		* Handles error.
+		*/
+		new Region(display).dispose();
 	}
 	meter.stop();
-	
-	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();
-	}
 	
 	disposeMeter(meter);
 }
@@ -208,27 +209,21 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_dispose() {
-	final int COUNT = 9000;	// 10000 causes No More Handles error
-	
-	Region[] regions = new Region [COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		regions[i] = new Region(display);
-		regions[i].add(new Rectangle(i, i, i+5, i+5));
-	}
-	
-	PerformanceMeter meter = createMeter("Region dispose - typical");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();	// dispose
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
+	final int COUNT = 50000000;
+
+	/*
+	* The tests for the constructors cover the base dispose case since
+	* they have to dispose of created Regions within their timer blocks.  
+	*/
     
-	meter = createMeter("Region dispose - disposed");
+	Region region = new Region(display);
+	region.dispose();
+	
+	PerformanceMeter meter = createMeter("Region dispose - disposed");
+	
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();	// dispose disposed
+		region.dispose();	// dispose disposed
 	}
 	meter.stop();
 	

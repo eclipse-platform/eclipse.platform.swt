@@ -305,10 +305,6 @@ public void test_isDisposed() {
 	disposeMeter(meter);
 }
 
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -328,7 +324,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getFontData");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -340,6 +335,5 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getFontData")) test_getFontData();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 }

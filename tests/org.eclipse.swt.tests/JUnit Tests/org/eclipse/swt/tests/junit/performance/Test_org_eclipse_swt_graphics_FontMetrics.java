@@ -169,10 +169,6 @@ public void test_hashCode() {
 	disposeMeter(meter);
 }
 
-public void test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -191,7 +187,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getHeight");
 	methodNames.addElement("test_getLeading");
 	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -202,7 +197,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getHeight")) test_getHeight();
 	else if (getName().equals("test_getLeading")) test_getLeading();
 	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC")) test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC();
 }
 
 /* custom */

@@ -35,7 +35,16 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor() {
-	ImageLoader loader = new ImageLoader();
+	final int COUNT = 5000000;
+	
+	PerformanceMeter meter = createMeter("ImageLoader constr.");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		new ImageLoader();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
@@ -58,7 +67,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 }
 
 public void test_hasListeners() {
-	final int COUNT = 400000000;
+	final int COUNT = 300000000;
 	
 	ImageLoader loader = new ImageLoader();
 	
@@ -91,7 +100,7 @@ public void test_loadLjava_io_InputStream() {
 }
 
 public void test_loadLjava_lang_String() {
-	final int COUNT = 2500;
+	final int COUNT = 4500;
 	
 	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 	if (isJ2ME()) return;
