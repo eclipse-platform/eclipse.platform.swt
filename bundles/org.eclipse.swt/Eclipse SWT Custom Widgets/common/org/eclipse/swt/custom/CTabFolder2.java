@@ -1710,8 +1710,12 @@ void onMouse(Event event) {
 			if (showClose && !single) {
 				for (int i=0; i<items.length; i++) {
 					CTabItem2 item = items[i];
-					if (item.closeImageState != NONE) {
+					if (i != selectedIndex && item.closeImageState != NONE) {
 						item.closeImageState = NONE;
+						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					}
+					if (i == selectedIndex && item.closeImageState != NORMAL) {
+						item.closeImageState = NORMAL;
 						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					}
 				}
@@ -1812,8 +1816,12 @@ void onMouse(Event event) {
 							}
 						}
 					} 
-					if (item.closeImageState != NONE && !close) {
+					if (i != selectedIndex && item.closeImageState != NONE && !close) {
 						item.closeImageState = NONE;
+						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					}
+					if (i == selectedIndex && item.closeImageState != NORMAL && !close) {
+						item.closeImageState = NORMAL;
 						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					}
 				}
@@ -2738,6 +2746,12 @@ public void setSelection(int index) {
 	
 	int oldIndex = selectedIndex;
 	selectedIndex = index;
+	if (!single) {
+		if (oldIndex != -1) {
+			items[oldIndex].closeImageState = NONE;
+		}
+		items[selectedIndex].closeImageState = NORMAL;
+	}
 	Control control = items[index].control;
 	if (control != null && !control.isDisposed()) {
 		control.setBounds(getClientArea());
@@ -2972,6 +2986,14 @@ public void setStyle(int style) {
 			single = (style & SWT.SINGLE) != 0;
 			if (single && selectedIndex == -1 && items.length > 0) {
 				setSelection(0, true);
+			}
+			for (int i = 0; i < items.length; i++) {
+				if (i != selectedIndex && items[i].closeImageState == NORMAL) {
+					items[i].closeImageState = NONE;
+				}
+				if (i == selectedIndex && items[i].closeImageState == NONE) {
+					items[i].closeImageState = NORMAL;
+				}
 			}
 			changed = true;
 		}
