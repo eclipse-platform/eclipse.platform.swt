@@ -27,6 +27,10 @@ import org.eclipse.swt.graphics.*;
  */
 public abstract class Scrollable extends Control {
  	int scrolledHandle /* AW , formHandle */;
+ 	// AW
+	int fHScrollBar;
+	int fVScrollBar;
+ 	// AW
 
 	ScrollBar horizontalBar, verticalBar;
 Scrollable () {
@@ -316,9 +320,6 @@ int topHandle () {
 // Mac Stuff
 ////////////////////////////
 
-	int fHScrollBar;
-	int fVScrollBar;
-
 	int createScrollView(int parentControlHandle, int style) {
 	
 		Display display= getDisplay();
@@ -333,12 +334,14 @@ int topHandle () {
 	
 		int controlHandle = MacUtil.createDrawingArea(parentControlHandle, 0, 0, 0);
 		
+		/*
 		OS.InstallEventHandler(OS.GetControlEventTarget(controlHandle), display.fControlProc, 
 			new int[] {
 				OS.kEventClassControl, OS.kEventControlBoundsChanged
 			},
 			controlHandle
 		);
+		*/
 	
 		if ((style & SWT.H_SCROLL) != 0) {
 			int hs= MacUtil.newControl(controlHandle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
@@ -361,18 +364,22 @@ int topHandle () {
 	 */
 	void handleResize(int scrolledHandle, int x, int y, int w, int h) {
 		super.handleResize(scrolledHandle, x, y, w, h);
-		relayout123(scrolledHandle);
+		relayout123();
 	}
 	
-	public void handleResizeScrollView(int scrolledHandle) {
+	//public void handleResizeScrollView(int scrolledHandle) {
 		/*
 		System.out.println("Scrollable.handleResizeScrollView");
 		if (scrolledHandle != 0)
-			relayout123(scrolledHandle);
+			relayout123();
 		*/
-	}
+	//}
 	
-	void relayout123(int hndl) {
+	void relayout123() {
+		
+		int hndl= scrolledHandle;
+		if (hndl == 0)
+			return;
 		
 		MacRect bounds= new MacRect();
 		OS.GetControlBounds(hndl, bounds.getData());
