@@ -63,6 +63,11 @@ import org.eclipse.swt.graphics.*;
  * (only) when constructing multi-threaded applications to use the
  * inter-thread communication mechanisms which this class provides
  * when required.
+ * </p><p>
+ * All SWT API methods which may only be called from the user-interface
+ * thread are distinguished in their documentation by indicating that
+ * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
+ * SWT exception.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -71,14 +76,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>Close, Dispose</dd>
  * </dl>
  * <p>
- * All SWT API methods which may only be called from the user-interface
- * thread are distinguished in their documentation by indicating that
- * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
- * SWT exception.
- * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
  * @see #syncExec
  * @see #asyncExec
  * @see #wake
@@ -1590,11 +1589,15 @@ int textWidth (String string, byte[] font) {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
- * number of milliseconds have elapsed.
+ * number of milliseconds have elapsed. If milliseconds is less
+ * than zero, the runnable is not executed.
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
@@ -1669,6 +1672,12 @@ static int untranslateKey (int key) {
 	return 0;
 }
 
+/**
+ * Forces all outstanding paint requests for the display
+ * to be processed before this method returns.
+ *
+ * @see Control#update
+ */
 public void update() {
 	checkDevice ();
 	Shell[] shells = WidgetTable.shells ();

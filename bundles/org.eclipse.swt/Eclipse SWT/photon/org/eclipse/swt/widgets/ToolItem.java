@@ -46,8 +46,8 @@ public class ToolItem extends Item {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -61,7 +61,11 @@ public class ToolItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -80,8 +84,8 @@ public ToolItem (ToolBar parent, int style) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -96,7 +100,11 @@ public ToolItem (ToolBar parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -372,8 +380,9 @@ public ToolBar getParent () {
  * and false otherwise.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button). If the receiver is of any other type, this method
+ * returns false.
  * </p>
  *
  * @return the selection state
@@ -743,8 +752,8 @@ public void setImage (Image image) {
  * Sets the selection state of the receiver.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button).
  * </p>
  *
  * @param selected the new selection state

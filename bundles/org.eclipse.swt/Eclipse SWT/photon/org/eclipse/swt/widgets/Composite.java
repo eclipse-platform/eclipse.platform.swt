@@ -14,11 +14,17 @@ import org.eclipse.swt.graphics.*;
  * of containing other controls.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE</dd>
+ * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: The <code>NO_BACKGROUND</code>, <code>NO_FOCUS</code>, <code>NO_MERGE_PAINTS</code>,
+ * and <code>NO_REDRAW_RESIZE</code> styles are intended for use with <code>Canvas</code>.
+ * They can be used with <code>Composite</code> if you are drawing your own, but their
+ * behavior is undefined if they are used with subclasses of <code>Composite</code> other
+ * than <code>Canvas</code>.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
@@ -44,8 +50,8 @@ Composite () {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a widget which will be the parent of the new instance (cannot be null)
@@ -56,11 +62,13 @@ Composite () {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
- * @see Widget#checkSubclass
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_FOCUS
+ * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_RADIO_GROUP
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {
@@ -708,10 +716,9 @@ boolean setTabItemFocus () {
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
  *
- * @param tabList the ordered list of controls representing the tab order; must not be null
+ * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>

@@ -15,7 +15,7 @@ import org.eclipse.swt.events.*;
  *  
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>LEFT, RIGHT, UP, DOWN, RESIZE</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Move</dd>
  * </dl>
@@ -47,8 +47,8 @@ public class Tracker extends Widget {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p><p>
  * Note: Currently, null can be passed in for the display argument.
  * This has the effect of creating the tracker on the currently active
@@ -65,6 +65,11 @@ public class Tracker extends Widget {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#UP
+ * @see SWT#DOWN
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -85,8 +90,8 @@ public Tracker (Display display, int style) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a widget which will be the parent of the new instance (cannot be null)
@@ -100,7 +105,11 @@ public Tracker (Display display, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#UP
+ * @see SWT#DOWN
+ * @see SWT#RESIZE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
