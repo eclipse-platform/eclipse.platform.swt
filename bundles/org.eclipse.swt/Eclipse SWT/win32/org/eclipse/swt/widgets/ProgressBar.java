@@ -234,7 +234,6 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
 }
 

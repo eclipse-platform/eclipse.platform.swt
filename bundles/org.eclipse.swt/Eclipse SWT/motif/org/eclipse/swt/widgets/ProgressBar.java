@@ -336,7 +336,6 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,
 		OS.XmNmaximum, 0,

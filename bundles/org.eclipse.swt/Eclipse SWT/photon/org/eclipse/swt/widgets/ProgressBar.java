@@ -223,7 +223,6 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	if (value < 0) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
 }
 

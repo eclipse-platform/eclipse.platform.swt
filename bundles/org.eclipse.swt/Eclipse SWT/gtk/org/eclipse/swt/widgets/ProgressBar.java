@@ -194,7 +194,6 @@ public void setMinimum (int minimum) {
  */
 public void setSelection (int x) {
 	checkWidget ();
-	if (x < 0) return;
 	if (x < min) x = min;
 	if (x > max) x = max;
 	value = x;
