@@ -3134,6 +3134,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmStringComponentCreate)
 }
 #endif
 
+#ifndef NO_XmStringConcat
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringConcat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringConcat\n")
+	rc = (jint)XmStringConcat((XmString)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringConcat\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XmStringCreate
 JNIEXPORT jint JNICALL OS_NATIVE(XmStringCreate)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)

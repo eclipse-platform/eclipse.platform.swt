@@ -830,6 +830,7 @@ public static final synchronized native int XmRenditionCreate(int widget, byte[]
 public static final synchronized native void XmRenditionFree(int rendition);
 public static final synchronized native boolean XmStringCompare(int xmString1, int xmString2);
 public static final synchronized native int XmStringComponentCreate(int type, int length, byte[] value);
+public static final synchronized native int XmStringConcat(int xmString1, int xmString2);
 public static final synchronized native int XmStringCreate(byte[] string, byte[] charset);
 public static final synchronized native int XmStringCreateLocalized(byte[] string);
 public static final synchronized native void XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);

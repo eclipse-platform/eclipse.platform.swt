@@ -428,6 +428,32 @@ public String open () {
 	OS.XmStringFree (xmStringPtr1);
 	OS.XmStringFree (xmStringPtr2);
 	OS.XmStringFree (xmStringPtr3);
+	
+	/*
+	 * Can override the selection text field if necessary now that
+	 * its initial value has been computed by the platform dialog.
+	 */
+	if (fileName != null && fileName.length() > 0) {
+		/* Use the character encoding for the default locale */
+		byte [] buffer4 = Converter.wcsToMbcs (null, fileName, true);
+		int xmStringPtr4 = OS.XmStringParseText (
+				buffer4,
+				0,
+				OS.XmFONTLIST_DEFAULT_TAG, 
+				OS.XmCHARSET_TEXT, 
+				null,
+				0,
+				0);
+		int [] argList2 = {OS.XmNdirSpec, 0};
+		OS.XtGetValues (dialog, argList2, argList2.length / 2);
+		int oldDirSpec = argList2 [1];
+		int newDirSpec = OS.XmStringConcat (oldDirSpec, xmStringPtr4);
+		argList2 [1] = newDirSpec;
+		OS.XtSetValues (dialog, argList2, argList2.length / 2);
+		OS.XmStringFree (xmStringPtr4);
+		OS.XmStringFree (oldDirSpec);
+		OS.XmStringFree (newDirSpec);
+	}
 
 	/* Hook the callbacks. */
 	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
@@ -440,8 +466,8 @@ public String open () {
 	if ((style & SWT.MULTI) != 0) {
 		child = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
 		if (child != 0) {
-			int [] argList2 = {OS.XmNselectionPolicy, OS.XmEXTENDED_SELECT};
-			OS.XtSetValues(child, argList2, argList2.length / 2);
+			int [] argList3 = {OS.XmNselectionPolicy, OS.XmEXTENDED_SELECT};
+			OS.XtSetValues(child, argList3, argList3.length / 2);
 			selectCallback = new Callback (this, "itemSelected", 3);
 			int selectAddress = selectCallback.getAddress ();
 			if (selectAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
