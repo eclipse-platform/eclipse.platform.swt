@@ -254,6 +254,7 @@ static String toC(String str) {
 public abstract void generate(Class clazz);
 
 public void generate() {
+	if (classes == null) return;
 	generateMetaData(getCopyrightKey());
 	generateMetaData(getIncludesKey());
 	sort(classes);
