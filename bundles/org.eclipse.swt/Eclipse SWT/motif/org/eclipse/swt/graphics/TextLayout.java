@@ -117,66 +117,63 @@ void computeRuns () {
 					}
 					break;
 			}
-		} else {
-			if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
-				int start = 0;
-				char[] chars = new char[run.length];
-				text.getChars(run.start, run.start + run.length, chars, 0);
-				int width = 0, maxWidth = wrapWidth - lineWidth;
-				char[] buffer = new char[1];
+		}
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
+			int start = 0;
+			char[] chars = new char[run.length];
+			text.getChars(run.start, run.start + run.length, chars, 0);
+			int width = 0, maxWidth = wrapWidth - lineWidth;
+			char[] buffer = new char[1];
+			buffer[0] = chars[start];
+			int charWidth = stringWidth(run, buffer);
+			while (width + charWidth < maxWidth) {
+				width += charWidth;
+				start++;
 				buffer[0] = chars[start];
-				int charWidth = stringWidth(run, buffer);
-				while (width + charWidth < maxWidth) {
-					width += charWidth;
-					start++;
-					buffer[0] = chars[start];
-					charWidth =	stringWidth(run, buffer);
+				charWidth =	stringWidth(run, buffer);
+			}
+			int firstStart = start;
+			int firstIndice = i;			
+			while (i >= lineStart) {
+				chars = new char[run.length];
+				text.getChars(run.start, run.start + run.length, chars, 0);
+				while(start >= 0) {
+					if (Compatibility.isSpaceChar(chars[start]) || Compatibility.isWhitespace(chars[start])) break;
+					start--;
 				}
-				int firstStart = start;
-				int firstIndice = i;
-				
-				while (i >= lineStart) {
-					chars = new char[run.length];
-					text.getChars(run.start, run.start + run.length, chars, 0);
-					while(start >= 0) {
-						if (Compatibility.isSpaceChar(chars[start]) || Compatibility.isWhitespace(chars[start])) break;
-						start--;
-					}
-					if (start >= 0 || i == lineStart) break;
-					run = allRuns[--i];
-					start = run.length - 1;
-				}
-				if (start == 0 && i != lineStart) {
-					run = allRuns[--i];
-				}
-				if (start <= 0 && i == lineStart) {
-					i = firstIndice; 
-					run = allRuns[i];
-					start = Math.max(1, firstStart);
-					chars = new char[run.length];
-					text.getChars(run.start, run.start + run.length, chars, 0);
-					while (start < run.length) {
-						if (!Compatibility.isWhitespace(chars[start])) break;
-						start++;
-					}
-				}
-				if (0 < start && start < run.length) {
-					StyleItem newRun = new StyleItem();
-					newRun.start = run.start + start;
-					newRun.length = run.length - start;
-					newRun.style = run.style;
-					run.length = start;
-					place (run);
-					place (newRun);
-					StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
-					System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
-					System.arraycopy(allRuns, i + 1, newAllRuns, i + 2, allRuns.length - i - 1);
-					allRuns = newAllRuns;
-					allRuns[i + 1] = newRun;
-				}
-				if (i != allRuns.length - 2) {
-					run.softBreak = run.lineBreak = true;
-				}
+				if (start >= 0 || i == lineStart) break;
+				run = allRuns[--i];
+				start = run.length - 1;
+			}
+			if (start == 0 && i != lineStart) {
+				run = allRuns[--i];
+			} else if (start <= 0 && i == lineStart) {
+				i = firstIndice; 
+				run = allRuns[i];
+				start = Math.max(1, firstStart);
+			}
+			chars = new char[run.length];
+			text.getChars(run.start, run.start + run.length, chars, 0);
+			while (start < run.length) {
+				if (!Compatibility.isWhitespace(chars[start])) break;
+				start++;
+			}
+			if (0 < start && start < run.length) {
+				StyleItem newRun = new StyleItem();
+				newRun.start = run.start + start;
+				newRun.length = run.length - start;
+				newRun.style = run.style;
+				run.length = start;
+				place (run);
+				place (newRun);
+				StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
+				System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
+				System.arraycopy(allRuns, i + 1, newAllRuns, i + 2, allRuns.length - i - 1);
+				allRuns = newAllRuns;
+				allRuns[i + 1] = newRun;
+			}
+			if (i != allRuns.length - 2) {
+				run.softBreak = run.lineBreak = true;
 			}
 		}
 		lineWidth += run.width;
