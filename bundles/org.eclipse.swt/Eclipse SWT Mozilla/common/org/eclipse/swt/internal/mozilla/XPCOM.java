@@ -31,24 +31,9 @@ import org.eclipse.swt.internal.*;
 
 public class XPCOM extends Platform {
 	
-	/* Minimal Mozilla version */
-	static final int MAJOR = 1;
-	static final int MINOR = 4;
-	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
-
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	public static final String HTTPS_PROTOCOL = "https:";  //$NON-NLS-1$
 	
-	/* nsDirectoryServiceDefs constants */
-	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
-	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
-	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
-	public static final String NS_APP_USER_PROFILE_50_DIR = "ProfD"; //$NON-NLS-1$
-	public static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
-	public static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
-	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
-	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
-	public static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
-
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
 	public static final nsID NS_DOWNLOAD_CID = new nsID("e3fa9D0a-1dd1-11b2-bdef-8c720b597445"); //$NON-NLS-1$
