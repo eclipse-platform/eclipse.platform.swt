@@ -1630,7 +1630,7 @@ void doColumnLeft() {
 				// at logical line end in R2L segment but there's more text (a L2R segment)
 				// go to end of R2L segment (visually left of next L2R segment)/end of line
 				caretOffset--;
-				while (caretOffset < lineOffset + lineLength && bidi.isRightToLeft(caretOffset - lineOffset)) {
+				while (caretOffset - lineOffset > 0 && bidi.isRightToLeft(caretOffset - lineOffset)) {
 					caretOffset--;
 				}
 			}
@@ -6278,7 +6278,9 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 		return paintX;
 	}
 	if (bidi != null) {
-		paintX = bidi.getCaretPosition(endOffset) - startXOffset;
+		// Use lastCaretDirection in order to get same results as during
+		// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
+		paintX = bidi.getCaretPosition(endOffset, lastCaretDirection) - startXOffset;
 	}
 	else {
 		for (int i = startOffset; i < endOffset; i++) {

@@ -324,52 +324,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	return new int[] {offset, direction};		
 }
 public int getCaretPosition(int logicalOffset) {
-	int caretX;
-
-	if (getTextLength() == 0) {
-		return StyledText.XINSET;
-	}
-	// at or past end of line?
-	if (logicalOffset >= order.length) {
-		logicalOffset = Math.min(logicalOffset, order.length - 1);
-		int visualOffset = order[logicalOffset];
-		if (isRightToLeft(logicalOffset)) {
-			caretX = renderPositions[visualOffset];
-		}
-		else {
-			caretX = renderPositions[visualOffset] + dx[visualOffset];
-		}
-	}
-	else
-	if (logicalOffset > 0 && isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
-		// logically first character of different direction segment?
-		// go behind last character of previous direction segment
-		int visualOffset = order[logicalOffset - 1];
-		if (isRightToLeft(logicalOffset - 1)) {
-			caretX = renderPositions[visualOffset];
-		}
-		else {
-			caretX = renderPositions[visualOffset] + dx[visualOffset];
-		}
-	}
-	else
-	// at R2L character or beginning of line?
-	if (isRightToLeft(logicalOffset) || logicalOffset == 0) {
-		int visualOffset = order[logicalOffset];
-
-
-		if (isRightToLeft(logicalOffset)) {
-			caretX = renderPositions[visualOffset] + dx[visualOffset];
-		}
-		else {
-			caretX = renderPositions[visualOffset];
-		}
-	}	
-	else {
-		// L2R segment
-		caretX = renderPositions[order[logicalOffset]];
-	}		
-	return caretX;
+	return getCaretPosition(logicalOffset, ST.COLUMN_NEXT);
 }
 public int getCaretPosition(int logicalOffset, int direction) {
 	// moving to character at logicalOffset
