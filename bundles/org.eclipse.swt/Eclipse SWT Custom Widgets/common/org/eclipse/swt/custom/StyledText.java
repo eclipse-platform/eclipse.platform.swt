@@ -1655,7 +1655,7 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  * <p>
  *
  * @param key a key code defined in SWT.java or a character. 
- * 	Optionally ORd with a state mask (one or more of SWT.CTRL, SWT.SHIFT, SWT.ALT)
+ * 	Optionally ORd with a state mask (one or more of SWT.MOD1, SWT.MOD2, SWT.ALT)
  * @param action one of the predefined actions defined in ST.java. 
  * 	Use SWT.NULL to remove a key binding.
  * @exception SWTException <ul>
@@ -2197,38 +2197,38 @@ void createKeyBindings() {
 	setKeyBinding(SWT.ARROW_RIGHT, ST.COLUMN_NEXT);
 	setKeyBinding(SWT.PAGE_UP, ST.PAGE_UP);
 	setKeyBinding(SWT.PAGE_DOWN, ST.PAGE_DOWN);
-	setKeyBinding(SWT.ARROW_LEFT | SWT.CTRL, ST.WORD_PREVIOUS);
-	setKeyBinding(SWT.ARROW_RIGHT | SWT.CTRL, ST.WORD_NEXT);
-	setKeyBinding(SWT.HOME | SWT.CTRL, ST.TEXT_START);	
-	setKeyBinding(SWT.END | SWT.CTRL, ST.TEXT_END);
-	setKeyBinding(SWT.PAGE_UP | SWT.CTRL, ST.WINDOW_START);
-	setKeyBinding(SWT.PAGE_DOWN | SWT.CTRL, ST.WINDOW_END);
+	setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1, ST.WORD_PREVIOUS);
+	setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1, ST.WORD_NEXT);
+	setKeyBinding(SWT.HOME | SWT.MOD1, ST.TEXT_START);	
+	setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
+	setKeyBinding(SWT.PAGE_UP | SWT.MOD1, ST.WINDOW_START);
+	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
 	// Selection
-	setKeyBinding(SWT.ARROW_UP | SWT.SHIFT, ST.SELECT_LINE_UP);	
-	setKeyBinding(SWT.ARROW_DOWN | SWT.SHIFT, ST.SELECT_LINE_DOWN);
-	setKeyBinding(SWT.HOME | SWT.SHIFT, ST.SELECT_LINE_START);
-	setKeyBinding(SWT.END | SWT.SHIFT, ST.SELECT_LINE_END);
-	setKeyBinding(SWT.ARROW_LEFT | SWT.SHIFT, ST.SELECT_COLUMN_PREVIOUS);
-	setKeyBinding(SWT.ARROW_RIGHT | SWT.SHIFT, ST.SELECT_COLUMN_NEXT);
-	setKeyBinding(SWT.PAGE_UP | SWT.SHIFT, ST.SELECT_PAGE_UP);
-	setKeyBinding(SWT.PAGE_DOWN | SWT.SHIFT, ST.SELECT_PAGE_DOWN);
-	setKeyBinding(SWT.ARROW_LEFT | SWT.CTRL | SWT.SHIFT, ST.SELECT_WORD_PREVIOUS);
-	setKeyBinding(SWT.ARROW_RIGHT | SWT.CTRL | SWT.SHIFT, ST.SELECT_WORD_NEXT);
-	setKeyBinding(SWT.HOME | SWT.CTRL | SWT.SHIFT, ST.SELECT_TEXT_START);	
-	setKeyBinding(SWT.END | SWT.CTRL | SWT.SHIFT, ST.SELECT_TEXT_END);
-	setKeyBinding(SWT.PAGE_UP | SWT.CTRL | SWT.SHIFT, ST.SELECT_WINDOW_START);
-	setKeyBinding(SWT.PAGE_DOWN | SWT.CTRL | SWT.SHIFT, ST.SELECT_WINDOW_END);
+	setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);	
+	setKeyBinding(SWT.ARROW_DOWN | SWT.MOD2, ST.SELECT_LINE_DOWN);
+	setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_LINE_START);
+	setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_LINE_END);
+	setKeyBinding(SWT.ARROW_LEFT | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);
+	setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
+	setKeyBinding(SWT.PAGE_UP | SWT.MOD2, ST.SELECT_PAGE_UP);
+	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD2, ST.SELECT_PAGE_DOWN);
+	setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
+	setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
+	setKeyBinding(SWT.HOME | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);	
+	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
+	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
+	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
 	// Modification
 	// Cut, Copy, Paste
 	// CUA style
-	setKeyBinding('\u0018' | SWT.CTRL, ST.CUT);
-	setKeyBinding('\u0003' | SWT.CTRL, ST.COPY);
-	setKeyBinding('\u0016' | SWT.CTRL, ST.PASTE);
+	setKeyBinding('\u0018' | SWT.MOD1, ST.CUT);
+	setKeyBinding('\u0003' | SWT.MOD1, ST.COPY);
+	setKeyBinding('\u0016' | SWT.MOD1, ST.PASTE);
 	// Wordstar style
-	setKeyBinding(SWT.DEL | SWT.SHIFT, ST.CUT);
-	setKeyBinding(SWT.INSERT | SWT.CTRL, ST.COPY);
-	setKeyBinding(SWT.INSERT | SWT.SHIFT, ST.PASTE);
-	setKeyBinding(SWT.BS | SWT.SHIFT, ST.DELETE_PREVIOUS);
+	setKeyBinding(SWT.DEL | SWT.MOD2, ST.CUT);
+	setKeyBinding(SWT.INSERT | SWT.MOD1, ST.COPY);
+	setKeyBinding(SWT.INSERT | SWT.MOD2, ST.PASTE);
+	setKeyBinding(SWT.BS | SWT.MOD2, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
 	
@@ -3626,7 +3626,7 @@ public int getHorizontalPixel() {
  * <p>
  *
  * @param key a key code defined in SWT.java or a character. 
- * 	Optionally ORd with a state mask (one or more of SWT.CTRL, SWT.SHIFT, SWT.ALT)
+ * 	Optionally ORd with a state mask (one or more of SWT.MOD1, SWT.MOD2, SWT.ALT)
  * @return one of the predefined actions defined in ST.java or SWT.NULL 
  * 	if there is no action associated with the key.
  * @exception SWTException <ul>
@@ -5086,7 +5086,7 @@ void handleMouseDoubleClick(Event event) {
  * pressed.
  */
 void handleMouseDown(Event event) {
-	boolean select = (event.stateMask & SWT.SHIFT) != 0;
+	boolean select = (event.stateMask & SWT.MOD2) != 0;
 	
 	if (event.button != 1) {
 		return;
