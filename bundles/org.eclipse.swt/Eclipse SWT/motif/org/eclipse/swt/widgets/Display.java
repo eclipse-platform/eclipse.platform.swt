@@ -1668,22 +1668,22 @@ void showToolTip (int handle, String toolTipText) {
 		 return;
 	}
 	
-	/* Create the tooltip widgets. */	
+	/* Create the tooltip widgets */	
 	int widgetClass = OS.OverrideShellWidgetClass ();
-	int [] argList = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
-	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList, argList.length / 2);
+	int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
+	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
 	toolTipHandle = OS.XmCreateLabel(shellHandle, null, null, 0);
 	
-	/* Set the tooltip foreground and background. */
+	/* Set the tooltip foreground and background */
 	Color infoForeground = getSystemColor(SWT.COLOR_INFO_FOREGROUND);
 	Color infoBackground = getSystemColor(SWT.COLOR_INFO_BACKGROUND);
 	int foregroundPixel = (infoForeground == null) ? defaultForeground : infoForeground.handle.pixel;
 	int backgroundPixel = (infoBackground == null) ? defaultBackground : infoBackground.handle.pixel;
 	int [] argList2 = {OS.XmNforeground, foregroundPixel, OS.XmNbackground, backgroundPixel};
 	OS.XtSetValues (toolTipHandle, argList2, argList2.length / 2);
-	OS.XtManageChild(toolTipHandle);		
+	OS.XtManageChild (toolTipHandle);		
 	
-	/* Set the tooltip label string. */
+	/* Set the tooltip label string */
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
@@ -1696,17 +1696,26 @@ void showToolTip (int handle, String toolTipText) {
 	int [] argList3 = {OS.XmNlabelString, xmString};
 	OS.XtSetValues (toolTipHandle, argList3, argList3.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);	
-	
-	/* Position and popup the tooltip. */
-	int xWindow = OS.XDefaultRootWindow (xDisplay);
-	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
-	
+		
 	/*
 	* Feature in X.  There is no way to query the size of a cursor.
 	* The fix is to use the default cursor size which is 16x16.
 	*/
-	int x = rootX [0] + 16, y = rootY [0] + 16;	
+	int xWindow = OS.XDefaultRootWindow (xDisplay);
+	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
+	int x = rootX [0] + 16, y = rootY [0] + 16;
+	
+	/*
+	* Ensure that the tooltip is on the screen.
+	*/
+	int screen = OS.XDefaultScreen (xDisplay);
+	int width = OS.XDisplayWidth (xDisplay, screen);
+	int height = OS.XDisplayHeight (xDisplay, screen);
+	int [] argList4 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (toolTipHandle, argList4, argList4.length / 2);
+	x = Math.max (0, Math.min (x, width - argList4 [1]));
+	y = Math.max (0, Math.min (y, height - argList4 [3]));
 	OS.XtMoveWidget (shellHandle, x, y);
 	OS.XtPopup (shellHandle, OS.XtGrabNone);
 }
