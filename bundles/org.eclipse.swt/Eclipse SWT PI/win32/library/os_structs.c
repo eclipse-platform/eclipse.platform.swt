@@ -3884,6 +3884,52 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 }
 #endif
 
+#ifndef NO_SCRIPT_FONTPROPERTIES
+typedef struct SCRIPT_FONTPROPERTIES_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cBytes, wgBlank, wgDefault, wgInvalid, wgKashida, iKashidaWidth;
+} SCRIPT_FONTPROPERTIES_FID_CACHE;
+
+SCRIPT_FONTPROPERTIES_FID_CACHE SCRIPT_FONTPROPERTIESFc;
+
+void cacheSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_FONTPROPERTIESFc.cached) return;
+	SCRIPT_FONTPROPERTIESFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_FONTPROPERTIESFc.cBytes = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "cBytes", "I");
+	SCRIPT_FONTPROPERTIESFc.wgBlank = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "wgBlank", "S");
+	SCRIPT_FONTPROPERTIESFc.wgDefault = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "wgDefault", "S");
+	SCRIPT_FONTPROPERTIESFc.wgInvalid = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "wgInvalid", "S");
+	SCRIPT_FONTPROPERTIESFc.wgKashida = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "wgKashida", "S");
+	SCRIPT_FONTPROPERTIESFc.iKashidaWidth = (*env)->GetFieldID(env, SCRIPT_FONTPROPERTIESFc.clazz, "iKashidaWidth", "I");
+	SCRIPT_FONTPROPERTIESFc.cached = 1;
+}
+
+SCRIPT_FONTPROPERTIES *getSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_FONTPROPERTIES *lpStruct)
+{
+	if (!SCRIPT_FONTPROPERTIESFc.cached) cacheSCRIPT_FONTPROPERTIESFields(env, lpObject);
+	lpStruct->cBytes = (*env)->GetIntField(env, lpObject, SCRIPT_FONTPROPERTIESFc.cBytes);
+	lpStruct->wgBlank = (*env)->GetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgBlank);
+	lpStruct->wgDefault = (*env)->GetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgDefault);
+	lpStruct->wgInvalid = (*env)->GetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgInvalid);
+	lpStruct->wgKashida = (*env)->GetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgKashida);
+	lpStruct->iKashidaWidth = (*env)->GetIntField(env, lpObject, SCRIPT_FONTPROPERTIESFc.iKashidaWidth);
+	return lpStruct;
+}
+
+void setSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_FONTPROPERTIES *lpStruct)
+{
+	if (!SCRIPT_FONTPROPERTIESFc.cached) cacheSCRIPT_FONTPROPERTIESFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SCRIPT_FONTPROPERTIESFc.cBytes, (jint)lpStruct->cBytes);
+	(*env)->SetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgBlank, (jshort)lpStruct->wgBlank);
+	(*env)->SetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgDefault, (jshort)lpStruct->wgDefault);
+	(*env)->SetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgInvalid, (jshort)lpStruct->wgInvalid);
+	(*env)->SetShortField(env, lpObject, SCRIPT_FONTPROPERTIESFc.wgKashida, (jshort)lpStruct->wgKashida);
+	(*env)->SetIntField(env, lpObject, SCRIPT_FONTPROPERTIESFc.iKashidaWidth, (jint)lpStruct->iKashidaWidth);
+}
+#endif
+
 #ifndef NO_SCRIPT_ITEM
 typedef struct SCRIPT_ITEM_FID_CACHE {
 	int cached;

@@ -711,6 +711,16 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 #define SCRIPT_CONTROL_sizeof() 0
 #endif
 
+#ifndef NO_SCRIPT_FONTPROPERTIES
+SCRIPT_FONTPROPERTIES *getSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_FONTPROPERTIES *lpStruct);
+void setSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_FONTPROPERTIES *lpStruct);
+#define SCRIPT_FONTPROPERTIES_sizeof() sizeof(SCRIPT_FONTPROPERTIES)
+#else
+#define getSCRIPT_FONTPROPERTIESFields(a,b,c) NULL
+#define setSCRIPT_FONTPROPERTIESFields(a,b,c)
+#define SCRIPT_FONTPROPERTIES_sizeof() 0
+#endif
+
 #ifndef NO_SCRIPT_ITEM
 SCRIPT_ITEM *getSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct);
 void setSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct);

@@ -1176,6 +1176,7 @@ public class OS {
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int UIS_INITIALIZE = 3;
+	public static final int USP_E_SCRIPT_NOT_IN_FONT = 0x80040200;
 	public static final int VERTRES = 0xa;
 	public static final int VK_BACK = 0x8;
 	public static final int VK_CANCEL = 0x3;
@@ -1486,6 +1487,11 @@ public static final int EnumFontFamilies (int hdc, TCHAR lpszFamily, int lpEnumF
 	}
 	byte [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.bytes;
 	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
+}
+
+public static final int EnumFontFamiliesEx (int hdc, LOGFONT lpLogfont, int lpEnumFontFamExProc, int lParam, int dwFlags) {
+	if (IsUnicode) return EnumFontFamiliesExW (hdc, (LOGFONTW)lpLogfont, lpEnumFontFamExProc, lParam, dwFlags);
+	return EnumFontFamiliesExA (hdc, (LOGFONTA)lpLogfont, lpEnumFontFamExProc, lParam, dwFlags);
 }
 
 public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags) {
@@ -2208,6 +2214,8 @@ public static final native int EndPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native boolean EnumDisplayMonitors (int hdc, RECT lprcClip, int lpfnEnum, int dwData);
 public static final native int EnumFontFamiliesW (int hdc, char [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native int EnumFontFamiliesA (int hdc, byte [] lpszFamily, int lpEnumFontFamProc, int lParam);
+public static final native int EnumFontFamiliesExW (int hdc, LOGFONTW lpLogfont, int lpEnumFontFamExProc, int lParam, int dwFlags);
+public static final native int EnumFontFamiliesExA (int hdc, LOGFONTA lpLogfont, int lpEnumFontFamExProc, int lParam, int dwFlags);
 public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
 public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
@@ -2524,6 +2532,7 @@ public static final native int ScriptGetProperties(int[] ppSp, int[] piNumScript
 public static final native int ScriptCacheGetHeight(int hdc, int psc, int[] tmHeight);
 public static final native int ScriptCPtoX(int iCP, boolean fTrailing, int cChars, int cGlyphs, int pwLogClust, int psva, int piAdvance, SCRIPT_ANALYSIS psa, int[] piX);
 public static final native int ScriptFreeCache(int psc);
+public static final native int ScriptGetFontProperties(int hdc, int psc, SCRIPT_FONTPROPERTIES sfp);
 public static final native int ScriptGetLogicalWidths (SCRIPT_ANALYSIS psa, int cChars, int cGlyphs, int piGlyphWidth, int pwLogClust, int psva, int[] piDx);
 public static final native int ScriptItemize(char[] pwcInChars, int cInChars, int cMaxItems, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, int pItems, int[] pcItems);
 public static final native int ScriptLayout(int cRuns, byte[] pbLevel, int[] piVisualToLogical, int[] piLogicalToVisual);

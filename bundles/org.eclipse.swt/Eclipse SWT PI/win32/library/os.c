@@ -1361,6 +1361,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesA)
 }
 #endif
 
+#ifndef NO_EnumFontFamiliesExA
+JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesExA)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4)
+{
+	LOGFONTA _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "EnumFontFamiliesExA\n")
+	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1);
+	rc = (jint)EnumFontFamiliesExA((HDC)arg0, (LPLOGFONTA)lparg1, (FONTENUMPROCA)arg2, (LPARAM)arg3, arg4);
+	if (arg1) setLOGFONTAFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "EnumFontFamiliesExA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_EnumFontFamiliesExW
+JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesExW)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4)
+{
+	LOGFONTW _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "EnumFontFamiliesExW\n")
+	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1);
+	rc = (jint)EnumFontFamiliesExW((HDC)arg0, (LPLOGFONTW)lparg1, (FONTENUMPROCW)arg2, (LPARAM)arg3, arg4);
+	if (arg1) setLOGFONTWFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "EnumFontFamiliesExW\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_EnumFontFamiliesW
 JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesW)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3)
@@ -6096,6 +6126,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScriptFreeCache)
 	NATIVE_ENTER(env, that, "ScriptFreeCache\n")
 	rc = (jint)ScriptFreeCache((SCRIPT_CACHE *)arg0);
 	NATIVE_EXIT(env, that, "ScriptFreeCache\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptGetFontProperties
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptGetFontProperties)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	SCRIPT_FONTPROPERTIES _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ScriptGetFontProperties\n")
+	if (arg2) lparg2 = getSCRIPT_FONTPROPERTIESFields(env, arg2, &_arg2);
+	rc = (jint)ScriptGetFontProperties((HDC)arg0, (SCRIPT_CACHE *)arg1, (SCRIPT_FONTPROPERTIES *)lparg2);
+	if (arg2) setSCRIPT_FONTPROPERTIESFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "ScriptGetFontProperties\n")
 	return rc;
 }
 #endif

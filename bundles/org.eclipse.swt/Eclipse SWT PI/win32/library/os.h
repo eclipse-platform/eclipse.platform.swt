@@ -75,6 +75,7 @@
 #define NO_SCRIPT_CONTROL
 #define NO_SCRIPT_ITEM
 #define NO_SCRIPT_LOGATTR
+#define NO_SCRIPT_FONTPROPERTIES
 #define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
 #define NO_TOOLINFO
@@ -156,6 +157,8 @@
 #define NO_EndPage
 #define NO_EnumDisplayMonitors
 #define NO_EnumFontFamiliesA
+#define NO_EnumFontFamiliesExA
+#define NO_EnumFontFamiliesExW
 #define NO_EnumSystemLanguageGroupsA
 #define NO_EnumSystemLanguageGroupsW
 #define NO_EnumSystemLocalesA
@@ -321,6 +324,7 @@
 #define NO_ScriptCPtoX
 #define NO_ScriptFreeCache
 #define NO_ScriptGetLogicalWidths
+#define NO_ScriptGetFontProperties
 #define NO_ScriptGetProperties
 #define NO_ScriptItemize
 #define NO_ScriptLayout
