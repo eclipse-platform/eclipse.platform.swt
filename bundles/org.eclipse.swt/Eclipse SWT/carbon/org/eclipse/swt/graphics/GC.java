@@ -952,7 +952,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	short[] fontInfo= new short[4];
 	OS.GetFontInfo(fontInfo);	// FontInfo
 	OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-	OS.DrawText(string);
+	OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
 	unfocus(true);
 }
 /** 
@@ -1087,7 +1087,7 @@ public void drawText (String string, int x, int y, int flags) {
 	short[] fontInfo= new short[4];
 	OS.GetFontInfo(fontInfo);	// FontInfo
 	OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-	OS.DrawText(string);
+	OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
 	unfocus(true);
 }
 
@@ -1401,11 +1401,20 @@ public void fillRectangle (int x, int y, int width, int height) {
 		height = -height;
 	}
 	focus(true);
+	fRect.set(x, y, width, height);
 	if ((data.background & 0xff000000) == 0) {
 		OS.RGBForeColor(data.background);
-		fRect.set(x, y, width, height);
 		OS.PaintRect(fRect.getData());
 	} else {
+		/*
+		OS.RGBForeColor(0xffffff);
+		OS.PaintRect(fRect.getData());
+		*/
+		int[] state= new int[1];
+		OS.GetThemeDrawingState(state);
+		OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, (short)32, true);
+		OS.EraseRect(fRect.getData());
+		OS.SetThemeDrawingState(state[0], true);
 		//	System.out.println("GC.fillRectangle: " + Integer.toHexString(data.background));
 	}
 	unfocus(true);
@@ -2052,7 +2061,7 @@ public Point stringExtent(String string) {
 	*/
 	focus(false);
 	installFont();
-	int width= OS.TextWidth(string);
+	int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
 	short[] fontInfo= new short[4];
 	OS.GetFontInfo(fontInfo);	// FontInfo
 	int height= fontInfo[0] + fontInfo[1];
@@ -2139,7 +2148,7 @@ public Point textExtent(String string, int flags) {
 	*/
 	focus(false);
 	installFont();
-	int width= OS.TextWidth(string);
+	int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
 	short[] fontInfo= new short[4];
 	OS.GetFontInfo(fontInfo);	// FontInfo
 	unfocus(false);
