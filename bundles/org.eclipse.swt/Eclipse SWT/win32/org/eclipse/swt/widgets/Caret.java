@@ -369,8 +369,10 @@ void setFocus () {
 	if (image != null) hBitmap = image.handle;
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
-	if (font != null) {
-		int hFont = font.handle;
+	if (OS.IsDBLocale) {
+		int hFont = 0;
+		if (font != null) hFont = font.handle;
+		if (hFont == 0) hFont = defaultFont ();
 		saveIMEFont ();
 		setIMEFont (hFont);
 	}
