@@ -788,6 +788,7 @@ int processKeyDown (int callData) {
 		case OS.XK_space:
 			click (false, xEvent);
 			break;
+		case OS.XK_KP_Enter:
 		case OS.XK_Return:
 			click (true, xEvent);
 			break;

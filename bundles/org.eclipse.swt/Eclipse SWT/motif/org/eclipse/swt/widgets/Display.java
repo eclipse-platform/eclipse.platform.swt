@@ -710,6 +710,7 @@ boolean filterEvent (XAnyEvent event) {
 		case OS.XK_Escape:
 		case OS.XK_Cancel:
 		case OS.XK_Tab:
+		case OS.XK_KP_Enter:
 		case OS.XK_Return:
 		case OS.XK_Up:
 		case OS.XK_Down:

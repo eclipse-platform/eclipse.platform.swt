@@ -452,6 +452,7 @@ public boolean open () {
 					int xChange = 0, yChange = 0;
 					int stepSize = ((keyEvent.state & OS.ControlMask) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 					switch (keysym [0]) {
+						case OS.XK_KP_Enter:
 						case OS.XK_Return:
 							tracking = false;
 							/*

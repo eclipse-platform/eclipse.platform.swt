@@ -2605,6 +2605,7 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
+		case OS.XK_KP_Enter:
 		case OS.XK_Return: {
 			all = true;
 			detail = SWT.TRAVERSE_RETURN;

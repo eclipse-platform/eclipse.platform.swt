@@ -433,7 +433,7 @@ public class OS {
 //	public static final int XK_KP_Add = 0xFFAB;
 //	public static final int XK_KP_Decimal = 0xFFAE;
 //	public static final int XK_KP_Divide = 0xFFAF;
-//	public static final int XK_KP_Enter = 0xFF8D;
+	public static final int XK_KP_Enter = 0xFF8D;
 //	public static final int XK_KP_Multiply = 0xFFAA;
 //	public static final int XK_KP_Subtract = 0xFFAD;
 	public static final int XK_Left = 0xFF51;
