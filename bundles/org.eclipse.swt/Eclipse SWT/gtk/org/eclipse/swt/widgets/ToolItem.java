@@ -421,10 +421,15 @@ public int getWidth () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	signal_connect(handle, "clicked",   SWT.Selection, 2);
-	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);
-	signal_connect(handle, "leave-notify-event", SWT.MouseExit,  3);
-	if (arrowButtonHandle!=0) signal_connect(arrowButtonHandle, "clicked",   SWT.DefaultSelection, 2);
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
+	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
+	OS.gtk_signal_connect (handle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
+	if (arrowButtonHandle != 0) {
+		OS.gtk_signal_connect (arrowButtonHandle, OS.clicked, windowProc2, SWT.DefaultSelection);
+	}
 
 	/*
 	 * Feature in GTK.
@@ -441,8 +446,8 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (handle, mask);
-	signal_connect (handle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect (handle, "button_release_event", SWT.MouseUp, 3);
+	OS.gtk_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
+	OS.gtk_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
 }
 
 /**

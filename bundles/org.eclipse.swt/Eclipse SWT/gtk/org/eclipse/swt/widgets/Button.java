@@ -315,7 +315,9 @@ public String getText () {
 
 void hookEvents () {
 	super.hookEvents();
-	signal_connect (handle, "clicked", SWT.Selection, 2);
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
 }
 
 int processSelection (int int0, int int1, int int2) {

@@ -892,33 +892,6 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
-void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
-	int proc=0;
-	switch (numArgs) {
-		case 2: proc=getDisplay().windowProc2; break;
-		case 3: proc=getDisplay().windowProc3; break;
-		case 4: proc=getDisplay().windowProc4; break;
-		case 5: proc=getDisplay().windowProc5; break;
-		default: error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	/*OS.g_signal_connect (handle, eventName, proc, swtEvent);*/
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
-	OS.gtk_signal_connect(handle, buffer, proc, swtEvent);
-}
-
-void signal_connect_after (int handle, String eventName, int swtEvent, int numArgs) {
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
-	int proc=0;
-	switch (numArgs) {
-		case 2: proc=getDisplay().windowProc2; break;
-		case 3: proc=getDisplay().windowProc3; break;
-		case 4: proc=getDisplay().windowProc4; break;
-		case 5: proc=getDisplay().windowProc5; break;
-		default: error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	OS.gtk_signal_connect_after (handle, buffer, proc, swtEvent);
-}
-
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
  
+import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.Library;
 
 public class OS {
@@ -195,6 +196,43 @@ public class OS {
 	public static final int PANGO_STYLE_OBLIQUE = 0x1;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
+	
+	/* Signals */
+	public static final byte[] activate = signal("activate");
+	public static final byte[] button_press_event = signal("button_press_event");
+	public static final byte[] button_release_event = signal("button_release_event");
+	public static final byte[] changed = signal("changed");
+	public static final byte[] clicked = signal("clicked");
+	public static final byte[] configure_event = signal("configure_event");
+	public static final byte[] delete_event = signal("delete_event");
+	public static final byte[] delete_text = signal("delete_text");
+	public static final byte[] enter_notify_event = signal("enter_notify_event");
+	public static final byte[] event_after = signal("event_after");
+	public static final byte[] expose_event = signal("expose_event");
+	public static final byte[] focus_in_event = signal("focus_in_event");
+	public static final byte[] focus_out_event = signal("focus_out_event");
+	public static final byte[] insert_text = signal("insert_text");
+	public static final byte[] key_press_event = signal("key_press_event");
+	public static final byte[] key_release_event = signal("key_release_event");
+	public static final byte[] leave_notify_event = signal("leave_notify_event");
+	public static final byte[] map_event = signal("map_event");
+	public static final byte[] motion_notify_event = signal("motion_notify_event");
+	public static final byte[] popup_menu = signal("popup_menu");
+	public static final byte[] select_child = signal("select_child");
+	public static final byte[] select_row = signal("select_row");
+	public static final byte[] size_allocate = signal("size_allocate");
+	public static final byte[] switch_page = signal("switch_page");
+	public static final byte[] tree_collapse = signal("tree_collapse");
+	public static final byte[] tree_expand = signal("tree_expand");
+	public static final byte[] tree_select_row = signal("tree_select_row");
+	public static final byte[] tree_unselect_row = signal("tree_unselect_row");
+	public static final byte[] unselect_row = signal("unselect_row");
+	public static final byte[] unmap_event = signal("unmap_event");
+	public static final byte[] value_changed = signal("value_changed");
+	
+static byte[] signal (String name) {
+	return Converter.wcsToMbcs(null, name, true);
+}
 
 /* Object private fields accessors */
 public static final native int GTK_CLIST_CLIST_WINDOW(int clist);

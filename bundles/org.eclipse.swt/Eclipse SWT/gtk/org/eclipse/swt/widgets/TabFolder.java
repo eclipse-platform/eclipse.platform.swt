@@ -379,7 +379,9 @@ public int getSelectionIndex () {
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect (handle, "switch_page", SWT.Selection, 4);
+	Display display = getDisplay ();
+	int windowProc4 = display.windowProc4;
+	OS.gtk_signal_connect (handle, OS.switch_page, windowProc4, SWT.Selection);
 }
 
 /**

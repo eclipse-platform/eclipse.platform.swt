@@ -313,10 +313,13 @@ int fontHandle () {
 void hookEvents () {
 	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
 	// TO DO - fix multiple selection events for one user action
-	signal_connect (listHandle, "select_child", SWT.Selection, 3);
-	signal_connect_after (entryHandle, "changed", SWT.Modify, 2);
-	signal_connect (entryHandle, "activate", SWT.DefaultSelection, 2);
+	OS.gtk_signal_connect (listHandle, OS.select_child, windowProc3, SWT.Selection);
+	OS.gtk_signal_connect_after (entryHandle, OS.changed, windowProc2, SWT.Modify);
+	OS.gtk_signal_connect (entryHandle, OS.activate, windowProc2, SWT.DefaultSelection);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -326,16 +329,16 @@ void hookEvents () {
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
 		OS.gtk_widget_add_events (handle, mask);
-		signal_connect (handle, "button_press_event", SWT.MouseDown, 3);
-		signal_connect (handle, "button_release_event", SWT.MouseUp, 3);
-		signal_connect (handle, "key_press_event", SWT.KeyDown, 3);
-		signal_connect (handle, "key_release_event", SWT.KeyUp, 3);
-		signal_connect (handle, "motion_notify_event", SWT.MouseMove, 3);
-		signal_connect_after (handle, "button_press_event", -SWT.MouseDown, 3);
-		signal_connect_after (handle, "button_release_event", -SWT.MouseUp, 3);
-		signal_connect_after (handle, "key_press_event", -SWT.KeyDown, 3);
-		signal_connect_after (handle, "key_release_event", -SWT.KeyUp, 3);
-		signal_connect_after (handle, "motion_notify_event", -SWT.MouseMove, 3);
+		OS.gtk_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
+		OS.gtk_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
+		OS.gtk_signal_connect (handle, OS.key_press_event, windowProc3, SWT.KeyDown);
+		OS.gtk_signal_connect (handle, OS.key_release_event, windowProc3, SWT.KeyUp);
+		OS.gtk_signal_connect (handle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
+		OS.gtk_signal_connect_after (handle, OS.button_press_event, windowProc3, -SWT.MouseDown);
+		OS.gtk_signal_connect_after (handle, OS.button_release_event, windowProc3, -SWT.MouseUp);
+		OS.gtk_signal_connect_after (handle, OS.key_press_event, windowProc3, -SWT.KeyDown);
+		OS.gtk_signal_connect_after (handle, OS.key_release_event, windowProc3, -SWT.KeyUp);
+		OS.gtk_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
 	}
 }
 

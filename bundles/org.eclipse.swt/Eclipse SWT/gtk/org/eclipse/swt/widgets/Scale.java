@@ -118,10 +118,10 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	signal_connect (hAdjustment, "value_changed", SWT.Selection, 2);
+	OS.gtk_signal_connect (hAdjustment, OS.value_changed, windowProc2, SWT.Selection);
 }
 
 void register () {

@@ -719,10 +719,14 @@ public int getTopPixel () {
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
-	signal_connect_after (handle, "changed", SWT.Modify, 2);
-	signal_connect (handle, "insert-text", SWT.Verify, 5);
-	signal_connect (handle, "delete-text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.DefaultSelection, 2);
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	int windowProc4 = display.windowProc4;
+	int windowProc5 = display.windowProc5;
+	OS.gtk_signal_connect_after (handle, OS.changed, windowProc2, SWT.Modify);
+	OS.gtk_signal_connect (handle, OS.insert_text, windowProc5, SWT.Verify);
+	OS.gtk_signal_connect (handle, OS.delete_text, windowProc4, SWT.Verify);
+	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.DefaultSelection);
 }
 
 /**
@@ -788,8 +792,7 @@ int processVerify (int int0, int int1, int int2) {
 		if (position [0] == -1) position [0] = OS.gtk_text_get_length (handle);
 		String newText = verifyText (oldText, position [0], position [0]); //WRONG POSITION
 		if (newText == null) {
-			byte [] insert_text = Converter.wcsToMbcs (null, "insert-text", true);
-			OS.gtk_signal_emit_stop_by_name (handle, insert_text);
+			OS.gtk_signal_emit_stop_by_name (handle, OS.insert_text);
 			return 0;
 		}
 		if (newText != oldText) {
@@ -798,8 +801,7 @@ int processVerify (int int0, int int1, int int2) {
 			OS.gtk_signal_handler_block_by_func (handle, windowProc5, SWT.Verify);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, position);
 			OS.gtk_signal_handler_unblock_by_func (handle, windowProc5, SWT.Verify);
-			byte [] insert_text = Converter.wcsToMbcs (null, "insert-text", true);
-			OS.gtk_signal_emit_stop_by_name (handle, insert_text);
+			OS.gtk_signal_emit_stop_by_name (handle, OS.insert_text);
 			return 0;
 		}
 	} else {
@@ -813,8 +815,7 @@ int processVerify (int int0, int int1, int int2) {
 		String oldText = new String (buffer2, 0, buffer2.length);
 		String newText = verifyText (oldText, int0, int1);
 		if (newText == null) {
-			byte [] delete_text = Converter.wcsToMbcs (null, "delete-text", true);
-			OS.gtk_signal_emit_stop_by_name (handle, delete_text);
+			OS.gtk_signal_emit_stop_by_name (handle, OS.delete_text);
 			return 0;
 		}
 	}

@@ -110,7 +110,6 @@ public MenuItem (Menu parent, int style, int index) {
 void addAccelerator (int accel_group) {
 	if (accel_group == 0) return;
 	if (accelerator == 0) return;
-	byte [] activate = Converter.wcsToMbcs (null, "activate", true);
 	int mask = 0;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
@@ -122,7 +121,7 @@ void addAccelerator (int accel_group) {
 	} else {
 		keysym = wcsToMbcs ((char) keysym);
 	}
-	OS.gtk_widget_add_accelerator (handle, activate, accel_group, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+	OS.gtk_widget_add_accelerator (handle, OS.activate, accel_group, keysym, mask, OS.GTK_ACCEL_VISIBLE);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -334,8 +333,7 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
-	byte [] activate_event = Converter.wcsToMbcs (null, "activate", true);
-	OS.gtk_signal_connect (handle, activate_event, windowProc2, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and

@@ -428,12 +428,14 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect(shellHandle, "map-event", SWT.Deiconify, 3);
-	signal_connect(shellHandle, "unmap-event", SWT.Iconify, 3);
-	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
-	signal_connect(shellHandle, "configure-event", SWT.Move, 3);
-	signal_connect(shellHandle, "delete-event", SWT.Dispose, 3);
-	signal_connect(shellHandle, "event-after", SWT.Activate, 3);
+	Display display = getDisplay ();
+	int windowProc3 = display.windowProc3;
+	OS.gtk_signal_connect (shellHandle, OS.map_event, windowProc3, SWT.Deiconify);
+	OS.gtk_signal_connect (shellHandle, OS.unmap_event, windowProc3, SWT.Iconify);
+	OS.gtk_signal_connect (shellHandle, OS.size_allocate, windowProc3, SWT.Resize);
+	OS.gtk_signal_connect (shellHandle, OS.configure_event, windowProc3, SWT.Move);
+	OS.gtk_signal_connect (shellHandle, OS.delete_event, windowProc3, SWT.Dispose);
+	OS.gtk_signal_connect (shellHandle, OS.event_after, windowProc3, SWT.Activate);
 }
 
 void register () {

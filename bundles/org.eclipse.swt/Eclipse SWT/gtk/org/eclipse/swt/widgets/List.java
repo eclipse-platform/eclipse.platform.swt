@@ -216,9 +216,12 @@ GdkColor defaultForeground () {
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
-	signal_connect (handle, "select_row", SWT.Selection, 5);
-	signal_connect (handle, "unselect_row", SWT.Selection, 5);
-	signal_connect (handle, "event_after", 0, 3);
+	Display display = getDisplay ();
+	int windowProc3 = display.windowProc3;
+	int windowProc5 = display.windowProc5;
+	OS.gtk_signal_connect (handle, OS.select_row, windowProc5, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.unselect_row, windowProc5, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.event_after, windowProc3, 0);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

@@ -326,7 +326,9 @@ public boolean getVisible () {
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect (handle, "value_changed",  SWT.Selection, 2);
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	OS.gtk_signal_connect (handle, OS.value_changed, windowProc2, SWT.Selection);
 }
 
 /**

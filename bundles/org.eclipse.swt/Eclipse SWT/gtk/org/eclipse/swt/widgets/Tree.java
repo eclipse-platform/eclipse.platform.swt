@@ -197,11 +197,14 @@ void createHandle (int index) {
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents ();
-	signal_connect (handle, "tree_select_row", SWT.Selection, 4);
-	signal_connect (handle, "tree_unselect_row", SWT.Selection, 4);
-	signal_connect (handle, "tree_expand", SWT.Expand, 3);
-	signal_connect (handle, "tree_collapse", SWT.Collapse, 3);
-	signal_connect (handle, "event_after", 0, 3);
+	Display display = getDisplay ();
+	int windowProc3 = display.windowProc3;
+	int windowProc4 = display.windowProc4;
+	OS.gtk_signal_connect (handle, OS.tree_select_row, windowProc4, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.tree_unselect_row, windowProc4, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.tree_expand, windowProc3, SWT.Expand);
+	OS.gtk_signal_connect (handle, OS.tree_collapse, windowProc3, SWT.Collapse);
+	OS.gtk_signal_connect (handle, OS.event_after, windowProc3, 0);
 }
 
 int createCheckPixmap(boolean checked) {
