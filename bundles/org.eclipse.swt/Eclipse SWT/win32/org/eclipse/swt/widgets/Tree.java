@@ -3503,6 +3503,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								}
 							}
 							x += hdItem.cxy;
+						}
+						if (count > 0) {
 							if (printClient || (style & SWT.FULL_SELECTION) != 0) {
 								OS.SetRect (rect, x, nmcd.top, nmcd.right, nmcd.bottom - gridWidth);
 								drawBackground (hDC, OS.GetBkColor (hDC), rect);
