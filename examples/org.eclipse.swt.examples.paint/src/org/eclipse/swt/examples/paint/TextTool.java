@@ -9,7 +9,6 @@ package org.eclipse.swt.examples.paint;
 
 import org.eclipse.jface.dialogs.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * A text drawing tool.

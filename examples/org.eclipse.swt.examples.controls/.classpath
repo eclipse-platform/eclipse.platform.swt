@@ -2,11 +2,10 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="var" path="JRE_LIB"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.0.0/runtime.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_1.9.0/runtimesrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui_2.0.0/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui_1.9.0/workbenchsrc.zip"/>
     <classpathentry kind="src" path="/org.eclipse.swt.examples"/>
     <classpathentry kind="src" path="/org.eclipse.swt"/>
+    <classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.1.0/runtime.jar"/>
+    <classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.workbench_2.1.0/workbench.jar"/>
+    <classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jface_2.1.0/jface.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

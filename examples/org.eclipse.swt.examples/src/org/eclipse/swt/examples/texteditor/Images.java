@@ -7,8 +7,6 @@ package org.eclipse.swt.examples.texteditor;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.io.*;
-import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 

@@ -13,7 +13,7 @@ launch items to the Launcher, optionally grouping them into
 categories so as to form a multi-tiered hierarchy.
 Standalone programs are executed using the platform's event loop.
 Workbench views are created within the active Workbench Perspective.<H2>Markup</H2>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT extension (EMPTY)&gt;</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT extension EMPTY&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST extension</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;point&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
@@ -21,20 +21,20 @@ Workbench views are created within the active Workbench Perspective.<H2>Markup</
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>point</b> - </li><li><b>id</b> - </li><li><b>name</b> - </li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT program (EMPTY)&gt;</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT program EMPTY&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST program</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainClass&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pluginId&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>mainClass</b> - The fully-qualified name of the class whose main() method is to be launched.</li><li><b>pluginId</b> - The unique id of the Eclipse Platform plugin containing the program.</li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT view (EMPTY)&gt;</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT view EMPTY&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST view</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;viewId&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>viewId</b> - The unique id of the Workbench View to be activated when the item is launched.</li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT category (EMPTY)&gt;</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT category EMPTY&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST category</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
@@ -42,7 +42,7 @@ Workbench views are created within the active Workbench Perspective.<H2>Markup</
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>name</b> - The localized name of this category.</li><li><b>id</b> - The unique id of this category.  Categories with duplicate id's will be discarded.</li><li><b>category</b> - The unique id of the parent category.</li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT item (EMPTY)&gt;</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT item EMPTY&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST item</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>

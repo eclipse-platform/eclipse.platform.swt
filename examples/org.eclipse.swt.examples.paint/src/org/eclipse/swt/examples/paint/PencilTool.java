@@ -7,7 +7,7 @@ package org.eclipse.swt.examples.paint;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.util.Random;import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * A pencil tool.
