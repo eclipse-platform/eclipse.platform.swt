@@ -149,7 +149,6 @@ public void add (Rectangle rect) {
  * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
@@ -500,7 +499,6 @@ public void subtract (Rectangle rect) {
  * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
