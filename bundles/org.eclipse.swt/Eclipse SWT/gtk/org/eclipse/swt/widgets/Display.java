@@ -449,6 +449,9 @@ synchronized void createDisplay (DeviceData data) {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (null, buffer)));
+		System.out.println ("***WARNING: SWT requires GTK " + MAJOR+ "." + MINOR + "." + MICRO);
+		int major = OS.gtk_major_version (), minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
+		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.gdk_set_program_class (buffer);
@@ -1479,8 +1482,7 @@ public void setCursorLocation (int x, int y) {
  */
 public void setCursorLocation (Point point) {
 	checkDevice ();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setCursorLocation (point.x, point.y);
+	/* This is not supported on GTK */
 }
 
 /**
