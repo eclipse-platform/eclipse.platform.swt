@@ -408,6 +408,18 @@ public TreeItem [] getItems () {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	/*
+	* Feature on Windows.  In some cases an OS callback
+	* can occur from within the TVM_DELETEITEM message.
+	* When this occurs, the node being destroyed has been
+	* removed from the items array and is no longer valid,
+	* however, the OS has not yet removed the item from
+	* its list.  The fix is to check for null items and remove 
+	* them from the result array. 
+	* 
+	* NOTE: This only happens on XP with the version 6.00 of
+	* COMCTL32.DLL,
+	*/
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = parent.items [tvItem.lParam];
@@ -416,7 +428,7 @@ public TreeItem [] getItems () {
 	}
 	if (index != count) {
 		TreeItem [] newResult = new TreeItem [index];
-		System.arraycopy(result, 0, newResult, 0, index);
+		System.arraycopy (result, 0, newResult, 0, index);
 		result = newResult;
 	}
 	return result;
