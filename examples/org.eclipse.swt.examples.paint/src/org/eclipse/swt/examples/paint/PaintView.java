@@ -480,7 +480,7 @@ public class PaintView extends ViewPart {
 			FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
 			FontData[] fontDatum = toolSettings.commonFont.getFontData();
 			if (fontDatum != null && fontDatum.length > 0) {
-				fontDialog.setFontData(fontDatum[0]);
+				fontDialog.setFontList(fontDatum);
 			}
 			fontDialog.setText(PaintPlugin.getResourceString("options.Font.dialog.title"));
 

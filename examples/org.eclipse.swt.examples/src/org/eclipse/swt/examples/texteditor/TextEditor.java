@@ -329,7 +329,7 @@ public Shell open (Display display) {
 
 void setFont() {
 	FontDialog fontDialog = new FontDialog(shell);
-	fontDialog.setFontData((text.getFont()).getFontData()[0]);
+	fontDialog.setFontList((text.getFont()).getFontData());
 	FontData fontData = fontDialog.open();
 	if(fontData != null) {
 		if(font != null)
