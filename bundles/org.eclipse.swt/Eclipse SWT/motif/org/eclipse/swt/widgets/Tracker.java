@@ -484,7 +484,6 @@ public boolean open () {
 							OS.XtAppNextEvent (xtContext, xEvent);
 							break;
 						case OS.XK_Escape:
-						case OS.XK_Cancel:
 							tracking = false;
 							cancelled = true;
 							/*

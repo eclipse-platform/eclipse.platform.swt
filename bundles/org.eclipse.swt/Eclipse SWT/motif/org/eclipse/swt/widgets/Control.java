@@ -2543,8 +2543,7 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	int code = traversalCode (key, xEvent);
 	boolean all = false;
 	switch (key) {
-		case OS.XK_Escape:
-		case OS.XK_Cancel: {
+		case OS.XK_Escape: {
 			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;

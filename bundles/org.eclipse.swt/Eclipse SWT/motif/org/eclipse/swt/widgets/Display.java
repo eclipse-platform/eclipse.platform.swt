@@ -203,7 +203,6 @@ public class Display extends Device {
 		{OS.XK_Delete,		SWT.DEL},
 		{OS.XK_KP_Delete,	SWT.DEL},
 		{OS.XK_Escape,		SWT.ESC},
-		{OS.XK_Cancel,		SWT.ESC},
 		{OS.XK_Linefeed,	SWT.LF},
 		{OS.XK_Tab,			SWT.TAB},
 		{OS.XK_ISO_Left_Tab,SWT.TAB},
@@ -825,7 +824,6 @@ boolean filterEvent (int event) {
 	if (keysym == 0) return false;
 	switch (keysym) {
 		case OS.XK_Escape:
-		case OS.XK_Cancel:
 		case OS.XK_Tab:
 		case OS.XK_KP_Enter:
 		case OS.XK_Return:
