@@ -133,7 +133,7 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
-	int [] timerIDs;
+	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
@@ -1457,12 +1457,12 @@ void releaseDisplay () {
 	caretCallback = null;
 	
 	/* Dispose the timer callback */
-	if (timerIDs != null) {
-		for (int i=0; i<timerIDs.length; i++) {
-			if (timerIDs [i] != 0) OS.XtRemoveTimeOut (timerIDs [i]);
+	if (timerIds != null) {
+		for (int i=0; i<timerIds.length; i++) {
+			if (timerIds [i] != 0) OS.XtRemoveTimeOut (timerIds [i]);
 		}
 	}
-	timerIDs = null;
+	timerIds = null;
 	timerList = null;
 	timerProc = 0;
 	timerCallback.dispose ();
@@ -1880,25 +1880,39 @@ int textWidth (String string, Font font) {
  */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIDs == null) timerIDs = new int [4];
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
 	while (index < timerList.length) {
-		if (timerList [index] == null) break;
+		if (timerList [index] == runnable) break;
 		index++;
 	}
-	if (index == timerList.length) {
-		Runnable [] newTimerList = new Runnable [timerList.length + 4];
-		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
-		timerList = newTimerList;
-		int [] newTimerIDs = new int [timerIDs.length + 4];
-		System.arraycopy (timerIDs, 0, newTimerIDs, 0, timerIDs.length);
-		timerIDs = newTimerIDs;
+	if (index != timerList.length) {
+		OS.XtRemoveTimeOut (timerIds [index]);
+		timerList [index] = null;
+		timerIds [index] = 0;
+		if (milliseconds < 0) return;
+	} else {
+		if (milliseconds < 0) return;
+		index = 0;
+		while (index < timerList.length) {
+			if (timerList [index] == null) break;
+			index++;
+		}
+		if (index == timerList.length) {
+			Runnable [] newTimerList = new Runnable [timerList.length + 4];
+			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
+			timerList = newTimerList;
+			int [] newTimerIds = new int [timerIds.length + 4];
+			System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+			timerIds = newTimerIds;
+		}
 	}
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	int timerID = OS.XtAppAddTimeOut (xtContext, milliseconds, timerProc, index);
-	if (timerID != 0) {
-		timerIDs [index] = timerID;
+	int timerId = OS.XtAppAddTimeOut (xtContext, milliseconds, timerProc, index);
+	if (timerId != 0) {
+		timerIds [index] = timerId;
 		timerList [index] = runnable;
 	}
 }
@@ -1907,7 +1921,7 @@ int timerProc (int index, int id) {
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
-		timerIDs [index] = 0;
+		timerIds [index] = 0;
 		if (runnable != null) runnable.run ();
 	}
 	return 0;
