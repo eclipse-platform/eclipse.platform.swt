@@ -226,8 +226,8 @@ public class Display extends Device {
 	int crPointer, tabPointer;
 	
 	/* Xt Translations */
+	int dragTranslations;
 	int arrowTranslations, tabTranslations;
-//	int dragTranslations;
 	
 	/* Check Expose Proc */
 	Callback checkExposeCallback;
@@ -1241,8 +1241,8 @@ void initializeTranslations () {
 	arrowTranslations = OS.XtParseTranslationTable (buffer1);
 	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0");
 	tabTranslations = OS.XtParseTranslationTable (buffer2);
-//	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
-//	dragTranslations = OS.XtParseTranslationTable (buffer3);
+	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
+	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.

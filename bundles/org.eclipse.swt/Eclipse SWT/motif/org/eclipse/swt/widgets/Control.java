@@ -402,6 +402,16 @@ void createWidget (int index) {
 		*/
 		realizeChildren ();
 	}
+	/*
+	* Bug in Motif.  Under certain circumstances, when a
+	* text widget is created as a child of another control
+	* that has drag and drop, starting a drag in the text
+	* widget causes a protection fault.  The fix is to
+	* disable the built in drag and drop for all widgets
+	* by overriding the drag start traslation.
+	*/
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.dragTranslations);
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
