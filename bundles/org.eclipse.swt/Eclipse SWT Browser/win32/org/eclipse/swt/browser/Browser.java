@@ -263,12 +263,9 @@ public Browser(Composite parent, int style) {
 						if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
 						iDispatch.Release();
 					}
-					/* leave default behaviour when event not registered */
-					if (openWindowListeners.length > 0) {
-						Variant cancel = event.arguments[1];
-						int pCancel = cancel.getByRef();
-						COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-					}
+					Variant cancel = event.arguments[1];
+					int pCancel = cancel.getByRef();
+					COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					break;
 				}
 				case OnVisible : {
