@@ -12,6 +12,7 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
@@ -20,6 +21,9 @@ class TextTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	Text text;
 	Group textGroup;
+	
+	/* Alignment Controls */
+	Button leftButton, rightButton, centerButton;
 
 	/* Style widgets added to the "Style" group */
 	Button wrapButton, readOnlyButton;
@@ -41,6 +45,37 @@ class TextTab extends ScrollableTab {
 	}
 
 	/**
+	 * Creates the "Control" group. 
+	 */
+	void createControlGroup () {
+		super.createControlGroup ();
+		
+		/* Create the group */
+		Group alignmentGroup = new Group (controlGroup, SWT.NONE);
+		alignmentGroup.setLayout (new GridLayout ());
+		alignmentGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL |
+						GridData.VERTICAL_ALIGN_FILL));
+		alignmentGroup.setText (ControlExample.getResourceString("Alignment"));
+		
+		/* Create the controls */
+		leftButton = new Button (alignmentGroup, SWT.RADIO);
+		leftButton.setText (ControlExample.getResourceString("Left"));
+		centerButton = new Button (alignmentGroup, SWT.RADIO);
+		centerButton.setText(ControlExample.getResourceString("Center"));
+		rightButton = new Button (alignmentGroup, SWT.RADIO);
+		rightButton.setText (ControlExample.getResourceString("Right"));
+		
+		SelectionListener selectionListener = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			};
+		};
+		leftButton.addSelectionListener (selectionListener);
+		rightButton.addSelectionListener (selectionListener);
+		centerButton.addSelectionListener (selectionListener);
+	}
+	
+	/**
 	 * Creates the "Example" group.
 	 */
 	void createExampleGroup () {
@@ -57,7 +92,6 @@ class TextTab extends ScrollableTab {
 	 * Creates the "Example" widgets.
 	 */
 	void createExampleWidgets () {
-		
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
@@ -67,6 +101,9 @@ class TextTab extends ScrollableTab {
 		if (wrapButton.getSelection ()) style |= SWT.WRAP;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
+		if (leftButton.getSelection ()) style |= SWT.LEFT;
+		if (rightButton.getSelection ()) style |= SWT.RIGHT;
+		if (centerButton.getSelection ()) style |= SWT.CENTER;
 	
 		/* Create the example widgets */
 		text = new Text (textGroup, style);
@@ -109,5 +146,8 @@ class TextTab extends ScrollableTab {
 		readOnlyButton.setSelection ((text.getStyle () & SWT.READ_ONLY) != 0);
 		horizontalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
 		verticalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
+		leftButton.setSelection ((text.getStyle () & SWT.LEFT) != 0);
+		centerButton.setSelection ((text.getStyle () & SWT.CENTER) != 0);
+		rightButton.setSelection ((text.getStyle () & SWT.RIGHT) != 0);
 	}
 }
