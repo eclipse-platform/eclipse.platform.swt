@@ -21,8 +21,8 @@ import org.eclipse.swt.graphics.*;
  */
 public final class Monitor {	
 	
-int screen_number;
-Rectangle bounds;
+	int screen_number;
+	int x, y, width, height;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -44,7 +44,7 @@ public boolean equals (Object object) {
  * @return the receiver's bounding rectangle
  */	
 public Rectangle getBounds () {
-	return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
+	return new Rectangle (x, y, width, height);
 }
 	
 /**
