@@ -703,7 +703,11 @@ public void setSelection (TreeItem [] items) {
  */
 public void showSelection () {
 	checkWidget();
-	// FIXME - not implemented
+	if (getSelectionCount()==0) return;
+	TreeItem item = getSelection()[0];
+	int path = OS.gtk_tree_model_get_path(modelHandle, item.handle);
+	OS.gtk_tree_view_scroll_to_cell(handle, path, 0, false, 0, 0);
+	OS.gtk_tree_path_free(path);
 }
 
 /**

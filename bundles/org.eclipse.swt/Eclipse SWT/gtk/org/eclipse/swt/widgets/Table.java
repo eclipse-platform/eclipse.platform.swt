@@ -1429,13 +1429,8 @@ public void setTopIndex (int index) {
  */
 public void showItem (TableItem item) {
 	int path = OS.gtk_tree_model_get_path(modelHandle, item.handle);
-	OS.gtk_tree_view_scroll_to_cell(handle,
-	                                path,
-	                                0,    // no h-scroll, please
-	                                false, // just show, don't bother for any particular alignment
-	                                0, 0);
+	OS.gtk_tree_view_scroll_to_cell(handle, path, 0, false, 0, 0);
 	OS.gtk_tree_path_free(path);
-
 }
 
 /**
@@ -1455,11 +1450,10 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget();
-	// FIXME
-	// Although this does bring the selection to be visible,
-	// it causes unnecessary scrolling when the selection is
-	// already visible. The better way is to use the OS call
-	// with use_align=false.
-	setTopIndex (getSelectionIndex ());
+	if (getSelectionCount()==0) return;
+	TableItem item = getSelection()[0];
+	int path = OS.gtk_tree_model_get_path(modelHandle, item.handle);
+	OS.gtk_tree_view_scroll_to_cell(handle, path, 0, false, 0, 0);
+	OS.gtk_tree_path_free(path);
 }
 }
