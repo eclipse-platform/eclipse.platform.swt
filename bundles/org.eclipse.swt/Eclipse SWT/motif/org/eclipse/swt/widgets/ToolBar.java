@@ -30,6 +30,27 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
+/**
+ * Instances of this class support the layout of selectable
+ * tool bar items.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>ToolItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public class ToolBar extends Composite {
 	int drawCount, itemCount;
 	ToolItem [] items;
@@ -104,7 +125,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	super.createHandle (index);
 	state &= ~CANVAS;
-	int [] argList = {OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1};
+	int [] argList = {
+		OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
+	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 void createItem (ToolItem item, int index) {
@@ -265,7 +288,7 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
-	int xSpacing = 0, ySpacing = 4;
+	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
 	int marginWidth = 0, marginHeight = 0;
 	ToolItem [] children = getItems ();
 	int length = children.length;
@@ -290,7 +313,7 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	return new int [] {rows, maxX, y + maxHeight};
 }
 int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
-	int xSpacing = 4, ySpacing = 0;
+	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
 	ToolItem [] children = getItems ();
 	int length = children.length;
@@ -320,6 +343,36 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 	} else {
 		return layoutHorizontal (nWidth, nHeight, resize);
 	}
+}
+boolean mnemonicHit (char key) {
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			char mnemonic = findMnemonic (item.getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					OS.XmProcessTraversal (item.handle, OS.XmTRAVERSE_CURRENT);
+					item.click (false, null);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+boolean mnemonicMatch (char key) {
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			char mnemonic = findMnemonic (item.getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -373,5 +426,7 @@ public void setSize (int width, int height) {
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
-
+int traversalCode () {
+	return super.traversalCode () | SWT.TRAVERSE_MNEMONIC;
+}
 }

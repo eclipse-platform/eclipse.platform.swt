@@ -183,6 +183,19 @@ void createHandle (int index) {
 	setBackgroundPixel (pixel);
 }
 
+void click (boolean dropDown, XInputEvent xEvent) {
+	if ((style & SWT.RADIO) != 0) {
+		selectRadio ();
+	} else {
+		if ((style & SWT.CHECK) != 0) setSelection(!set);			
+	}
+	Event event = new Event ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (dropDown) event.detail = SWT.ARROW;
+	}
+	if (xEvent != null) setInputState (event, xEvent);
+	postEvent (SWT.Selection, event);
+}
 
 Point computeSize () {
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -749,19 +762,9 @@ int processKeyUp (int callData) {
 	OS.XLookupString (xEvent, null, 0, keysym, null);
 	keysym [0] &= 0xFFFF;
 	switch (keysym [0]) {
-		case OS.XK_Return:
 		case OS.XK_space:
-			if ((style & SWT.RADIO) != 0) {
-				selectRadio ();
-			} else {
-				if ((style & SWT.CHECK) != 0) setSelection(!set);			
-			}
-			Event event = new Event ();
-			if ((style & SWT.DROP_DOWN) != 0) {
-				if (keysym [0] == OS.XK_Return) event.detail = SWT.ARROW;
-			}
-			setInputState(event, xEvent);
-			postEvent (SWT.Selection, event);
+		case OS.XK_Return:
+			click (keysym [0] == OS.XK_Return, xEvent);
 			break;
 	}
 	/*
@@ -837,6 +840,12 @@ Point toControl (Point point) {
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (point.x - root_x [0], point.y - root_y [0]);
 }
+boolean translateMnemonic (int key, XKeyEvent xEvent) {
+	return parent.translateMnemonic (key, xEvent);
+}
+boolean translateTraversal (int key, XKeyEvent xEvent) {
+	return parent.translateTraversal (key, xEvent);
+}
 int processMouseHover (int id) {
 	Display display = getDisplay ();
 	Point local = toControl (display.getCursorLocation ());
@@ -883,17 +892,7 @@ int processMouseUp (int callData) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [1], height = argList [3];
 		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
-			if ((style & SWT.RADIO) != 0) {
-				selectRadio ();
-			} else {
-				if ((style & SWT.CHECK) != 0) setSelection(!set);			
-			}
-			Event event = new Event ();
-			if ((style & SWT.DROP_DOWN) != 0) {
-				if (xEvent.x > width - 12) event.detail = SWT.ARROW;
-			}
-			setInputState(event, xEvent);
-			postEvent (SWT.Selection, event);
+			click (xEvent.x > width - 12, xEvent);
 		}
 		setDrawPressed(set);
 	}
@@ -964,7 +963,7 @@ int processPaint (int callData) {
 		XExposeEvent xEvent = new XExposeEvent ();
 		OS.memmove (xEvent, cb.event, XExposeEvent.sizeof);
 		Rectangle rect = new Rectangle (xEvent.x, xEvent.y, xEvent.width, xEvent.height);
-		gc.setClipping (rect);
+//		gc.setClipping (rect);
 	}
 	
 	if (!enabled) {
