@@ -737,9 +737,9 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	if (menubar != null && !menubar.isDisposed()) {
 		Shell shell = menubar.getShell();
 		int hwnd = shell.handle;
-		int cAccel = OS.SendMessage (hwnd, OS.WM_APP, 0, 0);
+		int cAccel = OS.SendMessage(hwnd, OS.WM_APP, 0, 0);
 		if (cAccel != 0) {
-			int hAccel = OS.SendMessage (hwnd, OS.WM_APP+1, 0, 0);
+			int hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
 			if (hAccel != 0) {
 				frameInfo.cAccelEntries = cAccel;
 				frameInfo.haccel = hAccel;

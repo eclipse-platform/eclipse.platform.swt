@@ -680,17 +680,17 @@ private boolean translateOleAccelerator(MSG msg) {
 	return objIOleInPlaceActiveObject.TranslateAccelerator(msg) != OLE.S_FALSE;
 }
 private int TranslateAccelerator(int lpmsg, int wID){
-	if (menubar == null || menubar.isDisposed() | !menubar.isEnabled()) return COM.S_FALSE;
+	if (menubar == null || menubar.isDisposed() || !menubar.isEnabled()) return COM.S_FALSE;
 	if (wID < 0) return COM.S_FALSE;
 	
 	Shell shell = menubar.getShell();
 	int hwnd = shell.handle;
-	int hAccel = OS.SendMessage (hwnd, OS.WM_APP+1, 0, 0);
+	int hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
 	if (hAccel == 0) return COM.S_FALSE;
 	
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lpmsg, MSG.sizeof);
-	int result = OS.TranslateAccelerator(hwnd, hAccel, msg );
+	int result = OS.TranslateAccelerator(hwnd, hAccel, msg);
 	return result == 0 ? COM.S_FALSE : COM.S_OK;
 }
 }
