@@ -323,6 +323,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle rect = computeTrim (0, 0, width, height);
 	return new Point (rect.width, rect.height);
 }
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void copy () {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmTextCopy (argList [1], OS.XtLastTimestampProcessed (xDisplay));
+}
 void createHandle (int index) {
 	state |= HANDLE;
 	
@@ -353,6 +374,31 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateComboBox (formHandle, null, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+}
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void cut () {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmTextCut (argList [1], OS.XtLastTimestampProcessed (xDisplay));
 }
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
@@ -771,6 +817,30 @@ public int indexOf (String string, int start) {
 	OS.XmStringFree (xmString);
 	if (index == itemCount) return -1;
 	return index;
+}
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void paste () {
+	checkWidget();
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmTextFieldPaste (argList [1]);
+	display.setWarnings (warnings);
 }
 int processSelection (int callData) {
 	/*
