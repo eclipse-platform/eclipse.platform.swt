@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
- 
-import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -191,13 +189,9 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 }
 
 Point computeSize (Control control, boolean flushCache) {
-	int wHint = SWT.DEFAULT, hHint = SWT.DEFAULT;
 	FormData data = (FormData) control.getLayoutData ();
-	if (data != null) {
-		wHint = data.width;
-		hHint = data.height;
-	}
-	return control.computeSize (wHint, hHint, flushCache);
+	if (data == null) control.setLayoutData (data = new FormData ());
+	return control.computeSize (data.width, data.height, flushCache);
 }
 
 /**
@@ -231,15 +225,13 @@ protected void layout (Composite composite, boolean flushCache) {
 
 Point layout (Composite composite, boolean move, int x, int y, int width, int height, boolean flushCache) {
 	Control [] children = composite.getChildren ();
-	for (int i = 0; i < children.length; i++) {
+	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		Point pt = computeSize (child, flushCache);
+		Point size = computeSize (child, flushCache);
 		FormData data = (FormData) child.getLayoutData ();
-		if (data == null) {
-			child.setLayoutData (data = new FormData ());
-		}
-		data.cacheWidth = pt.x;
-		data.cacheHeight = pt.y;
+		data.cacheWidth = size.x;
+		data.cacheHeight = size.y;
+		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -254,6 +246,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			width = Math.max (computeWidth (data), width);
 			height = Math.max (computeHeight (data), height);
 		}
+	}
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		FormData data = (FormData) child.getLayoutData ();
+		data.cacheWidth = data.cacheHeight = 0;
+		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
 	return move ? null : new Point (width, height);
 }
