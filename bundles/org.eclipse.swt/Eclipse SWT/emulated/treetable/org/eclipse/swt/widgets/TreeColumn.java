@@ -44,7 +44,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 static Tree checkNull (Tree tree) {
-	if (tree == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (tree == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return tree;
 }
 static int checkStyle (int style) {
@@ -73,7 +73,7 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 Rectangle getBounds () {
-	return new Rectangle(getX (), 0, width, parent.getClientArea ().height);
+	return new Rectangle (getX (), 0, width, parent.getClientArea ().height);
 }
 int getIndex () {
 	TreeColumn[] columns = parent.getColumns ();
@@ -145,7 +145,7 @@ void paint (GC gc) {
 	}
 }
 public void pack () {
-	checkWidget();
+	checkWidget ();
 	
 }
 public void removeControlListener (ControlListener listener) {
@@ -166,7 +166,7 @@ public void setAlignment (int alignment) {
 	if ((style & alignment) != 0) return;				/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
-	parent.redraw(getX (), 0, width, parent.getClientArea ().height, true);
+	parent.redraw (getX (), 0, width, parent.getClientArea ().height, true);
 }
 public void setImage (Image value) {
 	checkWidget ();
@@ -188,7 +188,7 @@ public void setImage (Image value) {
 		}
 	}
 	
-	parent.redraw(getX(), 0, width, parent.getHeaderHeight(), true);
+	parent.redraw (getX (), 0, width, parent.getHeaderHeight (), true);
 }
 public void setResizable (boolean value) {
 	checkWidget ();
@@ -202,7 +202,7 @@ public void setText (String value) {
 	GC gc = new GC (parent);
 	textWidth = gc.textExtent (value, SWT.DRAW_MNEMONIC).x;
 	gc.dispose ();
-	parent.redraw(getX (), 0, width, parent.getHeaderHeight (), true);
+	parent.redraw (getX (), 0, width, parent.getHeaderHeight (), true);
 }
 public void setWidth (int value) {
 	checkWidget ();

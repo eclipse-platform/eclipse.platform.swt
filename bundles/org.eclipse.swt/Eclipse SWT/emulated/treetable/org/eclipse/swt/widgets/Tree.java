@@ -483,12 +483,11 @@ void doFocusIn() {
 	if (selectedItems.length > 0) {
 		initialFocus = selectedItems[0];
 	} else {
-		initialFocus = availableItems[0];
+		initialFocus = availableItems[topIndex];
 		selectItem(initialFocus, false);
 	}
 	setFocusItem(initialFocus, false);
 	redrawItem(initialFocus.availableIndex);
-	showItem(initialFocus);
 	Event newEvent = new Event();
 	newEvent.item = initialFocus;
 	sendEvent(SWT.Selection, newEvent);
@@ -616,7 +615,6 @@ void doMouseDoubleClick(Event event) {
 	sendEvent(SWT.DefaultSelection, newEvent);
 }
 void doMouseDown(Event event) {
-	if (!isFocusControl()) setFocus();
 	int index = (event.y - getHeaderHeight()) / itemHeight + topIndex;
 	if (!(0 <= index && index < availableItems.length)) return;	/* not on an available item */
 	TreeItem selectedItem = availableItems[index];
