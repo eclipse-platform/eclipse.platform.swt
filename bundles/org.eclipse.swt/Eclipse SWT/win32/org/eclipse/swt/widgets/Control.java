@@ -3074,6 +3074,16 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	if (wParam != handle) return null;
 	
 	/*
+	* Feature in WM2003.  SHRecognizeGesture sends a WM_CONTEXTMENU
+	* notification even when the flag SHRG_NOTIFY_PARENT is not set.
+	* This behaviour is undocumented and causes the context menu to be 
+	* displayed twice on this platform.  Previous WinCE versions 
+	* don't support WM_CONTEXTMENU notifications.  The workaround
+	* is to ignore WM_CONTEXTMENU notifications on all WinCE platforms.
+	*/
+	if (OS.IsWinCE) return null;
+	
+	/*
 	* Feature in Windows.  When the user presses  WM_NCRBUTTONUP,
 	* a WM_CONTEXTMENU message is generated.  This happens when
 	* the user releases the mouse over a scroll bar.  Normally,
