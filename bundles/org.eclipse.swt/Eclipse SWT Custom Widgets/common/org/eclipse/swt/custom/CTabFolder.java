@@ -2478,8 +2478,9 @@ void setButtonBounds() {
 					} else {
 						CTabItem item = items[items.length - 1];
 						topRightRect.x = item.x + item.width;
+						if (!simple && items.length - 1 == selectedIndex) topRightRect.x += curveWidth - curveIndent;
 					}
-					topRightRect.width = rightEdge - topRightRect.x;
+					topRightRect.width = Math.max(0, rightEdge - topRightRect.x);
 				}
 				topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 				topRightRect.height = tabHeight - 1;
@@ -2722,6 +2723,7 @@ boolean setItemSize() {
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
 		if (showMin) tabAreaWidth -= BUTTON_SIZE;
 		if (showMax) tabAreaWidth -= BUTTON_SIZE;
+		if (topRightAlignment == SWT.RIGHT && topRight != null) tabAreaWidth -= topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 3;
 		if (!simple) tabAreaWidth -= curveWidth - 2*curveIndent;
 		tabAreaWidth = Math.max(0, tabAreaWidth);
 		int count = items.length;
