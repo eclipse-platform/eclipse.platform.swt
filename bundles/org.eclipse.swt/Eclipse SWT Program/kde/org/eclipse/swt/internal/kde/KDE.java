@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.kde;
 
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
  
-public class KDE {
+public class KDE extends Platform {
 	static {
 		Library.loadLibrary("swt-kde");
 	}

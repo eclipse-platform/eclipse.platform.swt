@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.win32;
 
 import org.eclipse.swt.internal.*;
 
-public class OS {
+public class OS extends Platform {
 	static {
 		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}

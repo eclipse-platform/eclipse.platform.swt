@@ -1,6 +1,8 @@
 package org.eclipse.swt.internal.gtk;
 
-public class GTK {
+import org.eclipse.swt.internal.*;
+
+public class GTK extends Platform {
 	
 public static final synchronized native int GTK_WIDGET_HEIGHT(int widget);
 public static final synchronized native int GTK_WIDGET_WIDTH(int widget);

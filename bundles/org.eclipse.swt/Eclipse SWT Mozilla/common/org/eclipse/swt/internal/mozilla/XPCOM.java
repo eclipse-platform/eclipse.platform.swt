@@ -27,7 +27,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class XPCOM {
+import org.eclipse.swt.internal.*;
+
+public class XPCOM extends Platform {
 	
 	/* Minimal Mozilla version */
 	static final int MAJOR = 1;

@@ -12,9 +12,9 @@
 package org.eclipse.swt.internal.gtk;
 
  
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class OS {
+public class OS extends Platform {
 	static {
 		Library.loadLibrary("swt-pi");
 	}

@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cde;
 
+import org.eclipse.swt.internal.*;
 
- 
-public class CDE {
+public class CDE extends Platform {
 
 	/** Constants */
 	public static final int DtACTION_FILE = 1;

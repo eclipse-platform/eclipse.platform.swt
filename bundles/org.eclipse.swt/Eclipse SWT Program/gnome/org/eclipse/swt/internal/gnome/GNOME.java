@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gnome;
 
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class GNOME {
+public class GNOME extends Platform {
 	static {
 		Library.loadLibrary("swt-gnome");
 	}
