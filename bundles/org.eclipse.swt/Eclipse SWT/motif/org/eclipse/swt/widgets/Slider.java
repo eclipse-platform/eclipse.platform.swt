@@ -427,7 +427,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	if (value < 0) return;
 	int [] argList = {OS.XmNvalue, value};
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();

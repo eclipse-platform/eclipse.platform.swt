@@ -513,7 +513,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_POS;
