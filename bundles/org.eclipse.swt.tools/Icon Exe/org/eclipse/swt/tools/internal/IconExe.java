@@ -45,6 +45,7 @@ public class IconExe {
 		IconResInfo[] iconInfo = iconExe.getIcons(raf);
 		ImageData[] data = new ImageData[iconInfo.length];
 		for (int i = 0; i < data.length; i++) data[i] = iconInfo[i].data;
+		raf.close();
 		return data;
 	}
 	
