@@ -1754,6 +1754,7 @@ int gtk_key_press_event (int widget, int event) {
 	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	if (translateMnemonic (gdkEvent.keyval, gdkEvent)) return 1;
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
@@ -1788,16 +1789,14 @@ int gtk_mnemonic_activate (int widget, int arg1) {
 		GdkEventKey keyEvent = new GdkEventKey ();
 		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
 		if (keyEvent.type == OS.GDK_KEY_PRESS) {
-			Event event = new Event ();
-			event.detail = SWT.TRAVERSE_MNEMONIC;
-			setKeyState (event, keyEvent);
-			sendEvent(SWT.Traverse, event);
-			if (!event.doit) {
-				Shell shell = _getShell ();
-				int focusWidget = OS.gtk_window_get_focus (shell.shellHandle);
-				OS.gtk_widget_event (focusWidget, eventPtr);
+			Control focusControl = display.getFocusControl ();
+			int focusHandle = focusControl != null ? focusControl.eventHandle () : 0;
+			if (focusHandle != 0) {
+				display.mnemonicControl = this;
+				OS.gtk_widget_event (focusHandle, eventPtr);
+				display.mnemonicControl = null;
 			}
-			result = event.doit ? 0 : 1;
+			result = 1;
 		}
 		OS.gdk_event_free (eventPtr);
 	}
@@ -2046,13 +2045,20 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+boolean mnemonicHit (char key) {
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	return false;
+}
+
 void register () {
 	super.register ();
 	if (fixedHandle != 0) display.addWidget (fixedHandle, this);
 	int imHandle = imHandle ();
 	if (imHandle != 0) display.addWidget (imHandle, this);
 }
-
 
 /**
  * Causes the entire bounds of the receiver to be marked
@@ -2186,7 +2192,7 @@ boolean sendHelpEvent (int helpType) {
 }
 
 char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
-	int index = 0, count = 0;
+	int index = 0, count = 0, state = 0, time = 0;
 	if (keyEvent == null) {
 		int ptr = OS.gtk_get_current_event ();
 		if (ptr != 0) {
@@ -2195,21 +2201,29 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 			OS.gdk_event_free (ptr);
 			switch (keyEvent.type) {
 				case OS.GDK_KEY_PRESS:
-				case OS.GDK_KEY_RELEASE: break;
-				default: keyEvent = null; break;
+				case OS.GDK_KEY_RELEASE:
+					state = keyEvent.state;
+					time =  keyEvent.time;
+					break;
+				default:
+					keyEvent = null;
+					break;
 			}
 		}
 	}
+	if (keyEvent == null) {
+		int [] buffer = new int [1];
+		OS.gtk_get_current_event_state (buffer);
+		state = buffer [0];
+		time = OS.gtk_get_current_event_time();
+	}
 	while (index < chars.length) {
 		Event event = new Event ();
-		if (keyEvent == null) {
-			int [] state = new int [1];
-			OS.gtk_get_current_event_state (state);
-			setInputState (event, state [0]);
-			event.time = OS.gtk_get_current_event_time();
-		} else {
+		event.time = time;
+		if (keyEvent != null && keyEvent.length <= 1) {
 			setKeyState (event, keyEvent);
-			event.time = keyEvent.time;
+		} else {
+			setInputState (event, state);
 		}
 		event.character = chars [index];
 		sendEvent (type, event);
@@ -2238,7 +2252,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	if (length <= 1) {
 		Event event = new Event ();
 		event.time = keyEvent.time;
-		setKeyState (event, keyEvent);
+		if (!setKeyState (event, keyEvent)) return true;
 		sendEvent (type, event);
 		// widget could be disposed at this point
 	
@@ -2635,17 +2649,6 @@ public void setVisible (boolean visible) {
 		OS.gtk_widget_show (topHandle);
 	} else {	
 		OS.gtk_widget_hide (topHandle);
-		/*
-		* Bug in GTK.  When duplicate mnemonics are created
-		* in two different widgets and one of the widgets is
-		* hidden, GTK runs the mnemonic for the hidden widget.
-		* This only happens for duplicates.  A hidden widget
-		* with a unique mnemonic does not have the problem.
-		* By observation, a widget that is not realized will
-		* not respond to a mnemonic.  The fix is to unrealize
-		* the widget hierarchy every time a widget is hidden.
-		*/
-		OS.gtk_widget_unrealize (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }
@@ -2729,6 +2732,34 @@ public boolean traverse (int traversal) {
 	return traverse (event);
 }
 
+boolean translateMnemonic (Event event, Control control) {
+	if (control == this) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	event.doit = this == display.mnemonicControl || mnemonicMatch (event.character);
+	return traverse (event);
+}
+
+boolean translateMnemonic (int keyval, GdkEventKey gdkEvent) {
+	int key = OS.gdk_keyval_to_unicode (keyval);
+	if (key < 0x20) return false;
+	if (gdkEvent.state == 0) {
+		int code = traversalCode (keyval, gdkEvent);
+		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
+	} else {
+		Shell shell = _getShell ();
+		if (gdkEvent.state != OS.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+	}
+	Decorations shell = menuShell ();
+	if (shell.isVisible () && shell.isEnabled ()) {
+		Event event = new Event ();
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		if (setKeyState (event, gdkEvent)) {
+			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
+		}
+	}
+	return false;
+}
+
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int detail = SWT.TRAVERSE_NONE;
 	int key = keyEvent.keyval;
@@ -2775,14 +2806,12 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
 	event.time = keyEvent.time;
-	setKeyState (event, keyEvent);
+	if (!setKeyState (event, keyEvent)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
 		if (control.traverse (event)) return true;
-		if (!event.doit && control.hooks (SWT.Traverse)) {
-			return false;
-		}
+		if (!event.doit && control.hooks (SWT.Traverse)) return false;
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);
@@ -2797,18 +2826,24 @@ int traversalCode (int key, GdkEventKey event) {
 }
 
 boolean traverse (Event event) {
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the traverse
+	* event.  If this happens, return true to stop further
+	* event processing.
+	*/	
 	sendEvent (SWT.Traverse, event);
-	if (isDisposed ()) return false;
+	if (isDisposed ()) return true;
 	if (!event.doit) return false;
 	switch (event.detail) {
-		case SWT.TRAVERSE_NONE:				return true;
+		case SWT.TRAVERSE_NONE:			return true;
 		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
 		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
+		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event);	
+		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);	
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
@@ -2879,14 +2914,8 @@ boolean traversePage (boolean next) {
 	return false;
 }
 
-boolean traverseMnemonic (Event event) {
-	// This code is intentionally commented.
-	// TraverseMnemonic always originates from the OS and
-	// never through the API, and on the GTK platform, accels
-	// are hooked by the OS before we get the key event.
-	// int shellHandle = _getShell ().topHandle ();
-	// return OS.gtk_accel_groups_activate (shellHandle, keyCode, stateMask);
-	return true;
+boolean traverseMnemonic (char key) {
+	return mnemonicHit (key);
 }
 
 /**

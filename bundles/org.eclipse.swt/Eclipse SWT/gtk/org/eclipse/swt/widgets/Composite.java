@@ -722,6 +722,18 @@ public void setTabList (Control [] tabList) {
 	this.tabList = tabList;
 }
 
+boolean translateMnemonic (Event event, Control control) {
+	if (super.translateMnemonic (event, control)) return true;
+	if (control != null) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			if (child.translateMnemonic (event, control)) return true;
+		}
+	}
+	return false;
+}
+
 int traversalCode(int key, GdkEventKey event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;

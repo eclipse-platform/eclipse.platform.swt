@@ -68,7 +68,7 @@ public class TabItem extends Item {
 public TabItem (TabFolder parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+	createWidget (parent.getItemCount ());
 }
 
 /**
@@ -105,7 +105,19 @@ public TabItem (TabFolder parent, int style) {
 public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
+	createWidget (index);
+}
+
+void createWidget (int index) {
 	parent.createItem (this, index);
+	hookEvents ();
+	register ();
+	text = "";
+}
+
+void deregister() {
+	super.deregister ();
+	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
 /**
@@ -154,6 +166,20 @@ public TabFolder getParent () {
 public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
+}
+
+int gtk_mnemonic_activate (int widget, int arg1) {
+	return parent.gtk_mnemonic_activate (widget, arg1);
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	if (labelHandle != 0) OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+}
+
+void register () {
+	super.register ();
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
 void releaseChild () {

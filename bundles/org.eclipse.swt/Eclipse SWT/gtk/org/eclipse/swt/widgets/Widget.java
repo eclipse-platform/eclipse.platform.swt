@@ -805,6 +805,20 @@ int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
 	return 0;
 }
 
+boolean mnemonicHit (int mnemonicHandle, char key) {
+	if (!mnemonicMatch (mnemonicHandle, key)) return false;
+	OS.g_signal_handlers_block_matched (mnemonicHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MNEMONIC_ACTIVATE);
+	boolean result = OS.gtk_widget_mnemonic_activate (mnemonicHandle, false);
+	OS.g_signal_handlers_unblock_matched (mnemonicHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MNEMONIC_ACTIVATE);
+	return result;
+}
+
+boolean mnemonicMatch (int mnemonicHandle, char key) {
+	int keyval1 = OS.gdk_keyval_to_lower (OS.gdk_unicode_to_keyval (key));
+	int keyval2 = OS.gdk_keyval_to_lower (OS.gtk_label_get_mnemonic_keyval (mnemonicHandle)); 
+	return keyval1 == keyval2;
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1073,50 +1087,52 @@ public void setData (String key, Object value) {
 	}
 }
 
-void setInputState (Event event, int state) {
+boolean setInputState (Event event, int state) {
 	if ((state & OS.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
 	if ((state & OS.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;
 	if ((state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
 	if ((state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
+	return true;
 }
 
-void setKeyState (Event event, GdkEventKey keyEvent) {
-	if (keyEvent.length <= 1) {
-		event.keyCode = Display.translateKey (keyEvent.keyval);
-		switch (keyEvent.keyval) {
-			case OS.GDK_BackSpace:		event.character = '\b'; break;
-			case OS.GDK_Linefeed:		event.character = '\n'; break;
-			case OS.GDK_KP_Enter:
-			case OS.GDK_Return: 		event.character = '\r'; break;
-			case OS.GDK_Delete:		event.character = 0x7F; break;
-			case OS.GDK_Cancel:
-			case OS.GDK_Escape:		event.character = 0x1B; break;
-			case OS.GDK_Tab:
-			case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
-//			case OS.GDK_Clear:			event.character = 0xB; break;
-//			case OS.GDK_Pause:			event.character = 0x13; break;
-//			case OS.GDK_Scroll_Lock:	event.character = 0x14; break;
-			default: {
-				if (event.keyCode == 0) {
-					int [] keyval = new int [1], effective_group= new int [1], level = new int [1], consumed_modifiers = new int [1];
-					if (OS.gdk_keymap_translate_keyboard_state(OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
-						event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
-					}
-					int key = keyEvent.keyval;
-					if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
-						if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
-						if (64 <= key && key <= 95) key -= 64;
-						event.character = (char) key;
-					} else {
-						event.character = (char) OS.gdk_keyval_to_unicode (key);
-					}
+boolean setKeyState (Event event, GdkEventKey keyEvent) {
+	if (keyEvent.length > 1) return false;
+	boolean isNull = false;
+	event.keyCode = Display.translateKey (keyEvent.keyval);
+	switch (keyEvent.keyval) {
+		case OS.GDK_BackSpace:		event.character = '\b'; break;
+		case OS.GDK_Linefeed:		event.character = '\n'; break;
+		case OS.GDK_KP_Enter:
+		case OS.GDK_Return: 		event.character = '\r'; break;
+		case OS.GDK_Delete:		event.character = 0x7F; break;
+		case OS.GDK_Cancel:
+		case OS.GDK_Escape:		event.character = 0x1B; break;
+		case OS.GDK_Tab:
+		case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
+		default: {
+			if (event.keyCode == 0) {
+				int [] keyval = new int [1], effective_group= new int [1], level = new int [1], consumed_modifiers = new int [1];
+				if (OS.gdk_keymap_translate_keyboard_state(OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
+					event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
+				}
+				int key = keyEvent.keyval;
+				if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
+					if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
+					if (64 <= key && key <= 95) key -= 64;
+					event.character = (char) key;
+					isNull = keyEvent.keyval == '@' && key == 0;
+				} else {
+					event.character = (char) OS.gdk_keyval_to_unicode (key);
 				}
 			}
 		}
 	}
-	setInputState (event, keyEvent.state);
+	if (event.keyCode == 0 && event.character == 0) {
+		if (!isNull) return false;
+	}
+	return setInputState (event, keyEvent.state);
 }
 
 void setOrientation () {

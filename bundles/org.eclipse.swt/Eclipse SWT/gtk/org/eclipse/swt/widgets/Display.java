@@ -137,6 +137,9 @@ public class Display extends Device {
 	Callback caretCallback;
 	int caretId, caretProc;
 	
+	/* Mnemonics */
+	Control mnemonicControl;
+
 	/* Mouse hover */
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;

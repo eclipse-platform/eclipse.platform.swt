@@ -188,6 +188,7 @@ void deregister() {
 	super.deregister ();
 	display.removeWidget (handle);
 	if (buttonHandle != 0) display.removeWidget (buttonHandle);
+	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
 /**
@@ -290,6 +291,10 @@ int gtk_clicked (int widget) {
 	return 0;
 }
 
+int gtk_mnemonic_activate (int widget, int arg1) {
+	return parent.gtk_mnemonic_activate (widget, arg1);
+}
+
 int gtk_size_allocate (int widget, int allocation) {
 	boolean mapped = OS.GTK_WIDGET_MAPPED (widget); 
 	int x = OS.GTK_WIDGET_X (widget);
@@ -309,6 +314,7 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
 	if (buttonHandle != 0) OS.g_signal_connect (buttonHandle, OS.size_allocate, display.windowProc3, SIZE_ALLOCATE);
+	if (labelHandle != 0) OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 }
 
 /**
@@ -339,6 +345,7 @@ void register () {
 	super.register ();
 	display.addWidget (handle, this);
 	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
 void releaseChild () {

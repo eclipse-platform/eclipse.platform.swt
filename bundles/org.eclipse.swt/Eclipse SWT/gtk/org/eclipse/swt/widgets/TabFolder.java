@@ -268,6 +268,7 @@ void destroyItem (TabItem item) {
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	item.deregister ();
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_remove_page (handle, index);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
@@ -488,6 +489,24 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 		}
 	}
 	return new Point (width, height);
+}
+
+boolean mnemonicHit (char key) {
+	int itemCount = getItemCount ();
+	for (int i=0; i<itemCount; i++) {
+		int labelHandle = items [i].labelHandle;
+		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+	}
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	int itemCount = getItemCount ();
+	for (int i=0; i<itemCount; i++) {
+		int labelHandle = items [i].labelHandle;
+		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
+	}
+	return false;
 }
 
 void releaseWidget () {

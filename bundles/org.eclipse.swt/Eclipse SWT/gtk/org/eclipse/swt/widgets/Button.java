@@ -389,18 +389,24 @@ int gtk_key_press_event (int widget, int event) {
 	return result;
 }
 
-int gtk_mnemonic_activate (int widget, int arg1) {
-	int result = super.gtk_mnemonic_activate (widget, arg1);
-	if (result == 0) setFocus ();
-	return result;
-}
-
 void hookEvents () {
 	super.hookEvents();
 	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
 	if (labelHandle != 0) {
 		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 	}
+}
+
+boolean mnemonicHit (char key) {
+	if (labelHandle == 0) return false;
+	boolean result = super.mnemonicHit (labelHandle, key);
+	if (result) setFocus ();
+	return result;
+}
+
+boolean mnemonicMatch (char key) {
+	if (labelHandle == 0) return false;
+	return mnemonicMatch (labelHandle, key);
 }
 
 void register () {

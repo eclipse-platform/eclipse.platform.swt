@@ -236,6 +236,11 @@ void createHandle (int index) {
 	setFontDescription (parent.getFontDescription ());
 }
 
+void deregister() {
+	super.deregister ();
+	if (labelHandle != 0) display.removeWidget (labelHandle);
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -501,6 +506,10 @@ int gtk_leave_notify_event (int widget, int event) {
 	return 0;
 }
 
+int gtk_mnemonic_activate (int widget, int arg1) {
+	return parent.gtk_mnemonic_activate (widget, arg1);
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -509,6 +518,7 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.clicked, windowProc2, CLICKED);
 	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+	if (labelHandle != 0) OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 
 	/*
 	* Feature in GTK.  Usually, GTK widgets propagate all events to their
@@ -548,6 +558,11 @@ void hookEvents () {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+void register () {
+	super.register ();
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
 void releaseHandle () {

@@ -303,6 +303,24 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
+boolean mnemonicHit (char key) {
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		int labelHandle = items [i].labelHandle;
+		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+	}
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		int labelHandle = items [i].labelHandle;
+		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
+	}
+	return false;
+}
+
 void releaseWidget () {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {

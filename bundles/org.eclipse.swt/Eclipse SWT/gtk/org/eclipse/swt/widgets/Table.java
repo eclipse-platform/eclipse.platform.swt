@@ -1284,6 +1284,22 @@ public boolean isSelected (int index) {
 	return answer;
 }
 
+boolean mnemonicHit (char key) {
+	for (int i=0; i<columnCount; i++) {
+		int labelHandle = columns [i].labelHandle;
+		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+	}
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	for (int i=0; i<columnCount; i++) {
+		int labelHandle = columns [i].labelHandle;
+		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
+	}
+	return false;
+}
+
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_tree_view_get_bin_window (handle);

@@ -268,31 +268,38 @@ public String getText () {
 	return text;
 }
 
-int gtk_mnemonic_activate (int widget, int arg1) {
-	int result = super.gtk_mnemonic_activate (widget, arg1);
-	if (result == 1) return 1;
-	Composite control = this.parent;
-	while (control != null) {
-		Control [] children = control._getChildren ();
-		int index = 0;
-		while (index < children.length) {
-			if (children [index] == this) break;
-			index++;
-		}
-		index++;
-		if (index < children.length) {
-			if (children [index].setFocus ()) return 1;
-		}
-		control = control.parent;
-	}
-	return 1;
-}
-
 void hookEvents () {
 	super.hookEvents();
 	if (labelHandle != 0) {
 		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 	}
+}
+
+boolean mnemonicHit (char key) {
+	if (labelHandle == 0) return false;
+	boolean result = super.mnemonicHit (labelHandle, key);
+	if (result) {
+		Composite control = this.parent;
+		while (control != null) {
+			Control [] children = control._getChildren ();
+			int index = 0;
+			while (index < children.length) {
+				if (children [index] == this) break;
+				index++;
+			}
+			index++;
+			if (index < children.length) {
+				if (children [index].setFocus ()) return result;
+			}
+			control = control.parent;
+		}
+	}
+	return result;
+}
+
+boolean mnemonicMatch (char key) {
+	if (labelHandle == 0) return false;
+	return mnemonicMatch (labelHandle, key);
 }
 
 void register () {
