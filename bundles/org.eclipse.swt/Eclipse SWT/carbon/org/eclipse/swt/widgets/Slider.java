@@ -63,8 +63,8 @@ int actionProc (int theControl, int partCode) {
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-	Display display = getDisplay ();
-	display.update ();
+	Shell shell = getShell ();
+	shell.update (true);
 	return 0;
 }
 
