@@ -1047,12 +1047,12 @@ public int indexOf (TableItem item) {
 void releaseWidget () {
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseWidget ();
+		if (!column.isDisposed ()) column.releaseResources ();
 	}
 	columns = null;
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	if (check != 0) OS.g_object_unref (check);
@@ -1085,7 +1085,7 @@ public void remove (int index) {
 	TableItem item = items [index];
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.releaseWidget ();
+	item.releaseResources ();
 }
 
 /**
@@ -1112,7 +1112,7 @@ public void remove (int start, int end) {
 	int index = end;
 	while (index >= start) {
 		OS.gtk_clist_remove (handle, index);
-		items [index].releaseWidget ();
+		items [index].releaseResources ();
 		--index;
 	}
 	int first = index + 1, last = end + 1;
@@ -1151,7 +1151,7 @@ public void remove (int [] indices) {
 		if (index != last || i == 0) {
 			OS.gtk_clist_remove (handle, index);
 			// BUG - disposed callback could remove an item
-			items [index].releaseWidget ();
+			items [index].releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --itemCount - index);
 			items [itemCount] = null;
 			last = index;
@@ -1170,6 +1170,11 @@ public void remove (int [] indices) {
 public void removeAll () {
 	checkWidget();
 	OS.gtk_clist_clear (handle);
+	int index = itemCount - 1;
+	while (index >= 0) {
+		items [index].releaseResources ();
+		--index;
+	}
 	items = new TableItem [4];
 	itemCount = 0;
 }

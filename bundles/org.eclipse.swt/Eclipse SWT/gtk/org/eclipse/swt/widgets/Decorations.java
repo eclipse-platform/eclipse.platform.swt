@@ -337,10 +337,7 @@ void remove (Menu menu) {
 }
 
 void releaseWidget () {
-	if (menuBar != null) {
-		menuBar.releaseWidget ();
-		menuBar.releaseHandle ();
-	}
+	if (menuBar != null) menuBar.releaseResources ();
 	menuBar = null;
 	if (menus != null) {
 		for (int i=0; i<menus.length; i++) {

@@ -578,10 +578,7 @@ int GtkCTreeDispose (int ctree, int node, int data) {
 	int index = OS.gtk_ctree_node_get_row_data (ctree, node) - 1;
 	OS.gtk_ctree_node_set_row_data (ctree, node, 0);
 	TreeItem item = items [index];
-	if (item != null && !item.isDisposed ()) {
-		item.releaseWidget ();
-		item.releaseHandle ();
-	}
+	if (item != null && !item.isDisposed ()) item.releaseResources ();
 	items [index] = null;
 	return 0;
 }
@@ -835,10 +832,7 @@ int processTimer (int id) {
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
-		}
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	if (check != 0) OS.g_object_unref (check);
@@ -861,10 +855,7 @@ public void removeAll () {
 	OS.gtk_ctree_remove_node (handle, 0);
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
-		}
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TreeItem [4];
 }

@@ -418,10 +418,7 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	if (menu != null) {
-		menu.releaseWidget ();
-		menu.releaseHandle ();
-	}
+	if (menu != null) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
 	if (accelerator != 0) parent.destroyAccelGroup ();

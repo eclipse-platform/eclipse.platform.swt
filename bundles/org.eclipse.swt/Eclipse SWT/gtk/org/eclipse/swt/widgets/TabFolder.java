@@ -457,7 +457,7 @@ void releaseWidget () {
 	int count = getItemCount ();
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	super.releaseWidget ();

@@ -169,7 +169,7 @@ void releaseChild () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	labelHandle = pixmapHandle = 0;
+	pageHandle = labelHandle = pixmapHandle = 0;
 }
 
 void releaseWidget () {

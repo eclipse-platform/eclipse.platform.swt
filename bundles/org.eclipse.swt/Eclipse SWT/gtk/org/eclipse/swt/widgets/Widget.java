@@ -714,6 +714,11 @@ void releaseHandle () {
 	state |= DISPOSED;
 }
 
+void releaseResources () {
+	releaseWidget ();
+	releaseHandle ();
+}
+
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
 	deregister ();
