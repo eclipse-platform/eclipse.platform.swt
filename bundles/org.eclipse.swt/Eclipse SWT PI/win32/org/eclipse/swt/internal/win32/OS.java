@@ -615,6 +615,7 @@ public class OS {
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
+	public static final int MWMO_INPUTAVAILABLE = 0x4;
 	public static final int NM_CLICK = 0xfffffffe;
 	public static final int NM_CUSTOMDRAW = OS.NM_FIRST - 12;
 	public static final int NM_DBLCLK = 0xfffffffd;
