@@ -432,12 +432,26 @@ public String getUrl() {
 
 public boolean isBackEnabled() {
 	checkWidget();
-	return true;
+	int ptr = OS.malloc(4);
+	int[] args = new int[] {OS.Pt_ARG_WEB_NAVIGATE_PAGE, ptr, 0};
+	OS.PtGetResources(webHandle, args.length / 3, args);
+	int[] result = new int[1];
+	OS.memmove(result, ptr, 4);
+	OS.memmove(result, result[0], 4);
+	OS.free(ptr);
+	return (result[0] & (1 << OS.Pt_WEB_DIRECTION_BACK)) != 0;
 }
 
 public boolean isForwardEnabled() {
 	checkWidget();
-	return true;
+	int ptr = OS.malloc(4);
+	int[] args = new int[]{OS.Pt_ARG_WEB_NAVIGATE_PAGE, ptr, 0};
+	OS.PtGetResources(webHandle, args.length / 3, args);
+	int[] result = new int[1];
+	OS.memmove(result, ptr, 4);
+	OS.memmove(result, result[0], 4);
+	OS.free(ptr);
+	return (result[0] & (1 << OS.Pt_WEB_DIRECTION_FWD)) != 0;
 }
 
 void onDispose() {
