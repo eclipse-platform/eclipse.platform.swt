@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File written by PDE 1.0 -->
+<plugin
+   id="org.eclipse.swt.examples.ole.win32"
+   name="%plugin.SWTOLEExample.name"
+   version="0.9"
+   provider-name="IBM"
+   class="org.eclipse.swt.examples.ole.win32.OlePlugin">
+<!-- Required plugins -->
+<requires>
+   <import plugin="org.eclipse.core.runtime"/>
+   <import plugin="org.eclipse.core.resources"/>
+   <import plugin="org.eclipse.ui"/>
+   <import plugin="org.eclipse.swt"/>
+</requires>
+
+<!-- Runtime -->
+<runtime>
+   <library name="olewin32.jar"/>
+</runtime>
+
+<!-- Extensions -->
+<!-- Extension points -->
+<extension
+      point="org.eclipse.ui.views">
+   <category
+         name="%category.SWTExamples.name"
+         id="org.eclipse.swt.examples.category">
+   </category>
+   <view
+         name="%view.OLEWebBrowserExample.name"
+         category="org.eclipse.swt.examples.category"
+         class="org.eclipse.swt.examples.ole.win32.OleBrowserView"
+         id="org.eclipse.swt.examples.ole.win32.browserView">
+   </view>
+</extension>
+<extension
+      point="org.eclipse.swt.examples.launcher.launchItems">
+   <category
+         name="%launchcategory.SWTExamples.name"
+         description="%launchcategory.SWTExamples.description"
+         id="org.eclipse.swt.examples.launchcategory">
+   </category>
+   <viewItem
+         viewId="org.eclipse.swt.examples.ole.win32.browserView"
+         name="%launchitem.OLEWebBrowserExample.name"
+         description="%launchitem.OLEWebBrowserExample.description"
+         category="org.eclipse.swt.examples.launchcategory"
+         source="olewebbrowsersrc.zip"
+         id="org.eclipse.swt.examples.ole.win32.launcher">
+   </viewItem>
+</extension>
+</plugin>
