@@ -35,7 +35,7 @@ import org.eclipse.swt.internal.carbon.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
-	int x, y, width, height;
+//	int x, y, width, height;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -278,7 +278,9 @@ public int getAccelerator () {
 		int height = rect.bottom - rect.top;
 		return new Rectangle (rect.left, rect.top, width, height);
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (0 ,0, 0, 0);
+//	return new Rectangle (x, y, width, height);
+
 }
 
 /**
