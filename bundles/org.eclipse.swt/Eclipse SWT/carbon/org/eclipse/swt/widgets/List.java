@@ -239,6 +239,9 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	if (!drawFocusRing ()) {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, new byte[] {0});
+	}
 	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
@@ -297,7 +300,8 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
-int defaultThemeFont () {	
+int defaultThemeFont () {
+	if (display.smallFonts) return OS.kThemeSmallSystemFont;
 	return OS.kThemeViewsFont;
 }
 

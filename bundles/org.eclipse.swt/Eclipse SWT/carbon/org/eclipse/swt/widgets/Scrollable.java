@@ -224,7 +224,7 @@ Rect inset () {
 	if ((state & CANVAS) != 0) {
 		Rect rect = new Rect ();
 		int [] outMetric = new int [1];
-		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+		if (drawFocusRing () && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 			rect.left += outMetric [0];
 			rect.top += outMetric [0];

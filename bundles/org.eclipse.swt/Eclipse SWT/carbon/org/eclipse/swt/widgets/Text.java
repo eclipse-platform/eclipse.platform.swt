@@ -423,7 +423,7 @@ Color defaultForeground () {
 }
 
 void drawBackground (int control) {
-	drawFocus (control, hasFocus (), hasBorder (), getParentBackground (), inset ());
+	drawFocus (control, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
@@ -862,11 +862,13 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 Rect inset () {
 	Rect rect = new Rect ();
 	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-	rect.left += outMetric [0];
-	rect.top += outMetric [0];
-	rect.right += outMetric [0];
-	rect.bottom += outMetric [0];
+	if (drawFocusRing ()) {
+		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+		rect.left += outMetric [0];
+		rect.top += outMetric [0];
+		rect.right += outMetric [0];
+		rect.bottom += outMetric [0];
+	}
 	if (hasBorder ()) {
 		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
 		rect.left += outMetric [0];
@@ -952,7 +954,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	drawFocusClipped (handle, part [0] != 0, hasBorder (), getParentBackground (), inset ());
+	drawFocusClipped (handle, part [0] != 0 && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 	OS.TXNDraw (txnObject, 0);
 	OS.TXNFocus (txnObject, part [0] != 0);
 	return OS.noErr;

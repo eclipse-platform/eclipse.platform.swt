@@ -201,7 +201,7 @@ void createScrolledHandle (int parentHandle) {
 void drawBackground (int control) {
 	if (control == scrolledHandle) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			drawFocus (control, hasFocus (), hasBorder (), getParentBackground (), inset ());
+			drawFocus (control, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 		} else {
 			drawBackground (control, getParentBackground ());			
 		}
@@ -356,7 +356,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 				short [] part = new short [1];
 				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-				drawFocusClipped (scrolledHandle, part [0] != 0, hasBorder (), getParentBackground (), inset ());
+				drawFocusClipped (scrolledHandle, part [0] != 0 && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 			}
 		}
 		return OS.noErr;

@@ -171,6 +171,10 @@ public class Display extends Device {
 	/* Focus */
 	boolean ignoreFocus;
 	
+	/* Fonts */
+	boolean smallFonts;
+	boolean noFocusRing;
+
 	/* Keyboard */
 	int kchrPtr;
 	int [] kchrState = new int [1];
@@ -1749,6 +1753,7 @@ protected void init () {
 	initializeCallbacks ();
 	initializeInsets ();
 	initializeWidgetTable ();
+	initializeFonts ();
 }
 	
 void initializeCallbacks () {
@@ -1846,6 +1851,12 @@ void initializeCallbacks () {
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 	};
 	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
+}
+
+void initializeFonts () {
+	//TEMPORARY CODE
+	smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
+	noFocusRing = System.getProperty("org.eclipse.swt.internal.carbon.noFocusRing") != null;
 }
 
 void initializeInsets () {

@@ -121,6 +121,7 @@ public class OS {
 	public static final int kControlContentIconRef = 132;
 	public static final int kControlContentMetaPart = -2;
 	public static final int kControlContentTextOnly = 0;
+	public static final int kControlDataBrowserIncludesFrameAndFocusTag = ('b'<<24) + ('r'<<16) + ('d'<<8) + 'r';
 	public static final int kControlDownButtonPart = 21;
 	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlEditTextSingleLineTag = ('s'<<24) + ('g'<<16) + ('l'<<8) + 'c';
@@ -360,6 +361,7 @@ public class OS {
 	public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);	
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
+	public static final int kHIComboBoxNumVisibleItemsTag = ('c'<<24) + ('b'<<16) + ('n'<<8) + 'i';
 	public static final int kHICommandFromMenu = 1 << 0;
 	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kHIViewZOrderAbove = 1;
