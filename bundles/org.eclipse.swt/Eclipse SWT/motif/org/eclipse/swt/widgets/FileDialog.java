@@ -198,13 +198,11 @@ void extractValues() {
 }
 /**
  * Returns the path of the first file that was
- * selected in the dialog relative to the filter path,
- * or empty string if the dialog was cancelled.
+ * selected in the dialog relative to the filter path
  * 
  * @return the relative path of the file
  */
 public String getFileName () {
-	if (cancel) return "";
 	return fileName;
 }
 
