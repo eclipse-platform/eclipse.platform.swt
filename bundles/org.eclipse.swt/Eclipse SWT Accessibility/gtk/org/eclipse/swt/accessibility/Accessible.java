@@ -59,6 +59,7 @@ public class Accessible {
 	 * @see #removeAccessibleListener
 	 */
 	public void addAccessibleListener (AccessibleListener listener) {
+		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		accessibleListeners.addElement (listener);	
 	}
@@ -85,8 +86,15 @@ public class Accessible {
 	 * @see #removeAccessibleControlListener
 	 */
 	public void addAccessibleControlListener (AccessibleControlListener listener) {
+		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		controlListeners.addElement (listener);		
+	}
+	
+	/* checkWidget was copied from Widget, and rewritten to work in this package */
+	void checkWidget () {
+		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		if (control.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	}
 	
 	AccessibleControlListener[] getControlListeners () {
@@ -99,19 +107,6 @@ public class Accessible {
 		AccessibleListener[] result = new AccessibleListener [accessibleListeners.size ()];
 		accessibleListeners.copyInto (result);
 		return result;
-	}
-	
-	/**
-	 * Invokes platform specific functionality to dispose an accessible object.
-	 * <p>
-	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	 * API for <code>Accessible</code>. It is marked public only so that it
-	 * can be shared within the packages provided by SWT. It is not
-	 * available on all platforms, and should never be called from
-	 * application code.
-	 * </p>
-	 */
-	public void internal_dispose_Accessible () {
 	}
 	
 	/**	 
@@ -131,10 +126,11 @@ public class Accessible {
 		return new Accessible (control, control.handle);
 	}
 
-	public static Accessible internal_new_Accessible (Control control, int handle) {
-		return new Accessible (control, handle);
+	/* isValidThread was copied from Widget, and rewritten to work in this package */
+	boolean isValidThread () {
+		return control.getDisplay ().getThread () == Thread.currentThread ();
 	}
-
+	
 	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notifed when an accessible client asks for custom control
@@ -155,6 +151,7 @@ public class Accessible {
 	 * @see #addAccessibleControlListener
 	 */
 	public void removeAccessibleControlListener (AccessibleControlListener listener) {
+		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		controlListeners.remove (listener);
 	}
@@ -179,6 +176,7 @@ public class Accessible {
 	 * @see #addDisposeListener
 	 */
 	public void removeAccessibleListener (AccessibleListener listener) {
+		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		accessibleListeners.remove (listener);
 	}
@@ -195,6 +193,7 @@ public class Accessible {
 	 * </ul>
 	 */
 	public void setFocus (int childID) {
+		checkWidget ();
 		if (accessibleObject != null) {
 			accessibleObject.setFocusToChild (childID);
 		}
