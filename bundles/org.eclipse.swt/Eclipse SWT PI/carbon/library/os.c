@@ -4192,6 +4192,18 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(GetLastUserEventTime)
 }
 #endif
 
+#ifndef NO_GetMBarHeight
+JNIEXPORT jint JNICALL OS_NATIVE(GetMBarHeight)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GetMBarHeight\n")
+	rc = (jint)GetMBarHeight();
+	NATIVE_EXIT(env, that, "GetMBarHeight\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetMainDevice
 JNIEXPORT jint JNICALL OS_NATIVE(GetMainDevice)
 	(JNIEnv *env, jclass that)
@@ -4341,6 +4353,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetMenuTrackingData)
 	rc = (jint)GetMenuTrackingData((MenuRef)arg0, lparg1);
 	if (arg1) setMenuTrackingDataFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "GetMenuTrackingData\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetMenuWidth
+JNIEXPORT jshort JNICALL OS_NATIVE(GetMenuWidth)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jshort rc;
+	NATIVE_ENTER(env, that, "GetMenuWidth\n")
+	rc = (jshort)GetMenuWidth((MenuRef)arg0);
+	NATIVE_EXIT(env, that, "GetMenuWidth\n")
 	return rc;
 }
 #endif

@@ -200,6 +200,7 @@ public void dispose () {
 * Not currently used.
 */
 Rectangle getBounds () {
+//	checkWidget ();
 	parent.forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (parent.handle, rect);

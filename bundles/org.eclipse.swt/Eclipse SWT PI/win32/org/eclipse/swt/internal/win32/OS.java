@@ -427,6 +427,7 @@ public class OS {
 	public static final int ICM_NOTOPEN = 0x0;
 	public static final int ICON_BIG = 0x1;
 	public static final int ICON_SMALL = 0x0;
+	public static final int I_IMAGECALLBACK = -1;
 	public static final int I_IMAGENONE = -2;
 	public static final int IDABORT = 0x3;
 	public static final int IDB_STD_SMALL_COLOR = 0x0;
@@ -569,6 +570,7 @@ public class OS {
 	public static final int LVM_HITTEST = 0x1012;
 	public static final int LVM_INSERTCOLUMN = IsUnicode ? 0x1061 : 0x101b;
 	public static final int LVM_INSERTITEM = IsUnicode ? 0x104d : 0x1007;
+	public static final int LVM_REDRAWITEMS = LVM_FIRST + 21;
 	public static final int LVM_SCROLL = 0x1014;
 	public static final int LVM_SETBKCOLOR = 0x1001;
 	public static final int LVM_SETCALLBACKMASK = LVM_FIRST + 11;

@@ -865,7 +865,7 @@ public Point getSize () {
 	OS.GetMenuItemRect (hWnd, handle, count - 1, rect);
 	OS.MapWindowPoints (0, parent.handle, rect, 2);
 	int width = rect.right + 4;
-	int height =  rect.bottom + 4;
+	int height = rect.bottom + 4;
 	return new Point (width, height);
 }
 

@@ -940,6 +940,7 @@ public static final native int GetKeyboardFocus(int wHandle, int[] cHandle);
 public static final native double GetLastUserEventTime();
 public static final native int GetMainDevice();
 public static final native int GetMainEventQueue();
+public static final native int GetMBarHeight();
 public static final native int GetMenuCommandMark(int theMenu, int commandId, char[] outMark);
 public static final native int GetMenuEventTarget(int cHandle);
 public static final native int GetMenuFont(int inMenu, short[] outFontID, short[] outFontSize);
@@ -949,6 +950,7 @@ public static final native int GetMenuItemCommandID(int inMenu, short inItem, in
 public static final native int GetMenuItemHierarchicalMenu(int inMenu, short inItem, int []outHierMenu);
 public static final native int GetMenuItemRefCon(int inMenu, short intItem, int[] outRefCon);
 public static final native int GetMenuTrackingData(int menu, MenuTrackingData outData);
+public static final native short GetMenuWidth(int inMenu);
 public static final native void GetMouse(Point where);
 public static final native int GetNextDevice(int curDevice);
 public static final native void GetPixBounds(int pHandle, Rect bounds);

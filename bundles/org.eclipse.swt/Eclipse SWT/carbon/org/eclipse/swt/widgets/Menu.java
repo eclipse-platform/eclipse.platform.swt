@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.internal.carbon.FontInfo;
+import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -499,6 +500,21 @@ public Menu getParentMenu () {
 public Shell getShell () {
 	checkWidget ();
 	return parent.getShell ();
+}
+
+public Point getSize () {
+	if ((style & SWT.BAR) != 0) {
+		int height = OS.GetMBarHeight ();
+		int gdevice = OS.GetMainDevice ();
+		int [] ptr = new int [1];
+		OS.memcpy (ptr, gdevice, 4);
+		GDevice device = new GDevice ();
+		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		return new Point (device.right - device.left, height);
+	}
+	int width = OS.GetMenuWidth (handle);
+	int height = OS.GetMenuHeight (handle);
+	return new Point (width, height);
 }
 
 /**
