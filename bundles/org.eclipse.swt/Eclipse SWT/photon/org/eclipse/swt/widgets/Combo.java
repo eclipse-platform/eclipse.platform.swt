@@ -939,6 +939,8 @@ public void remove (String string) {
 public void removeAll () {
 	checkWidget();
 	OS.PtListDeleteAllItems (handle);
+	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
+	sendEvent (SWT.Modify);
 }
 
 /**
@@ -1079,6 +1081,7 @@ public void setItems (String [] items) {
 		OS.free (itemsPtr [i]);
 	}
 	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
+	sendEvent (SWT.Modify);
 }
 
 /**

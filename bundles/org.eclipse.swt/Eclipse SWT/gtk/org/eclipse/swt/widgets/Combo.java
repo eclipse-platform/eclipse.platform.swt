@@ -1074,9 +1074,7 @@ public void setItems (String [] items) {
 		}
 		glist = new_glist;
 	}
-	OS.gtk_signal_handler_block_by_data (entryHandle, SWT.Modify);
 	OS.gtk_editable_delete_text (entryHandle, 0, -1);
-	OS.gtk_signal_handler_unblock_by_data (entryHandle, SWT.Modify);
 }
 
 /**
