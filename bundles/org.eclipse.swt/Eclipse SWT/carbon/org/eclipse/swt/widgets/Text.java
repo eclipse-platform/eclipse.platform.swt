@@ -318,7 +318,7 @@ void createHandle () {
 		OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
 		OS.HIViewRemoveFromSuperview (scrollBar [0]);
 		OS.HIViewAddSubview (handle, scrollBar [0]);
-	}	
+	}
 	
 	/* Configure the TXNOBject */
 	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNDisableDragAndDropTag}, new int [] {1});
@@ -329,6 +329,14 @@ void createHandle () {
 	OS.memcpy (ptr, rect, Rect.sizeof);
 	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
 	OS.DisposePtr (ptr);
+	
+	/*
+	* Bug in the Macintosh.  The caret height is too small until some text is set in the
+	* TXNObject.  The fix is to temporary change the text.
+	*/
+	char [] buffer = new char [] {' '};
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
 }
 
 ScrollBar createScrollBar (int type) {
