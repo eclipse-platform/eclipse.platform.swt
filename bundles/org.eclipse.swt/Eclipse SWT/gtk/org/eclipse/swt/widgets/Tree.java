@@ -932,6 +932,29 @@ void setFontDescription (int font) {
 }
 
 /**
+ * Display a mark indicating the point at which an item will be inserted.
+ * The drop insert item has a visual hint to show where a dragged item 
+ * will be inserted when dropped on the tree.
+ * 
+ * @param item the insert item.  Null will clear the insertion mark.
+ * @param after true places the insert mark above 'item'. false places 
+ *	the insert mark below 'item'.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setInsertMark(TreeItem item, boolean before){
+	checkWidget();
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	// This needs to be implemented
+}
+
+/**
  * Selects all the items in the receiver.
  *
  * @exception SWTException <ul>
