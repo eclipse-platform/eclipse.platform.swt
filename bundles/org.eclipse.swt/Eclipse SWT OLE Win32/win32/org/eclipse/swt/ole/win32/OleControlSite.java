@@ -456,7 +456,7 @@ protected int getLicenseInfo(GUID clsid) {
 		return 0;
 	}
 	int[] pBstrKey = new int[1];
-	if (licinfo != null && licinfo.fRuntimeKeyAvail != 0) {
+	if (licinfo != null && licinfo.fRuntimeKeyAvail) {
 		if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
 			classFactory.Release();
 			return pBstrKey[0];

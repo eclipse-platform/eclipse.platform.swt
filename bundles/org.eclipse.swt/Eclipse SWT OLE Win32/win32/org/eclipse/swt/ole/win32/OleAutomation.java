@@ -158,8 +158,8 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	int[] ppVarDesc = new int[1];
 	int rc = objITypeInfo.GetVarDesc(index, ppVarDesc);
 	if (rc != OLE.S_OK) return null;
-	VARDESC1 vardesc = new VARDESC1();
-	COM.MoveMemory(vardesc, ppVarDesc[0], VARDESC1.sizeof);
+	VARDESC vardesc = new VARDESC();
+	COM.MoveMemory(vardesc, ppVarDesc[0], VARDESC.sizeof);
 	
 	OlePropertyDescription data = new OlePropertyDescription();
 	data.id = vardesc.memid;
@@ -183,8 +183,8 @@ public OleFunctionDescription getFunctionDescription(int index) {
 	int[] ppFuncDesc = new int[1];
 	int rc = objITypeInfo.GetFuncDesc(index, ppFuncDesc);
 	if (rc != OLE.S_OK) return null;
-	FUNCDESC1 funcdesc = new FUNCDESC1();
-	COM.MoveMemory(funcdesc, ppFuncDesc[0], FUNCDESC1.sizeof);
+	FUNCDESC funcdesc = new FUNCDESC();
+	COM.MoveMemory(funcdesc, ppFuncDesc[0], FUNCDESC.sizeof);
 	
 	OleFunctionDescription data = new OleFunctionDescription();
 	

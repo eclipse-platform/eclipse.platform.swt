@@ -8,14 +8,15 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.ole.win32;
 
-public final class DVTARGETDEVICE {
-	public int tdSize; 
-	public short tdDriverNameOffset; 
-	public short tdDeviceNameOffset;
-	public short tdPortNameOffset;
-	public short tdExtDevmodeOffset;
-	public byte[] tdData = new byte[1];
-	public static final int sizeof = 13;
-}
+#ifndef INC_com_H
+#define INC_com_H
+
+#include "os_structs.h"
+
+#include "com_custom.h"
+
+#undef CoCreateInstance_FUNC
+#include "com_stats.h"
+
+#endif /* INC_com_H */

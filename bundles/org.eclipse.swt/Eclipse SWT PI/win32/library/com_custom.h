@@ -8,14 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.ole.win32;
 
-public final class DVTARGETDEVICE {
-	public int tdSize; 
-	public short tdDriverNameOffset; 
-	public short tdDeviceNameOffset;
-	public short tdPortNameOffset;
-	public short tdExtDevmodeOffset;
-	public byte[] tdData = new byte[1];
-	public static final int sizeof = 13;
-}
+/* Libraries for dynamic loaded functions */
+#define CreateStdAccessibleObject_LIB "oleacc.dll"
+#define LresultFromObject_LIB "oleacc.dll"

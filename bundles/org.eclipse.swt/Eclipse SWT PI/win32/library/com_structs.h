@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2003 IBM Corporation and others.
+* Copyright (c) 2000, 2004 IBM Corporation and others.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Common Public License v1.0
 * which accompanies this distribution, and is available at
@@ -9,113 +9,209 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "os_structs.h"
-
-/* used to cast Vtabl entries */
-
-/* P_OLE_FN_x typedef for an OLE function returning int with x params*/
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_9)(jint, jint, jint, jint, jint, jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_8)(jint, jint, jint, jint, jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_7)(jint, jint, jint, jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_6)(jint, jint, jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_5)(jint, jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_4)(jint, jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_3)(jint, jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_2)(jint, jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_1)(jint);
-typedef jint (STDMETHODCALLTYPE *P_OLE_FN_0)(void);
+#include "com.h"
 
 #ifndef NO_CAUUID
+void cacheCAUUIDFields(JNIEnv *env, jobject lpObject);
 CAUUID *getCAUUIDFields(JNIEnv *env, jobject lpObject, CAUUID *lpStruct);
 void setCAUUIDFields(JNIEnv *env, jobject lpObject, CAUUID *lpStruct);
-#endif /* NO_CAUUID */
+#define CAUUID_sizeof() sizeof(CAUUID)
+#else
+#define cacheCAUUIDFields(a,b)
+#define getCAUUIDFields(a,b,c) NULL
+#define setCAUUIDFields(a,b,c)
+#define CAUUID_sizeof() 0
+#endif
 
 #ifndef NO_CONTROLINFO
+void cacheCONTROLINFOFields(JNIEnv *env, jobject lpObject);
 CONTROLINFO *getCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lpStruct);
 void setCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lpStruct);
-#endif /* NO_CONTROLINFO */
+#define CONTROLINFO_sizeof() sizeof(CONTROLINFO)
+#else
+#define cacheCONTROLINFOFields(a,b)
+#define getCONTROLINFOFields(a,b,c) NULL
+#define setCONTROLINFOFields(a,b,c)
+#define CONTROLINFO_sizeof() 0
+#endif
 
 #ifndef NO_COSERVERINFO
+void cacheCOSERVERINFOFields(JNIEnv *env, jobject lpObject);
 COSERVERINFO *getCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct);
 void setCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct);
-#endif /* NO_COSERVERINFO */
+#define COSERVERINFO_sizeof() sizeof(COSERVERINFO)
+#else
+#define cacheCOSERVERINFOFields(a,b)
+#define getCOSERVERINFOFields(a,b,c) NULL
+#define setCOSERVERINFOFields(a,b,c)
+#define COSERVERINFO_sizeof() 0
+#endif
 
 #ifndef NO_DISPPARAMS
+void cacheDISPPARAMSFields(JNIEnv *env, jobject lpObject);
 DISPPARAMS *getDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct);
 void setDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct);
-#endif /* NO_DISPPARAMS */
+#define DISPPARAMS_sizeof() sizeof(DISPPARAMS)
+#else
+#define cacheDISPPARAMSFields(a,b)
+#define getDISPPARAMSFields(a,b,c) NULL
+#define setDISPPARAMSFields(a,b,c)
+#define DISPPARAMS_sizeof() 0
+#endif
 
 #ifndef NO_DVTARGETDEVICE
+void cacheDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject);
 DVTARGETDEVICE *getDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct);
 void setDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct);
-#endif /* NO_DVTARGETDEVICE */
+#define DVTARGETDEVICE_sizeof() sizeof(DVTARGETDEVICE)
+#else
+#define cacheDVTARGETDEVICEFields(a,b)
+#define getDVTARGETDEVICEFields(a,b,c) NULL
+#define setDVTARGETDEVICEFields(a,b,c)
+#define DVTARGETDEVICE_sizeof() 0
+#endif
 
 #ifndef NO_EXCEPINFO
+void cacheEXCEPINFOFields(JNIEnv *env, jobject lpObject);
 EXCEPINFO *getEXCEPINFOFields(JNIEnv *env, jobject lpObject, EXCEPINFO *lpStruct);
 void setEXCEPINFOFields(JNIEnv *env, jobject lpObject, EXCEPINFO *lpStruct);
-#endif /* NO_EXCEPINFO */
+#define EXCEPINFO_sizeof() sizeof(EXCEPINFO)
+#else
+#define cacheEXCEPINFOFields(a,b)
+#define getEXCEPINFOFields(a,b,c) NULL
+#define setEXCEPINFOFields(a,b,c)
+#define EXCEPINFO_sizeof() 0
+#endif
 
 #ifndef NO_FORMATETC
+void cacheFORMATETCFields(JNIEnv *env, jobject lpObject);
 FORMATETC *getFORMATETCFields(JNIEnv *env, jobject lpObject, FORMATETC *lpStruct);
 void setFORMATETCFields(JNIEnv *env, jobject lpObject, FORMATETC *lpStruct);
-#endif /* NO_FORMATETC */
+#define FORMATETC_sizeof() sizeof(FORMATETC)
+#else
+#define cacheFORMATETCFields(a,b)
+#define getFORMATETCFields(a,b,c) NULL
+#define setFORMATETCFields(a,b,c)
+#define FORMATETC_sizeof() 0
+#endif
 
-#ifndef NO_FUNCDESC1
-FUNCDESC *getFUNCDESC1Fields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
-void setFUNCDESC1Fields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
-#endif /* NO_FUNCDESC1 */
-
-#ifndef NO_FUNCDESC2
-FUNCDESC *getFUNCDESC2Fields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
-void setFUNCDESC2Fields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
-#endif /* NO_FUNCDESC2 */
+#ifndef NO_FUNCDESC
+void cacheFUNCDESCFields(JNIEnv *env, jobject lpObject);
+FUNCDESC *getFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
+void setFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct);
+#define FUNCDESC_sizeof() sizeof(FUNCDESC)
+#else
+#define cacheFUNCDESCFields(a,b)
+#define getFUNCDESCFields(a,b,c) NULL
+#define setFUNCDESCFields(a,b,c)
+#define FUNCDESC_sizeof() 0
+#endif
 
 #ifndef NO_GUID
+void cacheGUIDFields(JNIEnv *env, jobject lpObject);
 GUID *getGUIDFields(JNIEnv *env, jobject lpObject, GUID *lpStruct);
 void setGUIDFields(JNIEnv *env, jobject lpObject, GUID *lpStruct);
-#endif /* NO_GUID */
+#define GUID_sizeof() sizeof(GUID)
+#else
+#define cacheGUIDFields(a,b)
+#define getGUIDFields(a,b,c) NULL
+#define setGUIDFields(a,b,c)
+#define GUID_sizeof() 0
+#endif
 
 #ifndef NO_LICINFO
+void cacheLICINFOFields(JNIEnv *env, jobject lpObject);
 LICINFO *getLICINFOFields(JNIEnv *env, jobject lpObject, LICINFO *lpStruct);
 void setLICINFOFields(JNIEnv *env, jobject lpObject, LICINFO *lpStruct);
-#endif /* NO_LICINFO */
+#define LICINFO_sizeof() sizeof(LICINFO)
+#else
+#define cacheLICINFOFields(a,b)
+#define getLICINFOFields(a,b,c) NULL
+#define setLICINFOFields(a,b,c)
+#define LICINFO_sizeof() 0
+#endif
 
 #ifndef NO_OLECMD
+void cacheOLECMDFields(JNIEnv *env, jobject lpObject);
 OLECMD *getOLECMDFields(JNIEnv *env, jobject lpObject, OLECMD *lpStruct);
 void setOLECMDFields(JNIEnv *env, jobject lpObject, OLECMD *lpStruct);
-#endif /* NO_OLECMD */
+#define OLECMD_sizeof() sizeof(OLECMD)
+#else
+#define cacheOLECMDFields(a,b)
+#define getOLECMDFields(a,b,c) NULL
+#define setOLECMDFields(a,b,c)
+#define OLECMD_sizeof() 0
+#endif
 
 #ifndef NO_OLECMDTEXT
+void cacheOLECMDTEXTFields(JNIEnv *env, jobject lpObject);
 OLECMDTEXT *getOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct);
 void setOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct);
-#endif /* NO_OLECMDTEXT */
+#define OLECMDTEXT_sizeof() sizeof(OLECMDTEXT)
+#else
+#define cacheOLECMDTEXTFields(a,b)
+#define getOLECMDTEXTFields(a,b,c) NULL
+#define setOLECMDTEXTFields(a,b,c)
+#define OLECMDTEXT_sizeof() 0
+#endif
 
 #ifndef NO_OLEINPLACEFRAMEINFO
+void cacheOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject);
 OLEINPLACEFRAMEINFO *getOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpStruct);
 void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpStruct);
-#endif /* NO_OLEINPLACEFRAMEINFO */
+#define OLEINPLACEFRAMEINFO_sizeof() sizeof(OLEINPLACEFRAMEINFO)
+#else
+#define cacheOLEINPLACEFRAMEINFOFields(a,b)
+#define getOLEINPLACEFRAMEINFOFields(a,b,c) NULL
+#define setOLEINPLACEFRAMEINFOFields(a,b,c)
+#define OLEINPLACEFRAMEINFO_sizeof() 0
+#endif
 
 #ifndef NO_STATSTG
+void cacheSTATSTGFields(JNIEnv *env, jobject lpObject);
 STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct);
 void setSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct);
-#endif /* NO_STATSTG */
+#define STATSTG_sizeof() sizeof(STATSTG)
+#else
+#define cacheSTATSTGFields(a,b)
+#define getSTATSTGFields(a,b,c) NULL
+#define setSTATSTGFields(a,b,c)
+#define STATSTG_sizeof() 0
+#endif
 
 #ifndef NO_STGMEDIUM
+void cacheSTGMEDIUMFields(JNIEnv *env, jobject lpObject);
 STGMEDIUM *getSTGMEDIUMFields(JNIEnv *env, jobject lpObject, STGMEDIUM *lpStruct);
 void setSTGMEDIUMFields(JNIEnv *env, jobject lpObject, STGMEDIUM *lpStruct);
-#endif /* NO_STGMEDIUM */
+#define STGMEDIUM_sizeof() sizeof(STGMEDIUM)
+#else
+#define cacheSTGMEDIUMFields(a,b)
+#define getSTGMEDIUMFields(a,b,c) NULL
+#define setSTGMEDIUMFields(a,b,c)
+#define STGMEDIUM_sizeof() 0
+#endif
 
 #ifndef NO_TYPEATTR
+void cacheTYPEATTRFields(JNIEnv *env, jobject lpObject);
 TYPEATTR *getTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct);
 void setTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct);
-#endif /* NO_TYPEATTR */
+#define TYPEATTR_sizeof() sizeof(TYPEATTR)
+#else
+#define cacheTYPEATTRFields(a,b)
+#define getTYPEATTRFields(a,b,c) NULL
+#define setTYPEATTRFields(a,b,c)
+#define TYPEATTR_sizeof() 0
+#endif
 
-#ifndef NO_VARDESC1
-VARDESC *getVARDESC1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
-void setVARDESC1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
-#endif /* NO_VARDESC1 */
+#ifndef NO_VARDESC
+void cacheVARDESCFields(JNIEnv *env, jobject lpObject);
+VARDESC *getVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
+void setVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
+#define VARDESC_sizeof() sizeof(VARDESC)
+#else
+#define cacheVARDESCFields(a,b)
+#define getVARDESCFields(a,b,c) NULL
+#define setVARDESCFields(a,b,c)
+#define VARDESC_sizeof() 0
+#endif
 
-#ifndef NO_VARDESC2
-VARDESC *getVARDESC2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
-void setVARDESC2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
-#endif /* NO_VARDESC2 */
