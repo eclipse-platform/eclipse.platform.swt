@@ -24,7 +24,7 @@ import org.eclipse.swt.*;
  * for user-designed dialogs. Such dialogs usually consist
  * of a Shell with child widgets. The basic template for a
  * user-defined dialog typically looks something like this:
- * <code>
+ * <pre><code>
  * public class MyDialog extends Dialog {
  *	Object result;
  *		
@@ -47,7 +47,7 @@ import org.eclipse.swt.*;
  *		return result;
  *	}
  * }
- * </code>
+ * </pre></code>
  * <p>
  * Note: The <em>modality</em> styles supported by this class
  * must be treated as <em>HINT</em>s, because not all are
