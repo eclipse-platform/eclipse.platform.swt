@@ -7,7 +7,6 @@
 
    <requires>
       <import plugin="org.eclipse.swt" export="true"/>
-      <import plugin="org.apache.ant" export="true"/>
    </requires>
 
 </plugin>
