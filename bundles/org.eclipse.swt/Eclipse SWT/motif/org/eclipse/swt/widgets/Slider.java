@@ -312,7 +312,7 @@ public void removeSelectionListener(SelectionListener listener) {
 void sendScrollEvent (int detail) {
 	Event event = new Event ();
 	event.detail = detail;
-	sendEvent (SWT.Selection, event);
+	postEvent (SWT.Selection, event);
 }
 /**
  * Sets the amount that the receiver's value will be
