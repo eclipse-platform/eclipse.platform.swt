@@ -93,10 +93,10 @@ public class ViewForm2 extends Composite {
 	private Control content;
 	
 	// collapse/expand arrow
-	private Rectangle minRect = new Rectangle(0, 0, 0, 0);
-	private int minImageState = NORMAL;
-	private boolean minimized = false;
-	private boolean showMin = false;
+	private Rectangle maxRect = new Rectangle(0, 0, 0, 0);
+	private int maxImageState = NORMAL;
+	private boolean maximized = false;
+	private boolean showMax = false;
 	
 	// Configuration and state info
 	private boolean separateTopCenter = false;
@@ -249,10 +249,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimHeight = height + borderTop + borderBottom;
 	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
 }
-void drawMinimize(GC gc) {
+void drawMaximize(GC gc) {
 	Color foreground = null;
 	Color background = null;
-	switch (minImageState) {
+	switch (maxImageState) {
 		case NORMAL:
 			foreground = borderColor2;
 			background = borderColor3;
@@ -262,23 +262,23 @@ void drawMinimize(GC gc) {
 			background = borderColor2;
 			break;
 		case SELECTED:
-			foreground = getDisplay().getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
-			background = getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT);
+			foreground = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+			background = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
 			break;
 	}
 	
-	int x = minRect.x + (minRect.width - 10)/2;
+	int x = maxRect.x + (maxRect.width - 10)/2;
 	gc.setBackground(background);
-	gc.fillRectangle(minRect);
-	if (minimized) {
+	gc.fillRectangle(maxRect);
+	if (maximized) {
 		gc.setBackground(foreground);
-		gc.fillPolygon(new int[] {x , minRect.y, x + 11, minRect.y,
-				                  x + 5, minRect.y + 6});
+		gc.fillPolygon(new int[] {x , maxRect.y, x + 11, maxRect.y,
+				                  x + 5, maxRect.y + 6});
 		
 	} else {
 		gc.setBackground(foreground);
-		gc.fillPolygon(new int[] {x, minRect.y + 6, x + 12, minRect.y + 6,
-				                  x + 6, minRect.y - 1});
+		gc.fillPolygon(new int[] {x, maxRect.y + 6, x + 12, maxRect.y + 6,
+				                  x + 6, maxRect.y - 1});
 	}
 }
 public Rectangle getClientArea() {
@@ -313,16 +313,16 @@ public Control getContent() {
  * 
  * @since 3.0
  */
-public boolean getMinimized() {
+public boolean getMaximized() {
 	checkWidget();
-	return minimized;
+	return maximized;
 }
 /**
  * @since 3.0
  */
-public boolean getMinimizeVisible() {
+public boolean getMaximizeVisible() {
 	checkWidget();
-	return showMin;
+	return showMax;
 }
 /**
 * Returns Control that appears in the top center of the pane.
@@ -359,7 +359,7 @@ public void layout (boolean changed) {
 	Rectangle rect = getClientArea();
 	int y = rect.y + marginHeight;
 		
-	if (showMin && minimized) {
+	if (showMax && maximized) {
 		if (topLeft != null && !topLeft.isDisposed()) {
 			topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0,0);
 		}
@@ -436,9 +436,9 @@ public void layout (boolean changed) {
 		}
 	}
 
-	minRect = new Rectangle(0, 0, 0, 0);
-	if (showMin && (topLeft != null || topRight != null || topCenter != null)) {
-		minRect = new Rectangle(borderLeft, y, rect.width - borderLeft - borderRight, 6);
+	maxRect = new Rectangle(0, 0, 0, 0);
+	if (showMax && (topLeft != null || topRight != null || topCenter != null)) {
+		maxRect = new Rectangle(borderLeft, y, rect.width - borderLeft - borderRight, 6);
 		y += 7;
 	}
 	
@@ -470,42 +470,42 @@ void onDispose() {
 }
 void onMouseDown(Event e) {
 	if (e.button != 1) return;
-	minImageState = SELECTED;
-	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	maxImageState = SELECTED;
+	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 	update();
 }
 void onMouseExit(Event e) {
-	if (!showMin) return;
-	if (minImageState != NORMAL) {
-		minImageState = NORMAL;
-		redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	if (!showMax) return;
+	if (maxImageState != NORMAL) {
+		maxImageState = NORMAL;
+		redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 		update();
 	}
 }
 void onMouseMove(Event e) {
-	if (minRect.contains(e.x, e.y)) {
-		if (minImageState != SELECTED && minImageState != HOT) {
-			minImageState = HOT;
-			redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	if (maxRect.contains(e.x, e.y)) {
+		if (maxImageState != SELECTED && maxImageState != HOT) {
+			maxImageState = HOT;
+			redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 			update();
 		}
 	} else {
-		if (minImageState != NORMAL) {
-			minImageState = NORMAL;
-			redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+		if (maxImageState != NORMAL) {
+			maxImageState = NORMAL;
+			redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 			update();
 		}
 	}
 }
 void onMouseUp(Event e) {
-	if (!showMin || e.button != 1) return;
-	if (!minRect.contains(e.x, e.y)) return;
-	boolean selected = minImageState == SELECTED;
-	minImageState = HOT;
-	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	if (!showMax || e.button != 1) return;
+	if (!maxRect.contains(e.x, e.y)) return;
+	boolean selected = maxImageState == SELECTED;
+	maxImageState = HOT;
+	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 	update();
 	if (!selected) return;
-	minimized = !minimized;
+	maximized = !maximized;
 	layout();
 	redraw();
 }
@@ -531,13 +531,13 @@ void onPaint(GC gc) {
 			gc.drawLine(size.x - 1, 2, size.x - 1, size.y - 2);
 		}
 	}
-	if (showMin) drawMinimize(gc);
+	if (showMax) drawMaximize(gc);
 	
 	gc.setForeground(gcForeground);
 	gc.setBackground(gcBackground);
 }
 void onResize() {
-	Rectangle oldCollapseRect = new Rectangle(minRect.x, minRect.y, minRect.width, minRect.height);
+	Rectangle oldCollapseRect = new Rectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height);
 	layout();
 	
 	Rectangle area = super.getClientArea();
@@ -561,11 +561,11 @@ void onResize() {
 		}
 		redraw(area.x, area.y + area.height - height, area.width, height, false);
 	}
-	if (showMin && (oldCollapseRect.width != minRect.width || oldCollapseRect.y != minRect.y)) {
-		int left = Math.min(oldCollapseRect.x, minRect.x);
-		int top = Math.min(oldCollapseRect.y, minRect.y);
-		int right = Math.max(oldCollapseRect.x + oldCollapseRect.width, minRect.x + minRect.width);
-		int bottom = Math.max(oldCollapseRect.y + oldCollapseRect.height, minRect.y + minRect.height);
+	if (showMax && (oldCollapseRect.width != maxRect.width || oldCollapseRect.y != maxRect.y)) {
+		int left = Math.min(oldCollapseRect.x, maxRect.x);
+		int top = Math.min(oldCollapseRect.y, maxRect.y);
+		int right = Math.max(oldCollapseRect.x + oldCollapseRect.width, maxRect.x + maxRect.width);
+		int bottom = Math.max(oldCollapseRect.y + oldCollapseRect.height, maxRect.y + maxRect.height);
 		redraw(left, top, right - left, bottom - top, false);
 	}
 	oldArea = area;
@@ -625,11 +625,11 @@ public void setLayout (Layout layout) {
  * 
  * @since 3.0
  */
-public void setMinimizeVisible(boolean visible) {
+public void setMaximizeVisible(boolean visible) {
 	checkWidget();
-	if (showMin == visible) return;
+	if (showMax == visible) return;
 	// display maximize button
-	showMin = visible;
+	showMax = visible;
 	layout();
 	redraw();
 }
@@ -637,10 +637,10 @@ public void setMinimizeVisible(boolean visible) {
  * 
  * @since 3.0
  */
-public void setMinimized(boolean minimize) {
+public void setMaximized(boolean minimize) {
 	checkWidget ();
-	if (this.minimized == minimize) return;
-	this.minimized = minimize;
+	if (this.maximized == minimize) return;
+	this.maximized = minimize;
 	layout();
 	redraw();
 	update();
