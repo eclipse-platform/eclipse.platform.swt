@@ -619,8 +619,8 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
-		int newLength = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
-		TableItem [] newItems = new TableItem [newLength];	
+		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
+		TableItem [] newItems = new TableItem [length];	
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -2025,7 +2025,8 @@ public void setItemCount (int count) {
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	if (!isVirtual) setRedraw (false);
 	remove (count, itemCount - 1);
-	TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+	int length = Math.max (4, (count + 3) / 4 * 4);
+	TableItem [] newItems = new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, itemCount);
 	items = newItems;
 	if (isVirtual) {
