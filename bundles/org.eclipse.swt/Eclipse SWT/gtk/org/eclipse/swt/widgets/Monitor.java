@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 2.2
  */
-public class Monitor {	
+public final class Monitor {	
 
 int id;
 Rectangle bounds;
