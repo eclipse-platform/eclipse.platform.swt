@@ -3508,6 +3508,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1user_1data)
 }
 #endif
 
+#ifndef NO_gdk_1window_1hide
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1hide)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1hide_FUNC);
+	gdk_window_hide((GdkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1hide_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1window_1invalidate_1rect
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1invalidate_1rect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2)

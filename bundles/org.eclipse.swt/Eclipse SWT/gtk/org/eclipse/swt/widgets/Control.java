@@ -2505,7 +2505,7 @@ public void setEnabled (boolean enabled) {
 				changes.stack_mode = OS.Above;
 				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
 			}
-			OS.gdk_window_show (enableWindow);
+			if (isVisible ()) OS.gdk_window_show (enableWindow);
 		}
 	}
 	if (fixFocus) fixFocus ();
@@ -2794,6 +2794,7 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
+		if (enableWindow != 0) OS.gdk_window_show (enableWindow);
 		OS.gtk_widget_show (topHandle);
 	} else {
 		/*
@@ -2815,6 +2816,7 @@ public void setVisible (boolean visible) {
 			}
 		}
 		OS.gtk_widget_hide (topHandle);
+		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
 		sendEvent (SWT.Hide);
 	}
 }

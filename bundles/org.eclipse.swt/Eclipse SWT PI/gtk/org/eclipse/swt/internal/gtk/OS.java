@@ -646,6 +646,7 @@ public static final synchronized native int gdk_window_get_origin(int /*long*/ w
 public static final synchronized native int /*long*/ gdk_window_get_parent(int /*long*/ window);
 public static final synchronized native int /*long*/ gdk_window_get_pointer(int /*long*/ window, int[] x, int[] y, int[] mask);
 public static final synchronized native void gdk_window_get_user_data(int /*long*/ window, int /*long*/[] data);
+public static final synchronized native void gdk_window_hide(int /*long*/ window);
 public static final synchronized native void gdk_window_invalidate_rect(int /*long*/ window, GdkRectangle rectangle, boolean invalidate_children);
 public static final synchronized native void gdk_window_invalidate_region(int /*long*/ window, int /*long*/ region, boolean invalidate_children);
 public static final synchronized native void gdk_window_move(int /*long*/ window, int x, int y);
