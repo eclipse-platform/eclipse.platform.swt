@@ -135,8 +135,17 @@ public final class GridData {
 	public static final int GRAB_VERTICAL = 1 << 10;
 	
 	// Style convenience constants
+	/**
+	 * FILL_VERTICAL = VERTICAL_ALIGN_FILL | GRAB_VERTICAL
+	 */	
 	public static final int FILL_VERTICAL = VERTICAL_ALIGN_FILL | GRAB_VERTICAL;
+	/**
+	 * FILL_HORIZONTAL = HORIZONTAL_ALIGN_FILL | GRAB_HORIZONTAL
+	 */	
 	public static final int FILL_HORIZONTAL = HORIZONTAL_ALIGN_FILL | GRAB_HORIZONTAL;
+	/**
+	 * FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL
+	 */	
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
 	// Private
