@@ -559,18 +559,6 @@ public Shell [] getShells () {
 	return result;
 }
 
-public void moveAbove (Control control) {
-	checkWidget();
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	if (window != 0) OS.gdk_window_raise (window);
-}
-
-public void moveBelow (Control control) {
-	checkWidget();
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	if (window != 0) OS.gdk_window_lower (window);
-}
-
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -906,7 +894,8 @@ public void setVisible (boolean visible) {
 	}
 }
 
-void setZOrder () {
+void setZOrder (Control sibling, boolean above) {
+	 setZOrder (sibling, above, false);
 }
 
 boolean traverseEscape () {

@@ -350,18 +350,12 @@ void moveAbove (int child, int sibling) {
 	if (siblingLink == 0 || OS.g_list_next (siblingLink) == 0) {
 		OS.g_list_free_1 (childLink);
 		children = OS.g_list_append (children, childData);
-		int window = OS.GTK_WIDGET_WINDOW (child);
-		if (window != 0) OS.gdk_window_raise (window);
 	} else {
 		temp = OS.g_list_next (siblingLink);
 		OS.g_list_next (childLink, temp);
 		OS.g_list_previous (temp, childLink);
 		OS.g_list_previous (childLink, siblingLink);
 		OS.g_list_next (siblingLink, childLink);
-		
-		//FIXME - not done
-		int window = OS.GTK_WIDGET_WINDOW (child);
-		if (window != 0) OS.gdk_window_raise (window);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);
@@ -393,18 +387,12 @@ void moveBelow (int child, int sibling) {
 	if (siblingLink == 0 || OS.g_list_previous (siblingLink) == 0) {
 		OS.g_list_free_1 (childLink);
 		children = OS.g_list_prepend (children, childData);
-		int window = OS.GTK_WIDGET_WINDOW (child);
-		if (window != 0) OS.gdk_window_lower (window);
 	} else {
 		temp = OS.g_list_previous (siblingLink);
 		OS.g_list_previous (childLink, temp);
 		OS.g_list_next (temp, childLink);
 		OS.g_list_next (childLink, siblingLink);
 		OS.g_list_previous (siblingLink, childLink);
-		
-		//FIXME - not done
-		int window = OS.GTK_WIDGET_WINDOW (child);
-		if (window != 0) OS.gdk_window_lower (window);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);

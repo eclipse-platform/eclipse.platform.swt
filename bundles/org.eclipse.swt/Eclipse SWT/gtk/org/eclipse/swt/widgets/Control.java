@@ -208,7 +208,7 @@ Control computeTabRoot () {
 void createWidget (int index) {
 	super.createWidget (index);
 	setInitialSize ();
-	setZOrder ();
+	setZOrder (null, false);
 }
 
 /**
@@ -561,8 +561,11 @@ public void setSize (int width, int height) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-	if (control != null && parent != control.parent) return;
-	parent.moveAbove (topHandle (), control != null ? control.topHandle () : 0);
+	if (control != null) {
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+	}
+	setZOrder (control, true);
 }
 
 /**
@@ -584,8 +587,11 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-	if (control != null && parent != control.parent) return;
-	parent.moveBelow (topHandle (), control != null ? control.topHandle () : 0);
+	if (control != null) {
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+	}
+	setZOrder (control, false);
 }
 
 /**
@@ -2260,8 +2266,21 @@ public void setVisible (boolean visible) {
 	}
 }
 
-void setZOrder () {
-	parent.moveBelow (topHandle (), 0);
+void setZOrder (Control sibling, boolean above) {
+	 setZOrder (sibling, above, true);
+}
+
+void setZOrder (Control sibling, boolean above, boolean fixChildren) {
+	int topHandle = topHandle ();
+	int siblingHandle = sibling != null ? sibling.topHandle () : 0;
+	int window = OS.GTK_WIDGET_WINDOW (topHandle);
+	if (above) {
+		if (window != 0) OS.gdk_window_raise (window);
+		if (fixChildren) parent.moveAbove (topHandle, siblingHandle);
+	} else {
+		if (window != 0) OS.gdk_window_lower (window);
+		if (fixChildren) parent.moveBelow (topHandle, siblingHandle);
+	}	
 }
 
 void sort (int [] items) {
