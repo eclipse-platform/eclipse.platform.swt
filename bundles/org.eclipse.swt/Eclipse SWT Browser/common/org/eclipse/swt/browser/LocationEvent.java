@@ -30,7 +30,7 @@ public class LocationEvent extends TypedEvent {
 	/** current location */
 	public String location;
 
-	LocationEvent(Widget w) {
-		super(w);
-	}
+LocationEvent(Widget w) {
+	super(w);
+}
 }

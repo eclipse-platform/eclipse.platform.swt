@@ -33,7 +33,7 @@ public class ProgressEvent extends TypedEvent {
 	/** total value */
 	public int total;
 
-	ProgressEvent(Widget w) {
-		super(w);
-	}
+ProgressEvent(Widget w) {
+	super(w);
+}
 }

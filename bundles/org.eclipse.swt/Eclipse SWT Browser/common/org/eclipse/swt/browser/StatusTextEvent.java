@@ -31,7 +31,7 @@ public class StatusTextEvent extends TypedEvent {
 	/** status text */
 	public String text;
 
-	StatusTextEvent(Widget w) {
-		super(w);
-	}
+StatusTextEvent(Widget w) {
+	super(w);
+}
 }
