@@ -5884,7 +5884,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II\n")
 
 	if (arg0) lparg0 = getGdkColorFields(env, arg0, &_arg0);
-	memmove(lparg0, arg1, arg2);
+	memmove((void*)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkColorFields(env, arg0, lparg0);
 }
 
@@ -5894,4 +5894,68 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1get
 	DEBUG_CALL("gtk_1tree_1path_1get_1indices\n")
 
 	return (jint)gtk_tree_path_get_indices((GtkTreePath*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1insert
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("gtk_1tree_1store_1insert\n")
+
+	gtk_tree_store_insert((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, (GtkTreeIter*)arg2, (gint)arg3);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1set__IIIZI
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jint arg4)
+{
+	DEBUG_CALL("gtk_1tree_1store_1set__IIIZI\n")
+
+	gtk_tree_store_set((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, arg2, arg3, arg4);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	GdkColor _arg3, *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I\n")
+
+	if (arg3) lparg3 = getGdkColorFields(env, arg3, &_arg3);
+	gtk_tree_store_set((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
+	if (arg3) setGdkColorFields(env, arg3, lparg3);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1set__IIIII
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("gtk_1tree_1store_1set__IIIII\n")
+
+	gtk_tree_store_set((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, arg2, arg3, arg4);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1set__III_3BI
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1tree_1store_1set__III_3BI\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	gtk_tree_store_set((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1append
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1store_1append\n")
+
+	gtk_tree_store_append((GtkTreeStore*)arg0, (GtkTreeIter*)arg1, (GtkTreeIter*)arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1remove
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1store_1remove\n")
+	/* See GTK+ bug 94717 */
+	gtk_tree_store_remove((GtkTreeStore*)arg0, (GtkTreeIter*)arg1);
 }
