@@ -148,12 +148,12 @@ void layoutControl () {
 		int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
 		int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
 		if (isVisibleHBar) {
-			setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true);
+			setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
 		}
 		if (isVisibleVBar) {
-			setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true);
+			setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
 		}
-		setBounds (handle, inset.left, inset.top, width, height, true, true);
+		setBounds (handle, inset.left, inset.top, width, height, true, true, false);
 	}	
 }
 
@@ -174,9 +174,15 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(control, x, y, width, height, move, resize);
-	if (control == scrolledHandle) layoutControl ();
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(control, x, y, width, height, move, resize, false);
+	if ((result & MOVED) != 0) {
+		if (events) sendEvent (SWT.Move);
+	}
+	if ((result & RESIZED) != 0) {
+		if (control == scrolledHandle) layoutControl ();
+		if (events) sendEvent (SWT.Resize);
+	}
 	return result;
 }
 

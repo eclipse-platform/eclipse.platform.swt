@@ -891,9 +891,7 @@ public void setBackground (Color color) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	int result = setBounds (topHandle (), x, y, width, height, true, true);
-	if ((result & MOVED) != 0) sendEvent (SWT.Move);
-	if ((result & RESIZED) != 0) sendEvent (SWT.Resize);
+	setBounds (topHandle (), x, y, width, height, true, true, true);
 }
 
 public void setBounds (Rectangle rect) {
@@ -1012,9 +1010,7 @@ public void setLayoutData (Object layoutData) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
-	if (setBounds (topHandle (), x, y, 0, 0, true, false) != 0) {
-		sendEvent (SWT.Move);
-	}
+	setBounds (topHandle (), x, y, 0, 0, true, false, true);
 }
 
 public void setLocation (Point location) {
@@ -1063,9 +1059,7 @@ boolean setRadioSelection (boolean value){
 
 public void setSize (int width, int height) {
 	checkWidget();
-	if (setBounds (topHandle (), 0, 0, width, height, false, true) != 0) {
-		sendEvent (SWT.Resize);
-	}
+	setBounds (topHandle (), 0, 0, width, height, false, true, true);
 }
 
 public void setSize (Point size) {

@@ -372,7 +372,7 @@ void selectRadio () {
 
 void setBounds (int x, int y, int width, int height) {
 	if (control != null) control.setBounds (x, y, width, height);
-	setBounds (handle, x, y, width, height, true, true);
+	setBounds (handle, x, y, width, height, true, true, false);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int space = 0;
 	int inset = 3;
@@ -399,22 +399,22 @@ void setBounds (int x, int y, int width, int height) {
 	if ((parent.style & SWT.RIGHT) != 0) {
 		int imageX = inset;
 		int imageY = inset + (height - (inset * 2) - imageHeight) / 2;
-		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true);
+		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
 		int labelX = imageX + imageWidth + space;
 		int labelY = inset + (height - (inset * 2) - stringHeight) / 2;
-		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true);
+		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	} else {
 		int imageX = inset + (width - (inset * 2) - (arrowWidth + 3) - imageWidth) / 2;
 		int imageY = inset;
-		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true);
+		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
 		int labelX = inset + (width - (inset * 2) - (arrowWidth + 3) - stringWidth) / 2;
 		int labelY = imageY + imageHeight + space;
-		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true);
+		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	}
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int arrowX = width - inset - arrowWidth;
 		int arrowY = inset + (height - (inset * 2) - arrowHeight) / 2;
-		setBounds (arrowHandle, arrowX, arrowY, arrowWidth, arrowHeight, true, true);
+		setBounds (arrowHandle, arrowX, arrowY, arrowWidth, arrowHeight, true, true, false);
 	}
 }
 
@@ -502,7 +502,7 @@ void setSize (int width, int height, boolean layout) {
 	Rect rect = new Rect();
 	OS.GetControlBounds (handle, rect);
 	if ((rect.right - rect.left) != width || (rect.bottom - rect.top) != height) {
-		setBounds (handle, 0, 0, width, height, false, true);
+		setBounds (handle, 0, 0, width, height, false, true, false);
 		if (layout) parent.relayout ();
 	}
 }

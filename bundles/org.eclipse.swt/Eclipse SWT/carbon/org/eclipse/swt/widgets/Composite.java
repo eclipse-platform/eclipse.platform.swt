@@ -285,11 +285,9 @@ void releaseWidget () {
 	tabList = null;
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(control, x, y, width, height, move, resize);
-	if (resize && layout != null && (result & RESIZED) != 0) {
-		layout.layout (this, false);
-	}
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(control, x, y, width, height, move, resize, events);
+	if (layout != null && (result & RESIZED) != 0) layout.layout (this, false);
 	return result;
 }
 

@@ -717,7 +717,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	Rect inset = getInset ();
 	Rect oldBounds = new Rect ();
 	OS.GetControlBounds (control, oldBounds);
@@ -763,8 +763,14 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	OS.SetControlBounds (control, newBounds);
 	if (visible) OS.InvalWindowRect (window, newBounds);
 	int result = 0;
-	if (!sameOrigin) result |= MOVED;
-	if (!sameExtent) result |= RESIZED;
+	if (move && !sameOrigin) {
+		if (events) sendEvent (SWT.Move);
+		result |= MOVED;
+	}
+	if (resize && !sameExtent) {
+		if (events) sendEvent (SWT.Move);
+		result |= RESIZED;
+	}
 	return result;
 }
 
