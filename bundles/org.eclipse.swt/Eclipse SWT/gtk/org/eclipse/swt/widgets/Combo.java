@@ -527,14 +527,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	int font = getFontDescription ();
-	int context = OS.gtk_widget_get_pango_context (listHandle != 0 ? listHandle : handle);
-	int lang = OS.pango_context_get_language (context);
-	int metrics = OS.pango_context_get_metrics (context, font, lang);
-	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
-	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
-	OS.pango_font_metrics_unref (metrics);
-	return ascent + descent;
+	return fontHeight (getFontDescription (), listHandle != 0 ? listHandle : handle);
 }
 
 /**
@@ -651,14 +644,7 @@ String getText (int start, int stop) {
  */
 public int getTextHeight () {
 	checkWidget();
-	int font = getFontDescription ();
-	int context = OS.gtk_widget_get_pango_context (entryHandle != 0 ? entryHandle : handle);
-	int lang = OS.pango_context_get_language (context);
-	int metrics = OS.pango_context_get_metrics (context, font, lang);
-	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
-	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
-	OS.pango_font_metrics_unref (metrics);
-	return 8 + ascent + descent;
+	return fontHeight (getFontDescription (), entryHandle != 0 ? entryHandle : handle);
 }
 
 /**

@@ -411,6 +411,16 @@ public int getStyle () {
 	return style;
 }
 
+int fontHeight (int font, int widgetHandle) {
+	int context = OS.gtk_widget_get_pango_context (widgetHandle);
+	int lang = OS.pango_context_get_language (context);
+	int metrics = OS.pango_context_get_metrics (context, font, lang);
+	int ascent = OS.pango_font_metrics_get_ascent (metrics);
+	int descent = OS.pango_font_metrics_get_descent (metrics);
+	OS.pango_font_metrics_unref (metrics);
+	return OS.PANGO_PIXELS (ascent + descent);
+}
+
 char [] fixMnemonic (String string) {
 	int length = string.length ();
 	char [] text = new char [length];
