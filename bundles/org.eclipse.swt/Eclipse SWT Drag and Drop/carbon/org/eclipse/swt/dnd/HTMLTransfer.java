@@ -11,7 +11,6 @@
 package org.eclipse.swt.dnd;
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CFRange;
 
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
@@ -29,7 +28,7 @@ import org.eclipse.swt.internal.carbon.CFRange;
 public class HTMLTransfer extends ByteArrayTransfer {
 
 	private static HTMLTransfer _instance = new HTMLTransfer();
-	private static final String HTML = "HTML";
+	private static final String HTML = "HTML"; //$NON-NLS-1$
 	private static final int HTMLID = registerType(HTML);
 
 private HTMLTransfer() {}

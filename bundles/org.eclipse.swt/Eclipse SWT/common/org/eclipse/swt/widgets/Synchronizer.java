@@ -43,6 +43,7 @@ public Synchronizer (Display display) {
 }
 	
 void addLast (RunnableLock lock) {
+	boolean wake = false;
 	synchronized (messageLock) {
 		if (messages == null) messages = new RunnableLock [4];
 		if (messageCount == messages.length) {
@@ -51,8 +52,9 @@ void addLast (RunnableLock lock) {
 			messages = newMessages;
 		}
 		messages [messageCount++] = lock;
-		if (messageCount == 1) display.wakeThread ();
-	}
+		wake = messageCount == 1;
+	}	
+	if (wake) display.wakeThread ();
 }
 
 /**
