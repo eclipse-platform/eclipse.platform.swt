@@ -270,6 +270,10 @@ public boolean getVisible () {
 	return false;
 }
 
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
@@ -323,6 +327,12 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
+	Display display = getDisplay ();
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
 }
 
 public int internal_new_GC (GCData data) {

@@ -717,17 +717,33 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 	int eventClass = OS.GetEventClass (theEvent);
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventClass) {
-		case OS.kEventClassWindow: {
-			int [] theWindow = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
-			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow [0], theRoot);
-			Control control = WidgetTable.get (theRoot [0]);
+		case OS.kEventClassControl: {
+			int [] theControl = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);
-					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
-					case OS.kEventWindowClose:			return control.kEventWindowClose (nextHandler, theEvent, userData);
+					case OS.kEventControlDraw:	return control.kEventControlDraw (nextHandler, theEvent, userData);
+				}
+			}
+			break;
+		}
+		case OS.kEventClassKeyboard: {
+			int theWindow = OS.FrontWindow ();
+			if (theWindow == 0) return OS.eventNotHandledErr;
+			int [] theControl = new int [1];
+			OS.GetKeyboardFocus (theWindow, theControl);
+			//TEMPORARY CODE
+			if (theControl [0] == 0) {
+				OS.GetRootControl (theWindow, theControl);
+			}
+			Control control = WidgetTable.get (theControl [0]);
+			if (control != null) {
+				switch (eventKind) {
+					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyRepeat:			return control.kEventRawKeyRepeat (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyUp:				return control.kEventRawKeyUp (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
 				}
 			}
 			break;
@@ -750,20 +766,17 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		}
-		case OS.kEventClassKeyboard: {
-			int theWindow = OS.FrontWindow ();
-			if (theWindow == 0) return OS.eventNotHandledErr;
+		case OS.kEventClassWindow: {
+			int [] theWindow = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
 			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow, theRoot);
-			int [] theControl = new int [1];
-			OS.GetKeyboardFocus (theWindow, theControl);
+			OS.GetRootControl (theWindow [0], theRoot);
 			Control control = WidgetTable.get (theRoot [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyRepeat:			return control.kEventRawKeyRepeat (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyUp:				return control.kEventRawKeyUp (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
+					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowClose:			return control.kEventWindowClose (nextHandler, theEvent, userData);
 				}
 			}
 			break;

@@ -286,6 +286,7 @@ public void open () {
 	checkWidget();
 	OS.ShowWindow (shellHandle);
 	OS.BringToFront (shellHandle);
+//	OS.SetKeyboardFocus (shellHandle, handle, (short)-1 /*???OS.kControlFocusNoPart*/)));
 }
 
 public void removeShellListener(ShellListener listener) {
