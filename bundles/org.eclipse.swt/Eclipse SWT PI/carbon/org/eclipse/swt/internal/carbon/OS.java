@@ -619,6 +619,7 @@ public static final native void GetControlBounds(int cHandle, Rect bounds);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, Rect inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, int[] inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, short[] inBuffer, int[] outActualSize);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, byte[] inBuffer, int[] outActualSize);
 public static final native int GetControlEventTarget(int cHandle);
 public static final native int GetControlFeatures(int inControl, int[] outFeatures);
 public static final native int GetControlOwner(int cHandle);
@@ -848,6 +849,7 @@ public static final native int SetControlData(int inControl, int inPart, int inT
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, short[] inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, int[] inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, int inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, byte[] inData);
 public static final native int SetControlFontStyle(int inControl, ControlFontStyleRec inStyle);
 public static final native void SetControlPopupMenuHandle(int cHandle, int popupMenuHandle);
 public static final native void SetControlReference(int cHandle, int data);

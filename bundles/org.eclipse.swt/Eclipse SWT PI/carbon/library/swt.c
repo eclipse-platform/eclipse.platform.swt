@@ -2270,6 +2270,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__I
 }
 #endif /* NO_GetControlData__ISII_3S_3I */
 
+#ifndef NO_GetControlData__ISII_3B_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISII_3B_3I
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jbyteArray arg4, jintArray arg5)
+{
+	jbyte *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetControlData__ISII_3B_3I\n")
+
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlFeatures
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlFeatures
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
@@ -5050,7 +5069,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowser
 }
 #endif /* NO_RemoveDataBrowserTableViewColumn */
 
-ifndef NO_RemoveEventHandler
+#ifndef NO_RemoveEventHandler
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventHandler
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -5318,7 +5337,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__I
 	if (arg4) setControlButtonContentInfoFields(env, arg4, lparg4);
 	return rc;
 }
-#endif
+#endif /* NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2 */
+
+#ifndef NO_SetControlData__IIII_3B
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIII_3B
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIII_3B\n")
+
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_SetControlData__IIII_3B */
 
 #ifndef NO_SetControlFontStyle
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle
