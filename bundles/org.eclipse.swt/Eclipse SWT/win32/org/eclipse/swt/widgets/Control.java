@@ -3240,7 +3240,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
 				* detect the cases and send the events.
 				*/
-				if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
+				if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
 					sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 					// widget could be disposed at this point
 				}
