@@ -86,12 +86,12 @@ public void test_addLjava_lang_StringI() {
 	catch (IllegalArgumentException e) {
 	}
 
-//	try {
-//		combo.add("string", -1);
-//		fail("No exception thrown for index < 0");
-//	}
-//	catch (IllegalArgumentException e) {
-//	}
+	try {
+		combo.add("string", -1);
+		fail("No exception thrown for index < 0");
+	}
+	catch (IllegalArgumentException e) {
+	}
 
 	combo.add("string0", 0);
 	try {

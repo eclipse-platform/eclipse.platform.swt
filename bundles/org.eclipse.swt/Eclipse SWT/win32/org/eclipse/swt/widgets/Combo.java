@@ -179,16 +179,14 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (!(0 <= index && index <= count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
-	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
-	if (result == OS.CB_ERR) {
-		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		if (0 <= index && index <= count) {
-			error (SWT.ERROR_ITEM_NOT_ADDED);
-		} else {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
+	if (result == OS.CB_ERRSPACE || result == OS.CB_ERR) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 }
 
@@ -1162,6 +1160,7 @@ void setForegroundPixel (int pixel) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1191,6 +1190,9 @@ public void setItem (int index, String string) {
  *
  * @param items the array of items
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
