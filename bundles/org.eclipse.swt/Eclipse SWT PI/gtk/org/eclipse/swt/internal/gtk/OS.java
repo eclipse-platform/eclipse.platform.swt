@@ -385,7 +385,7 @@ protected static byte [] signal (String name) {
 }
 
 public static int VERSION (int major, int minor, int micro) {
-	return major * 100 + minor + 10 + micro;
+	return major * 100 + minor * 10 + micro;
 }
 
 /** 64 bit */
