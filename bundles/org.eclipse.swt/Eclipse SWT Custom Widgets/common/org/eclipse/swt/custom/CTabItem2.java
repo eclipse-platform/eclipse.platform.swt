@@ -195,45 +195,26 @@ void drawClose(GC gc) {
 }
 void drawSelected(GC gc ) {
 	Point size = parent.getSize();
+	
 	// Draw selection border across all tabs
-	int parentX = parent.borderLeft;
-	int parentY = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - CTabFolder2.HIGHLIGHT_HEADER : parent.borderTop + parent.tabHeight + 1;
-	int parentWidth = size.x - parent.borderLeft - parent.borderRight;
-	int parentHeight = CTabFolder2.HIGHLIGHT_HEADER - 1;
-	int[] shape = new int[] {parentX,parentY, parentX+parentWidth,parentY, parentX+parentWidth,parentY+parentHeight, parentX,parentY+parentHeight};
+	int xx = parent.borderLeft;
+	int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - CTabFolder2.HIGHLIGHT_HEADER : parent.borderTop + parent.tabHeight + 1;
+	int ww = size.x - parent.borderLeft - parent.borderRight;
+	int hh = CTabFolder2.HIGHLIGHT_HEADER - 1;
+	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
 	parent.drawBackground(gc, shape, true);
 
-	// if selected tab scrolled out of view or partially out of view
-	// draw line and clean up partial tab area
 	int rightTabEdge = parent.getRightItemEdge();
-	if (!parent.single && parent.selectedIndex != parent.topTabIndex && x + width >= rightTabEdge){
-		if (parent.onBottom) {
-			shape = new int[4];
-			int index = 0;
-			shape[index++] = Math.max(0, parent.borderLeft - 1);
-			shape[index++] = y - 1;
-			shape[index++] = size.x - parent.borderRight;
-			shape[index++] = y - 1;
-		} else {
-			shape = new int[4];
-			int index = 0;
-			shape[index++] = Math.max(0, parent.borderLeft - 1);
-			shape[index++] = y + height;
-			shape[index++] = size.x - parent.borderRight;
-			shape[index++] = y + height;
-		}
-		// draw line	
+	// if selected tab scrolled out of view or partially out of view
+	// just draw bottom line
+	if (!parent.single && parent.selectedIndex != parent.topTabIndex && x + width > rightTabEdge){
+		int x1 = Math.max(0, parent.borderLeft - 1);
+		int y1 = (parent.onBottom) ? y - 1 : y + height;
+		int x2 = size.x - parent.borderRight;
 		gc.setForeground(CTabFolder2.borderColor);
-		gc.drawPolyline(shape);
-		// if tab partially visible, fill in background for tab
-		shape = new int[] {x,y-1, x,y+height, size.x,y+height, size.x,y-1};
-		parent.drawBackground(gc, shape, false);
+		gc.drawLine(x1, y1, x2, y1);
 		return;
 	}
-
-	// fill in background for non-rectangular shape
-	shape = new int[] {x,y, x+width,y, x+width,y+height, x,y+height};
-	parent.drawBackground(gc, shape, false);
 	
 	// draw selected tab background and outline
 	int extra = CTabFolder2.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
@@ -371,82 +352,22 @@ void drawSelected(GC gc ) {
 	RGB inside = parent.selectionBackground.getRGB();
 	if (parent.selectionBgImage != null || (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1 && !parent.selectionGradientVertical)) inside = null;
 	RGB outside = parent.getBackground().getRGB();		
-	if (parent.bgImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1 && !parent.gradientVertical)) outside = null;
+	if (parent.bgImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1)) outside = null;
 	parent.antialias(shape, CTabFolder2.borderColor.getRGB(), inside, outside, gc);
 	gc.setForeground(CTabFolder2.borderColor);
 	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
 	int rightTabEdge = parent.getRightItemEdge();
-	if (x >= parent.getSize().x) return;
 	// Do not draw partial items
-	if (parent.items[parent.topTabIndex] != this && x + width >= rightTabEdge){
-		int x1 = x, y1 = y-1;
-		int x2 = parent.getSize().x, y2 = y + height;
-		int[] shape = new int[]{x1,y1, x1,y2, x2,y2, x2,y1};
-		parent.drawBackground(gc, shape, false);
+	if (parent.items[parent.topTabIndex] != this && x + width > rightTabEdge){
 		return;
 	}
-	
-	// draw background
-	int[] shape = null;
-	if (parent.indexOf(this) == parent.topTabIndex) {
-		if (this.parent.onBottom) {
-			int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
-			shape = new int[left.length + 6];
-			int index = 0;
-			shape[index++] = x;
-			shape[index++] = y;
-			for(int i = 0; i < left.length/2; i++) {
-				shape[index++] = x + left[2*i]; 
-				shape[index++] = y + height + left[2*i+1];
-			}
-			shape[index++]= x + width;
-			shape[index++]= y + height;
-			shape[index++]= x + width;
-			shape[index++]= y;
-		} else {		
-			int[] left = CTabFolder2.TOP_LEFT_CORNER;
-			shape = new int[left.length + 6];
-			int index = 0;
-			shape[index++] = x;
-			shape[index++] = y + height;
-			for(int i = 0; i < left.length/2; i++) {
-				shape[index++] = x + left[2*i];
-				shape[index++] = y + left[2*i+1];
-			}
-			shape[index++] = x + width;
-			shape[index++] = y;
-			shape[index++] = x + width;
-			shape[index++] = y + height;
-		}
-		parent.drawBackground(gc, shape, false);
-		// Shape is non-rectangular, fill in gaps with parent colours
-		Region r = new Region();
-		r.add(new Rectangle(x, y, width, height));
-		r.subtract(shape);
-		gc.setBackground(parent.getParent().getBackground());
-		CTabFolder2.fillRegion(gc, r);
-		r.dispose();
-	} else {
-		shape = new int[8];
-		shape[0] = x;
-		shape[1] = y;
-		shape[2] = x;
-		shape[3] = y + height;
-		shape[4] = x + width;
-		shape[5] = y + height;
-		shape[6] = x + width;
-		shape[7] = y;
-		parent.drawBackground(gc, shape, false);
-	}
-	
 	// draw border
 	if (parent.indexOf(this) != parent.selectedIndex - 1) {
 		gc.setForeground(CTabFolder2.borderColor);
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
-	
 	// draw Text
 	int textWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
@@ -459,7 +380,7 @@ void drawUnselected(GC gc) {
 	textY += parent.onBottom ? -1 : 1;
 	gc.setForeground(parent.getForeground());
 	gc.drawText(shortenedText, x + LEFT_MARGIN, textY, FLAGS);
-	
+	// draw close
 	if (parent.showClose || showClose) drawClose(gc);
 }
 /**
