@@ -5856,6 +5856,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1destroy)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1default_1direction
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1default_1direction)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1widget_1get_1default_1direction\n")
+	rc = (jint)gtk_widget_get_default_direction();
+	NATIVE_EXIT(env, that, "gtk_1widget_1get_1default_1direction\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1default_1style
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1default_1style)
 	(JNIEnv *env, jclass that)
@@ -5864,6 +5876,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1default_1style)
 	NATIVE_ENTER(env, that, "gtk_1widget_1get_1default_1style\n")
 	rc = (jint)gtk_widget_get_default_style();
 	NATIVE_EXIT(env, that, "gtk_1widget_1get_1default_1style\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1direction
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1direction)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1widget_1get_1direction\n")
+	rc = (jint)gtk_widget_get_direction((GtkWidget *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1widget_1get_1direction\n")
 	return rc;
 }
 #endif
@@ -6047,6 +6071,26 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1reparent)
 	NATIVE_ENTER(env, that, "gtk_1widget_1reparent\n")
 	gtk_widget_reparent((GtkWidget *)arg0, (GtkWidget *)arg1);
 	NATIVE_EXIT(env, that, "gtk_1widget_1reparent\n")
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1default_1direction
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1set_1default_1direction)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gtk_1widget_1set_1default_1direction\n")
+	gtk_widget_set_default_direction((GtkTextDirection)arg0);
+	NATIVE_EXIT(env, that, "gtk_1widget_1set_1default_1direction\n")
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1direction
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1set_1direction)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1widget_1set_1direction\n")
+	gtk_widget_set_direction((GtkWidget *)arg0, (GtkTextDirection)arg1);
+	NATIVE_EXIT(env, that, "gtk_1widget_1set_1direction\n")
 }
 #endif
 

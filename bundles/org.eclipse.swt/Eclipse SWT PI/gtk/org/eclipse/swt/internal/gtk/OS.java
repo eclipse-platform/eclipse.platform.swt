@@ -195,6 +195,9 @@ public class OS {
 	public static final int GTK_SHADOW_OUT = 0x2;
 	public static final int GTK_STATE_INSENSITIVE = 0x4;
 	public static final int GTK_STATE_NORMAL = 0x0;
+	public static final int GTK_TEXT_DIR_LTR = 1;
+	public static final int GTK_TEXT_DIR_NONE = 0 ;
+	public static final int GTK_TEXT_DIR_RTL = 2;
 	public static final int GTK_TEXT_WINDOW_TEXT = 2;
 	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
@@ -801,7 +804,9 @@ public static final synchronized native void gtk_widget_add_events(int widget, i
 public static final synchronized native int gtk_widget_create_pango_layout(int widget, byte[] text);
 public static final synchronized native int gtk_widget_create_pango_layout(int widget, int text);
 public static final synchronized native void gtk_widget_destroy(int widget);
+public static final synchronized native int gtk_widget_get_default_direction();
 public static final synchronized native int gtk_widget_get_default_style();
+public static final synchronized native int gtk_widget_get_direction(int widget);
 public static final synchronized native int gtk_widget_get_modifier_style(int widget);
 public static final synchronized native int gtk_widget_get_pango_context(int widget);
 public static final synchronized native int gtk_widget_get_parent(int widget);
@@ -818,6 +823,8 @@ public static final synchronized native void gtk_widget_modify_text(int widget, 
 public static final synchronized native void gtk_widget_realize(int widget);
 public static final synchronized native void gtk_widget_remove_accelerator(int widget, int accel_group, int accel_key, int accel_mods);
 public static final synchronized native void gtk_widget_reparent(int widget, int new_parent);
+public static final synchronized native void gtk_widget_set_default_direction(int dir); 
+public static final synchronized native void gtk_widget_set_direction(int widget, int dir);
 public static final synchronized native void gtk_widget_set_double_buffered(int widget, boolean double_buffered);
 public static final synchronized native void gtk_widget_set_name(int widget, byte[] name);
 public static final synchronized native void gtk_widget_set_redraw_on_allocate(int widget, boolean redraw);
