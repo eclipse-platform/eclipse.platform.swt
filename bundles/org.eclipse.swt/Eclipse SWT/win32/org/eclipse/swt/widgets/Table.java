@@ -150,6 +150,7 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	if (fixScrollWidth) setScrollWidth (true);
 	int bits = 0;
 	if (wHint != SWT.DEFAULT) {
 		bits |= wHint & 0xFFFF;
