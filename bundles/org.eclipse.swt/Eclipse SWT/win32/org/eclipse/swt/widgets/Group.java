@@ -241,7 +241,16 @@ public String getText () {
 }
 
 boolean mnemonicHit (char key) {
-	return setFocus ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setRadioFocus ()) return true;
+	}
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setFocus ()) return true;
+	}
+	return false;
 }
 
 boolean mnemonicMatch (char key) {
