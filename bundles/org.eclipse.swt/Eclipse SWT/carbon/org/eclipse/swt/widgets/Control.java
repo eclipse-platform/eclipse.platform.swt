@@ -500,6 +500,33 @@ public boolean isEnabled () {
 	return OS.IsControlEnabled (topHandle ());
 }
 
+boolean isEnabledModal () {
+	Display display = getDisplay ();
+	//NOT DONE - fails for multiple APP MODAL shells
+	Shell [] shells = display.getShells ();
+	for (int i = 0; i < shells.length; i++) {
+		Shell modal = shells [i];
+		if (modal != this && modal.isVisible ()) {
+			if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
+				Shell shell = getShell ();
+				if (modal.parent == shell) {
+					return false;
+				}
+			}
+			int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+			if ((modal.style & bits) != 0) {
+				Control control = this;
+				while (control != null) {
+					if (control == modal) break;
+					control = control.parent;
+				}
+				if (control != modal) return false;
+			}
+		}
+	}
+	return true;
+}
+
 boolean isFocusAncestor () {
 	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
@@ -529,7 +556,7 @@ boolean isTabItem () {
 
 public boolean isVisible () {
 	checkWidget();
-	return OS.IsControlVisible (topHandle ()) && getShell ().isVisible ();
+	return OS.IsControlVisible (topHandle ());
 }
 
 Decorations menuShell () {
@@ -588,6 +615,7 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
+	if (!isEnabled () || !isEnabledModal ()) return OS.noErr;
 	Cursor cursor = findCursor ();
 	if (cursor != null) {
 		setCursor (cursor.handle);
@@ -629,12 +657,12 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, theEvent);
+	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, theEvent);
+	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
 
@@ -920,6 +948,7 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
+	if (!OS.IsControlEnabled (topHandle ())) return;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
 	int [] theWindow = new int [1];
@@ -975,8 +1004,17 @@ public void setEnabled (boolean enabled) {
 		OS.EnableControl (topHandle ());
 	} else {
 		if ((state & DISABLED) != 0) return;
+		/*
+		* Feature in the Macintosh.  If the receiver has focus,
+		* disabling the receiver causes no cotnrol to have focus. 
+		* The fix is to assign focus to the first ancestor control
+		* that takes focus.  If no control will take focus, clear
+		* the focus control.
+		*/
+		boolean fixFocus = isFocusAncestor ();
 		state |= DISABLED;
 		OS.DisableControl (topHandle ());
+		if (fixFocus) fixFocus ();
 	}
 }
 

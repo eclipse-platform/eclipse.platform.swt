@@ -214,16 +214,19 @@ public Control [] getTabList () {
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-		int [] theControl = new int [1];
-		int window = OS.GetControlOwner (handle);
-		OS.GetKeyboardFocus (window, theControl);
-		if (handle != theControl [0]) {
-			short [] count = new short [1];
-			OS.CountSubControls (handle, count);
-			if (count [0] == 0) {
-				if (OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart) == OS.noErr) {
-					return OS.noErr;
+	if ((state & CANVAS) != 0) {
+		if (!OS.IsControlEnabled (topHandle ())) return result;
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			int [] theControl = new int [1];
+			int window = OS.GetControlOwner (handle);
+			OS.GetKeyboardFocus (window, theControl);
+			if (handle != theControl [0]) {
+				short [] count = new short [1];
+				OS.CountSubControls (handle, count);
+				if (count [0] == 0) {
+					if (OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart) == OS.noErr) {
+						return OS.noErr;
+					}
 				}
 			}
 		}

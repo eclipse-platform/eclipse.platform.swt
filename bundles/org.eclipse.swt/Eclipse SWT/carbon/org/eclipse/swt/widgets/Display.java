@@ -500,15 +500,15 @@ Control getCursorControl (boolean includeTrim) {
 	OS.GetRootControl (theWindow [0], theRoot);
 	int [] theControl = new int [1];
 	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
+		OS.GetSuperControl (theControl [0], theControl);
+	}
 	if (theControl [0] != 0) {
 		do {
 			Widget widget = WidgetTable.get (theControl [0]);
-			if (!includeTrim && widget != null) {
-				if (widget.isTrimHandle (theControl [0])) return null;
-			}
-			if (widget != null && widget instanceof Control) {
-				Control control = (Control) widget;
-				if (control.getEnabled ()) return control;
+			if (widget != null) {
+				if (!includeTrim && widget.isTrimHandle (theControl [0])) return null;
+				if (widget instanceof Control) return (Control) widget;
 			}
 			OS.GetSuperControl (theControl [0], theControl);
 		} while (theControl [0] != 0);
@@ -926,6 +926,9 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			OS.GetRootControl (theWindow [0], theRoot);
 			int [] theControl = new int [1];
 			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
+				OS.GetSuperControl (theControl [0], theControl);
+			}
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
 			switch (eventKind) {
