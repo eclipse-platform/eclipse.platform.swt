@@ -602,8 +602,10 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 				OS.FetchFontInfo (family[0], size[0], style[0], info);
 				int [] metric = new int [1];
 				OS.GetThemeMetric (OS.kThemeMetricMenuIconTrailingEdgeMargin, metric);
-				rect.left = (short) (rect.right - info.widMax - metric [0]);
 				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				org.eclipse.swt.internal.carbon.Point size1 = new org.eclipse.swt.internal.carbon.Point ();
+				OS.GetThemeTextDimensions (str, (short) font, 0, false, size1, null);
+				rect.left = (short) (rect.right - Math.max (info.widMax, size1.h) - metric [0]);
 				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
 				OS.CFRelease (str);
 				
@@ -612,7 +614,6 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 					buffer = new char [modifierIndex + 1];
 					accelText.getChars (0, buffer.length, buffer, 0);
 					str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					org.eclipse.swt.internal.carbon.Point size1 = new org.eclipse.swt.internal.carbon.Point ();
 					OS.GetThemeTextDimensions (str, (short) OS.kThemeMenuItemCmdKeyFont, 0, false, size1, null);
 					rect.right = rect.left;
 					rect.left = (short) (rect.right - size1.h);
