@@ -313,6 +313,9 @@ public Browser(Composite parent, int style) {
 	
 	/* register delegate for all notifications send out from webview */
 	WebKit.objc_msgSend(notificationCenter, WebKit.S_addObserver_selector_name_object, Delegate, WebKit.S_handleNotification, 0, webView);
+	
+	// [webView setPolicyDelegate:delegate];
+	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, Delegate);
 }
 
 static int eventProc(int webview, int selector, int arg0, int arg1, int arg2, int arg3) {
@@ -594,6 +597,10 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 16: setStatusBarVisible(arg0); break;
 		case 17: setResizable(arg0); break;
 		case 18: setToolbarsVisible(arg0); break;
+		case 19: decidePolicyForMIMEType(arg0, arg1, arg2, arg3); break;
+		case 20: decidePolicyForNavigationAction(arg0, arg1, arg2, arg3); break;
+		case 21: decidePolicyForNewWindowAction(arg0, arg1, arg2, arg3); break;
+		case 22: unableToImplementPolicyWithError(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -1155,6 +1162,7 @@ void didCommitLoadForFrame(int frame) {
 	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
 	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);	
 	int length = OS.CFStringGetLength(s);
+	if (length == 0) return;
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
@@ -1293,25 +1301,7 @@ int identifierForInitialRequest(int request, int dataSource) {
 }
 
 int willSendRequest(int identifier, int request, int redirectResponse, int dataSource) {
-	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
-	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);
-	int length = OS.CFStringGetLength(s);
-	char[] buffer = new char[length];
-	CFRange range = new CFRange();
-	range.length = length;
-	OS.CFStringGetCharacters(s, range, buffer);
-	String url2 = new String(buffer);
-	
-	LocationEvent newEvent = new LocationEvent(this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
-	newEvent.location = url2;
-	newEvent.doit = true;
-	if (locationListeners != null) {
-		for (int i = 0; i < locationListeners.length; i++)
-			locationListeners[i].changing(newEvent);
-	}
-	return newEvent.doit ? request : 0;
+	return request;
 }
 
 /* handleNotification */
@@ -1333,11 +1323,13 @@ int createWebViewWithRequest(int request) {
 	if (browser != null && !browser.isDisposed()) {
 		webView = WebKit.HIWebViewGetWebView(browser.webViewHandle);
 		
-		//mainFrame = [webView mainFrame];
-		int mainFrame= WebKit.objc_msgSend(webView, WebKit.S_mainFrame);
+		if (request != 0) {
+			//mainFrame = [webView mainFrame];
+			int mainFrame= WebKit.objc_msgSend(webView, WebKit.S_mainFrame);
 
-		//[mainFrame loadRequest:request];
-		WebKit.objc_msgSend(mainFrame, WebKit.S_loadRequest, request);
+			//[mainFrame loadRequest:request];
+			WebKit.objc_msgSend(mainFrame, WebKit.S_loadRequest, request);
+		}
 	}
 	return webView;
 }
@@ -1444,6 +1436,41 @@ void setResizable(int visible) {
 void setToolbarsVisible(int visible) {
 	/* Note.  Webkit only emits the notification when the tool bar should be hidden. */
 	toolBar = visible != 0;
+}
+
+/* PolicyDelegate */
+
+void decidePolicyForMIMEType(int type, int request, int frame, int listener) {
+	WebKit.objc_msgSend(listener, WebKit.S_use);
+}
+
+void decidePolicyForNavigationAction(int actionInformation, int request, int frame, int listener) {
+	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
+	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);
+	int length = OS.CFStringGetLength(s);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(s, range, buffer);
+	String url2 = new String(buffer);
+	
+	LocationEvent newEvent = new LocationEvent(this);
+	newEvent.display = getDisplay();
+	newEvent.widget = this;
+	newEvent.location = url2;
+	newEvent.doit = true;
+	if (locationListeners != null) {
+		for (int i = 0; i < locationListeners.length; i++) 
+			locationListeners[i].changing(newEvent);
+	}
+
+	WebKit.objc_msgSend(listener, newEvent.doit ? WebKit.S_use : WebKit.S_ignore);
+}
+
+void decidePolicyForNewWindowAction(int actionInformation, int request, int frameName, int listener) {
+}
+
+void unableToImplementPolicyWithError(int error, int frame) {
 }
 
 }

@@ -176,5 +176,31 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 {
 	proc((int)sender, 18, (int)visible, 0, 0, 0);
 }
+
+/* WebPolicyDelegate */
+/*
+- (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	proc((int)sender, 19, (int)type, (int)request, (int)listener, 0);
+}
+*/
+
+- (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	proc((int)sender, 20, (int)actionInformation, (int)request, (int)frame, (int)listener);
+}
+
+
+- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	proc((int)sender, 21, (int)actionInformation, (int)request, (int)frameName, (int)listener);
+}
+
+
+- (void)webView:(WebView *)sender unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame
+{
+	proc((int)sender, 22, (int)error, (int)frame, 0, 0);
+}
+
 @end
 
