@@ -53,6 +53,7 @@ public void generate(Class clazz) {
 	}
 	generateNativeMacro(clazz);
 	Method[] methods = clazz.getDeclaredMethods();
+	sort(methods);
 	generateExcludes(methods);
 	generate(methods);
 	if (isCPP) {
@@ -61,7 +62,6 @@ public void generate(Class clazz) {
 }
 
 public void generateExcludes(Method[] methods) {
-	sort(methods);
 	HashSet excludes = new HashSet();
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];

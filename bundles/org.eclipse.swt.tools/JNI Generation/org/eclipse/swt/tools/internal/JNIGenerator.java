@@ -181,7 +181,7 @@ static synchronized boolean isNativeUnique(Method method) {
 	Method[] methods;
 	String name = method.getName();
 	Class clazz = method.getDeclaringClass();
-	if (uniqueClassCache == clazz) {
+	if (clazz.equals(uniqueClassCache)) {
 		methods = uniqueMethodsCache;
 	} else {
 		uniqueClassCache = clazz;
