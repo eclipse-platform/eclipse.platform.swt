@@ -6373,6 +6373,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParamete
 }
 
 #ifndef _WIN32_WCE
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I
     (JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
 {
@@ -6390,8 +6391,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParamete
 
 	return rc;
 }
-#endif // _WIN32_WCE
-
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I
     (JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
@@ -6410,6 +6409,8 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParamete
 
 	return rc;
 }
+
+#endif // _WIN32_WCE
 
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToAscii

@@ -1814,8 +1814,6 @@ void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA
 	}
 }
 
-#endif _WIN32_WCE
-
 NONCLIENTMETRICSW* getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct, PNONCLIENTMETRICS_FID_CACHE lpCache)
 {
 	if (!lpCache->cached) cacheNONCLIENTMETRICSFids(env, lpObject, lpCache);
@@ -1886,6 +1884,8 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 	setLOGFONTWFields(env, lpLogfont, &lpStruct->lfMessageFont, &PGLOB(LOGFONTFc));
 	}
 }
+
+#endif _WIN32_WCE
 
 void cacheOPENFILENAMEFids(JNIEnv *env, jobject lpObject, POPENFILENAME_FID_CACHE lpCache)
 {
