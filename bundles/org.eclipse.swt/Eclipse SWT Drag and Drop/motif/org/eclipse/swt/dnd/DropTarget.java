@@ -89,6 +89,7 @@ public class DropTarget extends Widget {
 	private DNDEvent dragOverEvent;
 	
 	int lastOperation;
+	private int selectionTimeout;
 
 	
 /**
@@ -473,6 +474,10 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 		transferProc = new Callback(this, "transferProcCallback", 7);
 
 	if (transferProc != null){
+		int xtContext = OS.XtDisplayToApplicationContext(getDisplay().xDisplay);
+		selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+		OS.XtAppSetSelectionTimeout(xtContext, 0x7fffffff);
+		
 		int[] args = new int[] {OS.XmNdropTransfers, pTransferEntries,
 					OS.XmNnumDropTransfers, transferEntries.length / 2,
 					OS.XmNtransferProc, transferProc.getAddress()};
@@ -689,6 +694,9 @@ private int transferProcCallback(int widget, int client_data, int pSelection, in
 			event.detail = DND.DROP_NONE;
 		}
 
+		int xtContext = OS.XtDisplayToApplicationContext(getDisplay().xDisplay);
+		OS.XtAppSetSelectionTimeout(xtContext, selectionTimeout);
+		
 		if ((event.detail & DND.DROP_MOVE) == DND.DROP_MOVE) {
 			OS.XmDropTransferAdd(dropTransferObject, new int[]{0, Transfer.registerType("DELETE\0")}, 1);
 		}

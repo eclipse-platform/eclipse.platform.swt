@@ -5560,6 +5560,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppCreateShell
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtAppGetSelectionTimeout
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppGetSelectionTimeout
+  (JNIEnv *env, jclass that, jint appContext)
+{
+	DECL_GLOB(pGlob)
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtAppGetSelectionTimeout\n");
+#endif
+
+    return (jint)XtAppGetSelectionTimeout((XtAppContext)appContext);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XtAppNextEvent
  * Signature: (ILorg/eclipse/swt/internal/motif/XAnyEvent;)V
  */
@@ -5653,6 +5669,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetErrorHandl
 	fprintf(stderr, "XtAppSetErrorHandler\n");
 #endif
     return (jint) XtAppSetErrorHandler((XtAppContext)app_context, (XtErrorHandler)handler);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtAppSetSelectionTimeout
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetSelectionTimeout
+  (JNIEnv *env, jclass that, jint appContext, jint timeout)
+{
+	DECL_GLOB(pGlob)
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtAppSetSelectionTimeout\n");
+#endif
+
+    XtAppSetSelectionTimeout((XtAppContext)appContext, (unsigned long)timeout);
 }
 
 /*

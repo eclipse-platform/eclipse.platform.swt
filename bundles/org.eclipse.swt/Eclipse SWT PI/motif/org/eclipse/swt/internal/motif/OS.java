@@ -1201,11 +1201,13 @@ public static final synchronized native int XtAppCreateShell (
 	int display,
 	int [] argList,
 	int argCount);
+public static final synchronized native int XtAppGetSelectionTimeout (int appContext);
 public static final synchronized native void XtAppNextEvent (int appContext, XAnyEvent event);
 public static final synchronized native boolean XtAppPeekEvent (int appContext, XAnyEvent event);
 public static final synchronized native int XtAppPending (int appContext);
 public static final synchronized native void XtAppProcessEvent (int appContext, int inputMask);
 public static final synchronized native int XtAppSetErrorHandler (int app_context, int msg_handler);
+public static final synchronized native void XtAppSetSelectionTimeout (int appContext, int timeout);
 public static final synchronized native int XtAppSetWarningHandler (int app_context, int msg_handler);
 public static final synchronized native int XtBuildEventMask (int widget);
 public static final synchronized native void XtCallActionProc (int widget, byte []  action, XAnyEvent event, int [] params, int num_params);
