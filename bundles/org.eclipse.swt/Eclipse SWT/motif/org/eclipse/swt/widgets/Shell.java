@@ -1192,6 +1192,12 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	configured = true;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
+	if (resize) {
+		if (redrawWindow != 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			OS.XResizeWindow (xDisplay, redrawWindow, width, height);
+		}
+	}
 	if (move && resize) {
 		OS.XtConfigureWidget (shellHandle, x, y, width, height, 0);
 	} else {

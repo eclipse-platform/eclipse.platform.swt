@@ -37,6 +37,7 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  */
 public abstract class Control extends Widget implements Drawable {
+	int drawCount, redrawWindow;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -1884,6 +1885,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		boolean sameOrigin = (x == (short) argList [1]) && (y == (short) argList [3]);
 		boolean sameExtent = (width == argList [5]) && (height == argList [7]);
 		if (sameOrigin && sameExtent) return false;
+		if (redrawWindow != 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			OS.XResizeWindow (xDisplay, redrawWindow, width, height);
+		}
 		OS.XtConfigureWidget (topHandle, x, y, width, height, argList [9]);
 		updateIM ();
 		if (!sameOrigin) sendEvent (SWT.Move);
@@ -1909,6 +1914,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		width = Math.max (width - (argList [5] * 2), 1);
 		height = Math.max (height - (argList [5] * 2), 1);
 		if (width == argList [1] && height == argList [3]) return false;
+		if (redrawWindow != 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			OS.XResizeWindow (xDisplay, redrawWindow, width, height);
+		}
 		OS.XtResizeWidget (topHandle, width, height, argList [5]);
 		updateIM ();
 		sendEvent (SWT.Resize);
@@ -2295,6 +2304,31 @@ boolean setRadioSelection (boolean value) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
+	if (redraw) {
+		if (--drawCount == 0) {
+			if (redrawWindow != 0) {
+				int xDisplay = OS.XtDisplay(handle);
+				OS.XDestroyWindow(xDisplay, redrawWindow);
+				redrawWindow = 0;
+			}
+		}
+	} else {
+		if (drawCount++ == 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			int xWindow = OS.XtWindow (handle);
+			if (xWindow == 0) return;
+			Rectangle rect = getBounds();
+			XSetWindowAttributes attributes = new XSetWindowAttributes ();
+			attributes.background_pixmap = OS.None;
+			attributes.event_mask = OS.ExposureMask;
+			int mask = OS.CWDontPropagate | OS.CWEventMask | OS.CWBackPixmap;
+			redrawWindow = OS.XCreateWindow (xDisplay, xWindow, 0, 0, rect.width, rect.height,
+					0,OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, mask, attributes);
+			OS.XRaiseWindow (xDisplay, redrawWindow);
+			OS.XMapWindow (xDisplay, redrawWindow);
+		}
+	}
 }
 boolean setTabGroupFocus (boolean next) {
 	return setTabItemFocus (next);
@@ -2417,7 +2451,8 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 	}
 	int window1 = OS.XtWindow (topHandle1);
 	if (window1 == 0) return;
-	if (control == null) {
+	int redrawWindow = fixChildren ? parent.redrawWindow : 0;
+	if (control == null && redrawWindow == 0) {
 		if (above) {
 			OS.XRaiseWindow (display, window1);
 			if (fixChildren) parent.moveAbove (topHandle1, 0);
@@ -2427,17 +2462,23 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 		}
 		return;
 	}
-	int topHandle2 = control.topHandle ();
-	if (display != OS.XtDisplay (topHandle2)) return;
-	if (!OS.XtIsRealized (topHandle2)) {
-		Shell shell = control.getShell ();
-		shell.realizeWidget ();
+	int window2, topHandle2 = 0;
+	if (control != null) {
+		topHandle2 = control.topHandle ();
+		if (display != OS.XtDisplay (topHandle2)) return;
+		if (!OS.XtIsRealized (topHandle2)) {
+			Shell shell = control.getShell ();
+			shell.realizeWidget ();
+		}
+		window2 = OS.XtWindow (topHandle2);
+	} else {
+		window2 = redrawWindow;
 	}
-	int window2 = OS.XtWindow (topHandle2);
 	if (window2 == 0) return;
 	XWindowChanges struct = new XWindowChanges ();
 	struct.sibling = window2;
 	struct.stack_mode = above ? OS.Above : OS.Below;
+	if (window2 == redrawWindow) struct.stack_mode = OS.Below;
 	/*
 	* Feature in X. If the receiver is a top level, XConfigureWindow ()
 	* will fail (with a BadMatch error) for top level shells because top

@@ -713,29 +713,23 @@ int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 }
 
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_in_event (widget, event);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (widget == shellHandle) {
-		if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-		hasFocus = true;
-		sendEvent (SWT.Activate);
-		return 0;
+	if (widget != shellHandle) {
+		return super.gtk_focus_in_event (widget, event);
 	}
-	return result;
+	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+	hasFocus = true;
+	sendEvent (SWT.Activate);
+	return 0;
 }
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_out_event (widget, event);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (widget == shellHandle) {
-		if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
-		hasFocus = false;
-		sendEvent (SWT.Deactivate);
-		return 0;
+	if (widget != shellHandle) {
+		return super.gtk_focus_out_event (widget, event);
 	}
-	return result;
+	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+	hasFocus = false;
+	sendEvent (SWT.Deactivate);
+	return 0;
 }
 
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
@@ -897,6 +891,9 @@ void setActiveControl (Control control) {
 }
 
 void resizeBounds (int width, int height, boolean notify) {
+	if (redrawWindow != 0) {
+		OS.gdk_window_resize (redrawWindow, width, height);
+	}
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	int menuHeight = 0;
 	if (menuBar != null) {

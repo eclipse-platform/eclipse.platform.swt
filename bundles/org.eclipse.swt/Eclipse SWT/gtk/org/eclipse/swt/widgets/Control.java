@@ -38,6 +38,7 @@ import org.eclipse.swt.accessibility.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	int /*long*/ fixedHandle;
+	int /*long*/ redrawWindow;
 	int drawCount;
 	Composite parent;
 	Cursor cursor;
@@ -494,7 +495,12 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
 		int oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
 		sameExtent = width == oldWidth && height == oldHeight;
-		if (!sameExtent) resizeHandle (width, height);
+		if (!sameExtent) {
+			if (redrawWindow != 0) {
+				OS.gdk_window_resize (redrawWindow, width, height);
+			}
+			resizeHandle (width, height);
+		}
 	}
 	if (!sameOrigin || !sameExtent) {
 		/*
@@ -2657,10 +2663,27 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-//			redrawWidget (handle, true);
+			if (redrawWindow != 0) {
+				OS.gdk_window_destroy (redrawWindow);
+				redrawWindow = 0;
+			}
 		}
 	} else {
-		drawCount++;
+		if (drawCount++ == 0) {
+			if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) != 0) {
+				int /*long*/ window = paintWindow ();
+				Rectangle rect = getBounds ();
+				GdkWindowAttr attributes = new GdkWindowAttr ();
+				attributes.width = rect.width;
+				attributes.height = rect.height;
+				attributes.event_mask = OS.GDK_EXPOSURE_MASK;
+				attributes.window_type = OS.GDK_WINDOW_CHILD;
+				redrawWindow = OS.gdk_window_new (window, attributes, 0);
+				OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
+				OS.gdk_window_raise (redrawWindow);
+				OS.gdk_window_show (redrawWindow);
+			}
+		}
 	}
 }
 
@@ -2752,16 +2775,19 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	if (window != 0) {
 		int /*long*/ siblingWindow = sibling != null ? OS.GTK_WIDGET_WINDOW (siblingHandle) : 0;
-		if (!OS.GDK_WINDOWING_X11 () || siblingWindow == 0) {
+		int /*long*/ redrawWindow = fixChildren ? parent.redrawWindow : 0;
+		if (!OS.GDK_WINDOWING_X11 () || (siblingWindow == 0 && redrawWindow == 0)) {
 				if (above) {
 					OS.gdk_window_raise (window);
+					if (redrawWindow != 0) OS.gdk_window_raise (redrawWindow);
 				} else {
 					OS.gdk_window_lower (window);
 				}
 		} else {
 			XWindowChanges changes = new XWindowChanges ();
-			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow);
+			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow != 0 ? siblingWindow : redrawWindow);
 			changes.stack_mode = above ? OS.Above : OS.Below;
+			if (redrawWindow != 0 && siblingWindow == 0) changes.stack_mode = OS.Below;
 			int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 			int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 			int xScreen = OS.XDefaultScreen (xDisplay);
