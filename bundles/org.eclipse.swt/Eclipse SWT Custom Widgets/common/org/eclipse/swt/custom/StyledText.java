@@ -4318,8 +4318,7 @@ void installListeners() {
 	});
 	addListener(SWT.Traverse, new Listener() {
 		public void handleEvent(Event event) {
-			// do nothing
-			// hooked to disable automatic tab traversal on tab key press
+			handleTraverse(event);
 		}
 	});
 	if (verticalBar != null) {
@@ -4691,6 +4690,21 @@ void handleTextChanging(TextChangingEvent event) {
  */
 void handleTextSet(TextChangedEvent event) {
 	reset();
+}
+/**
+ * Called when a traversal key is pressed.
+ * Allow tab next traversal to occur when the widget is in single 
+ * line mode. 
+ * When in multi line mode we want to prevent the tab traversal 
+ * and receive the tab key event instead.
+ * <p>
+ *
+ * @param event the event
+ */
+void handleTraverse(Event event) {
+	if (isSingleLine() && event.detail == SWT.TRAVERSE_TAB_NEXT) {
+		event.doit = true;
+	}
 }
 /** 
  * Scrolls the widget vertically.
