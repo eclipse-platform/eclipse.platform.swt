@@ -139,12 +139,6 @@ public class CTabFolder extends Composite {
 	// tool tip
 	private Shell tip;
 
-
-/* Start ACCESSIBILITY */
-	Accessible accessible;
-/* End ACCESSIBILITY */
-
-
 /**
  * Construct a CTabFolder with the specified parent and style.
  * @param parent org.eclipse.swt.widgets.Composite
@@ -217,9 +211,8 @@ public CTabFolder(Composite parent, int style) {
 	
 	
 /* Start ACCESSIBILITY */
-	accessible = new Accessible(this);
-	accessible.addAccessibleListener(new AccessibleAdapter() {
-		public void get_accDescription(AccessibleEvent e) {
+	getAccessibleObject().addAccessibleListener(new AccessibleAdapter() {
+		public void getDescription(AccessibleEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
@@ -229,7 +222,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void get_accHelp(AccessibleEvent e) {
+		public void getHelp(AccessibleEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
@@ -240,7 +233,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void get_accKeyboardShortcut(AccessibleEvent e) {
+		public void getKeyboardShortcut(AccessibleEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID != ACC.CHILDID_SELF) {
@@ -248,7 +241,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void get_accName(AccessibleEvent e) {
+		public void getName(AccessibleEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
@@ -260,7 +253,7 @@ public CTabFolder(Composite parent, int style) {
 		}
 	});
 		
-	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+	getAccessibleObject().addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void accHitTest(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			int childID = ACC.CHILDID_SELF;
@@ -302,11 +295,9 @@ public CTabFolder(Composite parent, int style) {
 					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
 					break;
 				case ACC.NAVDIR_FIRSTCHILD:
-					if (childID != ACC.CHILDID_SELF) return; // do this check in Accessible
 					if (items.length > 0) childID = 1;
 					break;
 				case ACC.NAVDIR_LASTCHILD:
-					if (childID != ACC.CHILDID_SELF) return; // do this check in Accessible
 					if (items.length > 0) childID = items.length;
 					break;
 				case ACC.NAVDIR_LEFT:
@@ -319,23 +310,15 @@ public CTabFolder(Composite parent, int style) {
 					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
 					if (items.length > 0 && childID < items.length) childID = childID + 1;
 					break;
-				default: return; // do this check in Accessible
 			}
+			e.childID = childID;
 		}
 		
-		public void get_accChild(AccessibleControlEvent e) {
-			int childID = e.childID;
-			if (childID > items.length) return;
-			if (childID == ACC.CHILDID_SELF) {
-				e.accessible = accessible;
-			}
-		}
-		
-		public void get_accChildCount(AccessibleControlEvent e) {
+		public void getChildCount(AccessibleControlEvent e) {
 			e.code = items.length;
 		}
 		
-		public void get_accDefaultAction(AccessibleControlEvent e) {
+		public void getDefaultAction(AccessibleControlEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID != ACC.CHILDID_SELF) {
@@ -343,7 +326,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 
-		public void get_accRole(AccessibleControlEvent e) {
+		public void getRole(AccessibleControlEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
@@ -353,7 +336,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void get_accSelection(AccessibleControlEvent e) {
+		public void getSelection(AccessibleControlEvent e) {
 			if (selectedIndex == -1) {
 				e.childID = ACC.CHILDID_NONE;
 			} else {
@@ -361,7 +344,7 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void get_accState(AccessibleControlEvent e) {
+		public void getState(AccessibleControlEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			int state;
@@ -374,6 +357,15 @@ public CTabFolder(Composite parent, int style) {
 				}
 			}
 			e.code = state;
+		}
+		
+		// May need this for IEnumVARIANT
+		public void getChildren(AccessibleControlEvent e) {
+			Object[] children = new Object[items.length];
+			for (int i = 0; i < items.length; i++) {
+				children[i] = new Integer(i + 1);
+			}
+			e.children = children;
 		}
 	});
 /* End ACCESSIBILITY */

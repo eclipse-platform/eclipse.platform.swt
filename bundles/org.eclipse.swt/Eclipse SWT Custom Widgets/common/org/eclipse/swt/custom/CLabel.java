@@ -10,6 +10,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
+/* Start ACCESSIBILITY */
+import org.eclipse.swt.accessibility.*;
+/* End ACCESSIBILITY */
+
 /**
  * A Label which supports aligned text and/or an image and different border styles.
  * <p>
@@ -56,7 +60,6 @@ public class CLabel extends Canvas {
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 
-	
 /**
  * Create a CLabel with the given border style as a child of parent.
  */
@@ -78,6 +81,64 @@ public CLabel(Composite parent, int style) {
 			onDispose(event);
 		}
 	});
+
+/* Start ACCESSIBILITY */
+	getAccessibleObject().addAccessibleListener(new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				e.result = getText();
+			}
+		}
+		
+		public void getHelp(AccessibleEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				e.result = getToolTipText();
+			}
+		}
+		
+		public void getDescription(AccessibleEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				e.result = "This is a CLabel";
+			}
+		}
+	});
+		
+	getAccessibleObject().addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void accHitTest(AccessibleControlEvent e) {
+			Point testPoint = toControl(new Point(e.x, e.y));
+			if (getBounds().contains(testPoint)) {
+				e.childID = ACC.CHILDID_SELF;
+			}
+		}
+		
+		public void accLocation(AccessibleControlEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				Rectangle location = getBounds();
+				Point pt = toDisplay(new Point(location.x, location.y));
+				e.x = pt.x;
+				e.y = pt.y;
+				e.width = location.width;
+				e.height = location.height;
+			}
+		}
+		
+		public void getChildCount(AccessibleControlEvent e) {
+			e.code = 0;
+		}
+		
+		public void getRole(AccessibleControlEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				e.code = ACC.ROLE_SYSTEM_STATICTEXT;
+			}
+		}
+		
+		public void getState(AccessibleControlEvent e) {
+			if (e.childID == ACC.CHILDID_SELF) {
+				e.code = ACC.STATE_SYSTEM_NORMAL;
+			}
+		}
+	});
+/* End ACCESSIBILITY */
 
 }
 /**

@@ -6,6 +6,7 @@ package org.eclipse.swt.accessibility;
  */
 
 import org.eclipse.swt.internal.SWTEventObject;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -27,6 +28,7 @@ public class AccessibleControlEvent extends SWTEventObject {
 	public int width, height;		// OUT
 	public int code;				// IN/OUT
 	public String result;			// OUT
+	public Object children[];		// [OUT] - may need this for IEnumVARIANT
 	
 public AccessibleControlEvent(Object source) {
 	super(source);

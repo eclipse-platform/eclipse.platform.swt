@@ -1,118 +1,53 @@
-package org.eclipse.swt.accessibility;
+package org.eclipse.swt.widgets;
 
 import java.util.Vector;
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class Accessible {
 	static final boolean debug = true;
 	Control control;
-	int refCount = 0;
-	COMObject objIAccessible;
+	int refCount = 0, enumIndex = 0;
+	COMObject objIAccessible, objIEnumVARIANT;
 	IAccessible iaccessible;
 	Vector accessibleListeners, accessibleControlListeners;
+	Object[] variants;
 
 	public Accessible(Control control) {
 		this.control = control;
-		control.addListener(SWT.AccessAccessibility, new Listener() {
-			public void handleEvent(Event event) {
-				int lParam = ((int []) event.data)[0];
-				int wParam = ((int []) event.data)[1];
-				if (lParam == COM.OBJID_CLIENT) {
-					event.detail = ACC.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
-				}
-			}
-		});
-		objIAccessible = new COMObject(new int[] { 2, 0, 0, 1, 3, 5, 8, 1, 1, 5, 5, 5, 5, 5, 5, 5, 6, 5, 1, 1, 5, 5, 8, 6, 3, 4, 5, 5 }) {
-			public int method0(int[] args) {
-				return QueryInterface(args[0], args[1]);
-			}
-			public int method1(int[] args) {
-				return AddRef();
-			}
-			public int method2(int[] args) {
-				return Release();
-			}
-			public int method3(int[] args) {
-				return GetTypeInfoCount(args[0]);
-			}
-			public int method4(int[] args) {
-				return GetTypeInfo(args[0], args[1], args[2]);
-			}
-			public int method5(int[] args) {
-				return GetIDsOfNames(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method6(int[] args) {
-				return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-			}
-			public int method7(int[] args) {
-				return get_accParent(args[0]);
-			}
-			public int method8(int[] args) {
-				return get_accChildCount(args[0]);
-			}
-			public int method9(int[] args) {
-				return get_accChild(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method10(int[] args) {
-				return get_accName(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method11(int[] args) {
-				return get_accValue(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method12(int[] args) {
-				return get_accDescription(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method13(int[] args) {
-				return get_accRole(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method14(int[] args) {
-				return get_accState(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method15(int[] args) {
-				return get_accHelp(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method16(int[] args) {
-				return get_accHelpTopic(args[0], args[1], args[2], args[3], args[4], args[5]);
-			}
-			public int method17(int[] args) {
-				return get_accKeyboardShortcut(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method18(int[] args) {
-				return get_accFocus(args[0]);
-			}
-			public int method19(int[] args) {
-				return get_accSelection(args[0]);
-			}
-			public int method20(int[] args) {
-				return get_accDefaultAction(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method21(int[] args) {
-				return accSelect(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method22(int[] args) {
-				return accLocation(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-			}
-			public int method23(int[] args) {
-				return accNavigate(args[0], args[1], args[2], args[3], args[4], args[5]);
-			}
-			public int method24(int[] args) {
-				return accHitTest(args[0], args[1], args[2]);
-			}
-			public int method25(int[] args) {
-				return accDoDefaultAction(args[0], args[1], args[2], args[3]);
-			}
-			public int method26(int[] args) {
-				return put_accName(args[0], args[1], args[2], args[3], args[4]);
-			}
-			public int method27(int[] args) {
-				return put_accValue(args[0], args[1], args[2], args[3], args[4]);
-			}
+		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,5,5,5,5,5,5,5,6,5,1,1,5,5,8,6,3,4,5,5}) {
+			public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+			public int method1(int[] args) {return AddRef();}
+			public int method2(int[] args) {return Release();}
+			public int method3(int[] args) {return GetTypeInfoCount(args[0]);}
+			public int method4(int[] args) {return GetTypeInfo(args[0], args[1], args[2]);}
+			public int method5(int[] args) {return GetIDsOfNames(args[0], args[1], args[2], args[3], args[4]);}
+			public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+			public int method7(int[] args) {return get_accParent(args[0]);}
+			public int method8(int[] args) {return get_accChildCount(args[0]);}
+			public int method9(int[] args) {return get_accChild(args[0], args[1], args[2], args[3], args[4]);}
+			public int method10(int[] args) {return get_accName(args[0], args[1], args[2], args[3], args[4]);}
+			public int method11(int[] args) {return get_accValue(args[0], args[1], args[2], args[3], args[4]);}
+			public int method12(int[] args) {return get_accDescription(args[0], args[1], args[2], args[3], args[4]);}
+			public int method13(int[] args) {return get_accRole(args[0], args[1], args[2], args[3], args[4]);}
+			public int method14(int[] args) {return get_accState(args[0], args[1], args[2], args[3], args[4]);}
+			public int method15(int[] args) {return get_accHelp(args[0], args[1], args[2], args[3], args[4]);}
+			public int method16(int[] args) {return get_accHelpTopic(args[0], args[1], args[2], args[3], args[4], args[5]);}
+			public int method17(int[] args) {return get_accKeyboardShortcut(args[0], args[1], args[2], args[3], args[4]);}
+			public int method18(int[] args) {return get_accFocus(args[0]);}
+			public int method19(int[] args) {return get_accSelection(args[0]);}
+			public int method20(int[] args) {return get_accDefaultAction(args[0], args[1], args[2], args[3], args[4]);}
+			public int method21(int[] args) {return accSelect(args[0], args[1], args[2], args[3], args[4]);}
+			public int method22(int[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+			public int method23(int[] args) {return accNavigate(args[0], args[1], args[2], args[3], args[4], args[5]);}
+			public int method24(int[] args) {return accHitTest(args[0], args[1], args[2]);}
+			public int method25(int[] args) {return accDoDefaultAction(args[0], args[1], args[2], args[3]);}
+			public int method26(int[] args) {return put_accName(args[0], args[1], args[2], args[3], args[4]);}
+			public int method27(int[] args) {return put_accValue(args[0], args[1], args[2], args[3], args[4]);}
 		};
-
 		int[] ppvObject = new int[1];
 		int result = ACC.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
 		if (result != COM.S_OK)
@@ -120,6 +55,16 @@ public class Accessible {
 		iaccessible = new IAccessible(ppvObject[0]);
 		iaccessible.AddRef();
 		//new TypeInfoBrowser(ppvObject[0]);
+		
+		objIEnumVARIANT = new COMObject(new int[] {2,0,0,3,1,0,1}) {
+			public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+			public int method1(int[] args) {return AddRef();}
+			public int method2(int[] args) {return Release();}
+			public int method3(int[] args) {return Next(args[0], args[1], args[2]);}
+			public int method4(int[] args) {return Skip(args[0]);}
+			public int method5(int[] args) {return Reset();}
+			// method6 Clone - not implemented
+		};
 	}
 
 	public void addAccessibleListener(AccessibleListener listener) {
@@ -142,9 +87,16 @@ public class Accessible {
 
 	// need removeAccessibleControlListener also
 	
+	int WM_GETOBJECT (int wParam, int lParam) {
+		if (lParam == COM.OBJID_CLIENT) {
+			return ACC.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
+		}
+		return 0;
+	}
+
 	int QueryInterface(int arg1, int arg2) {
 		if (debug)
-			System.out.println("QueryInterface");
+			System.out.print("QueryInterface: ");
 
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, arg1, GUID.sizeof);
@@ -170,11 +122,25 @@ public class Accessible {
 			return COM.S_OK;
 		}
 
+		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) {
+			if (debug)
+				System.out.println("IEnumVARIANT");
+			AccessibleControlEvent event = new AccessibleControlEvent(this);
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getChildren(event);
+			}
+			variants = event.children;
+			enumIndex = 0;
+			COM.MoveMemory(arg2, new int[] { objIEnumVARIANT.getAddress()}, 4);
+			return COM.S_OK;
+		}
+
 		int[] ppvObject = new int[1];
 		int result = iaccessible.QueryInterface(guid, ppvObject);
 		COM.MoveMemory(arg2, ppvObject, 4);
 		if (debug)
-			System.out.println("QI other " + result);
+			System.out.println("other (" + result + ")");
 		return result;
 	}
 
@@ -252,7 +218,7 @@ public class Accessible {
 		if (debug)
 			System.out.println("accLocation " + pxLeft + " " + pyTop + " " + pcxWidth + " " + pcyHeight + " " + varChild_vt + " " + varChild_lVal);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -271,6 +237,19 @@ public class Accessible {
 			System.out.println("accNavigate " + navDir + " " + varStart_vt + " " + varStart_lVal + " " + pvarEndUpAt);
 
 		if (varStart_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		switch (navDir) {
+			case ACC.NAVDIR_FIRSTCHILD:
+			case ACC.NAVDIR_LASTCHILD:
+				if (varStart_lVal != ACC.CHILDID_SELF) return COM.E_INVALIDARG;
+			case ACC.NAVDIR_UP:
+			case ACC.NAVDIR_DOWN:
+			case ACC.NAVDIR_LEFT:
+			case ACC.NAVDIR_PREVIOUS:
+			case ACC.NAVDIR_RIGHT:
+			case ACC.NAVDIR_NEXT:
+				break;
+			default: return COM.E_INVALIDARG;
+		}
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.code = navDir;
 		event.childID = varStart_lVal;
@@ -310,13 +289,15 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accChild " + varChild_vt + " " + varChild_lVal + " " + ppdispChild);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accChild(event);
+			listener.getChild(event);
 		}
+		if (debug)
+			System.out.println("get_accChild returned: " + event);
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
 			COM.MoveMemory(ppdispChild, new int[] { accessible.objIAccessible.getAddress() }, 4);
@@ -332,7 +313,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accChildCount(event);
+			listener.getChildCount(event);
 		}
 
 		COM.MoveMemory(pcountChildren, new int[] { event.code }, 4);
@@ -343,12 +324,12 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accDefaultAction " + varChild_vt + " " + varChild_lVal + " " + pszDefaultAction);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accDefaultAction(event);
+			listener.getDefaultAction(event);
 		}
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
@@ -361,12 +342,12 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accDescription " + varChild_vt + " " + varChild_lVal + " " + pszDescription);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.get_accDescription(event);
+			listener.getDescription(event);
 		}
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
@@ -382,7 +363,7 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accFocus(event);
+			listener.getFocus(event);
 		}
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
@@ -409,12 +390,12 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accHelp " + varChild_vt + " " + varChild_lVal + " " + pszHelp);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.get_accHelp(event);
+			listener.getHelp(event);
 		}
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
@@ -433,12 +414,12 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accKeyboardShortcut " + pszKeyboardShortcut);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.get_accKeyboardShortcut(event);
+			listener.getKeyboardShortcut(event);
 		}
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
@@ -451,13 +432,15 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accName " + varChild_vt + " " + varChild_lVal + " " + pszName);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.get_accName(event);
+			listener.getName(event);
 		}
+		if (debug)
+			System.out.println("get_accName returned: " + event);
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
 		int ptr = COM.SysAllocString(data);
@@ -473,13 +456,15 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accRole " + varChild_vt + " " + varChild_lVal + " " + pvarRole);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accRole(event);
+			listener.getRole(event);
 		}
+		if (debug)
+			System.out.println("get_accRole returned: " + event);
 		int role = event.code;
 		COM.MoveMemory(pvarRole, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarRole + 8, new int[] { role }, 4);
@@ -491,10 +476,13 @@ public class Accessible {
 			System.out.println("get_accSelection " + pvarChildren);
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = ACC.CHILDID_NONE;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accSelection(event);
+			listener.getSelection(event);
 		}
+		if (debug)
+			System.out.println("get_accSelection returned: " + event);
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
 			COM.MoveMemory(pvarChildren, new short[] { COM.VT_DISPATCH }, 2);
@@ -526,13 +514,15 @@ public class Accessible {
 		if (debug)
 			System.out.println("get_accState " + varChild_vt + " " + varChild_lVal + " " + pvarState);
 
-		if (varChild_vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accState(event);
+			listener.getState(event);
 		}
+		if (debug)
+			System.out.println("get_accState returned: " + event);
 		int state = event.code;
 		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
@@ -547,7 +537,7 @@ public class Accessible {
 		event.childID = varChild_lVal;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.get_accValue(event);
+			listener.getValue(event);
 		}
 		if (event.result == null) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
@@ -568,5 +558,77 @@ public class Accessible {
 		if (debug)
 			System.out.println("put_accValue " + varChild_vt + " " + varChild_lVal + " " + szValue);
 		return iaccessible.put_accValue(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szValue);
+	}
+
+	/* IEnumVARIANT methods: Next, Skip, Reset */
+	int Next(int celt, int rgvar, int pceltFetched) {
+		/* Retrieve the next celt items in the enumeration sequence. 
+		 * If there are fewer than the requested number of elements left
+		 * in the sequence, retrieve the remaining elements.
+		 * The number of elements actually retrieved is returned in pceltFetched 
+		 * (unless the caller passed in NULL for that parameter).
+		 */
+		if (debug)
+			System.out.println("Next " + celt + " " + rgvar + " " + pceltFetched);
+
+		if (rgvar == 0) return COM.E_INVALIDARG;
+		if (pceltFetched == 0 && celt != 1) return COM.E_INVALIDARG;
+			
+		Object[] nextItems = null;
+		if (variants != null && celt >= 1) {
+			int endIndex = enumIndex + celt - 1;
+			if (endIndex > (variants.length - 1)) endIndex = variants.length - 1;
+			if (enumIndex <= endIndex) {
+				nextItems = new Object[endIndex - enumIndex + 1];
+				for (int i = 0; i < nextItems.length; i++) {
+					nextItems[i] = variants[enumIndex];
+					enumIndex++;
+				}
+			}
+		}
+		if (nextItems != null) {
+			for (int i = 0; i < nextItems.length; i++) {
+				Object nextItem = nextItems[i];
+				if (nextItem instanceof Integer) {
+					int item = ((Integer) nextItem).intValue();
+					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_I4 }, 2);
+					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { item }, 4);
+				} else {
+					int address = ((Accessible) nextItem).objIAccessible.getAddress();
+					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_DISPATCH }, 2);
+					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { address }, 4);
+				}
+			}
+			if (pceltFetched != 0)
+				COM.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
+			if (nextItems.length == celt) return COM.S_OK;
+		} else {
+			if (pceltFetched != 0)
+				COM.MoveMemory(pceltFetched, new int[] {0}, 4);
+		}
+		return COM.S_FALSE;
+	}
+	
+	int Skip(int celt) {
+		/* Skip over the specified number of elements in the enumeration sequence. */
+		if (debug)
+			System.out.println("Skip " + celt);
+			
+		if (celt < 1 ) return COM.E_INVALIDARG;
+		enumIndex += celt;
+		if (enumIndex > (variants.length - 1)) {
+			enumIndex = variants.length - 1;
+			return COM.S_FALSE;
+		}
+		return COM.S_OK;
+	}
+	
+	int Reset() {
+		/* Reset the enumeration sequence to the beginning. */
+		if (debug)
+			System.out.println("Reset");
+
+		enumIndex = 0;
+		return COM.S_OK;
 	}
 }

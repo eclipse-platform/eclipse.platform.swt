@@ -24,6 +24,7 @@ public class ACC extends COM {
 	public static final int ROLE_SYSTEM_PUSHBUTTON = 0x2b;
 	public static final int ROLE_SYSTEM_PAGETAB = 0x25;
 	public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
+	public static final int ROLE_SYSTEM_STATICTEXT = 0x29;
 	public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;
 	public static final int NAVDIR_UP = 0x1;
 	public static final int NAVDIR_DOWN = 0x2;

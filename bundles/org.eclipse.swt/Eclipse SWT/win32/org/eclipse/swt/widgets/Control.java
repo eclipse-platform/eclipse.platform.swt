@@ -10,8 +10,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-import org.eclipse.swt.accessibility.*;
-
 /**
  * Control is the abstract superclass of all windowed user interface classes.
  * <p>
@@ -41,6 +39,11 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
+
+/* Start ACCESSIBILITY */
+	Accessible accessible;
+/* End ACCESSIBILITY */
+	
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -568,6 +571,28 @@ public boolean forceFocus () {
 	shell.setDefaultButton (null, false);
 	return true;
 }
+
+/* Start ACCESSIBILITY */
+/**
+ * Returns the accessible object for the receiver.
+ * If this is the first time this object is requested,
+ * then the object is created and returned.
+ *
+ * @return the accessible object
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Accessible getAccessibleObject () {
+	checkWidget ();
+	if (accessible == null) {
+		accessible = new Accessible(this);
+	}
+	return accessible;
+}
+/* End ACCESSIBILITY */
 
 /**
  * Returns the receiver's background color.
@@ -2634,7 +2659,9 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_IME_COMPOSITION:	result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
+/* Start ACCESSIBILITY */
 		case OS.WM_GETOBJECT:			result = WM_GETOBJECT (wParam, lParam); break;
+/* End ACCESSIBILITY */
 		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
@@ -2816,12 +2843,17 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 	return null;
 }
 
+/* Start ACCESSIBILITY */
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
-	Event event = new Event ();
-	event.data = new int [] {lParam, wParam};
-	sendEvent (SWT.AccessAccessibility, event);
-	return new LRESULT(event.detail);
+	if (accessible != null) {
+		int result = accessible.WM_GETOBJECT (wParam, lParam);
+		if (result != 0) {
+			return new LRESULT(result);
+		}
+	}
+	return null;
 }
+/* End ACCESSIBILITY */
 
 LRESULT WM_HELP (int wParam, int lParam) {
 	if (OS.IsWinCE) return null;

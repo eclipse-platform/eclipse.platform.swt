@@ -19,6 +19,11 @@ import org.eclipse.swt.internal.SWTEventListener;
  * When a client requests information the appropriate method
  * will be invoked.
  * </p><p>
+ * Accessibility clients use child identifiers to specify
+ * whether they want information about a control or one of its children.
+ * Child identifiers are positive integers > 0.
+ * The identifier CHILDID_SELF (0) represents the control.
+ * </p><p>
  * Note: This interface is typically used by implementors of
  * a custom control to provide very detailed information about
  * the control instance to accessibility clients.
@@ -31,22 +36,27 @@ public interface AccessibleControlListener extends SWTEventListener {
 
 	public void accHitTest(AccessibleControlEvent e);
 	public void accLocation(AccessibleControlEvent e);
-	public void accNavigate(AccessibleControlEvent e);
-	public void get_accChild(AccessibleControlEvent e);
-	public void get_accChildCount(AccessibleControlEvent e);
-	public void get_accDefaultAction(AccessibleControlEvent e);
-	public void get_accFocus(AccessibleControlEvent e);
-	public void get_accRole(AccessibleControlEvent e);
-	public void get_accSelection(AccessibleControlEvent e);
-	public void get_accState(AccessibleControlEvent e);
-	public void get_accValue(AccessibleControlEvent e);
+	public void getChild(AccessibleControlEvent e);
+	public void getChildCount(AccessibleControlEvent e);
+	public void getDefaultAction(AccessibleControlEvent e);
+	public void getFocus(AccessibleControlEvent e);
+	public void getRole(AccessibleControlEvent e);
+	public void getSelection(AccessibleControlEvent e);
+	public void getState(AccessibleControlEvent e);
+	public void getValue(AccessibleControlEvent e);
 	
-	// May not implement
-	public void accDoDefaultAction(AccessibleControlEvent e);
-	public void accSelect(AccessibleControlEvent e);
-	public void get_accParent(AccessibleControlEvent e);
+	// May need to implement for IEnumVARIANT
+	public void getChildren(AccessibleControlEvent e);
+	
+	// May not implement - not sure what clients use these - likely testing clients, not accesibility (but not sure)
+	public void accNavigate(AccessibleControlEvent e);
+	//public void accDoDefaultAction(AccessibleControlEvent e);
+	//public void accSelect(AccessibleControlEvent e);
+	
+	// Probably won't implement - the usual parent is probably good enough
+	//public void getParent(AccessibleControlEvent e);
 	
 	// Will not implement
-	//public void put_accName(AccessibleControlEvent e);
-	//public void put_accValue(AccessibleControlEvent e);
+	//public void putName(AccessibleControlEvent e);
+	//public void putValue(AccessibleControlEvent e);
 }
