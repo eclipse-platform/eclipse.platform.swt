@@ -1883,10 +1883,18 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			* the mouse.  The fix is to look for WM_ACTIVATEAPP
 			* and force the enabled dialog child to the front.
 			* This is typically what the user is expecting.
+			* 
+			* NOTE: If the modal shell is disabled for any reason,
+			* it should not be brought to the front.
 			*/
 			if (wParam != 0) {
-				Shell shell = getModalShell ();
-				if (shell != null) shell.bringToTop ();
+				Shell modal = getModalShell ();
+				if (modal != null) {
+					int hwndModal = modal.handle;
+					if (OS.IsWindowEnabled (hwndModal)) {
+						modal.bringToTop ();
+					}
+				}
 			}
 			break;
 		case OS.WM_ENDSESSION:
