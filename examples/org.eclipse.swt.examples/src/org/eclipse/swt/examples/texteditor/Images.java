@@ -19,6 +19,9 @@ public class Images {
 
 	// Bitmap Images
 	public Image Bold;
+	public Image Italic;
+	public Image Underline;
+	public Image Strikeout;
 	public Image Red;
 	public Image Green;
 	public Image Blue;
@@ -52,6 +55,9 @@ Image createBitmapImage(Display display, String fileName) {
 public void loadAll (Display display) {
 	// Bitmap Images
 	Bold = createBitmapImage (display, "bold");
+	Italic = createBitmapImage (display, "italic");
+	Underline = createBitmapImage (display, "underline");
+	Strikeout = createBitmapImage (display, "strikeout");
 	Red = createBitmapImage (display, "red");
 	Green = createBitmapImage (display, "green");
 	Blue = createBitmapImage (display, "blue");
@@ -59,6 +65,9 @@ public void loadAll (Display display) {
 	
 	AllBitmaps = new Image [] {
 		Bold,
+		Italic,
+		Underline,
+		Strikeout,
 		Red,
 		Green,
 		Blue,

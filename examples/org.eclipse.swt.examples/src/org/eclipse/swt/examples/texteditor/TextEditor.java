@@ -32,10 +32,8 @@ public class TextEditor {
 	Color BLUE = null; 
 	Color GREEN = null; 
 	Font font = null;
+	ToolItem boldButton, italicButton, underlineButton, strikeoutButton;
 	
-	boolean isBold = false;
-	
-	ExtendedModifyListener extendedModifyListener;
 	static ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");
 
 Menu createEditMenu() {
@@ -51,7 +49,6 @@ Menu createEditMenu() {
 			text.cut();
 		}
 	});
-
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Copy_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'C');
@@ -61,7 +58,6 @@ Menu createEditMenu() {
 			text.copy();
 		}
 	});
-
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Paste_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'V');
@@ -70,9 +66,7 @@ Menu createEditMenu() {
 			text.paste();
 		}
 	});
-
-	new MenuItem (menu, SWT.SEPARATOR);
-	
+	new MenuItem (menu, SWT.SEPARATOR);	
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Font_menuitem"));
 	item.addSelectionListener(new SelectionAdapter() {
@@ -99,20 +93,35 @@ Menu createFileMenu() {
 }
 
 /*
- * Set the text state to bold.
+ * Set a style
  */
-void bold(boolean bold) {
-	isBold = bold;
+void setStyle(Widget widget) {
 	Point sel = text.getSelectionRange();
-	if ((sel != null) && (sel.y != 0)) {
-		StyleRange style;
-		int fontStyle = SWT.NORMAL;
-		if (isBold) fontStyle = SWT.BOLD;
-		style = new StyleRange(sel.x, sel.y, null, null, fontStyle);
+	if ((sel == null) || (sel.y == 0)) return;
+	StyleRange style;
+	for (int i = sel.x; i<sel.x+sel.y; i++) {
+		StyleRange range = text.getStyleRangeAtOffset(i);
+		if (range != null) {
+			style = (StyleRange)range.clone();
+			style.start = i;
+			style.length = 1;
+		} else {
+			style = new StyleRange(i, 1, null, null, SWT.NORMAL);
+		}
+		if (widget == boldButton) {
+			style.fontStyle ^= SWT.BOLD;
+		} else if (widget == italicButton) {
+			style.fontStyle ^= SWT.ITALIC;						
+		} else if (widget == underlineButton) {
+			style.underline = !style.underline;
+		} else if (widget == strikeoutButton) {
+			style.strikeout = !style.strikeout;
+		}
 		text.setStyleRange(style);
 	}
-	text.setSelectionRange(sel.x + sel.y, 0);
+	text.setSelectionRange(sel.x + sel.y, 0);			
 }
+
 /*
  * Clear all style data for the selected text.
  */
@@ -128,24 +137,20 @@ void clear() {
 /*
  * Set the foreground color for the selected text.
  */
-void fgColor(int color) {
+void fgColor(Color fg) {
 	Point sel = text.getSelectionRange();
 	if ((sel == null) || (sel.y == 0)) return;
-	Color fg;
-	if (color == SWT.COLOR_RED) {
-		fg = RED;
-	} else if (color == SWT.COLOR_GREEN) {
-		fg = GREEN;
-	} else if (color == SWT.COLOR_BLUE) {
-		fg = BLUE;
-	} else {
-		fg = null;
-	}
-	StyleRange style;
+	StyleRange style, range;
 	for (int i = sel.x; i<sel.x+sel.y; i++) {
-		StyleRange range = text.getStyleRangeAtOffset(i);
-		if (range == null) {style = new StyleRange(i, 1, fg, null, SWT.NORMAL);}
-		else {style = new StyleRange(i, 1, fg, null, range.fontStyle);};
+		range = text.getStyleRangeAtOffset(i);
+		if (range != null) {
+			style = (StyleRange)range.clone();
+			style.start = i;
+			style.length = 1;
+			style.foreground = fg;
+		} else {
+			style = new StyleRange (i, 1, fg, null, SWT.NORMAL);
+		}
 		text.setStyleRange(style);
 	}
 	text.setSelectionRange(sel.x + sel.y, 0);
@@ -189,51 +194,60 @@ void createStyledText() {
 	spec.verticalAlignment = GridData.FILL;
 	spec.grabExcessVerticalSpace = true;
 	text.setLayoutData(spec);
-	extendedModifyListener = new ExtendedModifyListener() {
+	text.addExtendedModifyListener(new ExtendedModifyListener() {
 		public void modifyText(ExtendedModifyEvent e) {
 			handleExtendedModify(e);
 		}
-	};
-	text.addExtendedModifyListener(extendedModifyListener);
+	});
 }
 
 void createToolBar() {
 	toolBar = new ToolBar(shell, SWT.NULL);
-	
-	ToolItem item = new ToolItem(toolBar, SWT.CHECK);
-	item.setImage(images.Bold);
-	item.addSelectionListener(new SelectionAdapter() {
+	SelectionAdapter listener = new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
-			bold(((ToolItem)event.widget).getSelection());
+			setStyle (event.widget);
 		}
-	});
-	
-	item = new ToolItem(toolBar, SWT.SEPARATOR);
-
+	};
+	boldButton = new ToolItem(toolBar, SWT.CHECK);
+	boldButton.setImage(images.Bold);
+	boldButton.setToolTipText(resources.getString("Bold"));
+	boldButton.addSelectionListener(listener);
+	italicButton = new ToolItem(toolBar, SWT.CHECK);
+	italicButton.setImage(images.Italic);
+	italicButton.setToolTipText(resources.getString("Italic"));
+	italicButton.addSelectionListener(listener);
+	underlineButton = new ToolItem(toolBar, SWT.CHECK);
+	underlineButton.setImage(images.Underline);
+	underlineButton.setToolTipText(resources.getString("Underline"));
+	underlineButton.addSelectionListener(listener);
+	strikeoutButton = new ToolItem(toolBar, SWT.CHECK);
+	strikeoutButton.setImage(images.Strikeout);
+	strikeoutButton.setToolTipText(resources.getString("Strikeout"));
+	strikeoutButton.addSelectionListener(listener);
+		
+	ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
 	item = new ToolItem(toolBar, SWT.PUSH);
 	item.setImage(images.Red);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
-			fgColor(SWT.COLOR_RED);
+			fgColor(RED);
 		}
 	});
 	item = new ToolItem(toolBar, SWT.PUSH);
 	item.setImage(images.Green);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
-			fgColor(SWT.COLOR_GREEN);
+			fgColor(GREEN);
 		}
 	});
 	item = new ToolItem(toolBar, SWT.PUSH);
 	item.setImage(images.Blue);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
-			fgColor(SWT.COLOR_BLUE);
+			fgColor(BLUE);
 		}
-	});
-	
+	});	
 	item = new ToolItem(toolBar, SWT.SEPARATOR);
-
 	item = new ToolItem(toolBar, SWT.PUSH);
 	item.setImage(images.Erase);
 	item.addSelectionListener(new SelectionAdapter() {
@@ -241,11 +255,6 @@ void createToolBar() {
 			clear();
 		}
 	});
-}
-void displayError(String msg) {
-	MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-	box.setMessage(msg);
-	box.open();
 }
 /*
  * Cache the style information for text that has been cut or copied.
@@ -286,16 +295,17 @@ void handleExtendedModify(ExtendedModifyEvent event) {
 		style = null;
 		if (caretOffset < text.getCharCount()) style = text.getStyleRangeAtOffset(caretOffset);
 		if (style != null) {
+			style = (StyleRange) style.clone ();
 			style.start = event.start;
 			style.length = event.length;
-			int fontStyle = SWT.NORMAL;
-			if (isBold) fontStyle = SWT.BOLD;
-			style.fontStyle = fontStyle;
-			text.setStyleRange(style);
-		} else if (isBold) {
-			StyleRange newStyle = new StyleRange(event.start, event.length, null, null, SWT.BOLD);
-			text.setStyleRange(newStyle);
-		}
+		} else {
+			style = new StyleRange(event.start, event.length, null, null, SWT.NORMAL);
+		}		
+		if (boldButton.getSelection()) style.fontStyle |= SWT.BOLD;
+		if (italicButton.getSelection()) style.fontStyle |= SWT.ITALIC;
+		style.underline = underlineButton.getSelection();
+		style.strikeout = strikeoutButton.getSelection();
+		if (!style.isUnstyled()) text.setStyleRange(style);
 	} else {
 		// paste occurring, have text take on the styles it had when it was
 		// cut/copied
@@ -331,9 +341,10 @@ void setFont() {
 	FontDialog fontDialog = new FontDialog(shell);
 	fontDialog.setFontList((text.getFont()).getFontData());
 	FontData fontData = fontDialog.open();
-	if(fontData != null) {
-		if(font != null)
+	if (fontData != null) {
+		if (font != null) {
 			font.dispose();
+		}
 		font = new Font(shell.getDisplay(), fontData);
 		text.setFont(font);
 	}
