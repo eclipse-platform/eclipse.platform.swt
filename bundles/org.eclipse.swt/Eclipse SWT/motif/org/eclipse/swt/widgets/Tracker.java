@@ -457,9 +457,8 @@ public boolean open () {
 					 * the move failed.
 					 */
 					if (isDisposed ()) {
-						if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
-						if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
-						return false;
+						cancelled = true;
+						break;
 					}
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
@@ -527,9 +526,8 @@ public boolean open () {
 						 * the move failed.
 						 */
 						if (isDisposed ()) {
-							if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
-							if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
-							return false;
+							cancelled = true;
+							break;
 						}
 						drawRectangles ();
 						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
@@ -547,7 +545,7 @@ public boolean open () {
 		}
 	}
 	OS.XtFree (xEvent);
-	drawRectangles ();
+	if (!isDisposed()) drawRectangles ();
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	return !cancelled;

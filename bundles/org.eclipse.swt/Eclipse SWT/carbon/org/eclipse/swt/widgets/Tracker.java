@@ -496,7 +496,10 @@ public boolean open () {
 							* event.  If this happens, return false to indicate
 							* that the tracking has failed.
 							*/
-							if (isDisposed ()) return false;
+							if (isDisposed ()) {
+								cancelled = true;
+								break;
+							}
 							drawRectangles (window, false);
 							oldX = newX;  oldY = newY;
 						}
@@ -561,7 +564,10 @@ public boolean open () {
 							* event.  If this happens return false to indicate
 							* that the tracking has failed.
 							*/
-							if (isDisposed ()) return false;
+							if (isDisposed ()) {
+								cancelled = true;
+								break;
+							}
 							drawRectangles (window, false);
 							oldX = cursorPos.x;  oldY = cursorPos.y;
 						}
@@ -585,7 +591,7 @@ public boolean open () {
 			display.setCursor (clientCursor.handle);
 		}
 	}
-	drawRectangles (window, true);
+	if (!isDisposed()) drawRectangles (window, true);
 	OS.DisposeWindow (window);
 	tracking = false;
 	display.grabControl = null;
