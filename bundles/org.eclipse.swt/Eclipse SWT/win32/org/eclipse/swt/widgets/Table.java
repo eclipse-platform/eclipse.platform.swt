@@ -2641,6 +2641,38 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.NM_RECOGNIZEGESTURE:
+			/* 
+			* Feature on Pocket PC.  The tree and table controls detect the tap
+			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
+			* the popup menu.  This default behaviour is unwanted on Pocket PC 2002
+			* when no menu has been set, as it still draws a red circle.  The fix
+			* is to disable this default behaviour when no menu is set by returning
+			* TRUE when receiving the Pocket PC 2002 specific NM_RECOGNIZEGESTURE
+			* message.
+			*/
+			if (OS.IsPPC) {
+				boolean hasMenu = menu != null && !menu.isDisposed ();
+				if (!hasMenu && !hooks (SWT.MenuDetect)) return LRESULT.ONE;
+			}
+			break;
+		case OS.GN_CONTEXTMENU:
+			if (OS.IsPPC) {
+				boolean hasMenu = menu != null && !menu.isDisposed ();
+				if (hasMenu || hooks (SWT.MenuDetect)) {
+					NMRGINFO nmrg = new NMRGINFO ();
+					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
+					/*
+					* Feature on Pocket PC.  The popup menu is expected to become
+					* visible when the stylus is still down.  On a tree and a
+					* table, activating the menu from within the event loop causes
+					* the menu to be visible only when the stylus is released.
+					* The fix is to force the menu to be visible immediately.
+					*/
+					showMenu (nmrg.x, nmrg.y, true);
+				}
+			}
+			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }

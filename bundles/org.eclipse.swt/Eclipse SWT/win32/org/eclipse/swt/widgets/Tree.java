@@ -1543,26 +1543,6 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	if (OS.IsPPC) {
-		/*
-		* Note: On WinCE PPC, only attempt to recognize the gesture for
-		* a context menu when the control contains a valid menu or there
-		* are listeners for the MenuDetect event.
-		*/
-		boolean hasMenu = menu != null && !menu.isDisposed ();
-		if (hasMenu || hooks (SWT.MenuDetect)) {
-			int x = (short) (lParam & 0xFFFF);
-			int y = (short) (lParam >> 16);
-			SHRGINFO shrg = new SHRGINFO ();
-			shrg.cbSize = SHRGINFO.sizeof;
-			shrg.hwndClient = handle;
-			shrg.ptDown_x = x;
-			shrg.ptDown_y = y; 
-			shrg.dwFlags = OS.SHRG_RETURNCMD;
-			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
-		}
-	}
 	/*
 	* Feature in Windows.  When a tree item is
 	* reselected, Windows does not issue a WM_NOTIFY.
@@ -1994,15 +1974,37 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			dragStarted = true;
 			break;
 		case OS.NM_RECOGNIZEGESTURE:
-			/* Feature on Pocket PC.  The TreeView control detects the tap and hold
-			* gesture by default. It sends a GN_CONTEXTMENU message to show the popup
-			* menu.  This default behaviour is unwanted on Pocket PC 2002 as it causes
-			* a red circle to be drawn even if no menu has been set.  The workaround is
-			* to disable this default behaviour by returning TRUE when receiving the
-			* Pocket PC 2002 specific NM_RECOGNIZEGESTURE message.
+			/* 
+			* Feature on Pocket PC.  The tree and table controls detect the tap
+			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
+			* the popup menu.  This default behaviour is unwanted on Pocket PC 2002
+			* when no menu has been set, as it still draws a red circle.  The fix
+			* is to disable this default behaviour when no menu is set by returning
+			* TRUE when receiving the Pocket PC 2002 specific NM_RECOGNIZEGESTURE
+			* message.
 			*/
-			if (OS.IsPPC) return LRESULT.ONE;
-			break;			
+			if (OS.IsPPC) {
+				boolean hasMenu = menu != null && !menu.isDisposed ();
+				if (!hasMenu && !hooks (SWT.MenuDetect)) return LRESULT.ONE;
+			}
+			break;
+		case OS.GN_CONTEXTMENU:
+			if (OS.IsPPC) {
+				boolean hasMenu = menu != null && !menu.isDisposed ();
+				if (hasMenu || hooks (SWT.MenuDetect)) {
+					NMRGINFO nmrg = new NMRGINFO ();
+					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
+					/*
+					* Feature on Pocket PC.  The popup menu is expected to become
+					* visible when the stylus is still down.  On a tree and a
+					* table, activating the menu from within the event loop causes
+					* the menu to be visible only when the stylus is released.
+					* The fix is to force the menu to be visible immediately.
+					*/
+					showMenu (nmrg.x, nmrg.y, true);
+				}
+			}
+			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }

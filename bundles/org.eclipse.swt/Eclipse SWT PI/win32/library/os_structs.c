@@ -2075,6 +2075,46 @@ void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpSt
 }
 #endif
 
+#ifndef NO_NMRGINFO
+typedef struct NMRGINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, dwItemSpec;
+} NMRGINFO_FID_CACHE;
+
+NMRGINFO_FID_CACHE NMRGINFOFc;
+
+void cacheNMRGINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMRGINFOFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMRGINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMRGINFOFc.x = (*env)->GetFieldID(env, NMRGINFOFc.clazz, "x", "I");
+	NMRGINFOFc.y = (*env)->GetFieldID(env, NMRGINFOFc.clazz, "y", "I");
+	NMRGINFOFc.dwItemSpec = (*env)->GetFieldID(env, NMRGINFOFc.clazz, "dwItemSpec", "I");
+	NMRGINFOFc.cached = 1;
+}
+
+NMRGINFO *getNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct)
+{
+	if (!NMRGINFOFc.cached) cacheNMRGINFOFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->ptAction.x = (*env)->GetIntField(env, lpObject, NMRGINFOFc.x);
+	lpStruct->ptAction.y = (*env)->GetIntField(env, lpObject, NMRGINFOFc.y);
+	lpStruct->dwItemSpec = (*env)->GetIntField(env, lpObject, NMRGINFOFc.dwItemSpec);
+	return lpStruct;
+}
+
+void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct)
+{
+	if (!NMRGINFOFc.cached) cacheNMRGINFOFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMRGINFOFc.x, (jint)lpStruct->ptAction.x);
+	(*env)->SetIntField(env, lpObject, NMRGINFOFc.y, (jint)lpStruct->ptAction.y);
+	(*env)->SetIntField(env, lpObject, NMRGINFOFc.dwItemSpec, (jint)lpStruct->dwItemSpec);
+}
+#endif
+
 #ifndef NO_NMTOOLBAR
 typedef struct NMTOOLBAR_FID_CACHE {
 	int cached;

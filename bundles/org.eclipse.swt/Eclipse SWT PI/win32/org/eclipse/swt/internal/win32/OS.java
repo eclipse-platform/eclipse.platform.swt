@@ -2314,6 +2314,7 @@ public static final native void MoveMemory (LOGFONTW Destination, int Source, in
 public static final native void MoveMemory (LOGFONTA Destination, int Source, int Length);
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
+public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);

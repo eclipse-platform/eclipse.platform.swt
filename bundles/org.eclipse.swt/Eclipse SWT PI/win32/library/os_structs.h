@@ -331,6 +331,14 @@ void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpSt
 #define setNMREBARCHEVRONFields(a,b,c)
 #endif
 
+#ifndef NO_NMRGINFO
+NMRGINFO *getNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
+void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
+#else
+#define getNMRGINFOFields(a,b,c) NULL
+#define setNMRGINFOFields(a,b,c)
+#endif
+
 #ifndef NO_NMTOOLBAR
 NMTOOLBAR *getNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);
 void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);
