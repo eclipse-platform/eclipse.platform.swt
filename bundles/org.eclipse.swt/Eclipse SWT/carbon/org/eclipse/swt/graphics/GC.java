@@ -756,6 +756,19 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	OS.ATSUDrawText(data.layout, 0, length, OS.X2Fix(x), OS.X2Fix(-(y + data.fontAscent)));
 	OS.CGContextRestoreGState(handle);
 }
+//public void drawString(String string, int x, int y, boolean isTransparent) {
+//	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+//	int length = string.length();
+//	if (length == 0) return;
+//	OS.CGContextSaveGState(handle);
+//	OS.CGContextScaleCTM(handle, 1, -1);
+//	OS.CGContextSetFillColor(handle, data.foreground);
+//	OS.CGContextSetTextDrawingMode(handle, 0);
+//	byte[] buffer = string.getBytes();
+//	OS.CGContextShowTextAtPoint(handle, x, -(y + data.fontAscent), buffer, buffer.length);
+//	OS.CGContextRestoreGState(handle);
+//}
 
 /** 
  * Draws the given string, using the receiver's current font and
@@ -1410,6 +1423,8 @@ void init(Drawable drawable, GCData data, int context) {
 	handle = context;
 	
 	if (data.font != null) setGCFont();
+	
+//	OS.CGContextSelectFont(handle, "Helvetica\0".getBytes(), 14, 1);
 }
 
 /**
@@ -1754,6 +1769,19 @@ public Point stringExtent(String string) {
 	int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
 	return new Point(width, height);
 }
+//public Point stringExtent(String string) {
+//	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+//	int length = string.length();
+//	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
+//	OS.CGContextSetTextDrawingMode(handle, 3);
+//	OS.CGContextSetTextPosition(handle, 0, 0);
+//	byte[] buffer = string.getBytes();
+//	OS.CGContextShowText(handle, buffer, buffer.length);
+//	CGPoint pt = new CGPoint();
+//	OS.CGContextGetTextPosition(handle, pt);
+//	return new Point((int)pt.x, data.fontAscent + data.fontDescent);
+//}
 
 /**
  * Returns the extent of the given string. Tab expansion and
