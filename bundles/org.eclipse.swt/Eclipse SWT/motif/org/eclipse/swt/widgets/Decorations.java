@@ -137,7 +137,7 @@ void add (Menu menu) {
 	System.arraycopy (menus, 0, newMenus, 0, menus.length);
 	menus = newMenus;
 }
-void bringToTop () {
+void bringToTop (boolean force) {
 	/*
 	* Feature in X.  Calling XSetInputFocus() when the
 	* widget is not viewable causes an X bad match error.
@@ -150,6 +150,22 @@ void bringToTop () {
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
 	if (window == 0) return;
+	
+	if (!force) {
+		int [] buffer1 = new int [1], buffer2 = new int [1];
+		OS.XGetInputFocus (display, buffer1, buffer2);
+		int xWindow = buffer1 [0];
+		if (xWindow == 0) return;
+		int handle = OS.XtWindowToWidget (display, xWindow);
+		if (handle == 0) return;
+
+		Widget widget = null;
+		do {
+			widget = WidgetTable.get (handle);
+		} while (widget == null && (handle = OS.XtParent (handle)) != 0);
+		if (widget == null) return;
+	}
+	
 	OS.XSetInputFocus (display, window, OS.RevertToParent, OS.CurrentTime);
 }
 static int checkStyle (int style) {

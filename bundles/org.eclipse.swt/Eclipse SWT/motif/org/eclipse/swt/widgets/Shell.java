@@ -432,7 +432,7 @@ void closeWidget () {
 		for (int i=0; i<shells.length; i++) {
 			Shell shell = shells [i];
 			if (shell != this && shell.isModal () && shell.isVisible ()) {
-				shell.bringToTop ();
+				shell.bringToTop (false);
 				return;
 			}
 		}
@@ -591,7 +591,7 @@ public void dispose () {
 	super.dispose ();
 	if (parent != null && argList [1] != 0) {
 		Shell shell = parent.getShell ();
-		shell.bringToTop ();
+		shell.bringToTop (false);
 	}
 	
 	/*
@@ -626,7 +626,7 @@ void enableWidget (boolean enabled) {
 */
 public void forceActive () {
 	checkWidget ();
-	bringToTop ();
+	bringToTop (true);
 }
 public int getBorderWidth () {
 	checkWidget();
@@ -1000,7 +1000,7 @@ void saveBounds () {
 */
 public void setActive () {
 	checkWidget ();
-	bringToTop ();
+	bringToTop (false);
 }
 
 void setActiveControl (Control control) {

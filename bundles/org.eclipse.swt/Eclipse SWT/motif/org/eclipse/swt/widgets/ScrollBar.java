@@ -404,7 +404,7 @@ int processSelection (int callData) {
 	* make the shell active.
 	*/
 	Shell shell = parent.getShell ();
-	shell.bringToTop ();
+	shell.bringToTop (true);
 	
 	sendEvent (SWT.Selection, event);
 	return 0;

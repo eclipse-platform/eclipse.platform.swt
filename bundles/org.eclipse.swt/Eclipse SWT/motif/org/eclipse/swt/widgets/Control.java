@@ -501,7 +501,7 @@ public boolean forceFocus () {
 	checkWidget();
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	shell.bringToTop ();
+	shell.bringToTop (false);
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 
@@ -2074,7 +2074,7 @@ public boolean setFocus () {
 	checkWidget();
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	shell.bringToTop ();
+	shell.bringToTop (false);
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 /**
