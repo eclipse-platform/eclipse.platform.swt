@@ -258,6 +258,7 @@ public class OS {
 	public static final int kEventWindowExpanded = 70;
 	public static final int kEventWindowFocusAcquired = 200;
 	public static final int kEventWindowFocusRelinquish = 201;
+	public static final int kEventWindowUpdate = 1;
 	public static final int kFMIterationCompleted = -980;
 	public static final int kFloatingWindowClass = 5;
 	public static final int kFontSelectionQDStyleVersionZero = 0;
