@@ -426,7 +426,7 @@ void releaseWidget () {
 	menu = null;
 	super.releaseWidget ();
 	if (accelerator != 0) {
-		parent.destroyAcceleratorTable ();
+		parent.destroyAccelerators ();
 	}
 	accelerator = 0;
 	Decorations shell = parent.parent;
@@ -521,7 +521,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget ();
 	this.accelerator = accelerator;
-	parent.destroyAcceleratorTable ();
+	parent.destroyAccelerators ();
 }
 
 /**
@@ -727,7 +727,7 @@ public void setMenu (Menu menu) {
 		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
 	}
-	parent.destroyAcceleratorTable ();
+	parent.destroyAccelerators ();
 }
 
 /**

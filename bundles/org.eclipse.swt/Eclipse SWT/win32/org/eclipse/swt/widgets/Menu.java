@@ -453,8 +453,8 @@ int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_MENUTEXT);
 }
 
-void destroyAcceleratorTable () {
-	parent.destroyAcceleratorTable ();
+void destroyAccelerators () {
+	parent.destroyAccelerators ();
 }
 
 void destroyItem (MenuItem item) {

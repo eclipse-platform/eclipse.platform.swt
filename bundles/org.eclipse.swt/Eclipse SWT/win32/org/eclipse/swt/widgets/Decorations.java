@@ -282,7 +282,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-void createAcceleratorTable () {
+void createAccelerators () {
 	hAccel = nAccel = 0;
 	int maxAccel = 0;
 	if (menuBar == null || items == null) {
@@ -340,7 +340,7 @@ void createWidget () {
 	hAccel = -1;
 }
 
-void destroyAcceleratorTable () {
+void destroyAccelerators () {
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
 }
@@ -945,7 +945,7 @@ public void setMenuBar (Menu menu) {
 		if (menuBar != null) hMenu = menuBar.handle;
 		OS.SetMenu (handle, hMenu);
 	}
-	destroyAcceleratorTable ();
+	destroyAccelerators ();
 }
 
 /**
@@ -1143,7 +1143,7 @@ public void setVisible (boolean visible) {
 boolean translateAccelerator (MSG msg) {
 	if (!isEnabled () || !isActive ()) return false;
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
-	if (hAccel == -1) createAcceleratorTable ();
+	if (hAccel == -1) createAccelerators ();
 	if (hAccel == 0) return false;
 	return OS.TranslateAccelerator (handle, hAccel, msg) != 0;
 }
@@ -1212,7 +1212,7 @@ int windowProc (int msg, int wParam, int lParam) {
 	switch (msg) {
 		case OS.WM_APP:
 		case OS.WM_APP+1:
-			if (hAccel == -1) createAcceleratorTable ();
+			if (hAccel == -1) createAccelerators ();
 			return msg == OS.WM_APP ? nAccel : hAccel;
 	}
 	return super.windowProc (msg, wParam, lParam);
