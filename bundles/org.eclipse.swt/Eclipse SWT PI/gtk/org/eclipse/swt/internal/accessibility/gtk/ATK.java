@@ -81,44 +81,44 @@ public class ATK extends OS {
 	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
 	public static final byte[] text_selection_changed = OS.ascii ("text_selection_changed");
 	
-	/** 64 bit */
-	public static final synchronized native int AtkObjectFactory_sizeof ();
-	public static final synchronized native int AtkObjectFactoryClass_sizeof ();
+/** 64 bit */
+public static final native int AtkObjectFactory_sizeof ();
+public static final native int AtkObjectFactoryClass_sizeof ();
 	
-	/** Native methods */
-	public static final synchronized native int /*long*/ ATK_ACTION_GET_IFACE (int /*long*/ obj);
-	public static final synchronized native int /*long*/ ATK_COMPONENT_GET_IFACE(int /*long*/ atkHandle);
-	public static final synchronized native int /*long*/ ATK_OBJECT_FACTORY_CLASS (int /*long*/ klass);
-	public static final synchronized native int /*long*/ ATK_SELECTION_GET_IFACE (int /*long*/ obj);
-	public static final synchronized native int /*long*/ ATK_TEXT_GET_IFACE (int /*long*/ handle);
-	public static final synchronized native int /*long*/ GTK_ACCESSIBLE (int /*long*/ handle);
-	public static final synchronized native void atk_focus_tracker_notify (int /*long*/ object);
-	public static final synchronized native int /*long*/ atk_get_default_registry ();
-	public static final synchronized native int /*long*/ atk_object_factory_get_accessible_type (int /*long*/ factory);
-	public static final synchronized native void atk_object_initialize (int /*long*/ accessible, int /*long*/ data);
-	public static final synchronized native int /*long*/ atk_registry_get_factory (int /*long*/ registry, int /*long*/ type);
-	public static final synchronized native void atk_registry_set_factory_type (int /*long*/ registry, int /*long*/ type, int /*long*/ factory_type);
-	public static final synchronized native boolean atk_state_set_add_state (int /*long*/ set, int type);
-	public static final synchronized native int /*long*/ atk_state_set_new ();
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0);
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1);
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
-	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
-	public static final synchronized native void memmove (AtkActionIface dest, int /*long*/ src);
-	public static final synchronized native void memmove (AtkComponentIface dest, int /*long*/ src);
-	public static final synchronized native void memmove (AtkHypertextIface dest, int /*long*/ src);
-	public static final synchronized native void memmove (AtkObjectClass dest, int /*long*/ src);
-	public static final synchronized native void memmove (AtkObjectFactoryClass  dest, int /*long*/ src);
-	public static final synchronized native void memmove (AtkSelectionIface dest, int /*long*/ src);	
-	public static final synchronized native void memmove (AtkTextIface dest, int /*long*/ src);
-	public static final synchronized native void memmove (GtkAccessible  dest, int /*long*/ src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkActionIface src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkComponentIface src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkHypertextIface src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectClass src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectFactoryClass src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkSelectionIface src);
-	public static final synchronized native void memmove (int /*long*/ dest, AtkTextIface src);
+/** Native methods */
+public static final synchronized native int /*long*/ ATK_ACTION_GET_IFACE (int /*long*/ obj);
+public static final synchronized native int /*long*/ ATK_COMPONENT_GET_IFACE(int /*long*/ atkHandle);
+public static final synchronized native int /*long*/ ATK_OBJECT_FACTORY_CLASS (int /*long*/ klass);
+public static final synchronized native int /*long*/ ATK_SELECTION_GET_IFACE (int /*long*/ obj);
+public static final synchronized native int /*long*/ ATK_TEXT_GET_IFACE (int /*long*/ handle);
+public static final synchronized native int /*long*/ GTK_ACCESSIBLE (int /*long*/ handle);
+public static final synchronized native void atk_focus_tracker_notify (int /*long*/ object);
+public static final synchronized native int /*long*/ atk_get_default_registry ();
+public static final synchronized native int /*long*/ atk_object_factory_get_accessible_type (int /*long*/ factory);
+public static final synchronized native void atk_object_initialize (int /*long*/ accessible, int /*long*/ data);
+public static final synchronized native int /*long*/ atk_registry_get_factory (int /*long*/ registry, int /*long*/ type);
+public static final synchronized native void atk_registry_set_factory_type (int /*long*/ registry, int /*long*/ type, int /*long*/ factory_type);
+public static final synchronized native boolean atk_state_set_add_state (int /*long*/ set, int type);
+public static final synchronized native int /*long*/ atk_state_set_new ();
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0);
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1);
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
+public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
+public static final native void memmove (AtkActionIface dest, int /*long*/ src);
+public static final native void memmove (AtkComponentIface dest, int /*long*/ src);
+public static final native void memmove (AtkHypertextIface dest, int /*long*/ src);
+public static final native void memmove (AtkObjectClass dest, int /*long*/ src);
+public static final native void memmove (AtkObjectFactoryClass  dest, int /*long*/ src);
+public static final native void memmove (AtkSelectionIface dest, int /*long*/ src);	
+public static final native void memmove (AtkTextIface dest, int /*long*/ src);
+public static final native void memmove (GtkAccessible  dest, int /*long*/ src);
+public static final native void memmove (int /*long*/ dest, AtkActionIface src);
+public static final native void memmove (int /*long*/ dest, AtkComponentIface src);
+public static final native void memmove (int /*long*/ dest, AtkHypertextIface src);
+public static final native void memmove (int /*long*/ dest, AtkObjectClass src);
+public static final native void memmove (int /*long*/ dest, AtkObjectFactoryClass src);
+public static final native void memmove (int /*long*/ dest, AtkSelectionIface src);
+public static final native void memmove (int /*long*/ dest, AtkTextIface src);
 }
