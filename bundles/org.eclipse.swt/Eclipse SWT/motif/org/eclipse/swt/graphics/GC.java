@@ -688,6 +688,10 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, 0, 23040);
 }
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.XDrawPoint(data.display, data.drawable, handle, x, y);
+}
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 

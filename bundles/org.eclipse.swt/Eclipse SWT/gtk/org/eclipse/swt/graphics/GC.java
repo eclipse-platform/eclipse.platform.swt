@@ -581,6 +581,11 @@ public void drawOval(int x, int y, int width, int height) {
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, 0, 23040);
 }
 
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.gdk_draw_point(data.drawable, handle, x, y);
+}
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 

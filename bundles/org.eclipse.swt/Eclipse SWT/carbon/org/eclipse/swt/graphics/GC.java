@@ -588,6 +588,24 @@ public void drawOval(int x, int y, int width, int height) {
 	flush();
 }
 
+public void drawPoint(int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
+	/*
+	* Feature in Quartz.  Drawing a one-pixel line produces no output.  The
+	* fix is to fill a one-pixel rectangle instead.
+	*/
+	CGRect rect = new CGRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = 1;
+	rect.height = 1;
+	OS.CGContextSetFillColor(handle, data.foreground);
+	OS.CGContextFillRect(handle, rect);
+	OS.CGContextSetFillColor(handle, data.background);
+	flush();
+}
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
