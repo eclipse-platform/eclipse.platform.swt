@@ -845,7 +845,7 @@ public int getTextLimit () {
  * 
  * @since 3.0
  */
-public int getVisibleCount () {
+public int getVisibleItemCount () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		//TODO
@@ -1461,7 +1461,7 @@ public void setTextLimit (int limit) {
  * 
  * @since 3.0
  */
-public void setVisibleCount (int count) {
+public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
 	if ((style & SWT.READ_ONLY) != 0) {

@@ -776,7 +776,7 @@ public int getTextLimit () {
  * 
  * @since 3.0
  */
-public int getVisibleCount () {
+public int getVisibleItemCount () {
 	checkWidget ();
 	int [] args = new int [] {OS.Pt_ARG_CBOX_MAX_VISIBLE_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -1286,7 +1286,7 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
  * 
  * @since 3.0
  */
-public void setVisibleCount (int visibleCount) {
+public void setVisibleItemCount (int visibleCount) {
 	checkWidget ();
 	if (visibleCount < 0) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_CBOX_MAX_VISIBLE_COUNT, visibleCount, 0);

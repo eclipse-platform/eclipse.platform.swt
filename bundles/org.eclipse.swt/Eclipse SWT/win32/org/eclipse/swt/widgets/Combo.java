@@ -731,7 +731,7 @@ public int getTextLimit () {
  * 
  * @since 3.0
  */
-public int getVisibleCount () {
+public int getVisibleItemCount () {
 	checkWidget ();
 	return visibleCount;
 }
@@ -1391,7 +1391,7 @@ public void setTextLimit (int limit) {
  * 
  * @since 3.0
  */
-public void setVisibleCount (int count) {
+public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
 	visibleCount = count;
