@@ -1,4 +1,4 @@
-# Makefile for creating SWT libraries on Solaris
+# Makefile for creating SWT libraries on Linux
 
 # (c) Copyright IBM Corp., 2000, 2001
 # All Rights Reserved.
@@ -11,64 +11,57 @@
 
 DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
 
+CC=cc_r
 
 # Define the installation directories for various products.
-#    JAVA_HOME  - Sun's version of Java (JDK2)
-#    MOTIF_HOME - Motif includes and libraries
+#    IVE_HOME   - IBM's version of Java (J9)
 #    CDE_HOME - CDE includes and libraries
-JAVA_HOME  = /tools/java1.3
-MOTIF_HOME = /usr/dt
+#    MOTIF_HOME - Motif includes and libraries
+IVE_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
+MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
 CDE_HOME   = /usr/dt
-
 
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-OS_PREFIX    = solaris
+OS_PREFIX    = aix
 SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 SWT_OBJ      = callback.o globals.o library.o structs.o swt.o 
-SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
-	       -G -lXm -lXt -lX11 -lm
+SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext
 
 CDE_PREFIX   = swt-cde
 CDE_DLL      = lib$(CDE_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 CDE_OBJ      = cde.o
-CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
-
+CDE_LIB      = -L$(CDE_HOME)/lib -G -bnoentry -bexpall -lDtSvc
 
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE
 # library.
 #
-# Note:
-#   The flag -xarch=generic ensure the compiled modules will be targeted
-#   for 32-bit architectures. If this flag is not
-#
 CFLAGS = -O -s \
-	-xarch=generic \
 	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
 	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
-	-DSOLARIS -DMOTIF -DCDE \
-	-KPIC \
-	-I./ \
-	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris \
+	-DAIX -DMOTIF -DCDE -DNO_XPRINTING_EXTENSIONS \
+	-q mbcs -qlanglvl=extended -qarch=ppc -qtune=604 -qmaxmem=8192 \
+	-I$(IVE_HOME)/include \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-
-all: make_swt make_cde
+all: make_swt
 
 make_swt: $(SWT_DLL)
 
 $(SWT_DLL): $(SWT_OBJ)
-	ld -o $@ $(SWT_OBJ) $(SWT_LIB)
-
+	ld $(SWT_LIB) -o $(SWT_DLL) $(SWT_OBJ)
 
 make_cde: $(CDE_DLL)
 
 $(CDE_DLL): $(CDE_OBJ)
 	ld -o $@ $(CDE_OBJ) $(CDE_LIB)
 
-
 clean:
 	rm -f $(SWT_OBJ) $(SWT_DLL) $(CDE_OBJ) $(CDE_DLL)
+
+
+
+
