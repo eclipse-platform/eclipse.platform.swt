@@ -2150,9 +2150,8 @@ public boolean post (Event event) {
 	switch (type){
 		case SWT.KeyDown :
 		case SWT.KeyUp : {
-			int keyCode = event.keyCode;
 			KEYBDINPUT inputs = new KEYBDINPUT ();
-			inputs.wVk = (short) Display.untranslateKey (keyCode);
+			inputs.wVk = (short) untranslateKey (event.keyCode);
 			if (inputs.wVk == 0) {
 				char key = event.character;
 				switch (key) {
