@@ -658,6 +658,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	short[] info = new short[4];
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
+	OS.CGContextSetFillColor(handle, data.foreground);
 	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
@@ -1383,6 +1384,7 @@ public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.background = color.handle;
 	OS.CGContextSetFillColor(handle, color.handle);
 }
 
@@ -1520,6 +1522,7 @@ public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.foreground = color.handle;
 	OS.CGContextSetStrokeColor(handle, color.handle);
 }
 
