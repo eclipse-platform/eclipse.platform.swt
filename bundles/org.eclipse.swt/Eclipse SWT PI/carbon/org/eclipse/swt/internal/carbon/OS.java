@@ -88,6 +88,7 @@ public class OS {
 	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
 	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kControlEntireControl = 0;
+	public static final int kControlFocusNoPart = 0;
 	public static final int kControlGetsFocusOnClick = 1 << 8;
 	public static final int kControlGroupBoxTextTitleProc = 160;
 	public static final int kControlHandlesTracking = 1 << 5;
