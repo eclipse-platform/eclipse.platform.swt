@@ -551,7 +551,6 @@ public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int 
 public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
 public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
 
-public static final int WM_GETOBJECT = 0x3d;
 public static final int OBJID_CLIENT = 0xfffffffc;
 public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;
 
