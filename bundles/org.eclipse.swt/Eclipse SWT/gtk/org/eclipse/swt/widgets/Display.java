@@ -92,6 +92,7 @@ public class Display extends Device {
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
 	Callback eventCallback;
+	GdkEventButton gdkEvent = new GdkEventButton ();
 	int eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
@@ -532,7 +533,6 @@ void error (int code) {
 }
 
 int eventProc (int event, int data) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	switch (gdkEvent.type) {
 		case OS.GDK_BUTTON_PRESS:
