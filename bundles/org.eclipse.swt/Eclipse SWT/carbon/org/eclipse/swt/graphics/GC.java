@@ -146,7 +146,35 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  		OS.CGContextRestoreGState(handle);
  		return;
 	}
-	//NOT DONE
+	if (data.control != 0) {
+		//WRONG
+		int window = OS.GetControlOwner (data.control);
+		int port = OS.GetWindowPort (window);
+		int [] currentPort = new int [1];
+		OS.GetPort (currentPort);
+		OS.SetPort (port);
+		int oldRgn = OS.NewRgn ();
+		OS.GetClip (oldRgn);
+		int clipRgn = data.visibleRgn;
+		if (data.clipRgn != 0) {
+			clipRgn = OS.NewRgn ();
+			OS.SectRgn(data.clipRgn, data.visibleRgn, clipRgn);
+		}
+		OS.SetClip (clipRgn);
+		Rect rect = new Rect ();
+		OS.GetControlBounds (data.control, rect);
+		int left = rect.left + srcX;
+		int top = rect.top + srcY;
+		OS.SetRect(rect, (short) left, (short) top, (short) (left + width), (short) (top + height));
+		int invalRgn = OS.NewRgn ();
+		OS.ScrollRect(rect, (short) deltaX, (short) deltaY, invalRgn);
+		OS.InvalWindowRgn (window, invalRgn);
+		OS.DisposeRgn (invalRgn);
+		OS.SetClip (oldRgn);
+		if (clipRgn != data.visibleRgn) OS.DisposeRgn (clipRgn);
+		OS.DisposeRgn (oldRgn);
+		OS.SetPort (currentPort [0]);
+	}
 }
 
 /**
