@@ -64,7 +64,6 @@ class ComboTab extends Tab {
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (simpleButton.getSelection ()) style |= SWT.SIMPLE;
-		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		
 		/* Create the example widgets */
 		combo1 = new Combo (comboGroup, style);
@@ -87,8 +86,6 @@ class ComboTab extends Tab {
 		simpleButton.setText("SWT.SIMPLE");
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
 		readOnlyButton.setText ("SWT.READ_ONLY");
-		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**
@@ -113,6 +110,6 @@ class ComboTab extends Tab {
 		dropDownButton.setSelection ((combo1.getStyle () & SWT.DROP_DOWN) != 0);
 		simpleButton.setSelection ((combo1.getStyle () & SWT.SIMPLE) != 0);
 		readOnlyButton.setSelection ((combo1.getStyle () & SWT.READ_ONLY) != 0);
-		borderButton.setSelection ((combo1.getStyle () & SWT.BORDER) != 0);
+		readOnlyButton.setEnabled(!simpleButton.getSelection());
 	}
 }
