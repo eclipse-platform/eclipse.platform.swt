@@ -57,8 +57,8 @@ public int accLocation(int pxLeft, int pyTop, int pcxWidth, int pcyHeight,
 	int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
 	return COM.VtblCall(22, address, pxLeft, pyTop, pcxWidth, pcyHeight, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
 }
-public int accNavigate(int navDir, int varStart, int pvarEndUpAt) {
-	return COM.VtblCall(23, address, navDir, varStart, pvarEndUpAt);
+public int accNavigate(int navDir, int varStart_vt, int varStart_reserved1, int varStart_lVal, int varStart_reserved2, int pvarEndUpAt) {
+	return COM.VtblCall(23, address, navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
 }
 public int accHitTest(int xLeft, int yTop, int pvarChild) {
 	return COM.VtblCall(24, address, xLeft, yTop, pvarChild);
@@ -66,7 +66,6 @@ public int accHitTest(int xLeft, int yTop, int pvarChild) {
 public int accDoDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
 	return COM.VtblCall(25, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
 }
-
 public int put_accName(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int szName) {
 	return COM.VtblCall(26, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szName);
 }
