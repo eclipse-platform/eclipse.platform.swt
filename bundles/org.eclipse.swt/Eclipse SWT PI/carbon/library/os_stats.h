@@ -108,6 +108,7 @@ typedef enum {
 	CGContextClosePath_FUNC,
 	CGContextConcatCTM_FUNC,
 	CGContextDrawImage_FUNC,
+	CGContextEOClip_FUNC,
 	CGContextEOFillPath_FUNC,
 	CGContextFillPath_FUNC,
 	CGContextFillRect_FUNC,

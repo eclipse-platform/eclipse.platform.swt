@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 791;
-int OS_nativeFunctionCallCount[791];
+int OS_nativeFunctionCount = 792;
+int OS_nativeFunctionCallCount[792];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -104,6 +104,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextClosePath",
 	"CGContextConcatCTM",
 	"CGContextDrawImage",
+	"CGContextEOClip",
 	"CGContextEOFillPath",
 	"CGContextFillPath",
 	"CGContextFillRect",

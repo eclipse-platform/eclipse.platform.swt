@@ -1217,6 +1217,16 @@ fail:
 }
 #endif
 
+#ifndef NO_CGContextEOClip
+JNIEXPORT void JNICALL OS_NATIVE(CGContextEOClip)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextEOClip_FUNC);
+	CGContextEOClip((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextEOClip_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextEOFillPath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextEOFillPath)
 	(JNIEnv *env, jclass that, jint arg0)
