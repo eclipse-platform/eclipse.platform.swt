@@ -1004,10 +1004,22 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
+	/*
+	* Bug on Windows.  Calling ShowOnedPopups to
+	* hide the child windows of a hidden window causes the
+	* application to be deactivated.  The workaround is to
+	* call ShowOwnedPopups to hide child windows before
+	* hiding their parent window.
+	*/
+	if (showWithParent && !visible) {
+		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
+	}
 	super.setVisible (visible);
 	if (showWithParent == visible) return;
 	showWithParent = visible;
-	if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, visible);
+	if (visible) {
+		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
+	}
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
