@@ -420,9 +420,9 @@ void bringToTop (boolean force) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-		int /*long*/ xid = OS.gdk_x11_drawable_get_xid (window);
+		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
-		OS.XSetInputFocus (xDisplay, xid, OS.RevertToParent, OS.gtk_get_current_event_time ());
+		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.gtk_get_current_event_time ());
 		OS.gdk_error_trap_pop ();
 	} else {
 		OS.gdk_window_focus (window, OS.gtk_get_current_event_time ());
@@ -536,6 +536,36 @@ void createHandle (int index) {
 	OS.gtk_window_set_modal (shellHandle, modal);
 }
 
+void fixShellFocus () {
+	/*
+	* Bug in GTK.  When a shell that has no window manager trimmings
+	* is given focus, GTK gets stuck in "focus follows pointer" mode when
+	* the pointer is within the shell and its parent when the shell is disposed.
+	* The fix is to send a fake XFocusChangeEvent with FocusOut to the
+	* parent shell to clear the mode. 
+	*/
+	if (!OS.GDK_WINDOWING_X11 ()) return;
+	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+	if (xDisplay == 0) return;
+	int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
+	if (xWindow == 0) return;
+	int /*long*/ [] root = new int /*long*/ [1];
+	int /*long*/ [] parent = new int /*long*/ [1];
+	OS.XQueryTree (xDisplay, xWindow, root, parent, new int /*long*/ [1], new int[1]);
+	if (parent [0] == root [0]) return;
+	XFocusChangeEvent focusEvent = new XFocusChangeEvent ();
+	focusEvent.type = OS.FocusOut;
+	focusEvent.display = xDisplay;
+	focusEvent.window = xWindow;
+	focusEvent.detail = OS.NotifyPointer;
+	int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
+	if (xEvent != 0) {
+		OS.memmove (xEvent, focusEvent, XFocusChangeEvent.sizeof);
+		OS.XSendEvent (xDisplay, xWindow, false, OS.FocusChangeMask, xEvent);
+		OS.g_free (xEvent);
+	}
+}
+
 boolean hasBorder () {
 	return false;
 }
@@ -553,6 +583,7 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
 	OS.g_signal_connect (shellHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
+	OS.g_signal_connect (shellHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 }
 
 public boolean isEnabled () {
@@ -701,6 +732,18 @@ int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
 	return 1;
 }
 
+int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	if (widget != shellHandle) {
+		return super.gtk_enter_notify_event (widget, event);
+	}
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	if (gdkEvent.detail != OS.GDK_NOTIFY_INFERIOR && gdkEvent.focus) {
+		fixShellFocus ();
+	}
+	return 0;
+}
+
 int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 	switch ((int)/*64*/directionType) {
 		case OS.GTK_DIR_TAB_FORWARD:
@@ -722,6 +765,7 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
 	}
+	fixShellFocus ();
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 	hasFocus = true;
 	sendEvent (SWT.Activate);
@@ -1240,14 +1284,14 @@ public void dispose () {
 	* The fix is to make the parent be the active top level
 	* shell when the child shell is disposed.
 	*/
-	OS.gtk_widget_hide (shellHandle);
-	if (parent != null) {
-		Shell activeShell = display.getActiveShell ();
-		if (activeShell == this) {
-			Shell shell = parent.getShell ();	
-			shell.bringToTop (false);
+		OS.gtk_widget_hide (shellHandle);
+		if (parent != null) {
+			Shell activeShell = display.getActiveShell ();
+			if (activeShell == this) {
+				Shell shell = parent.getShell ();	
+				shell.bringToTop (false);
+			}
 		}
-	}
 	super.dispose ();
 }
 

@@ -435,6 +435,18 @@ void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct
 #define XExposeEvent_sizeof() 0
 #endif
 
+#ifndef NO_XFocusChangeEvent
+void cacheXFocusChangeEventFields(JNIEnv *env, jobject lpObject);
+XFocusChangeEvent *getXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct);
+void setXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct);
+#define XFocusChangeEvent_sizeof() sizeof(XFocusChangeEvent)
+#else
+#define cacheXFocusChangeEventFields(a,b)
+#define getXFocusChangeEventFields(a,b,c) NULL
+#define setXFocusChangeEventFields(a,b,c)
+#define XFocusChangeEvent_sizeof() 0
+#endif
+
 #ifndef NO_XVisibilityEvent
 void cacheXVisibilityEventFields(JNIEnv *env, jobject lpObject);
 XVisibilityEvent *getXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct);

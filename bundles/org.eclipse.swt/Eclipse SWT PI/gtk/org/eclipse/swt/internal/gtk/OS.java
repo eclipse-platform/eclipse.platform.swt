@@ -154,6 +154,7 @@ public class OS {
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
+	public static final int GDK_NOTIFY_INFERIOR = 2;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
 	public static final int PANGO_ALIGN_RIGHT = 2;
@@ -410,6 +411,7 @@ public static final synchronized native int XAnyEvent_sizeof();
 public static final synchronized native int XClientMessageEvent_sizeof();
 public static final synchronized native int XEvent_sizeof();
 public static final synchronized native int XExposeEvent_sizeof();
+public static final synchronized native int XFocusChangeEvent_sizeof();
 public static final synchronized native int XVisibilityEvent_sizeof();
 public static final synchronized native int XWindowChanges_sizeof();
 public static final native int strlen(int /*long*/ str);
@@ -435,9 +437,12 @@ public static final int ClientMessage = 33;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
 public static final int Expose = 12;
+public static final int FocusChangeMask = 1 << 21;
+public static final int FocusOut = 10;
 public static final int GraphicsExpose = 13;
 public static final int NoExpose = 14;
 public static final int ExposureMask = 1 << 15;
+public static final int NotifyPointer = 5;
 public static final int VisibilityChangeMask = 1 << 16;
 public static final int VisibilityFullyObscured = 2;
 public static final int VisibilityNotify = 15;
@@ -450,6 +455,7 @@ public static final synchronized native boolean XCheckWindowEvent(int /*long*/ d
 public static final synchronized native boolean XCheckIfEvent(int /*long*/ display, int /*long*/ event_return, int /*long*/ predicate, int /*long*/ arg);
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
 public static final synchronized native int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
+public static final synchronized native int XQueryTree(int /*long*/ display, int /*long*/ w, int[] /*long*/ root_return, int[] /*long*/ parent_return, int[] /*long*/ children_return, int[] nchildren_return);
 public static final synchronized native int XKeysymToKeycode(int /*long*/ display, int /*long*/ keysym);
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int /*long*/ window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
@@ -464,6 +470,7 @@ public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(in
 public static final synchronized native int /*long*/ gdk_window_lookup(int /*long*/ xid);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XExposeEvent src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, XFocusChangeEvent src, int /*long*/ size);
 public static final native void memmove(XExposeEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
 

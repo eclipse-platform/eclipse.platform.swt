@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 834;
-int OS_nativeFunctionCallCount[834];
+int OS_nativeFunctionCount = 837;
+int OS_nativeFunctionCallCount[837];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -97,8 +97,10 @@ char * OS_nativeFunctionNames[] = {
 	"XDefaultScreen", 
 	"XEvent_1sizeof", 
 	"XExposeEvent_1sizeof", 
+	"XFocusChangeEvent_1sizeof", 
 	"XGetSelectionOwner", 
 	"XKeysymToKeycode", 
+	"XQueryTree", 
 	"XReconfigureWMWindow", 
 	"XSendEvent", 
 	"XSetInputFocus", 
@@ -743,6 +745,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I", 
+	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I", 
 	"memmove__I_3BI", 
 	"memmove__I_3II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II", 

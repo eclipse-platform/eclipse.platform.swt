@@ -1728,6 +1728,43 @@ void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct
 }
 #endif
 
+#ifndef NO_XFocusChangeEvent
+typedef struct XFocusChangeEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mode, detail;
+} XFocusChangeEvent_FID_CACHE;
+
+XFocusChangeEvent_FID_CACHE XFocusChangeEventFc;
+
+void cacheXFocusChangeEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XFocusChangeEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XFocusChangeEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XFocusChangeEventFc.mode = (*env)->GetFieldID(env, XFocusChangeEventFc.clazz, "mode", "I");
+	XFocusChangeEventFc.detail = (*env)->GetFieldID(env, XFocusChangeEventFc.clazz, "detail", "I");
+	XFocusChangeEventFc.cached = 1;
+}
+
+XFocusChangeEvent *getXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct)
+{
+	if (!XFocusChangeEventFc.cached) cacheXFocusChangeEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->mode = (*env)->GetIntField(env, lpObject, XFocusChangeEventFc.mode);
+	lpStruct->detail = (*env)->GetIntField(env, lpObject, XFocusChangeEventFc.detail);
+	return lpStruct;
+}
+
+void setXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct)
+{
+	if (!XFocusChangeEventFc.cached) cacheXFocusChangeEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XFocusChangeEventFc.mode, (jint)lpStruct->mode);
+	(*env)->SetIntField(env, lpObject, XFocusChangeEventFc.detail, (jint)lpStruct->detail);
+}
+#endif
+
 #ifndef NO_XVisibilityEvent
 typedef struct XVisibilityEvent_FID_CACHE {
 	int cached;

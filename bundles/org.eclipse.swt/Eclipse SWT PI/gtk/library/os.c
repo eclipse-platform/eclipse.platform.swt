@@ -912,6 +912,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XExposeEvent_1sizeof)
 }
 #endif
 
+#ifndef NO_XFocusChangeEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XFocusChangeEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XFocusChangeEvent_1sizeof_FUNC);
+	rc = (jint)XFocusChangeEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XFocusChangeEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XGetSelectionOwner
 JNIEXPORT jint JNICALL OS_NATIVE(XGetSelectionOwner)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -932,6 +944,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
 	OS_NATIVE_ENTER(env, that, XKeysymToKeycode_FUNC);
 	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
 	OS_NATIVE_EXIT(env, that, XKeysymToKeycode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XQueryTree
+JNIEXPORT jint JNICALL OS_NATIVE(XQueryTree)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XQueryTree_FUNC);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)XQueryTree((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, (Window **)lparg4, (unsigned int *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, XQueryTree_FUNC);
 	return rc;
 }
 #endif
@@ -8948,6 +8984,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XExpose
 	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XFocusChangeEvent _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
+	if (arg1) lparg1 = getXFocusChangeEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
 }
 #endif
 
