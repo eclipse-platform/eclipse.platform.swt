@@ -147,6 +147,11 @@ public int getPageIncrement () {
     return pageIncrement;
 }
 
+public Scrollable getParent () {
+	checkWidget ();
+	return parent;
+}
+
 public int getSelection () {
 	checkWidget();
     return OS.GetControl32BitValue (handle);

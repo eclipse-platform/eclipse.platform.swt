@@ -528,6 +528,10 @@ public Control getFocusControl () {
 	return null;
 }
 
+public int getIconDepth () {
+	return getDepth ();
+}
+
 int getLastEventTime () {
 	/*
 	* This code is intentionally commented.  Event time is
