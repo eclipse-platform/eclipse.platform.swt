@@ -1092,6 +1092,7 @@ public class OS extends Platform {
 	public static final int TB_SETPARENT = 0x400 + 37;
 	public static final int TB_SETROWS = 0x427;
 	public static final int TB_SETSTATE = 0x411;
+	public static final int TB_THUMBPOSITION = 0x4;
 	public static final int TCIF_IMAGE = 0x2;
 	public static final int TCIF_TEXT = 0x1;
 	public static final int TCI_SRCCHARSET = 0x1;
