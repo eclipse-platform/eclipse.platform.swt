@@ -501,6 +501,24 @@ void fixFocus () {
 		if (control.setFocus () || control == shell) return;
 	}
 }
+void fixParentTraversal () {
+	/*
+	* When the parent was created with NO_FOCUS, XmNtraversalOn was
+	* set to false disallowing focus in the parent and all children.
+	* In order to allow the new child to take focus like other platforms,
+	* set XmNtraversalOn to true in the parent.
+	*/
+	if ((parent.style & SWT.NO_FOCUS) != 0) {
+		int parentHandle = parent.handle;
+		int [] argList = {OS.XmNtraversalOn, 0};
+		OS.XtGetValues (parentHandle, argList, argList.length / 2);
+		if (argList [1] == 0) {
+			argList [1] = 1;
+			OS.XtSetValues (parentHandle, argList, argList.length / 2);
+			parent.overrideTranslations ();
+		}
+	}
+}
 int fontHandle () {
 	return handle;
 }
@@ -1203,6 +1221,7 @@ void manageChildren () {
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
 	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
 	OS.XtSetMappedWhenManaged (handle, true);
+	fixParentTraversal ();
 }
 Decorations menuShell () {
 	return parent.menuShell ();

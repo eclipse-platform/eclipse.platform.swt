@@ -713,6 +713,8 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
+void fixParentTraversal () {
+}
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
