@@ -1068,7 +1068,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		display.timerExec(delay, new Runnable() {
 			public void run() {
 				long endTime = System.currentTimeMillis();
-				assertTrue(endTime >= (startTime + delay));
+				assertTrue("Timer ran early!", endTime >= (startTime + delay));
 				threadRan[0] = true;
 			}
 		});
@@ -1079,7 +1079,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		}
 		
 		// Verify the timerExec with less than zero milliseconds didn't execute.
-		assertFalse(timerExecRan[0]);
+		assertFalse("< 0 ms timer did execute", timerExecRan[0]);
 	} finally {
 		display.dispose();
 	}
