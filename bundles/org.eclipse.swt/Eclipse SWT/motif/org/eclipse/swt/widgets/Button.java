@@ -534,6 +534,12 @@ public void setAlignment (int alignment) {
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
+	if ((style & SWT.FLAT) != 0) {
+		int [] argList1 = {OS.XmNbottomShadowColor, 0};
+		OS.XtGetValues (handle, argList1, argList1.length / 2);
+		int [] argList2 = {OS.XmNtopShadowColor, argList1 [1]};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 	int [] argList = {OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (argList [1] == OS.XmPIXMAP) setBitmap (image);
