@@ -214,8 +214,10 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (topHandle (), rect);
-	return new Rectangle (rect.top, rect.left, rect.right - rect.left, rect.bottom - rect.top);
+	int topHandle = topHandle ();
+	OS.GetControlBounds (topHandle, rect);
+	toControl (topHandle, rect);
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Display getDisplay () {
@@ -249,7 +251,8 @@ public Point getLocation () {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetControlBounds (topHandle (), rect);
-	return new Point (rect.top, rect.left);
+	toControl (topHandle (), rect);
+	return new Point (rect.left, rect.top);
 }
 
 public Menu getMenu () {
@@ -286,8 +289,10 @@ public Shell getShell () {
 
 public Point getSize () {
 	checkWidget();
+	int topHandle = topHandle ();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (topHandle (), rect);
+	OS.GetControlBounds (topHandle, rect);
+	toControl (topHandle, rect);
 	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
@@ -849,11 +854,14 @@ public void setBackground (Color color) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
+	int topHandle = topHandle ();
+	OS.HIViewSetVisible (topHandle, false);
+	Rect rect = new Rect ();
 	width = Math.max (0, width);
 	height = Math.max (0, height);
-	Rect rect = new Rect ();
 	OS.SetRect (rect, (short)x, (short)y, (short) (x + width), (short) (y + height));
-	OS.SetControlBounds (topHandle (), rect);
+	OS.SetControlBounds (topHandle, toRoot (topHandle, rect));
+	OS.HIViewSetVisible (topHandle, true);
 }
 
 public void setBounds (Rectangle rect) {
@@ -905,7 +913,12 @@ public void setLayoutData (Object layoutData) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
-    OS.MoveControl (topHandle (), (short)x, (short)y);
+	int topHandle = topHandle ();
+	Rect rect = new Rect ();
+	rect.left = (short) x;
+	rect.top = (short) y;
+	toRoot (topHandle, rect);
+	OS.MoveControl (topHandle, rect.left, rect.top);
 }
 
 public void setLocation (Point location) {
@@ -953,9 +966,10 @@ boolean setRadioSelection (boolean value){
 
 public void setSize (int width, int height) {
 	checkWidget();
+	int topHandle = topHandle ();
 	width = Math.max (0, width);
 	height = Math.max (0, height);
-	OS.SizeControl (topHandle (), (short) width, (short) height);
+	OS.SizeControl (topHandle, (short) width, (short) height);
 }
 
 public void setSize (Point size) {
@@ -1013,6 +1027,36 @@ public Point toDisplay (Point point) {
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
     return new Point (rect.left + (int) ioPoint.x, rect.top + (int) ioPoint.y);
+}
+
+Rect toControl (int control, Rect rect) {
+//	if (true) return rect;
+	int window = OS.GetControlOwner (control);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
+	}
+	return rect;
+}
+
+Rect toRoot (int control, Rect rect) {
+//	if (true) return rect;
+	int window = OS.GetControlOwner (control);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (rect, parentRect.left, parentRect.top);
+	}
+	return rect;
 }
 
 int toolItemProc (int nextHandler, int theEvent, int userData) {

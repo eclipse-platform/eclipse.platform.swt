@@ -101,16 +101,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
-void createWidget () {
-	super.createWidget ();
-	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
-	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
-	layoutControl ();
-}
-
 void createHandle () {
 	state |= CANVAS | GRAB;
-	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
+	int attributes = OS.kWindowStandardHandlerAttribute;
+//	attributes |= OS.kWindowCompositingAttribute;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) attributes |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) attributes |= OS.kWindowCollapseBoxAttribute;
@@ -121,7 +115,6 @@ void createHandle () {
 	}
 	int windowActivationScope= -1;
 	int windowClass= 0;
-	int themeBrush= OS.kThemeBrushDialogBackgroundActive;
 	if ((style & SWT.ON_TOP) == 0) {
 		if ((style & SWT.NO_TRIM) != 0) {
 			windowClass= OS.kSheetWindowClass;
@@ -174,7 +167,8 @@ void createHandle () {
 	}
 	
 	int [] theRoot = new int [1];
-	OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowContentID (), theRoot);
+	OS.CreateRootControl (shellHandle, theRoot);
+	OS.GetRootControl (shellHandle, theRoot);
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		scrolledHandle = theRoot [0];
@@ -182,6 +176,11 @@ void createHandle () {
 	} else {
 		handle = theRoot [0];
 	}
+}
+
+void createWidget () {
+	super.createWidget ();
+	layoutControl ();
 }
 
 public void dispose () {

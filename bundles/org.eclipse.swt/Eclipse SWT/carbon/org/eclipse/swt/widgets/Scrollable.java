@@ -135,23 +135,34 @@ void layoutControl () {
 			Point size = verticalBar.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
 			vWidth = size.x;
 		}
+		int window = OS.GetControlOwner (scrolledHandle);
+		boolean visible = OS.IsWindowVisible (window);
+		int [] theRoot = new int [1];
+		OS.GetRootControl (window, theRoot);
 		Rect rect = new Rect ();
-		OS.GetControlBounds (scrolledHandle, rect);
+		if (scrolledHandle == theRoot [0]) {
+			OS.GetWindowBounds (window, (short)  OS.kWindowContentRgn, rect);
+		} else {
+			OS.GetControlBounds (scrolledHandle, rect);
+		}
 		int width = Math.max (0, rect.right - rect.left - vWidth);
 		int height = Math.max (0, rect.bottom - rect.top - hHeight);
 		if (horizontalBar != null) {
 			int x = 0, y = height;
 			Rect rect1 = new Rect ();
 			OS.SetRect (rect1, (short) x, (short) y, (short)(x + width), (short)(y + hHeight));
+			if (visible) toRoot (horizontalBar.handle, rect1);
 			OS.SetControlBounds (horizontalBar.handle, rect1);
 		}
 		if (verticalBar != null) {
 			int x = width, y = 0;
 			Rect rect2 = new Rect ();
 			OS.SetRect (rect2, (short) x, (short) y, (short)(x + vWidth), (short)(y + height));
+			if (visible) toRoot (verticalBar.handle, rect2);
 			OS.SetControlBounds (verticalBar.handle, rect2);
 		}
 		OS.SetRect (rect, (short) 0, (short) 0, (short) width, (short) height);
+		if (visible) toRoot (handle, rect);
 		OS.SetControlBounds (handle, rect);
 	}	
 }
