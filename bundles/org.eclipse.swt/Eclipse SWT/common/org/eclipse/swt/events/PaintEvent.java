@@ -62,6 +62,8 @@ public final class PaintEvent extends TypedEvent {
 	 */
 	public int count;
 
+	static final long serialVersionUID = 3256446919205992497L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

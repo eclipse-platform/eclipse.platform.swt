@@ -56,6 +56,8 @@ public class KeyEvent extends TypedEvent {
 	 */
 	public boolean doit;
 
+	static final long serialVersionUID = 3256442491011412789L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

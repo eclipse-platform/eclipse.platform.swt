@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class HelpEvent extends TypedEvent {
 
+	static final long serialVersionUID = 3257001038606251315L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

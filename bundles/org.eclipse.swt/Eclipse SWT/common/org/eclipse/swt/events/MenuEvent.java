@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class MenuEvent extends TypedEvent {
 
+	static final long serialVersionUID = 3258132440332383025L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

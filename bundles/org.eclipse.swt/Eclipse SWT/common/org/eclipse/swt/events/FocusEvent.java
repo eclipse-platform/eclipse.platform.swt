@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class FocusEvent extends TypedEvent {
 
+	static final long serialVersionUID = 3258134643684227381L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

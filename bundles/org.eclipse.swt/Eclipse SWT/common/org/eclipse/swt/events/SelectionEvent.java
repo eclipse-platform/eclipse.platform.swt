@@ -84,6 +84,8 @@ public class SelectionEvent extends TypedEvent {
 	 */
 	public boolean doit;
 	
+	static final long serialVersionUID = 3976735856884987953L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class DisposeEvent extends TypedEvent {
 
+	static final long serialVersionUID = 3257566187633521206L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

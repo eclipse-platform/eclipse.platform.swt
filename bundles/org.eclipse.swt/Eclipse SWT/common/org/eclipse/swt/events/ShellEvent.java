@@ -28,6 +28,8 @@ public final class ShellEvent extends TypedEvent {
 	 */
 	public boolean doit;
 	
+	static final long serialVersionUID = 3257569490479888441L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

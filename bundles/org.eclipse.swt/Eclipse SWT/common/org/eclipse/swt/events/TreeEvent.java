@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class TreeEvent extends SelectionEvent {
 
+	static final long serialVersionUID = 3257282548009677109L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

@@ -35,6 +35,8 @@ public final class VerifyEvent extends KeyEvent {
 	 */
 	public String text;
 
+	static final long serialVersionUID = 3257003246269577014L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

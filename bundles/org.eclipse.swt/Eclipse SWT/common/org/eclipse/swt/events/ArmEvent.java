@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Event;
 
 public final class ArmEvent extends TypedEvent {
 
+	static final long serialVersionUID = 3258126964249212217L;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

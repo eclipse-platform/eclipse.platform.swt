@@ -49,6 +49,8 @@ public class TypedEvent extends SWTEventObject {
 	 */
 	public Object data;
 
+	static final long serialVersionUID = 3257285846578377524L;
+	
 /**
  * Constructs a new instance of this class.
  *

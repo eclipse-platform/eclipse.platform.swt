@@ -108,6 +108,8 @@ public final class TraverseEvent extends KeyEvent {
 	 */
 	public int detail;
 	
+	static final long serialVersionUID = 3257565105301239349L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

@@ -56,6 +56,8 @@ public final class MouseEvent extends TypedEvent {
 	 */	
 	public int y;
 
+	static final long serialVersionUID = 3257288037011566898L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.
