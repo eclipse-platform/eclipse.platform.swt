@@ -414,53 +414,185 @@ public class AccessibleObject {
 	}
 
 	int atkText_get_text_after_offset (int offset, int boundary_type, int start_offset, int end_offset) {
-		// TODO according to new gnome doc this determined text wrong
 		String text = getText ();
 		if (text != null) {
+			int length = text.length ();
+			int startBounds = offset;
 			int endBounds = offset;
-			String afterText = text.substring (offset);
 			switch (boundary_type) {
 				case OS.ATK_TEXT_BOUNDARY_CHAR: {
-					if (afterText.length () > 0) endBounds++;
+					if (text.length () > offset) endBounds++;
 					break;
 				}
-				case OS.ATK_TEXT_BOUNDARY_LINE_START:
-				case OS.ATK_TEXT_BOUNDARY_LINE_END: {
-					int newlineIndex = afterText.indexOf ('\n');	//TODO use platform line delimiter?
-					if (newlineIndex == -1) newlineIndex = afterText.length ();
-					endBounds += newlineIndex;
+				case OS.ATK_TEXT_BOUNDARY_WORD_START: {
+					int wordStart1 = getIndexOfChar (text, " !?.\n", offset);
+					if (wordStart1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					while (wordStart1 < length) {
+						char current = text.charAt (wordStart1); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						wordStart1++;
+					}
+					if (wordStart1 == length) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = wordStart1;
+					int wordStart2 = getIndexOfChar (text, " !?.\n", wordStart1);
+					if (wordStart2 == -1) {
+						endBounds = length;
+						break;
+					}
+					while (wordStart2 < length) {
+						char current = text.charAt (wordStart2); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						wordStart2++;
+					}
+					endBounds = wordStart2;
 					break;
 				}
-				case OS.ATK_TEXT_BOUNDARY_SENTENCE_START:
-				case OS.ATK_TEXT_BOUNDARY_SENTENCE_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = afterText.length ();
-					int periodIndex = afterText.indexOf ('.');
-					if (periodIndex != -1) separatorIndex = Math.min (separatorIndex, periodIndex + 1);
-					int questionIndex = afterText.indexOf ('?');
-					if (questionIndex != -1) separatorIndex = Math.min (separatorIndex, questionIndex + 1);
-					int exclaimationIndex = afterText.indexOf ('!');
-					if (exclaimationIndex != -1) separatorIndex = Math.min (separatorIndex, exclaimationIndex + 1);
-					endBounds += separatorIndex;
-					break;
-				}
-				case OS.ATK_TEXT_BOUNDARY_WORD_START:
 				case OS.ATK_TEXT_BOUNDARY_WORD_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = afterText.length ();
-					int spaceIndex = afterText.indexOf (' ');
-					if (spaceIndex != -1) separatorIndex = Math.min (separatorIndex, spaceIndex);
-					int newlineIndex = afterText.indexOf ('\n');
-					if (newlineIndex != -1) separatorIndex = Math.min (separatorIndex, newlineIndex);
-					endBounds += separatorIndex;
+					int wordEnd1 = getIndexOfChar (text, " !?.\n", offset);
+					if (wordEnd1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = wordEnd1;
+					int wordEnd2 = wordEnd1;
+					while (wordEnd2 < length) {
+						char current = text.charAt (wordEnd2); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						wordEnd2++;
+					}
+					if (wordEnd2 == length) {
+						endBounds = length;
+						break;
+					}
+					wordEnd2 = getIndexOfChar (text, " !?.\n", wordEnd2);
+					if (wordEnd2 == -1) {
+						endBounds = length;
+					} else {
+						endBounds = wordEnd2;
+					}
+					break;
+				}
+
+				case OS.ATK_TEXT_BOUNDARY_SENTENCE_START: {
+					int sentenceStart1 = getIndexOfChar (text, "!?.", offset);
+					if (sentenceStart1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					while (sentenceStart1 < length) {
+						char current = text.charAt (sentenceStart1); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						sentenceStart1++;
+					}
+					if (sentenceStart1 == length) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = sentenceStart1;
+					int sentenceStart2 = getIndexOfChar (text, "!?.", sentenceStart1);
+					if (sentenceStart2 == -1) {
+						endBounds = length;
+						break;
+					}
+					while (sentenceStart2 < length) {
+						char current = text.charAt (sentenceStart2); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						sentenceStart2++;
+					}
+					endBounds = sentenceStart2;
+					break;
+				}
+
+				case OS.ATK_TEXT_BOUNDARY_SENTENCE_END: {
+					int sentenceEnd1 = getIndexOfChar (text, "!?.", offset);
+					if (sentenceEnd1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = sentenceEnd1;
+					int sentenceEnd2 = sentenceEnd1;
+					while (sentenceEnd2 < length) {
+						char current = text.charAt (sentenceEnd2); 
+						if (current != ' ' && current != '!' && current != '?' && current != '.' && current != '\n') break;
+						sentenceEnd2++;
+					}
+					if (sentenceEnd2 == length) {
+						endBounds = length;
+						break;
+					}
+					sentenceEnd2 = getIndexOfChar (text, "!?.", sentenceEnd2);
+					if (sentenceEnd2 == -1) {
+						endBounds = length;
+					} else {
+						endBounds = sentenceEnd2;
+					}
+					break;
+				}
+
+				case OS.ATK_TEXT_BOUNDARY_LINE_START: {
+					int lineStart1 = text.indexOf ('\n', offset);
+					if (lineStart1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					while (lineStart1 < length) {
+						if (text.charAt (lineStart1) != '\n') break;
+						lineStart1++;
+					}
+					if (lineStart1 == length) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = lineStart1;
+					int lineStart2 = text.indexOf ('\n', lineStart1);
+					if (lineStart2 == -1) {
+						endBounds = length;
+						break;
+					}
+					while (lineStart2 < length) {
+						if (text.charAt (lineStart2) != '\n') break;
+						lineStart2++;
+					}
+					endBounds = lineStart2;
+					break;
+				}
+				case OS.ATK_TEXT_BOUNDARY_LINE_END: {
+					int lineEnd1 = text.indexOf ('\n', offset);
+					if (lineEnd1 == -1) {
+						startBounds = endBounds = length;
+						break;
+					}
+					startBounds = lineEnd1;
+					int lineEnd2 = lineEnd1;
+					while (lineEnd2 < length) {
+						if (text.charAt (lineEnd2) != '\n') break;
+						lineEnd2++;
+					}
+					if (lineEnd2 == length) {
+						endBounds = length;
+						break;
+					}
+					lineEnd2 = text.indexOf ('\n', lineEnd2);
+					if (lineEnd2 == -1) {
+						endBounds = length;
+					} else {
+						endBounds = lineEnd2;
+					}
 					break;
 				}
 			}
-			OS.memmove (start_offset, new int[] {offset}, 4);
-			OS.memmove (end_offset, new int[] {endBounds}, 4);
-//			text = text.substring (start_offset, end_offset);
+//			OS.memmove (start_offset, new int[] {startBounds}, 4);
+//			OS.memmove (end_offset, new int[] {endBounds}, 4);
+			text = text.substring (startBounds, endBounds);
+System.out.println("result: \"" + text + "\"");
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
+			// TODO gnopernicus bug? freeing previous string can cause gp
 //			if (textPtr != -1) OS.g_free (textPtr);
 			textPtr = OS.g_malloc (bytes.length);
 			OS.memmove (textPtr, bytes, bytes.length);
@@ -629,6 +761,16 @@ public class AccessibleObject {
 			if (object.index == childIndex) return object;
 		}
 		return null;
+	}
+	
+	int getIndexOfChar (String string, String searchChars, int startIndex) {
+		int result = string.length ();
+		for (int i = 0; i < searchChars.length (); i++) {
+			char current = searchChars.charAt (i);
+			int index = string.indexOf (current, startIndex);
+			if (index != -1) result = Math.min (result, index);
+		}
+		return result;
 	}
 	
 	String getText () {
