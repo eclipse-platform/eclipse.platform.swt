@@ -3721,17 +3721,17 @@ int getWordEnd(int offset) {
 	else {
 		offset -= lineOffset;
 		char ch = lineText.charAt(offset);
-		boolean letterOrDigit = Character.isLetterOrDigit(ch);
-		while (offset < lineLength - 1 && Character.isLetterOrDigit(ch) == letterOrDigit) {
+		boolean letterOrDigit = Compatibility.isLetterOrDigit(ch);
+		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit) {
 			offset++;
 			ch = lineText.charAt(offset);
 		}
 		// skip over trailing whitespace
-		while (offset < lineLength - 1 && Character.isSpaceChar(ch)) {
+		while (offset < lineLength - 1 && Compatibility.isSpaceChar(ch)) {
 			offset++;
 			ch = lineText.charAt(offset);		
 		}
-		if (offset == lineLength - 1 && (Character.isLetterOrDigit(ch) == letterOrDigit || Character.isSpaceChar(ch))) {
+		if (offset == lineLength - 1 && (Compatibility.isLetterOrDigit(ch) == letterOrDigit || Compatibility.isSpaceChar(ch))) {
 			offset++;
 		}
 		offset += lineOffset;
@@ -3770,13 +3770,13 @@ int getWordEndNoSpaces(int offset) {
 	else {
 		offset -= lineOffset;
 		char ch = lineText.charAt(offset);
-		boolean letterOrDigit = Character.isLetterOrDigit(ch);
+		boolean letterOrDigit = Compatibility.isLetterOrDigit(ch);
 		
-		while (offset < lineLength - 1 && Character.isLetterOrDigit(ch) == letterOrDigit && Character.isSpaceChar(ch) == false) {
+		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
 			offset++;
 			ch = lineText.charAt(offset);
 		}
-		if (offset == lineLength - 1 && Character.isLetterOrDigit(ch) == letterOrDigit && Character.isSpaceChar(ch) == false) {
+		if (offset == lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
 			offset++;
 		}
 		offset += lineOffset;
@@ -3821,13 +3821,13 @@ int getWordStart(int offset) {
 		do {		
 			offset--;
 			ch = lineText.charAt(offset);
-		} while (offset > 0 && Character.isSpaceChar(ch));
-		letterOrDigit = Character.isLetterOrDigit(ch);
-		while (offset > 0 && Character.isLetterOrDigit(ch) == letterOrDigit && Character.isSpaceChar(ch) == false) {
+		} while (offset > 0 && Compatibility.isSpaceChar(ch));
+		letterOrDigit = Compatibility.isLetterOrDigit(ch);
+		while (offset > 0 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
 			offset--;
 			ch = lineText.charAt(offset);
 		}
-		if (offset > 0 || Character.isLetterOrDigit(ch) != letterOrDigit) {
+		if (offset > 0 || Compatibility.isLetterOrDigit(ch) != letterOrDigit) {
 			offset++;
 		}
 		offset += lineOffset;

@@ -14,6 +14,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.printing.*;
+import org.eclipse.swt.internal.Compatibility;
 
 class StyledTextPrinter implements Runnable {
 	class RTFState {
@@ -133,7 +134,7 @@ class StyledTextPrinter implements Runnable {
 		if (index >= end) return;
 		char c = rtf.charAt(index);
 		index++;
-		if (!Character.isLetter(c)) {
+		if (!Compatibility.isLetter(c)) {
 			handleControlSymbol(c);
 			return;
 		}
@@ -142,7 +143,7 @@ class StyledTextPrinter implements Runnable {
 		while (index < end) {
 			c = rtf.charAt(index);
 			index++;
-			if (!Character.isLetter(c)) break;
+			if (!Compatibility.isLetter(c)) break;
 			controlWord.append(c);
 		}
 		boolean isNegative = false;
@@ -194,7 +195,7 @@ class StyledTextPrinter implements Runnable {
 		if (c != '\t') {
 			wordBuffer.append(c);
 		}
-		if (!Character.isLetterOrDigit(c) && !creatingFontTable) {
+		if (!Compatibility.isLetterOrDigit(c) && !creatingFontTable) {
 			printWordBuffer();
 			if (c == '\t') {
 				x += tabWidth;

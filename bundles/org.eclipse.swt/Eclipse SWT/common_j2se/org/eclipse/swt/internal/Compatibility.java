@@ -74,13 +74,43 @@ public static void loadLibrary(String name) {
 }
 
 /**
- * Test if the character is a whitespace character.
+ * Answers whether the character is a letter.
+ *
+ * @param c the character
+ * @return true when the character is a letter
+ */
+public static boolean isLetter(char c) {
+	return Character.isLetter(c);
+}
+
+/**
+ * Answers whether the character is a letter or a digit.
+ *
+ * @param c the character
+ * @return true when the character is a letter or a digit
+ */
+public static boolean isLetterOrDigit(char c) {
+	return Character.isLetterOrDigit(c);
+}
+
+/**
+ * Answers whether the character is a Unicode space character.
+ *
+ * @param c	 the character
+ * @return true when the character is a Unicode space character
+ */
+public static boolean isSpaceChar(char c) {
+	return Character.isSpaceChar(c);
+}
+
+/**
+ * Answers whether the character is a whitespace character.
  *
  * @param ch the character to test
  * @return true if the character is whitespace
  */
-public static boolean isWhitespace(char ch) {
-	return Character.isWhitespace(ch);
+public static boolean isWhitespace(char c) {
+	return Character.isWhitespace(c);
 }
 
 private static ResourceBundle msgs = null;

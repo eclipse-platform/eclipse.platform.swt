@@ -6,6 +6,7 @@ package org.eclipse.swt.internal.image;
  */
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.Compatibility;
 import java.io.*;
 
 class PngChunk extends Object {
@@ -298,7 +299,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	
 	// All characters must be letters.
 	for (int i = 0; i < TYPE_FIELD_LENGTH; i++) {
-		if (!Character.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		if (!Compatibility.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	
 	// The stored CRC must match the data's computed CRC.

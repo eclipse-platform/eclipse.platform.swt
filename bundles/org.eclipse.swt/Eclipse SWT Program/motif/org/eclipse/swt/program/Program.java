@@ -319,7 +319,7 @@ private static void gnome_parseMimeFile( Hashtable info, BufferedReader reader )
 	while (line != null) {
 		
 		// Determine if the line contains a mime type name.
-		boolean newType = (line.length() > 0 && Character.isLetter( line.charAt(0) ));
+		boolean newType = (line.length() > 0 && Compatibility.isLetter( line.charAt(0) ));
 				  
 		// If there is valid data on this line to be processed
 		String data = line.trim();
