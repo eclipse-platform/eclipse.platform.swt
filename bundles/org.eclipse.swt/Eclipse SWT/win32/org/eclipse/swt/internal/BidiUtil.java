@@ -104,22 +104,19 @@ public static void addLanguageListener (int hwnd, Runnable runnable) {
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
 }
 /**
- * Proc used for OS.EnumSystemCodePages call during isBidiPlatform test.
+ * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
  */
-static int EnumCodePagesProc(int lpCodePageString) {	
-	/* Get the code pages */
-	int length = 8;
-	TCHAR buffer = new TCHAR(0, length);
-	int byteCount = length * TCHAR.sizeof;
-	OS.MoveMemory(buffer, lpCodePageString, byteCount);
-	String cpg = buffer.toString(0, buffer.strlen());
-	
-	if (CD_PG_ARABIC.equals(cpg) || CD_PG_HEBREW.equals(cpg)) {
+static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, int lpLangGrpName, int options, int lParam) {
+	if (lpLangGrpId == OS.LGRPID_HEBREW) {
 		isBidiPlatform = 1;
 		return 0;
 	}
-	else return 1;
-}
+	if (lpLangGrpId == OS.LGRPID_ARABIC) {
+		isBidiPlatform = 1;
+		return 0;
+	}
+	return 1;
+} 
 /**
  * Wraps the ExtTextOut function.
  * <p>
@@ -412,26 +409,25 @@ static int[] getKeyboardLanguageList() {
  */
 public static boolean isBidiPlatform() {
 	if (OS.IsWinCE) return false;
-	int[] languages = getKeyboardLanguageList();
-	for (int i=0; i<languages.length; i++) {
-		int language = languages[i] & 0x000000FF;;
-		if ((language == LANG_ARABIC) || (language == LANG_HEBREW)) {
-			return true;
-		}
+	if (isBidiPlatform != -1) return isBidiPlatform == 1; // already set
+
+	isBidiPlatform = 0;
+	Callback callback;
+	try {
+		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5);
+		int lpEnumSystemLanguageGroupsProc = callback.getAddress ();	
+		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
+		callback.dispose ();
+	} catch (ClassNotFoundException e) {}
+	if (isBidiPlatform == 1) return true;
+	// need to look at system code page for NT & 98 platforms since EnumSystemLanguageGroups is
+	// not supported for these platforms
+	String codePage = String.valueOf(OS.GetACP());
+	if (CD_PG_ARABIC.equals(codePage) || CD_PG_HEBREW.equals(codePage)) {
+		isBidiPlatform = 1;
 	}
-	return false;
-//	if (isBidiPlatform == - 1) {
-//		isBidiPlatform = 0;
-//		Callback callback;
-//		try {
-//			callback = new Callback (Class.forName (CLASS_NAME), "EnumCodePagesProc", 1);
-//			int lpEnumCodePagesProc = callback.getAddress ();	
-//			if (lpEnumCodePagesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-//			OS.EnumSystemCodePages(lpEnumCodePagesProc, OS.CP_INSTALLED);
-//			callback.dispose ();
-//		} catch (ClassNotFoundException e) {}
-//	}
-//	return isBidiPlatform == 1;
+	return isBidiPlatform == 1;
 }
 /**
  * Return whether or not the keyboard supports input of a bidi language.  Determine this
