@@ -160,8 +160,6 @@ void createHandle () {
 	}
 
 	ControlFontStyleRec fontRec = new ControlFontStyleRec();
-//	fontRec.flags = (short)OS.kControlUseFontMask;
-//	fontRec.font = 0;
 	fontRec.flags = (short)OS.kControlUseThemeFontIDMask;
 	fontRec.font = OS.kThemePushButtonFont;
 	OS.SetControlFontStyle (handle, fontRec);
@@ -333,25 +331,24 @@ public void setImage (Image image) {
 		cIcon = 0;
 	}
 	this.image = image;
-	if (text != null) {
-		char [] buffer = new char [1];
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetControlTitleWithCFString (handle, ptr);
-		OS.CFRelease (ptr);
-	}
 	isImage = true;
+	
 	if (image == null) {
-		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-		inContent.contentType = (short)OS.kControlContentTextOnly;
-		OS.SetBevelButtonContentInfo (handle, inContent);
-	} else {
-		cIcon = createCIcon (image);
-		ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-		inContent.contentType = (short)OS.kControlContentCIconHandle;
-		inContent.iconRef = cIcon;
-		OS.SetBevelButtonContentInfo (handle, inContent);
+		setText (text);
+		return;
 	}
+	
+	char [] buffer = new char [1];
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlTitleWithCFString (handle, ptr);
+	OS.CFRelease (ptr);
+	
+	cIcon = createCIcon (image);
+	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+	inContent.contentType = (short)OS.kControlContentCIconHandle;
+	inContent.iconRef = cIcon;
+	OS.SetBevelButtonContentInfo (handle, inContent);
 	redraw ();
 }
 
