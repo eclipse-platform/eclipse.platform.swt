@@ -4060,6 +4060,7 @@ public static final native int iconv_close(int cd);
 public static final native int iconv_open(byte[] tocode, byte[] fromcode);
 public static final native void memmove(int dest, XImage src, int count);
 public static final native void memmove(int dest, XmDragProcCallbackStruct src, int count);
+public static final native void memmove(int dest, XmSpinBoxCallbackStruct src, int count);
 public static final native void memmove(int dest, XmTextBlockRec src, int count);
 public static final native void memmove(int dest, XmTextVerifyCallbackStruct src, int count);
 public static final native void memmove(int dest, byte[] src, int count);
@@ -4090,6 +4091,7 @@ public static final native void memmove(XmAnyCallbackStruct dest, int src, int c
 public static final native void memmove(XmDragProcCallbackStruct dest, int src, int count);
 public static final native void memmove(XmDropFinishCallbackStruct dest, int src, int count);
 public static final native void memmove(XmDropProcCallbackStruct dest, int src, int count);
+public static final native void memmove(XmSpinBoxCallbackStruct dest, int src, int count);
 public static final native void memmove(XmTextBlockRec dest, int src, int count);
 public static final native void memmove(XmTextVerifyCallbackStruct dest, int src, int count);
 public static final native void memmove(byte[] dest, int src, int count);

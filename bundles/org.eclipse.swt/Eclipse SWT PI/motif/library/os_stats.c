@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 444;
-int OS_nativeFunctionCallCount[444];
+int OS_nativeFunctionCount = 446;
+int OS_nativeFunctionCallCount[446];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -417,6 +417,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_motif_XImage_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2I",
+	"memmove__ILorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I",
 	"memmove__I_3BI",
@@ -448,6 +449,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallbackStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallbackStruct_2II",
+	"memmove__Lorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II",
 	"memmove___3BII",

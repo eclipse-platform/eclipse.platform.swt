@@ -407,6 +407,18 @@ void setXmDropProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropProc
 #define XmDropProcCallbackStruct_sizeof() 0
 #endif
 
+#ifndef NO_XmSpinBoxCallbackStruct
+void cacheXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject);
+XmSpinBoxCallbackStruct *getXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject, XmSpinBoxCallbackStruct *lpStruct);
+void setXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject, XmSpinBoxCallbackStruct *lpStruct);
+#define XmSpinBoxCallbackStruct_sizeof() sizeof(XmSpinBoxCallbackStruct)
+#else
+#define cacheXmSpinBoxCallbackStructFields(a,b)
+#define getXmSpinBoxCallbackStructFields(a,b,c) NULL
+#define setXmSpinBoxCallbackStructFields(a,b,c)
+#define XmSpinBoxCallbackStruct_sizeof() 0
+#endif
+
 #ifndef NO_XmTextBlockRec
 void cacheXmTextBlockRecFields(JNIEnv *env, jobject lpObject);
 XmTextBlockRec *getXmTextBlockRecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpStruct);

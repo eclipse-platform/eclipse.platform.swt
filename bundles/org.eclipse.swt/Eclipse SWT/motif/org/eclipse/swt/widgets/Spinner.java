@@ -384,6 +384,7 @@ void hookEvents () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int textHandle = argList [1];
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);	
 	OS.XtAddCallback (textHandle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
 	OS.XtAddCallback (textHandle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (textHandle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
@@ -677,6 +678,17 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 	return super.xFocusOut (xEvent);
 }
 int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
+	if (w == handle) {
+		if ((style & SWT.WRAP) == 0) {
+			XmSpinBoxCallbackStruct struct = new XmSpinBoxCallbackStruct ();
+			OS.memmove (struct, call_data, XmSpinBoxCallbackStruct.sizeof);
+			if (struct.crossed_boundary != 0) {
+				struct.doit = (byte) 0;
+				OS.memmove (call_data, struct, XmSpinBoxCallbackStruct.sizeof);
+			}
+		}
+		return 0;
+	}
 	int result = super.XmNmodifyVerifyCallback (w, client_data, call_data);
 	if (result != 0) return result;
 	

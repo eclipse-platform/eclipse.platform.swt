@@ -1872,6 +1872,52 @@ void setXmDropProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropProc
 }
 #endif
 
+#ifndef NO_XmSpinBoxCallbackStruct
+typedef struct XmSpinBoxCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID widget, doit, position, value, crossed_boundary;
+} XmSpinBoxCallbackStruct_FID_CACHE;
+
+XmSpinBoxCallbackStruct_FID_CACHE XmSpinBoxCallbackStructFc;
+
+void cacheXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmSpinBoxCallbackStructFc.cached) return;
+	cacheXmAnyCallbackStructFields(env, lpObject);
+	XmSpinBoxCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmSpinBoxCallbackStructFc.widget = (*env)->GetFieldID(env, XmSpinBoxCallbackStructFc.clazz, "widget", "I");
+	XmSpinBoxCallbackStructFc.doit = (*env)->GetFieldID(env, XmSpinBoxCallbackStructFc.clazz, "doit", "B");
+	XmSpinBoxCallbackStructFc.position = (*env)->GetFieldID(env, XmSpinBoxCallbackStructFc.clazz, "position", "I");
+	XmSpinBoxCallbackStructFc.value = (*env)->GetFieldID(env, XmSpinBoxCallbackStructFc.clazz, "value", "I");
+	XmSpinBoxCallbackStructFc.crossed_boundary = (*env)->GetFieldID(env, XmSpinBoxCallbackStructFc.clazz, "crossed_boundary", "B");
+	XmSpinBoxCallbackStructFc.cached = 1;
+}
+
+XmSpinBoxCallbackStruct *getXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject, XmSpinBoxCallbackStruct *lpStruct)
+{
+	if (!XmSpinBoxCallbackStructFc.cached) cacheXmSpinBoxCallbackStructFields(env, lpObject);
+	getXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	lpStruct->widget = (Widget)(*env)->GetIntField(env, lpObject, XmSpinBoxCallbackStructFc.widget);
+	lpStruct->doit = (Boolean)(*env)->GetByteField(env, lpObject, XmSpinBoxCallbackStructFc.doit);
+	lpStruct->position = (*env)->GetIntField(env, lpObject, XmSpinBoxCallbackStructFc.position);
+	lpStruct->value = (XmString)(*env)->GetIntField(env, lpObject, XmSpinBoxCallbackStructFc.value);
+	lpStruct->crossed_boundary = (Boolean)(*env)->GetByteField(env, lpObject, XmSpinBoxCallbackStructFc.crossed_boundary);
+	return lpStruct;
+}
+
+void setXmSpinBoxCallbackStructFields(JNIEnv *env, jobject lpObject, XmSpinBoxCallbackStruct *lpStruct)
+{
+	if (!XmSpinBoxCallbackStructFc.cached) cacheXmSpinBoxCallbackStructFields(env, lpObject);
+	setXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XmSpinBoxCallbackStructFc.widget, (jint)lpStruct->widget);
+	(*env)->SetByteField(env, lpObject, XmSpinBoxCallbackStructFc.doit, (jbyte)lpStruct->doit);
+	(*env)->SetIntField(env, lpObject, XmSpinBoxCallbackStructFc.position, (jint)lpStruct->position);
+	(*env)->SetIntField(env, lpObject, XmSpinBoxCallbackStructFc.value, (jint)lpStruct->value);
+	(*env)->SetByteField(env, lpObject, XmSpinBoxCallbackStructFc.crossed_boundary, (jbyte)lpStruct->crossed_boundary);
+}
+#endif
+
 #ifndef NO_XmTextBlockRec
 typedef struct XmTextBlockRec_FID_CACHE {
 	int cached;
