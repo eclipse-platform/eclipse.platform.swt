@@ -514,25 +514,6 @@ boolean isValidThread () {
 void manageChildren () {
 	/* Do nothing */
 }
-char mbcsToWcs (int ch) {
-	return mbcsToWcs (ch, null);
-}
-char mbcsToWcs (int ch, String codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return (char) ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
-	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
-	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
-}
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -716,7 +697,7 @@ void setInputState (Event event, XInputEvent xEvent) {
 }
 void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
-		byte [] buffer = new byte [1];
+		byte [] buffer = new byte [5];
 		int [] keysym = new int [1];
 		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 		
@@ -812,7 +793,8 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			event.keyCode = Display.translateKey (keysym [0]);
 		}
 		if (buffer [0] != 0) {
-			event.character = mbcsToWcs (buffer [0] & 0xFF);
+			char [] result = Converter.mbcsToWcs (null, buffer);
+			if (result.length != 0) event.character = result [0];
 		}
 	}
 	setInputState (event, xEvent);
@@ -964,7 +946,7 @@ int topHandle () {
 boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
 	return false;
 }
-boolean translateMnemonic (int key, XKeyEvent xEvent) {
+boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
 	return false;
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {

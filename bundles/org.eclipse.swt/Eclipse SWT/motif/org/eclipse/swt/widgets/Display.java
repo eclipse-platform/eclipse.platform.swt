@@ -739,13 +739,14 @@ boolean filterEvent (XAnyEvent event) {
 	if (widget == null) return false;
 
 	/* Get the unaffected character and keysym */
+	char key = 0;
 	int oldState = keyEvent.state;
 	keyEvent.state = 0;
-	byte [] buffer1 = new byte [4];
+	byte [] buffer1 = new byte [5];
 	int [] buffer2 = new int [1];
-	int key = 0;
 	if (OS.XLookupString (keyEvent, buffer1, 1, buffer2, null) != 0) {
-		key = buffer1 [0] & 0xFF;
+		char [] result = Converter.mbcsToWcs (null, buffer1);
+		if (result.length != 0) key = result [0];
 	}
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
@@ -783,7 +784,7 @@ boolean filterEvent (XAnyEvent event) {
 
 	/* Check for a mnemonic key */
 	if (key != 0) {
-		if (widget.translateMnemonic (key, keyEvent)) return true;
+		if (widget.translateMnemonic (key, keysym, keyEvent)) return true;
 	}
 
 	/* Check for a traversal key */

@@ -828,8 +828,8 @@ void setDrawPressed (boolean value) {
 boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
 	return parent.translateAccelerator (key, keysym, xEvent, doit);
 }
-boolean translateMnemonic (int key, XKeyEvent xEvent) {
-	return parent.translateMnemonic (key, xEvent);
+boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
+	return parent.translateMnemonic (key, keysym, xEvent);
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
