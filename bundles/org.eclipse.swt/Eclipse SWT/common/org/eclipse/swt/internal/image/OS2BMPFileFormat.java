@@ -85,7 +85,7 @@ ImageData[] loadFromByteStream() {
 		}
 	}
 	byte[] data = loadData(infoHeader);
-	int type = SWT.IMAGE_BMP_OS2;
+	int type = SWT.IMAGE_OS2_BMP;
 	return new ImageData[] {
 		ImageData.internal_new(
 			width,

@@ -1988,7 +1988,7 @@ public class ImageAnalyzer {
 		
 		radio = new Button(dialog, SWT.RADIO);
 		radio.setText(bundle.getString("Save_as_type_os2"));
-		radio.setData(new Integer(SWT.IMAGE_BMP_OS2));
+		radio.setData(new Integer(SWT.IMAGE_OS2_BMP));
 		radio.addSelectionListener(radioSelected);
 
 		label = new Label(dialog, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -2127,7 +2127,7 @@ public class ImageAnalyzer {
 			return "BMP";
 		if (filetype == SWT.IMAGE_BMP_RLE)
 			return "RLE" + imageData.depth + " BMP";
-		if (filetype == SWT.IMAGE_BMP_OS2)
+		if (filetype == SWT.IMAGE_OS2_BMP)
 			return "OS/2 BMP";
 		if (filetype == SWT.IMAGE_GIF)
 			return "GIF";

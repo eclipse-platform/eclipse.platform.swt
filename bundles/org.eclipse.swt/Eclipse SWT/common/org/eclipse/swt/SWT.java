@@ -2416,7 +2416,7 @@ public class SWT {
 	/**
 	 * Image format constant indicating an OS/2 BMP format image (value is 7).
 	 */
-	public static final int IMAGE_BMP_OS2 = 7;
+	public static final int IMAGE_OS2_BMP = 7;
 
 	/**
 	 * GIF image disposal method constants indicating that the
