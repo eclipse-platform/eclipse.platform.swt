@@ -2364,8 +2364,7 @@ public void setBackground (Color color) {
 		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
 		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_BG) != 0;
 	} else {
-		GdkColor oldColor = new GdkColor ();
-		OS.gtk_style_get_fg (OS.gtk_widget_get_style (handle), OS.GTK_STATE_NORMAL, oldColor);
+		GdkColor oldColor = getBackgroundColor ();
 		set = oldColor.pixel != gdkColor.pixel;
 	}
 	if (set) setBackgroundColor (gdkColor);
@@ -2591,8 +2590,7 @@ public void setForeground (Color color) {
 		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
 		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_FG) != 0;
 	} else {
-		GdkColor oldColor = new GdkColor ();
-		OS.gtk_style_get_fg (OS.gtk_widget_get_style (handle), OS.GTK_STATE_NORMAL, oldColor);
+		GdkColor oldColor = getForegroundColor ();
 		set = oldColor.pixel != gdkColor.pixel;
 	}
 	if (set) setForegroundColor (gdkColor);
