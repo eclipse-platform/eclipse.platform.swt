@@ -362,10 +362,9 @@ public void setLayout (Layout layout) {
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
  *
- * @param tabList the ordered list of controls representing the tab order; must not be null
+ * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
@@ -376,44 +375,27 @@ public void setLayout (Layout layout) {
  */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
-	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<tabList.length; i++) {
-		Control control = tabList [i];
-		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//		Shell shell = control.getShell ();
-//		while (control != shell && control != this) {
-//			control = control.parent;
-//		}
-//		if (control != this) error (SWT.ERROR_INVALID_PARENT);
-		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
-	}
-	/*
-	* This code is intentionally commented.  It is
-	* not yet clear whether setting the tab list 
-	* should force the widget to be a tab group
-	* instead of a tab item or non-traversable.
-	*/
-//	Control [] children = _getChildren ();
-//	for (int i=0; i<children.length; i++) {
-//		Control control = children [i];
-//		if (control != null) {
-//			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//			int index = 0;
-//			while (index < tabList.length) {
-//				if (tabList [index] == control) break;
-//				index++;
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			Control control = tabList [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			/*
+			* This code is intentionally commented.
+			* Tab lists are currently only supported
+			* for the direct children of a composite.
+			*/
+//			Shell shell = control.getShell ();
+//			while (control != shell && control != this) {
+//				control = control.parent;
 //			}
-//			int hwnd = control.handle;
-//			int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
-//			if (index == tabList.length) {
-//				bits &= ~OS.WS_TABSTOP;
-//			} else {
-//				bits |= OS.WS_TABSTOP;
-//			}
-//			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
-//		}
-//	}
+//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
+			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		Control [] newList = new Control [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
 	this.tabList = tabList;
 }
 
@@ -429,7 +411,7 @@ boolean setTabGroupFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isVisible () && child.setRadioFocus ()) return true;
+		if (child.isTabItem () && child.setRadioFocus ()) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];

@@ -1137,11 +1137,23 @@ boolean isShowing () {
 }
 
 boolean isTabGroup () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_TABSTOP) != 0;
 }
 
 boolean isTabItem () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return false;
+		}
+	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_TABSTOP) != 0) return false;
 	int code = OS.SendMessage (handle, OS.WM_GETDLGCODE, 0, 0);
