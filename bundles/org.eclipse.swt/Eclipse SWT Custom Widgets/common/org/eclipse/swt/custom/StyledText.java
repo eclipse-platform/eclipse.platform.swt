@@ -2621,9 +2621,7 @@ void doLineDown() {
 	// allow line down action only if receiver is not in single line mode.
 	// fixes 4820.
 	if (caretLine < content.getLineCount() - 1) {
-		String lineText = content.getLine(caretLine);
-		int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
-		int caretX = getXAtOffset(lineText, caretLine, offsetInLine);
+		int caretX = getCaretX();
 		
 		caretLine++;
 		if (isBidi()) {
@@ -2670,10 +2668,7 @@ void doLineStart() {
  */
 void doLineUp() {
 	if (caretLine > 0) {
-		String lineText = content.getLine(caretLine);
-		int lineOffset = content.getOffsetAtLine(caretLine);
-		int offsetInLine = caretOffset - lineOffset;		
-		int caretX = getXAtOffset(lineText, caretLine, offsetInLine);
+		int caretX = getCaretX();
 		
 		caretLine--;
 		if (isBidi()) {
@@ -2743,31 +2738,28 @@ void doMouseSelection() {
  * @param select whether or not to select the page
  */
 void doPageDown(boolean select) {
-	int line = content.getLineAtOffset(caretOffset);
 	int lineCount = content.getLineCount();
 	
 	// do nothing if in single line mode. fixes 5673
 	if (isSingleLine()) {
 		return;
 	}
-	if (line < lineCount - 1) {
-		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
-		int verticalMaximum = content.getLineCount() * getVerticalIncrement();
+	if (caretLine < lineCount - 1) {
+		int verticalMaximum = lineCount * getVerticalIncrement();
 		int pageSize = getClientArea().height;
-		int scrollLines = Math.min(lineCount - line - 1, getLineCountWhole());
+		int scrollLines = Math.min(lineCount - caretLine - 1, getLineCountWhole());
 		int scrollOffset;
-		int caretX = getXAtOffset(content.getLine(line), line, offsetInLine);
+		int caretX = getCaretX();
 		
 		// ensure that scrollLines never gets negative and at leat one 
 		// line is scrolled. fixes bug 5602.
 		scrollLines = Math.max(1, scrollLines);
-		line += scrollLines;
-		caretLine = line;
+		caretLine += scrollLines;
 		if (isBidi()) {
-			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
+			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
 		}
 		else {
-			caretOffset = getOffsetAtMouseLocation(caretX, line);
+			caretOffset = getOffsetAtMouseLocation(caretX, caretLine);
 		}	
 		if (select) {
 			doSelection(SWT.RIGHT);
@@ -2823,21 +2815,17 @@ void doPageStart() {
  * caret is moved in front of the first character.
  */
 void doPageUp() {
-	int line = content.getLineAtOffset(caretOffset);
-
-	if (line > 0) {	
-		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
-		int scrollLines = Math.max(1, Math.min(line, getLineCountWhole()));
+	if (caretLine > 0) {	
+		int scrollLines = Math.max(1, Math.min(caretLine, getLineCountWhole()));
 		int scrollOffset;
-		int caretX = getXAtOffset(content.getLine(line), line, offsetInLine);
+		int caretX = getCaretX();
 		
-		line -= scrollLines;
-		caretLine = line;
+		caretLine -= scrollLines;
 		if (isBidi()) {
-			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
+			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
 		}
 		else {
-			caretOffset = getOffsetAtMouseLocation(caretX, line);
+			caretOffset = getOffsetAtMouseLocation(caretX, caretLine);
 		}	
 		// scroll one page up or to the top
 		scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
@@ -3166,6 +3154,25 @@ int getBottomIndex() {
 		lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
 	}
 	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
+}
+/**
+ * Returns the caret x position.
+ * 
+ * @return the caret x position
+ */
+int getCaretX() {
+	Caret caret = getCaret();
+	int caretX;
+	
+	if (caret != null) {
+		caretX = caret.getLocation().x;
+	}
+	else {
+		String lineText = content.getLine(caretLine);
+		int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
+		caretX = getXAtOffset(lineText, caretLine, offsetInLine);
+	}
+	return caretX;
 }
 /**
  * Returns the caret position relative to the start of the text.
@@ -7290,14 +7297,11 @@ boolean showLocation(int x, int line) {
  * Sets the caret location and scrolls the caret offset into view.
  */
 void showCaret() {
-	int lineOffset = content.getOffsetAtLine(caretLine);
-	String lineText = content.getLine(caretLine);
-	int offsetInLine = caretOffset - lineOffset;
-	int xAtOffset = getXAtOffset(lineText, caretLine, offsetInLine);	
-	boolean scrolled = showLocation(xAtOffset, caretLine);
+	int caretX = getCaretX();
+	boolean scrolled = showLocation(caretX, caretLine);
 	
 	if (scrolled == false) {
-		setCaretLocation(xAtOffset, caretLine);
+		setCaretLocation(caretX, caretLine);
 	}
 	if (isBidi()) {
 		setBidiKeyboardLanguage();
