@@ -521,7 +521,7 @@ int createMask(ImageData image, boolean copy) {
 			((s & 0x20) >> 3) | ((s & 0x10) >> 1) | ((s & 0x08) << 1) |
 			((s & 0x04) << 3) | ((s & 0x02) << 5) |	((s & 0x01) << 7));
 	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	return OS.gdk_bitmap_create_from_data(0, maskData, mask.width, mask.height);
 }
 
