@@ -2247,6 +2247,89 @@ public void test_replaceStyleRanges(){
 	assertTrue(":1xh:", styles[1].equals(getStyle(4,2,PURPLE,PURPLE)));
 	assertTrue(":1xh:", styles[2].equals(getStyle(6,3,PURPLE,YELLOW)));
 	assertTrue(":1xh:", styles[3].equals(getStyle(12,3,RED,YELLOW)));	
+
+	// reset the environment
+	text.dispose();
+	text = new StyledText(shell, SWT.NULL);
+	setWidget(text);
+
+	text.setText("0");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,1,PURPLE,PURPLE);
+	text.replaceStyleRanges(0, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xa:", styles.length == 1);
+
+	text.setText("01");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,1,PURPLE,PURPLE);
+	ranges[1] = getStyle(1,1,RED,RED);
+	text.replaceStyleRanges(0, 2, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(0, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xb:", styles.length == 2);
+	assertTrue(":2xb:", styles[0].equals(getStyle(0,1,YELLOW,YELLOW)));
+	assertTrue(":2xb:", styles[1].equals(getStyle(1,1,RED,RED)));
+
+	text.setText("01");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,1,PURPLE,PURPLE);
+	ranges[1] = getStyle(1,1,RED,RED);
+	text.replaceStyleRanges(0, 2, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(1,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(1, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xc:", styles.length == 2);
+	assertTrue(":2xc:", styles[0].equals(getStyle(0,1,PURPLE,PURPLE)));
+	assertTrue(":2xc:", styles[1].equals(getStyle(1,1,YELLOW,YELLOW)));
+
+	text.setText("012");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,1,PURPLE,PURPLE);
+	ranges[1] = getStyle(1,1,RED,RED);
+	text.replaceStyleRanges(0, 2, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(2,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(2, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xd:", styles.length == 3);
+	assertTrue(":2xd:", styles[0].equals(getStyle(0,1,PURPLE,PURPLE)));
+	assertTrue(":2xd:", styles[1].equals(getStyle(1,1,RED,RED)));
+	assertTrue(":2xd:", styles[2].equals(getStyle(2,1,YELLOW,YELLOW)));
+
+	text.setText("01234");
+	ranges = new StyleRange[3];
+	ranges[0] = getStyle(1,1,PURPLE,PURPLE);
+	ranges[1] = getStyle(2,1,RED,RED);
+	ranges[2] = getStyle(3,1,PURPLE,PURPLE);
+	text.setStyleRanges(ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(4,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(4, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xe:", styles.length == 4);
+	assertTrue(":2xe:", styles[3].equals(getStyle(4,1,YELLOW,YELLOW)));
+
+	text.setText("01234");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(4,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(4, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xf:", styles.length == 1);
+	assertTrue(":2xf:", styles[0].equals(getStyle(4,1,YELLOW,YELLOW)));
+
+	text.setText("01234");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(4,1,YELLOW,YELLOW);
+	text.replaceStyleRanges(4, 1, ranges);
+	ranges = new StyleRange[0];
+	text.replaceStyleRanges(4, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2xg:", styles.length == 0);
+
 }
 
 public void test_replaceTextRangeIILjava_lang_String(){
