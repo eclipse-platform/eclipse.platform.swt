@@ -418,6 +418,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountSubControls
 }
 #endif /* NO_CountSubControls */
 
+#ifndef NO_CreateDataBrowserControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateDataBrowserControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateDataBrowserControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)CreateDataBrowserControl((WindowRef)arg0, (const Rect *)lparg1, (DataBrowserViewStyle)arg2, (ControlRef *)lparg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_CreateDataBrowserControl */
+
 #ifndef NO_CreateEvent
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEvent
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jdouble arg3, jint arg4, jintArray arg5)
@@ -2442,6 +2461,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor
 }
 #endif /* NO_InitCursor */
 
+#ifndef NO_InitDataBrowserCallbacks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitDataBrowserCallbacks
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DataBrowserCallbacks _arg0={0}, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("InitDataBrowserCallbacks\n")
+
+	if (arg0) lparg0 = getDataBrowserCallbacksFields(env, arg0, &_arg0);
+	rc = (jint)InitDataBrowserCallbacks((DataBrowserCallbacks *)lparg0);
+	if (arg0) setDataBrowserCallbacksFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_InitDataBrowserCallbacks */
+
 #ifndef NO_InsertMenu
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenu
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
@@ -3683,6 +3718,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor
 	SetCursor((const Cursor *)arg0);
 }
 #endif /* NO_SetCursor */
+
+#ifndef NO_SetDataBrowserCallbacks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserCallbacks
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DataBrowserCallbacks _arg1={0}, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetDataBrowserCallbacks\n")
+
+	if (arg1) lparg1 = getDataBrowserCallbacksFields(env, arg1, &_arg1);
+	rc = (jint)SetDataBrowserCallbacks((ControlRef)arg0, (const DataBrowserCallbacks *)lparg1);
+	if (arg1) setDataBrowserCallbacksFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_SetDataBrowserCallbacks */
 
 #ifndef NO_SetDataBrowserHasScrollBars
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars

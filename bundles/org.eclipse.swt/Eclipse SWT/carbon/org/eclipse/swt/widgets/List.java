@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -255,10 +256,18 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE;
 
-	int parentHandle = parent.handle;
+	int parentHandle= parent.handle;
 	int windowHandle= OS.GetControlOwner(parentHandle);
-	handle= OS.createDataBrowserControl(windowHandle);
+	int[] controlRef= new int[1];
+	OS.CreateDataBrowserControl(windowHandle, null, OS.kDataBrowserListView, controlRef);
+	handle= controlRef[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
+	callbacks.version= OS.kDataBrowserLatestCallbacks;
+	OS.InitDataBrowserCallbacks(callbacks);
+	OS.SetDataBrowserCallbacks(handle, callbacks);
+
 	//OS.HIViewAddSubview(parentHandle, handle);
 	MacUtil.insertControl(handle, parentHandle, -1);
 	

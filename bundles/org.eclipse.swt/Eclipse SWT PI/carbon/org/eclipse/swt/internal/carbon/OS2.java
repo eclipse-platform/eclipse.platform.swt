@@ -18,7 +18,6 @@ public static final native int MenuEvent(int[] eventData);
 public static final native void TXNClick(int txHandle, int[] eventData);
 public static final native int TXNGetRectBounds(int txHandle, short[] viewRect, int[] destinationRect, int[] textRect);
 public static final native int GetEventHICommand(int eRefHandle, int[] outParamType);
-public static final native int createDataBrowserControl(int wHandle);
 public static final native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP, int compareCallbackUPP, int itemNotificationCallbackUPP);
 public static final native void setTXNMargins(int txHandle, short margin);
 public static final native void getHandleData(int handle, char[] data);
@@ -82,5 +81,4 @@ public static native void CGContextFillPath(int inContext);
 public static native int HIViewSetBoundsOrigin(int inView, float x, float y);
 public static native int HIViewGetPartHit(int inView, float[] where, short[] outPart);
 public static native int HIViewGetSubviewHit(int inView, float[] inPoint, boolean inDeep, int[] outView);
-
 }

@@ -64,19 +64,6 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 	}
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_createDataBrowserControl(JNIEnv *env, jclass zz, jint wHandle) {
-	ControlRef controlRef;
-	DataBrowserCallbacks callbacks;
-	
-	CreateDataBrowserControl((WindowRef)wHandle, &NULL_RECT, kDataBrowserListView, &controlRef);
-	
-	callbacks.version= kDataBrowserLatestCallbacks;
-	InitDataBrowserCallbacks(&callbacks);
-	SetDataBrowserCallbacks(controlRef, &callbacks);
-		
-	return (jint) controlRef;
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setDataBrowserCallbacks(JNIEnv *env, jclass zz,
 					jint cHandle, jint dataUPP, jint compareUPP, jint notificationUPP) {
 	DataBrowserCallbacks callbacks;

@@ -75,6 +75,14 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 #define setControlTabInfoRecV1Fields(a,b,c)
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_DataBrowserCallbacks
+DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);
+void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);
+#else
+#define getDataBrowserCallbacksFields(a,b,c) NULL
+#define setDataBrowserCallbacksFields(a,b,c)
+#endif /* NO_DataBrowserCallbacks */
+
 #ifndef NO_DataBrowserListViewColumnDesc
 DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);
 void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);

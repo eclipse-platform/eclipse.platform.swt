@@ -394,6 +394,67 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 }
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_DataBrowserCallbacks
+typedef struct DataBrowserCallbacks_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, v1_itemDataCallback, v1_itemCompareCallback, v1_itemNotificationCallback, v1_addDragItemCallback, v1_acceptDragCallback, v1_receiveDragCallback, v1_postProcessDragCallback, v1_itemHelpContentCallback, v1_getContextualMenuCallback, v1_selectContextualMenuCallback;
+} DataBrowserCallbacks_FID_CACHE;
+
+DataBrowserCallbacks_FID_CACHE DataBrowserCallbacksFc;
+
+void cacheDataBrowserCallbacksFids(JNIEnv *env, jobject lpObject)
+{
+	if (DataBrowserCallbacksFc.cached) return;
+	DataBrowserCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DataBrowserCallbacksFc.version = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "version", "I");
+	DataBrowserCallbacksFc.v1_itemDataCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_itemDataCallback", "I");
+	DataBrowserCallbacksFc.v1_itemCompareCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_itemCompareCallback", "I");
+	DataBrowserCallbacksFc.v1_itemNotificationCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_itemNotificationCallback", "I");
+	DataBrowserCallbacksFc.v1_addDragItemCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_addDragItemCallback", "I");
+	DataBrowserCallbacksFc.v1_acceptDragCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_acceptDragCallback", "I");
+	DataBrowserCallbacksFc.v1_receiveDragCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_receiveDragCallback", "I");
+	DataBrowserCallbacksFc.v1_postProcessDragCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_postProcessDragCallback", "I");
+	DataBrowserCallbacksFc.v1_itemHelpContentCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_itemHelpContentCallback", "I");
+	DataBrowserCallbacksFc.v1_getContextualMenuCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_getContextualMenuCallback", "I");
+	DataBrowserCallbacksFc.v1_selectContextualMenuCallback = (*env)->GetFieldID(env, DataBrowserCallbacksFc.clazz, "v1_selectContextualMenuCallback", "I");
+	DataBrowserCallbacksFc.cached = 1;
+}
+
+DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct)
+{
+	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFids(env, lpObject);
+	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.version);
+	lpStruct->u.v1.itemDataCallback = (DataBrowserItemDataUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemDataCallback);
+	lpStruct->u.v1.itemCompareCallback = (DataBrowserItemCompareUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemCompareCallback);
+	lpStruct->u.v1.itemNotificationCallback = (DataBrowserItemNotificationUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemNotificationCallback);
+	lpStruct->u.v1.addDragItemCallback = (DataBrowserAddDragItemUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_addDragItemCallback);
+	lpStruct->u.v1.acceptDragCallback = (DataBrowserAcceptDragUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_acceptDragCallback);
+	lpStruct->u.v1.receiveDragCallback = (DataBrowserReceiveDragUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_receiveDragCallback);
+	lpStruct->u.v1.postProcessDragCallback = (DataBrowserPostProcessDragUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_postProcessDragCallback);
+	lpStruct->u.v1.itemHelpContentCallback = (DataBrowserItemHelpContentUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemHelpContentCallback);
+	lpStruct->u.v1.getContextualMenuCallback = (DataBrowserGetContextualMenuUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_getContextualMenuCallback);
+	lpStruct->u.v1.selectContextualMenuCallback = (DataBrowserSelectContextualMenuUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_selectContextualMenuCallback);
+	return lpStruct;
+}
+
+void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct)
+{
+	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemDataCallback, (jint)lpStruct->u.v1.itemDataCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemCompareCallback, (jint)lpStruct->u.v1.itemCompareCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemNotificationCallback, (jint)lpStruct->u.v1.itemNotificationCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_addDragItemCallback, (jint)lpStruct->u.v1.addDragItemCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_acceptDragCallback, (jint)lpStruct->u.v1.acceptDragCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_receiveDragCallback, (jint)lpStruct->u.v1.receiveDragCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_postProcessDragCallback, (jint)lpStruct->u.v1.postProcessDragCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemHelpContentCallback, (jint)lpStruct->u.v1.itemHelpContentCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_getContextualMenuCallback, (jint)lpStruct->u.v1.getContextualMenuCallback);
+	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_selectContextualMenuCallback, (jint)lpStruct->u.v1.selectContextualMenuCallback);
+}
+#endif /* NO_DataBrowserCallbacks */
+
 #ifndef NO_DataBrowserListViewColumnDesc
 typedef struct DataBrowserListViewColumnDesc_FID_CACHE {
 	int cached;

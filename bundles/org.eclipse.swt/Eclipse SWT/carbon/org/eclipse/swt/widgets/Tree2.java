@@ -13,6 +13,7 @@ import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -209,10 +210,18 @@ void createHandle (int index) {
 	state |= HANDLE;
 	state &= ~CANVAS;
 		
-	int parentHandle = parent.handle;
+	int parentHandle= parent.handle;
 	int windowHandle= OS.GetControlOwner(parentHandle);
-	handle= OS.createDataBrowserControl(windowHandle);
+	int[] controlRef= new int[1];
+	OS.CreateDataBrowserControl(windowHandle, null, OS.kDataBrowserListView, controlRef);
+	handle= controlRef[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
+	callbacks.version= OS.kDataBrowserLatestCallbacks;
+	OS.InitDataBrowserCallbacks(callbacks);
+	OS.SetDataBrowserCallbacks(controlRef[0], callbacks);
+
 	//OS.HIViewAddSubview(parentHandle, handle);
 	MacUtil.insertControl(handle, parentHandle, -1);
 	
