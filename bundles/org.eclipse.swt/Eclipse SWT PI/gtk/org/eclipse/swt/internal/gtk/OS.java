@@ -339,7 +339,6 @@ public static final native void gtk_adjustment_set_value(int adjustment, double 
 public static final native void gtk_adjustment_value_changed(int adjustment);
 public static final native int gtk_arrow_new(int arrow_type, int shadow_type);
 public static final native void gtk_arrow_set(int arrow, int arrow_type, int shadow_type);
-public static final native int gtk_atom_intern(byte[] atom_name, boolean only_if_exists);
 public static final native void gtk_box_pack_end(int box, int child, boolean expand, boolean fill, int padding);
 public static final native void gtk_box_pack_start(int box, int child, boolean expand, boolean fill, int padding);
 public static final native int gtk_button_new();
@@ -385,8 +384,8 @@ public static final native void gtk_clist_thaw(int clist);
 public static final native void gtk_clist_unselect_all(int clist);
 public static final native void gtk_clist_unselect_row(int clist, int row, int column);
 public static final native int gtk_color_selection_dialog_new(byte[] title);
-public static final native void gtk_color_selection_get_current_color(int colorsel, GdkColor color);
-public static final native void gtk_color_selection_set_current_color(int colorsel, GdkColor color);
+public static final native void gtk_color_selection_get_color(int colorsel, double[] color);
+public static final native void gtk_color_selection_set_color(int colorsel, double[] color);
 public static final native int gtk_combo_new();
 public static final native void gtk_combo_set_popdown_strings(int combo, int strings);
 public static final native void gtk_container_add(int container, int widget);
@@ -515,7 +514,7 @@ public static final native int gtk_scrolled_window_get_hadjustment(int scrolled_
 public static final native int gtk_scrolled_window_get_vadjustment(int scrolled_window);
 public static final native int gtk_scrolled_window_new(int hadjustment, int vadjustment);
 public static final native void gtk_selection_data_free(int selection_data);
-public static final native void gtk_selection_data_set(int selection_data, int type, int format, int data, int length);
+public static final native void gtk_selection_data_set(int selection_data, int type, int format, byte[] data, int length);
 public static final native void gtk_scrolled_window_set_policy(int scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
 public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final native int gtk_set_locale();

@@ -1302,20 +1302,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1arrow_1set
 	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkArrowType)arg2);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1atom_1intern
-	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)
-{
-	jbyte *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("gtk_1atom_1intern\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)gtk_atom_intern((const gchar *)lparg0, (gboolean)arg1);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1box_1pack_1end
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jboolean arg3, jint arg4)
 {
@@ -1746,28 +1732,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selectio
 	return rc;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1get_1current_1color
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1get_1color
+	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1)
 {
-	GdkColor _arg1, *lparg1=NULL;
+	jdouble *lparg1=NULL;
 
-	DEBUG_CALL("gtk_1color_1selection_1get_1current_1color\n")
+	DEBUG_CALL("gtk_1color_1selection_1get_1color\n")
 
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
-	gtk_color_selection_get_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
-	if (arg1) setGdkColorFields(env, arg1, lparg1);
+	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+	gtk_color_selection_get_color((GtkColorSelection *)arg0, (gdouble *)lparg1);
+	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1set_1current_1color
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1set_1color
+	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1)
 {
-	GdkColor _arg1, *lparg1=NULL;
+	jdouble *lparg1=NULL;
 
-	DEBUG_CALL("gtk_1color_1selection_1set_1current_1color\n")
+	DEBUG_CALL("gtk_1color_1selection_1set_1color\n")
 
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
-	gtk_color_selection_set_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
-	if (arg1) setGdkColorFields(env, arg1, lparg1);
+	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+	gtk_color_selection_set_color((GtkColorSelection *)arg0, (gdouble *)lparg1);
+	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1new
@@ -2961,11 +2947,15 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1selection_1data
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1selection_1data_1set
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
 {
+	jbyte *lparg3=NULL;
+
 	DEBUG_CALL("gtk_1selection_1data_1set\n")
 
-	gtk_selection_data_set((GtkSelectionData *)arg0, (GdkAtom)arg1, (gint)arg2, (const guchar *)arg3, (gint)arg4);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	gtk_selection_data_set((GtkSelectionData *)arg0, (GdkAtom)arg1, (gint)arg2, (const guchar *)lparg3, (gint)arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1set_1locale
