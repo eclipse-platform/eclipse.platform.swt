@@ -117,12 +117,37 @@ class TabFolderTab extends Tab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"SelectionIndex"};
+		return new String[] {"Selection", "SelectionIndex"};
 	}
 
 	String setMethodName(String methodRoot) {
 		/* Override to handle special case of int getSelectionIndex()/setSelection(int) */
 		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
+	}
+
+	Object[] parameterForType(String typeName, String value, Control control) {
+		if (value.equals("")) return new Object[] {new TabItem[0]};
+		if (typeName.equals("org.eclipse.swt.widgets.TabItem")) {
+			TabItem item = findItem(value, ((TabFolder) control).getItems());
+			if (item != null) return new Object[] {item};
+		}
+		if (typeName.equals("[Lorg.eclipse.swt.widgets.TabItem;")) {
+			String[] values = value.split(",");
+			TabItem[] items = new TabItem[values.length];
+			for (int i = 0; i < values.length; i++) {
+				items[i] = findItem(values[i], ((TabFolder) control).getItems());
+			}
+			return new Object[] {items};
+		}
+		return super.parameterForType(typeName, value, control);
+	}
+
+	TabItem findItem(String value, TabItem[] items) {
+		for (int i = 0; i < items.length; i++) {
+			TabItem item = items[i];
+			if (item.getText().equals(value)) return item;
+		}
+		return null;
 	}
 
 	/**

@@ -571,7 +571,8 @@ abstract class Tab {
 		});
 		getText = new Text(dialog, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		data.widthHint = data.heightHint = 200;
+		data.widthHint = 240;
+		data.heightHint = 200;
 		getText.setLayoutData(data);
 		resetLabels();
 		dialog.setDefaultButton(setButton);
