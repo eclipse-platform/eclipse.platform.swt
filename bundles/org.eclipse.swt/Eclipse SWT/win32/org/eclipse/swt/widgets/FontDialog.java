@@ -103,7 +103,7 @@ public FontData getFontData() {
  *
  * @see PaletteData#getRGBs
  * 
- * @since 3.0
+ * @since 2.1
  */
 public RGB getRGB () {
 	return rgb;
@@ -228,7 +228,7 @@ public void setFontData (FontData fontData) {
  *
  * @see PaletteData#getRGBs
  * 
- * @since 3.0
+ * @since 2.1
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;

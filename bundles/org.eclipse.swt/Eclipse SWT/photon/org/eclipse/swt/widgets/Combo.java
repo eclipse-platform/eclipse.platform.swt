@@ -414,7 +414,7 @@ public void clearSelection () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.0
+ * @since 2.1
  */
 public void copy () {
 	checkWidget();
@@ -444,7 +444,7 @@ public void copy () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.0
+ * @since 2.1
  */
 public void cut () {
 	checkWidget();
@@ -800,7 +800,7 @@ public int indexOf (String string, int start) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.0
+ * @since 2.1
  */
 public void paste () {
 	checkWidget();

@@ -284,7 +284,7 @@ public boolean getChecked () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @ since 3.0
+ * @since 2.1
  */
 public boolean getGrayed () {
 	checkWidget();
@@ -602,7 +602,7 @@ public void setChecked (boolean checked) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @ since 3.0
+ * @since 2.1
  */
 public void setGrayed (boolean grayed) {
 	checkWidget();
