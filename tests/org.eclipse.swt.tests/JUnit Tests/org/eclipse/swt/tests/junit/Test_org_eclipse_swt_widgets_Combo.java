@@ -499,8 +499,8 @@ public void test_removeI() {
 		combo.select(0);
 		assertEquals("index " + i, 0, combo.getSelectionIndex());
 		combo.remove(0);
-		if (SwtJunit.isWindows) {
-			// The behavior on Windows when the selected item is removed
+		if (SwtJunit.isWindows || SwtJunit.isGTK) {
+			// The behavior on Windows and GTK when the selected item is removed
 			// is to simply say that no items are selected.
 			assertEquals("index " + i, -1, combo.getSelectionIndex());
 		} else {
