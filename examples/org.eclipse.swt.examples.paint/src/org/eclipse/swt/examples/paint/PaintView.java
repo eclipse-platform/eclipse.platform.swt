@@ -5,7 +5,7 @@ package org.eclipse.swt.examples.paint;
  * All Rights Reserved
  */
 
-import java.util.*;import org.eclipse.jface.action.*;import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;import org.eclipse.ui.part.*;
+import org.eclipse.jface.action.*;import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;import org.eclipse.ui.part.*;import java.util.*;
 
 /**
  * The view for the paint application.
@@ -118,12 +118,19 @@ public class PaintView extends ViewPart {
 		GridLayout gridLayout;
 		GridData gridData;
 
-		/*** Create principal GUI elements ***/		
+		/*** Create principal GUI layout elements ***/		
 		Composite displayArea = new Composite(parent, SWT.NONE);
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		displayArea.setLayout(gridLayout);
 
+		// Creating these elements here avoids the need to instantiate the GUI elements
+		// in strict layout order.  The natural layout ordering is an artifact of using
+		// SWT layouts, but unfortunately it is not the same order as that required to
+		// instantiate all of the non-GUI application elements to satisfy referential
+		// dependencies.  It is possible to reorder the initialization to some extent, but
+		// this can be very tedious.
+		
 		// paint canvas
 		final Canvas paintCanvas = new Canvas(displayArea, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
@@ -132,15 +139,20 @@ public class PaintView extends ViewPart {
 		
 		// color selector frame
 		final Composite colorFrame = new Composite(displayArea, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		colorFrame.setLayoutData(gridData);
+
+		// tool settings frame
+		final Composite toolSettingsFrame = new Composite(displayArea, SWT.NONE);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+		toolSettingsFrame.setLayoutData(gridData);
 
 		// status text
 		final Text statusText = new Text(displayArea, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		statusText.setLayoutData(gridData);
 
-		/*** Create program elements that depend on GUI ***/
+		/*** Create the remaining application elements inside the principal GUI layout elements ***/	
 		// paintStatus
 		paintStatus = new PaintStatus(statusText);
 
@@ -164,14 +176,15 @@ public class PaintView extends ViewPart {
 		paintToolMap.put("org.eclipse.swt.examples.paint.toolEllipse",
 			new EllipseTool(toolSettings, paintSurface));
 		paintToolMap.put("org.eclipse.swt.examples.paint.toolNull", null);
-		
-		// activeForegroundColorCanvas, activeBackgroundColorCanvas
+
+		// colorFrame		
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		colorFrame.setLayout(gridLayout);
 
+		// activeForegroundColorCanvas, activeBackgroundColorCanvas
 		activeForegroundColorCanvas = new Canvas(colorFrame, SWT.BORDER);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gridData.heightHint = 24;
@@ -184,6 +197,7 @@ public class PaintView extends ViewPart {
 		gridData.widthHint = 24;
 		activeBackgroundColorCanvas.setLayoutData(gridData);
 
+		// paletteCanvas
 		final Canvas paletteCanvas = new Canvas(colorFrame, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 24;
@@ -221,7 +235,44 @@ public class PaintView extends ViewPart {
 		};
 		paletteCanvas.addListener(SWT.Resize, refreshListener);
 		paletteCanvas.addListener(SWT.Paint, refreshListener);
-		paletteCanvas.redraw();
+		//paletteCanvas.redraw();
+		
+		// toolSettingsFrame
+		gridLayout = new GridLayout();
+		gridLayout.numColumns = 4;
+		gridLayout.marginHeight = 0;
+		gridLayout.marginWidth = 0;
+		toolSettingsFrame.setLayout(gridLayout);
+
+		Label label = new Label(toolSettingsFrame, SWT.NONE);
+		label.setText(PaintPlugin.getResourceString("settings.AirbrushRadius.text"));
+
+		final Scale airbrushRadiusScale = new Scale(toolSettingsFrame, SWT.HORIZONTAL);
+		airbrushRadiusScale.setMinimum(5);
+		airbrushRadiusScale.setMaximum(50);
+		airbrushRadiusScale.setSelection(toolSettings.airbrushRadius);
+		airbrushRadiusScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+		airbrushRadiusScale.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				toolSettings.airbrushRadius = airbrushRadiusScale.getSelection();
+				updateToolSettings();
+			}
+		});
+
+		label = new Label(toolSettingsFrame, SWT.NONE);
+		label.setText(PaintPlugin.getResourceString("settings.AirbrushIntensity.text"));
+
+		final Scale airbrushIntensityScale = new Scale(toolSettingsFrame, SWT.HORIZONTAL);
+		airbrushIntensityScale.setMinimum(1);
+		airbrushIntensityScale.setMaximum(100);
+		airbrushIntensityScale.setSelection(toolSettings.airbrushIntensity);
+		airbrushIntensityScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+		airbrushIntensityScale.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				toolSettings.airbrushIntensity = airbrushIntensityScale.getSelection();
+				updateToolSettings();
+			}
+		});
 	}
 		
 	/**

@@ -27,6 +27,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 		super(paintSurface);
 		random = new Random();
 		set(toolSettings);
+		setRetriggerTimer(10);
 	}
 	
 	/**
@@ -40,7 +41,9 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 
 		// compute things we need to know for drawing
 		cachedRadiusSquared = toolSettings.airbrushRadius * toolSettings.airbrushRadius;
-		cachedNumPoints = 314 * cachedRadiusSquared / 10000;
+		cachedNumPoints = 314 * toolSettings.airbrushIntensity * cachedRadiusSquared / 250000;
+		if (cachedNumPoints == 0 && toolSettings.airbrushIntensity != 0)
+			cachedNumPoints = 1;
 	}
 
 	/**

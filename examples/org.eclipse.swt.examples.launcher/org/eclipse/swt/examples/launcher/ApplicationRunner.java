@@ -152,7 +152,7 @@ public class ApplicationRunner {
 	}
 
 	protected static String getPlatformPath() {
-		return URLHelper.urlToLocalFile(BootLoader.getInstallURL()).getAbsolutePath();
+		return urlToLocalFile(BootLoader.getInstallURL()).getAbsolutePath();
 	}
 
 	protected static String[] getPlatformClassPath() {
@@ -179,5 +179,5 @@ public class ApplicationRunner {
 			return null;
 		}
 		return vmRunner;
-	}
+	}		/**	 * Get a File representing a local path to the resources referenced by a URL.	 * Use this when you want to know the local path corresponding to aURL but do not	 * want to access it (yet).	 * <p>	 * Cannot resolve paths to non-local [not on filesystem] files or directories.	 * </p>	 * 	 * @param url the URL to convert	 * @return a File representing the URL's location on the filesystem, or null if not accessible	 */	private static File urlToLocalFile(URL url) {		try {			url = Platform.resolve(url);		} catch (IOException e) { }		final String urlProtocol = url.getProtocol();		if (urlProtocol.equals("file")) {			return new File(url.getFile()).getAbsoluteFile();		}		return null;	}
 }

@@ -87,7 +87,7 @@ public class ImportProjectTask {	// Support for externalized project properties
 
 		ZipFile zipFile = null;
 		try {
-			/* Open the Zip file and get a StructureProvider for it */			File file = URLHelper.urlToFile(sourceUrl);			if (file == null) throw new Exception();			
+			/* Open the Zip file and get a StructureProvider for it */			File file = urlToFile(sourceUrl);			if (file == null) throw new Exception();			
 			zipFile = new ZipFile(file);
 			ZipFileStructureProvider provider = new ZipFileStructureProvider(zipFile);
 			
@@ -286,5 +286,5 @@ public class ImportProjectTask {	// Support for externalized project properties
 		newCommand.setArguments(builderArgs);
 		newArray[array.length] = newCommand;
 		return newArray;
-	}		/**	 * Finds a particular child of a container in an IImportStructureProvider.	 * 	 */	private Object findStructuredChildElement(IImportStructureProvider provider, Object parent, String name) {		if (! provider.isFolder(parent)) return null;				java.util.List list = provider.getChildren(parent);		if (list == null) return null;				for (Iterator it = list.iterator(); it.hasNext(); ) {			Object item = it.next();			if (provider.getLabel(item).equals(name)) return item;		}		return null;	}
+	}		/**	 * Finds a particular child of a container in an IImportStructureProvider.	 * 	 */	private Object findStructuredChildElement(IImportStructureProvider provider, Object parent, String name) {		if (! provider.isFolder(parent)) return null;				java.util.List list = provider.getChildren(parent);		if (list == null) return null;				for (Iterator it = list.iterator(); it.hasNext(); ) {			Object item = it.next();			if (provider.getLabel(item).equals(name)) return item;		}		return null;	}	/**	 * Get a File through which it is possible to access the contents of a URL.	 * Use this when you want to be able to access the contents of a URL immediately.	 * <p>	 * Will automatically cache contents from non-local files or Jars on the local filesystem.	 * Cannot resolve paths to non-local [not on filesystem] directories.	 * </p>	 * 	 * @param url the URL to convert	 * @return a File where the URL's data can be accessed, or null if not accessible	 */	private static File urlToFile(URL url) {		try {			url = Platform.asLocalURL(url);		} catch (IOException e) {			try {				url = Platform.resolve(url); // perhaps it is a directory on the local filesystem			} catch (IOException e2) { }		}		final String urlProtocol = url.getProtocol();		if (urlProtocol.equals("file")) {			return new File(url.getFile()).getAbsoluteFile();		}		return null;	}
 }

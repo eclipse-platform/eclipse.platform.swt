@@ -35,7 +35,7 @@ public class LauncherView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		workbenchShell = getSite().getShell();
-		parent.setLayout(new OptimalSplitLayout());
+		parent.setLayout(new SplitLayout());
 				
 		Group launchGroup = new Group(parent, SWT.NULL);
 		launchGroup.setText(LauncherPlugin.getResourceString("view.launchGroup.text"));

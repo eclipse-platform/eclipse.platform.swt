@@ -48,7 +48,7 @@
             enablesFor="*"
             icon="icons/ellipse_tool.gif"
             label="%tool.Ellipse.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Ellipse"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.Ellipse.tooltip">
       </action>
       <action
@@ -59,7 +59,7 @@
             enablesFor="*"
             icon="icons/filledrectangle_tool.gif"
             label="%tool.FilledRectangle.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/FilledRectangle"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.FilledRectangle.tooltip">
       </action>
       <action
@@ -70,7 +70,7 @@
             enablesFor="*"
             icon="icons/rectangle_tool.gif"
             label="%tool.Rectangle.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Rectangle"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.Rectangle.tooltip">
       </action>
       <action
@@ -81,7 +81,7 @@
             enablesFor="*"
             icon="icons/polyline_tool.gif"
             label="%tool.PolyLine.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/PolyLine"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.PolyLine.tooltip">
       </action>
       <action
@@ -92,7 +92,7 @@
             enablesFor="*"
             icon="icons/line_tool.gif"
             label="%tool.Line.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Line"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.Line.tooltip">
       </action>
       <action
@@ -103,7 +103,7 @@
             enablesFor="*"
             icon="icons/airbrush_tool.gif"
             label="%tool.Airbrush.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Airbrush"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.Airbrush.tooltip">
       </action>
       <action
@@ -114,7 +114,7 @@
             enablesFor="*"
             icon="icons/pencil_tool.gif"
             label="%tool.Pencil.label"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Pencil"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Normal"
             tooltip="%tool.Pencil.tooltip">
       </action>
    </viewContribution>

@@ -21,7 +21,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	/**
 	 * The position of the first anchor in a segmented selection sequence
 	 */
-	protected Point firstAnchorPosition = new Point(-1, 0);
+	private Point firstAnchorPosition = new Point(-1, 0);
 
 	/**
 	 * Constructs a SegmentedInteractivePaintSession.

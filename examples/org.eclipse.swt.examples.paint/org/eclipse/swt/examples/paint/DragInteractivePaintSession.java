@@ -16,7 +16,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	/**
 	 * True if a click-drag is in progress
 	 */
-	private boolean dragInProgress;
+	private boolean dragInProgress = false;
 	
 	/**
 	 * The position of the first click in a click-drag
