@@ -221,7 +221,6 @@ public class CTabFolder extends Composite {
 	static final int HOT = 2;
 	static final int SELECTED = 3;
 	static final RGB CLOSE_FILL = new RGB(252, 160, 160);
-	static final RGB MINMAX_FILL = new RGB(199, 214, 252);
 	
 
 /**
@@ -841,6 +840,7 @@ void drawChevron(GC gc) {
 		case NORMAL: {
 			Color chevronBorder = single ? getSelectionForeground() : getForeground();
 			gc.setForeground(chevronBorder);
+			gc.setFont(f);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
 			gc.drawLine(x+1,y,   x+3,y+2);
@@ -849,16 +849,14 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			gc.setFont(f);
-			gc.drawString(String.valueOf(count), x+7, y+4, true);
+			gc.drawString(String.valueOf(count), x+7, y+3, true);
 			break;
 		}
 		case HOT: {
-			Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
-			Color fill = display.getSystemColor(BUTTON_FILL);
-			gc.setBackground(fill);
+			gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+			gc.setBackground(display.getSystemColor(BUTTON_FILL));
+			gc.setFont(f);
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
@@ -868,16 +866,14 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			gc.setFont(f);
-			gc.drawString(String.valueOf(count), x+7, y+4, true);
+			gc.drawString(String.valueOf(count), x+7, y+3, true);
 			break;
 		}
 		case SELECTED: {
-			Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
-			Color fill = display.getSystemColor(BUTTON_FILL);
-			gc.setBackground(fill);
+			gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+			gc.setBackground(display.getSystemColor(BUTTON_FILL));
+			gc.setFont(f);
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
 			gc.drawLine(x+1,y+1, x+3,y+3);
 			gc.drawLine(x+3,y+3, x+1,y+5);
@@ -887,8 +883,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+7,y+3, x+6,y+5);
 			gc.drawLine(x+6,y+1, x+8,y+3);
 			gc.drawLine(x+8,y+3, x+5,y+5);
-			gc.setFont(f);
-			gc.drawString(String.valueOf(count), x+8, y+5, true);
+			gc.drawString(String.valueOf(count), x+8, y+4, true);
 			break;
 		}
 	}
@@ -898,23 +893,21 @@ void drawMaximize(GC gc) {
 	if (maxRect.width == 0 || maxRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 7x9
-	Color maxBorder = display.getSystemColor(BUTTON_BORDER);
-	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
-	int x = maxRect.x + indent - 1;
-	int y = maxRect.y + indent;
+	int x = maxRect.x + (CTabFolder.BUTTON_SIZE - 10)/2;
+	int y = maxRect.y + 3;
+	
+	gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+	gc.setBackground(display.getSystemColor(BUTTON_FILL));
+	
 	switch (maxImageState) {
 		case NORMAL: {
 			if (!maximized) {
-				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
-				gc.fillRectangle(x, y, 7, 9);
-				gc.setForeground(maxBorder);
-				gc.drawRectangle(x, y, 7, 9);
-				gc.drawLine(x+1, y+2, x+6, y+2);
+				gc.fillRectangle(x, y, 9, 9);
+				gc.drawRectangle(x, y, 9, 9);
+				gc.drawLine(x+1, y+2, x+8, y+2);				
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -923,45 +916,37 @@ void drawMaximize(GC gc) {
 			break;
 		}
 		case HOT: {
-			Color fill = new Color(display, MINMAX_FILL);
+			gc.fillRoundRectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height, 6, 6);
+			gc.drawRoundRectangle(maxRect.x, maxRect.y, maxRect.width - 1, maxRect.height - 1, 6, 6);
 			if (!maximized) {
-				gc.setBackground(fill);
-				gc.fillRectangle(x, y, 7, 9);
-				gc.setForeground(maxBorder);
-				gc.drawRectangle(x, y, 7, 9);
-				gc.drawLine(x+1, y+2, x+6, y+2);
+				gc.fillRectangle(x, y, 9, 9);
+				gc.drawRectangle(x, y, 9, 9);
+				gc.drawLine(x+1, y+2, x+8, y+2);
 			} else {
-				gc.setBackground(fill);
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
 				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
-			fill.dispose();
 			break;
 		}
 		case SELECTED: {
-			Color fill = new Color(display, MINMAX_FILL);
+			gc.fillRoundRectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height, 6, 6);
+			gc.drawRoundRectangle(maxRect.x, maxRect.y, maxRect.width - 1, maxRect.height - 1, 6, 6);
 			if (!maximized) {
-				gc.setBackground(fill);
-				gc.fillRectangle(x+1, y+1, 7, 9);
-				gc.setForeground(maxBorder);
-				gc.drawRectangle(x+1, y+1, 7, 9);
-				gc.drawLine(x+2, y+3, x+7, y+3);
+				gc.fillRectangle(x+1, y+1, 9, 9);
+				gc.drawRectangle(x+1, y+1, 9, 9);
+				gc.drawLine(x+2, y+3, x+9, y+3);
 			} else {
-				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+4, 5, 4);
 				gc.fillRectangle(x+3, y+1, 5, 4);
-				gc.setForeground(maxBorder);
 				gc.drawRectangle(x+1, y+4, 5, 4);
 				gc.drawRectangle(x+3, y+1, 5, 4);
 				gc.drawLine(x+4, y+2, x+7, y+2);
 				gc.drawLine(x+2, y+5, x+5, y+5);
 			}
-			fill.dispose();
 			break;
 		}
 	}
@@ -970,22 +955,20 @@ void drawMinimize(GC gc) {
 	if (minRect.width == 0 || minRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 9x3
-	Color minBorder = display.getSystemColor(BUTTON_BORDER);
-	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
-	int x = minRect.x + indent - 1;
-	int y = minRect.y + indent;
+	int x = minRect.x + (BUTTON_SIZE - 10)/2;
+	int y = minRect.y + 3;
+	
+	gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+	gc.setBackground(display.getSystemColor(BUTTON_FILL));
+	
 	switch (minImageState) {
 		case NORMAL: {
 			if (!minimized) {
-				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
@@ -994,43 +977,35 @@ void drawMinimize(GC gc) {
 			break;
 		}
 		case HOT: {
-			Color fill = new Color(display, MINMAX_FILL);
+			gc.fillRoundRectangle(minRect.x, minRect.y, minRect.width, minRect.height, 6, 6);
+			gc.drawRoundRectangle(minRect.x, minRect.y, minRect.width - 1, minRect.height - 1, 6, 6);
 			if (!minimized) {
-				gc.setBackground(fill);
 				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
-				gc.setBackground(fill);
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y+3, 5, 4);
 				gc.drawRectangle(x+2, y, 5, 4);
 				gc.drawLine(x+3, y+1, x+6, y+1);
 				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
-			fill.dispose();
 			break;
 		}
 		case SELECTED: {
-			Color fill = new Color(display, MINMAX_FILL);
+			gc.fillRoundRectangle(minRect.x, minRect.y, minRect.width, minRect.height, 6, 6);
+			gc.drawRoundRectangle(minRect.x, minRect.y, minRect.width - 1, minRect.height - 1, 6, 6);
 			if (!minimized) {
-				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+1, 9, 3);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x+1, y+1, 9, 3);
 			} else {
-				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+4, 5, 4);
 				gc.fillRectangle(x+3, y+1, 5, 4);
-				gc.setForeground(minBorder);
 				gc.drawRectangle(x+1, y+4, 5, 4);
 				gc.drawRectangle(x+3, y+1, 5, 4);
 				gc.drawLine(x+4, y+2, x+7, y+2);
 				gc.drawLine(x+2, y+5, x+5, y+5);
 			}
-			fill.dispose();
 			break;
 		}
 	}
@@ -2511,7 +2486,7 @@ void setButtonBounds() {
 	if (single) {
 		if (selectedIndex == -1 || items.length > 1) {
 			chevronRect.width = 3*BUTTON_SIZE/2;
-			chevronRect.height = BUTTON_SIZE + 2;
+			chevronRect.height = BUTTON_SIZE;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 			if (selectedIndex == -1) {
 				chevronRect.x = size.x - borderRight - 3 - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
@@ -2526,7 +2501,7 @@ void setButtonBounds() {
 	} else {
 		if (showChevron) {
 			chevronRect.width = 3*BUTTON_SIZE/2;
-			chevronRect.height = BUTTON_SIZE + 2;
+			chevronRect.height = BUTTON_SIZE;
 			int lastIndex = getLastIndex();
 			CTabItem lastItem = items[lastIndex];
 			int w = lastItem.x + lastItem.width + 3;
