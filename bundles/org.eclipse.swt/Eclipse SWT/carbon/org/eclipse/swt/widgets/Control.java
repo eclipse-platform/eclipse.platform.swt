@@ -1047,31 +1047,17 @@ public boolean isReparentable () {
 }
 
 boolean isShowing () {
-	/*
-	* This is not complete.  Need to check if the
-	* widget is obscurred by a parent or sibling.
-	*/
-	/* AW
 	if (!isVisible ()) return false;
-	Control control = this;
-	while (control != null) {
-		Point size = control.getSize ();
-		if (size.x == 0 || size.y == 0) {
-			return false;
-		}
-		control = control.parent;
+	// check if the widget is obscurred by a parent or sibling.
+	int rgn= 0;
+	try {
+		rgn= OS.NewRgn();
+		MacUtil.getVisibleRegion(handle, rgn, true);
+		return !OS.EmptyRgn(rgn);
+	} finally {
+		if (rgn != 0)
+			OS.DisposeRgn(rgn);
 	}
-	*/
-	return true;
-	/*
-	* Check to see if current damage is included.
-	*/
-//	if (!OS.IsWindowVisible (handle)) return false;
-//	int flags = OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS;
-//	int hDC = OS.GetDCEx (handle, 0, flags);
-//	int result = OS.GetClipBox (hDC, new RECT ());
-//	OS.ReleaseDC (handle, hDC);
-//	return result != OS.NULLREGION;
 }
 
 boolean isTabGroup () {
