@@ -13,20 +13,4 @@
 
 #!/bin/sh
 
-# Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
-fixup_files=`grep -l "\
-" *.[ch]`
-if test -n "$fixup_files"; then
-    echo "Converting files from DOS to UNIX format:"
-    for file in $fixup_files; do
-	echo "    $file"
-	ex $file << EOF 2> /dev/null
-g/\$/s///
-w
-EOF
-    done
-fi
-
-# Determine the operating system being built
-
 make -f make_gtk.mak ${1+"$@"}
