@@ -1236,12 +1236,17 @@ void setWindowVisible (boolean visible) {
 			OS.GetWindowActivationScope (shellHandle, scope);
 	    	OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 		}
+		int shellHandle = this.shellHandle;
+		OS.RetainWindow (shellHandle);
 		OS.ShowWindow (shellHandle);
-		if (minimized != OS.IsWindowCollapsed (shellHandle)) {
-			OS.CollapseWindow (shellHandle, minimized);
-		}
-		if ((style & SWT.ON_TOP) != 0) {
-			OS.SetWindowActivationScope (shellHandle, scope [0]);
+		OS.ReleaseWindow (shellHandle);
+		if (!isDisposed()) {
+			if (minimized != OS.IsWindowCollapsed (shellHandle)) {
+				OS.CollapseWindow (shellHandle, minimized);
+			}
+			if ((style & SWT.ON_TOP) != 0) {
+				OS.SetWindowActivationScope (shellHandle, scope [0]);
+			}
 		}
 	} else {
     	OS.HideWindow (shellHandle);

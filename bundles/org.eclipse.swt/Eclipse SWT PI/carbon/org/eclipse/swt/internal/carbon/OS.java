@@ -1071,6 +1071,7 @@ public static final native int RegisterAppearanceClient();
 public static final native void ReleaseEvent(int theEvent);
 public static final native int ReleaseMenu(int mHandle);
 public static final native int ReleaseWindowGroup (int inGroup);
+public static final native int ReleaseWindow(int inWindow); 
 public static final native int RemoveControlProperty(int control, int propertyCreator, int propertyTag);
 public static final native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
 public static final native int RemoveDataBrowserTableViewColumn(int browser, int column);
@@ -1082,6 +1083,7 @@ public static final native int RepositionWindow(int window, int parentWindow, in
 public static final native int ReshapeCustomWindow(int window);
 public static final native int RetainEvent(int inEvent);
 public static final native int RetainMenu(int mHandle);
+public static final native int RetainWindow(int inWindow); 
 public static final native int RevealDataBrowserItem(int browser, int item, int property, byte options);
 public static final native int RunStandardAlert(int dialogHandle, int modalFilterUPP, short[] itemHit);
 public static final native void ScrollRect(Rect rect, short dh, short dv, int updateRgn);

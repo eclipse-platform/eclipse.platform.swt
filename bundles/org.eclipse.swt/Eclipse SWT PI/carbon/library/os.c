@@ -6400,6 +6400,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ReleaseMenu)
 }
 #endif
 
+#ifndef NO_ReleaseWindow
+JNIEXPORT jint JNICALL OS_NATIVE(ReleaseWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ReleaseWindow\n")
+	rc = (jint)ReleaseWindow((WindowRef)arg0);
+	NATIVE_EXIT(env, that, "ReleaseWindow\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ReleaseWindowGroup
 JNIEXPORT jint JNICALL OS_NATIVE(ReleaseWindowGroup)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6543,6 +6555,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(RetainMenu)
 	NATIVE_ENTER(env, that, "RetainMenu\n")
 	rc = (jint)RetainMenu((MenuRef)arg0);
 	NATIVE_EXIT(env, that, "RetainMenu\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_RetainWindow
+JNIEXPORT jint JNICALL OS_NATIVE(RetainWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "RetainWindow\n")
+	rc = (jint)RetainWindow((WindowRef)arg0);
+	NATIVE_EXIT(env, that, "RetainWindow\n")
 	return rc;
 }
 #endif
