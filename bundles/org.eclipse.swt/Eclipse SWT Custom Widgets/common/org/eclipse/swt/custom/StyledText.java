@@ -3516,6 +3516,13 @@ void handleTextChanged(TextChangedEvent event) {
 		lastTextChangeStart, 
 		lastTextChangeReplaceCharCount, 
 		lastTextChangeNewCharCount);
+		
+	int newVerticalOffset = getLineCount() * getLineHeight() - getClientArea().height;
+	if (newVerticalOffset < verticalScrollOffset) {
+		// Scroll up so that empty lines below last text line are used.
+		// Fixes 1GEYJM0
+		setVerticalScrollOffset(Math.max(0, newVerticalOffset), true);
+	}
 }
 /**
  * Updates the screen to reflect a pending content change.
