@@ -702,7 +702,7 @@ void setInputState (Event event, XInputEvent xEvent) {
 }
 void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
-		byte [] buffer = new byte [1];
+		byte [] buffer = new byte [5];
 		int [] keysym = new int [1];
 		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 		
@@ -798,7 +798,8 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			event.keyCode = Display.translateKey (keysym [0]);
 		}
 		if (buffer [0] != 0) {
-			event.character = mbcsToWcs (buffer [0] & 0xFF);
+			char [] result = Converter.mbcsToWcs (null, buffer);
+			if (result.length != 0) event.character = result [0];
 		}
 	}
 	setInputState (event, xEvent);

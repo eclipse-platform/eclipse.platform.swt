@@ -937,13 +937,10 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
 	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
 	xEvent.window = OS.XtWindow (parent.handle);
-//	TEMPORARY CODE - need to fix the window field in xEvent
-//	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
-
-	/*
-	* This code is intentionally commented.
-	*/
-//	parent.processSetFocus (callData);
+//	OS.memmove (call_data, xEvent, XFocusChangeEvent.sizeof);
+	if (OS.IsDBLocale) {
+		parent.XFocusChange (w, client_data, call_data, continue_to_dispatch);
+	} 
 	return 0;
 }
 int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {

@@ -1066,7 +1066,7 @@ public void select (int index) {
 		ignoreSelect = false;
 	}
 }
-byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
+void sendIMKeyEvent (int type, XKeyEvent xEvent, byte [] mbcs, char [] chars) {
 	/*
 	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
 	* the characters from the IME. This causes the characters to be
@@ -1074,28 +1074,31 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	* has been cleared and use XmTextInsert() to insert the stolen
 	* characters. This problem does not happen on AIX.
 	*/
-	byte [] mbcs = super.sendIMKeyEvent (type, xEvent);
-	if (mbcs == null || xEvent.keycode != 0) return null;
+	super.sendIMKeyEvent (type, xEvent, mbcs, chars);
+	if (mbcs == null || xEvent.keycode != 0) return;
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int textHandle = argList[1];
 	int [] unused = new int [1];
 	byte [] buffer = new byte [2];
-	int length = OS.XmImMbLookupString (textHandle, xEvent, buffer, buffer.length, unused, unused);
-	if (length != 0) return null;
+	int length = OS.XmImMbLookupString (argList [1], xEvent, buffer, buffer.length, unused, unused);
+	if (length != 0) return;
 	int [] start = new int [1], end = new int [1];
-	OS.XmTextGetSelectionPosition (textHandle, start, end);
+	OS.XmTextGetSelectionPosition (argList [1], start, end);
 	if (start [0] == end [0]) {
-		start [0] = end [0] = OS.XmTextGetInsertionPosition (textHandle);
+		start [0] = end [0] = OS.XmTextGetInsertionPosition (argList [1]);
 	}
-	Display display = getDisplay ();
+	Display display = getDisplay();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
-	OS.XmTextReplace (textHandle, start [0], end [0], mbcs);
-	int position = start [0] + mbcs.length - 1;
-	OS.XmTextSetInsertionPosition (textHandle, position);
+	OS.XmTextReplace (argList [1], start [0], end [0], mbcs);
+	int index = 0;
+	while (index < chars.length) {
+		if (chars [index] == 0) break;
+		index++;
+	}
+	int position = start [0] + index;
+	OS.XmTextSetInsertionPosition (argList [1], position);
 	display.setWarnings (warnings);
-	return mbcs;
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
