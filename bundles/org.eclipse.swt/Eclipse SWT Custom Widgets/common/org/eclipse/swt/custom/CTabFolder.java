@@ -1109,13 +1109,6 @@ void drawTabArea(Event event) {
 	gc.setBackground(getParent().getBackground());
 	fillRegion(gc, r);
 	r.dispose();
-	// Draw border line
-	if (borderLeft > 0) {
-		RGB outside = getParent().getBackground().getRGB();
-		antialias(shape, borderColor.getRGB(), null, outside, gc);
-		gc.setForeground(borderColor);
-		gc.drawPolyline(shape);
-	}	
 	
 	// Draw the unselected tabs.
 	if (!single) {
@@ -1145,6 +1138,14 @@ void drawTabArea(Event event) {
 		drawMinimize(gc);
 		drawMaximize(gc);
 	}
+	
+	// Draw border line
+	if (borderLeft > 0) {
+		RGB outside = getParent().getBackground().getRGB();
+		antialias(shape, borderColor.getRGB(), null, outside, gc);
+		gc.setForeground(borderColor);
+		gc.drawPolyline(shape);
+	}	
 	
 	// Draw insertion mark
 //	if (insertionIndex > -2) {
