@@ -69,12 +69,13 @@ public class TreeEditor extends ControlEditor {
 public TreeEditor (Tree tree) {
 	super(tree);
 	this.tree = tree;
-	treeListener = new TreeAdapter () {
+
+	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				if (TreeEditor.this.tree.isDisposed() || editor == null) return;
 				resize();
-				if (editor == null || editor.isDisposed ()) return;
+				if (editor == null || editor.isDisposed()) return;
 				editor.setVisible(true);
 			}
 		};
@@ -92,10 +93,12 @@ public TreeEditor (Tree tree) {
 		}
 	};
 	tree.addTreeListener(treeListener);
+	
+	// To be consistent with older versions of SWT, grabVertical defaults to true
+	grabVertical = true;
 }
 Rectangle computeBounds () {
 	if (item == null || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
-	
 	Rectangle cell = item.getBounds();
 	Rectangle area = tree.getClientArea();
 	if (cell.x < area.x + area.width) {
@@ -103,24 +106,40 @@ Rectangle computeBounds () {
 			cell.width = area.x + area.width - cell.x;
 		}
 	}
-	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, cell.height);
-	
+	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, minimumHeight);
+
 	if (grabHorizontal) {
-		editorRect.width = Math.max(area.x + area.width - cell.x, minimumWidth);
+		// Bounds of tree item only include the text area - stretch out to include 
+		// entire client area
+		cell.width = area.x + area.width - cell.x;
+		editorRect.width = Math.max(cell.width, minimumWidth);
+	}
+	
+	if (grabVertical) {
+		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
 	
 	if (horizontalAlignment == SWT.RIGHT) {
-		editorRect.x = Math.max(cell.x, cell.x + cell.width - editorRect.width);
+		editorRect.x += cell.width - editorRect.width;
 	} else if (horizontalAlignment == SWT.LEFT) {
 		// do nothing - cell.x is the right answer
 	} else { // default is CENTER
-		editorRect.x = Math.max(cell.x, cell.x + (cell.width - editorRect.width)/2);
+		editorRect.x += (cell.width - editorRect.width)/2;
 	}
+	// don't let the editor overlap with the +/- of the tree
+	editorRect.x = Math.max(cell.x, editorRect.x);
 	
+	if (verticalAlignment == SWT.BOTTOM) {
+		editorRect.y += cell.height - editorRect.height;
+	} else if (verticalAlignment == SWT.TOP) {
+		// do nothing - cell.y is the right answer
+	} else { // default is CENTER
+		editorRect.y += (cell.height - editorRect.height)/2;
+	}
 	return editorRect;
 }
 /**
- * Removes all associations between the TreeEditor and the cell in the tree.  The
+ * Removes all associations between the TreeEditor and the row in the tree.  The
  * tree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
@@ -155,10 +174,9 @@ public void setItem (TreeItem item) {
 * @param column the zero based index of the column of the cell being tracked by this editor
 */
 public void setEditor (Control editor, TreeItem item) {
-	setItem (item);
-	super.setEditor (editor);
+	setItem(item);
+	setEditor(editor);
 }
-
 void resize () {
 	if (tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	

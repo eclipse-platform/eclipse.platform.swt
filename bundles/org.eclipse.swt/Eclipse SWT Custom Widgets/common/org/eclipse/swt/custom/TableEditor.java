@@ -12,6 +12,7 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -58,11 +59,10 @@ import org.eclipse.swt.widgets.*;
 * </pre></code>
 */
 public class TableEditor extends ControlEditor {
-
 	Table table;
 	TableItem item;
 	int column = -1;
-	Listener columnListener;
+	ControlListener columnListener;
 /**
 * Creates a TableEditor for the specified Table.
 *
@@ -73,27 +73,35 @@ public TableEditor (Table table) {
 	super(table);
 	this.table = table;
 	
-	columnListener = new Listener() {
-		public void handleEvent(Event e) {
+	columnListener = new ControlListener() {
+		public void controlMoved(ControlEvent e){
+			resize ();
+		}
+		public void controlResized(ControlEvent e){
 			resize ();
 		}
 	};
-
+	
+	// To be consistent with older versions of SWT, grabVertical defaults to true
+	grabVertical = true;
 }
 Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
-	
 	Rectangle cell = item.getBounds(column);
-	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, cell.height);
 	Rectangle area = table.getClientArea();
 	if (cell.x < area.x + area.width) {
 		if (cell.x + cell.width > area.x + area.width) {
-			cell.width = area.width - cell.x;
+			cell.width = area.x + area.width - cell.x;
 		}
 	}
-	
-	if (grabHorizontal){
+	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, minimumHeight);
+
+	if (grabHorizontal) {
 		editorRect.width = Math.max(cell.width, minimumWidth);
+	}
+	
+	if (grabVertical) {
+		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
 	
 	if (horizontalAlignment == SWT.RIGHT) {
@@ -104,6 +112,13 @@ Rectangle computeBounds () {
 		editorRect.x += (cell.width - editorRect.width)/2;
 	}
 	
+	if (verticalAlignment == SWT.BOTTOM) {
+		editorRect.y += cell.height - editorRect.height;
+	} else if (verticalAlignment == SWT.TOP) {
+		// do nothing - cell.y is the right answer
+	} else { // default is CENTER
+		editorRect.y += (cell.height - editorRect.height)/2;
+	}
 	return editorRect;
 }
 /**
@@ -111,11 +126,9 @@ Rectangle computeBounds () {
  * Table and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	
 	if (this.column > -1 && this.column < table.getColumnCount()){
 		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeListener(SWT.Resize, columnListener);
-		tableColumn.removeListener(SWT.Move, columnListener);
+		tableColumn.removeControlListener(columnListener);
 	}
 	columnListener = null;
 	table = null;
@@ -141,7 +154,6 @@ public TableItem getItem () {
 	return item;
 }
 public void setColumn(int column) {
-	
 	int columnCount = table.getColumnCount();
 	// Separately handle the case where the table has no TableColumns.
 	// In this situation, there is a single default column.
@@ -150,11 +162,9 @@ public void setColumn(int column) {
 		resize();
 		return;
 	}
-		
 	if (this.column > -1 && this.column < columnCount){
 		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeListener(SWT.Resize, columnListener);
-		tableColumn.removeListener(SWT.Move, columnListener);
+		tableColumn.removeControlListener(columnListener);
 		this.column = -1;
 	}
 
@@ -162,8 +172,7 @@ public void setColumn(int column) {
 		
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
-	tableColumn.addListener(SWT.Resize, columnListener);
-	tableColumn.addListener(SWT.Move, columnListener);
+	tableColumn.addControlListener(columnListener);
 	resize();
 }
 public void setItem (TableItem item) {	

@@ -126,21 +126,27 @@ public TableTreeEditor (TableTree tableTree) {
 			resize ();
 		}
 	};
-
+	
+	// To be consistent with older versions of SWT, grabVertical defaults to true
+	grabVertical = true;
 }
 Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed() || item.tableItem == null) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
-	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, cell.height);
 	Rectangle area = tableTree.getClientArea();
 	if (cell.x < area.x + area.width) {
 		if (cell.x + cell.width > area.x + area.width) {
-			cell.width = area.width - cell.x;
+			cell.width = area.x + area.width - cell.x;
 		}
 	}
-	
-	if (grabHorizontal){
+	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, minimumHeight);
+
+	if (grabHorizontal) {
 		editorRect.width = Math.max(cell.width, minimumWidth);
+	}
+	
+	if (grabVertical) {
+		editorRect.height = Math.max(cell.height, minimumHeight);
 	}
 	
 	if (horizontalAlignment == SWT.RIGHT) {
@@ -151,14 +157,20 @@ Rectangle computeBounds () {
 		editorRect.x += (cell.width - editorRect.width)/2;
 	}
 	
+	if (verticalAlignment == SWT.BOTTOM) {
+		editorRect.y += cell.height - editorRect.height;
+	} else if (verticalAlignment == SWT.TOP) {
+		// do nothing - cell.y is the right answer
+	} else { // default is CENTER
+		editorRect.y += (cell.height - editorRect.height)/2;
+	}
 	return editorRect;
 }
 /**
- * Removes all associations between the TableEditor and the cell in the table.  The
- * Table and the editor Control are <b>not</b> disposed.
+ * Removes all associations between the TableTreeEditor and the cell in the table tree.  The
+ * TableTree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-
 	if (treeListener != null) 
 		tableTree.removeTreeListener(treeListener);
 	treeListener = null;	
@@ -167,7 +179,6 @@ public void dispose () {
 		TableColumn tableColumn = table.getColumn(this.column);
 		tableColumn.removeControlListener(columnListener);
 	}
-
 	tableTree = null;
 	item = null;
 	column = -1;
@@ -182,9 +193,25 @@ public void dispose () {
 public int getColumn () {
 	return column;
 }
+/**
+* Returns the TableTreeItem for the row of the cell being tracked by this editor.
+*
+* @return the TableTreeItem for the row of the cell being tracked by this editor
+*/
+public TableTreeItem getItem () {
+	return item;
+}
 public void setColumn(int column) {
 	Table table = tableTree.getTable();
-	if (this.column > -1 && this.column < table.getColumnCount()){
+	int columnCount = table.getColumnCount();
+	// Separately handle the case where the table has no TableColumns.
+	// In this situation, there is a single default column.
+	if (columnCount == 0) {
+		this.column = (column == 0) ? 0 : -1;
+		resize();
+		return;
+	}
+	if (this.column > -1 && this.column < columnCount){
 		TableColumn tableColumn = table.getColumn(this.column);
 		tableColumn.removeControlListener(columnListener);
 		this.column = -1;
@@ -195,16 +222,7 @@ public void setColumn(int column) {
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
-	
 	resize();
-}
-/**
-* Returns the TableItem for the row of the cell being tracked by this editor.
-*
-* @return the TableItem for the row of the cell being tracked by this editor
-*/
-public TableTreeItem getItem () {
-	return item;
 }
 public void setItem (TableTreeItem item) {	
 	this.item = item;
@@ -224,13 +242,15 @@ public void setItem (TableTreeItem item) {
 public void setEditor (Control editor, TableTreeItem item, int column) {
 	setItem(item);
 	setColumn(column);
-	super.setEditor(editor);
+	setEditor(editor);
 }
 void resize () {
 	if (tableTree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
 	Table table = tableTree.getTable();
-	if (column < 0 || column >= table.getColumnCount()) return;
+	int columnCount = table.getColumnCount();
+	if (columnCount == 0 && column != 0) return;
+	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
 	super.resize();
 }
 }
