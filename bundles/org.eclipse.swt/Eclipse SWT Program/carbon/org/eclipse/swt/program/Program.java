@@ -64,17 +64,32 @@ public static Program findProgram (String extension) {
 public static String [] getExtensions () {
     Vector extensions = new Vector();
 	extensions.add(".xml");
+	extensions.add(".html");
 	extensions.add(".java");
 	extensions.add(".properties");
 	extensions.add(".jar");
 	extensions.add(".zip");
-	extensions.add(".html");	
+	extensions.add(".txt");
+	extensions.add(".jpeg");
+	extensions.add(".jpg");
+	extensions.add(".tiff");
+	extensions.add(".gif");
+	extensions.add(".png");
 	String[] result = new String[extensions.size()];
 	extensions.copyInto(result);
 	return result;
 }
 
 static Program getProgram (String key) {
+	String[] extentions = getExtensions();
+	int i = 0;
+	while (i < extentions.length) {
+		String ext = extentions[i];
+		if (ext.equals(key)) break;
+		i++;
+	}
+	if (i == extentions.length) return null;
+
 	/* Name */
 	String name = key;
 	if (name == null || name.length () == 0) return null;
