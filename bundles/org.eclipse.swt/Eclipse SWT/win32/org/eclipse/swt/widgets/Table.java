@@ -1928,6 +1928,14 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	/*
+	* Bug in Windows.  For some reason, when there is insufficient space
+	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
+	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
+	* return a negative number (this is an impossible result).  The fix is to
+	* detect this case and fail to show the selection.
+	*/
+	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0)  return;
 	int index = indexOf (item);
 	if (index != -1) {
 		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
@@ -1951,6 +1959,14 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget (); 
+	/*
+	* Bug in Windows.  For some reason, when there is insufficient space
+	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
+	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
+	* return a negative number (this is an impossible result).  The fix is to
+	* detect this case and fail to show the selection.
+	*/
+	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0)  return;
 	int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
 	if (index != -1) OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
 }
