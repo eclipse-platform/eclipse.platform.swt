@@ -2169,6 +2169,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__I
 }
 #endif /* NO_GetControlData__ISII_3S_3I */
 
+#ifndef NO_GetControlFeatures
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlFeatures
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetControlFeatures\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetControlFeatures((ControlRef)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetControlFeatures */
+
 #ifndef NO_GetControlEventTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlEventTarget
 	(JNIEnv *env, jclass that, jint arg0)

@@ -1036,9 +1036,11 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
+					case OS.kEventControlActivate:				return control.kEventControlActivate (nextHandler, theEvent, userData);
 					case OS.kEventControlBoundsChanged:		return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 					case OS.kEventControlClick:				return control.kEventControlClick (nextHandler, theEvent, userData);
 					case OS.kEventControlContextualMenuClick:	return control.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
+					case OS.kEventControlDeactivate:			return control.kEventControlDeactivate (nextHandler, theEvent, userData);
 					case OS.kEventControlDraw:					return control.kEventControlDraw (nextHandler, theEvent, userData);
 					case OS.kEventControlHit:					return control.kEventControlHit (nextHandler, theEvent, userData);
 					case OS.kEventControlSetFocusPart:			return control.kEventControlSetFocusPart (nextHandler, theEvent, userData);
@@ -1115,12 +1117,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null && control.handle == theControl [0]) {
 				switch (eventKind) {
-					case OS.kEventMouseDown: {
-						int result = control.kEventMouseDown (nextHandler, theEvent, userData);
-						//TEMPORARY CODE
-//						return userData == 0 ? result : OS.noErr;
-						return result;
-					}
+					case OS.kEventMouseDown: 			return control.kEventMouseDown (nextHandler, theEvent, userData);
 					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);
 					case OS.kEventMouseDragged:		return control.kEventMouseDragged (nextHandler, theEvent, userData);
 //					case OS.kEventMouseEntered:			return control.kEventMouseEntered (nextHandler, theEvent, userData);
@@ -1140,12 +1137,14 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theRoot [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);	
-					case OS.kEventWindowBoundsChanged:	return control.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
-					case OS.kEventWindowClose:			return control.kEventWindowClose (nextHandler, theEvent, userData);
-					case OS.kEventWindowCollapsed:		return control.kEventWindowCollapsed (nextHandler, theEvent, userData);
-					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
-					case OS.kEventWindowExpanded:		return control.kEventWindowExpanded (nextHandler, theEvent, userData);
+					case OS.kEventWindowActivated:			return control.kEventWindowActivated (nextHandler, theEvent, userData);	
+					case OS.kEventWindowBoundsChanged:		return control.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
+					case OS.kEventWindowClose:				return control.kEventWindowClose (nextHandler, theEvent, userData);
+					case OS.kEventWindowCollapsed:			return control.kEventWindowCollapsed (nextHandler, theEvent, userData);
+					case OS.kEventWindowDeactivated:		return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowExpanded:			return control.kEventWindowExpanded (nextHandler, theEvent, userData);
+					case OS.kEventWindowFocusAcquired:		return control.kEventWindowFocusAcquired (nextHandler, theEvent, userData);
+					case OS.kEventWindowFocusRelinquish:	return control.kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
 				}
 			}
 			break;

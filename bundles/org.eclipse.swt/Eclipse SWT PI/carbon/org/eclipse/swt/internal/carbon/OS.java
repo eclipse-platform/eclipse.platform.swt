@@ -172,10 +172,12 @@ public class OS {
 	public static final int kEventClassMouse = ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
 	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
-	public static final int kEventControlAddedSubControl = 152;
+  	public static final int kEventControlActivate = 9;
+  	public static final int kEventControlAddedSubControl = 152;
 	public static final int kEventControlBoundsChanged = 154;
 	public static final int kEventControlClick = 13;
 	public static final int kEventControlContextualMenuClick = 12;
+  	public static final int kEventControlDeactivate = 10;
 	public static final int kEventControlDraw = 4;
 	public static final int kControlFocusNextPart = -1;
 	public static final int kEventControlHit = 1;
@@ -232,6 +234,8 @@ public class OS {
 	public static final int kEventWindowDeactivated = 6;
 	public static final int kEventWindowDrawContent = 2;
 	public static final int kEventWindowExpanded = 70;
+	public static final int kEventWindowFocusAcquired = 200;
+	public static final int kEventWindowFocusRelinquish = 201;
 	public static final int kFloatingWindowClass = 5;
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
@@ -314,6 +318,7 @@ public class OS {
 	public static final int kNavUserActionSaveAs = 3;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
+	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
 	public static final int kSheetWindowClass = 11;
 	public static final int kControlSliderDoesNotPoint = 2;
@@ -577,6 +582,7 @@ public static final native int GetControlData(int inControl, short inPart, int i
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, int[] inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, short[] inBuffer, int[] outActualSize);
 public static final native int GetControlEventTarget(int cHandle);
+public static final native int GetControlFeatures(int inControl, int[] outFeatures);
 public static final native int GetControlOwner(int cHandle);
 public static final native int GetControlReference(int cHandle);
 public static final native int GetControlRegion(int cHandle, short inPart, int rgnHandle);

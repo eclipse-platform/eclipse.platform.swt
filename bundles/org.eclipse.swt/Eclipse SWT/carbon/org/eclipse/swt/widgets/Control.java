@@ -294,11 +294,14 @@ boolean hasFocus () {
 void hookEvents () {
 	Display display = getDisplay ();
 	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlActivate,
 		OS.kEventClassControl, OS.kEventControlClick,
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlDeactivate,
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
+		//MUST BE LAST
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 	};
 	//TEMPORARY CODE - hooking kEventControlBoundsChanged on the root control draws garbage
@@ -379,6 +382,10 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
+int kEventControlActivate (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int [] attributes = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
@@ -405,6 +412,10 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 		menu.setVisible (true);
 		return OS.noErr;
 	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -445,16 +456,17 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-//	int kEventParamControlPart = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
-//	int typeControlPartCode = kEventParamControlPart;
-//	short [] controlPart = new short [1];
-//	OS.GetEventParameter (theEvent, kEventParamControlPart, OS.typeControlPartCode, null, 2, null, controlPart);
+	short [] part = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+	if (part [0] == 0) {
+		sendEvent (SWT.FocusOut);
+	} else {
+		sendEvent (SWT.FocusIn);
+	}
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-//	int window = OS.GetControlOwner (handle);
-//	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	if ((state & GRAB) != 0) {
 		int [] clickCount = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
@@ -463,6 +475,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		Display display = getDisplay ();
 		display.grabControl = this;
 	}
+	if ((state & CANVAS) != 0 && userData != 0) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -542,6 +555,14 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowFocusAcquired (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

@@ -15,6 +15,7 @@ public class Decorations extends Canvas {
 	Menu menuBar;
 	String text;
 	boolean minimized, maximized;
+	Control savedFocus;
 	Button defaultButton, saveDefault;
 	
 Decorations () {
@@ -93,6 +94,17 @@ Decorations menuShell () {
 void releaseWidget () {
 	super.releaseWidget ();
 	defaultButton = saveDefault = null;
+}
+
+boolean restoreFocus () {
+	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
+	if (savedFocus == null) return false;
+	return savedFocus.forceFocus ();
+}
+
+void saveFocus () {
+	Control control = getDisplay ().getFocusControl ();
+	if (control != null) savedFocus = control;
 }
 
 public void setDefaultButton (Button button) {

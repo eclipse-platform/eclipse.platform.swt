@@ -274,6 +274,11 @@ public boolean getVisible () {
     return OS.IsWindowVisible (shellHandle);
 }
 
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	//TEMPORARY CODE - shell draws on top of TXNObject
+	return OS.noErr;
+}
+
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -328,6 +333,20 @@ int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
+int kEventWindowFocusAcquired (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowFocusAcquired (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	restoreFocus ();
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	saveFocus ();
+	return OS.eventNotHandledErr;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int[] mask= new int [] {
@@ -338,6 +357,8 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
+		OS.kEventClassWindow, OS.kEventWindowFocusAcquired,
+		OS.kEventClassWindow, OS.kEventWindowFocusRelinquish,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, display.windowProc, mask.length / 2, mask, shellHandle, null);
