@@ -463,7 +463,7 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
-	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, EXPOSURE);
+	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, EXPOSURE_CALLBACK);
 	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, FOCUS_CHANGE);
 }
 int hoverProc (int id) {
@@ -881,7 +881,86 @@ int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	}
 	return 0;
 }
-int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
+	/*
+	* Forward the focus event to the parent.
+	* This is necessary so that focus listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
+	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
+	xEvent.window = OS.XtWindow (parent.handle);
+//	TEMPORARY CODE - need to fix the window field in xEvent
+//	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
+
+	/*
+	* This code is intentionally commented.
+	*/
+//	parent.processSetFocus (callData);
+	return 0;
+}
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, null, 0, keysym, null);
+	keysym [0] &= 0xFFFF;
+	switch (keysym [0]) {
+		case OS.XK_space:
+			click (false, xEvent);
+			break;
+		case OS.XK_KP_Enter:
+		case OS.XK_Return:
+			click (true, xEvent);
+			break;
+	}
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that key listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.XKeyPress (w, client_data, call_data, continue_to_dispatch);
+	return 0;
+}
+int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that key listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.XKeyRelease (w, client_data, call_data, continue_to_dispatch);
+	return 0;
+}
+int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeOut ();
+	display.hideToolTip ();
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+	if ((xEvent.state & OS.Button1Mask) != 0) {
+		setDrawPressed (set);
+	} else {
+		if ((parent.style & SWT.FLAT) != 0) redraw ();
+	}
+	return 0;
+}
+int XmNexposureCallback (int w, int client_data, int call_data) {
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
@@ -993,85 +1072,6 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	
 	if (!enabled && disabledImage == null) {
 		if (currentImage != null) currentImage.dispose ();
-	}
-	return 0;
-}
-int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
-	/*
-	* Forward the focus event to the parent.
-	* This is necessary so that focus listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
-	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
-	xEvent.window = OS.XtWindow (parent.handle);
-//	TEMPORARY CODE - need to fix the window field in xEvent
-//	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
-
-	/*
-	* This code is intentionally commented.
-	*/
-//	parent.processSetFocus (callData);
-	return 0;
-}
-int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
-	int [] keysym = new int [1];
-	OS.XLookupString (xEvent, null, 0, keysym, null);
-	keysym [0] &= 0xFFFF;
-	switch (keysym [0]) {
-		case OS.XK_space:
-			click (false, xEvent);
-			break;
-		case OS.XK_KP_Enter:
-		case OS.XK_Return:
-			click (true, xEvent);
-			break;
-	}
-	/*
-	* Forward the key event to the parent.
-	* This is necessary so that key listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	xEvent.window = OS.XtWindow (parent.handle);
-//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
-	parent.XKeyPress (w, client_data, call_data, continue_to_dispatch);
-	return 0;
-}
-int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
-
-	/*
-	* Forward the key event to the parent.
-	* This is necessary so that key listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	xEvent.window = OS.XtWindow (parent.handle);
-//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
-	parent.XKeyRelease (w, client_data, call_data, continue_to_dispatch);
-	return 0;
-}
-int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Display display = getDisplay ();
-	display.removeMouseHoverTimeOut ();
-	display.hideToolTip ();
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
-	if ((xEvent.state & OS.Button1Mask) != 0) {
-		setDrawPressed (set);
-	} else {
-		if ((parent.style & SWT.FLAT) != 0) redraw ();
 	}
 	return 0;
 }

@@ -99,6 +99,7 @@ public abstract class Widget {
 	static final int MAP_CALLBACK = 29;
 	static final int UNMAP_CALLBACK  = 30;
 	static final int DELETE_WINDOW = 31;
+	static final int EXPOSURE_CALLBACK  = 32;	
 
 Widget () {
 	/* Do nothing */
@@ -1009,6 +1010,7 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 		case MAP_CALLBACK:					return XmNmapCallback (w, client_data, call_data);
 		case UNMAP_CALLBACK:				return XmNunmapCallback (w, client_data, call_data);
 		case DELETE_WINDOW:				return WM_DELETE_WINDOW (w, client_data, call_data);
+		case EXPOSURE_CALLBACK:				return XmNexposureCallback (w, client_data, call_data);
 	}
 	return 0;
 }
@@ -1061,6 +1063,9 @@ int XmNdefaultActionCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNexposureCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNextendedSelectionCallback (int w, int client_data, int call_data) {
