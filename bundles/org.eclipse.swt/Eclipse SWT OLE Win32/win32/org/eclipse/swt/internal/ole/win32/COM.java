@@ -538,6 +538,7 @@ public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, GUI
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, GUID arg1, int arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, int arg5, EXCEPINFO arg6, int[] arg7);
 public static final native int VtblCall(int ppVtbl, int fnNumber, int arg0, STATSTG arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, int ppVtbl, MSG arg0);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, MSG arg1, int arg2, int arg3, int arg4, RECT arg5);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, SIZE arg1);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, boolean arg1);
