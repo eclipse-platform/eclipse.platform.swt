@@ -25,7 +25,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMa
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "getSharedLibraryMajorVersionNumber\n");
 #endif
-    return SWT_LIBRARY_MAJOR_VERSION;
+    return SWT_LIBRARY_VERSION / 1000;
 }
 
 JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMinorVersionNumber
@@ -34,7 +34,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMi
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "getSharedLibraryMinorVersionNumber\n");
 #endif
-    return SWT_LIBRARY_MINOR_VERSION;
+    return SWT_LIBRARY_VERSION % 1000;
 }
 
 /*
