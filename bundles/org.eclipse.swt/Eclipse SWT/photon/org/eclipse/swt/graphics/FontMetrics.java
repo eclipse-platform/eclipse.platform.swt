@@ -22,7 +22,7 @@ public final class FontMetrics {
 	 * A Photon FontQueryInfo struct
 	 * (Warning: This field is platform dependent)
 	 */
-	FontQueryInfo handle;
+	public FontQueryInfo handle;
 	
 FontMetrics() {
 }
