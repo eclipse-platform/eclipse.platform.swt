@@ -701,7 +701,7 @@ public ImageData getImageData() {
  *
  * @private
  */
-public static Image gtk_new(Device device, int type, int pixmap, int mask) {
+public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*long*/ mask) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
 	image.type = type;

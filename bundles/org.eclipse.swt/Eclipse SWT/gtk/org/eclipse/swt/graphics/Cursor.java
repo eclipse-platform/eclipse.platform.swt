@@ -373,7 +373,7 @@ public boolean equals(Object object) {
  * 
  * @private
  */
-public static Cursor gtk_new(Device device, int handle) {
+public static Cursor gtk_new(Device device, int /*long*/ handle) {
 	if (device == null) device = Device.getDevice();
 	Cursor cursor = new Cursor();
 	cursor.handle = handle;

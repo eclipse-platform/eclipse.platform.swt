@@ -572,7 +572,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return result;
 }
 	
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);

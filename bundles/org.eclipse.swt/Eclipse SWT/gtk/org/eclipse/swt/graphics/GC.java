@@ -465,7 +465,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 				int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 				if (scaledPixbuf != 0) {
 					int /*long*/[] colorBuffer = new int /*long*/[1];
-					int[] maskBuffer = new int[1];
+					int /*long*/[] maskBuffer = new int /*long*/[1];
 					OS.gdk_pixbuf_render_pixmap_and_mask(scaledPixbuf, colorBuffer, maskBuffer, 128);
 					colorPixmap = colorBuffer[0];
 					maskPixmap = maskBuffer[0];

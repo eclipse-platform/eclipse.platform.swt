@@ -268,7 +268,7 @@ void setBackgroundColor (GdkColor color) {
 	setBackgroundColor(fixedHandle, color);
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	OS.gtk_widget_modify_font (labelHandle, font);
 }

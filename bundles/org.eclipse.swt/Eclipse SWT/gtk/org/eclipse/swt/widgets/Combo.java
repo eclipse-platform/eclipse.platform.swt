@@ -1074,7 +1074,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
 	if (listHandle != 0) {
