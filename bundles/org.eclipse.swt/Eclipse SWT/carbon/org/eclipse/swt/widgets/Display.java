@@ -203,7 +203,7 @@ public class Display extends Device {
 	/* Current caret */
 	Caret currentCaret;
 	int caretID, caretProc;
-			
+				
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
 	
@@ -1176,7 +1176,12 @@ public boolean readAndDispatch () {
 	
 	switch (rc) {
 	case OS.noErr:
-		int event= evt[0];		
+		int event= evt[0];
+		if (OS.GetEventClass(event) == SWT_USER_EVENT && OS.GetEventKind(event) == 54322) {
+			//System.out.println("aha");
+			OS.ReleaseEvent(event);
+			break;
+		}
 		//System.out.println("event: " + MacUtil.toString(OS.GetEventClass(event)));
 		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
 		OS.ReleaseEvent(event);
@@ -1184,6 +1189,7 @@ public boolean readAndDispatch () {
 		return true;
 		
 	case OS.eventLoopTimedOutErr:
+		// System.out.println("readAndDispatch: eventLoopTimedOutErr");
 		break;	// no event: run async
 		
 	default:
@@ -1650,7 +1656,10 @@ void showToolTip (int handle, String toolTipText) {
  */
 public boolean sleep () {
 	checkDevice ();
-	return OS.ReceiveNextEvent(0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	int rc= OS.ReceiveNextEvent(0, null, OS.kEventDurationForever, false, null);
+	if (rc != OS.noErr)
+		System.out.println("oha: " + rc);
+	return rc == OS.noErr;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -1872,17 +1881,14 @@ static String convertToLf(String text) {
 		if (OS.GetEventClass(inEvent) == OS.kEventClassControl) {
 			int kind= OS.GetEventKind(inEvent);
 			switch (kind) {
+				
 			case OS.kEventControlDraw:
-				//System.out.println("Display.kEventControlDraw");
-			
 				int[] gccontext= new int[1];
-				OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, gccontext);
-			
+				OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, gccontext);		
 				int[] region= new int[1];
 				if (OS.GetEventParameter(inEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region) != OS.noErr)
-					System.err.println("kEventControlDraw: couldn't retrieve region");
-				
-				windowProc(cHandle, SWT.Paint, new MacControlEvent(inEvent, region[0], gccontext[0]));
+					System.err.println("kEventControlDraw: couldn't retrieve region");	
+				windowProc(cHandle, SWT.Paint, new MacControlEvent(inEvent, region[0], gccontext[0]));				
 				return OS.noErr;
 				
 			case OS.kEventControlHit:
@@ -1940,17 +1946,14 @@ static String convertToLf(String text) {
 			Tree2 tree= (Tree2) widget;
 			return tree.handleItemNotificationCallback(item, message);
 		}
-//		if (message == 14) {	// selection changed
-//			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
-//		}
 		return OS.noErr;
 	}
 	
 	private int handleMenuCallback(int nextHandler, int eHandle, int mHandle) {
 		switch (OS.GetEventKind(eHandle)) {
+			
 		case OS.kEventMenuPopulate:
 		case OS.kEventMenuOpening:
-		
 			if (fInContextMenu)
 				OS.SetMenuFont(mHandle, (short)1024, (short)11);	// AW todo: FIXME menu id
 			/*
@@ -1960,9 +1963,9 @@ static String convertToLf(String text) {
 			OS.GetMenuFont(hMenu, fontID, size);
 			OS.SetMenuFont(menu.handle, fontID[0], size[0]);
 			*/ 
-		
 			windowProc(mHandle, SWT.Show, new MacEvent(eHandle, nextHandler));
 			break;
+			
 		case OS.kEventMenuClosed:
 			windowProc(mHandle, SWT.Hide, new MacEvent(eHandle, nextHandler));
 			break;
@@ -2218,13 +2221,7 @@ static String convertToLf(String text) {
 		if (whichWindow == 0) {
 			if (fTrackedControl != 0) {
 				// in tracking mode: get window from control
-				int ww= OS.GetControlOwner(fTrackedControl);
-				int[] w= new int[1];
-				int rc= OS.GetEventParameter(eRefHandle, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, w);
-				if (rc == OS.noErr)
-					whichWindow= w[0];
-				if (whichWindow != ww)
-					System.out.println("Display.handleMouseEvent:  oops");
+				whichWindow= OS.GetControlOwner(fTrackedControl);
 			} else {
 				int[] w= new int[1];
 				OS.FindWindow(where, w);
@@ -2310,7 +2307,7 @@ static String convertToLf(String text) {
 			break;
 		
 		case OS.kEventMouseDragged:
-			if (fTrackedControl != 0) {
+			if (fTrackedControl != 0) {	// continue mouse tracking
 				windowProc(fTrackedControl, SWT.MouseMove, mme);
 				return OS.noErr;
 			}
@@ -2319,7 +2316,7 @@ static String convertToLf(String text) {
 		case OS.kEventMouseUp:
 			if (fTrackedControl != 0) {
 				windowProc(fTrackedControl, SWT.MouseUp, mme);
-				fTrackedControl= 0;
+				fTrackedControl= 0;		// continue mouse tracking
 				return OS.noErr;
 			}	
 			break;
@@ -2446,4 +2443,10 @@ static String convertToLf(String text) {
 			error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return proc;
 	}
+	
+	private int testProc (int id, int clientData) {
+		System.out.println("testProc");
+		return 0;
+	}
+	
 }
