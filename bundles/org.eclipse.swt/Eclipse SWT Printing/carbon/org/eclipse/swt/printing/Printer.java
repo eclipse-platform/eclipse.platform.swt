@@ -40,12 +40,6 @@ public final class Printer extends Device {
 	static String APP_NAME = "SWT_Printer";
 	
 	public static String XDefaultPrintServer = ":1";
-//	static {
-//		/* Read the default print server name from
-//		 * the XPRINTER environment variable.
-//		 */
-//		XDefaultPrintServer = ":1";
-//	}
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -582,10 +576,6 @@ public PrinterData getPrinterData() {
 public Font getSystemFont () {
 	checkDevice ();
 	return defaultFont;
-}
-
-protected void checkDevice() {
-	if (xDisplay == 0) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
 protected void release() {
