@@ -60,8 +60,7 @@ public class OpenGLExample {
 				new LightTab(),
 				new NurbTab(),
 				new ObjectsTab(),
-				// outline tab is windows specific
-				new OutlineTextTab (),
+				new OutlineTextTab(),	/* outline tab is win32-only */
 				new ReflectionTab(),
 				new StencilTab(),
 				new TextureTab(),
