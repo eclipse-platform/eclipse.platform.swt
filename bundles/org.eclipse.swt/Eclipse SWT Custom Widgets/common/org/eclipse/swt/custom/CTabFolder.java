@@ -805,7 +805,11 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
 	Color chevronBorder = single ? getSelectionForeground() : getForeground();
-	int indent = 2;
+	FontData fd = getFont().getFontData()[0];
+	fd.setHeight(fd.getHeight() - 1);
+	Font f = new Font(getDisplay(), fd);
+	int fHeight = f.getFontData()[0].getHeight() * getDisplay().getDPI().y / 72;
+	int indent = Math.max(1, (BUTTON_SIZE - fHeight - 4) /2);
 	int x = chevronRect.x + indent;
 	int y = chevronRect.y + indent;
 	int count;
@@ -826,12 +830,8 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			FontData fd = getFont().getFontData()[0];
-			fd.setHeight(fd.getHeight() - 1);
-			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
-			f.dispose();
 			break;
 		}
 		case HOT: {
@@ -844,12 +844,8 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			FontData fd = getFont().getFontData()[0];
-			fd.setHeight(fd.getHeight() - 1);
-			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
-			f.dispose();
 			break;
 		}
 		case SELECTED: {
@@ -862,15 +858,12 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+7,y+3, x+6,y+5);
 			gc.drawLine(x+6,y+1, x+8,y+3);
 			gc.drawLine(x+8,y+3, x+5,y+5);
-			FontData fd = getFont().getFontData()[0];
-			fd.setHeight(fd.getHeight() - 1);
-			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
-			f.dispose();
 			break;
 		}
 	}
+	f.dispose();
 }
 void drawMaximize(GC gc) {
 	if (maxRect.width == 0 || maxRect.height == 0) return;
@@ -2651,7 +2644,6 @@ boolean setItemLocation() {
 boolean setItemSize() {
 	if (isDisposed()) return false;
 	Point size = getSize();
-	int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 	int[] widths = new int[items.length];
 	CTabFolderEvent e = new CTabFolderEvent(this);
 	e.widget = this;
@@ -2680,27 +2672,48 @@ boolean setItemSize() {
 			widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 		}
 		gc.dispose();
+		
 		if (!single && items.length > 1) {
+			int totalWidth = 0;
+			int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width;
 			int count = items.length;
-			int averageWidth = tabAreaWidth / count;
-			int oldAverageWidth = 0;
-			while (averageWidth > oldAverageWidth) {
-				int width = tabAreaWidth;
-				for (int i = 0; i < items.length; i++) {
-					if (widths[i] < averageWidth) {
-						width -= widths[i];
-						count--;
-					}
-				}
-				oldAverageWidth = averageWidth;
-				if (count > 0) {
-					averageWidth = width / count;
-				}
+			for (int i = 0 ; i < count; i++) {
+				totalWidth += widths[i];
 			}
-			averageWidth = Math.max(averageWidth, MIN_TAB_WIDTH * tabHeight);
-			for (int i = 0; i < items.length; i++) {
-				if (widths[i] > averageWidth) {
-					widths[i] = averageWidth;
+			if (totalWidth > tabAreaWidth) {
+				// try to compress items
+				int minWidth = MIN_TAB_WIDTH * tabHeight;
+				totalWidth = 0;
+				int large = 0;
+				for (int i = 0 ; i < count; i++) {
+					totalWidth += Math.min(widths[i], minWidth);
+					if (widths[i] > minWidth) large++;
+				}
+				if (totalWidth >= tabAreaWidth) {
+					// maximum compression required
+					for (int i = 0; i < count; i++) {
+						widths[i] = Math.min(widths[i], minWidth);
+					}
+				} else {
+					// determine compression for each item
+					int extra = (tabAreaWidth - totalWidth)/large;
+					while (true) {
+						totalWidth = 0;
+						large = 0;
+						for (int i = 0 ; i < count; i++) {
+							totalWidth += Math.min(widths[i], minWidth + extra);
+							if (widths[i] > minWidth + extra) large++;
+						}
+						if (totalWidth >= tabAreaWidth) {
+							extra--;
+							break;
+						}
+						if (large == 0 ||tabAreaWidth - totalWidth < large) break;
+						extra++;
+					}
+					for (int i = 0; i < items.length; i++) {
+						widths[i] = Math.min(widths[i], minWidth + extra);
+					}	
 				}
 			}
 		}
@@ -2725,6 +2738,7 @@ boolean setItemSize() {
 		}
 		totalWidth += widths[i];
 	}
+	int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 	if (totalWidth <= tabAreaWidth) {
 		firstIndex = 0;		
 	}
@@ -3335,7 +3349,6 @@ boolean updateItems() {
 	if (setItemSize()) changed = true;
 	if (setItemLocation()) changed = true;
 	if (setButtonBounds()) changed = true;
-	if (setItemLocation()) changed = true; // repeat this call since button positions can affect item sizes
 	if (selectedIndex != -1) {
 		int top = firstIndex;
 		showItem(items[selectedIndex]);

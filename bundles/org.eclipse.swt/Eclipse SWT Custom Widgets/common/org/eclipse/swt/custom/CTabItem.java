@@ -552,6 +552,10 @@ public String getToolTipText () {
 	}
 	return toolTipText;
 }
+/**
+* UNDER CONSTRUCTION
+* @since 3.0
+*/
 public boolean isShowing () {
 	int index = parent.indexOf(this);
 	if (parent.single) {
@@ -598,7 +602,7 @@ int preferredWidth(GC gc, boolean isSelected) {
 	for (int j = 0; j < parent.folderListeners.length; j++) {
 			parent.folderListeners[j].getTabSize(e);
 	}
-	if (e.doit == false) return e.width;
+	if (!e.doit) return e.width;
 	if (isDisposed()) return 0;
 	int w = 0;
 	Image image = getImage();
