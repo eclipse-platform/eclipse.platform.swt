@@ -549,6 +549,7 @@ public static final native void gtk_frame_set_label_widget(int frame, int label_
 public static final native void gtk_frame_set_shadow_type(int frame, int type);
 public static final native int gtk_get_current_event();
 public static final native int gtk_get_current_event_time();
+public static final native int gtk_grab_get_current();
 public static final native void gtk_grab_remove(int widget);
 public static final native int gtk_hbox_new(boolean homogeneous, int spacing);
 public static final native int gtk_hscale_new(int adjustment);
