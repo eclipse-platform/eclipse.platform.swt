@@ -1271,7 +1271,7 @@ void setForeground (float [] color) {
 	if (color == null) {	
 		rgb = new RGBColor ();
 	} else {
-		rgb = toRGBColor (foreground);
+		rgb = toRGBColor (color);
 	}
 	OS.memcpy (ptr2, rgb, RGBColor.sizeof);
 	int [] attribs = new int [] {

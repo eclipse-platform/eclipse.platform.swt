@@ -2016,10 +2016,10 @@ public void setBackground (Color color) {
 void setBackground (float [] color) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (background != null) {
-		fontStyle.backColor_red = (short) (background [0] * 0xffff);
-		fontStyle.backColor_green = (short) (background [1] * 0xffff);
-		fontStyle.backColor_blue = (short) (background [2] * 0xffff);
+	if (color != null) {
+		fontStyle.backColor_red = (short) (color [0] * 0xffff);
+		fontStyle.backColor_green = (short) (color [1] * 0xffff);
+		fontStyle.backColor_blue = (short) (color [2] * 0xffff);
 		fontStyle.flags |= OS.kControlUseBackColorMask;
 	} else {
 		fontStyle.flags &= ~OS.kControlUseBackColorMask;
@@ -2283,10 +2283,10 @@ public void setForeground (Color color) {
 void setForeground (float [] color) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (foreground != null) {
-		fontStyle.foreColor_red = (short) (foreground [0] * 0xffff);
-		fontStyle.foreColor_green = (short) (foreground [1] * 0xffff);
-		fontStyle.foreColor_blue = (short) (foreground [2] * 0xffff);
+	if (color != null) {
+		fontStyle.foreColor_red = (short) (color [0] * 0xffff);
+		fontStyle.foreColor_green = (short) (color [1] * 0xffff);
+		fontStyle.foreColor_blue = (short) (color [2] * 0xffff);
 		fontStyle.flags |= OS.kControlUseForeColorMask;
 	} else {
 		fontStyle.flags &= ~OS.kControlUseForeColorMask;
