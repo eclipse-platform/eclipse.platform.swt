@@ -83,9 +83,10 @@ public void add (int[] pointArray) {
 	int polyRgn = OS.NewRgn();
 	OS.OpenRgn();
 	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i = 0; i < pointArray.length / 2; i++) {
+	for (int i = 1; i < pointArray.length / 2; i++) {
 		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
 	}
+	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
 	OS.CloseRgn(polyRgn);
 	OS.UnionRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
@@ -361,12 +362,14 @@ public boolean isEmpty() {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pointArray.length < 2) return;
 	int polyRgn = OS.NewRgn();
 	OS.OpenRgn();
 	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i = 0; i < pointArray.length / 2; i++) {
+	for (int i = 1; i < pointArray.length / 2; i++) {
 		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
 	}
+	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
 	OS.CloseRgn(polyRgn);
 	OS.DiffRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
