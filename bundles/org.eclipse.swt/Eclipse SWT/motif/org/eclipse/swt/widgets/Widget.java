@@ -812,23 +812,22 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			}
 		}
 		
-		/* Fill in the event keyCode or character */
-		if (buffer [0] != 0) {
-			event.character = mbcsToWcs (buffer [0] & 0xFF);
+		/*
+		* Bug in Motif.  There are some keycodes for which 
+		* XLookupString() does not translate the character.
+		* Some of examples are Shift+Tab and Ctrl+Space.
+		*/
+		switch (keysym [0]) {
+			case OS.XK_ISO_Left_Tab: buffer [0] = '\t'; break;
+			case OS.XK_space: buffer [0] = ' '; break;
 		}
+			
+		/* Fill in the event keyCode or character */
 		if (keysym [0] != 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
-			/*
-			* Bug in Motif.  There are some keycodes for which 
-			* XLookupString does not fill buffer [0] properly.
-			* Fix these cases here.
-			*/
-			switch (keysym [0]) {
-				/* SHIFT+Tab */
-				case OS.XK_ISO_Left_Tab: event.character = '\t'; break;
-				/* CTRL+Space */
-				case OS.XK_space: event.character = ' '; break;
-			}
+		}
+		if (buffer [0] != 0) {
+			event.character = mbcsToWcs (buffer [0] & 0xFF);
 		}
 	}
 	setInputState (event, xEvent);
