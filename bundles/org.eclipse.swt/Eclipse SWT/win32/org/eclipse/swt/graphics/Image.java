@@ -1614,7 +1614,7 @@ static int[] init(Device device, Image image, ImageData i) {
 				}
 				break;
 			case 32: 
-				if (!(redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000)) {
+				if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
 					newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 				}
 				break;
