@@ -110,7 +110,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += 10;
 		} else {
 			width += 28;
-			height += 6;
+			height += 8;
 		}
 	}
 	
@@ -126,8 +126,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 * very small, even 0.
 	 */
 	width = Math.max(20, width);
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = (style & SWT.PUSH) != 0 ? 2 : 0;
+	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
+	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
 }
 
