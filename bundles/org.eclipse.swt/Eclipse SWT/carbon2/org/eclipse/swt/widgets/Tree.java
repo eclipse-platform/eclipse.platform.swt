@@ -341,13 +341,13 @@ void destroyItem (TreeItem item) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	releaseItems (item.getItems ());
+	releaseItem (item);
 	TreeItem parentItem = item.parentItem;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
 			if (items [i].index >= item.index) --items [i].index;
 		}
 	}
-	releaseItem (item);
 	setScrollWidth ();
 }
 
