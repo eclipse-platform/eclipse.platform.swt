@@ -579,11 +579,8 @@ int inputContext () {
 }
 public int internal_new_GC (GCData data) {
 	if (!OS.XtIsRealized (handle)) {
-		int xtParent = handle;
-		while ((OS.XtParent (xtParent) != 0) && !OS.XtIsSubclass (xtParent, OS.ShellWidgetClass ())) {
-			xtParent = OS.XtParent (xtParent);
-		}
-		OS.XtRealizeWidget (xtParent);
+		Shell shell = getShell ();
+		shell.realizeWidget ();
 	}
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -606,7 +603,9 @@ public int internal_new_GC (GCData data) {
 	return xGC;
 }
 public void internal_dispose_GC (int xGC, GCData data) {
-	int xDisplay = OS.XtDisplay (handle);
+	int xDisplay = 0;
+	if (data != null) xDisplay = data.display;
+	if (xDisplay == 0 && handle != 0) xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.XFreeGC (xDisplay, xGC);
 }
