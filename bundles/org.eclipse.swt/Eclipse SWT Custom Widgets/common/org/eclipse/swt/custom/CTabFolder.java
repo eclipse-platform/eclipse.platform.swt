@@ -1767,11 +1767,14 @@ private void updateCloseBar() {
 	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
 
 	int maxHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - toolbarTrim;
-	if (maxHeight < 3) return;
-	int imageHeight = (maxHeight < 9) ? 9 : maxHeight;
+	int imageHeight = Math.max(9, maxHeight);
 	
-	if (closeImage != null && closeImage.getBounds().height == imageHeight) return;
-	
+	if (closeImage != null) {
+		int height = closeImage.getBounds().height;
+		if (height == imageHeight) return;
+		if (imageHeight > maxHeight && height == maxHeight) return;
+	}
+
 	if (closeBar != null) closeBar.dispose();
 	closeBar = null;
 	if (inactiveCloseBar != null) inactiveCloseBar.dispose();
@@ -1824,11 +1827,14 @@ private void updateArrowBar() {
 	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
 
 	int maxHeight = tabHeight - toolbarTrim;
-	if (maxHeight < 3) return;
-	int imageHeight = (maxHeight < 9) ? 9 : maxHeight;
+	int imageHeight = Math.max(9, maxHeight);	
 	
-	if (arrowLeftImage != null && arrowLeftImage.getBounds().height == imageHeight) return;	
-	
+	if (arrowLeftImage != null) {
+		int height = arrowLeftImage.getBounds().height;
+		if (height == imageHeight) return;
+		if (imageHeight > maxHeight && height == maxHeight) return;
+	}
+
 	if (arrowBar != null) arrowBar.dispose();
 	arrowBar = null;
 	if (arrowLeftImage != null) arrowLeftImage.dispose();
