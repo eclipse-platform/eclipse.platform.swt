@@ -576,7 +576,7 @@ public void setVisible (boolean visible) {
 			address = GtkMenuPositionFunc.getAddress ();
 		}
 		sendEvent(SWT.Show);
-		OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, 0);
+		OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, OS.gtk_get_current_event_time());
 		if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
 	} else {
 		OS.gtk_menu_popdown (handle);

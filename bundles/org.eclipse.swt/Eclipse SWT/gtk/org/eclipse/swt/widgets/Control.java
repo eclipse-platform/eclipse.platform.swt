@@ -113,6 +113,7 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (eventHandle, mask);
+	signal_connect (eventHandle, "popup_menu", SWT.Show, 2);
 	signal_connect (eventHandle, "button_press_event", SWT.MouseDown, 3);
 	signal_connect (eventHandle, "button_release_event", SWT.MouseUp, 3);
 	signal_connect (eventHandle, "key_press_event", SWT.KeyDown, 3);
@@ -1631,9 +1632,11 @@ int processMouseDown (int callData, int arg1, int int2) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
-	int eventType = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	sendMouseEvent (eventType, button, callData);
-	if (button == 3 && menu != null) menu.setVisible (true);
+	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
+	sendMouseEvent (type, button, callData);
+	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		if (menu != null) menu.setVisible (true);
+	}
 	
 	/*
 	* It is possible that the shell may be
@@ -1720,6 +1723,11 @@ int processPaint (int callData, int int2, int int3) {
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
+	return 0;
+}
+
+int processShow (int int0, int int1, int int2) {
+	if (menu != null) menu.setVisible(true);
 	return 0;
 }
 

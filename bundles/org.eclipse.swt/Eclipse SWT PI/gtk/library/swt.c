@@ -2395,6 +2395,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1set_1sha
 	gtk_frame_set_shadow_type((GtkFrame *)arg0, (GtkShadowType)arg1);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1event_1time
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1get_1current_1event_1time\n")
+
+	return (jint)gtk_get_current_event_time();
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1hbox_1new
 	(JNIEnv *env, jclass that, jboolean arg0, jint arg1)
 {
