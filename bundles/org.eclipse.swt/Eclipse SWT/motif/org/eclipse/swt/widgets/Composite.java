@@ -648,18 +648,20 @@ void setClientWindow (int window) {
 	display.setWarnings (false);
 	int xDisplay = OS.XtDisplay (handle);
 	if (window != 0) {
-		clientWindow = window;
-		sendClientEvent (0, OS.XEMBED_EMBEDDED_NOTIFY, 0, 0, 0);
-		OS.XtRegisterDrawable (xDisplay, clientWindow, handle);
-		OS.XSelectInput (xDisplay, clientWindow, OS.PropertyChangeMask);
-		updateMapped ();		
-		resizeClientWindow ();
-		Shell shell = getShell ();
-		if (shell == display.getActiveShell ()) {
-			shell.bringToTop (true);
-			sendClientEvent (0, OS.XEMBED_WINDOW_ACTIVATE, 0, 0, 0);
-			if (this == display.getFocusControl ()) {
-				sendClientEvent (0, OS.XEMBED_FOCUS_IN, OS.XEMBED_FOCUS_CURRENT, 0, 0);
+		if (clientWindow == 0) {
+			clientWindow = window;
+			sendClientEvent (0, OS.XEMBED_EMBEDDED_NOTIFY, 0, 0, 0);
+			OS.XtRegisterDrawable (xDisplay, clientWindow, handle);
+			OS.XSelectInput (xDisplay, clientWindow, OS.PropertyChangeMask);
+			updateMapped ();		
+			resizeClientWindow ();
+			Shell shell = getShell ();
+			if (shell == display.getActiveShell ()) {
+				shell.bringToTop (true);
+				sendClientEvent (0, OS.XEMBED_WINDOW_ACTIVATE, 0, 0, 0);
+				if (this == display.getFocusControl ()) {
+					sendClientEvent (0, OS.XEMBED_FOCUS_IN, OS.XEMBED_FOCUS_CURRENT, 0, 0);
+				}
 			}
 		}
 	} else {
