@@ -91,6 +91,20 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	} catch (IllegalAccessException e) {
 		e.printStackTrace();
 	}
+	
+	final Object printer;
+	try {
+		printer = printerClass.newInstance();
+	} catch (InstantiationException e1) {
+		return;
+	} catch (IllegalAccessException e1) {
+		return;
+	}
+	testPerformance(new Runnable() {
+		public void run() {
+			new GC((Printer) printer).dispose();
+		}
+	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
@@ -145,6 +159,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	} catch (IllegalAccessException e) {
 		e.printStackTrace();
 	}
+	final Object printer;
+	try {
+		printer = printerClass.newInstance();
+	} catch (InstantiationException e1) {
+		return;
+	} catch (IllegalAccessException e1) {
+		return;
+	}
+	testPerformance(new Runnable() {
+		public void run() {
+			new GC((Printer) printer, SWT.RIGHT_TO_LEFT).dispose();
+		}
+	});
 }
 
 public void test_copyAreaIIIIII() {
@@ -152,10 +179,10 @@ public void test_copyAreaIIIIII() {
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 	RGB whiteRGB = getRealRGB(white);
 	RGB blueRGB = getRealRGB(blue);
-	int width = 20;
-	int height = 20;
-	int destX = 10;
-	int destY = 50;
+	final int width = 20;
+	final int height = 20;
+	final int destX = 10;
+	final int destY = 50;
 
 	gc.setBackground(white);
 	gc.setForeground(white);
@@ -174,6 +201,12 @@ public void test_copyAreaIIIIII() {
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 11, destY);
 	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	
+	testPerformance(new Runnable() {
+		public void run() {
+			gc.copyArea(0, 0, width, height, destX, destY);
+		}
+	});
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
@@ -187,7 +220,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	gc.fillRectangle(image.getBounds());
 	gc.setForeground(blue);
 	gc.drawLine(5, 0, 10, 0);
-	Image image = new Image(display, 12, 12);
+	final Image image = new Image(display, 12, 12);
 	gc.copyArea(image, 0, 0);
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette; 
@@ -199,19 +232,47 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(11, 0);
 	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	
+	testPerformance(new Runnable() {
+		public void run() {
+			gc.copyArea(image, 0, 0);
+		}
+	});
 	image.dispose();
 }
 
 public void test_dispose() {
 	gc.dispose();
+	final Image image = new Image(display, 10, 10);
+	testPerformance("dispose()", new Runnable() {
+		public void run() {
+			new GC(image).dispose();
+		}
+	});
+	image.dispose();
+	testPerformance("dispose disposed()", new Runnable() {
+		public void run() {
+			gc.dispose();
+		}
+	});
 }
 
 public void test_drawArcIIIIII() {
-	gc.drawArc(10, 20, 50, 25, 90, 90);				
+	gc.drawArc(10, 20, 50, 25, 90, 90);
+	testPerformance(new Runnable() {
+		public void run() {
+			gc.drawArc(10, 20, 50, 25, 90, 90);
+		}
+	});
 }
 
 public void test_drawFocusIIII() {
-	gc.drawFocus(1, 1, 50, 25);				
+	gc.drawFocus(1, 1, 50, 25);
+	testPerformance(new Runnable() {
+		public void run() {
+			gc.drawFocus(1, 1, 50, 25);
+		}
+	});
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
@@ -228,17 +289,17 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
 		}
 	}
-	Image image = new Image(display, data);
+	final Image image = new Image(display, data);
 	data = image.getImageData();
 	data.transparentPixel = paletteData.getPixel(c1.getRGB());
-	Image imageTransparent = new Image(display, data);
+	final Image imageTransparent = new Image(display, data);
 	data.transparentPixel = -1;
 	for (int y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {
 			data.setAlpha(x, y, 127);
 		}
 	}		
-	Image imageAlpha = new Image(display, data);
+	final Image imageAlpha = new Image(display, data);
 							
 	gc.drawImage(image, 100, 100);
 	gc.drawImage(imageTransparent, 130, 100);
@@ -249,6 +310,26 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+	final Image imageErase = new Image(display, image.getBounds().width, image.getBounds().height);
+	testPerformance("normal image", new Runnable() {
+		public void run() {
+			gc.drawImage(imageErase, 100, 100);
+			gc.drawImage(image, 100, 100);		
+		}
+	});
+	testPerformance("transparent image", new Runnable() {
+		public void run() {
+			gc.drawImage(imageErase, 130, 100);
+			gc.drawImage(imageTransparent, 130, 100);		
+		}
+	});
+	testPerformance("alpha image", new Runnable() {
+		public void run() {
+			gc.drawImage(imageErase, 160, 100);
+			gc.drawImage(imageAlpha, 160, 100);		
+		}
+	});
+	imageErase.dispose();
 	image.dispose();
 	imageTransparent.dispose();
 	imageAlpha.dispose();

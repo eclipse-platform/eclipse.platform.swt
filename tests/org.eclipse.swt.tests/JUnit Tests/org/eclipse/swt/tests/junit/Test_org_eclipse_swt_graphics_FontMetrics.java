@@ -43,42 +43,77 @@ protected void tearDown() {
 }
 
 public void test_equalsLjava_lang_Object() {
-	FontMetrics fm1 = gc.getFontMetrics();
-	FontMetrics fm2 = gc.getFontMetrics();
+	final FontMetrics fm1 = gc.getFontMetrics();
+	final FontMetrics fm2 = gc.getFontMetrics();
 	assertTrue(fm1.equals(fm2));
+	testPerformance(new Runnable() {
+		public void run() {
+			fm1.equals(fm2);
+		}
+	});
 }
 
 public void test_getAscent() {
-	FontMetrics fm = gc.getFontMetrics();
+	final FontMetrics fm = gc.getFontMetrics();
 	fm.getAscent();
+	testPerformance(new Runnable() {
+		public void run() {
+			fm.getAscent();
+		}
+	});
 }
 
 public void test_getAverageCharWidth() {
-	FontMetrics fm = gc.getFontMetrics();
+	final FontMetrics fm = gc.getFontMetrics();
 	fm.getAverageCharWidth();
+	testPerformance(new Runnable() {
+		public void run() {
+			fm.getAverageCharWidth();
+		}
+	});
 }
 
 public void test_getDescent() {
-	FontMetrics fm = gc.getFontMetrics();
+	final FontMetrics fm = gc.getFontMetrics();
 	fm.getDescent();
+	testPerformance(new Runnable() {
+		public void run() {
+			fm.getDescent();
+		}
+	});
 }
 
 public void test_getHeight() {
-	FontMetrics fm = gc.getFontMetrics();
+	final FontMetrics fm = gc.getFontMetrics();
 	fm.getHeight();
+	testPerformance(new Runnable() {
+		public void run() {
+			fm.getHeight();
+		}
+	});
 }
 
 public void test_getLeading() {
-	FontMetrics fm = gc.getFontMetrics();
+	final FontMetrics fm = gc.getFontMetrics();
 	fm.getLeading();
+	testPerformance(new Runnable() {
+		public void run() {
+			fm.getLeading();
+		}
+	});
 }
 
 public void test_hashCode() {
-	FontMetrics fm1 = gc.getFontMetrics();
+	final FontMetrics fm1 = gc.getFontMetrics();
 	FontMetrics fm2 = gc.getFontMetrics();
 	if (fm1.equals(fm2)) {
 		assertEquals(fm1.hashCode(), fm2.hashCode());
 	}
+	testPerformance(new Runnable() {
+		public void run() {
+			fm1.hashCode();
+		}
+	});
 }
 
 public void test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC() {

@@ -114,6 +114,13 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	FontData[] returnedData = font.getFontData();
 	assertEquals(data,returnedData[0]);
 	font.dispose();
+	
+	final FontData fontData = new FontData();
+	testPerformance(new Runnable() {
+		public void run() {
+			new Font(display, fontData).dispose();
+		}
+	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
@@ -176,6 +183,61 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
+	
+	testPerformance("normal", new Runnable() {
+		public void run() {
+			new Font(display, new FontData("", 10, SWT.NORMAL)).dispose();
+		}
+	});
+
+	testPerformance("unknown name", new Runnable() {
+		public void run() {
+			// valid font with unknown name (strange, but apparently valid)
+			new Font(display, new FontData("bad-font", 10, SWT.NORMAL)).dispose();
+		}
+	});
+
+	testPerformance("no height", new Runnable() {
+		public void run() {
+			// valid font with 0 height (strange, but apparently valid)
+			new Font(display, new FontData(SwtJunit.testFontName, 0, SWT.NORMAL)).dispose();
+		}
+	});
+
+	testPerformance("100pt", new Runnable() {
+		public void run() {
+			// valid normal 100-point font
+			new Font(display, new FontData(SwtJunit.testFontName, 100, SWT.NORMAL)).dispose();
+		}
+	});
+
+	testPerformance("10pt", new Runnable() {
+		public void run() {
+			// valid normal 10-point font
+			new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.NORMAL)).dispose();
+		}
+	});
+
+	testPerformance("bold", new Runnable() {
+		public void run() {
+			// valid bold 10-point font
+			new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.BOLD)).dispose();
+		}
+	});
+
+	testPerformance("italic", new Runnable() {
+		public void run() {
+			// valid italic 10-point font
+			new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.ITALIC)).dispose();
+		}
+	});
+
+	testPerformance("bold italic", new Runnable() {
+		public void run() {
+			// valid bold italic 10-point font
+			new Font(display, new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC)).dispose();
+		}
+	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
@@ -234,19 +296,92 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
+	
+	testPerformance("no name", new Runnable() {
+		public void run() {
+			// valid font with no name (strange, but apparently valid)
+			new Font(display, "", 10, SWT.NORMAL).dispose();
+		}
+	});
+
+	testPerformance("unknown name", new Runnable() {
+		public void run() {
+			// valid font with unknown name (strange, but apparently valid)
+			new Font(display, "bad-font", 10, SWT.NORMAL).dispose();
+		}
+	});
+
+	testPerformance("no height", new Runnable() {
+		public void run() {
+			// valid font with 0 height (strange, but apparently valid)
+			new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL).dispose();
+		}
+	});
+
+	testPerformance("100pt", new Runnable() {
+		public void run() {
+			// valid normal 100-point font
+			new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL).dispose();
+		}
+	});
+
+	testPerformance("10pt", new Runnable() {
+		public void run() {
+			// valid normal 10-point font
+			new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL).dispose();
+		}
+	});
+
+	testPerformance("bold", new Runnable() {
+		public void run() {
+			// valid bold 10-point font
+			new Font(display, SwtJunit.testFontName, 10, SWT.BOLD).dispose();
+		}
+	});
+
+	testPerformance("italic", new Runnable() {
+		public void run() {
+			// valid italic 10-point font
+			new Font(display, SwtJunit.testFontName, 10, SWT.ITALIC).dispose();
+		}
+	});
+
+	testPerformance("bold italic", new Runnable() {
+		public void run() {
+			// valid bold italic 10-point font
+			new Font(display, SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC).dispose();
+		}
+	});
+
+	testPerformance("null device", new Runnable() {
+		public void run() {
+			// device == null (valid)
+			new Font(null, SwtJunit.testFontName, 10, SWT.NORMAL).dispose();
+		}
+	});
 }
 
 public void test_dispose() {
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	final Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	assertFalse(font.isDisposed());
 	font.dispose();
 	assertTrue(font.isDisposed());
+	testPerformance("disposed()", new Runnable() {
+		public void run() {
+			new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL).dispose();
+		}
+	});
+	testPerformance("disposed dispose()", new Runnable() {
+		public void run() {
+			font.dispose();
+		}
+	});
 }
 
 public void test_equalsLjava_lang_Object() {
 	// Fonts are only equal if their handles are the same (?!)
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
+	final Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	final Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 	try {
 		// Test Font.equals(Object)
 		assertTrue("!font.equals((Object)null)", !font.equals((Object)null));
@@ -255,6 +390,16 @@ public void test_equalsLjava_lang_Object() {
 		assertTrue("!font.equals((Font)null)", !font.equals((Font)null));
 		assertTrue("font.equals(font)", font.equals(font));
 		assertTrue("!font.equals(otherFont)", !font.equals(otherFont));
+		testPerformance("equals same", new Runnable() {
+			public void run() {
+				font.equals(font);
+			}
+		});
+		testPerformance("equals different", new Runnable() {
+			public void run() {
+				font.equals(otherFont);
+			}
+		});
 	} finally {
 		font.dispose();
 		otherFont.dispose();
@@ -323,27 +468,50 @@ public void test_getFontData() {
 	} finally {
 		font.dispose();
 	}
+	
+	final Font testFont = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
+	testPerformance(new Runnable() {
+		public void run() {
+			testFont.getFontData();
+		}
+	});
+	testFont.dispose();
 }
 
 public void test_hashCode() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	assertEquals(font,font);
 	assertEquals(font.hashCode(),font.hashCode());
-	Font boldFont = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD);
+	final Font boldFont = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD);
 	assertFalse(font.hashCode() == boldFont.hashCode());
+	testPerformance(new Runnable() {
+		public void run() {
+			boldFont.hashCode();
+		}
+	});
 	boldFont.dispose();
 	font.dispose();
 }
 
 public void test_isDisposed() {
 	// Test Font.isDisposed() false
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	final Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	try {
 		assertTrue("Font should not be disposed", !font.isDisposed());
+		testPerformance ("isDisposed()", new Runnable() {
+			public void run() {
+				font.isDisposed();
+			}
+		});
 	} finally {
 		// Test Font.isDisposed() true
 		font.dispose();
 		assertTrue("Font should be disposed", font.isDisposed());
+		testPerformance ("disposed isDisposed()", new Runnable() {
+			public void run() {
+				font.isDisposed();
+			}
+		});
 	}
 }
 

@@ -15,6 +15,7 @@ import java.io.*;
 import junit.framework.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.test.performance.*;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -208,6 +209,31 @@ protected boolean isReparentablePlatform() {
 		if (reparentablePlatforms[i].equals(platform)) return true;
 	}
 	return false;
+}
+
+protected void testPerformance (Runnable runnable) {
+	testPerformance (null, runnable);
+}
+protected void testPerformance (String id, Runnable runnable) {
+	if (!performanceTesting) return;
+	Performance perf = Performance.getDefault();
+	PerformanceMeter meter;
+	if (id != null) {
+		meter = perf.createPerformanceMeter(perf.getDefaultScenarioId(this, id));
+	} else {
+		meter = perf.createPerformanceMeter(perf.getDefaultScenarioId(this));
+	}
+	try {
+		meter.start();
+		for (int i = 0; i < 1000; i++) {
+			runnable.run();
+		}
+		meter.stop();
+		meter.commit();
+		perf.assertPerformance(meter);
+	} finally {
+		meter.dispose();
+	}
 }
 protected void warnUnimpl(String message) {
 	if (verbose) {

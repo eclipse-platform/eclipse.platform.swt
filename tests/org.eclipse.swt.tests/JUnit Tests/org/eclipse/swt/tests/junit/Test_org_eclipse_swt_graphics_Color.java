@@ -83,6 +83,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for blue > 255");
 	} catch (IllegalArgumentException e) {
 	}
+	
+	testPerformance (new Runnable () {
+		public void run() {
+			new Color(display, 102, 255, 0).dispose();
+		}
+	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
@@ -142,17 +148,36 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 	catch (IllegalArgumentException e) {
 	}
+	
+	testPerformance(new Runnable () {
+		public void run() {
+			new Color(null, new RGB(244, 16, 99)).dispose();
+		}
+	});
 }
 
 public void test_dispose() {
 	// tested in test_isDisposed
+	
+	testPerformance("dispose()", new Runnable () {
+		public void run() {
+			Color color = new Color (null, 0, 0, 0);
+			color.dispose();
+		}
+	});
+	final Color color = new Color (null, 0, 0, 0);
+	testPerformance("dispose() disposed", new Runnable() {
+		public void run() {
+			color.dispose();
+		}
+	});
 }
 
 public void test_equalsLjava_lang_Object() {
-	Color color = new Color(display, 1, 2, 3);
-	Color sameColor = new Color(display, 1, 2, 3);
+	final Color color = new Color(display, 1, 2, 3);
+	final Color sameColor = new Color(display, 1, 2, 3);
 	Color sameColor2 = new Color(display, new RGB(1, 2, 3));
-	Color otherColor = new Color(display, 5, 6, 7);
+	final Color otherColor = new Color(display, 5, 6, 7);
 	try {
 		// Test Color.equals(Object)
 		assertTrue("!color.equals((Object)null)", !color.equals((Object)null));
@@ -163,6 +188,16 @@ public void test_equalsLjava_lang_Object() {
 		assertTrue("color.equals(sameColor)", color.equals(sameColor));
 		assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
 		assertTrue("!color.equals(otherColor)", !color.equals(otherColor));
+		testPerformance ("equals same", new Runnable () {
+			public void run() {
+				color.equals (sameColor);
+			}
+		});
+		testPerformance ("equals different", new Runnable () {
+			public void run() {
+				color.equals (otherColor);
+			}
+		});
 	} finally {
 		color.dispose();
 		sameColor.dispose();
@@ -173,59 +208,102 @@ public void test_equalsLjava_lang_Object() {
 
 public void test_getBlue() {
 	// Test Color.getBlue()
-	Color color = new Color(display, 0, 0, 255);
+	final Color color = new Color(display, 0, 0, 255);
 	try {
 		assertEquals("color.getBlue()", color.getBlue(), 255);
+		testPerformance(new Runnable () {
+			public void run() {
+				color.getBlue();
+			}
+		});
 	} finally {
 		color.dispose();
 	}
-	
 }
 
 public void test_getGreen() {
 	// Test Color.getGreen()
-	Color color = new Color(display, 0, 255, 0);
+	final Color color = new Color(display, 0, 255, 0);
 	try {
 		assertEquals("color.getGreen()", color.getGreen(), 255);
+		testPerformance(new Runnable () {
+			public void run() {
+				color.getGreen();
+			}
+		});
 	} finally {
 		color.dispose();
 	}
 }
 
 public void test_getRGB() {
-	Color color = new Color(display, 255, 255, 255);
-	assertNotNull(color.getRGB());
-	assertEquals(new RGB(255, 255, 255), color.getRGB());
+	final Color color = new Color(display, 255, 255, 255);
+	try {
+		assertNotNull(color.getRGB());
+		assertEquals(new RGB(255, 255, 255), color.getRGB());
+		testPerformance(new Runnable () {
+			public void run() {
+				color.getRGB();
+			}
+		});
+	} finally {
+		color.dispose();
+	}
 }
 
 public void test_getRed() {
 	// Test Color.getRed()
-	Color color = new Color(display, 255, 0, 0);
+	final Color color = new Color(display, 255, 0, 0);
 	try {
 		assertEquals("color.getRed()", color.getRed(), 255);
+		testPerformance(new Runnable () {
+			public void run() {
+				color.getRed();
+			}
+		});
 	} finally {
 		color.dispose();
 	}
 }
 
 public void test_hashCode() {
-	Color color = new Color(display, 12, 34, 56);
+	final Color color = new Color(display, 12, 34, 56);
 	Color otherColor = new Color(display, 12, 34, 56);
-	if (color.equals(otherColor)) {
-		assertEquals("Hash codes of equal objects should be equal", color.hashCode(), otherColor.hashCode());
+	try {
+		if (color.equals(otherColor)) {
+			assertEquals("Hash codes of equal objects should be equal", color.hashCode(), otherColor.hashCode());
+		}
+		testPerformance(new Runnable () {
+			public void run() {
+				color.hashCode();
+			}
+		});
+	} finally {
+		color.dispose();
+		otherColor.dispose();
 	}
 }
 
 public void test_isDisposed() {
 	// Test Color.isDisposed() false
-	Color color = new Color(display, 34, 67, 98);
+	final Color color = new Color(display, 34, 67, 98);
 	try {
 		assertTrue("Color should not be disposed", !color.isDisposed());
+		testPerformance ("isDisposed()", new Runnable () {
+			public void run() {
+				color.isDisposed();
+			}
+		});
 	} finally {
 		// Test Color.isDisposed() true
 		color.dispose();
 		assertTrue("Color should be disposed", color.isDisposed());
 	}
+	testPerformance ("disposed isDisposed()", new Runnable () {
+		public void run() {
+			color.isDisposed();
+		}
+	});
 }
 
 public void test_toString() {
