@@ -1621,6 +1621,14 @@ int gtk_focus_in_event (int widget, int event) {
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
+	Display display = getDisplay ();
+	Control oldControl = display.imControl;
+	if (oldControl != this)  {
+		if (oldControl != null && !oldControl.isDisposed ()) {
+			int oldIMHandle = oldControl.imHandle ();
+			if (oldIMHandle != 0) OS.gtk_im_context_reset (oldIMHandle);
+		}
+	}
 	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
 		int imHandle = imHandle ();
 		if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
@@ -1647,7 +1655,6 @@ int gtk_focus_out_event (int widget, int event) {
 		int imHandle = imHandle ();
 		if (imHandle != 0) {
 			OS.gtk_im_context_focus_out (imHandle);
-			OS.gtk_im_context_reset (imHandle);
 		}
 	}
 	

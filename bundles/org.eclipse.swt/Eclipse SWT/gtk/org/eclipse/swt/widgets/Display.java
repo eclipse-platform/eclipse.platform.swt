@@ -97,6 +97,7 @@ public class Display extends Device {
 	static String APP_NAME = "SWT";
 
 	/* Input method resources */
+	Control imControl;
 	int preeditWindow, preeditLabel;
 
 	/* Sync/Async Widget Communication */
@@ -1292,7 +1293,8 @@ void releaseDisplay () {
 	
 	/* Dispose preedit window */
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
-
+	imControl = null;
+	
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
@@ -1592,6 +1594,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 void showIMWindow (Control control) {
+	imControl = control;
 	if (preeditWindow == 0) { 
 		preeditWindow = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
