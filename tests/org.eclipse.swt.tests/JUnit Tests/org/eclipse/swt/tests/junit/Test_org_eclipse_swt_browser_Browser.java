@@ -14,6 +14,8 @@ import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
@@ -32,6 +34,7 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
+	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
 }
 
@@ -40,6 +43,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+	shell.setText("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.dispose();
 	browser = new Browser(shell, SWT.BORDER);
@@ -52,6 +56,14 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
+	shell.setText("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
+	try {
+		browser.addLocationListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	LocationListener listener = new LocationListener() {
 		public void changed(LocationEvent event) {
 		}
@@ -63,6 +75,7 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 }
 
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
+	shell.setText("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	try {
 		browser.addProgressListener(null);
 		fail("No exception thrown for listener == null");
@@ -81,6 +94,7 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 }
 
 public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
+	shell.setText("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	try {
 		browser.addStatusTextListener(null);
 		fail("No exception thrown for listener == null");
@@ -97,30 +111,39 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 }
 
 public void test_back() {
-	for (int i = 0; i < 50; i++) {
+	shell.setText("test_back");
+	for (int i = 0; i < 10; i++) {
 		browser.back();
+		runLoopTimer(1);
 	}
-	/* returning 50 times in history - expecting false is returned */
+	/* returning 10 times in history - expecting false is returned */
 	boolean result = browser.back();
 	assertFalse(result);
 }
 
 public void test_forward() {
-	for (int i = 0; i < 50; i++) {
+	shell.setText("test_forward");
+	for (int i = 0; i < 10; i++) {
 		browser.forward();
+		runLoopTimer(1);
 	}
-	/* going forward 50 times in history - expecting false is returned */
+	/* going forward 10 times in history - expecting false is returned */
 	boolean result = browser.forward();
 	assertFalse(result);
 }
 
 public void test_getUrl() {
+	shell.setText("test_getUrl");
 	String string = browser.getUrl();
 	assertTrue(string != null);
 }
 
 public void test_refresh() {
-	for (int i = 0; i < 50; i++) browser.refresh();
+	shell.setText("test_refresh");
+	for (int i = 0; i < 10; i++) {
+		browser.refresh();
+		runLoopTimer(1);
+	}
 }
 
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
@@ -154,19 +177,27 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 }
 
 public void test_setTextLjava_lang_String() {
-	String html1 = "<HTML><HEAD><TITLE>HTML example 1</TITLE></HEAD><BODY><H1>HTML example</H1><P>This is a really cool page</P></BODY></HTML>";
-	boolean result = browser.setText(html1);
-	assertTrue(result);
-	String html2 = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
+	shell.setText("test_setTextLjava_lang_String");
+	
+	String html = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
 	for (int i = 0; i < 1000; i++) {
-		html2 +="<P>That is a test line with the number "+i+"</P>";
+		html +="<P>That is a test line with the number "+i+"</P>";
 	}
-	html2 += "</BODY></HTML>";
-	result = browser.setText(html2);
+	html += "</BODY></HTML>";
+	boolean result = browser.setText(html);
 	assertTrue(result);
+	runLoopTimer(10);
+	
+	try {
+		browser.setText(null);
+		fail("No exception thrown for text == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setUrlLjava_lang_String() {
+	shell.setText("test_setUrlLjava_lang_String");
 	try {
 		browser.setUrl(null);
 		fail("No exception thrown for url == null");
@@ -177,12 +208,16 @@ public void test_setUrlLjava_lang_String() {
 	
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
+	runLoopTimer(10);
 }
 
 public void test_stop() {
+	shell.setText("test_stop");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
+	runLoopTimer(1);
 	browser.stop();
+	runLoopTimer(10);
 }
 
 
@@ -236,4 +271,26 @@ protected void runTest() throws Throwable {
 
 /* custom */
 Browser browser;
+
+void runLoopTimer(final int seconds) {
+	final boolean[] exit = {false};
+	new Thread() {
+		public void run() {
+			try {Thread.sleep(seconds * 1000);} catch (Exception e) {}
+			exit[0] = true;
+			/* wake up the event loop */
+			Display display = Display.getDefault();
+			if (!display.isDisposed()) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						if (!shell.isDisposed()) shell.redraw();						
+					}
+				});
+			}
+		}
+	}.start();
+	shell.open();
+	Display display = Display.getCurrent();
+	while (!exit[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
+}
 }
