@@ -1011,6 +1011,13 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+void resetVisibleRegion (int control) {
+	super.resetVisibleRegion (control);
+	if (showItem != null && !showItem.isDisposed ()) {
+		showItem (showItem , true);
+	}	
+}
+
 /**
  * Display a mark indicating the point at which an item will be inserted.
  * The drop insert item has a visual hint to show where a dragged item 
@@ -1211,9 +1218,22 @@ void showItem (TreeItem item, boolean scroll) {
 		path [i].setExpanded (true);
 	}
 	if (scroll) {
-		//TODO - optimize
+		/*
+		* Bug in the Macintosh.  When there is not room to show a
+		* single item in the data browser, RevealDataBrowserItem()
+		* scrolls the item such that it is above the top of the data
+		* browser.  The fix is to remember the index and scroll when
+		* the data browser is resized.
+		* 
+		* Bug in the Macintosh.  When items are added to the data
+		* browser after is has been hidden, RevealDataBrowserItem()
+		* when called before the controls behind the data browser
+		* are repainted causes a redraw.  This redraw happens right
+		* away causing pixel corruption.  The fix is to remember the
+		* index and scroll when the data browser is shown.
+		*/
 		Rectangle rect = getClientArea ();
-		if (rect.height < getItemHeight ()) {
+		if (rect.height < getItemHeight () || !OS.IsControlVisible (handle)) {
 			showItem = item;
 			return;
 		}

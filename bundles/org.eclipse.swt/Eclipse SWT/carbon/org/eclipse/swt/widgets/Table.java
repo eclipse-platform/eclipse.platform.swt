@@ -1397,6 +1397,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resetVisibleRegion (int control) {
+	super.resetVisibleRegion (control);
+	if (showIndex != -1) {
+		showIndex (showIndex);
+	}
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains
@@ -1771,8 +1778,22 @@ public void setTopIndex (int index) {
 
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {
+		/*
+		* Bug in the Macintosh.  When there is not room to show a
+		* single item in the data browser, RevealDataBrowserItem()
+		* scrolls the item such that it is above the top of the data
+		* browser.  The fix is to remember the index and scroll when
+		* the data browser is resized.
+		* 
+		* Bug in the Macintosh.  When items are added to the data
+		* browser after is has been hidden, RevealDataBrowserItem()
+		* when called before the controls behind the data browser
+		* are repainted causes a redraw.  This redraw happens right
+		* away causing pixel corruption.  The fix is to remember the
+		* index and scroll when the data browser is shown.
+		*/
 		Rectangle rect = getClientArea ();
-		if (rect.height < getItemHeight ()) {
+		if (rect.height < getItemHeight () || !OS.IsControlVisible (handle)) {
 			showIndex = index;
 			return;
 		}

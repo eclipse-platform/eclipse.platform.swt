@@ -186,6 +186,46 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	return style;
 }
 
+void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) {
+	int tempRgn = OS.NewRgn ();
+	if (OS.IsControlVisible (control)) {
+		int childRgn = OS.NewRgn ();
+		int window = OS.GetControlOwner (control);
+		int port = OS.GetWindowPort (window);
+		short [] count = new short [1];
+		int [] outControl = new int [1];
+		OS.GetRootControl (window, outControl);
+		int root = outControl [0];
+		OS.GetControlRegion (root, (short) OS.kControlStructureMetaPart, visibleRgn);
+		Rect rect = new Rect();
+		int tempControl = control, lastControl = 0;
+		while (tempControl != root) {
+			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
+			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+			if (OS.EmptyRgn (visibleRgn)) break;
+			if (clipChildren || tempControl != control) {
+				OS.CountSubControls (tempControl, count);
+				for (int i = 0; i < count [0]; i++) {
+					OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+					int child = outControl [0];
+					if (child == lastControl) break;
+					if (!OS.IsControlVisible (child)) continue;
+					OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
+					OS.UnionRgn (tempRgn, childRgn, childRgn);
+				}
+			}
+			lastControl = tempControl;
+			OS.GetSuperControl (tempControl, outControl);
+			tempControl = outControl [0];
+		}
+		OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+		OS.DisposeRgn (childRgn);
+	} else {
+		OS.CopyRgn (tempRgn, visibleRgn);
+	}
+	OS.DisposeRgn (tempRgn);
+}
+
 void checkOrientation (Widget parent) {
 	style &= ~SWT.MIRRORED;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
@@ -666,35 +706,7 @@ public int getStyle () {
 
 int getVisibleRegion (int control, boolean clipChildren) {
 	int visibleRgn = OS.NewRgn ();
-	int childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
-	int window = OS.GetControlOwner (control);
-	int port = OS.GetWindowPort (window);
-	OS.GetPortVisibleRegion (port, visibleRgn);
-	short [] count = new short [1];
-	int [] outControl = new int [1];
-	int tempControl = control, lastControl = 0;
-	while (tempControl != 0) {
-		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
-		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-		if (OS.EmptyRgn (visibleRgn)) break;
-		if (clipChildren || tempControl != control) {
-			OS.CountSubControls (tempControl, count);
-			for (int i = 0; i < count [0]; i++) {
-				OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
-				int child = outControl [0];
-				if (child == lastControl) break;
-				if (!OS.IsControlVisible (child)) continue;
-				OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-				OS.UnionRgn (tempRgn, childRgn, childRgn);
-			}
-		}
-		lastControl = tempControl;
-		OS.GetSuperControl (tempControl, outControl);
-		tempControl = outControl [0];
-	}
-	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-	OS.DisposeRgn (childRgn);
-	OS.DisposeRgn (tempRgn);
+	calculateVisibleRegion (control, visibleRgn, clipChildren);
 	return visibleRgn;
 }
 
@@ -721,6 +733,9 @@ int getDrawCount (int control) {
 
 Rect getInset () {
 	return EMPTY_RECT;
+}
+
+void invalidateVisibleRegion (int control) {
 }
 
 /**
@@ -1214,6 +1229,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	boolean visible = OS.IsControlVisible (control);
 	if (visible) OS.InvalWindowRect (window, oldBounds);
 	OS.SetControlBounds (control, newBounds);
+	invalidateVisibleRegion (control);
 	if (visible) OS.InvalWindowRect (window, newBounds);
 	int result = 0;
 	if (move && !sameOrigin) {
@@ -1442,11 +1458,33 @@ void setVisible (int control, boolean visible) {
 	boolean drawing = getDrawCount (control) == 0;
 	if (drawing && !visible) visibleRgn = getVisibleRegion (control, false);
 	OS.SetControlVisibility (control, visible, false);
+	invalidateVisibleRegion (control);
 	if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
 	if (drawing) {
 		int window = OS.GetControlOwner (control);
 		OS.InvalWindowRgn (window, visibleRgn);
 		OS.DisposeRgn (visibleRgn);
+	}
+}
+
+void setZOrder (int control, int otheControl, boolean above) {
+	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
+	int oldRgn = 0;
+	boolean drawing = isDrawing (control);
+	if (drawing) oldRgn = getVisibleRegion (control, false);
+	OS.HIViewSetZOrder (control, inOp, otheControl);
+	invalidateVisibleRegion (control);
+	if (drawing) {
+		int newRgn = getVisibleRegion (control, false);
+		if (above) {
+			OS.DiffRgn (newRgn, oldRgn, newRgn);
+		} else {
+			OS.DiffRgn (oldRgn, newRgn, newRgn);
+		}
+		int window = OS.GetControlOwner (control);
+		OS.InvalWindowRgn (window, newRgn);
+		OS.DisposeRgn (oldRgn);
+		OS.DisposeRgn (newRgn);
 	}
 }
 

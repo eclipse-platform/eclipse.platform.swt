@@ -658,6 +658,11 @@ void hookEvents () {
 	OS.InstallEventHandler (windowTarget, mouseProc, mask2.length / 2, mask2, shellHandle, null);
 }
 
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	invalidateChildrenVisibleRegion (control);
+}
+
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
@@ -1041,7 +1046,9 @@ void setWindowVisible (boolean visible) {
 			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
-		OS.SetControlVisibility (topHandle (), true, false);
+		int topHandle = topHandle ();
+		OS.SetControlVisibility (topHandle, true, false);
+		invalidateVisibleRegion (topHandle);
 		int [] scope = new int [1];
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.GetWindowActivationScope (shellHandle, scope);
@@ -1053,7 +1060,9 @@ void setWindowVisible (boolean visible) {
 		}
 	} else {
     	OS.HideWindow (shellHandle);
-		OS.SetControlVisibility (topHandle (), false, false);
+		int topHandle = topHandle ();
+		OS.SetControlVisibility (topHandle, false, false);
+		invalidateVisibleRegion (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }

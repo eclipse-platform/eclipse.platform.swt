@@ -1007,6 +1007,26 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);
 }
 
+void resetVisibleRegion (int control) {
+	super.resetVisibleRegion (control);
+	
+	/*
+	*
+	*/
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	Rect inset = inset ();
+	rect.left += inset.left;
+	rect.top += inset.top;
+	rect.right -= inset.right;
+	if (OS.IsControlVisible (handle)) {
+		rect.bottom -= inset.bottom;
+	} else {
+		rect.bottom = rect.top;
+	}
+	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
+}
+
 /**
  * Selects all the text in the receiver.
  *

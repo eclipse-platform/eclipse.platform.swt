@@ -56,6 +56,7 @@ public abstract class Control extends Widget implements Drawable {
 	float [] foreground, background;
 	Font font;
 	Cursor cursor;
+	GCData gcs[];
 	Accessible accessible;
 
 Control () {
@@ -1012,8 +1013,8 @@ public int internal_new_GC (GCData data) {
 	int context = buffer [0];
 	if (context != 0) {
 		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
 		Rect portRect = new Rect ();
+		OS.GetControlBounds (handle, rect);
 		OS.GetPortBounds (port, portRect);
 		if (data != null && data.paintEvent != 0) {
 			visibleRgn = data.visibleRgn;
@@ -1028,6 +1029,10 @@ public int internal_new_GC (GCData data) {
 		int portHeight = portRect.bottom - portRect.top;
 		OS.CGContextScaleCTM (context, 1, -1);
 		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+		if (data != null) {
+			data.portRect = portRect;
+			data.controlRect = rect;
+		}
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
@@ -1041,6 +1046,18 @@ public int internal_new_GC (GCData data) {
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
+	
+		if (data.paintEvent == 0) {
+			if (gcs == null) gcs = new GCData [4];
+			int index = 0;
+			while (index < gcs.length && gcs [index] != null) index++;
+			if (index == gcs.length) {
+				GCData [] newGCs = new GCData [gcs.length + 4];
+				System.arraycopy (gcs, 0, newGCs, 0, gcs.length);
+				gcs = newGCs;
+			}
+			gcs [index] = data;
+		}
 	}
 	return context;
 }
@@ -1060,10 +1077,21 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	if (data != null && data.paintEvent == 0) {
-		if (data.visibleRgn != 0) {
-			OS.DisposeRgn (data.visibleRgn);
-			data.visibleRgn = 0;
+	if (data != null) {
+		if (data.paintEvent == 0) {
+			if (data.visibleRgn != 0) {
+				OS.DisposeRgn (data.visibleRgn);
+				data.visibleRgn = 0;
+			}
+			
+			int index = 0;
+			while (index < gcs.length && gcs [index] != data) index++;
+			if (index < gcs.length) {
+				gcs [index] = null;
+				index = 0;
+				while (index < gcs.length && gcs [index] == null) index++;
+				if (index == gcs.length) gcs = null;
+			}
 		}
 	}
 	
@@ -1075,6 +1103,35 @@ public void internal_dispose_GC (int context, GCData data) {
 	OS.CGContextSynchronize(context);
 	
 	OS.CGContextRelease (context);
+}
+
+void invalidateChildrenVisibleRegion (int control) {
+}
+
+void invalidateVisibleRegion (int control) {
+	int index = 0;
+	Control[] siblings = parent._getChildren ();
+	while (index < siblings.length && siblings [index] != this) index++;
+	for (int i=index; i<siblings.length; i++) {
+		Control sibling = siblings [i];
+		sibling.resetVisibleRegion (control);
+		sibling.invalidateChildrenVisibleRegion (control);
+	}
+	parent.resetVisibleRegion (control);
+}
+
+void resetVisibleRegion (int control) {
+	if (gcs != null) {
+		int visibleRgn = getVisibleRegion (handle, true);
+		for (int i=0; i<gcs.length; i++) {
+			GCData data = gcs [i];
+			if (data != null) {
+				data.updateClip = true;
+				OS.CopyRgn (visibleRgn, data.visibleRgn);
+			}
+		}
+		OS.DisposeRgn (visibleRgn);
+	}
 }
 
 /**
@@ -1836,12 +1893,9 @@ void setBackground (float [] color) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
 	if (background != null) {
-		int red = (short) (background [0] * 255);
-		int green = (short) (background [1] * 255);
-		int blue = (short) (background [2] * 255);
-		fontStyle.backColor_red = (short) (red << 8 | red);
-		fontStyle.backColor_green = (short) (green << 8 | green);
-		fontStyle.backColor_blue = (short) (blue << 8 | blue);
+		fontStyle.backColor_red = (short) (background [0] * 0xffff);
+		fontStyle.backColor_green = (short) (background [1] * 0xffff);
+		fontStyle.backColor_blue = (short) (background [2] * 0xffff);
 		fontStyle.flags |= OS.kControlUseBackColorMask;
 	} else {
 		fontStyle.flags &= ~OS.kControlUseBackColorMask;
@@ -2125,12 +2179,9 @@ void setForeground (float [] color) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
 	if (foreground != null) {
-		int red = (short) (foreground [0] * 255);
-		int green = (short) (foreground [1] * 255);
-		int blue = (short) (foreground [2] * 255);
-		fontStyle.foreColor_red = (short) (red << 8 | red);
-		fontStyle.foreColor_green = (short) (green << 8 | green);
-		fontStyle.foreColor_blue = (short) (blue << 8 | blue);
+		fontStyle.foreColor_red = (short) (foreground [0] * 0xffff);
+		fontStyle.foreColor_green = (short) (foreground [1] * 0xffff);
+		fontStyle.foreColor_blue = (short) (foreground [2] * 0xffff);
 		fontStyle.flags |= OS.kControlUseForeColorMask;
 	} else {
 		fontStyle.flags &= ~OS.kControlUseForeColorMask;
@@ -2423,25 +2474,8 @@ void setZOrder () {
 }
 
 void setZOrder (Control control, boolean above) {
-	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
-	int inOther = control == null ? 0 : control.topHandle ();
-	int oldRgn = 0;
-	int topHandle = topHandle ();
-	boolean drawing = isDrawing (topHandle);
-	if (drawing) oldRgn = getVisibleRegion (topHandle, false);
-	OS.HIViewSetZOrder (topHandle, inOp, inOther);
-	if (drawing) {
-		int newRgn = getVisibleRegion (topHandle, false);
-		if (above) {
-			OS.DiffRgn (newRgn, oldRgn, newRgn);
-		} else {
-			OS.DiffRgn (oldRgn, newRgn, newRgn);
-		}
-		int window = OS.GetControlOwner (topHandle);
-		OS.InvalWindowRgn (window, newRgn);
-		OS.DisposeRgn (oldRgn);
-		OS.DisposeRgn (newRgn);
-	}
+	int otherControl = control == null ? 0 : control.topHandle ();
+	setZOrder (topHandle (), otherControl, above);
 }
 
 void sort (int [] items) {

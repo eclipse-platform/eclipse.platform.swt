@@ -362,6 +362,15 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
+void invalidateChildrenVisibleRegion (int control) {
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		child.resetVisibleRegion (control);
+		child.invalidateChildrenVisibleRegion (control);
+	}
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
