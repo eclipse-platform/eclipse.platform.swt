@@ -125,6 +125,7 @@ public class Display extends Device {
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
+	Shell activeShell;
 	
 	/* Input method resources */
 	Control imControl;
@@ -999,14 +1000,7 @@ void flushExposes (int /*long*/ window, boolean all) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	for (int i=0; i<widgetTable.length; i++) {
-		Widget widget = widgetTable [i];
-		if (widget != null && widget instanceof Shell) {
-			Shell shell = (Shell) widget;
-			if (shell.hasFocus) return shell;
-		}
-	}
-	return null;
+	return activeShell;
 }
 
 /**
@@ -1327,9 +1321,8 @@ public Control getFocusControl () {
 	if (focusControl != null && !focusControl.isDisposed ()) {
 		return focusControl;
 	}
-	Shell shell = getActiveShell ();
-	if (shell == null) return null;
-	int /*long*/ shellHandle = shell.shellHandle;
+	if (activeShell == null) return null;
+	int /*long*/ shellHandle = activeShell.shellHandle;
 	int /*long*/ handle = OS.gtk_window_get_focus (shellHandle);
 	if (handle == 0) return null;
 	do {
@@ -2553,6 +2546,7 @@ void releaseDisplay () {
 	mouseHoverCallback = null;
 
 	thread = null;
+	activeShell = null;
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	/* Dispose the default font */

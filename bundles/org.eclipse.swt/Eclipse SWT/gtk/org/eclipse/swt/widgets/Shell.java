@@ -101,7 +101,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle;
-	boolean hasFocus, mapped, moved, resized, opened;
+	boolean mapped, moved, resized, opened;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
@@ -402,16 +402,16 @@ void adjustTrim () {
 
 void bringToTop (boolean force) {
 	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return; 
-	if (hasFocus) return;
-	Shell shell = display.getActiveShell ();
+	Shell activeShell = display.activeShell;
+	if (activeShell == this) return;
 	if (!force) {
-		if (shell == null) return;
-		int /*long*/ focusHandle = OS.gtk_window_get_focus (shell.shellHandle);
+		if (activeShell == null) return;
+		int /*long*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
 		if (focusHandle != 0) {
 			if (!OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
 		}
 	}
-	if (shell != null) shell.hasFocus = false;
+	if (activeShell != null) display.activeShell = null;
 	/*
 	* Feature in GTK.  When the shell is an override redirect
 	* window, gdk_window_focus() does not give focus to the
@@ -428,7 +428,7 @@ void bringToTop (boolean force) {
 	} else {
 		OS.gdk_window_focus (window, OS.gtk_get_current_event_time ());
 	}
-	hasFocus = true;
+	display.activeShell = this;
 }
 
 void checkBorder () {
@@ -809,7 +809,7 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 		return super.gtk_focus_in_event (widget, event);
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-	hasFocus = true;
+	display.activeShell = this;
 	sendEvent (SWT.Activate);
 	return 0;
 }
@@ -821,7 +821,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
 	sendEvent (SWT.Deactivate);
 	setActiveControl (null);
-	hasFocus = false;
+	if (display.activeShell == this) display.activeShell = null;
 	return 0;
 }
 
@@ -1105,7 +1105,7 @@ public void setEnabled (boolean enabled) {
 		}
 	}
 	if (fixFocus) fixFocus (control);
-	if (enabled && hasFocus) {
+	if (enabled && (display.activeShell == this)) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
 }
@@ -1405,8 +1405,7 @@ public void dispose () {
 	*/
 	OS.gtk_widget_hide (shellHandle);
 	if (parent != null) {
-		Shell activeShell = display.getActiveShell ();
-		if (activeShell == this) {
+		if (display.activeShell == this) {
 			Shell shell = parent.getShell ();	
 			shell.bringToTop (false);
 		}
@@ -1470,6 +1469,7 @@ void releaseWidget () {
 	releaseShells ();
 	destroyAccelGroup ();
 	super.releaseWidget ();
+	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
 	region = null;

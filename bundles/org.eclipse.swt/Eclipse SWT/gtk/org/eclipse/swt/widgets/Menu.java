@@ -551,8 +551,7 @@ public boolean getVisible () {
 
 int /*long*/ gtk_hide (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		Shell shell = getShell ();
-		shell.hasFocus = true;
+		display.activeShell = getShell ();
 	}
 	sendEvent (SWT.Hide);
 	return 0;
@@ -560,8 +559,7 @@ int /*long*/ gtk_hide (int /*long*/ widget) {
 
 int /*long*/ gtk_show (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		Shell shell = getShell ();
-		shell.hasFocus = true;
+		display.activeShell = getShell ();
 		return 0;
 	} 
 	sendEvent (SWT.Show);
