@@ -1809,7 +1809,20 @@ public void setBackground (Color color) {
 }
 
 void setBackground (float [] color) {
-	setFontStyle (font);	
+	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+	if (background != null) {
+		int red = (short) (background [0] * 255);
+		int green = (short) (background [1] * 255);
+		int blue = (short) (background [2] * 255);
+		fontStyle.backColor_red = (short) (red << 8 | red);
+		fontStyle.backColor_green = (short) (green << 8 | green);
+		fontStyle.backColor_blue = (short) (blue << 8 | blue);
+		fontStyle.flags |= OS.kControlUseBackColorMask;
+	} else {
+		fontStyle.flags &= ~OS.kControlUseBackColorMask;
+	}
+	OS.SetControlFontStyle (handle, fontStyle);
 }
 
 /**
@@ -2046,6 +2059,7 @@ public void setFont (Font font) {
 
 void setFontStyle (Font font) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
 	if (font != null) {
 		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
 		fontStyle.font = font.id;
@@ -2054,28 +2068,6 @@ void setFontStyle (Font font) {
 	} else {
 		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
 		fontStyle.font = (short) defaultThemeFont ();
-	}
-	if (background != null) {
-		int red = (short) (background [0] * 255);
-		int green = (short) (background [1] * 255);
-		int blue = (short) (background [2] * 255);
-		fontStyle.backColor_red = (short) (red << 8 | red);
-		fontStyle.backColor_green = (short) (green << 8 | green);
-		fontStyle.backColor_blue = (short) (blue << 8 | blue);
-		fontStyle.flags |= OS.kControlUseBackColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseBackColorMask;
-	}
-	if (foreground != null) {
-		int red = (short) (foreground [0] * 255);
-		int green = (short) (foreground [1] * 255);
-		int blue = (short) (foreground [2] * 255);
-		fontStyle.foreColor_red = (short) (red << 8 | red);
-		fontStyle.foreColor_green = (short) (green << 8 | green);
-		fontStyle.foreColor_blue = (short) (blue << 8 | blue);
-		fontStyle.flags |= OS.kControlUseForeColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseForeColorMask;
 	}
 	OS.SetControlFontStyle (handle, fontStyle);
 }
@@ -2106,7 +2098,20 @@ public void setForeground (Color color) {
 }
 
 void setForeground (float [] color) {
-	setFontStyle (font);	
+	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+	if (foreground != null) {
+		int red = (short) (foreground [0] * 255);
+		int green = (short) (foreground [1] * 255);
+		int blue = (short) (foreground [2] * 255);
+		fontStyle.foreColor_red = (short) (red << 8 | red);
+		fontStyle.foreColor_green = (short) (green << 8 | green);
+		fontStyle.foreColor_blue = (short) (blue << 8 | blue);
+		fontStyle.flags |= OS.kControlUseForeColorMask;
+	} else {
+		fontStyle.flags &= ~OS.kControlUseForeColorMask;
+	}
+	OS.SetControlFontStyle (handle, fontStyle);	
 }
 
 /**

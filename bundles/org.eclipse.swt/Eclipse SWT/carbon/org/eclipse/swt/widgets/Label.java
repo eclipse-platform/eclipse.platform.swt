@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
@@ -155,7 +156,13 @@ void createHandle () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		OS.CreateSeparatorControl (window, null, outControl);
 	} else {
-		OS.CreateStaticTextControl (window, null, 0, null, outControl);
+		int just = OS.teFlushLeft;
+		if ((style & SWT.CENTER) != 0) just = OS.teCenter;
+		if ((style & SWT.RIGHT) != 0) just = OS.teFlushRight;
+		ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+		fontStyle.flags |= OS.kControlUseJustMask;
+		fontStyle.just = (short) just;
+		OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
 	}
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
@@ -173,7 +180,12 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		data.paintEvent = theEvent;
 		data.visibleRgn = visibleRgn;
 		GC gc = GC.carbon_new (this, data);
-		gc.drawImage (image, 0, 0);
+		int x = 0;
+		Point size = getSize ();
+		Rectangle bounds = image.getBounds ();
+		if ((style & SWT.CENTER) != 0) x = (size.x - bounds.width) / 2;
+		if ((style & SWT.RIGHT) != 0) x = size.x - bounds.width;
+		gc.drawImage (image, x, 0);
 		gc.dispose ();
 	}
 	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
@@ -260,6 +272,18 @@ public String getText () {
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	int just = OS.teFlushLeft;
+	if ((alignment & SWT.CENTER) != 0) just = OS.teCenter;
+	if ((alignment & SWT.RIGHT) != 0) just = OS.teFlushRight;
+	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+	fontStyle.flags |= OS.kControlUseJustMask;
+	fontStyle.just = (short) just;
+	OS.SetControlFontStyle (handle, fontStyle);
+	redraw ();
 }
 
 /**
