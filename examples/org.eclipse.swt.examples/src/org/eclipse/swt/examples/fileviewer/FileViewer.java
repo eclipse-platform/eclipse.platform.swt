@@ -63,6 +63,7 @@ public class FileViewer {
 		// Object: if not present or null then the item has not been populated
 
 	private Tree tree;
+	private TreeItem targetTreeItem;
 	private Label treeScopeLabel;
 
 	/* Table view */
@@ -473,6 +474,7 @@ public class FileViewer {
 		dropTarget.addDropListener(new TreeDropFeedbackListener(tree));
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragEnter(DropTargetEvent event) {
+				targetTreeItem = (TreeItem)event.item;
 				isDropping = true;
 			}
 			public void dragLeave(DropTargetEvent event) {
@@ -480,16 +482,18 @@ public class FileViewer {
 				handleDeferredRefresh();
 			}
 			public void dragOver(DropTargetEvent event) {
+				targetTreeItem = (TreeItem)event.item;
 				dropTargetValidate(event, getTargetFile(event));
 			}
 			public void drop(DropTargetEvent event) {
+				event.item = targetTreeItem;
 				File targetFile = getTargetFile(event);
 				if (dropTargetValidate(event, targetFile))
 					dropTargetHandleDrop(event, targetFile);
 			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
-				TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
+				TreeItem item = (TreeItem)event.item;
 				File targetFile = null;
 				if (item != null) {
 					// We are over a particular item in the tree, use the item's file
