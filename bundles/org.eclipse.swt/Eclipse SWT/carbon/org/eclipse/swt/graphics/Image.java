@@ -209,14 +209,12 @@ public Image(Device device, Image srcImage, int flag) {
 	int alphaInfo = OS.kCGImageAlphaNoneSkipFirst;
  	
 	/* Copy transparent pixel and alpha data when necessary */
-	if (flag != SWT.IMAGE_DISABLE) {
-		alphaInfo = OS.CGImageGetAlphaInfo(srcImage.handle);
-		transparentPixel = srcImage.transparentPixel;
-		alpha = srcImage.alpha;
-		if (srcImage.alphaData != null) {
-			alphaData = new byte[srcImage.alphaData.length];
-			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
-		}
+	alphaInfo = OS.CGImageGetAlphaInfo(srcImage.handle);
+	transparentPixel = srcImage.transparentPixel;
+	alpha = srcImage.alpha;
+	if (srcImage.alphaData != null) {
+		alphaData = new byte[srcImage.alphaData.length];
+		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 	}
 
 	/* Create the image */
@@ -289,12 +287,6 @@ public Image(Device device, Image srcImage, int flag) {
 					offset += 4;
 				}
 				OS.memcpy(data + (y * bpr), line, bpr);
-			}
-			transparentPixel = srcImage.transparentPixel;
-			alpha = srcImage.alpha;
-			if (srcImage.alphaData != null) {
-				alphaData = new byte[srcImage.alphaData.length];
-				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 			}
 			break;
 		}
