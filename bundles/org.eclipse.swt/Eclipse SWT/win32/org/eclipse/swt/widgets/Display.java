@@ -193,7 +193,7 @@ public class Display extends Device {
 	static boolean TrimEnabled = false;
 
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
 	/*
 	* This code is intentionally commented.  In order
 	* to support CLDC, .class cannot be used because
@@ -326,10 +326,10 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-synchronized void checkDisplay () {
+static synchronized void checkDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null && Displays [i].thread == thread) {
-			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
 }
@@ -371,19 +371,18 @@ int controlKey (int key) {
  */
 protected void create (DeviceData data) {
 	checkSubclass ();
-	checkDisplay ();
-	thread = Thread.currentThread ();
+	checkDisplay (thread = Thread.currentThread ());
 	createDisplay (data);
-	register ();
+	register (this);
 	if (Default == null) Default = this;
 }
 
 void createDisplay (DeviceData data) {
 }
 
-synchronized void deregister () {
+static synchronized void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
-		if (this == Displays [i]) Displays [i] = null;
+		if (display == Displays [i]) Displays [i] = null;
 	}
 }
 
@@ -399,7 +398,7 @@ synchronized void deregister () {
  */
 protected void destroy () {
 	if (this == Default) Default = null;
-	deregister ();
+	deregister (this);
 	destroyDisplay ();
 }
 
@@ -1209,16 +1208,16 @@ public boolean readAndDispatch () {
 	return runAsyncMessages ();
 }
 
-synchronized void register () {
+static synchronized void register (Display display) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] == null) {
-			Displays [i] = this;
+			Displays [i] = display;
 			return;
 		}
 	}
 	Display [] newDisplays = new Display [Displays.length + 4];
 	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = this;
+	newDisplays [Displays.length] = display;
 	Displays = newDisplays;
 }
 

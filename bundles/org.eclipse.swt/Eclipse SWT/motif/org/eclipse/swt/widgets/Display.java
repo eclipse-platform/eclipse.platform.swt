@@ -383,10 +383,10 @@ int checkResizeProc (int display, int event, int arg) {
 	}
 	return 0;
 }
-synchronized void checkDisplay () {
+static synchronized void checkDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null && Displays [i].thread == thread) {
-			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
 }
@@ -397,10 +397,9 @@ protected void checkSubclass () {
 }
 protected void create (DeviceData data) {
 	checkSubclass ();
-	checkDisplay ();
-	thread = Thread.currentThread ();
+	checkDisplay (thread = Thread.currentThread ());
 	createDisplay (data);
-	register ();
+	register (this);
 	if (Default == null) Default = this;
 }
 void createDisplay (DeviceData data) {
@@ -438,14 +437,14 @@ void createDisplay (DeviceData data) {
 	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
 	DisplayDisposed = false;
 }
-synchronized void deregister () {
+synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
-		if (this == Displays [i]) Displays [i] = null;
+		if (display == Displays [i]) Displays [i] = null;
 	}
 }
 protected void destroy () {
 	if (this == Default) Default = null;
-	deregister ();
+	deregister (this);
 	destroyDisplay ();
 }
 void destroyDisplay () {
@@ -1420,16 +1419,16 @@ public boolean readAndDispatch () {
 	}
 	return runAsyncMessages ();
 }
-synchronized void register () {
+static synchronized void register (Display display) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] == null) {
-			Displays [i] = this;
+			Displays [i] = display;
 			return;
 		}
 	}
 	Display [] newDisplays = new Display [Displays.length + 4];
 	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = this;
+	newDisplays [Displays.length] = display;
 	Displays = newDisplays;
 }
 protected void release () {
