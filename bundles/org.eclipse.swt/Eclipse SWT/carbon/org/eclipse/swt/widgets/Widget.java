@@ -1477,7 +1477,7 @@ boolean setKeyState (Event event, int type, int theEvent) {
 		case SWT.ESC: event.character = 0x1B; break;
 		case SWT.TAB: event.character = '\t'; break;
 		default: {
-			if (event.keyCode == 0 || (SWT.KEYPAD_TIMES <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
+			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
 				int [] length = new int [1];
 				int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 				if (status == OS.noErr && length [0] != 0) {
