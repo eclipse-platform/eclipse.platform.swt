@@ -5275,7 +5275,8 @@ void handleTraverse(Event event) {
 	int style = getStyle();
 	boolean ignoreTab = (style & SWT.MULTI) != 0 && !editable || isSingleLine();
 	
-	if (event.detail == SWT.TRAVERSE_TAB_NEXT && ignoreTab) {
+	if ((event.detail == SWT.TRAVERSE_TAB_NEXT || 
+		 event.detail == SWT.TRAVERSE_RETURN) && ignoreTab) {
 		event.doit = true;
 	}
 }
