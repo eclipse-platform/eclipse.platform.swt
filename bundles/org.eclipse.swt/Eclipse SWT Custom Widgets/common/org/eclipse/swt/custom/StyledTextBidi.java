@@ -222,7 +222,7 @@ private void calculateRenderPositions() {
 private void calculateTabStops(String text, int tabWidth) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
-	int x = StyledText.XINSET;
+	int x = 0;
 	int spaceWidth = gc.stringExtent(" ").x;
 				
 	while (tabIndex != -1) {
