@@ -230,7 +230,7 @@ public String open () {
 			filterPath = filterPath.substring (0, length - 1);
 			int index = fullPath.length () - 1;
 			while ((index >= 0) && (fullPath.charAt (index) != '/')) --index;
-			fileName = fullPath.substring (index, fullPath.length ());
+			fileName = fullPath.substring (index < 0 ? 0 : index, fullPath.length ());
 		}
 	}
 
