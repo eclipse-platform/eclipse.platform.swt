@@ -1830,6 +1830,57 @@ void setBackgroundPixel (int pixel) {
 	OS.XmChangeColor (handle, pixel);
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int topHandle = topHandle ();
+	if (move && resize) {
+		int [] argList = {
+			OS.XmNx, 0, 			/* 1 */
+			OS.XmNy, 0, 			/* 3 */
+			OS.XmNwidth, 0, 		/* 5 */
+			OS.XmNheight, 0, 		/* 7 */
+			OS.XmNborderWidth, 0, 	/* 9 */
+		};
+		OS.XtGetValues (topHandle, argList, argList.length / 2);
+		/*
+		* Feature in Motif.  Motif will not allow a window
+		* to have a zero width or zero height.  The fix is
+		* to ensure these values are never zero.
+		*/
+		width = Math.max (width - (argList [9] * 2), 1);
+		height = Math.max (height - (argList [9] * 2), 1);
+		boolean sameOrigin = (x == (short) argList [1]) && (y == (short) argList [3]);
+		boolean sameExtent = (width == argList [5]) && (height == argList [7]);
+		if (sameOrigin && sameExtent) return false;
+		OS.XtConfigureWidget (topHandle, x, y, width, height, argList [9]);
+		if (!sameOrigin) sendEvent (SWT.Move);
+		if (!sameExtent) sendEvent (SWT.Resize);
+		return true;
+	}
+	if (move) {
+		int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+		OS.XtGetValues (topHandle, argList, argList.length / 2);
+		if (x == (short) argList [1] && y == (short) argList [3]) return false;
+		OS.XtMoveWidget (topHandle, x, y);
+		sendEvent (SWT.Move);
+		return true;
+	}
+	if (resize) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (topHandle, argList, argList.length / 2);
+		/*
+		* Feature in Motif.  Motif will not allow a window
+		* to have a zero width or zero height.  The fix is
+		* to ensure these values are never zero.
+		*/
+		width = Math.max (width - (argList [5] * 2), 1);
+		height = Math.max (height - (argList [5] * 2), 1);
+		if (width == argList [1] && height == argList [3]) return false;
+		OS.XtResizeWidget (topHandle, width, height, argList [5]);
+		sendEvent (SWT.Resize);
+		return true;
+	}
+	return false;
+}
 /**
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
@@ -1853,28 +1904,7 @@ void setBackgroundPixel (int pixel) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	/*
-	* Feature in Motif.  Motif will not allow a window
-	* to have a zero width or zero height.  The fix is
-	* to ensure these values are never zero.
-	*/
-	int topHandle = topHandle ();
-	int [] argList = {
-		OS.XmNx, 0, 			/* 1 */
-		OS.XmNy, 0, 			/* 3 */
-		OS.XmNwidth, 0, 		/* 5 */
-		OS.XmNheight, 0, 		/* 7 */
-		OS.XmNborderWidth, 0, 	/* 9 */
-	};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	int newWidth = Math.max (width - (argList [9] * 2), 1);
-	int newHeight = Math.max (height - (argList [9] * 2), 1);
-	boolean sameOrigin = (x == (short) argList [1]) && (y == (short) argList [3]);
-	boolean sameExtent = (newWidth == argList [5]) && (newHeight == argList [7]);
-	if (sameOrigin && sameExtent) return;
-	OS.XtConfigureWidget (topHandle, x, y, newWidth, newHeight, argList [9]);
-	if (!sameOrigin) sendEvent (SWT.Move);
-	if (!sameExtent) sendEvent (SWT.Resize);
+	setBounds (x, y, width, height, true, true);
 }
 /**
  * Sets the receiver's size and location to the rectangular
@@ -1895,8 +1925,9 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
+	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBounds (rect.x, rect.y, rect.width, rect.height, true, true);
 }
 /**
  * If the argument is <code>true</code>, causes the receiver to have
@@ -2133,13 +2164,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	int topHandle = topHandle ();
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	boolean sameOrigin = (x == (short) argList [1]) && (y == (short) argList [3]);
-	if (sameOrigin) return;
-	OS.XtMoveWidget (topHandle, x, y);
-	if (!sameOrigin) sendEvent (SWT.Move);
+	setBounds (x, y, 0, 0, true, false);
 }
 /**
  * Sets the receiver's location to the point specified by
@@ -2154,8 +2179,9 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
+	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setBounds (location.x, location.y, 0, 0, true, false);
 }
 /**
  * Sets the receiver's pop up menu to the argument.
@@ -2262,20 +2288,7 @@ boolean setTabItemFocus () {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	/*
-	* Feature in Motif.  Motif will not allow a window
-	* to have a zero width or zero height.  The fix is
-	* to ensure these values are never zero.
-	*/
-	int topHandle = topHandle ();
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	int newWidth = Math.max (width - (argList [5] * 2), 1);
-	int newHeight = Math.max (height - (argList [5] * 2), 1);
-	boolean sameExtent = (newWidth == argList [1]) && (newHeight == argList [3]);
-	if (sameExtent) return;
-	OS.XtResizeWidget (topHandle, newWidth, newHeight, argList [5]);
-	if (!sameExtent) sendEvent (SWT.Resize);
+	setBounds (0, 0, width, height, false, true);
 }
 /**
  * Sets the receiver's size to the point specified by the argument.
@@ -2297,8 +2310,9 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setSize (Point size) {
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	setBounds (0, 0, size.x, size.y, false, true);
 }
 /**
  * Sets the receiver's tool tip text to the argument, which

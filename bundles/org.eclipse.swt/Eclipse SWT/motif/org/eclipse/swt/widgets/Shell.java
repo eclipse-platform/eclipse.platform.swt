@@ -944,26 +944,6 @@ void setActiveControl (Control control) {
 		}
 	}
 }
-
-public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
-	/*
-	* Feature in Motif.  Motif will not allow a window
-	* to have a zero width or zero height.  The fix is
-	* to ensure these values are never zero.
-	*/
-	saveBounds ();
-	int newWidth = Math.max (width - trimWidth (), 1);
-	int newHeight = Math.max (height - trimHeight (), 1);
-	if (!reparented) {
-		super.setBounds (x, y, newWidth, newHeight);
-		return;
-	}
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	OS.XtConfigureWidget (shellHandle, x, y, newWidth, newHeight, 0);
-	if (isFocus) caret.setFocus ();
-}
 /**
  * Sets the input method editor mode to the argument which 
  * should be the result of bitwise OR'ing together one or more
@@ -983,17 +963,30 @@ public void setBounds (int x, int y, int width, int height) {
 public void setImeInputMode (int mode) {
 	checkWidget();
 }
-public void setLocation (int x, int y) {
-	checkWidget();
-	saveBounds ();
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	if (resize) {
+		/*
+		* Feature in Motif.  Motif will not allow a window
+		* to have a zero width or zero height.  The fix is
+		* to ensure these values are never zero.
+		*/
+		saveBounds ();
+		width = Math.max (width - trimWidth (), 1);
+		height = Math.max (height - trimHeight (), 1);
+	}
 	if (!reparented) {
-		super.setLocation(x, y);
-		return;
-	}	
+		return super.setBounds (x, y, width, height, move, resize);
+	}
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	OS.XtMoveWidget (shellHandle, x, y);
+	if (move && resize) {
+		OS.XtConfigureWidget (shellHandle, x, y, width, height, 0);
+	} else {
+		if (move) OS.XtMoveWidget (shellHandle, x, y);
+		if (resize) OS.XtResizeWidget (shellHandle, width, height, 0);
+	}
 	if (isFocus) caret.setFocus ();
+	return move || resize;
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();
@@ -1023,26 +1016,6 @@ public void setMinimized (boolean minimized) {
 	/* Force the XWindowAttributes to be up to date */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay != 0) OS.XSync (xDisplay, false);
-}
-
-public void setSize (int width, int height) {
-	checkWidget();
-	/*
-	* Feature in Motif.  Motif will not allow a window
-	* to have a zero width or zero height.  The fix is
-	* to ensure these values are never zero.
-	*/
-	saveBounds ();
-	int newWidth = Math.max (width - trimWidth (), 1);
-	int newHeight = Math.max (height - trimHeight (), 1);
-	if (!reparented) {
-		super.setSize(newWidth, newHeight);
-		return;
-	}
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	OS.XtResizeWidget (shellHandle, newWidth, newHeight, 0);
-	if (isFocus) caret.setFocus ();
 }
 public void setText (String string) {
 	checkWidget();

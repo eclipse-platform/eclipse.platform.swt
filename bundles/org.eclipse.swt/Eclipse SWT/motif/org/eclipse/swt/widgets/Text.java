@@ -1106,10 +1106,7 @@ public void selectAll () {
 	OS.XmTextSetInsertionPosition (handle, 0);
 	display.setWarnings (warnings);
 }
-/**
-* Sets the bounds.
-*/
-public void setBounds (int x, int y, int width, int height) {
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	* Bug in Motif.  For some reason an Xm warning is
 	* output whenever a Text widget's caret is beyond
@@ -1119,7 +1116,7 @@ public void setBounds (int x, int y, int width, int height) {
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
-	super.setBounds (x, y, width, height);
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	display.setWarnings(warnings);
 	
 	/*
@@ -1136,6 +1133,7 @@ public void setBounds (int x, int y, int width, int height) {
 //	self noWarnings: [super resizeWidget].
 //	nWidth > inset x ifTrue: [^self].
 //	self showPosition: self topCharacter
+	return changed;
 }
 /**
  * Sets the double click enabled flag.
@@ -1351,33 +1349,6 @@ public void setSelection (Point selection) {
 	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
-}
-public void setSize (int width, int height) {
-	/*
-	* Bug in Motif.  For some reason an Xm warning is
-	* output whenever a Text widget's caret is beyond
-	* the visible region during a resize.  The fix is
-	* to temporarily turn off warnings below.
-	*/
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	super.setSize (width, height);
-	display.setWarnings(warnings);
-	/*
-	* Bug in Motif.  When the receiver is a Text widget
-	* (not a Text Field) and is resized to be smaller than
-	* the inset that surrounds the text and the selection
-	* is set, the receiver scrolls to the left.  When the
-	* receiver is resized larger, the text is not scrolled
-	* back.  The fix is to detect this case and scroll the
-	* text back.
-	*/
-//	inset := self inset.
-//	nWidth := self dimensionAt: XmNwidth.
-//	self noWarnings: [super resizeWidget].
-//	nWidth > inset x ifTrue: [^self].
-//	self showPosition: self topCharacter
 }
  /**
  * Sets the number of tabs.

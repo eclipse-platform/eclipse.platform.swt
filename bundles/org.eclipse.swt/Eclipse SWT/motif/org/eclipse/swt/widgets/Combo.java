@@ -994,13 +994,10 @@ public void select (int index) {
 		ignoreSelect = false;
 	}
 }
-/**
-* Sets the widget bounds.
-*/
-public void setBounds (int x, int y, int width, int height) {
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
-	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
-	super.setBounds (x, y, width, newHeight);
+	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
+	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 /**
  * Sets the text of the item in the receiver's list at the given
@@ -1129,14 +1126,6 @@ public void setSelection (Point selection) {
 	/* Force the i-beam to follow the highlight/selection. */
 	OS.XmTextSetInsertionPosition (argList[1], nEnd);
 	display.setWarnings(warnings);
-}
-/**
-* Sets the widget size.
-*/
-public void setSize (int width, int height) {
-	checkWidget();
-	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
-	super.setSize (width, newHeight);
 }
 /**
  * Sets the contents of the receiver's text field to the

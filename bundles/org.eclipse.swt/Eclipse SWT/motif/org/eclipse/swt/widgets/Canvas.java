@@ -196,13 +196,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	/* Show the caret */
 	if (isFocus) caret.setFocus ();
 }
-public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	super.setBounds (x, y, width, height);
-	if (isFocus) caret.setFocus ();
-}
 /**
  * Sets the receiver's caret.
  * <p>
@@ -236,20 +229,12 @@ public void setCaret (Caret caret) {
 		}
 	}
 }
-
-public void setLocation (int x, int y) {
-	checkWidget();
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	super.setLocation (x, y);
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (isFocus) caret.setFocus ();
-}
-public void setSize (int width, int height) {
-	checkWidget();
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	super.setSize (width, height);
-	if (isFocus) caret.setFocus ();
+	return changed;
 }
 void updateCaret () {
 	if (caret == null) return;

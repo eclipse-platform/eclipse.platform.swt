@@ -554,9 +554,10 @@ void setBackgroundPixel (int pixel) {
 		}
 	}
 }
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	if (layout != null) layout (false);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && layout != null) layout.layout (this, false);
+	return changed;
 }
 /**
  * Sets the layout which is associated with the receiver to be
@@ -572,10 +573,6 @@ public void setBounds (int x, int y, int width, int height) {
 public void setLayout (Layout layout) {
 	checkWidget();
 	this.layout = layout;
-}
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	if (layout != null) layout (false);
 }
 /**
  * Sets the tabbing order for the specified controls to

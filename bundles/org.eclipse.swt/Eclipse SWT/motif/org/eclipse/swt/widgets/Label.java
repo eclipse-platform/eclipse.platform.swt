@@ -339,9 +339,10 @@ void setBitmap (Image image) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	if ((style & SWT.WRAP) != 0) setText (text);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && (style & SWT.WRAP) != 0) setText (text);
+	return changed;
 }
 public void setFont (Font font) {
 	super.setFont (font);
@@ -364,10 +365,6 @@ public void setFont (Font font) {
 public void setImage (Image image) {
 	checkWidget();
 	setBitmap (this.image = image);
-}
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	if ((style & SWT.WRAP) != 0) setText (text);
 }
 /**
  * Sets the receiver's text.

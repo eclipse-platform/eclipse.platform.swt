@@ -1173,8 +1173,8 @@ public void selectAll () {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	/*
 	* Bug in AIX.  When the receiver has a vertical scroll bar
 	* that is currently not visible and no horizontal scroll bar
@@ -1201,11 +1201,13 @@ public void setBounds (int x, int y, int width, int height) {
 //	(fixHScroll or: [fixVScroll]) ifFalse: [^self].
 	
 	/* Grow and shrink the scrolled window by one pixel */
-	if (scrolledHandle == 0) return;
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-	OS.XtResizeWidget (scrolledHandle, argList [1] + 1, argList [3], argList [5]);
-	OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
+	if (changed && scrolledHandle != 0) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+		OS.XtResizeWidget (scrolledHandle, argList [1] + 1, argList [3], argList [5]);
+		OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
+	}
+	return changed;
 }
 void setFocusIndex (int index) {
 	OS.XmListSetKbdItemPos (handle, index + 1);
@@ -1421,40 +1423,6 @@ public void setSelection (String [] items) {
 	for (int i=0; i<length; i++) OS.XmStringFree (table [i]);
 	OS.XtFree (ptr);
 	OS.XmListUpdateSelectedList (handle);
-}
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	/*
-	* Bug in AIX.  When the receiver has a vertical scroll bar
-	* that is currently not visible and no horizontal scroll bar
-	* and is resized to be smaller in both the width and height
-	* and goes from the state where the width of the longest item
-	* is smaller than the width of the list to the state where the
-	* width of the longest item is longer than the width of the
-	* list, the list hides the vertical scroll bar and leaves a
-	* blank space where it should be.  This often happens when a
-	* shell containing a list that matches the above criteria is
-	* maximized and then restored.  This is just one of a number
-	* of repeatable cases where the scrolled window hides the
-	* scroll bars but does not resize the list.  The fix is to
-	* detect these cases and force the scroll bars to be layed
-	* out properly by growing and then shrinking the scrolled
-	* window.
-	*/
-//	fixHScroll := hScroll ~~ nil and: [
-//		hScroll isVisible not and: [
-//			height ~~ (self dimensionAt: XmNheight)]].
-//	fixVScroll := vScroll ~~ nil and: [
-//		vScroll isVisible not and: [
-//			width ~~ (self dimensionAt: XmNwidth)]].
-//	(fixHScroll or: [fixVScroll]) ifFalse: [^self].
-
-	/* Grow and shrink the scrolled window by one pixel */
-	if (scrolledHandle == 0) return;
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-	OS.XtResizeWidget (scrolledHandle, argList [1] + 1, argList [3], argList [5]);
-	OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
 }
 /**
  * Sets the zero-relative index of the item which is currently
