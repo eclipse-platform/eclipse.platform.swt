@@ -1497,6 +1497,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XSetErrorHandler)
 }
 #endif
 
+#ifndef NO__1XSetFillRule
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetFillRule)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1XSetFillRule_FUNC);
+	XSetFillRule((Display *)arg0, (GC)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetFillRule_FUNC);
+}
+#endif
+
 #ifndef NO__1XSetFillStyle
 JNIEXPORT void JNICALL OS_NATIVE(_1XSetFillStyle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

@@ -134,6 +134,7 @@ typedef enum {
 	_1XSetClipRectangles_FUNC,
 	_1XSetDashes_FUNC,
 	_1XSetErrorHandler_FUNC,
+	_1XSetFillRule_FUNC,
 	_1XSetFillStyle_FUNC,
 	_1XSetForeground_FUNC,
 	_1XSetFunction_FUNC,

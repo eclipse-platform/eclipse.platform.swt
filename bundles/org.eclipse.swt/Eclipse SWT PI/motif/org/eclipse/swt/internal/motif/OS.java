@@ -99,6 +99,7 @@ public class OS extends Platform {
 	public static final int ForgetGravity = 0;
 	public static final int GCBackground = 0x8;
 	public static final int GCCapStyle = 1 << 6;
+	public static final int GCFillRule = 1 << 9;
 	public static final int GCForeground = 0x4;
 	public static final int GCFunction = 0x1;
 	public static final int GCJoinStyle = 1 << 7;
@@ -604,6 +605,7 @@ public class OS extends Platform {
 	public static final int XtIMXEvent = 0x1;
 	public static final int XtInputReadMask = 1;
 	public static final int XtListTail = 0x1;
+	public static final int WindingRule = 1;
 	public static final int ZPixmap = 2;
 	
 	
@@ -1625,6 +1627,15 @@ public static final int XSetErrorHandler(int handler) {
 	lock.lock();
 	try {
 		return _XSetErrorHandler(handler);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetFillRule(int display, int gc, int fill_rule);
+public static final void XSetFillRule(int display, int gc, int fill_rule) {
+	lock.lock();
+	try {
+		_XSetFillRule(display, gc, fill_rule);
 	} finally {
 		lock.unlock();
 	}
