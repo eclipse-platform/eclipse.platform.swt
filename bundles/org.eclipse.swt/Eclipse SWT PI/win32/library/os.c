@@ -454,9 +454,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateBitmap)
 	jbyte *lparg4=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "CreateBitmap\n")
-	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
 	rc = (jint)CreateBitmap(arg0, arg1, arg2, arg3, (CONST VOID *)lparg4);
-	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, JNI_ABORT);
+	if (arg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, JNI_ABORT);
 	NATIVE_EXIT(env, that, "CreateBitmap\n")
 	return rc;
 }
@@ -506,11 +506,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateCursor)
 	jbyte *lparg6=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "CreateCursor\n")
-	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
-	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg5) lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetPrimitiveArrayCritical(env, arg6, NULL);
 	rc = (jint)CreateCursor((HINSTANCE)arg0, arg1, arg2, arg3, arg4, (CONST VOID *)lparg5, (CONST VOID *)lparg6);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, JNI_ABORT);
-	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, JNI_ABORT);
+	if (arg6) (*env)->ReleasePrimitiveArrayCritical(env, arg6, lparg6, JNI_ABORT);
+	if (arg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, JNI_ABORT);
 	NATIVE_EXIT(env, that, "CreateCursor\n")
 	return rc;
 }
@@ -527,8 +527,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateDCA)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	rc = (jint)CreateDCA((LPSTR)lparg0, (LPSTR)lparg1, (LPSTR)arg2, (CONST DEVMODE *)arg3);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "CreateDCA\n")
 	return rc;
 }
@@ -545,8 +545,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateDCW)
 	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	rc = (jint)CreateDCW((LPWSTR)lparg0, (LPWSTR)lparg1, (LPWSTR)arg2, (CONST DEVMODEW *)arg3);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "CreateDCW\n")
 	return rc;
 }
@@ -560,11 +560,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateDIBSection)
 	jint *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "CreateDIBSection\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)CreateDIBSection((HDC)arg0, (BITMAPINFO *)lparg1, arg2, (VOID **)lparg3, (HANDLE)arg4, arg5);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "CreateDIBSection\n")
 	return rc;
 }
@@ -655,9 +655,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreatePalette)
 	jbyte *lparg0=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "CreatePalette\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	rc = (jint)CreatePalette((LOGPALETTE *)lparg0);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
 	NATIVE_EXIT(env, that, "CreatePalette\n")
 	return rc;
 }
@@ -736,9 +736,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateWindowExA)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg11) lparg11 = getCREATESTRUCTFields(env, arg11, &_arg11);
 	rc = (jint)CreateWindowExA(arg0, (LPSTR)lparg1, lparg2, arg3, arg4, arg5, arg6, arg7, (HWND)arg8, (HMENU)arg9, (HINSTANCE)arg10, lparg11);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg11) setCREATESTRUCTFields(env, arg11, lparg11);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "CreateWindowExA\n")
 	return rc;
 }
@@ -757,9 +757,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateWindowExW)
 	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
 	if (arg11) lparg11 = getCREATESTRUCTFields(env, arg11, &_arg11);
 	rc = (jint)CreateWindowExW(arg0, (LPWSTR)lparg1, (LPWSTR)lparg2, arg3, arg4, arg5, arg6, arg7, (HWND)arg8, (HMENU)arg9, (HINSTANCE)arg10, lparg11);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg11) setCREATESTRUCTFields(env, arg11, lparg11);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "CreateWindowExW\n")
 	return rc;
 }
@@ -1143,10 +1143,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawTextA)
 	RECT _arg3, *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "DrawTextA\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jint)DrawTextA((HDC)arg0, (LPSTR)lparg1, arg2, lparg3, arg4);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg3) setRECTFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "DrawTextA\n")
 	return rc;
@@ -1161,10 +1161,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawTextW)
 	RECT _arg3, *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "DrawTextW\n")
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jint)DrawTextW((HDC)arg0, (LPWSTR)lparg1, arg2, lparg3, arg4);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg3) setRECTFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "DrawTextW\n")
 	return rc;
@@ -1363,8 +1363,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(ExpandEnvironmentStringsA)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	rc = (jint)ExpandEnvironmentStringsA(lparg0, lparg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "ExpandEnvironmentStringsA\n")
 	return rc;
 }
@@ -1381,8 +1381,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(ExpandEnvironmentStringsW)
 	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	rc = (jint)ExpandEnvironmentStringsW(lparg0, lparg1, arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "ExpandEnvironmentStringsW\n")
 	return rc;
 }
@@ -1398,11 +1398,11 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ExtTextOutA)
 	jboolean rc;
 	NATIVE_ENTER(env, that, "ExtTextOutA\n")
 	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4);
-	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
-	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg5) lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetPrimitiveArrayCritical(env, arg7, NULL);
 	rc = (jboolean)ExtTextOutA((HDC)arg0, arg1, arg2, arg3, lparg4, (LPSTR)lparg5, arg6, (CONST INT *)lparg7);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, JNI_ABORT);
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, JNI_ABORT);
+	if (arg7) (*env)->ReleasePrimitiveArrayCritical(env, arg7, lparg7, JNI_ABORT);
+	if (arg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, JNI_ABORT);
 	NATIVE_EXIT(env, that, "ExtTextOutA\n")
 	return rc;
 }
@@ -1418,11 +1418,11 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ExtTextOutW)
 	jboolean rc;
 	NATIVE_ENTER(env, that, "ExtTextOutW\n")
 	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4);
-	if (arg5) lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL);
-	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg5) lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetPrimitiveArrayCritical(env, arg7, NULL);
 	rc = (jboolean)ExtTextOutW((HDC)arg0, arg1, arg2, arg3, lparg4, (LPWSTR)lparg5, arg6, (CONST INT *)lparg7);
-	if (arg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, JNI_ABORT);
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, JNI_ABORT);
+	if (arg7) (*env)->ReleasePrimitiveArrayCritical(env, arg7, lparg7, JNI_ABORT);
+	if (arg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, JNI_ABORT);
 	NATIVE_EXIT(env, that, "ExtTextOutW\n")
 	return rc;
 }
@@ -1441,9 +1441,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(ExtractIconExA)
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	rc = (jint)ExtractIconExA((LPSTR)lparg0, arg1, (HICON FAR *)lparg2, (HICON FAR *)lparg3, arg4);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "ExtractIconExA\n")
 	return rc;
 }
@@ -1462,9 +1462,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(ExtractIconExW)
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	rc = (jint)ExtractIconExW((LPWSTR)lparg0, arg1, (HICON FAR *)lparg2, (HICON FAR *)lparg3, arg4);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "ExtractIconExW\n")
 	return rc;
 }
@@ -1495,8 +1495,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(FindWindowA)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	rc = (jint)FindWindowA((LPSTR)lparg0, (LPSTR)lparg1);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "FindWindowA\n")
 	return rc;
 }
@@ -1513,8 +1513,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(FindWindowW)
 	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	rc = (jint)FindWindowW((LPWSTR)lparg0, (LPWSTR)lparg1);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "FindWindowW\n")
 	return rc;
 }
@@ -1602,9 +1602,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetCharABCWidthsA)
 	jint *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetCharABCWidthsA\n")
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jboolean)GetCharABCWidthsA((HDC)arg0, arg1, arg2, (LPABC)lparg3);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetCharABCWidthsA\n")
 	return rc;
 }
@@ -1617,9 +1617,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetCharABCWidthsW)
 	jint *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetCharABCWidthsW\n")
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jboolean)GetCharABCWidthsW((HDC)arg0, arg1, arg2, (LPABC)lparg3);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetCharABCWidthsW\n")
 	return rc;
 }
@@ -1632,9 +1632,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetCharWidthA)
 	jint *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetCharWidthA\n")
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jboolean)GetCharWidthA((HDC)arg0, arg1, arg2, (LPINT)lparg3);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetCharWidthA\n")
 	return rc;
 }
@@ -1647,9 +1647,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetCharWidthW)
 	jint *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetCharWidthW\n")
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jboolean)GetCharWidthW((HDC)arg0, arg1, arg2, (LPINT)lparg3);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetCharWidthW\n")
 	return rc;
 }
@@ -1663,10 +1663,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCharacterPlacementA)
 	GCP_RESULTS _arg4, *lparg4=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetCharacterPlacementA\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg4) lparg4 = getGCP_RESULTSFields(env, arg4, &_arg4);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jint)GetCharacterPlacementA((HDC)arg0, (LPSTR)lparg1, arg2, arg3, lparg4, arg5);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg4) setGCP_RESULTSFields(env, arg4, lparg4);
 	NATIVE_EXIT(env, that, "GetCharacterPlacementA\n")
 	return rc;
@@ -1681,10 +1681,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCharacterPlacementW)
 	GCP_RESULTS _arg4, *lparg4=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetCharacterPlacementW\n")
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg4) lparg4 = getGCP_RESULTSFields(env, arg4, &_arg4);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jint)GetCharacterPlacementW((HDC)arg0, (LPWSTR)lparg1, arg2, arg3, (LPGCP_RESULTSW)lparg4, arg5);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg4) setGCP_RESULTSFields(env, arg4, lparg4);
 	NATIVE_EXIT(env, that, "GetCharacterPlacementW\n")
 	return rc;
@@ -1702,8 +1702,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetClassInfoA)
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = getWNDCLASSFields(env, arg2, &_arg2);
 	rc = (jboolean)GetClassInfoA((HINSTANCE)arg0, (LPSTR)lparg1, lparg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg2) setWNDCLASSFields(env, arg2, lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "GetClassInfoA\n")
 	return rc;
 }
@@ -1720,8 +1720,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetClassInfoW)
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = getWNDCLASSFields(env, arg2, &_arg2);
 	rc = (jboolean)GetClassInfoW((HINSTANCE)arg0, (LPWSTR)lparg1, (LPWNDCLASSW)lparg2);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	if (arg2) setWNDCLASSFields(env, arg2, lparg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "GetClassInfoW\n")
 	return rc;
 }
@@ -1905,9 +1905,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDIBColorTable)
 	jbyte *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetDIBColorTable\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)GetDIBColorTable((HDC)arg0, arg1, arg2, (RGBQUAD *)lparg3);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetDIBColorTable\n")
 	return rc;
 }
@@ -1920,9 +1920,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDIBits)
 	jbyte *lparg5=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetDIBits\n")
-	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg5) lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL);
 	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)arg4, (LPBITMAPINFO)lparg5, arg6);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, 0);
 	NATIVE_EXIT(env, that, "GetDIBits\n")
 	return rc;
 }
@@ -2514,9 +2514,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetPaletteEntries)
 	jbyte *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetPaletteEntries\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)GetPaletteEntries((HPALETTE)arg0, arg1, arg2, (LPPALETTEENTRY)lparg3);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetPaletteEntries\n")
 	return rc;
 }
@@ -2588,10 +2588,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetProfileStringA)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	rc = (jint)GetProfileStringA((LPSTR)lparg0, (LPSTR)lparg1, (LPSTR)lparg2, (LPSTR)lparg3, arg4);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "GetProfileStringA\n")
 	return rc;
 }
@@ -2612,10 +2612,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetProfileStringW)
 	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
 	rc = (jint)GetProfileStringW((LPWSTR)lparg0, (LPWSTR)lparg1, (LPWSTR)lparg2, (LPWSTR)lparg3, arg4);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "GetProfileStringW\n")
 	return rc;
 }
@@ -2640,9 +2640,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetRegionData)
 	jint *lparg2=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetRegionData\n")
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
 	rc = (jint)GetRegionData((HRGN)arg0, arg1, (RGNDATA *)lparg2);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "GetRegionData\n")
 	return rc;
 }
@@ -2775,9 +2775,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemPaletteEntries)
 	jbyte *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "GetSystemPaletteEntries\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)GetSystemPaletteEntries((HDC)arg0, (UINT)arg1, (UINT)arg2, (LPPALETTEENTRY)lparg3);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "GetSystemPaletteEntries\n")
 	return rc;
 }
@@ -2815,10 +2815,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetTextExtentPoint32A)
 	SIZE _arg3, *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetTextExtentPoint32A\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg3) lparg3 = &_arg3;
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jboolean)GetTextExtentPoint32A((HDC)arg0, (LPSTR)lparg1, arg2, lparg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg3) setSIZEFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "GetTextExtentPoint32A\n")
 	return rc;
@@ -2833,10 +2833,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetTextExtentPoint32W)
 	SIZE _arg3, *lparg3=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "GetTextExtentPoint32W\n")
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg3) lparg3 = &_arg3;
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jboolean)GetTextExtentPoint32W((HDC)arg0, (LPWSTR)lparg1, arg2, lparg3);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg3) setSIZEFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "GetTextExtentPoint32W\n")
 	return rc;
@@ -3244,8 +3244,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1GetIconSize)
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jboolean)ImageList_GetIconSize((HIMAGELIST)arg0, lparg1, lparg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "ImageList_1GetIconSize\n")
 	return rc;
 }
@@ -3430,8 +3430,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmGetConversionStatus)
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jboolean)ImmGetConversionStatus((HIMC)arg0, lparg1, lparg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "ImmGetConversionStatus\n")
 	return rc;
 }
@@ -3947,8 +3947,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(MessageBoxA)
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	rc = (jint)MessageBoxA((HWND)arg0, (LPSTR)lparg1, (LPSTR)lparg2, arg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "MessageBoxA\n")
 	return rc;
 }
@@ -3965,8 +3965,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(MessageBoxW)
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
 	rc = (jint)MessageBoxW((HWND)arg0, (LPWSTR)lparg1, (LPWSTR)lparg2, arg3);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "MessageBoxW\n")
 	return rc;
 }
@@ -4122,9 +4122,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3BI)
 {
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3BI\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3BI\n")
 }
 #endif
@@ -4135,9 +4135,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3CI)
 {
 	jchar *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3CI\n")
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3CI\n")
 }
 #endif
@@ -4148,9 +4148,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3DI)
 {
 	jdouble *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3DI\n")
-	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3DI\n")
 }
 #endif
@@ -4161,9 +4161,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3FI)
 {
 	jfloat *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3FI\n")
-	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3FI\n")
 }
 #endif
@@ -4174,9 +4174,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3II)
 {
 	jint *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3II\n")
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3II\n")
 }
 #endif
@@ -4187,9 +4187,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3SI)
 {
 	jshort *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__I_3SI\n")
-	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3SI\n")
 }
 #endif
@@ -4202,10 +4202,10 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_BIT
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI\n")
 	if (arg0) lparg0 = &_arg0;
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI\n")
 }
 #endif
@@ -4450,9 +4450,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BII)
 {
 	jbyte *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3BII\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3BII\n")
 }
 #endif
@@ -4464,10 +4464,10 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_
 	jbyte *lparg0=NULL;
 	ACCEL _arg1, *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = getACCELFields(env, arg1, &_arg1);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I\n")
 }
 #endif
@@ -4479,10 +4479,10 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_
 	jbyte *lparg0=NULL;
 	BITMAPINFOHEADER _arg1, *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = getBITMAPINFOHEADERFields(env, arg1, &_arg1);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I\n")
 }
 #endif
@@ -4493,9 +4493,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3CII)
 {
 	jchar *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3CII\n")
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3CII\n")
 }
 #endif
@@ -4506,9 +4506,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3DII)
 {
 	jdouble *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3DII\n")
-	if (arg0) lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3DII\n")
 }
 #endif
@@ -4519,9 +4519,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3FII)
 {
 	jfloat *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3FII\n")
-	if (arg0) lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseFloatArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3FII\n")
 }
 #endif
@@ -4532,9 +4532,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3III)
 {
 	jint *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3III\n")
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3III\n")
 }
 #endif
@@ -4545,9 +4545,9 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3SII)
 {
 	jshort *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory___3SII\n")
-	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "MoveMemory___3SII\n")
 }
 #endif
@@ -4583,9 +4583,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(MultiByteToWideChar__IIII_3CI)
 	jchar *lparg4=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "MultiByteToWideChar__IIII_3CI\n")
-	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
 	rc = (jint)MultiByteToWideChar(arg0, arg1, (LPCSTR)arg2, arg3, (LPWSTR)lparg4, arg5);
-	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 	NATIVE_EXIT(env, that, "MultiByteToWideChar__IIII_3CI\n")
 	return rc;
 }
@@ -4599,11 +4599,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(MultiByteToWideChar__II_3BI_3CI)
 	jchar *lparg4=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "MultiByteToWideChar__II_3BI_3CI\n")
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
-	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
 	rc = (jint)MultiByteToWideChar(arg0, arg1, (LPCSTR)lparg2, arg3, (LPWSTR)lparg4, arg5);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
-	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
+	if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MultiByteToWideChar__II_3BI_3CI\n")
 	return rc;
 }
@@ -4704,9 +4704,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Polygon)
 	jint *lparg1=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "Polygon\n")
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jboolean)Polygon((HDC)arg0, (CONST POINT *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "Polygon\n")
 	return rc;
 }
@@ -4719,9 +4719,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Polyline)
 	jint *lparg1=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "Polyline\n")
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	rc = (jboolean)Polyline((HDC)arg0, (CONST POINT *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "Polyline\n")
 	return rc;
 }
@@ -4917,12 +4917,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegEnumKeyExA)
 	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
 	if (arg7) lparg7 = getFILETIMEFields(env, arg7, &_arg7);
 	rc = (jint)RegEnumKeyExA((HKEY)arg0, arg1, (LPSTR)lparg2, lparg3, lparg4, (LPSTR)lparg5, lparg6, lparg7);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg7) setFILETIMEFields(env, arg7, lparg7);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "RegEnumKeyExA\n")
 	return rc;
 }
@@ -4947,12 +4947,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegEnumKeyExW)
 	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
 	if (arg7) lparg7 = getFILETIMEFields(env, arg7, &_arg7);
 	rc = (jint)RegEnumKeyExW((HKEY)arg0, arg1, (LPWSTR)lparg2, lparg3, lparg4, (LPWSTR)lparg5, lparg6, lparg7);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, 0);
-	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg7) setFILETIMEFields(env, arg7, lparg7);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "RegEnumKeyExW\n")
 	return rc;
 }
@@ -4969,8 +4969,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegOpenKeyExA)
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	rc = (jint)RegOpenKeyExA((HKEY)arg0, (LPSTR)lparg1, arg2, arg3, (PHKEY)lparg4);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "RegOpenKeyExA\n")
 	return rc;
 }
@@ -4987,8 +4987,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegOpenKeyExW)
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	rc = (jint)RegOpenKeyExW((HKEY)arg0, (LPWSTR)lparg1, arg2, arg3, (PHKEY)lparg4);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "RegOpenKeyExW\n")
 	return rc;
 }
@@ -5017,14 +5017,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryInfoKeyA)
 	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
 	if (arg10) lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL);
 	rc = (jint)RegQueryInfoKeyA((HKEY)arg0, (LPSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
-	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
-	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "RegQueryInfoKeyA\n")
 	return rc;
 }
@@ -5053,14 +5053,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryInfoKeyW)
 	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
 	if (arg10) lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL);
 	rc = (jint)RegQueryInfoKeyW((HKEY)arg0, (LPWSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
-	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
-	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "RegQueryInfoKeyW\n")
 	return rc;
 }
@@ -5081,10 +5081,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA)
 	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
 	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "RegQueryValueExA\n")
 	return rc;
 }
@@ -5105,10 +5105,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW)
 	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
 	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "RegQueryValueExW\n")
 	return rc;
 }
@@ -5404,9 +5404,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScrollWindowEx)
 	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4);
 	if (arg6) lparg6 = getRECTFields(env, arg6, &_arg6);
 	rc = (jint)ScrollWindowEx((HWND)arg0, arg1, arg2, lparg3, lparg4, (HRGN)arg5, lparg6, arg7);
-	if (arg3) setRECTFields(env, arg3, lparg3);
-	if (arg4) setRECTFields(env, arg4, lparg4);
 	if (arg6) setRECTFields(env, arg6, lparg6);
+	if (arg4) setRECTFields(env, arg4, lparg4);
+	if (arg3) setRECTFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "ScrollWindowEx\n")
 	return rc;
 }
@@ -5711,8 +5711,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__II_3I_3I)
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "SendMessageA__II_3I_3I\n")
 	return rc;
 }
@@ -6073,9 +6073,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDIBColorTable)
 	jbyte *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "SetDIBColorTable\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)SetDIBColorTable((HDC)arg0, arg1, arg2, (RGBQUAD *)lparg3);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, JNI_ABORT);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
 	NATIVE_EXIT(env, that, "SetDIBColorTable\n")
 	return rc;
 }
@@ -6178,9 +6178,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPaletteEntries)
 	jbyte *lparg3=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "SetPaletteEntries\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
 	rc = (jint)SetPaletteEntries((HPALETTE)arg0, arg1, arg2, (PALETTEENTRY *)lparg3);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, JNI_ABORT);
+	if (arg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
 	NATIVE_EXIT(env, that, "SetPaletteEntries\n")
 	return rc;
 }
@@ -6665,8 +6665,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(ToAscii)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
 	rc = (jint)ToAscii(arg0, arg1, (PBYTE)lparg2, (LPWORD)lparg3, arg4);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "ToAscii\n")
 	return rc;
 }
@@ -6683,8 +6683,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(ToUnicode)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
 	rc = (jint)ToUnicode(arg0, arg1, (PBYTE)lparg2, (LPWSTR)lparg3, arg4, arg5);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "ToUnicode\n")
 	return rc;
 }
@@ -6921,13 +6921,13 @@ JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CIII_3B_3Z)
 	jboolean *lparg7=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "WideCharToMultiByte__II_3CIII_3B_3Z\n")
-	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
 	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 	if (arg7) lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL);
+	if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
 	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)arg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, JNI_ABORT);
-	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
 	if (arg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	NATIVE_EXIT(env, that, "WideCharToMultiByte__II_3CIII_3B_3Z\n")
 	return rc;
 }
@@ -6943,15 +6943,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CI_3BI_3B_3Z)
 	jboolean *lparg7=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "WideCharToMultiByte__II_3CI_3BI_3B_3Z\n")
-	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
-	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
 	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 	if (arg7) lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL);
+	if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
 	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)lparg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, JNI_ABORT);
-	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
+	if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
 	if (arg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	NATIVE_EXIT(env, that, "WideCharToMultiByte__II_3CI_3BI_3B_3Z\n")
 	return rc;
 }
