@@ -787,7 +787,7 @@ void updateAccelerator (int /*long*/ accelGroup, boolean add) {
 	} else {
 		switch (keysym) {
 			case '\r': keysym = OS.GDK_Return; break;
-			default: keysym = wcsToMbcs ((char) keysym);
+			default: keysym = Display.wcsToMbcs ((char) keysym);
 		}
 	}
 	if (add) {

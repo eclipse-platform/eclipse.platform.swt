@@ -19,6 +19,9 @@
 #define PTR_sizeof() sizeof(void *)
 
 /* Libraries for dynamic loaded functions */
+#define XTestFakeButtonEvent_LIB "libXtst.so"
+#define XTestFakeKeyEvent_LIB "libXtst.so"
+#define XTestFakeMotionEvent_LIB "libXtst.so"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so"
 #define gdk_screen_get_default_LIB "libgdk-x11-2.0.so"
 #define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so"

@@ -1577,6 +1577,23 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
+static char mbcsToWcs (char ch) {
+	int key = ch & 0xFFFF;
+	if (key <= 0x7F) return ch;
+	byte [] buffer;
+	if (key <= 0xFF) {
+		buffer = new byte [1];
+		buffer [0] = (byte) key;
+	} else {
+		buffer = new byte [2];
+		buffer [0] = (byte) ((key >> 8) & 0xFF);
+		buffer [1] = (byte) (key & 0xFF);
+	}
+	char [] result = Converter.mbcsToWcs (null, buffer);
+	if (result.length == 0) return 0;
+	return result [0];
+}
+
 int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
 	Widget widget = getWidget (menu);
 	if (widget == null) return 0;
@@ -1618,8 +1635,44 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 public boolean post (Event event) {
 	checkDevice ();
 	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (!OS.GDK_WINDOWING_X11()) return false;
+	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+	int type = event.type;
+	switch (type) {
+		case SWT.KeyDown :
+		case SWT.KeyUp : {
+			int keyCode = 0;
+			int /*long*/ keysym = untranslateKey (event.keyCode);
+			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+			if (keyCode == 0) {
+				char key = event.character;
+				switch (key) {
+					case '\r': keysym = OS.GDK_Return; break;
+					default: keysym = wcsToMbcs ((char) key);
+				}
+				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+				if (keyCode == 0) return false;
+			}
+			OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
+			return true;
+		}
+		case SWT.MouseDown :
+		case SWT.MouseMove : 
+		case SWT.MouseUp : {
+			if (type == SWT.MouseMove) {
+				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+				return true;
+			} else {
+				int button = event.button;
+				if (button < 1 || button > 3) return false;
+				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+			    return true;
+			}
+		}
+	}
 	return false;
 }
+
 
 void postEvent (Event event) {
 	/*
@@ -2374,6 +2427,17 @@ public void wake () {
 	// NOT IMPLEMENTED - need to wake up the event loop
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+}
+
+static char wcsToMbcs (char ch) {
+	int key = ch & 0xFFFF;
+	if (key <= 0x7F) return ch;
+	byte [] buffer = Converter.wcsToMbcs (null, new char [] {ch}, false);
+	if (buffer.length == 1) return (char) buffer [0];
+	if (buffer.length == 2) {
+		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
+	}
+	return 0;
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {

@@ -828,6 +828,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XGetSelectionOwner)
 }
 #endif
 
+#ifndef NO_XKeysymToKeycode
+JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XKeysymToKeycode\n")
+	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
+	NATIVE_EXIT(env, that, "XKeysymToKeycode\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XReconfigureWMWindow
 JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
@@ -864,6 +876,81 @@ JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
 	rc = (jint)XSetInputFocus((Display *)arg0, (Window)arg1, arg2, arg3);
 	NATIVE_EXIT(env, that, "XSetInputFocus\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_XTestFakeButtonEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeButtonEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XTestFakeButtonEvent\n")
+/*
+	XTestFakeButtonEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(XTestFakeButtonEvent_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "XTestFakeButtonEvent");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+		}
+	}
+	NATIVE_EXIT(env, that, "XTestFakeButtonEvent\n")
+}
+#endif
+
+#ifndef NO_XTestFakeKeyEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeKeyEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XTestFakeKeyEvent\n")
+/*
+	XTestFakeKeyEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(XTestFakeKeyEvent_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "XTestFakeKeyEvent");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+		}
+	}
+	NATIVE_EXIT(env, that, "XTestFakeKeyEvent\n")
+}
+#endif
+
+#ifndef NO_XTestFakeMotionEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeMotionEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "XTestFakeMotionEvent\n")
+/*
+	XTestFakeMotionEvent((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(XTestFakeMotionEvent_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "XTestFakeMotionEvent");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
+		}
+	}
+	NATIVE_EXIT(env, that, "XTestFakeMotionEvent\n")
 }
 #endif
 

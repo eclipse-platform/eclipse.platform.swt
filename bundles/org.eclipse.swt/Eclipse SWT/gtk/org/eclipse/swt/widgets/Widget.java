@@ -781,23 +781,6 @@ int /*long*/ hoverProc (int /*long*/ widget) {
 	return 0;
 }
 
-char mbcsToWcs (char ch) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
-	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
-	}
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
-}
-
 int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
 	return 0;
 }
@@ -1165,17 +1148,6 @@ int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*lon
 
 boolean translateTraversal (int event) {
 	return false;
-}
-
-char wcsToMbcs (char ch) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (null, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-	}
-	return 0;
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
