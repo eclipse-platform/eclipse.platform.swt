@@ -10,8 +10,16 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
  
 /**
- * A TableColumn stores such data as column label, label alignmentand size.
- * It routes paint requests to the corresponding table item.
+ * Instances of this class represent a column in a table widget.
+ *  <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>LEFT, RIGHT, CENTER</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd> Move, Resize, Selection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public /*final*/ class TableColumn extends Item {
 	static final int FIRST = 0;							// index of the first column
@@ -67,19 +75,25 @@ public TableColumn(Table parent, int style, int index) {
 		public void handleEvent(Event event) {disposeColumn();}
 	});
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is moved or resized, by sending
+ * it one of the messages defined in the <code>ControlListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #removeControlListener
+ */
 public void addControlListener(ControlListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -88,19 +102,25 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ */
 public void addSelectionListener (SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -155,19 +175,17 @@ void disposeColumn() {
 	getParent().removeColumn(this);
 }
 /**
-* Gets the alignment.
-* <p>
-* The alignment of a widget controls the position of the
-* text or image in the widget.  The alignment may be one
-* of LEFT, RIGHT or CENTER.
-*
-* @return the alignment 
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a value which describes the position of the
+ * text or image in the receiver. The value will be one of
+ * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>.
+ *
+ * @return the alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getAlignment () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -183,9 +201,6 @@ public int getAlignment () {
 Rectangle getBounds() {
 	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);	// copy the object to prevent changes
 }
-/**
- * Gets the Display.
- */
 public Display getDisplay() {
 	if (parent == null) {		// access parent field directly to prevent endless recursion
 		error(SWT.ERROR_WIDGET_DISPOSED);
@@ -200,7 +215,14 @@ int getIndex() {
 	return index;
 }
 /**
- * Answer the parent widget of the receiver.
+ * Returns the receiver's parent, which must be a <code>Table</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Table getParent() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -209,15 +231,17 @@ public Table getParent() {
 	return parent;
 }
 /**
-* Gets the resize attribute.
-* <p>
-* @return the resize attribute
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Gets the resizable attribute. A column that is
+ * not resizable cannot be dragged by the user but
+ * may be resized by the programmer.
+ * <p>
+ * @return the resizable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getResizable() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -225,15 +249,15 @@ public boolean getResizable() {
 	return resize;
 }
 /**
-* Gets the width.
-* <p>
-* @return the width
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Gets the width of the receiver.
+ * <p>
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getWidth () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -257,16 +281,16 @@ boolean isDefaultWidth() {
 	return isDefaultWidth;
 }
 /**
-* Packs the widget.
-* <p>
-* Packing a widget causes it to be resized to the
-* preferred size for the widget.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Causes the receiver to be resized to its preferred size.
+ * For a composite, this involves computing the preferred size
+ * from its layout, if there is one.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ */
 public void pack() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -289,19 +313,23 @@ void paint(TableItem item, GC gc, int yPosition) {
 
 	item.paint(gc, paintPosition, this);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is moved or resized.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #addControlListener
+ */
 public void removeControlListener (ControlListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -310,19 +338,23 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -334,19 +366,17 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.DefaultSelection, listener);
 }
 /**
-* Sets the alignment.
-* <p>
-* The alignment of a widget controls the position of the
-* text or image in the widget.  The alignement may be one
-* of LEFT, RIGHT or CENTER.
-*
-* @param alignment the new alignment 
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Controls how text and images will be displayed in the receiver.
+ * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
+ * or <code>CENTER</code>.
+ *
+ * @param alignment the new alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setAlignment(int alignment) {
 	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -397,24 +427,23 @@ void setIndex(int newIndex) {
 	this.index = newIndex;
 }
 /**
-* Sets the resize attribute.
-* <p>
-* @param resizee the resize attribute
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the resizable attribute.  A column that is
+ * not resizable cannot be dragged by the user but
+ * may be resized by the programmer.
+ * <p>
+ * @param resizable the resize attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setResizable(boolean resize) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 
 	this.resize = resize;
 }
-/**
- * Set the text of the receiver to 'text'.
- */
 public void setText(String newText) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -429,15 +458,15 @@ public void setText(String newText) {
 	}	
 }
 /**
-* Sets the width.
-* <p>
-* @param width the width
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the width of the receiver.
+ * <p>
+ * @param width the new width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setWidth(int width) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
