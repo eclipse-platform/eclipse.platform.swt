@@ -210,7 +210,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SCROLL_POSITION, 0, 0};
+	int [] args = {OS.Pt_ARG_GAUGE_VALUE, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
@@ -344,7 +344,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SCROLL_POSITION, value, 0};
+	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 

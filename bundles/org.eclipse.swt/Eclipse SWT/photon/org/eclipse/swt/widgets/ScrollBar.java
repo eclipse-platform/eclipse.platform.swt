@@ -287,7 +287,7 @@ public Scrollable getParent () {
  */
 public int getSelection () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SCROLL_POSITION, 0, 0};
+	int [] args = {OS.Pt_ARG_GAUGE_VALUE, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
@@ -588,7 +588,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_SCROLL_POSITION, value, 0};
+	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
@@ -643,7 +643,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	int [] args = {
-		OS.Pt_ARG_SCROLL_POSITION, selection, 0,
+		OS.Pt_ARG_GAUGE_VALUE, selection, 0,
 		OS.Pt_ARG_INCREMENT, increment, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, pageIncrement, 0,
 		OS.Pt_ARG_SLIDER_SIZE, thumb, 0,
