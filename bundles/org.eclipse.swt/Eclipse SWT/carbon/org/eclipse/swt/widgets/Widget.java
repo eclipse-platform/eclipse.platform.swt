@@ -813,7 +813,19 @@ void setInputState (Event event, MacEvent mEvent) {
 	
 	if ((modifiers & OS.shiftKey) != 0)
 		event.stateMask |= SWT.SHIFT;
+		
+	if ((modifiers & OS.controlKey) != 0)
+		event.stateMask |= SWT.CONTROL;
+		
+	if ((modifiers & OS.cmdKey) != 0) {
+		// if the Command modifier is pressed we report the Option modifier as 'ALT'
+		if ((modifiers & OS.optionKey) != 0)
+			event.stateMask |= SWT.ALT;
+	} else {
+		// we don't report the option modifier as 'ALT'
+	}
 	
+	/*
 	if (false) {
 		// map option modifier to ALT modifier
 		if ((modifiers & OS.optionKey) != 0)
@@ -823,6 +835,7 @@ void setInputState (Event event, MacEvent mEvent) {
 		if ((modifiers & OS.controlKey) != 0)
 			event.stateMask |= SWT.ALT;
 	}
+	*/
 }
 void setKeyState (Event event, MacEvent mEvent) {
 	if (mEvent.getKeyCode() != 0) {
@@ -970,21 +983,6 @@ public String toString () {
 int topHandle () {
 	return handle;
 }
-/*
-char wcsToMbcs (char ch) {
-	return wcsToMbcs (ch, null);
-}
-char wcsToMbcs (char ch, String codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-	}
-	return 0;
-}
-*/
 
 ////////////////////////////////////////////
 // Mac stuff

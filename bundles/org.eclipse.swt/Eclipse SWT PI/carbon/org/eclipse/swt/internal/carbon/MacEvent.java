@@ -38,7 +38,7 @@ public class MacEvent {
 			if (fEventRef != -1) {
 				//System.out.println("ConvertEventRefToEventRecord");
 				if (!OS.ConvertEventRefToEventRecord(fEventRef, fData))
-					System.out.println("MacEvent.MacEvent(int): can't convert event");
+					System.out.println("MacEvent.convert: can't convert event");
 			}
 		}
 	}

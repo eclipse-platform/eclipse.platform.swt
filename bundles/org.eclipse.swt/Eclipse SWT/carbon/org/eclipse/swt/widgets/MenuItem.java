@@ -578,66 +578,39 @@ public void setMenu (Menu menu) {
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
 
-	/* Assign the new menu in the OS */
+	if (parent == null) {
+		System.out.println("MenuItem.setMenu: parent == null");
+		return;
+	}
 	
-	/*
-	* Feature in Windows.  When SetMenuItemInfo () is used to
-	* set a submenu and the menu item already has a submenu,
-	* Windows destroys the previous menu.  This is undocumented
-	* and unexpected but not necessarily wrong.  The fix is to
-	* remove the item with RemoveMenu () which does not destroy
-	* the submenu and then insert the item with InsertMenuItem ().
-	*/
+	/* Assign the new menu in the OS */
 	int hMenu = parent.handle;
-	/* AW
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
-	int index = 0;
-	while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
-		if (info.wID == id) break;
-		index++;
-	}
-	if (info.wID != id) return;
-	int cch = 128;
-	int hHeap = OS.GetProcessHeap ();
-	int byteCount = cch * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE;
-	info.dwTypeData = pszText;
-	info.cch = cch;
-	boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
+	int newMenuHandle= 0;
 	if (menu != null) {
-		menu.cascade = this; 
-		info.fMask |= OS.MIIM_SUBMENU;
-		info.hSubMenu = menu.handle;
+		menu.cascade = this;
+		newMenuHandle= menu.handle;
 	}
-	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-	if (OS.IsWinCE) {
-		success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
-		if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
-	} else {
-		success = OS.InsertMenuItem (hMenu, index, true, info);
-	}
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
-	parent.destroyAcceleratorTable ();
-	*/
 	
 	short[] index= new short[1];
 	OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
 	if (index[0] >= 1) {
-		OS.SetMenuItemHierarchicalMenu(hMenu, index[0], menu.handle);
-		// we set the menu's title to the item's title
-		int sHandle= 0;
-		try {
-			sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(getText()));
-			OS.SetMenuTitleWithCFString(menu.handle, sHandle);
-		} finally {
-			if (sHandle != 0)
-				OS.CFRelease(sHandle);
-		}
+		if (OS.SetMenuItemHierarchicalMenu(hMenu, index[0], newMenuHandle) == OS.kNoErr) {
+			if (menu != null) {
+				// we set the menu's title to the item's title
+				int sHandle= 0;
+				try {
+					sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(getText()));
+					OS.SetMenuTitleWithCFString(menu.handle, sHandle);
+				} finally {
+					if (sHandle != 0)
+						OS.CFRelease(sHandle);
+				}
+			}
+		} else
+			error (SWT.ERROR_CANNOT_SET_MENU);
 	}
+	
+	parent.destroyAcceleratorTable ();
 }
 
 /**
@@ -672,14 +645,7 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	
 	super.setText (string);
-	
-	/*
-	if (string != null && string.equals("Co&ntent Assist")) {
-		setAccelerator(SWT.CONTROL + ' ');
-	}
-	*/
-	//System.out.println("MenuItem.setText: " + string);
-	
+		
 	int hMenu = parent.handle;
 	
 	short[] index= new short[1];
@@ -738,81 +704,49 @@ static String removeMnemonicsAndShortcut(String s) {
 
 private static void setAccelerator(int menu, short index, int accelerator) {
 
-	boolean controlIsCommand= true;
-
-	//String t= getText();
-	//System.out.println("setAccelerator: " + t + " " + Integer.toHexString(accelerator));
-	//setText(removeMnemonicsAndShortcut(t) + "-0x" + Integer.toHexString(accelerator));
-	
 	if (accelerator == 0) {
-		/* AW: hack for demo: we don't remove any accelerators
 		OS.SetMenuItemCommandKey(menu, index, false, (char)0);
 		OS.SetMenuItemKeyGlyph(menu, index, OS.kMenuNullGlyph);
 		OS.SetMenuItemModifiers(menu, index, OS.kMenuNoModifiers);
-		*/
 		return;
 	}
-
-	/*
-	if (t != null && t.equals("Co&ntent Assist")) {
-		accelerator= SWT.CONTROL + ' ';
-	}
-	*/
-	
-	// use SetMenuItemData instead!
 	
 	int key= accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT);
-	int macKey= 0;
-	if (key != ' ')
-		macKey= Display.untranslateKey(key);
-	else {
-		macKey= 49;
-		controlIsCommand= false;
-	}
+	int macKey= Display.untranslateKey(key);
+
+	// use SetMenuItemData instead!
+
 	if (macKey == 0) {
 		char c= new String(new char[] { (char)(key & 0xff) } ).toUpperCase().charAt(0);
 		//System.out.println("  char: <" + c + ">");
 		OS.SetMenuItemCommandKey(menu, index, false, c);
 	} else {
 		//System.out.println("  virtual key: " + macKey);
-		OS.SetMenuItemCommandKey(menu, index, true, (char)macKey);
+		char c= (char)macKey;
+		OS.SetMenuItemCommandKey(menu, index, true, c);
 		OS.SetMenuItemKeyGlyph(menu, index, Display.keyGlyph(key));
 	}
 	
 	byte modifiers= 0;
+		
 	if ((accelerator & SWT.SHIFT) != 0)
 		modifiers |= OS.kMenuShiftModifier;
-		
-	if ((accelerator & SWT.CONTROL) != 0)
-		modifiers |= OS.kMenuControlModifier;
-	if ((accelerator & SWT.ALT) != 0)
-		modifiers |= OS.kMenuOptionModifier;
-		
-	if (! controlIsCommand) {	// control is control
-		modifiers |= OS.kMenuNoCommandModifier;
-	} else {	// control is command
-		if ((modifiers & OS.kMenuControlModifier) != 0)
-			modifiers &= ~OS.kMenuControlModifier;
-		else
-			modifiers |= OS.kMenuNoCommandModifier;
-	}
-	
-	if ((accelerator & SWT.ALT) != 0)
-		modifiers |= OS.kMenuControlModifier;
 
+	if ((accelerator & SWT.CONTROL) != 0) {
+		// we get the Command glyph for free so we don't have to do anything here
+	} else {
+		// but we have to remove it here...
+		modifiers |= OS.kMenuNoCommandModifier;
+	}
+				
+	if ((accelerator & SWT.ALT) != 0) {
+		modifiers |= OS.kMenuOptionModifier;
+		// force 'Alt' to have a 'Command' (by removing the NoCommand :-)
+		modifiers &= ~OS.kMenuNoCommandModifier;
+	}
 	
 	if (modifiers != 0)
 		OS.SetMenuItemModifiers(menu, index, modifiers);
-	
-	/*
-	//OS.InvalidateMenuItems(menu, index, 1);
-	Shell shell= getParent().getShell();
-	if (shell != null) {
-		Menu mb= shell.getMenuBar();
-		if (mb != null)
-			OS.SetRootMenu(mb.handle);
-	}
-	*/
 }
 
 }

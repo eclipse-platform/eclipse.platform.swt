@@ -139,8 +139,9 @@ public class Display extends Device {
 	static int [] [] KeyTable = {
 	
 		// AW
-		//{49,				0x20},	// space
+		{49,				0x20},	// space
 		{51,				SWT.BS},
+		{36,				SWT.CR},
 		// AW
 		
 		// Keyboard and Mouse Masks
