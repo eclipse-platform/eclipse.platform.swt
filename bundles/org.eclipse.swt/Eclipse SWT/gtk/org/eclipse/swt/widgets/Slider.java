@@ -167,8 +167,7 @@ int gtk_value_changed (int adjustment) {
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	OS.g_signal_connect (hAdjustment, OS.value_changed, display.windowProc2, VALUE_CHANGED);
+	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 
 void register () {
@@ -504,10 +503,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.step_increment = (double) increment;
 	adjustment.page_increment = (double) pageIncrement;
 	OS.memmove (hAdjustment, adjustment);
-	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.gtk_adjustment_value_changed (hAdjustment);
-	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 }
