@@ -23,13 +23,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	(JNIEnv *env, jclass that)
 {
 	jboolean rc;
-	NATIVE_ENTER(env, that, "GDK_1WINDOWING_1X11\n")
+	OS_NATIVE_ENTER(env, that, GDK_1WINDOWING_1X11_FUNC)
 #ifdef GDK_WINDOWING_X11
 	rc = (jboolean)1;
 #else
 	rc = (jboolean)0;
 #endif	
-	NATIVE_EXIT(env, that, "GDK_1WINDOWING_1X11\n")
+	OS_NATIVE_EXIT(env, that, GDK_1WINDOWING_1X11_FUNC)
 	return rc;
 }
 #endif

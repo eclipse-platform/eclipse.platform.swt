@@ -15,4 +15,5 @@
   
 #include "os.h"
 #include <atk/atk.h>
+#include "atk_stats.h"
 #include "atk_custom.h"

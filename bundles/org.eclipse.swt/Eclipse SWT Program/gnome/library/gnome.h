@@ -23,5 +23,4 @@
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-info.h>
 
-#define NATIVE_ENTER(env,clazz,func)
-#define NATIVE_EXIT(env,clazz,func)
+#include "gnome_stats.h"

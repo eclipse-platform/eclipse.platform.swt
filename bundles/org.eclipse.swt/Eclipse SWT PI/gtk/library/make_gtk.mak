@@ -86,9 +86,9 @@ MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.6 \
 
 SWT_OBJECTS		= callback.o
 AWT_OBJECTS		= swt_awt.o
-SWTPI_OBJECTS	= os.o os_structs.o os_custom.o
-ATK_OBJECTS			= atk.o atk_structs.o atk_custom.o
-GNOME_OBJECTS	= gnome.o gnome_structs.o
+SWTPI_OBJECTS	= os.o os_structs.o os_custom.o os_stats.o
+ATK_OBJECTS		= atk.o atk_structs.o atk_custom.o atk_stats.o
+GNOME_OBJECTS	= gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = xpcom.o
  
 CFLAGS = -O -Wall \
@@ -128,6 +128,8 @@ os_structs.o: os_structs.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_structs.c 
 os_custom.o: os_custom.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_custom.c
+os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_stats.c
 
 #
 # AWT lib
@@ -151,6 +153,8 @@ atk_structs.o: atk_structs.c atk_structs.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_structs.c
 atk_custom.o: atk_custom.c atk_structs.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_custom.c
+atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
+	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_stats.c
 
 #
 # Gnome lib
@@ -165,6 +169,9 @@ gnome.o: gnome.c
 
 gnome_structs.o: gnome_structs.c 
 	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_structs.c
+	
+gnome_stats.o: gnome_stats.c gnome_stats.h
+	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_stats.c
 	
 #
 # Mozilla lib
