@@ -360,8 +360,10 @@ int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
 	* - Shockwave director plugin (mime: application/x-director)
 	* - Java plugin
 	*/
-	if (url.startsWith("http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab") || //$NON-NLS-1$
-		(url.startsWith("http://java.sun.com/products/plugin/autodl/jinstall") && url.indexOf(".cab") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
+
+	if (url.startsWith(Browser.URL_DIRECTOR) ||
+		(url.startsWith(Browser.URL_JAVA) && url.indexOf(Browser.URL_CAB) != -1) ||
+		(url.startsWith(Browser.URL_JAVA_15) && url.indexOf(Browser.URL_CAB) != -1)) {
 		zone = Browser.URLZONE_LOCAL_MACHINE;
 	}
 	COM.MoveMemory(pdwZone, new int[] {zone}, 4);

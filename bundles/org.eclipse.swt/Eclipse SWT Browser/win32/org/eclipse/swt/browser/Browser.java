@@ -97,8 +97,12 @@ public class Browser extends Composite {
 	static final int DLCTL_NO_CLIENTPULL = 0x20000000;
 	static final int DLCTL_SILENT = 0x40000000;
 	
-	static final String ABOUT_BLANK = "about:blank";//$NON-NLS-1$
-	
+	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String URL_CAB = ".cab"; //$NON-NLS-1$
+	static final String URL_DIRECTOR = "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab"; //$NON-NLS-1$
+	static final String URL_JAVA = "http://java.sun.com/products/plugin/autodl/jinstall"; //$NON-NLS-1$
+	static final String URL_JAVA_15 = "http://java.sun.com/update"; //$NON-NLS-1$
+
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
