@@ -680,9 +680,22 @@ int getTextWidth() {
  * 	false=the font set in the specified gc doesn't contain ligatured 
  * 	glyphs. 
  */
+static boolean isCharacterShaped(GC gc) {
+	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.GLYPHSHAPE) != 0;
+}
+/**
+ * Returns whether the font set in the specified gc contains 
+ * ligatured glyphs.
+ * <p>
+ * 
+ * @param gc the GC that should be tested for ligatures.
+ * @return 
+ * 	true=the font set in the specified gc contains ligatured glyphs. 
+ * 	false=the font set in the specified gc doesn't contain ligatured 
+ * 	glyphs. 
+ */
 static boolean isLigated(GC gc) {
-	// should call BidiUtil
-	return true;
+	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.LIGATE) != 0;
 }
 /**
  * Returns the direction of the character at the specified index.
@@ -748,6 +761,7 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 	// figure out what is before and after the substring
 	// so that the proper character shaping will occur
 	if (logicalStart != 0  
+		&& isCharacterShaped(gc) 
 		&& !Compatibility.isWhitespace(textline.charAt(logicalStart - 1)) 
 		&& isRightToLeft(logicalStart - 1)) {
 		// if the start of the substring is not the beginning of the 
@@ -755,6 +769,7 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 		flags |= BidiUtil.LINKBEFORE;
 	}
 	if ((logicalStart + byteCount) != dx.length 
+		&& isCharacterShaped(gc) 
 		&& !Compatibility.isWhitespace(textline.charAt(logicalStart + byteCount)) 
 		&& isRightToLeft(logicalStart + byteCount)) {
 		// if the end of the substring is not the end of the text line,
