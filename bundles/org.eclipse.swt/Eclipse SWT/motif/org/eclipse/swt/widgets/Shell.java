@@ -1258,16 +1258,55 @@ public void setEnabled (boolean enabled) {
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
-	if (!OS.XtIsRealized (handle)) realizeWidget();
+	if (!OS.XtIsRealized (handle)) realizeWidget ();
 	int xDisplay = OS.XtDisplay (shellHandle);
 	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow != 0) {
-		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
-		int maximizedHorz = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
-		int maximizedVert = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
-		int[] atoms = new int[]{maximizedHorz, maximizedVert};
-		OS.XChangeProperty (xDisplay, xWindow, property, OS.XA_ATOM, 32, OS.PropModeReplace, atoms, atoms.length);
+	if (xWindow == 0) return;
+	int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+	if (property == 0) return;
+	int hMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
+	int vMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
+	if (hMaxAtom == 0 || vMaxAtom == 0) return;
+	int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atomsPtr = new int[1];
+	OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atomsPtr);
+	if (type [0] == OS.None) return;
+	int[] atoms = new int [nitems [0]];
+	OS.memmove (atoms, atomsPtr [0], nitems [0] * 4);
+	
+	if (maximized) {
+		boolean hasHmax = false;
+		boolean hasVmax = false;
+		for (int i = 0; i < nitems [0]; i++) {
+			int atom = atoms [i];
+			if (atom == hMaxAtom) hasHmax = true;
+			if (atom == vMaxAtom) hasVmax = true;
+		}
+		if (!hasHmax) {
+			int[] temp = new int [atoms.length + 1];
+			System.arraycopy (atoms, 0, temp, 0, atoms.length);
+			temp [atoms.length] = hMaxAtom;
+			atoms = temp;
+		}
+		if (!hasVmax) {
+			int[] temp = new int [atoms.length + 1];
+			System.arraycopy (atoms, 0, temp, 0, atoms.length);
+			temp [atoms.length] = vMaxAtom;
+			atoms = temp;
+		}
+	} else {
+		int[] temp = new int [nitems [0]];
+		int index = 0;
+		for (int i = 0; i < nitems [0]; i++) {
+			int atom = atoms [i];
+			if (atom != hMaxAtom && atom != vMaxAtom) {
+				temp [index++] = atom;
+			}
+		}
+		atoms = new int [index];
+		System.arraycopy (temp, 0, atoms, 0, index);
 	}
+
+	OS.XChangeProperty (xDisplay, xWindow, property, OS.XA_ATOM, 32, OS.PropModeReplace, atoms, atoms.length);
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();
