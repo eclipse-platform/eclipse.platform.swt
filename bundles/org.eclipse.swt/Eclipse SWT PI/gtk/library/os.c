@@ -6210,16 +6210,29 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tooltips_1set_1tip)
 }
 #endif
 
-#ifndef NO_gtk_1tree_1model_1get
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1model_1get)
+#ifndef NO_gtk_1tree_1model_1get__III_3II
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1model_1get__III_3II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
 {
 	jint *lparg3=NULL;
-	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get\n")
+	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get__III_3II\n")
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get\n")
+	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get__III_3II\n")
+}
+#endif
+
+#ifndef NO_gtk_1tree_1model_1get__III_3JI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1model_1get__III_3JI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jlongArray arg3, jint arg4)
+{
+	jlong *lparg3=NULL;
+	NATIVE_ENTER(env, that, "gtk_1tree_1model_1get__III_3JI\n")
+	if (arg3) lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL);
+	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1model_1get__III_3JI\n")
 }
 #endif
 
