@@ -967,6 +967,7 @@ int getLastEventTime () {
  * @since 2.2
  */
 public Monitor [] getMonitors () {
+	checkDevice ();
 	Monitor [] monitors = null;
 	int screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
@@ -1001,6 +1002,7 @@ public Monitor [] getMonitors () {
  * @since 2.2
  */
 public Monitor getPrimaryMonitor () {
+	checkDevice ();
 	Monitor [] monitors = getMonitors ();
 	return monitors [0];
 }
