@@ -14,14 +14,27 @@ import org.eclipse.swt.graphics.*;
 
 public class MacUtil {
 
-	public static boolean DEBUG;
-	public static boolean JAGUAR;
+	public final static boolean DEBUG;
+	public final static boolean JAGUAR;
+	public final static boolean USE_MENU_ICONS;
 	
 	static final char MNEMONIC = '&';
 	
 	static {
 		DEBUG= false;
+		USE_MENU_ICONS= true;
 		JAGUAR= System.getProperty("os.version").startsWith("10.2");
+	}
+	
+	public static int indexOf(int parentHandle, int handle) {
+		int n= countSubControls(parentHandle);
+		int[] outControl= new int[1];
+		
+		for (int i= 0; i < n; i++)
+			if (OS.GetIndexedSubControl(parentHandle, (short)(n-i), outControl) == 0)
+				if (outControl[0] == handle)
+					return i;
+		return -1;
 	}
 	
 	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
@@ -263,9 +276,16 @@ public class MacUtil {
 	 * Create a new control and embed it in the given parent control.
 	 */
 	public static int newControl(int parentControlHandle, short init, short min, short max, short procID) {
+		return newControl(parentControlHandle, -1, init, min, max, procID);
+	}
+	
+	/**
+	 * Create a new control and embed it in the given parent control.
+	 */
+	public static int newControl(int parentControlHandle, int pos, short init, short min, short max, short procID) {
 		int windowHandle= OS.GetControlOwner(parentControlHandle);
 		int controlHandle= OS.NewControl(windowHandle, false, init, min, max, procID);
-		embedControl(controlHandle, parentControlHandle);
+		embedControl(controlHandle, parentControlHandle, pos);
 		initLocation(controlHandle);
 		OS.ShowControl(controlHandle);
 		return controlHandle;
