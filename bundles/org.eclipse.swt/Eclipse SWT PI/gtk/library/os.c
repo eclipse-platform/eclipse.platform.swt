@@ -14,7 +14,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
@@ -484,19 +484,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1object_1ref)
 }
 #endif
 
-#ifndef NO_g_1object_1set__I_3BI
-JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
-{
-	jbyte *lparg1=NULL;
-	NATIVE_ENTER(env, that, "g_1object_1set__I_3BI\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	NATIVE_EXIT(env, that, "g_1object_1set__I_3BI\n")
-}
-#endif
-
 #ifndef NO_g_1object_1set__I_3BF
 JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BF)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jfloat arg2)
@@ -507,6 +494,19 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BF)
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "g_1object_1set__I_3BF\n")
+}
+#endif
+
+#ifndef NO_g_1object_1set__I_3BI
+JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "g_1object_1set__I_3BI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "g_1object_1set__I_3BI\n")
 }
 #endif
 
@@ -734,6 +734,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf16_1to_1utf8)
 }
 #endif
 
+#ifndef NO_g_1utf8_1to_1utf16__II_3I_3I_3I
+JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16__II_3I_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1utf8_1to_1utf16__II_3I_3I_3I\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_utf8_to_utf16((const gchar *)arg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "g_1utf8_1to_1utf16__II_3I_3I_3I\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1utf8_1to_1utf16___3BI_3I_3I_3I
 JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16___3BI_3I_3I_3I)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
@@ -754,27 +775,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16___3BI_3I_3I_3I)
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	NATIVE_EXIT(env, that, "g_1utf8_1to_1utf16___3BI_3I_3I_3I\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1utf8_1to_1utf16__II_3I_3I_3I
-JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16__II_3I_3I_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
-{
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
-	jint *lparg4=NULL;
-	jint rc;
-	NATIVE_ENTER(env, that, "g_1utf8_1to_1utf16__II_3I_3I_3I\n")
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	rc = (jint)g_utf8_to_utf16((const gchar *)arg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	NATIVE_EXIT(env, that, "g_1utf8_1to_1utf16__II_3I_3I_3I\n")
 	return rc;
 }
 #endif
@@ -3584,19 +3584,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1remove)
 }
 #endif
 
-#ifndef NO_gtk_1list_1store_1set__III_3BI
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__III_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
-{
-	jbyte *lparg3=NULL;
-	NATIVE_ENTER(env, that, "gtk_1list_1store_1set__III_3BI\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "gtk_1list_1store_1set__III_3BI\n")
-}
-#endif
-
 #ifndef NO_gtk_1list_1store_1set__IIIII
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__IIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -3627,6 +3614,19 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__IIIZI)
 	NATIVE_ENTER(env, that, "gtk_1list_1store_1set__IIIZI\n")
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 	NATIVE_EXIT(env, that, "gtk_1list_1store_1set__IIIZI\n")
+}
+#endif
+
+#ifndef NO_gtk_1list_1store_1set__III_3BI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__III_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+	NATIVE_ENTER(env, that, "gtk_1list_1store_1set__III_3BI\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gtk_1list_1store_1set__III_3BI\n")
 }
 #endif
 
@@ -4993,6 +4993,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1first)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1path_1new_1from_1string__I
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1from_1string__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1tree_1path_1new_1from_1string__I\n")
+	rc = (jint)gtk_tree_path_new_from_string((const gchar *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1path_1new_1from_1string__I\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1path_1new_1from_1string___3B
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1from_1string___3B)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -5004,18 +5016,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1from_1string___3B)
 	rc = (jint)gtk_tree_path_new_from_string((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "gtk_1tree_1path_1new_1from_1string___3B\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1tree_1path_1new_1from_1string__I
-JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1from_1string__I)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "gtk_1tree_1path_1new_1from_1string__I\n")
-	rc = (jint)gtk_tree_path_new_from_string((const gchar *)arg0);
-	NATIVE_EXIT(env, that, "gtk_1tree_1path_1new_1from_1string__I\n")
 	return rc;
 }
 #endif
@@ -5174,19 +5174,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1remove)
 }
 #endif
 
-#ifndef NO_gtk_1tree_1store_1set__III_3BI
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__III_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
-{
-	jbyte *lparg3=NULL;
-	NATIVE_ENTER(env, that, "gtk_1tree_1store_1set__III_3BI\n")
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "gtk_1tree_1store_1set__III_3BI\n")
-}
-#endif
-
 #ifndef NO_gtk_1tree_1store_1set__IIIII
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__IIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -5217,6 +5204,19 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__IIIZI)
 	NATIVE_ENTER(env, that, "gtk_1tree_1store_1set__IIIZI\n")
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 	NATIVE_EXIT(env, that, "gtk_1tree_1store_1set__IIIZI\n")
+}
+#endif
+
+#ifndef NO_gtk_1tree_1store_1set__III_3BI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__III_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+	NATIVE_ENTER(env, that, "gtk_1tree_1store_1set__III_3BI\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1store_1set__III_3BI\n")
 }
 #endif
 
@@ -5749,6 +5749,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1add_1events)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1create_1pango_1layout__II
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1widget_1create_1pango_1layout__II\n")
+	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)arg1);
+	NATIVE_EXIT(env, that, "gtk_1widget_1create_1pango_1layout__II\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1create_1pango_1layout__I_3B
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__I_3B)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -5760,18 +5772,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__I_3B)
 	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "gtk_1widget_1create_1pango_1layout__I_3B\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1widget_1create_1pango_1layout__II
-JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__II)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "gtk_1widget_1create_1pango_1layout__II\n")
-	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)arg1);
-	NATIVE_EXIT(env, that, "gtk_1widget_1create_1pango_1layout__II\n")
 	return rc;
 }
 #endif
@@ -6336,18 +6336,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1unmaximize)
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
-{
-	GtkTargetEntry _arg1, *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I\n")
-	if (arg1) lparg1 = getGtkTargetEntryFields(env, arg1, &_arg1);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I\n")
-}
-#endif
-
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -6360,42 +6348,41 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEven
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	GdkDragContext _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setGdkDragContextFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
+	GtkTargetEntry _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I\n")
+	if (arg1) lparg1 = getGtkTargetEntryFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+#ifndef NO_memmove__I_3BI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {
-	GtkSelectionData _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setGtkSelectionDataFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II\n")
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3BI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "memmove__I_3BI\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+#ifndef NO_memmove__I_3II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
-	GtkTargetPair _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3II\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "memmove__I_3II\n")
 }
 #endif
 
@@ -6412,16 +6399,16 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkColor
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
-	GdkEvent _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II\n")
+	GdkDragContext _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
 	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setGdkEventFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II\n")
+	if (arg0) setGdkDragContextFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
 }
 #endif
 
@@ -6490,6 +6477,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGdkEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -6503,45 +6503,29 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRecta
 }
 #endif
 
-#ifndef NO_memmove__I_3II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
-	jint *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__I_3II\n")
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
-	NATIVE_EXIT(env, that, "memmove__I_3II\n")
+	GtkSelectionData _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGtkSelectionDataFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II\n")
 }
 #endif
 
-#ifndef NO_memmove__I_3BI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
-	jbyte *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__I_3BI\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	NATIVE_EXIT(env, that, "memmove__I_3BI\n")
-}
-#endif
-
-#ifndef NO_memmove___3I_3BI
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
-	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jint arg2)
-{
-	jint *lparg0=NULL;
-	jbyte *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove___3I_3BI\n")
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	NATIVE_EXIT(env, that, "memmove___3I_3BI\n")
+	GtkTargetPair _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
 }
 #endif
 
@@ -6581,6 +6565,22 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memmove___3III\n")
+}
+#endif
+
+#ifndef NO_memmove___3I_3BI
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
+	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove___3I_3BI\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "memmove___3I_3BI\n")
 }
 #endif
 

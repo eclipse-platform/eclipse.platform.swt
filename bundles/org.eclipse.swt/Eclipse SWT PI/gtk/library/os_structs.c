@@ -14,7 +14,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #ifndef NO_GdkColor
 typedef struct GdkColor_FID_CACHE {

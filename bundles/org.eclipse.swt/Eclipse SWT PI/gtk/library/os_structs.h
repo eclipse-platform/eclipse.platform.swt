@@ -13,7 +13,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "swt_os.h"
+#include "os.h"
 
 #ifndef NO_GdkColor
 GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);

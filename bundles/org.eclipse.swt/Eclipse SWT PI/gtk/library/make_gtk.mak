@@ -61,8 +61,8 @@ $(GNOME_DLL): gnome.c
 $(SWT_DLL): callback.c callback.h
 	gcc  $(CFLAGS) -o $(SWT_DLL) callback.c
 
-$(SWTPI_DLL): structs.c structs.h swt.c swt.h swt_custom.c
-	gcc  $(CFLAGS) $(GTKCFLAGS) $(GTKLIBS) -o $(SWTPI_DLL) structs.c swt.c swt_custom.c
+$(SWTPI_DLL): os_structs.c os_structs.h os.c swt.h os_custom.c
+	gcc  $(CFLAGS) $(GTKCFLAGS) $(GTKLIBS) -o $(SWTPI_DLL) os_structs.c os.c os_custom.c
 
 clean:
 	rm -f *.o *.so
