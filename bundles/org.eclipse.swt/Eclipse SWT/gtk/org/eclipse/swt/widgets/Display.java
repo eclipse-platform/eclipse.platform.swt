@@ -1147,6 +1147,7 @@ public int internal_new_GC (GCData data) {
 	if (data != null) {
 		data.device = this;
 		data.drawable = root;
+		data.font = defaultFont;
 	}
 	return gdkGC;
 }
