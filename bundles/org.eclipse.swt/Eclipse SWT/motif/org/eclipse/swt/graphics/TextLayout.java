@@ -147,7 +147,7 @@ void computeRuns () {
 					break;
 			}
 		}
-		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab) {
 			int start = 0;
 			char[] chars = new char[run.length];
 			text.getChars(run.start, run.start + run.length, chars, 0);

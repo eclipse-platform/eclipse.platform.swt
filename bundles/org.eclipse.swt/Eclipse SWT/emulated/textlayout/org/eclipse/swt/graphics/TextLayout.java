@@ -134,7 +134,7 @@ void computeRuns (GC gc) {
 					break;
 			}
 		}
-		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab) {
 			int start = 0;
 			gc.setFont(getItemFont(run));
 			char[] chars = new char[run.length];
