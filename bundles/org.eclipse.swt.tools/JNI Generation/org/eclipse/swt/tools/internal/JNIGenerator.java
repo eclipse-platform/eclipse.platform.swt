@@ -261,7 +261,10 @@ public void generate() {
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		ClassData data = getMetaData().getMetaData(clazz);
-		if (data.getFlag("cpp")) isCPP = true;
+		if (data.getFlag("cpp")) {
+			isCPP = true;
+			break;
+		}
 	}
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
