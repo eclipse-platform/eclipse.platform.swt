@@ -2640,9 +2640,9 @@ String trimItemText(String text, int maxWidth, GC gc) {
 
 	if (text != null && text.length() > 1) {
 		textWidth = gc.stringExtent(text).x;
-		if (textWidth >= maxWidth) {
+		if (textWidth > maxWidth) {
 			dotsWidth = getDotsWidth(gc);
-			while (textWidth + dotsWidth >= maxWidth && text.length() > 1) {
+			while (textWidth + dotsWidth > maxWidth && text.length() > 1) {
 				text = text.substring(0, text.length() - 1);		// chop off one character at the end
 				textWidth = gc.stringExtent(text).x;
 			}
