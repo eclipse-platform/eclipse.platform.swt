@@ -301,7 +301,7 @@ void setMessage (int dialogHandle) {
 		OS.XtGetValues (label, argList, argList.length / 2);
 		int fontList = argList [1];
 		if (fontList != 0) {
-			Display display = getParent ().getDisplay ();
+			Display display = parent.getDisplay ();
 			int xDisplay = display.xDisplay;
 			int screen = OS.XDefaultScreen (xDisplay);
 			int width = OS.XDisplayWidth (xDisplay, screen);
