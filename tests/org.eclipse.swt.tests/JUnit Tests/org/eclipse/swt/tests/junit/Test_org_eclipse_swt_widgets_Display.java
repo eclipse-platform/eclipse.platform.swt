@@ -323,6 +323,10 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 	warnUnimpl("Test test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle not written");
 }
 
+public void test_postLorg_eclipse_swt_widgets_Event() {
+	warnUnimpl("Test test_postLorg_eclipse_swt_widgets_Event not written");
+}
+
 public void test_readAndDispatch() {
 	warnUnimpl("Test test_readAndDispatch not written");
 }
@@ -476,6 +480,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle");
+	methodNames.addElement("test_postLorg_eclipse_swt_widgets_Event");
 	methodNames.addElement("test_readAndDispatch");
 	methodNames.addElement("test_removeFilterILorg_eclipse_swt_widgets_Listener");
 	methodNames.addElement("test_removeListenerILorg_eclipse_swt_widgets_Listener");
@@ -531,6 +536,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle();
+	else if (getName().equals("test_postLorg_eclipse_swt_widgets_Event")) test_postLorg_eclipse_swt_widgets_Event();
 	else if (getName().equals("test_readAndDispatch")) test_readAndDispatch();
 	else if (getName().equals("test_removeFilterILorg_eclipse_swt_widgets_Listener")) test_removeFilterILorg_eclipse_swt_widgets_Listener();
 	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
