@@ -603,7 +603,16 @@ public void setImage (Image image) {
 		imageHandle = copyPhImage (image.handle);
 		if (text.length () != 0) type = OS.Pt_TEXT_IMAGE;
 		else type = OS.Pt_IMAGE;
-	}	
+	} else {
+		/*
+		* Bug in Photon.  Photon will segment fault, if Pt_ARG_LABEL_IMAGE
+		* is set to NULL.  This means that after setting an image into a
+		* PtMenuButton, it can never be removed.  The fix is to set it to
+		* a small blank image.
+		*/
+		Display display = getDisplay ();
+		imageHandle = copyPhImage (display.nullImage);
+	}
 	int [] args = {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
 		OS.Pt_ARG_LABEL_TYPE, type, 0,

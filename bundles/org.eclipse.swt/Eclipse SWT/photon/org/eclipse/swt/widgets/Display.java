@@ -222,6 +222,9 @@ public class Display extends Device {
 	/* Fonts */
 	byte [] TEXT_FONT, LIST_FONT;
 	
+	/* Images */
+	int nullImage;
+	
 	/* ScrollBars */
 	int SCROLLBAR_WIDTH;
 	int SCROLLBAR_HEIGHT;
@@ -845,6 +848,7 @@ protected void init () {
 	initializeWidgetColors ();
 	initializeWidgetFonts ();
 	initializeScrollbars ();
+	initializeImages ();
 }
 
 void initializeDisplay () {
@@ -1035,6 +1039,11 @@ void initializeWidgetFonts () {
 	TEXT_FONT = new byte [count + 1];
 	OS.memmove (TEXT_FONT, args [1], count);
 	OS.PtDestroyWidget (shellHandle);
+}
+
+void initializeImages () {
+	nullImage = OS.PhCreateImage (null, (short) 1, (short) 1, OS.Pg_IMAGE_DIRECT_888, 0, 0, 0);
+	if (nullImage == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 }
 
 int inputProc (int data, int rcvid, int message, int size) {
@@ -1292,6 +1301,16 @@ void releaseDisplay () {
 	inputCallback = null;
 	hotkeyCallback.dispose();
 	hotkeyCallback = null;
+	
+	if (nullImage != 0) {
+		PhImage_t phImage = new PhImage_t();
+		OS.memmove(phImage, nullImage, PhImage_t.sizeof);
+		phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+		OS.memmove(nullImage, phImage, PhImage_t.sizeof);
+		OS.PhReleaseImage(nullImage);
+		OS.free(nullImage);
+		nullImage = 0;
+	}
 		
 	/* Release references */
 	thread = null;
