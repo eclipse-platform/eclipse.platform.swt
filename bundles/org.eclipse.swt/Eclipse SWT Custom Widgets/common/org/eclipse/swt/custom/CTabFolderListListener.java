@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-/**
- * @deprecated use CTabFolderCloseListener
- */
-public interface CTabFolderListener extends CTabFolderCloseListener {
-	/*
-	* Deprecated. Body implemented in CTabFolderCloseListener
-	*/
+import org.eclipse.swt.internal.*;
+
+public interface CTabFolderListListener extends SWTEventListener {
+
+public void showList(CTabFolderEvent event);
 }
