@@ -32,10 +32,8 @@ distinguish the one from the other.
 starts a program that is written to interact with the Workbench as a view, it is opened and
 embedded into the currently active perspective.
 </p>
-<p>Standalone applications are programs that run independently of the current
-Eclipse Platform environment.&nbsp; First, a new Java VM and Eclipse Platform runtime
-is started, then the application's main() method is invoked.&nbsp; For this reason,
-these applications may take some time to load.
+<p>Standalone applications are programs that run using the platform's event loop. 
+The open() method of these programs is invoked from the launcher.
 </p>
 
 <h3>Details</h3>
