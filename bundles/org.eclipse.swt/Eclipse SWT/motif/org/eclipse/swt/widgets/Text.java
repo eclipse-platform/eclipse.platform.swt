@@ -529,9 +529,8 @@ public boolean getEditable () {
 public int getLineCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	int [] argList = {OS.XmNtotalLines, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
+	int lastChar = echoCharacter != '\0' ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
+	return getLineNumber (lastChar) + 1;
 }
 /**
  * Gets the line delimiter.
