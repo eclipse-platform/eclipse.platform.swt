@@ -47,7 +47,7 @@
       <view
          viewId="org.eclipse.swt.examples.ole.win32.browserView"/>
       <source
-         source="olewin32src.zip"/>
+         zip="olewin32src.zip"/>
    </item>
 </extension>
 </plugin>

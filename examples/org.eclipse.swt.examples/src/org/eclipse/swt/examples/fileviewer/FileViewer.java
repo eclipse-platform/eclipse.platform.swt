@@ -3,7 +3,7 @@ package org.eclipse.swt.examples.fileviewer;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
@@ -16,37 +16,33 @@ import org.eclipse.swt.widgets.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-
-/**
+/**
  * File Viewer example
  */
 public class FileViewer { 
  	private static ResourceBundle resourceBundle;
-
-	private final static String DRIVE_A = "a:" + File.separator;
+	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
-
+
 	/* Important UI elements */ 	  
  	/* package */ Display display;
 	private Shell   shell;
 	private ToolBar toolBar;
-
 	private TreeView treeView;
 	private TableView tableView;
 	private ComboView comboView;
-
+
 	private Label numObjectsLabel;
 	private Label diskSpaceLabel;
 	
 	private File currentDirectory = null;
-
+
 	private static final DateFormat dateFormat = DateFormat.getDateTimeInstance(
 		DateFormat.MEDIUM, DateFormat.MEDIUM);
-
-	/* Simulate only flag */
+	/* Simulate only flag */
 	// when true, disables actual filesystem manipulations and outputs results to standard out
 	private static boolean simulateOnly = false;
-
+
 	/**
 	 * Runs main program.
 	 */
@@ -65,8 +61,7 @@ public class FileViewer {
 		shell = new Shell();
 		createShellContents();
 		notifyRefreshFiles(null);
-		shell.open();
-
+		shell.open();
 		// Event loop
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -76,8 +71,7 @@ public class FileViewer {
 		IconCache.freeResources();
 		display.dispose();
 	}
-
-	/**
+	/**
 	 * Closes the main program.
 	 */
 	/* package */ void close() {
@@ -98,7 +92,7 @@ public class FileViewer {
 			return "!" + key + "!";
 		}			
 	}
-
+
 	/**
 	 * Returns a string from the resource bundle and binds it
 	 * with the given arguments. If the key is not found,
@@ -113,7 +107,7 @@ public class FileViewer {
 			return "!" + key + "!";
 		}
 	}
-
+
 	/**
 	 * Construct the UI
 	 * 
@@ -169,7 +163,7 @@ public class FileViewer {
 		MenuItem header = new MenuItem(parent, SWT.CASCADE);
 		header.setText(getResourceString("menu.File.text"));
 		header.setMenu(menu);
-
+
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.Close.text"));
 		item.addSelectionListener(new SelectionAdapter () {
@@ -189,7 +183,7 @@ public class FileViewer {
 		MenuItem header = new MenuItem(parent, SWT.CASCADE);
 		header.setText(getResourceString("menu.Help.text"));
 		header.setMenu(menu);
-
+
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.About.text"));		
 		item.addSelectionListener(new SelectionAdapter () {
@@ -202,14 +196,14 @@ public class FileViewer {
 			}
 		});
 	}
-
+
 	/**
 	 * Creates the toolbar
 	 * 
 	 * @param shell the shell on which to attach the toolbar
 	 * @param layoutData the layout data
 	 */
-	private void createToolBar(Shell shell, Object layoutData) {
+	private void createToolBar(final Shell shell, Object layoutData) {
 		toolBar = new ToolBar(shell, SWT.NULL);
 		toolBar.setLayoutData(layoutData);
 		ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
@@ -228,37 +222,50 @@ public class FileViewer {
 			public void widgetSelected(SelectionEvent e) {
 				doRefresh();
 			}
-		});
-
+		});
+		SelectionAdapter unimplementedListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+				box.setText(getResourceString("dialog.NotImplemented.title"));
+				box.setMessage(getResourceString("dialog.ActionNotImplemented.description"));
+				box.open();
+			}
+		};
+
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdCut]);
 		item.setToolTipText(getResourceString("tool.Cut.tiptext"));
+		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdCopy]);
 		item.setToolTipText(getResourceString("tool.Copy.tiptext"));
+		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdPaste]);
-		item.setToolTipText(getResourceString("tool.Paste.tiptext"));
-
+		item.setToolTipText(getResourceString("tool.Paste.tiptext"));		item.addSelectionListener(unimplementedListener);
+
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdDelete]);
 		item.setToolTipText(getResourceString("tool.Delete.tiptext"));
+		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdRename]);
 		item.setToolTipText(getResourceString("tool.Rename.tiptext"));
-
+		item.addSelectionListener(unimplementedListener);
+
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdSearch]);
 		item.setToolTipText(getResourceString("tool.Search.tiptext"));
+		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(IconCache.stockImages[IconCache.cmdPrint]);
 		item.setToolTipText(getResourceString("tool.Print.tiptext"));
-		item.setSelection(true);
+		item.addSelectionListener(unimplementedListener);
 	}
-
+
 	/**
 	 * Notifies the application components that a new current directory has been selected
 	 * 
@@ -269,8 +276,7 @@ public class FileViewer {
 		if (currentDirectory != null && dir.equals(currentDirectory)) return;
 		currentDirectory = dir;
 		shell.setText(getResourceString("Title", new Object[] { currentDirectory.getPath() }));
-
-		// Notify the other components
+		// Notify the other components
 		comboView.selectedDirectory(dir);
 		treeView.selectedDirectory(dir);
 		tableView.selectedDirectory(dir);
@@ -289,7 +295,7 @@ public class FileViewer {
 		}
 		tableView.selectedFiles(files);
 	}
-
+
 	/**
 	 * Notifies the application components that files must be refreshed
 	 * 
@@ -303,7 +309,7 @@ public class FileViewer {
 		treeView.refreshFiles(files);
 		tableView.refreshFiles(files);
 	}
-
+
 	/**
 	 * Performs the default action on a set of files.
 	 * 
@@ -313,7 +319,7 @@ public class FileViewer {
 		// only uses the 1st file (for now)
 		if (files.length == 0) return;
 		final File file = files[0];
-
+
 		if (file.isDirectory()) {
 			notifySelectedDirectory(file);
 		} else {
@@ -326,7 +332,7 @@ public class FileViewer {
 			}
 		}
 	}
-
+
 	/**
 	 * Navigates to the parent directory
 	 */
@@ -342,8 +348,7 @@ public class FileViewer {
 	/* package */ void doRefresh() {
 		notifyRefreshFiles(null);
 	}
-
-	/**
+	/**
 	 * Sets the details appropriately for a file
 	 * 
 	 * @param file the file in question
@@ -353,7 +358,7 @@ public class FileViewer {
 			new Object[] { new Long(file.length()) }));
 		numObjectsLabel.setText("");
 	}
-
+
 	/**
 	 * Sets the details appropriately for a folder
 	 * 
@@ -365,7 +370,7 @@ public class FileViewer {
 		numObjectsLabel.setText(getResourceString("details.NumberOfObjects.text",
 			new Object[] { new Integer(files.length) }));
 	}
-
+
 	/**
 	 * Sets the details appropriately for a selection with > 1 item
 	 * 
@@ -375,7 +380,7 @@ public class FileViewer {
 		// not implemented
 		clearDetails();
 	}
-
+
 	/**
 	 * Blanks out the details
 	 */
@@ -383,7 +388,7 @@ public class FileViewer {
 		diskSpaceLabel.setText("");
 		numObjectsLabel.setText("");
 	}
-
+
 	/**
 	 * Validate a drop target event
 	 * <p>
@@ -397,11 +402,10 @@ public class FileViewer {
 	/* package */ File[] validateDrop(DropTargetEvent event, File targetFile) {
 		final int dropMode = (event.detail != DND.DROP_NONE) ? event.detail : DND.DROP_MOVE;
 		event.detail = DND.DROP_NONE; // simplify error reporting
-
-		// Validate the target
+		// Validate the target
 		if (targetFile == null) return null;
 		if (! targetFile.isDirectory()) return null;
-
+
 		// Get dropped data (an array of filenames)
 		final String[] names = (String[]) event.data;
 		final File[] files;
@@ -419,7 +423,7 @@ public class FileViewer {
 		event.detail = dropMode;
 		return files;
 	}
-
+
 	/**
 	 * Perform a drop on a target
 	 * <p>
@@ -434,7 +438,7 @@ public class FileViewer {
 		try {
 			final File[] sourceFiles = validateDrop(event, targetFile);
 			final int dropMode = event.detail;
-
+
 			event.detail = DND.DROP_NONE; // simplify error reporting
 			if (sourceFiles == null) return;
 		
@@ -462,7 +466,7 @@ public class FileViewer {
 			notifyRefreshFiles((File[]) dirtyFiles.toArray(new File[dirtyFiles.size()]));
 		}
 	}
-
+
 	/**
 	 * Gets filesystem root entries
 	 * 
@@ -474,7 +478,7 @@ public class FileViewer {
 		 * On JDK 1.22 only...
 		 */
 		// return File.listRoots();
-
+
 		/*
 		 * On JDK 1.1.7 and beyond...
 		 * -- PORTABILITY ISSUES HERE --
@@ -496,7 +500,7 @@ public class FileViewer {
 			return new File[] { new File(File.separator) };
 		}
 	}
-
+
 	/**
 	 * Gets a directory listing
 	 * 
@@ -549,8 +553,7 @@ public class FileViewer {
 		}
 		return new FileDisplayInfo(nameString, typeString, sizeString, dateString, icon);
 	}
-
-	/**
+	/**
 	 * Moves a file or entire directory structure.
 	 * [Note only works within a specific volume on some platforms for now]
 	 *
@@ -687,5 +690,5 @@ public class FileViewer {
 //		if (aIsDir && ! bIsDir) return -1;
 //		if (bIsDir && ! aIsDir) return 1;
 		return a.getName().compareToIgnoreCase(b.getName());
-	}
+	}	
 }

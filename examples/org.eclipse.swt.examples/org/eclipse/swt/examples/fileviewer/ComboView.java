@@ -1,17 +1,14 @@
 package org.eclipse.swt.examples.fileviewer;
-
-/*
+/*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
-import org.eclipse.swt.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 import java.io.*;
-
-/**
+/**
  * A navigation bar
  */
 public class ComboView {
@@ -20,7 +17,7 @@ public class ComboView {
 	
 	private File[] roots = null;
 	private String lastText = null;
-
+
 	/**
 	 * Creates the combo box.
 	 * 
@@ -30,8 +27,7 @@ public class ComboView {
 	 */
 	public ComboView(FileViewer theViewer, Composite parent, Object layoutData) {
 		this.viewer = theViewer;
-
-		combo = new Combo(parent, SWT.NONE);
+		combo = new Combo(parent, SWT.NONE);
 		combo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				int selection = combo.getSelectionIndex();
@@ -49,7 +45,7 @@ public class ComboView {
 		});
 		combo.setLayoutData(layoutData);
 	}
-
+
 	/**
 	 * Listens to selectedDirectory events.
 	 * <p>
@@ -69,8 +65,7 @@ public class ComboView {
 			}
 		}
 		combo.setText(dir.getPath());
-	}
-
+	}
 	/**
 	 * Listens to refreshFiles events.
 	 * <p>
@@ -82,7 +77,7 @@ public class ComboView {
 	/* package */ void refreshFiles(File[] files) {
 		if (files == null) {
 			roots = viewer.getRoots();
-
+
 			combo.removeAll();
 			for (int i = 0; i < roots.length; ++i) {
 				final File file = roots[i];

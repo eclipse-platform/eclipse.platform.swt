@@ -135,7 +135,7 @@
       <view
          viewId="org.eclipse.swt.examples.paint.view"/>
       <source
-         source="paintsrc.zip"/>
+         zip="paintsrc.zip"/>
    </item>
 </extension>
 </plugin>
