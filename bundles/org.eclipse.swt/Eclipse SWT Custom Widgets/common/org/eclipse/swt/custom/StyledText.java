@@ -1588,7 +1588,7 @@ public StyledText(Composite parent, int style) {
 	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
-	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored;
+	isBidi = BidiUtil.isBidiPlatform() || isMirrored;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -1615,7 +1615,7 @@ public StyledText(Composite parent, int style) {
 			setCaretLocation(newCaretX, getCaretLine(), direction);
 		}
 	};
-	StyledTextBidi.addLanguageListener(this, runnable);
+	BidiUtil.addLanguageListener(handle, runnable);
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
@@ -4866,7 +4866,7 @@ void handleDispose(Event event) {
 		defaultLineStyler = null;
 	}
 	if (isBidi()) {
-		StyledTextBidi.removeLanguageListener(StyledText.this);
+		BidiUtil.removeLanguageListener(handle);
 	}
 	selectionBackground = null;
 	selectionForeground = null;
@@ -6931,11 +6931,11 @@ public void setOrientation(int orientation) {
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && isMirrored() == false) {
 		return;
 	}
-	if (StyledTextBidi.setOrientation(this, orientation) == false) {
+	if (BidiUtil.setOrientation(handle, orientation) == false) {
 		return;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
-	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
+	isBidi = BidiUtil.isBidiPlatform() || isMirrored();
 	initializeRenderer();
 	caretDirection = SWT.NULL;
 	setCaretLocation();
