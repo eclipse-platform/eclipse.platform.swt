@@ -13,13 +13,12 @@ import org.eclipse.swt.widgets.*;
  */
 class StyledTextBidi {
 	private GC gc;
-	private int[] bidiSegments;		// bidi direction segments specified to explicitly render separately
-	private int[] renderPositions;	// x position where characters of the line get rendered at.
-									// in visual order
-	private int[] order;			// reordering indices in logical order. iV=order[iL]. iV=visual index, iL=logical index.
+	private int[] bidiSegments;		// bidi text segments, each segment will be rendered separately
+	private int[] renderPositions;	// x position at which characters of the line are rendered, in visual order
+	private int[] order;			// reordering indices in logical order, iV=order[iL] (iV=visual index, iL=logical index),
 									// if no character in a line needs reordering all iV and iL are the same.
 	private int[] dx;				// distance between character cells. in visual order. renderPositions[iV + 1] = renderPositions[iV] + dx[iV]
-	private byte[] classBuffer;		// the character types in logical order. see BidiUtil for the possible types.
+	private byte[] classBuffer;		// the character types in logical order, see BidiUtil for the possible types
 	private char[] glyphBuffer;		// the glyphs in visual order as they will be rendered on screen.
 
 	/** 
@@ -32,7 +31,7 @@ class StyledTextBidi {
 	class DirectionRun {
 		int logicalStart;
 		int logicalEnd;
-		
+
 		DirectionRun(int logicalStart, int logicalEnd) {
 			this.logicalStart = logicalStart;
 			this.logicalEnd = logicalEnd;
@@ -40,7 +39,10 @@ class StyledTextBidi {
 		int getVisualStart() {
 			int visualStart = order[logicalStart];
 			int visualEnd = order[logicalEnd];
-			
+			// the visualStart of a R2L direction run is actually
+			// at the run's logicalEnd, answered as such since rendering 
+			// always occurs from L2R regardless of the text run's
+			// direction
 			if (visualEnd < visualStart) {
 				visualStart = visualEnd;
 			}
@@ -49,7 +51,10 @@ class StyledTextBidi {
 		int getVisualEnd() {
 			int visualStart = order[logicalStart];
 			int visualEnd = order[logicalEnd];
-			
+			// the visualEnd of a R2L direction run is actually
+			// at the run's logicalStart, answered as such since rendering 
+			// always occurs from L2R regardless of the text run's
+			// direction
 			if (visualEnd < visualStart) {
 				visualEnd = visualStart;
 			}
@@ -72,20 +77,20 @@ class StyledTextBidi {
 
 /**
  * Constructs an instance of this class for a line of text. The text 
- * is reordered to reflect right-to-left (R2L) text segments.
+ * is reordered to reflect how it will be displayed.
  * <p>
  * 
  * @param gc the GC to use for rendering and measuring of this line.
- * @param tabWidth tab width in number of spaces. used to calculate 
- * 	tab stops.
+ * @param tabWidth tab width in number of spaces, used to calculate 
+ * 	tab stops
  * @param text line that bidi data should be calculated for
- * @param boldRanges bold text segments in the line. specified as 
+ * @param boldRanges bold text segments in the line, specified as 
  * 	i=bold start,i+1=bold length
- * @param boldFont font that bold text will be rendered in. needed for 
+ * @param boldFont font that bold text will be rendered in, needed for 
  * 	proper measuring of bold text segments.
  * @param offset text segments that should be measured and reordered 
- * 	separately. May be needed to preserve the order of separate R2L 
- * 	segments to each other.
+ * 	separately, may be needed to preserve the order of separate R2L 
+ * 	segments to each other
  */
 public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont, int[] offsets) {
 	int length = text.length();
@@ -113,6 +118,8 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 			for (int i = 0; i < segmentedBoldRanges.length; i += 2) {
 				int rangeStart = segmentedBoldRanges[i];
 				int rangeLength = segmentedBoldRanges[i + 1];
+				// Bold text needs to be processed so that the dx array reflects the bold
+				// font.
 				prepareBoldText(text, rangeStart, rangeLength);
 			}
 			gc.setFont(normalFont);
@@ -128,14 +135,12 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
  * <p>
  * 
  * @param gc the GC to use for rendering and measuring of this line.
- * @param tabWidth tab width in number of spaces. used to calculate 
- * 	tab stops.
  * @param text line that bidi data should be calculated for
  * @param offset text segments that should be measured and reordered 
- * 	separately. May be needed to preserve the order of separate R2L 
- * 	segments to each other.
+ * 	separately, may be needed to preserve the order of separate R2L 
+ * 	segments to each other
  */
-public StyledTextBidi(GC gc, int tabWidth, String text, int[] offsets) {
+public StyledTextBidi(GC gc, String text, int[] offsets) {
 	int length = text.length();		
 	this.gc = gc;
 	bidiSegments = offsets;
@@ -162,14 +167,14 @@ static void addLanguageListener(Control control, Runnable runnable) {
 	BidiUtil.addLanguageListener(control.handle, runnable);
 }
 /**
- * Answers the direction of the active keyboard language, either 
- * left to right or right to left.
- * This determines the direction of the caret and can be changed 
- * by the user.
+ * Answers the direction of the active keyboard language - either 
+ * L2R or R2L.  The active keyboard language determines the direction 
+ * of the caret and can be changed by the user (e.g., via Alt-Shift on
+ * Win32 platforms).
  * <p>
  * 
- * @return the direction of the active keyboard language. SWT.LEFT 
- * 	or SWT.RIGHT.
+ * @return the direction of the active keyboard language. SWT.LEFT (for L2R
+ *  language) or SWT.RIGHT (for R2L language).
  */
 static int getKeyboardLanguageDirection() {
 	int language = BidiUtil.getKeyboardLanguage();
@@ -191,7 +196,7 @@ static void removeLanguageListener(Control control) {
 	BidiUtil.removeLanguageListener(control.handle);
 }
 /**
- * Calculates render positions using the glyph distances.
+ * Calculates render positions using the glyph distance values in the dx array.
  */
 private void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
@@ -201,12 +206,13 @@ private void calculateRenderPositions() {
 	}
 }
 /**
- * Calculates tab stops by adjusting the glyph distances.
+ * Calculate the line's tab stops and adjust the dx array to 
+ * reflect the width of tab characters.
  * <p>
  * 
  * @param text the original line text (not reordered) containing 
  * 	tab characters.
- * @param tabWidth number of spaces that one tab character represents
+ * @param tabWidth number of pixels that one tab character represents
  */
 private void calculateTabStops(String text, int tabWidth) {
 	int tabIndex = text.indexOf('\t', 0);
@@ -230,23 +236,22 @@ private void calculateTabStops(String text, int tabWidth) {
 	}
 }
 /** 
- * Renders the specified text segment.
- * The rendered text may be visually discontiguous if the text segment 
- * is bidirectional.
+ * Renders the specified text segment.  All text is rendered L2R
+ * regardless of the direction of the text.  The rendered text may 
+ * be visually discontiguous if the text segment is bidirectional.
  * <p>
  * 
  * @param logicalStart start offset in the logical text
  * @param length number of logical characters to render
  * @param xOffset x location of the line start
- * @param yOffset y location of the line start
+ * @param yOffset y location of the line start 
  */
-int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
+void drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 	int endOffset = logicalStart + length;
-	int stopX;
 
 	if (endOffset > getTextLength()) {
-		return StyledText.XINSET;
+		return;
 	}
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
@@ -255,26 +260,10 @@ int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
 		int x = xOffset + run.getRenderStartX();
 		drawGlyphs(visualStart, visualEnd - visualStart + 1, x, yOffset);				
 	}		
-	// between R2L and L2R direction segment?
-	if (endOffset < order.length && isRightToLeft(endOffset) == false && isRightToLeft(endOffset - 1)) {
-		// continue drawing at start of L2R segment
-		stopX = renderPositions[endOffset];
-	}
-	else
-	if (isRightToLeft(endOffset - 1)) {
-		// we rendered a R2L segment
-		stopX = renderPositions[order[endOffset - 1]];
-	}
-	else {
-		int visualEnd = order[endOffset - 1];
-		// we rendered a L2R segment
-		stopX = renderPositions[visualEnd] + dx[visualEnd];
-	}
-	return stopX;
 }
 /**
  * Renders a segment of glyphs. Glyphs are visual objects so the
- * start and length are visual as well.
+ * start and length are visual as well.  Glyphs are always rendered L2R.
  * <p>
  * 
  * @param visualStart start offset of the glyphs to render relative to the 
@@ -286,7 +275,6 @@ int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
 private void drawGlyphs(int visualStart, int length, int x, int y) {
 	char[] renderBuffer = new char[length];
 	int[] renderDx = new int[length];
-
 	if (length == 0) {
 		return;
 	}	
@@ -320,9 +308,11 @@ void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int 
 	}				
 }
 /**
- * Returns the offset and direction that will position the caret, depending 
- * on the direction in front of or behind the character at the specified x 
- * location in the line.
+ * Returns the offset and direction that will be used to position the caret for 
+ * the given x location.  The caret will be placed in front of or behind the
+ * character at location x depending on what type of character (i.e., R2L or L2R)
+ * is at location x.  This method is used for positioning the caret when a mouse
+ * click occurs within the widget.
  * <p>
  * 
  * @param x the x location of the character in the line.
@@ -330,7 +320,8 @@ void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int 
  * 	index 0: offset relative to the start of the line
  * 	index 1: direction, either ST.COLUMN_NEXT or ST.COLUMN_PREVIOUS.
  *	The direction is used to control the caret position at direction 
- * 	boundaries. The semantics are like using keyboard cursor navigation. 
+ * 	boundaries. The semantics follow the behavior for keyboard cursor 
+ * 	navigation. 
  * 	Example: RRRLLL
  * 	Pressing cursor left (COLUMN_PREVIOUS) in the L2R segment places the cursor 
  * 	in front of the first character of the L2R segment. Pressing cursor right 
@@ -359,20 +350,34 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 	if (isRightToLeft(offset)) {
 		if (visualLeft) {
 			if (isLigated(gc)) {
+				// the caret should be positioned after the last
+				// character of the ligature
 				offset = getLigatureEndOffset(offset);
 			}
 			offset++;
+			// position the caret as if the caret is to the right
+			// of the character at location x and the NEXT key is
+			// pressed
 			direction = ST.COLUMN_NEXT;
 		}
 		else {
+			// position the caret as if the caret is to the left
+			// of the character at location x and the PREVIOUS key is
+			// pressed
 			direction = ST.COLUMN_PREVIOUS;
 		}
 	}
 	else {
 		if (visualLeft) {
+			// position the caret as if the caret is to the right
+			// of the character at location x and the PREVIOUS key is
+			// pressed
 			direction = ST.COLUMN_PREVIOUS;
 		}
 		else {
+			// position the caret as if the caret is to the left
+			// of the character at location x and the NEXT key is
+			// pressed
 			offset++;
 			direction = ST.COLUMN_NEXT;
 		}
@@ -390,12 +395,13 @@ int getCaretPosition(int logicalOffset) {
 }
 /**
  * Returns the caret position at the specified offset in the line.
- * The direction determines the caret position at direction boundaries.
- * If the logical offset is between a R2L and a L2R segment pressing 
- * cursor left in the L2R segment places the cursor in front of the 
- * first character of the L2R segment. Pressing cursor right in the 
- * R2L segment places the cursor behind the last character of the R2L 
- * segment. However, both are the same logical offset.
+ * The direction parameter is used to determine the caret position 
+ * at direction boundaries.  If the logical offset is between a R2L 
+ * and a L2R segment, pressing cursor left in the L2R segment places
+ * the cursor in front of the first character of the L2R segment; whereas
+ * pressing cursor right in the R2L segment places the cursor behind 
+ * the last character of the R2L segment. However, both caret positions
+ * are at the same logical offset.
  * <p>
  * 
  * @param logicalOffset offset of the character in the line
@@ -486,9 +492,10 @@ int getCaretPosition(int logicalOffset, int direction) {
  * Returns the direction segments that are in the specified text
  * range. The text range may be visually discontiguous if the 
  * text is bidirectional. Each returned direction run has a single 
- * direction and is thus contiguous ensuring proper rendering.
- * User specified direction segments are taken into account and 
- * result in separate direction runs.
+ * direction and the runs all go from left to right, regardless of
+ * the direction of the text in the segment.  User specified segments 
+ * (via BidiSegmentListener) are taken into account and result in 
+ * separate direction runs.
  * <p>
  * 
  * @param logicalStart offset of the logcial start of the first 
@@ -496,8 +503,7 @@ int getCaretPosition(int logicalOffset, int direction) {
  * @param length length of the text included in the direction 
  * 	segments
  * @return the direction segments that are in the specified 
- * text range. Each segment has a single direction and is thus 
- * contiguous.
+ *  text range, each segment has a single direction.
  */
 private Vector getDirectionRuns(int logicalStart, int length) {
 	Vector directionRuns = new Vector();
@@ -550,6 +556,9 @@ int getLigatureEndOffset(int offset) {
 	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
 	int i = offset + 1;
+	// a ligature is a visual character that is comprised of 
+	// multiple logical characters, thus each logical part of
+	// a ligature will have the same order value
 	while (i<order.length && (order[i] == order[offset])) {
 		newOffset = i;
 		i++;
@@ -567,6 +576,9 @@ int getLigatureStartOffset(int offset) {
 	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
 	int i = offset - 1;
+	// a ligature is a visual character that is comprised of 
+	// multiple logical characters, thus each logical part of
+	// a ligature will have the same order value
 	while (i>=0 && (order[i] == order[offset])) {
 		newOffset = i;
 		i--;
@@ -668,7 +680,7 @@ private int[] getRenderIndexesFor(int start, int length) {
  * Break up the given ranges such that each range is fully contained within a bidi
  * segment.
  */
-int[] segmentedRangesFor(int[] ranges) {
+private int[] segmentedRangesFor(int[] ranges) {
 	if ((bidiSegments == null) || (bidiSegments.length == 0)) return ranges;
 	Vector newRanges = new Vector();
 	int j=0;
@@ -740,15 +752,14 @@ int getTextWidth() {
 	return width;
 }
 /**
- * Returns whether the font set in the specified gc contains 
- * ligatured glyphs.
+ * Returns whether the font set in the specified gc supports 
+ * character shaping.
  * <p>
  * 
- * @param gc the GC that should be tested for ligatures.
+ * @param gc the GC that should be tested for character shaping.
  * @return 
- * 	true=the font set in the specified gc contains ligatured glyphs. 
- * 	false=the font set in the specified gc doesn't contain ligatured 
- * 	glyphs. 
+ * 	true=the font set in the specified gc supports character shaped glyphs
+ * 	false=the font set in the specified gc doesn't support character shaped glyphs 
  */
 static boolean isCharacterShaped(GC gc) {
 	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.GLYPHSHAPE) != 0;
@@ -819,7 +830,7 @@ boolean isRightToLeftInput(int logicalIndex) {
  * 
  * @param logicalIndex the index to test
  * @return true=the specified index is the start of a user specified 
- * 	direction segment. false otherwise
+ * 	direction segment, false otherwise
  */
 private boolean isStartOfBidiSegment(int logicalIndex) {
 	for (int i = 0; i < bidiSegments.length; i++) {

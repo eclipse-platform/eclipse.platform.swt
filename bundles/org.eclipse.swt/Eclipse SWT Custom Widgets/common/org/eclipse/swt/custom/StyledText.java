@@ -2603,7 +2603,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
  * @param renderOffset offset of the first character that should be rendered.
  * 	Relative to the start of the line.
  * @param styles the styles to use for rendering line segments. May be empty but not null.
- * @param paintX x location to draw at
+ * @param paintX x location to draw at, not used in bidi mode
  * @param paintY y location to draw at
  * @param gc GC to draw on
  * @param lineBackground line background color, used when no style is specified for a line segment.
@@ -2697,14 +2697,15 @@ void drawStyledLine(String line, int lineOffset, int renderOffset, StyleRange[] 
  * @param text text to draw 
  * @param startOffset offset of the first character in text to draw 
  * @param length number of characters to draw
- * @param paintX x location to start drawing at
+ * @param paintX x location to start drawing at, not used in bidi mode
  * @param paintY y location to draw at. Unused when draw is false
  * @param gc GC to draw on
  * 	location where drawing would stop
  * @param bidi the bidi object to use for measuring and rendering text in bidi locales. 
  * 	null when not in bidi mode.
  * @return x location where drawing stopped or 0 if the startOffset or 
- * 	length is outside the specified text.
+ * 	length is outside the specified text. In bidi mode this value is the same as the paintX
+ *  input parameter.
  */
 int drawText(String text, int startOffset, int length, int paintX, int paintY, GC gc, StyledTextBidi bidi) {
 	int endOffset = startOffset + length;
@@ -2722,7 +2723,7 @@ int drawText(String text, int startOffset, int length, int paintX, int paintY, G
 		if (tabIndex != i) {
 			String tabSegment = text.substring(i, tabIndex);
 			if (bidi != null) {
-				paintX = bidi.drawBidiText(i, tabIndex - i, -horizontalScrollOffset, paintY);
+				bidi.drawBidiText(i, tabIndex - i, -horizontalScrollOffset, paintY);
 			}
 			else {
 				gc.drawString(tabSegment, paintX - horizontalScrollOffset, paintY, true);
@@ -3227,7 +3228,7 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 				// Note that there is no need to deal with segments when checking for
 				// the ligatures.
 				int lineLength = line.length();
-				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, new int[] {0, lineLength});
+				StyledTextBidi bidi = new StyledTextBidi(gc, line, new int[] {0, lineLength});
 				for (int i=0; i<event.styles.length; i++) {
 					StyleRange range = event.styles[i];
 					StyleRange newRange = null;
@@ -5042,7 +5043,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			int offsetInLine = caretOffset - lineStartOffset;
 			String lineText = content.getLine(line);
 			GC gc = new GC(this);
-			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, getBidiSegments(lineText, lineStartOffset));
+			StyledTextBidi bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineText, lineStartOffset));
 			
 			isDirectionBoundary = (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1));
 			gc.dispose();
@@ -5859,7 +5860,7 @@ void setBidiKeyboardLanguage() {
 	int lineLength = lineText.length();
 
 	// Don't supply the bold styles/font since we don't want to measure anything
-	bidi = new StyledTextBidi(gc, tabWidth, lineText, getBidiSegments(lineText, lineStartOffset));
+	bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineText, lineStartOffset));
 	if (offsetInLine == 0) {
 		bidi.setKeyboardLanguage(offsetInLine);
 	}
