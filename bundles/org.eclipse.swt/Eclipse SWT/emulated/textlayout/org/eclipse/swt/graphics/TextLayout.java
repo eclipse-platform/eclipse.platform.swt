@@ -857,7 +857,14 @@ public int getOffset (int x, int y, int[] trailing) {
 		}
 	}
 	if (x < 0) return lineOffset[line];
-	if (x > lineWidth[line]) return lineOffset[line + 1] - 1;	
+	if (x > lineWidth[line]) {
+		if (lineOffset[line + 1] > lineOffset[line]) {
+			if (trailing != null) trailing[0] = 1;
+			return lineOffset[line + 1]  - 1;	
+		}
+		if (trailing != null) trailing[0] = 0;
+		return lineOffset[line + 1];
+	}
 	StyleItem[] lineRuns = runs[line];
 	int width = 0;
 	for (int i = 0; i < lineRuns.length; i++) {
