@@ -8,8 +8,6 @@ package org.eclipse.swt.tests.junit;
  */
 
 import org.eclipse.swt.widgets.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Scrollable

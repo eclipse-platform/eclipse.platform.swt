@@ -7,10 +7,8 @@ package org.eclipse.swt.tests.junit;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
 

@@ -7,10 +7,6 @@ package org.eclipse.swt.tests.junit;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.custom.*;
-import junit.framework.*;
-import junit.textui.*;
-
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.CTabFolderListener
  *

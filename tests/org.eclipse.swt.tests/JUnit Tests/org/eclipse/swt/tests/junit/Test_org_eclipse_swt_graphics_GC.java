@@ -5,7 +5,6 @@ package org.eclipse.swt.tests.junit;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import junit.framework.*;
