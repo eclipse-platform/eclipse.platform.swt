@@ -336,9 +336,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}	
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
 	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
@@ -983,9 +981,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	OS.CGContextBeginPath(handle);
     OS.CGContextSaveGState(handle);
     OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);

@@ -227,9 +227,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, startAngle * 64, arcAngle * 64);
 }
 /** 
@@ -1172,9 +1170,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
