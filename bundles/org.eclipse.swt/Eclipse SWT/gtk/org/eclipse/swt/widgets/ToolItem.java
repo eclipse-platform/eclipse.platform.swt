@@ -31,6 +31,7 @@ public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
+	String toolTipText;
 
 	int boxHandle, arrowHandle, arrowButtonHandle;
 	
@@ -395,7 +396,7 @@ public boolean getSelection () {
  */
 public String getToolTipText () {
 	checkWidget();
-	return "";
+	return toolTipText;
 }
 
 /**
@@ -736,9 +737,11 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
+	toolTipText = string;
 	if (tooltipsHandle == 0) tooltipsHandle = OS.gtk_tooltips_new();
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_tooltips_set_tip(tooltipsHandle, handle, buffer, null);
+	byte [] buffer = null;
+	if (string != null) buffer = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
 /**
  * Sets the width of the receiver.
