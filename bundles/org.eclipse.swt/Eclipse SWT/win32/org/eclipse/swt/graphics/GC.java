@@ -1693,6 +1693,7 @@ public void fillOval (int x, int y, int width, int height) {
  */
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int nullPen = OS.GetStockObject(OS.NULL_PEN);
 	int oldPen = OS.SelectObject(handle, nullPen);
 	OS.Polygon(handle, pointArray, pointArray.length / 2);
