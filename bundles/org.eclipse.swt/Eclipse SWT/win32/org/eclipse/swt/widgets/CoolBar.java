@@ -53,7 +53,7 @@ public class CoolBar extends Composite {
 		OS.GetClassInfo (0, ReBarClass, lpWndClass);
 		ReBarProc = lpWndClass.lpfnWndProc;
 	}
-	static final int INSET = 4;
+	static final int SEPARATOR_WIDTH = 2;
 	static final int MAX_WIDTH = 0x7FFF;
 
 /**
@@ -146,17 +146,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		rbBand.cbSize = REBARBANDINFO.sizeof;
 		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
 		int rowWidth = 0;
+		int separator = (style & SWT.FLAT) == 0 ? SEPARATOR_WIDTH : 0;
 		for (int i = 0; i < count; i++) {
 			OS.SendMessage(handle, OS.RB_GETBANDINFO, i, rbBand);
-			OS.SendMessage(handle, OS.RB_GETBANDBORDERS, i, rect);
 			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-				width = Math.max(width, rowWidth);
+				width = Math.max(width, rowWidth - separator);
 				rowWidth = 0;
 			}
-			rowWidth += rbBand.cxIdeal + rect.left + INSET;
-			if ((style & SWT.FLAT) == 0) rowWidth += rect.right;
+			rowWidth += rbBand.cxIdeal + getMargin (i) + separator;
 		}
-		width = Math.max(width, rowWidth);
+		width = Math.max(width, rowWidth - separator);
 		if (redraw) {
 			if (OS.COMCTL32_MAJOR >= 6) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -335,6 +334,28 @@ void destroyItem (CoolItem item) {
 	originalItems = newOriginals;
 }
 
+int getMargin (int index) {
+	int margin = 0;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		MARGINS margins = new MARGINS ();
+		OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
+		margin += margins.cxLeftWidth + margins.cxRightWidth;
+	}
+	RECT rect = new RECT ();
+	OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
+	if ((style & SWT.FLAT) != 0) {
+		/*
+		* Bug in Windows.  When the style bit  RBS_BANDBORDERS is not set
+		* the rectangle returned by RBS_BANDBORDERS is four pixels too small.
+		* The fix is to add four pixels to the result.
+		*/	
+		margin += rect.left + 4;
+	} else {
+		margin += rect.left + rect.right; 
+	}
+	return margin;
+}
+
 /**
  * Returns the item that is currently displayed at the given,
  * zero-relative index. Throws an exception if the index is
@@ -480,11 +501,19 @@ public Point [] getItemSizes () {
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	int separator = (style & SWT.FLAT) == 0 ? SEPARATOR_WIDTH : 0;
+	MARGINS margins = new MARGINS ();
 	for (int i=0; i<count; i++) {
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		sizes [i] = new Point (rect.right - rect.left + 2, rbBand.cyChild);
+		if (OS.COMCTL32_MAJOR >= 6) {
+			OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
+			rect.left -= margins.cxLeftWidth;
+			rect.right += margins.cxRightWidth;
+		}
+		if (!isLastItemOfRow(i)) rect.right += separator;
+		sizes [i] = new Point (rect.right - rect.left, rbBand.cyChild);
 	}
 	return sizes;
 }
@@ -502,6 +531,16 @@ int getLastIndexOfRow (int index) {
 		}
 	}
 	return count - 1;
+}
+
+boolean isLastItemOfRow (int index) {
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (index + 1 == count) return true;
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	OS.SendMessage (handle, OS.RB_GETBANDINFO, index + 1, rbBand);
+	return (rbBand.fStyle & OS.RBBS_BREAK) != 0;
 }
 
 /**

@@ -186,11 +186,7 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	int hwnd = parent.handle;
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	width += rect.left + CoolBar.INSET;
-	if ((parent.style & SWT.FLAT) == 0) width += rect.right; 
+	width += parent.getMargin (index);
 	return new Point (width, height);
 }
 
@@ -212,7 +208,16 @@ public Rectangle getBounds () {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	int width = rect.right - rect.left + 2;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		MARGINS margins = new MARGINS ();
+		OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+		rect.left -= margins.cxLeftWidth;
+		rect.right += margins.cxRightWidth;
+	}
+	if (!parent.isLastItemOfRow (index)) {
+		rect.right += (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
+	}
+	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -367,10 +372,7 @@ public Point getPreferredSize () {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	int width = rbBand.cxIdeal + rect.left + CoolBar.INSET;
-	if ((parent.style & SWT.FLAT) == 0) width += rect.right;
+	int width = rbBand.cxIdeal + parent.getMargin (index);
 	return new Point (width, rbBand.cyMinChild);
 }
 
@@ -393,8 +395,6 @@ public void setPreferredSize (int width, int height) {
 	height = Math.max (0, height);
 	ideal = true;
 	int hwnd = parent.handle;
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
@@ -404,9 +404,7 @@ public void setPreferredSize (int width, int height) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = width - rect.left - CoolBar.INSET;
-	if ((parent.style & SWT.FLAT) == 0) rbBand.cxIdeal -= rect.right; 
-	rbBand.cxIdeal = Math.max (0, rbBand.cxIdeal);
+	rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
 	rbBand.cyMaxChild = height;
 	if (!minimum) rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
@@ -452,7 +450,16 @@ public Point getSize() {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	int width = rect.right - rect.left + 2;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		MARGINS margins = new MARGINS ();
+		OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+		rect.left -= margins.cxLeftWidth;
+		rect.right += margins.cxRightWidth;
+	}
+	if (!parent.isLastItemOfRow (index)) {
+		rect.right += (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
+	}
+	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Point (width, height);
 }
@@ -483,37 +490,27 @@ public void setSize (int width, int height) {
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
-	/*
-	* Do not set the size for the last item on the row.
-	*/
-	int count = OS.SendMessage (hwnd, OS.RB_GETBANDCOUNT, 0, 0);
-	boolean isLastItem;
-	if (index + 1 == count) {
-		isLastItem = true;
-	} else {
-		rbBand.fMask = OS.RBBIM_STYLE;
-		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index + 1, rbBand);
-		isLastItem = (rbBand.fStyle & OS.RBBS_BREAK) != 0;
-		rbBand.fMask = 0;
-	}
-	
 	/* Get the child size fields first so we don't overwrite them. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	if (!ideal) {
-		RECT rect = new RECT ();
-		OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-		rbBand.cxIdeal = width - rect.left - CoolBar.INSET;
-		if ((parent.style & SWT.FLAT) == 0) rbBand.cxIdeal -= rect.right; 
-		rbBand.cxIdeal = Math.max (0, rbBand.cxIdeal);
-	}
+	if (!ideal) rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;
-	if (!isLastItem) {
-		rbBand.cx = width - 2;
+	
+	/*
+	* Do not set the size for the last item on the row.
+	*/	
+	if (!parent.isLastItemOfRow (index)) {
+		if (OS.COMCTL32_MAJOR >= 6) {
+			MARGINS margins = new MARGINS ();
+			OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+			width -= margins.cxLeftWidth;
+			width -= margins.cxRightWidth;
+		}
+		int separator = (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
+		rbBand.cx = width - separator;
 		rbBand.fMask |= OS.RBBIM_SIZE;
 	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);

@@ -6433,6 +6433,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win3
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MARGINS _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2\n")
+	if (arg3) lparg3 = getMARGINSFields(env, arg3, &_arg3);
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+	if (arg3) setMARGINSFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -6699,6 +6714,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
 	if (arg3) setLVITEMFields(env, arg3, lparg3);
 	NATIVE_EXIT(env, that, "SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MARGINS _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2\n")
+	if (arg3) lparg3 = getMARGINSFields(env, arg3, &_arg3);
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+	if (arg3) setMARGINSFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2\n")
 	return rc;
 }
 #endif

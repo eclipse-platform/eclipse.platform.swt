@@ -331,6 +331,16 @@ void setLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct);
 #define LVITEM_sizeof() 0
 #endif
 
+#ifndef NO_MARGINS
+MARGINS *getMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct);
+void setMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct);
+#define MARGINS_sizeof() sizeof(MARGINS)
+#else
+#define getMARGINSFields(a,b,c) NULL
+#define setMARGINSFields(a,b,c)
+#define MARGINS_sizeof() 0
+#endif
+
 #ifndef NO_MEASUREITEMSTRUCT
 MEASUREITEMSTRUCT *getMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpStruct);
 void setMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpStruct);

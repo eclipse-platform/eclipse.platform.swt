@@ -844,6 +844,7 @@ public class OS {
 	public static final int RB_GETBANDBORDERS = 0x422;
 	public static final int RB_GETBANDCOUNT = 0x40c;
 	public static final int RB_GETBANDINFO = IsUnicode ? 0x41c : 0x41d;
+	public static final int RB_GETBANDMARGINS = 0x428;
 	public static final int RB_GETBARHEIGHT = 0x41b;
 	public static final int RB_GETBKCOLOR = 0x414;
 	public static final int RB_GETRECT = 0x409;
@@ -1972,6 +1973,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, LVITEM lPara
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, MARGINS lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, REBARBANDINFO lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -2555,6 +2561,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, int 
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVCOLUMN lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVITEM lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, MARGINS lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, RECT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TBBUTTON lParam);
@@ -2573,6 +2580,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, int 
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVCOLUMN lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVITEM lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, MARGINS lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, RECT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TBBUTTON lParam);

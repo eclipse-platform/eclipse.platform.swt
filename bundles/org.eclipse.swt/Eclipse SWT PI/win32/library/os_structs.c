@@ -1631,6 +1631,46 @@ void setLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct)
 }
 #endif
 
+#ifndef NO_MARGINS
+typedef struct MARGINS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cxLeftWidth, cxRightWidth, cyTopHeight, cyBottomHeight;
+} MARGINS_FID_CACHE;
+
+MARGINS_FID_CACHE MARGINSFc;
+
+void cacheMARGINSFields(JNIEnv *env, jobject lpObject)
+{
+	if (MARGINSFc.cached) return;
+	MARGINSFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MARGINSFc.cxLeftWidth = (*env)->GetFieldID(env, MARGINSFc.clazz, "cxLeftWidth", "I");
+	MARGINSFc.cxRightWidth = (*env)->GetFieldID(env, MARGINSFc.clazz, "cxRightWidth", "I");
+	MARGINSFc.cyTopHeight = (*env)->GetFieldID(env, MARGINSFc.clazz, "cyTopHeight", "I");
+	MARGINSFc.cyBottomHeight = (*env)->GetFieldID(env, MARGINSFc.clazz, "cyBottomHeight", "I");
+	MARGINSFc.cached = 1;
+}
+
+MARGINS *getMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct)
+{
+	if (!MARGINSFc.cached) cacheMARGINSFields(env, lpObject);
+	lpStruct->cxLeftWidth = (*env)->GetIntField(env, lpObject, MARGINSFc.cxLeftWidth);
+	lpStruct->cxRightWidth = (*env)->GetIntField(env, lpObject, MARGINSFc.cxRightWidth);
+	lpStruct->cyTopHeight = (*env)->GetIntField(env, lpObject, MARGINSFc.cyTopHeight);
+	lpStruct->cyBottomHeight = (*env)->GetIntField(env, lpObject, MARGINSFc.cyBottomHeight);
+	return lpStruct;
+}
+
+void setMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct)
+{
+	if (!MARGINSFc.cached) cacheMARGINSFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MARGINSFc.cxLeftWidth, (jint)lpStruct->cxLeftWidth);
+	(*env)->SetIntField(env, lpObject, MARGINSFc.cxRightWidth, (jint)lpStruct->cxRightWidth);
+	(*env)->SetIntField(env, lpObject, MARGINSFc.cyTopHeight, (jint)lpStruct->cyTopHeight);
+	(*env)->SetIntField(env, lpObject, MARGINSFc.cyBottomHeight, (jint)lpStruct->cyBottomHeight);
+}
+#endif
+
 #ifndef NO_MEASUREITEMSTRUCT
 typedef struct MEASUREITEMSTRUCT_FID_CACHE {
 	int cached;

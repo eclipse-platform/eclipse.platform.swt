@@ -37,6 +37,7 @@
 #include <initguid.h>
 #include <oleacc.h>
 #include <usp10.h>
+#include <uxtheme.h>
 #include <winable.h>
 #endif // _WIN32_WCE
 
@@ -61,6 +62,7 @@
 #define NO_GRADIENT_RECT
 #define NO_HELPINFO
 #define NO_HIGHCONTRAST
+#define NO_MARGINS
 #define NO_MENUBARINFO
 #define NO_MENUINFO
 #define NO_NMREBARCHEVRON
@@ -287,12 +289,14 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageA__IIII
 #define NO_SendMessageA__III_3S
 #define NO_SendMessageA__III_3I
 #define NO_SendMessageA__III_3B
 #define NO_SendMessageA__II_3II
 #define NO_SendMessageA__II_3I_3I
+#define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
 #define NO_SetErrorMode
