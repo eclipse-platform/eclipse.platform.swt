@@ -1468,37 +1468,11 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect bounds = new Rect();
-	int x = 0, y = 0, width = 0, height = 0;
-	if (data.control != 0) {
-		OS.GetControlBounds(data.control, bounds);
-		width = bounds.right - bounds.left;
-		height = bounds.bottom - bounds.top;
-	} else {
-		if (data.image != null) {
-			int image = data.image.handle;
-			width = OS.CGImageGetWidth(image);
-			height = OS.CGImageGetHeight(image);
-		}
-	}
-	if (data.clipRgn != 0 || data.visibleRgn != 0) {
-		int clipping = OS.NewRgn();
-		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
-		if (data.clipRgn != 0) OS.SectRgn(data.clipRgn, clipping, clipping);
-		if (data.visibleRgn != 0) {
-			// Note that bounds has the control bounds
-			OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
-			OS.SectRgn(data.visibleRgn, clipping, clipping);
-			OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
-		}
-		OS.GetRegionBounds(clipping, bounds);
-		x = bounds.left;
-		y = bounds.top;
-		width = bounds.right - bounds.left;
-		height = bounds.bottom - bounds.top;
-		OS.DisposeRgn(clipping);
-	}
-	return new Rectangle(x, y, width, height);
+	Region region = new Region();
+	getClipping(region);
+	Rectangle rect = region.getBounds();
+	region.dispose();
+	return rect;
 }
 
 /** 
@@ -1517,25 +1491,30 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rect bounds = null;
-	int width = 0, height = 0;
-	if (data.control != 0) {
-		bounds = new Rect();
-		OS.GetControlBounds(data.control, bounds);
-		width = bounds.right - bounds.left;
-		height = bounds.bottom - bounds.top;
-	} else {
-		if (data.image != null) {
-			int image = data.image.handle;
-			width = OS.CGImageGetWidth(image);
-			height = OS.CGImageGetHeight(image);
-		}
-	}
 	int clipping = region.handle;
-	OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
-	if (data.clipRgn != 0) OS.SectRgn(data.clipRgn, clipping, clipping);
-	if (data.visibleRgn != 0) {
-		// Note that bounds has the control bounds
+	if (data.clipRgn == 0) {
+		int width = 0, height = 0;
+		if (data.control != 0) {
+			if (bounds == null) bounds = new Rect();
+			OS.GetControlBounds(data.control, bounds);
+			width = bounds.right - bounds.left;
+			height = bounds.bottom - bounds.top;
+		} else {
+			if (data.image != null) {
+				int image = data.image.handle;
+				width = OS.CGImageGetWidth(image);
+				height = OS.CGImageGetHeight(image);
+			}
+		}
+		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
+	} else {
+		OS.CopyRgn(data.clipRgn, clipping);
+	}
+	if (data.paintEvent != 0 && data.visibleRgn != 0) {
+		if (bounds == null) bounds = new Rect();
+		OS.GetControlBounds(data.control, bounds);
 		OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
 		OS.SectRgn(data.visibleRgn, clipping, clipping);
 		OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
@@ -1887,7 +1866,7 @@ void setCGClipping () {
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.GetPortBounds(port, portRect);
 	OS.GetControlBounds(data.control, rect);
-	if (data.clipRgn != 0) { 
+	if (data.clipRgn != 0) {
 		int rgn = OS.NewRgn();
 		OS.CopyRgn(data.clipRgn, rgn);
 		OS.OffsetRgn(rgn, rect.left, rect.top);
