@@ -22,5 +22,5 @@ public class PhKeyEvent_t {
 	public short pos_x;
 	public short pos_y;
 	public short button_state;
-	public static final int sizeof = 26;
+	public static final int sizeof = OS.QNX_MAJOR * 100 + OS.QNX_MINOR * 10 + OS.QNX_MICRO >= 610 ? 28 : 26;
 }

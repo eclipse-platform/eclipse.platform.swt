@@ -40,5 +40,4 @@ public class PhCursorInfo_t {
 	public int key_mods;
 	public int zero2;
 	public static final int sizeof = 60;
-
 }

@@ -15,7 +15,6 @@ public class PhCursorDef_t {
 //	PhRegionDataHdr_t hdr;
 	public short hdr_len;
 	public short hdr_type;
-	
 //	PhPoint_t size1;
 	public short size1_x;
 	public short size1_y;
@@ -24,9 +23,7 @@ public class PhCursorDef_t {
 	public short offset1_y;
 	public int color1;
 	public byte bytesperline1;
-	
 //	byte zero1; // 3 bytes
-	
 //	PhPoint_t size2;
 	public short size2_x;
 	public short size2_y;
@@ -35,10 +32,7 @@ public class PhCursorDef_t {
 	public short offset2_y;
 	public int color2;
 	public byte bytesperline2;
-
 //	byte Spare; // 14 bytes
-
 //	byte images; // variable number of bytes
-
-	public static final int sizeof = 47;
+	public static final int sizeof = 48;
 }

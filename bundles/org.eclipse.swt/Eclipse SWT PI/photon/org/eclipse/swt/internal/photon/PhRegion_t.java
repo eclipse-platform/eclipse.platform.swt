@@ -33,6 +33,5 @@ public class PhRegion_t {
 //	public int zero22;
 	public short cursor_type;
 //	public short zero3;
-
 	public static final int sizeof = 68;
 }

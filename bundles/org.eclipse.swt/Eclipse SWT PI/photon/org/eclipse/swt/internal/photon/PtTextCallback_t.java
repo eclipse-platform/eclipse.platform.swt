@@ -20,5 +20,5 @@ public class PtTextCallback_t {
 	public short reserved;
 	public int text;
 	public int doit;
-	public static final int sizeof = 30;
+	public static final int sizeof = 32;
 }

@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.photon;
 
 
 public class PgAlpha_t {
-	
 	public int alpha_op;
 	// PgMap_t src_alpha_map;
 	public short src_alpha_map_dim_w;

@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.photon;
 
 
 public class PhClipHeader {
-
 	public byte type_0;
 	public byte type_1;
 	public byte type_2;
@@ -24,8 +23,6 @@ public class PhClipHeader {
 	public short length;
 	public short zero;
 	public int data;
-	
 	public static final int sizeof = 16;
-
 }
 

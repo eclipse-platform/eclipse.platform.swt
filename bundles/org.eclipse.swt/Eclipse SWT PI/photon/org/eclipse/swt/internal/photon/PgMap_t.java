@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.photon;
 
 
 public class PgMap_t {
-	
 	public short dim_w;
 	public short dim_h;
 	public short bpl;
