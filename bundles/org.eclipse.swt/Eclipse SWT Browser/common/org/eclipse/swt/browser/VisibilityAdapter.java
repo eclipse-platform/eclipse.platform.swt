@@ -47,6 +47,8 @@ public void hide(VisibilityEvent event) {
  * <p>
  *
  * @param event.widget the browser to display
+ * @param event.location if not null, the requested location for the Shell hosting the browser
+ * @param event.size if not null, the requested size for the Shell hosting the browser
  *
  * @see VisibilityEvent
  * 

@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
@@ -42,6 +43,8 @@ public class Browser extends Composite {
 
 	boolean backwardEnabled;
 	boolean forwardEnabled;
+	Point location;
+	Point size;
 
 	String html;
 
@@ -62,7 +65,11 @@ public class Browser extends Composite {
 	static final int RegisterAsBrowser = 0x228;
 	static final int StatusTextChange = 0x66;
 	static final int WindowClosing = 0x107;
-	
+	static final int WindowSetHeight = 0x10b;
+	static final int WindowSetLeft = 0x108;
+	static final int WindowSetTop = 0x109;
+	static final int WindowSetWidth = 0x10a;
+
 	static final short CSC_UPDATECOMMANDS = -1;
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
@@ -278,8 +285,13 @@ public Browser(Composite parent, int style) {
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					if (visible) {
-						for (int i = 0; i < visibilityListeners.length; i++)
+						for (int i = 0; i < visibilityListeners.length; i++) {
+							newEvent.location = location;
+							newEvent.size = size;
 							visibilityListeners[i].show(newEvent);
+							location = null;
+							size = null;
+						}
 					} else {
 						for (int i = 0; i < visibilityListeners.length; i++)
 							visibilityListeners[i].hide(newEvent);
@@ -327,6 +339,30 @@ public Browser(Composite parent, int style) {
 					dispose();
 					break;
 				}
+				case WindowSetHeight : {
+					if (size == null) size = new Point(0, 0);
+					Variant arg1 = event.arguments[0];
+					size.y = arg1.getInt();
+					break;
+				}
+				case WindowSetLeft : {
+					if (location == null) location = new Point(0, 0);
+					Variant arg1 = event.arguments[0];
+					location.x = arg1.getInt();
+					break;
+				}
+				case WindowSetTop : {
+					if (location == null) location = new Point(0, 0);
+					Variant arg1 = event.arguments[0];
+					location.y = arg1.getInt();
+					break;
+				}
+				case WindowSetWidth : {
+					if (size == null) size = new Point(0, 0);
+					Variant arg1 = event.arguments[0];
+					size.x = arg1.getInt();
+					break;
+				}
 			}
 			
 			/*
@@ -346,7 +382,11 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);
 	site.addEventListener(WindowClosing, listener);
-	
+	site.addEventListener(WindowSetHeight, listener);
+	site.addEventListener(WindowSetLeft, listener);
+	site.addEventListener(WindowSetTop, listener);
+	site.addEventListener(WindowSetWidth, listener);
+		
 	Variant variant = new Variant(true);
 	auto.setProperty(RegisterAsBrowser, variant);
 	variant.dispose();

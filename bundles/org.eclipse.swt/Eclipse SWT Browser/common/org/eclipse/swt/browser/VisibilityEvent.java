@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * This event is sent to VisibilityListeners when the Browser
@@ -28,6 +29,18 @@ import org.eclipse.swt.events.*;
  */
 public class VisibilityEvent extends TypedEvent {
 
+	/** 
+	 * Requested location for the Shell hosting the Browser. Null if no location
+	 * has been requested.
+	 */
+	public Point location;
+
+	/** 
+	 * Requested size for the Shell hosting the Browser. Null if no size has been
+	 * requested.
+	 */
+	public Point size;
+	
 VisibilityEvent(Widget w) {
 	super(w);
 }
