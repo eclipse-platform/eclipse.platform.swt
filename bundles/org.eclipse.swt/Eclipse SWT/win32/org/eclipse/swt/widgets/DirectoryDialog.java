@@ -182,23 +182,25 @@ public String open () {
 	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
 	lpbi.lpfn = address;
 	/*
-	* Bug on Windows.  On some configurations, SHBrowseForFolder brings up
-	* multiple warning dialogs with the message "There is no disk in the
-	* drive. Please insert a disk into \Device\Harddisk0\DR0".  This is
-	* possibly caused by SHBrowseForFolder() calling internally
-	* GetVolumeInformation().  MSDN for GetVolumeInformation() says:
+	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
+	* causes warning dialogs with the message "There is no disk in the drive
+	* Please insert a disk into \Device\Harddisk0\DR0".  This is possibly
+	* caused by SHBrowseForFolder() calling internally GetVolumeInformation().
+	* MSDN for GetVolumeInformation() says:
+	* 
 	* "If you are attempting to obtain information about a floppy drive
 	* that does not have a floppy disk or a CD-ROM drive that does not 
 	* have a compact disc, the system displays a message box asking the 
 	* user to insert a floppy disk or a compact disc, respectively. 
 	* To prevent the system from displaying this message box, call the 
 	* SetErrorMode function with SEM_FAILCRITICALERRORS."
-	* The workaround is to call SetErrorMode with the
-	* SEM_FAILCRITICALERRORS flag before calling SHBrowseForFolder.
+	* 
+	* The fix is to save and restore the error mode using SetErrorMode()
+	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
 	*/
-	int oldErrorMode = OS.SetErrorMode(OS.SEM_FAILCRITICALERRORS);
+	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	OS.SetErrorMode(oldErrorMode);
+	OS.SetErrorMode( oldErrorMode);
 	boolean success = lpItemIdList != 0;
 	if (success) {
 		/* Use the character encoding for the default locale */
