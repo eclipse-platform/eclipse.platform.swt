@@ -84,6 +84,13 @@ public static Frame new_Frame (final Composite parent) {
 	final Frame frame = (Frame) value;
 	
 	/*
+	* This is necessary to make lightweigth components
+	* directly added to the frame receive mouse events
+	* properly.
+	*/
+	frame.addNotify();
+	
+	/*
 	* Generate the appropriate events to activate and deactivate
 	* the embedded frame. This is needed in order to make keyboard
 	* focus work properly for lightweights.
@@ -96,6 +103,7 @@ public static Frame new_Frame (final Composite parent) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
 					} else {
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
 					}
 				}
@@ -111,6 +119,7 @@ public static Frame new_Frame (final Composite parent) {
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 					}
 				}
 			});
