@@ -439,21 +439,15 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
-		int list = OS.gtk_tree_view_column_get_cell_renderers (columnHandle);
-		int length = OS.g_list_length (list);
-		int renderer = OS.g_list_nth_data (list, length - 1);
-		OS.g_list_free (list);
-		int [] w = new int [1], h = new int [1];
-		OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, w, h);
-		return h [0];
-	}
-	GdkRectangle rect = new GdkRectangle ();
-	int path = OS.gtk_tree_path_new_first ();
-	OS.gtk_widget_realize (handle);
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-	OS.gtk_tree_path_free (path);
-	return rect.height;
+	int list = OS.gtk_tree_view_column_get_cell_renderers (columnHandle);
+	int length = OS.g_list_length (list);
+	int renderer = OS.g_list_nth_data (list, length - 1);
+	OS.g_list_free (list);
+	int [] h = new int [1];
+	OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, null, h);
+	int[] separator = new int [1];
+	OS.gtk_widget_style_get (handle, OS.horizontal_separator, separator, 0);
+	return h [0] + separator [0];
 }
 
 /**
