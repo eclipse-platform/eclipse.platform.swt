@@ -1728,6 +1728,40 @@ void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct
 }
 #endif
 
+#ifndef NO_XVisibilityEvent
+typedef struct XVisibilityEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID state;
+} XVisibilityEvent_FID_CACHE;
+
+XVisibilityEvent_FID_CACHE XVisibilityEventFc;
+
+void cacheXVisibilityEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XVisibilityEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XVisibilityEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XVisibilityEventFc.state = (*env)->GetFieldID(env, XVisibilityEventFc.clazz, "state", "I");
+	XVisibilityEventFc.cached = 1;
+}
+
+XVisibilityEvent *getXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct)
+{
+	if (!XVisibilityEventFc.cached) cacheXVisibilityEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XVisibilityEventFc.state);
+	return lpStruct;
+}
+
+void setXVisibilityEventFields(JNIEnv *env, jobject lpObject, XVisibilityEvent *lpStruct)
+{
+	if (!XVisibilityEventFc.cached) cacheXVisibilityEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XVisibilityEventFc.state, (jint)lpStruct->state);
+}
+#endif
+
 #ifndef NO_XWindowChanges
 typedef struct XWindowChanges_FID_CACHE {
 	int cached;

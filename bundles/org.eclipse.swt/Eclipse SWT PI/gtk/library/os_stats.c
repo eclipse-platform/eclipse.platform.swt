@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 830;
-int OS_nativeFunctionCallCount[830];
+int OS_nativeFunctionCount = 834;
+int OS_nativeFunctionCallCount[834];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -90,6 +90,7 @@ char * OS_nativeFunctionNames[] = {
 	"PangoLogAttr_1sizeof", 
 	"PangoRectangle_1sizeof", 
 	"XAnyEvent_1sizeof", 
+	"XCheckIfEvent", 
 	"XCheckMaskEvent", 
 	"XCheckWindowEvent", 
 	"XClientMessageEvent_1sizeof", 
@@ -105,6 +106,7 @@ char * OS_nativeFunctionNames[] = {
 	"XTestFakeButtonEvent", 
 	"XTestFakeKeyEvent", 
 	"XTestFakeMotionEvent", 
+	"XVisibilityEvent_1sizeof", 
 	"XWindowChanges_1sizeof", 
 	"g_1filename_1from_1uri", 
 	"g_1filename_1from_1utf8", 
@@ -740,6 +742,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I", 
+	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I", 
 	"memmove__I_3BI", 
 	"memmove__I_3II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II", 
@@ -768,6 +771,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II", 
 	"memmove___3BII", 
 	"memmove___3CII", 
 	"memmove___3III", 

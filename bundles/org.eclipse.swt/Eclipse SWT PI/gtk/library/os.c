@@ -828,6 +828,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
 }
 #endif
 
+#ifndef NO_XCheckIfEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckIfEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, XCheckIfEvent_FUNC);
+	rc = (jboolean)XCheckIfEvent((Display *)arg0, (XEvent *)arg1, (Bool (*)())arg2, (XPointer)arg3);
+	OS_NATIVE_EXIT(env, that, XCheckIfEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XCheckMaskEvent
 JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckMaskEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -1002,6 +1014,18 @@ JNIEXPORT void JNICALL OS_NATIVE(XTestFakeMotionEvent)
 	OS_NATIVE_ENTER(env, that, XTestFakeMotionEvent_FUNC);
 	XTestFakeMotionEvent((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
 	OS_NATIVE_EXIT(env, that, XTestFakeMotionEvent_FUNC);
+}
+#endif
+
+#ifndef NO_XVisibilityEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XVisibilityEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XVisibilityEvent_1sizeof_FUNC);
+	rc = (jint)XVisibilityEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XVisibilityEvent_1sizeof_FUNC);
+	return rc;
 }
 #endif
 
@@ -8915,6 +8939,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClient
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XExposeEvent _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
+	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__I_3BI
 JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
@@ -9283,6 +9319,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeE
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXExposeEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XVisibilityEvent _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXVisibilityEventFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
 }
 #endif
 

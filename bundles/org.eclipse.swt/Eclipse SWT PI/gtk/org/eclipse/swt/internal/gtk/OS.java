@@ -409,6 +409,7 @@ public static final synchronized native int XAnyEvent_sizeof();
 public static final synchronized native int XClientMessageEvent_sizeof();
 public static final synchronized native int XEvent_sizeof();
 public static final synchronized native int XExposeEvent_sizeof();
+public static final synchronized native int XVisibilityEvent_sizeof();
 public static final synchronized native int XWindowChanges_sizeof();
 public static final native int strlen(int /*long*/ str);
 
@@ -432,13 +433,20 @@ public static final int Below = 1;
 public static final int ClientMessage = 33;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
+public static final int Expose = 12;
+public static final int GraphicsExpose = 13;
+public static final int NoExpose = 14;
 public static final int ExposureMask = 1 << 15;
+public static final int VisibilityChangeMask = 1 << 16;
+public static final int VisibilityFullyObscured = 2;
+public static final int VisibilityNotify = 15;
 public static final native boolean GDK_WINDOWING_X11();
 public static final int /*long*/ NoEventMask = 0;
 public static final int RevertToParent = 2;
 public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final synchronized native boolean XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return);
 public static final synchronized native boolean XCheckWindowEvent(int /*long*/ display, int /*long*/ window, int /*long*/ event_mask, int /*long*/ event_return);
+public static final synchronized native boolean XCheckIfEvent(int /*long*/ display, int /*long*/ event_return, int /*long*/ predicate, int /*long*/ arg);
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
 public static final synchronized native int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
 public static final synchronized native int XKeysymToKeycode(int /*long*/ display, int /*long*/ keysym);
@@ -454,7 +462,9 @@ public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdispl
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_window_lookup(int /*long*/ xid);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, XExposeEvent src, int /*long*/ size);
 public static final native void memmove(XExposeEvent dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
 
 /** Native methods */
 public static final synchronized native int /*long*/ GDK_DISPLAY();
