@@ -33,7 +33,7 @@ MOZ_INCLUDES =  -I$(MOZ_HOME)/include \
 	-I$(MOZ_HOME)/include/string \
 	-I$(MOZ_HOME)/include/nspr \
 	-I$(MOZ_HOME)/include/embed_base \
-	-I$(MOZ_HOME)/include/gfx \
+	-I$(MOZ_HOME)/include/gfx
 	
 
 CFLAGS = -DXPCOM_GLUE  -DOSTYPE=\"Darwin6.0\" -DOSARCH=\"Darwin\" \

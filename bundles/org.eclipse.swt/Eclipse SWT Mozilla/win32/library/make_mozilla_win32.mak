@@ -35,7 +35,8 @@ MOZ_INCLUDES = -I$(MOZ_HOME)/include \
 	-I$(MOZ_HOME)/include/xpcom \
 	-I$(MOZ_HOME)/include/string \
 	-I$(MOZ_HOME)/include/nspr \
-	-I$(MOZ_HOME)/include/embed_base
+	-I$(MOZ_HOME)/include/embed_base \
+	-I$(MOZ_HOME)/include/gfx
 	
 MOZ_CFLAGS = -DXP_WIN -DXP_WIN32
 CFLAGS = -c -W3 -G6 -GD -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) $(MOZ_CDEBUG) $(MOZ_CFLAGS) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I. $(MOZ_INCLUDES)
