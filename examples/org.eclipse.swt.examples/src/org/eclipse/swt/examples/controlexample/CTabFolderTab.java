@@ -25,11 +25,14 @@ class CTabFolderTab extends Tab {
 	Group tabFolderGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button topButton, bottomButton, flatButton;
+	Button topButton, bottomButton, flatButton, closeButton;
 
 	static String [] CTabItems1 = {ControlExample.getResourceString("CTabItem1_0"),
 								  ControlExample.getResourceString("CTabItem1_1"),
 								  ControlExample.getResourceString("CTabItem1_2")};
+
+	/* Other widgets added to the "Other" group */
+	Button setSimpleTabButton, setImageButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -38,6 +41,31 @@ class CTabFolderTab extends Tab {
 		super(instance);
 	}
 	
+	/**
+	 * Creates the "Other" group.
+	 */
+	void createOtherGroup () {
+		super.createOtherGroup ();
+	
+		/* Create display controls specific to this example */
+		setSimpleTabButton = new Button (otherGroup, SWT.CHECK);
+		setSimpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
+		setImageButton = new Button (otherGroup, SWT.CHECK);
+		setImageButton.setText (ControlExample.getResourceString("Set_Image"));
+	
+		/* Add the listeners */
+		setSimpleTabButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setSimpleTabs();
+			}
+		});
+		setImageButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setImages();
+			}
+		});
+	}
+
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -62,6 +90,7 @@ class CTabFolderTab extends Tab {
 		if (bottomButton.getSelection ()) style |= SWT.BOTTOM;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (flatButton.getSelection ()) style |= SWT.FLAT;
+		if (closeButton.getSelection ()) style |= SWT.CLOSE;
 
 		/* Create the example widgets */
 		tabFolder1 = new CTabFolder (tabFolderGroup, style);
@@ -97,6 +126,8 @@ class CTabFolderTab extends Tab {
 		flatButton = new Button (styleGroup, SWT.CHECK);
 		flatButton.setText ("SWT.FLAT");
 		flatButton.setEnabled(false);
+		closeButton = new Button (styleGroup, SWT.CHECK);
+		closeButton.setText ("SWT.CLOSE");
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
@@ -111,6 +142,7 @@ class CTabFolderTab extends Tab {
 		bottomButton.addSelectionListener (selectionListener);
 		borderButton.addSelectionListener (selectionListener);
 		flatButton.addSelectionListener (selectionListener);
+		closeButton.addSelectionListener (selectionListener);
 		borderButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				flatButton.setEnabled(borderButton.getSelection());
@@ -161,5 +193,37 @@ class CTabFolderTab extends Tab {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Sets the state of the "Example" widgets.
+	 */
+	void setExampleWidgetState () {
+		super.setExampleWidgetState ();
+		setSimpleTabs ();
+		setImages ();
+	}
+	
+	/**
+	 * Sets the header visible state of the "Example" widgets.
+	 */
+	void setSimpleTabs () {
+		tabFolder1.setSimpleTab (setSimpleTabButton.getSelection ());
+	}
+	
+	/**
+	 * Sets an image into each item of the "Example" widgets.
+	 */
+	void setImages () {
+		boolean setImage = setImageButton.getSelection ();
+		CTabItem items[] = tabFolder1.getItems ();
+		for (int i = 0; i < items.length; i++) {
+			if (setImage) {
+				items[i].setImage (instance.images[ControlExample.ciClosedFolder]);
+			} else {
+				items[i].setImage (null);
+			}
+		}
+		setExampleWidgetSize ();
 	}
 }
