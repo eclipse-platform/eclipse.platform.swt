@@ -87,6 +87,21 @@ void createScrollBars () {
 	}
 }
 
+public boolean forceFocus () {
+	/*
+	* Bug in Photon. PtContainerGiveFocus() is supposed to give
+	* focus to the widget even if the widget's Pt_GET_FOCUS flag
+	* is not set. This does not happen when the widget is a
+	* PtContainer. The fix is to set the flag before calling it.
+	*/
+	int [] args = {OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS};
+	OS.PtSetResources (handle, args.length / 3, args);
+	boolean result = super.forceFocus ();
+	args [1] = 0;
+	OS.PtSetResources (handle, args.length / 3, args);
+	return result;
+}
+
 void createScrolledHandle (int parentHandle) {
 	int etches = OS.Pt_ALL_ETCHES | OS.Pt_ALL_OUTLINES;
 	int [] args = new int [] {
