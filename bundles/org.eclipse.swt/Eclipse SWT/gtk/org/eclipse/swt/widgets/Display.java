@@ -3140,7 +3140,9 @@ public void wake () {
 
 void wakeThread () {
 	wake = true;
-	// NOT IMPLEMENTED - need to wake up the event loop
+	synchronized (OS_LOCK) {
+		OS_LOCK.notifyAll ();
+	}
 }
 
 static char wcsToMbcs (char ch) {

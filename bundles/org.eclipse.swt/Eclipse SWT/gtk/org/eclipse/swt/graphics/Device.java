@@ -203,7 +203,7 @@ void dispose_Object (Object object) {
 	}
 }
 
-static synchronized Device findDevice (int xDisplay) {
+static synchronized Device findDevice (int /*long*/ xDisplay) {
 	for (int i=0; i<Devices.length; i++) {
 		Device device = Devices [i];
 		if (device != null && device.xDisplay == xDisplay) {
