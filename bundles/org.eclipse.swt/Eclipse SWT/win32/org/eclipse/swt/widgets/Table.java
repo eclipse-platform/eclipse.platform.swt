@@ -1092,7 +1092,14 @@ int getFocusIndex () {
 }
 
 int getForegroundPixel () {
-	return OS.SendMessage (handle, OS.LVM_GETTEXTCOLOR, 0, 0);
+	int pixel = OS.SendMessage (handle, OS.LVM_GETTEXTCOLOR, 0, 0);
+	/*
+	* The Windows table control uses CLR_DEFAULT to indicate
+	* that it is using the default foreground color.  This
+	* is undocumented.
+	*/
+	if (pixel == OS.CLR_DEFAULT) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
+	return pixel;
 }
 
 /**
@@ -2022,19 +2029,10 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;
-	
-	/*
-	* Feature in Windows.  Setting the color to be
-	* the current default is not correct because the
-	* widget will not change colors when the colors
-	* are changed from the control panel.  There is
-	* no fix at this time.
-	*/
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
 	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
-	
 	/*
 	* Feature in Windows.  When the background color is
 	* changed, the table does not redraw until the next
@@ -2129,15 +2127,12 @@ public void setFont (Font font) {
 void setForegroundPixel (int pixel) {
 	if (foreground == pixel) return;
 	foreground = pixel;
-	
 	/*
-	* Feature in Windows.  Setting the color to be
-	* the current default is not correct because the
-	* table will not change colors when the colors
-	* are changed from the control panel.  There is
-	* no fix at this time.
+	* The Windows table control uses CLR_DEFAULT to indicate
+	* that it is using the default foreground color.  This
+	* is undocumented.
 	*/
-	if (pixel == -1) pixel = defaultForeground ();
+	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.LVM_SETTEXTCOLOR, 0, pixel);
 		
 	/*
@@ -3135,6 +3130,11 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
+	if (background == -1) {
+		int pixel = defaultBackground ();
+		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
+		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
+	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
 	return result;
 }
