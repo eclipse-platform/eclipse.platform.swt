@@ -239,27 +239,31 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	*/
 	if ((state & CANVAS) != 0) {
 		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
+		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
+		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
+		int msg = (vertical) ? OS.WM_VSCROLL : (horizontal) ? OS.WM_HSCROLL : 0;
+		if (msg == 0) return result;
+		int [] value = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
 		int delta = (short) (wParam >> 16);
-		int code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-		delta = Math.abs (delta);
-		if (delta < OS.WHEEL_DELTA) return result;
-		if (verticalBar != null) {
-			int [] value = new int [1];
-   			OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-			int count = value [0] * delta / OS.WHEEL_DELTA;
-			for (int i=0; i<count; i++) {
-				OS.SendMessage (handle, OS.WM_VSCROLL, code, 0);
-			}
-			return LRESULT.ZERO;
+		int code = 0, count = 0;
+  		if (value [0] == OS.WHEEL_PAGESCROLL) {	
+   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
+   			count = 1;
+  		} else {
+  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+  			delta = Math.abs (delta);
+  			if (delta < OS.WHEEL_DELTA) return result;
+  			if (msg == OS.WM_VSCROLL) {
+  				count = value [0] * delta / OS.WHEEL_DELTA;
+  			} else {
+  				count = delta / OS.WHEEL_DELTA;
+  			}
+  		}
+		for (int i=0; i<count; i++) {
+			OS.SendMessage (handle, msg, code, 0);
 		}
-		if (horizontalBar != null) {
-			int count = delta / OS.WHEEL_DELTA;
-			for (int i=0; i<count; i++) {
-				OS.SendMessage (handle, OS.WM_HSCROLL, code, 0);
-			}
-			return LRESULT.ZERO;
-		}
-		return result;
+		return LRESULT.ZERO;
 	}
 		
 	/*
