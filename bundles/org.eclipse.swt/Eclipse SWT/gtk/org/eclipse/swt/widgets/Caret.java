@@ -287,7 +287,13 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	Display display = getDisplay ();
+	if (display.currentCaret == this) {
+		if (isVisible) hideCaret ();
+		display.setCurrentCaret (null);
+	}
 	parent = null;
+	image = null;
 }
 
 /**
