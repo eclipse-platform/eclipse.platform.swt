@@ -1,15 +1,16 @@
 package org.eclipse.swt.internal.image;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * WebSphere Studio Workbench
  * (c) Copyright IBM Corp 2000
  */
+
+import java.io.*;
+import java.util.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+
 public class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	PngDecodingDataStream decodingStream;

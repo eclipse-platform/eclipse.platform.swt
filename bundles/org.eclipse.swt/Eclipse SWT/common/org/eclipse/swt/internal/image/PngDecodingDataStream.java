@@ -1,12 +1,12 @@
 package org.eclipse.swt.internal.image;
 
-import java.io.*;
-import org.eclipse.swt.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+
+import java.io.*;
+import org.eclipse.swt.*;
 
 public class PngDecodingDataStream {
 	PngIdatChunk currentChunk;

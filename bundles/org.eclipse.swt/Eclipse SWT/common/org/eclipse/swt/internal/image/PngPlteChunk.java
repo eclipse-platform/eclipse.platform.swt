@@ -1,12 +1,12 @@
 package org.eclipse.swt.internal.image;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 class PngPlteChunk extends PngChunk {
 

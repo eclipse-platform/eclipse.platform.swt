@@ -1,11 +1,11 @@
 package org.eclipse.swt.internal.image;
 
-import org.eclipse.swt.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+
+import org.eclipse.swt.*;
 
 class PngIendChunk extends PngChunk {
 
