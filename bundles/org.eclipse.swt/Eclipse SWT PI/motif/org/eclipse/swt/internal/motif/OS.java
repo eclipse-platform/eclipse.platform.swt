@@ -687,6 +687,7 @@ public static final synchronized native int XLookupString(XKeyEvent event, byte[
 public static final synchronized native int XLowerWindow(int display, int window);
 public static final synchronized native void XMapWindow(int display, int w);
 public static final synchronized native int XGetModifierMapping(int display);
+public static final synchronized native int XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return);
 public static final synchronized native void XMoveResizeWindow(int display, int w, int x, int y, int width, int height);
 public static final synchronized native int XOpenDisplay(byte[] display_name);
 public static final synchronized native boolean XPointInRegion(int region, int x, int y);
@@ -1011,6 +1012,7 @@ public static final native void memmove(int dest, XExposeEvent src, int count);
 public static final native void memmove(int dest, XClientMessageEvent src, int count);
 public static final native void memmove(int dest, XConfigureEvent src, int count);
 public static final native void memmove(int dest, XKeyEvent src, int count);
+public static final native void memmove(XIconSize dest, int src, int count);
 public static final native int nl_langinfo(int item);
 public static final native int pipe(int[] filedes);
 public static final native int read(int filedes, byte[] buf, int nbyte);

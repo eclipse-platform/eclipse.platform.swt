@@ -1097,12 +1097,15 @@ public Point getCursorLocation () {
 	OS.XQueryPointer (xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
-public Point getCursorSize () {
+public Point [] getCursorSizes() {
 	checkDevice ();
 	int xDrawable = OS.XDefaultRootWindow (xDisplay);
 	int [] width_return = new int [1], height_return = new int [1];
-	OS.XQueryBestCursor (xDisplay, xDrawable, 1024, 1024, width_return, height_return);
-	return new Point (width_return [0], height_return [0]);
+	OS.XQueryBestCursor (xDisplay, xDrawable, 16, 16, width_return, height_return);
+	Point pt = new Point (width_return [0], height_return [0]);
+	OS.XQueryBestCursor (xDisplay, xDrawable, 32, 32, width_return, height_return);
+	return pt.x == width_return [0] && pt.y == height_return [0] ? 
+		new Point [] {pt} : new Point [] {pt, new Point (width_return [0], height_return [0])};
 }
 /**
  * Returns the default display. One is created (making the
@@ -1259,6 +1262,25 @@ public Control getFocusControl () {
  */
 public int getIconDepth () {
 	return getDepth ();
+}
+public Point [] getIconSizes () {
+	checkDevice ();
+	int w = OS.XDefaultRootWindow (xDisplay);
+	int [] size_list_return = new int [1];
+	int [] count_return = new int [1];
+	Point min, max;
+	int status = OS.XGetIconSizes (xDisplay, w, size_list_return, count_return);
+	if (status != 0 && count_return [0] > 0) {
+		XIconSize iconSize = new XIconSize ();
+		OS.memmove (iconSize, size_list_return [0], XIconSize.sizeof);
+		min = new Point (iconSize.min_width, iconSize.min_height);
+		max = new Point (iconSize.max_width, iconSize.max_height);
+		OS.XFree (size_list_return [0]);
+	} else {
+		min = new Point (16, 16);
+		max = new Point (32, 32);
+	}
+	return new Point [] {min, max};
 }
 int getLastEventTime () {
 	return OS.XtLastTimestampProcessed (xDisplay);
