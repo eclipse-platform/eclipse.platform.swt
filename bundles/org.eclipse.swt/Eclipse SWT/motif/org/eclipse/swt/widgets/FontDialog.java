@@ -247,6 +247,50 @@ void createControls (Composite parent) {
 	layout.marginHeight = layout.marginWidth = 0;
 	layout.numColumns = 3;
 	controls.setLayout (layout);
+	
+	// labels row (1)
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Character_set") + ":");
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Font") + ":");
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Extended_style") + ":");	
+
+	// lists row (2)
+	charSetList = new List (controls, SWT.V_SCROLL);
+	GridData gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	charSetList.setLayoutData (gridData);
+
+	faceNameList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	faceNameList.setLayoutData (gridData);
+
+	extStyleList = new List (controls, SWT.V_SCROLL | SWT.MULTI);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = EXTSTYLE_WIDTH;
+	extStyleList.setLayoutData (gridData);
+
+	// labels row (3)
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Size") + ":");	
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Style") + ":");
+	new Label (controls, SWT.NONE);		// filler
+
+	// lists row (4)
+	fontSizeList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	fontSizeList.setLayoutData (gridData);
+
+	fontStyleList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	fontStyleList.setLayoutData (gridData);
+
+	new Label (controls, SWT.NONE);		// filler
 
 	// font sets group
 	Group fontSetGroup = new Group (controls, SWT.NONE);
@@ -299,50 +343,6 @@ void createControls (Composite parent) {
 	removeButton = new Button (newRemoveButtonsGroup, SWT.PUSH);
 	removeButton.setLayoutData (new GridData (buttonAlignment));
 	removeButton.setText (SWT.getMessage ("SWT_Remove"));
-	
-	// labels row (1)
-	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Character_set") + ":");
-	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Font") + ":");
-	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Extended_style") + ":");	
-
-	// lists row (2)
-	charSetList = new List (controls, SWT.V_SCROLL);
-	GridData gridData = new GridData (GridData.FILL_HORIZONTAL);
-	gridData.heightHint = LIST_HEIGHT;
-	gridData.widthHint = LIST_WIDTH;
-	charSetList.setLayoutData (gridData);
-
-	faceNameList = new List (controls, SWT.V_SCROLL);
-	gridData = new GridData (GridData.FILL_HORIZONTAL);
-	gridData.heightHint = LIST_HEIGHT;
-	gridData.widthHint = LIST_WIDTH;
-	faceNameList.setLayoutData (gridData);
-
-	extStyleList = new List (controls, SWT.V_SCROLL | SWT.MULTI);
-	gridData = new GridData (GridData.FILL_HORIZONTAL);
-	gridData.heightHint = LIST_HEIGHT;
-	gridData.widthHint = EXTSTYLE_WIDTH;
-	extStyleList.setLayoutData (gridData);
-
-	// labels row (3)
-	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Size") + ":");	
-	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Style") + ":");
-	new Label (controls, SWT.NONE);		// filler
-
-	// lists row (4)
-	fontSizeList = new List (controls, SWT.V_SCROLL);
-	gridData = new GridData (GridData.FILL_HORIZONTAL);
-	gridData.heightHint = LIST_HEIGHT;
-	gridData.widthHint = LIST_WIDTH;
-	fontSizeList.setLayoutData (gridData);
-
-	fontStyleList = new List (controls, SWT.V_SCROLL);
-	gridData = new GridData (GridData.FILL_HORIZONTAL);
-	gridData.heightHint = LIST_HEIGHT;
-	gridData.widthHint = LIST_WIDTH;
-	fontStyleList.setLayoutData (gridData);
-
-	new Label (controls, SWT.NONE);		// filler
 	
 	// font sample group
 	Group sampleGroup = new Group (controls, SWT.NONE);
