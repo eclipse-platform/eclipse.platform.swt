@@ -275,7 +275,8 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	if (!allowTimers) return 0;
+	//TEMPORARY CODE
+//	if (!allowTimers) return 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
