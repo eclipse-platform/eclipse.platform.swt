@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
+	int lastSelected = -1;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -186,6 +187,7 @@ void createItem (TabItem item, int index) {
 	*/
 	if (count == 0) {
 		OS.SetControl32BitValue (handle, 1);
+		lastSelected = 1;
 		Event event = new Event ();
 		event.item = items [0];
 		sendEvent (SWT.Selection, event);
@@ -409,6 +411,8 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	int index = OS.GetControl32BitValue (handle) - 1;
+	if (index == lastSelected) return result;
+	lastSelected = index;
 	int count = OS.GetControl32BitMaximum (handle);
 	for (int i = 0; i < count; i++) {
 		if (i != index) {
@@ -429,8 +433,7 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	Event event = new Event ();
 	event.item = item;
 	postEvent (SWT.Selection, event);
-	redraw ();
-	return OS.eventNotHandledErr;
+	return OS.noErr;
 }
 
 void releaseWidget () {
@@ -539,6 +542,7 @@ void setSelection (int index, boolean notify) {
 	}
 	OS.SetControl32BitValue (handle, index+1);
 	index = OS.GetControl32BitValue (handle) - 1;
+	lastSelected = index;
 	if (index != -1) {
 		TabItem item = items [index];
 		if (item != null) {
@@ -554,7 +558,6 @@ void setSelection (int index, boolean notify) {
 			}
 		}
 	}
-	redraw ();
 }
 
 boolean traversePage (boolean next) {
