@@ -977,18 +977,8 @@ public void setMaximized (boolean maximized) {
 		/*
 		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
 		* workaround is to resize the window to fit the parent client area.
-		* PocketPC windows typically don't have a caption when they are
-		* maximized. They usually have one when they are not occupying all the
-		* space. We implement this behavior by default - it can be overriden by
-		* setting SWT.TITLE or SWT.NO_TRIM.
 		*/
 		if (maximized) {
-			if ((style & SWT.TITLE) == 0) {
-				/* Remove caption when maximized */
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				bits &= ~OS.WS_CAPTION;
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-			}
 			RECT rect = new RECT ();
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			int width = rect.right - rect.left, height = rect.bottom - rect.top;
@@ -1003,15 +993,6 @@ public void setMaximized (boolean maximized) {
 			}
 			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
-		} else {
-			if ((style & SWT.NO_TRIM) == 0) {
-				/* Insert caption when no longer maximized */
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				bits |= OS.WS_CAPTION;
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-				int flags = OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME;
-				SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
-			}
 		}
 	} else {
 		if (!OS.IsWindowVisible (handle)) return;

@@ -919,14 +919,6 @@ void setActiveControl (Control control) {
 void setBounds (int x, int y, int width, int height, int flags) {
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
-		if ((style & SWT.NO_TRIM) == 0) {
-			/* Set the WS_CAPTION bits when no longer maximized */
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.WS_CAPTION) != OS.WS_CAPTION) {
-				bits |= OS.WS_CAPTION;
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-			}
-		}
 	} else {
 		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
 			setPlacement (x, y, width, height, flags);
