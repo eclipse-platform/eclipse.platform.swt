@@ -201,7 +201,7 @@ protected void init() {
 	/* Initialize the default font */
 	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*", true);
-	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, 0, OS.XmFONTLIST_DEFAULT_TAG);
+	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	defaultFontList = OS.XmFontListAppendEntry(0, fontListEntry);
 	OS.XmFontListEntryFree(new int[]{fontListEntry});
@@ -498,6 +498,31 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 public PrinterData getPrinterData() {
 	return data;
+}
+
+/**
+ * Returns a reasonable font for applications to use.
+ * On some platforms, this will match the "default font"
+ * or "system font" if such can be found.  This font
+ * should not be free'd because it was allocated by the
+ * system, not the application.
+ * <p>
+ * Typically, applications which want the default look
+ * should simply not set the font on the widgets they
+ * create. Widgets are always created with the correct
+ * default font for the class of user-interface component
+ * they represent.
+ * </p>
+ *
+ * @return a font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Font getSystemFont () {
+	checkDevice ();
+	return Font.motif_new (this, defaultFontList);
 }
 
 protected void checkDevice() {
