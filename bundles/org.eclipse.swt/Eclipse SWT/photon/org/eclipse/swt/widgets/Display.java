@@ -1176,9 +1176,12 @@ synchronized void register () {
 }
 
 protected void release () {
-	super.release ();
-
-	/* Release shells */
+	if (disposeList != null) {
+		for (int i=0; i<disposeList.length; i++) {
+			if (disposeList [i] != null) disposeList [i].run ();
+		}
+	}
+	disposeList = null;
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1187,20 +1190,10 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
-	
-	/* Run dispose list */
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			if (disposeList [i] != null) disposeList [i].run ();
-		}
-	}
-	disposeList = null;
-	
-	/* Release synchronizer */
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
-
-	releaseDisplay ();
+	releaseDisplay ();	
+	super.release ();
 }
 
 void releaseDisplay () {
