@@ -15,12 +15,13 @@ import org.eclipse.swt.widgets.Widget;
  * <ul>
  * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
  * <li>(in)time          - the time of the event
- * <li>(in)x             - the x-cordinate of the cursor relative to the DropTarget <code>Control</code>
- * <li>(in)y             - the y-cordinate of the cursor relative to the DropTarget <code>Control</code>
+ * <li>(in)x             - the x-cordinate of the cursor relative to the <code>Display</code>
+ * <li>(in)y             - the y-cordinate of the cursor relative to the <code>Display</code>
  * <li>(in)dataTypes     - a list of the types of data that the DragSource can support
  * <li>(in,out)currentDataType - the specific type of data that will be provided on a drop
  * <li>(in)operations    - a list of the operations that the DragSource can support (e.g. DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK)
- * <li>(in,out)detail   - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
+ * <li>(in,out)detail    - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
+ * <li>(in)item          - if the associated control is a table or tree, this field contains the item located at the cursor coordinates
  * </ul>
  * The application can change the operation that will be performed by modifying the <code>detail</code> field 
  * but the choice must be one of the values in the <code>operations</code> field.  
@@ -33,12 +34,13 @@ import org.eclipse.swt.widgets.Widget;
  * <li>(in)time       - the time of the event
  * <li>(in)x          - the x-cordinate of the cursor relative to the <code>Display</code>
  * <li>(in)y          - the y-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
+ * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_TARGET_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
  * <li>(in)currentDataType - the specific type of data that is be contained in the <code>data</code> field
  * <li>(in)data       - the data (which is of type currentDataType); the type of Java Object contained in this field is
  *						dependant on the Transfer subclass.  For example, the TextTransfer subclass provides a
  *						String with the text in the String.  The FileTransfer object provides an array of String with
  *						each String in the array containing the full path of the file.
+ * (in)item          - if the associated control is a table or tree, this field contains the item located at the cursor coordinates
  * </ul>
  * The application can cancel the drop operation by setting the detail field to DND.DROP_NONE.</p>
  *
