@@ -215,16 +215,12 @@ void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int 
 	}
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
-		int visualStart = run.getVisualStart();
-		int visualEnd = run.getVisualEnd();
 		int startX = run.getRenderStartX();
 		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
 	}				
 }
 int[] getCaretOffsetAndDirectionAtX(int x) {
 	int lineLength = getTextLength();
-	int low = -1;
-	int high = lineLength;
 	int offset;
 
 	if (lineLength == 0) {
@@ -483,8 +479,9 @@ int getOffsetAtX(int x) {
 		int offset = (high + low) / 2;
 		int visualX = renderPositions[offset];
 
-
-		if (x <= visualX + dx[offset]) {
+		// visualX + dx is the start of the next character. Restrict right/high
+		// search boundary only if x is before next character. Fixes 1GL4ZVE.
+		if (x < visualX + dx[offset]) {
 			high = offset;			
 		}
 		else 
@@ -600,8 +597,6 @@ void redrawRange(Control parent, int logicalStart, int length, int xOffset, int 
 	}
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
-		int visualStart = run.getVisualStart();
-		int visualEnd = run.getVisualEnd();
 		int startX = run.getRenderStartX();
 
 		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
