@@ -90,6 +90,8 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
+	setForegroundColor (parent.getForegroundColor ());
+	setFontDescription (parent.getFontDescription ());
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -262,6 +264,26 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	ToolItem [] items = getItems (); //BAD
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setFontDescription (font);
+		}
+	}
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	ToolItem [] items = getItems (); //BAD
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundColor (color);
+		}
+	}
 }
 
 }

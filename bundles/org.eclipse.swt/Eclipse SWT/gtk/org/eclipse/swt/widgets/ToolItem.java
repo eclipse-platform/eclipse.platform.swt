@@ -617,6 +617,28 @@ public void setEnabled (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
+void setFontDescription (int font) {
+	int list = OS.gtk_container_get_children (handle);
+	if (list != 0) {
+		int fontHandle = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
+		OS.gtk_widget_modify_font (fontHandle, font);
+		return;
+	}
+	OS.gtk_widget_modify_font (handle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	int list = OS.gtk_container_get_children (handle);
+	if (list != 0) {
+		int colorHandle = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
+		OS.gtk_widget_modify_fg (colorHandle, 0, color);
+		return;
+	}
+	OS.gtk_widget_modify_fg (handle, 0, color);
+}
+
 /**
  * Sets the receiver's hot image to the argument, which may be
  * null indicating that no hot image should be displayed.

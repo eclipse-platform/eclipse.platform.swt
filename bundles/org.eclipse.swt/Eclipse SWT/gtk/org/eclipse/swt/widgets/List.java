@@ -976,6 +976,11 @@ public void selectAll () {
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent

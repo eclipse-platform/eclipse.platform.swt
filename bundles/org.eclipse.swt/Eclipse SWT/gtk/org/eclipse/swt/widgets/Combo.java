@@ -838,10 +838,28 @@ public void select (int index) {
 	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+	if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
+	if (listHandle != 0) OS.gtk_widget_modify_font (listHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
+	if (listHandle != 0) OS.gtk_widget_modify_text (listHandle, 0, color);
 }
 
 /**

@@ -198,6 +198,14 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible (false);
 }
 
+void setFontDescription (int font) {
+	OS.gtk_widget_modify_font (handle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	OS.gtk_widget_modify_fg (handle, 0, color);
+}
+
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);

@@ -198,6 +198,8 @@ void createItem (TabItem item, int index) {
 	item.pageHandle = pageHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
+	item.setForegroundColor (getForegroundColor ());
+	item.setFontDescription (getFontDescription ());
 }
 
 void destroyItem (TabItem item) {
@@ -428,6 +430,26 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		}
 	}
 	return changed;
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	TabItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setFontDescription (font);
+		}
+	}
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	TabItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundColor (color);
+		}
+	}
 }
 
 /**
