@@ -139,16 +139,16 @@ class LabelTab extends AlignableTab {
 	 * Sets the alignment of the "Example" widgets.
 	 */
 	void setExampleWidgetAlignment () {
-		int allignment = 0;
-		if (leftButton.getSelection ()) allignment = SWT.LEFT;
-		if (centerButton.getSelection ()) allignment = SWT.CENTER;
-		if (rightButton.getSelection ()) allignment = SWT.RIGHT;
-		label1.setAlignment (allignment);
-		label2.setAlignment (allignment);
-		label3.setAlignment (allignment);
-		label4.setAlignment (allignment);
-		label5.setAlignment (allignment);
-		label6.setAlignment (allignment);
+		int alignment = 0;
+		if (leftButton.getSelection ()) alignment = SWT.LEFT;
+		if (centerButton.getSelection ()) alignment = SWT.CENTER;
+		if (rightButton.getSelection ()) alignment = SWT.RIGHT;
+		label1.setAlignment (alignment);
+		label2.setAlignment (alignment);
+		label3.setAlignment (alignment);
+		label4.setAlignment (alignment);
+		label5.setAlignment (alignment);
+		label6.setAlignment (alignment);
 	}
 	
 	/**

@@ -43,9 +43,11 @@ public class ControlExample {
 		Tab [] tabs = new Tab [] {
 			new ButtonTab (this),
 			new ComboTab (this),
+			new CComboTab (this),
 			new CoolBarTab (this),
 			new DialogTab (this),
 			new LabelTab (this),
+			new CLabelTab (this),
 			new ListTab (this),
 			new ProgressBarTab (this),
 			new SashTab (this),
