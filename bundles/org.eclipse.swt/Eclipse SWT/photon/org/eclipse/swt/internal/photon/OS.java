@@ -2810,6 +2810,7 @@ public static final native int PtFindDisjoint (int widget);
 public static final native int PhClipboardPasteString (short ig);
 
 public static final native int PtBlockAllWindows(int skip, short cursor, int cursor_color);
+public static final native int PtBlockWindow(int window, short cursor, int cursor_color);
 public static final native void PtUnblockWindows(int bl);
 public static final native int PtNextTopLevelWidget(int widget);
 public static final native int PtWindowGetState(int widget);

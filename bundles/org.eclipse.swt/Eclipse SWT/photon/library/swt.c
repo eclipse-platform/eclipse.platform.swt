@@ -4551,6 +4551,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockAllWindows
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtBlockWindow
+ * Signature: (ISI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockWindow
+  (JNIEnv *env, jobject that, jint window, jshort cursor, jint cursor_color)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtBlockWindow\n");
+#endif
+	
+	return (jint) PtBlockWindow((PtWidget_t *)window, cursor, (PgColor_t)cursor_color);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtUnblockWindows
  * Signature: (I)V
  */
