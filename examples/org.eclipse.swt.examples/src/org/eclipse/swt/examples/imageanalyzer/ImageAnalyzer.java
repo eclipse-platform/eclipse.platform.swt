@@ -21,9 +21,9 @@ public class ImageAnalyzer {
 	Shell shell;
 	Canvas imageCanvas, paletteCanvas;
 	Label typeLabel, sizeLabel, depthLabel, transparentPixelLabel,
-		screenSizeLabel, backgroundPixelLabel, locationLabel,
-		disposalMethodLabel, delayTimeLabel, repeatCountLabel,
-		paletteLabel, dataLabel, statusLabel;
+		timeToLoadLabel, screenSizeLabel, backgroundPixelLabel,
+		locationLabel, disposalMethodLabel, delayTimeLabel,
+		repeatCountLabel, paletteLabel, dataLabel, statusLabel;
 	Combo backgroundCombo, scaleXCombo, scaleYCombo, alphaCombo;
 	Button incrementalCheck, transparentCheck, maskCheck, backgroundCheck;
 	Button previousButton, nextButton, animateButton;
@@ -53,6 +53,7 @@ public class ImageAnalyzer {
 	ImageData imageData; // the currently-displayed image data
 	Image image; // the currently-displayed image
 	Vector incrementalEvents; // incremental image events
+	long loadTime = 0; // the time it took to load the current image
 	
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
@@ -299,7 +300,7 @@ public class ImageAnalyzer {
 		imageCanvas.setBackground(whiteColor);
 		imageCanvas.setCursor(crossCursor);
 		gridData = new GridData();
-		gridData.verticalSpan = 14;
+		gridData.verticalSpan = 15;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -349,7 +350,13 @@ public class ImageAnalyzer {
 		transparentPixelLabel = new Label(shell, SWT.NULL);
 		transparentPixelLabel.setText(bundle.getString("Transparent_pixel_initial"));
 		transparentPixelLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		// Separate the animation fields from the rest of the fields.
+
+		// Label to show the time to load.
+		timeToLoadLabel = new Label(shell, SWT.NULL);
+		timeToLoadLabel.setText(bundle.getString("Time_to_load_initial"));
+		timeToLoadLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+
+		// Separate the animation fields from the rest of the fields.
 		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
@@ -379,7 +386,8 @@ public class ImageAnalyzer {
 		repeatCountLabel = new Label(shell, SWT.NULL);
 		repeatCountLabel.setText(bundle.getString("Repeats_initial"));
 		repeatCountLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		// Separate the animation fields from the palette.
+
+		// Separate the animation fields from the palette.
 		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		// Label to show if the image has a direct or indexed palette.
@@ -678,7 +686,9 @@ public class ImageAnalyzer {
 				incrementalThreadStart();
 			}
 			// Read the new image(s) from the chosen file.
+			long startTime = System.currentTimeMillis();
 			imageDataArray = loader.load(filename);
+			loadTime = System.currentTimeMillis() - startTime;
 			if (imageDataArray.length > 0) {				// Cache the filename.
 				fileName = filename;
 				
@@ -941,7 +951,9 @@ public class ImageAnalyzer {
 		imageCanvas.setCursor(waitCursor);
 		try {
 			loader = new ImageLoader();
+			long startTime = System.currentTimeMillis();
 			ImageData[] newImageData = loader.load(fileName);
+			loadTime = System.currentTimeMillis() - startTime;
 			imageDataIndex = 0;
 			displayImage(newImageData[imageDataIndex]);
 
@@ -1391,6 +1403,9 @@ public class ImageAnalyzer {
 
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
 		transparentPixelLabel.setText(string);
+
+		string = createMsg(bundle.getString("Time_to_load_value"), new Long(loadTime));
+		timeToLoadLabel.setText(string);
 
 		string = createMsg(bundle.getString("Animation_size_value"), 
 		                      new Object[] {new Integer(loader.logicalScreenWidth),
