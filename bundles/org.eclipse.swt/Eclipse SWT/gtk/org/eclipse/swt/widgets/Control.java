@@ -1975,10 +1975,13 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 		state |= OBSCURED;
 	} else {
 		if ((state & OBSCURED) != 0) {
-			int /*long*/ paintHandle = paintHandle ();
-			int width = OS.GTK_WIDGET_WIDTH (paintHandle);
-			int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
-			redrawWidget (0, 0, width, height, false);
+			int /*long*/ window = gdkEvent.window;
+			int [] width = new int [1], height = new int [1];
+			OS.gdk_drawable_get_size (window, width, height);
+			GdkRectangle rect = new GdkRectangle ();
+			rect.width = width [0];
+			rect.height = height [0];
+			OS.gdk_window_invalidate_rect (window, rect, true);
 		}
 		state &= ~OBSCURED;
 	}
@@ -2838,20 +2841,16 @@ public void setVisible (boolean visible) {
 		*/		
 		Control control = null;
 		boolean fixFocus = false;
-		if (!visible) {
-			if (display.focusEvent != SWT.FocusOut) {
-				control = display.getFocusControl ();
-				fixFocus = isFocusAncestor (control);
-			}
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
 		}
 		if (fixFocus) {
 			int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
 			fixFocus (control);
 			if (isDisposed ()) return;
-			if ((flags & OS.GTK_VISIBLE) != 0) {
-				OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
-			}
+			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 		}
 		OS.gtk_widget_hide (topHandle);
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
