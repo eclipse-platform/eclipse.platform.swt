@@ -36,7 +36,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Display not written");
+	// tested in Test_org_eclipse_swt_widgets_Display.test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer
 }
 
 

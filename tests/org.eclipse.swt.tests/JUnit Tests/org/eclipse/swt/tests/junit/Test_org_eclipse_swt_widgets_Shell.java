@@ -45,7 +45,9 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	Shell newShell = new Shell();
+	assertNotNull("a: ", newShell.getDisplay());
+	newShell.dispose();
 }
 
 public void test_ConstructorI() {

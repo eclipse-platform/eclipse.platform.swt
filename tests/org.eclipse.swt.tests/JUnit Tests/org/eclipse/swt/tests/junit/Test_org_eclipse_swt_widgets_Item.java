@@ -44,11 +44,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_WidgetI not written");
+	// abstract class
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetII() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_WidgetII not written");
+	// abstract class
 }
 
 public void test_getImage() {

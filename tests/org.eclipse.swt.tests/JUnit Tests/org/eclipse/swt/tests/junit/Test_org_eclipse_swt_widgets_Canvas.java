@@ -67,7 +67,20 @@ public void test_getCaret() {
 }
 
 public void test_scrollIIIIIIZ() {
-	warnUnimpl("Test test_scrollIIIIIIZ not written");
+	canvas.scroll(100, 100, 0, 0, 50, 50, false);
+	canvas.scroll(100, 100, 0, 0, 50, 50, true);
+
+	canvas.scroll(10000, 10000, 100, 100, 500, 500, false);
+	canvas.scroll(10000, 10000, 100, 100, 500, 500, true);
+
+	canvas.scroll(-100, -100, 10, 10, 30, 30, false);
+	canvas.scroll(-100, -100, 10, 10, 30, 30, true);
+
+	canvas.scroll(10, 10, -200, -200, 100, 100, false);
+	canvas.scroll(10, 10, -200, -200, 100, 100, true);
+
+	canvas.scroll(100, 100, 50, 50, -50, -50, false);
+	canvas.scroll(100, 100, 50, 50, -50, -50, true);
 }
 
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
