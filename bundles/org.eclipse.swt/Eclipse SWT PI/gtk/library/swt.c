@@ -4595,3 +4595,48 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1optimal_
 
 	return (jint)gtk_clist_optimal_column_width((GtkCList*)arg0, (gint)arg1);
 }
+
+#define CELL_SPACING 1
+#define ROW_TOP_YPIXEL(clist, row) (((clist)->row_height * (row)) + \
+				    (((row) + 1) * CELL_SPACING) + \
+				    (clist)->voffset)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_ROW_1TOP_1YPIXEL
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ROW_1TOP_1YPIXEL\n")
+
+	return (jint)ROW_TOP_YPIXEL((GtkCList*)arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1ROW
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CTREE_1ROW\n")
+
+	return (jint)GTK_CTREE_ROW((GtkCTreeNode*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1ROW_1LIST
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CLIST_1ROW_1LIST\n")
+
+	return (jint) ((GtkCList*)arg0) -> row_list;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1NODE_1NEXT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CTREE_1NODE_1NEXT\n")
+
+	return (jint) GTK_CTREE_NODE_NEXT((GtkCTreeNode*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1WINDOW_1WIDTH
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("OS_GTK_1CLIST_1WINDOW_1WIDTH\n")
+
+	return (jint) ((GtkCList*)arg0)->clist_window_width;
+}
+

@@ -212,47 +212,35 @@ static TreeItem checkNull (TreeItem item) {
  */
 public Rectangle getBounds () {
 	int ctree = parent.handle;
-/*
-	double haj = OS.gtk_adjustment_get_value(tree.hadjustment);
-	double vaj = OS.gtk_adjustment_get_value(tree.vadjustment);
-	
-	int columnHandle = tree.column;
-	int height=parent.getItemHeight();
+	/* NB: Different from gtk_ctree_is_visible() */
+	if (!OS.gtk_ctree_is_viewable(ctree, handle)) return new Rectangle(0,0,0,0);
 
-	int row_list = tree.row_list; int level=0;
-	int count = OS.g_list_length (row_list);
-	int index=0;
-	while (index<count) {
-		int data = OS.g_list_nth (row_list, index);
-		if (handle == data){
-			int rowHandle = OS.g_list_nth_data (row_list, index);
-			GtkCTreeRow row = new GtkCTreeRow();
-			OS.memmove(row, rowHandle, GtkCTreeRow.sizeof);
-			level = row.level;
-			break;
-		}
-		index++;
+	/* Vertical */
+	int row_index = 0;
+	int work = OS.GTK_CLIST_ROW_LIST(ctree);
+	while ((work!=0) && (work!=handle)) {
+		work = OS.GTK_CTREE_NODE_NEXT(work);
+		row_index++;
 	}
-	int y = height*index + Tree.CELL_SPACING + tree.voffset + 2;
+	
+	int border = OS.gtk_container_get_border_width(ctree);
+	// observe the weird row spacing rule
+	int y = OS.ROW_TOP_YPIXEL(ctree, row_index) + Tree.CELL_SPACING;
+	int height = parent.getItemHeight();
 
-	int [] buffer = new int [1]; byte [] spacing = new byte [1];
-	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
-	int [] pixmap_closed = new int [1], mask_closed= new int [1], pixmap_opened= new int [1], mask_opened= new int [1];
-	OS.gtk_ctree_get_node_info (ctree, handle, buffer, spacing, pixmap_closed, mask_closed, pixmap_opened, mask_opened, is_leaf, expanded);
-	int length = OS.strlen (buffer[0]);
-	byte [] buffer1 = new byte [length];
-	OS.memmove (buffer1, buffer[0], length);
-	int styleHandle = OS.gtk_ctree_node_get_row_style(ctree, handle);
-	if (styleHandle == 0)
-		styleHandle = OS.gtk_widget_get_style(ctree);
-	GtkStyle style = new GtkStyle(styleHandle);*/
-	/* FIXME */	
-	int width = 50; /*OS.gdk_string_width(style.font, buffer1);*/
-
-//	x = (short)column.area_x+tree.tree_indent*(level-1)+spacing[0]+tree.hoffset;
-/*	int x = 33+tree.tree_indent*(level-1)+spacing[0]+tree.hoffset;*/
-
-	return new Rectangle (0, 0, 40, 10);
+	/* Horizontal */	
+	int row_ptr = OS.GTK_CTREE_ROW(ctree, handle);
+	GtkCTreeRow row = new GtkCTreeRow();
+	OS.memmove(row, OS.g_list_nth_data (handle, 0), GtkCTreeRow.sizeof);
+	int x = OS.GTK_CLIST_HOFFSET(ctree) + OS.GTK_CTREE_TREE_INDENT (ctree) * row.level;
+	if (image != null) {
+		int[] w = new int[1], h = new int[1];
+ 		OS.gdk_drawable_get_size(image.pixmap, w, h);
+ 		x += w[0]; 
+	}	
+	int width = OS.GTK_CLIST_WINDOW_WIDTH(ctree) - x; // No hoffset!
+	
+	return new Rectangle (x, y, width, parent.getItemHeight());
 }	
 
 /**
