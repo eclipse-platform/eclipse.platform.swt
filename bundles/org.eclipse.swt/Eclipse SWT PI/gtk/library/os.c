@@ -9088,19 +9088,35 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1size_1request)
 }
 #endif
 
-#ifndef NO_gtk_1widget_1style_1get
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1style_1get)
+#ifndef NO_gtk_1widget_1style_1get__I_3B_3II
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1style_1get__I_3B_3II)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, gtk_1widget_1style_1get_FUNC);
+	OS_NATIVE_ENTER(env, that, gtk_1widget_1style_1get__I_3B_3II_FUNC);
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, gtk_1widget_1style_1get_FUNC);
+	OS_NATIVE_EXIT(env, that, gtk_1widget_1style_1get__I_3B_3II_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1style_1get__I_3B_3JI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1style_1get__I_3B_3JI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jlongArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jlong *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1widget_1style_1get__I_3B_3JI_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL);
+	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
+	if (arg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1widget_1style_1get__I_3B_3JI_FUNC);
 }
 #endif
 
