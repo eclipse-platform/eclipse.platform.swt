@@ -1024,7 +1024,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (rect.right > client.right || rect.bottom > client.bottom) {
 							return LRESULT.ONE;
 						}
-					break;
+						break;
 				}
 			}
 			break;
