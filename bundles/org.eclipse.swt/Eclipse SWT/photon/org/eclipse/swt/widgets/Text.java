@@ -1083,7 +1083,7 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget();
-	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {-1});
+	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0x7FFFFFFF});
 }
 
 /**
