@@ -1470,6 +1470,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 
 boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	Event event = new Event ();
+	event.time = OS.GetMessageTime ();
 	event.button = button;
 	event.x = (short) (lParam & 0xFFFF);
 	event.y = (short) (lParam >> 16);
@@ -2946,20 +2947,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus out list */
-	int index = 0;
-	Control [] focusOut = getPath ();
 	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusIn = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -2971,15 +2960,15 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	// widget could be disposed at this point
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus out event or the deactivate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusOut.length-1; i>=index; --i) {
-		if (!focusOut [i].isDisposed ()) {
-			focusOut [i].sendEvent (SWT.Deactivate);
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		Control control = display.findControl (wParam);
+		if (control == null || shell != control.getShell ()) {
+			shell.setActiveControl (null);
 		}
 	}
 	
@@ -3398,20 +3387,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus in list */
-	int index = 0;
-	Control [] focusIn = getPath ();
-	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusOut = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -3423,16 +3399,13 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	// widget could be disposed at this point
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus in event or the activate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusIn.length-1; i>=index; --i) {
-		if (!focusIn [i].isDisposed ()) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
 	}
 
 	/*
