@@ -48,8 +48,12 @@ private String getPath(String fileName) {
 	String pathName = packageName + fileName;
 	URL url = SwtTestCase.class.getClassLoader().getResource(pathName);
 	
-	pathName = url.getFile();
-	return pathName.replaceAll("%20", " ");	
+	if (url != null) {
+		pathName = url.getFile();
+		return pathName.replaceAll("%20", " ");
+	} else {
+		return null;
+	}	
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
@@ -371,6 +375,14 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		fail("No exception thrown for file name == null");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for file name == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+	try {
+		String pathName = "nonexistent.txt";
+		Image image = new Image(display, pathName);
+		image.dispose();
+		fail("No exception thrown for non-existent file name");
+	} catch (SWTException e) {
+		assertEquals("Incorrect exception thrown for non-existent file name", SWT.ERROR_IO, e);
 	}
 	// j2se and j2me(cdc) can load from a file name but, j2me(cldc) throws an exception
 	if (!isJ2ME()) {
