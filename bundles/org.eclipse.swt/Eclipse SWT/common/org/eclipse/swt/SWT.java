@@ -225,153 +225,153 @@ public class SWT {
 	public static final int DEFAULT = -1;
 
 	/**
-	 * <code>Menu</code> style constant for menu bar behavior (value is 1<<1)
+	 * <code>Menu</code> style constant for menu bar behavior (value is 1&lt;&lt;1)
 	 */
 	public static final int BAR = 1 << 1;
 
 	/**
-	 * <code>Menu</code> style constant for drop down menu behavior (value is 1<<2)
+	 * <code>Menu</code> style constant for drop down menu behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int DROP_DOWN = 1 << 2;
 
 	/**
-	 * <code>Menu</code> style constant for pop up menu behavior (value is 1<<3)
+	 * <code>Menu</code> style constant for pop up menu behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int POP_UP = 1 << 3;
 
 	/**
-	 * <code>MenuItem</code> style constant for line separator behavior (value is 1<<1)
+	 * <code>MenuItem</code> style constant for line separator behavior (value is 1&lt;&lt;1)
 	 */
 	public static final int SEPARATOR = 1 << 1;
 
 	/* Button, MenuItem Constants */
 
 	/**
-	 * <code>Button</code> style constant for toggle button behavior (value is 1<<1)
+	 * <code>Button</code> style constant for toggle button behavior (value is 1&lt;&lt;1)
 	 */
 	public static final int TOGGLE = 1 << 1;
 
 	/**
-	 * <code>Button</code> style constant for arrow button behavior (value is 1<<2)
+	 * <code>Button</code> style constant for arrow button behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int ARROW = 1 << 2;
 
 	/**
 	 * <code>Button</code> and <code>MenuItem</code> 
-	 * style constant for push button behavior (value is 1<<3)
+	 * style constant for push button behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int PUSH = 1 << 3;
 
 	/**
 	 * <code>Button</code> and <code>MenuItem</code> 
-	 * style constant for radio button behavior (value is 1<<4)
+	 * style constant for radio button behavior (value is 1&lt;&lt;4)
 	 */
 	public static final int RADIO = 1 << 4;
 
 	/**
 	 * <code>Button</code> and <code>MenuItem</code> 
-	 * style constant for check box behavior (value is 1<<5)
+	 * style constant for check box behavior (value is 1&lt;&lt;5)
 	 */
 	public static final int CHECK = 1 << 5;
 
 	/**
-	 * <code>MenuItem</code> style constant for cascade behavior (value is 1<<6)
+	 * <code>MenuItem</code> style constant for cascade behavior (value is 1&lt;&lt;6)
 	 */
 	public static final int CASCADE = 1 << 6;
 
 	/**
 	 * <code>Text</code> and <code>List</code> 
 	 * style constant for multi-selection behavior in lists
-	 * and multiple line support on text fields (value is 1<<1)
+	 * and multiple line support on text fields (value is 1&lt;&lt;1)
 	 */
 	public static final int MULTI = 1 << 1;
 
 	/**
 	 * <code>Text</code> and <code>List</code> 
 	 * style constant for single selection behavior in lists
-	 * and single line support on text fields (value is 1<<2)
+	 * and single line support on text fields (value is 1&lt;&lt;2)
 	 */
 	public static final int SINGLE = 1 << 2;
 
 	/**
-	 * <code>Text</code> style constant for read-only behavior (value is 1<<3)
+	 * <code>Text</code> style constant for read-only behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int READ_ONLY = 1 << 3;
 
 	/**
-	 * <code>Text</code> style constant for auto-line wrap behavior (value is 1<<6)
+	 * <code>Text</code> style constant for auto-line wrap behavior (value is 1&lt;&lt;6)
 	 */
 	public static final int WRAP = 1 << 6;
 
 	/**
-	 * <code>Combo</code> style constant for simple (not drop down) behavior (value is 1<<6)
+	 * <code>Combo</code> style constant for simple (not drop down) behavior (value is 1&lt;&lt;6)
 	 */
 	public static final int SIMPLE = 1 << 6;
 
 	/**
 	 * <code>Group</code> and <code>Label</code>
-	 * style constant for shadow in behavior (value is 1<<2)
+	 * style constant for shadow in behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int SHADOW_IN = 1 << 2;
 
 	/**
 	 * <code>Group</code>, <code>Label</code> and <code>CustomLabel</code> 
-	 * style constant for shadow out behavior (value is 1<<3)
+	 * style constant for shadow out behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int SHADOW_OUT = 1 << 3;
 
 	/**
-	 * <code>Group</code> style constant for shadow etched in behavior (value is 1<<4)
+	 * <code>Group</code> style constant for shadow etched in behavior (value is 1&lt;&lt;4)
 	 * NOTE: This style is ignored on all platforms except Motif
 	 */
 	public static final int SHADOW_ETCHED_IN = 1 << 4;
 
 	/**
-	 * <code>Label</code> style constant for no shadow behavior (value is 1<<5)
+	 * <code>Label</code> style constant for no shadow behavior (value is 1&lt;&lt;5)
 	 */
 	public static final int SHADOW_NONE = 1 << 5;
 
 	/**
-	 * <code>Group</code> style constant for shadow etched out behavior (value is 1<<6)
+	 * <code>Group</code> style constant for shadow etched out behavior (value is 1&lt;&lt;6)
 	 * NOTE: This style is ignored on all platforms except Motif
 	 */
 	public static final int SHADOW_ETCHED_OUT = 1 << 6;
 
 	/**
-	 * <code>Shell</code> style constant for tool window behavior (value is 1<<2)
+	 * <code>Shell</code> style constant for tool window behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int TOOL = 1 << 2; 
 
 	/**
 	 * <code>Shell</code> style constant to ensure no trimmings are used. 
-	 * This overrides all other trim styles (value is 1<<3)
+	 * This overrides all other trim styles (value is 1&lt;&lt;3)
 	 */
 	public static final int NO_TRIM = 1 << 3;
 	
 	/**
-	 * <code>Shell</code> style constant for resize box trim (value is 1<<4)
+	 * <code>Shell</code> style constant for resize box trim (value is 1&lt;&lt;4)
 	 */
 	public static final int RESIZE = 1 << 4;
 
 	/**
-	 * <code>Shell</code> style constant for title area trim (value is 1<<5)
+	 * <code>Shell</code> style constant for title area trim (value is 1&lt;&lt;5)
 	 */
 	public static final int TITLE = 1 << 5;
 
 	/**
-	 * <code>Shell</code> style constant for close box trim (value is 1<<6,
+	 * <code>Shell</code> style constant for close box trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
 	 */
 	public static final int CLOSE = 1 << 6;
 
 	/**
-	 * <code>Shell</code> style constant for shell menu trim (value is 1<<6,
+	 * <code>Shell</code> style constant for shell menu trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
 	 */
 	public static final int MENU = CLOSE;
 
 	/**
-	 * <code>Shell</code> style constant for minimize box trim (value is 1<<7)
+	 * <code>Shell</code> style constant for minimize box trim (value is 1&lt;&lt;7)
 	 */
 	public static final int MIN = 1 << 7;
 
@@ -379,42 +379,42 @@ public class SWT {
 
 	/**
 	 * <code>ScrollBar</code>, <code>Composite</code> and <code>Shell</code>
-	 * style constant for horizontal scrollbar behavior (value is 1<<8)
+	 * style constant for horizontal scrollbar behavior (value is 1&lt;&lt;8)
 	 */
 	public static final int H_SCROLL = 1 << 8;
 
 	/**
 	 * <code>ScrollBar</code>, <code>Composite</code> and <code>Shell</code>
-	 * style constant for vertical scrollbar behavior (value is 1<<9)
+	 * style constant for vertical scrollbar behavior (value is 1&lt;&lt;9)
 	 */
 	public static final int V_SCROLL = 1 << 9;
 
 	/**
-	 * <code>Shell</code> style constant for maximize box trim (value is 1<<10)
+	 * <code>Shell</code> style constant for maximize box trim (value is 1&lt;&lt;10)
 	 */
 	public static final int MAX = 1 << 10;
 
 	/**
-	 * all <code>Widget</code> style constant for bordered behavior (value is 1<<11)
+	 * all <code>Widget</code> style constant for bordered behavior (value is 1&lt;&lt;11)
 	 */
 	public static final int BORDER = 1 << 11;
 
 	/**
 	 * all <code>Widget</code> style constant indicating that the window
 	 * manager should clip a widget's children with respect to its viewable
-	 * area. Note that this is a <em>HINT</em>. (value is 1<<12)
+	 * area. Note that this is a <em>HINT</em>. (value is 1&lt;&lt;12)
 	 */
 	public static final int CLIP_CHILDREN = 1 << 12; 
 
 	/**
 	 * all <code>Widget</code> style constant indicating that the window
 	 * manager should clip a widget's siblings with respect to its viewable
-	 * area. Note that this is a <em>HINT</em>. (value is 1<<13)
+	 * area. Note that this is a <em>HINT</em>. (value is 1&lt;&lt;13)
 	 */
 	public static final int CLIP_SIBLINGS = 1 << 13;
 
 	/**
-	 * <code>Shell</code> style constant for always on top behavior (value is 1<<14)
+	 * <code>Shell</code> style constant for always on top behavior (value is 1&lt;&lt;14)
 	 */
 	public static final int ON_TOP = 1 << 14;
 
@@ -438,29 +438,29 @@ public class SWT {
 	public static final int MODELESS = 0;
 
 	/**
-	 * <code>Shell</code> style constant for primary modal behavior (value is 1<<15)
+	 * <code>Shell</code> style constant for primary modal behavior (value is 1&lt;&lt;15)
 	 */
 	public static final int PRIMARY_MODAL = 1 << 15;
 
 	/**
-	 * <code>Shell</code> style constant for application modal behavior (value is 1<<16)
+	 * <code>Shell</code> style constant for application modal behavior (value is 1&lt;&lt;16)
 	 */
 	public static final int APPLICATION_MODAL = 1 << 16;
 
 	/**
-	 * <code>Shell</code> style constant for system modal behavior (value is 1<<17)
+	 * <code>Shell</code> style constant for system modal behavior (value is 1&lt;&lt;17)
 	 */
 	public static final int SYSTEM_MODAL = 1 << 17;
 
 	/**
 	 * all <code>Widget</code> style constant for selection hiding
-	 * behavior. Note that this is a <em>HINT</em>.  (value is 1<<15)
+	 * behavior. Note that this is a <em>HINT</em>.  (value is 1&lt;&lt;15)
 	 */
 	public static final int HIDE_SELECTION = 1 << 15;
 
 	/**
 	 * all <code>Widget</code> style constant for full row selection
-	 * behavior. Note that this is a <em>HINT</em>.  (value is 1<<16 since
+	 * behavior. Note that this is a <em>HINT</em>.  (value is 1&lt;&lt;16 since
 	 * FULL_SELECTION and SMOOTH share the same value, but are 
 	 * implemented on non-intersecting sets of widgets)
 	 */
@@ -468,130 +468,130 @@ public class SWT {
 
 	/**
 	 * all <code>Widget</code> style constant for flat appearance.
-	 * Note that this is a <em>HINT</em>.  (value is 1<<23)
+	 * Note that this is a <em>HINT</em>.  (value is 1&lt;&lt;23)
 	 */
 	public static final int FLAT = 1 << 23;
 
 	/**
 	 * all <code>Widget</code> style constant for flat appearance.
-	 * Note that this is a <em>HINT</em>.  (value is 1<<16 since
+	 * Note that this is a <em>HINT</em>.  (value is 1&lt;&lt;16 since
 	 * FULL_SELECTION and SMOOTH share the same value, but are 
 	 * implemented on non-intersecting sets of widgets)
 	 */
 	public static final int SMOOTH = FULL_SELECTION;
 
 	/**
-	 * <code>Canvas</code> style constant for no background behavior (value is 1<<18)
+	 * <code>Canvas</code> style constant for no background behavior (value is 1&lt;&lt;18)
 	 */
 	public static final int NO_BACKGROUND = 1 << 18;
 
 	/**
-	 * <code>Canvas</code> style constant for does not take focus behavior (value is 1<<19)
+	 * <code>Canvas</code> style constant for does not take focus behavior (value is 1&lt;&lt;19)
 	 */
 	public static final int NO_FOCUS = 1 << 19;
 
 	/**
-	 * <code>Canvas</code> style constant for no redraw on resize behavior (value is 1<<20)
+	 * <code>Canvas</code> style constant for no redraw on resize behavior (value is 1&lt;&lt;20)
 	 */
 	public static final int NO_REDRAW_RESIZE = 1 << 20;
 
 	/**
 	 * <code>Canvas</code> style constant for no paint event merging
-	 * behavior (value is 1<<21)
+	 * behavior (value is 1&lt;&lt;21)
 	 */
 	public static final int NO_MERGE_PAINTS = 1 << 21;
 
 	/**
 	 * <code>Canvas</code> style constant for preventing child radio group
-	 * behavior (value is 1<<22)
+	 * behavior (value is 1&lt;&lt;22)
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align up behavior (value is 1<<7, since
+	 * style constant for align up behavior (value is 1&lt;&lt;7, since
 	 * align UP and align TOP are considered the same)
 	 */
 	public static final int UP = 1 << 7;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align top behavior (value is 1<<7, since
+	 * style constant for align top behavior (value is 1&lt;&lt;7, since
 	 * align UP and align TOP are considered the same)
 	 */
 	public static final int TOP = UP;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align down behavior (value is 1<<10, since
+	 * style constant for align down behavior (value is 1&lt;&lt;10, since
 	 * align DOWN and align BOTTOM are considered the same)
 	 */
 	public static final int DOWN               = 1 << 10;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align bottom behavior (value is 1<<10, since
+	 * style constant for align bottom behavior (value is 1&lt;&lt;10, since
 	 * align DOWN and align BOTTOM are considered the same)
 	 */
 	public static final int BOTTOM             = DOWN;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align left behavior (value is 1<<14)
+	 * style constant for align left behavior (value is 1&lt;&lt;14)
 	 */
 	public static final int LEFT               = 1 << 14;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align right behavior (value is 1<<17)
+	 * style constant for align right behavior (value is 1&lt;&lt;17)
 	 */
 	public static final int RIGHT              = 1 << 17;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align center behavior (value is 1<<24)
+	 * style constant for align center behavior (value is 1&lt;&lt;24)
 	 */
 	public static final int CENTER             = 1 << 24;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align horizontal behavior (value is 1<<8)
+	 * style constant for align horizontal behavior (value is 1&lt;&lt;8)
 	 */
 	public static final int HORIZONTAL = H_SCROLL;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>
-	 * style constant for align vertical behavior (value is 1<<9)
+	 * style constant for align vertical behavior (value is 1&lt;&lt;9)
 	 */
 	public static final int VERTICAL = V_SCROLL;
 
 	/**
 	 * Input Method Editor style constant for double byte
-	 * input behavior (value is 1<<1)
+	 * input behavior (value is 1&lt;&lt;1)
 	 */
 	public static final int DBCS = 1 << 1;
 
 	/**
 	 * Input Method Editor style constant for alpha
-	 * input behavior (value is 1<<2)
+	 * input behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int ALPHA = 1 << 2;
 
 	/**
 	 * Input Method Editor style constant for native
-	 * input behavior (value is 1<<3)
+	 * input behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int NATIVE = 1 << 3;
 
 	/**
 	 * Input Method Editor style constant for phonetic
-	 * input behavior (value is 1<<4)
+	 * input behavior (value is 1&lt;&lt;4)
 	 */
 	public static final int PHONETIC = 1 << 4;
 
 	/**
 	 * Input Method Editor style constant for romanicized
-	 * input behavior (value is 1<<5)
+	 * input behavior (value is 1&lt;&lt;5)
 	 */
 	public static final int ROMAN = 1 << 5;
 
@@ -628,172 +628,172 @@ public class SWT {
 	/**
 	 * keyboard and/or mouse event mask indicating that the ALT key
 	 * was pushed on the keyboard when the event was generated
-	 * (value is 1<<16)
+	 * (value is 1&lt;&lt;16)
 	 */
 	public static final int ALT = 1 << 16;
 					
 	/**
 	 * keyboard and/or mouse event mask indicating that the SHIFT key
 	 * was pushed on the keyboard when the event was generated
-	 * (value is 1<<17)
+	 * (value is 1&lt;&lt;17)
 	 */
 	public static final int SHIFT = 1 << 17;
 					
 	/**
 	 * keyboard and/or mouse event mask indicating that the CTRL key
 	 * was pushed on the keyboard when the event was generated
-	 * (value is 1<<18)
+	 * (value is 1&lt;&lt;18)
 	 */
 	public static final int CTRL = 1 << 18;
 
 	/**
 	 * keyboard and/or mouse event mask indicating that the CTRL key
 	 * was pushed on the keyboard when the event was generated. This
-	 * is a synonym for CTRL (value is 1<<18)
+	 * is a synonym for CTRL (value is 1&lt;&lt;18)
 	 */
 	public static final int CONTROL = CTRL;
 
 	/**
 	 * keyboard and/or mouse event mask indicating that mouse button one
-	 * was pushed when the event was generated. (value is 1<<19)
+	 * was pushed when the event was generated. (value is 1&lt;&lt;19)
 	 */
 	public static final int BUTTON1 = 1 << 19;
 
 	/**
 	 * keyboard and/or mouse event mask indicating that mouse button two
-	 * was pushed when the event was generated. (value is 1<<20)
+	 * was pushed when the event was generated. (value is 1&lt;&lt;20)
 	 */
 	public static final int BUTTON2 = 1 << 20;
 
 	/**
 	 * keyboard and/or mouse event mask indicating that mouse button three
-	 * was pushed when the event was generated. (value is 1<<21)
+	 * was pushed when the event was generated. (value is 1&lt;&lt;21)
 	 */
 	public static final int BUTTON3 = 1 << 21;
 
 	/**
 	 * keyboard event constant representing the UP ARROW key
-	 * (value is (1<<24)+1)
+	 * (value is (1&lt;&lt;24)+1)
 	 */
 	public static final int ARROW_UP = (1 << 24) + 1;
 
 	/**
 	 * keyboard event constant representing the DOWN ARROW key
-	 * (value is (1<<24)+2)
+	 * (value is (1&lt;&lt;24)+2)
 	 */
 	public static final int ARROW_DOWN = (1 << 24) + 2;
 
 	/**
 	 * keyboard event constant representing the LEFT ARROW key
-	 * (value is (1<<24)+3)
+	 * (value is (1&lt;&lt;24)+3)
 	 */
 	public static final int ARROW_LEFT = (1 << 24) + 3;
 
 	/**
 	 * keyboard event constant representing the RIGHT ARROW key
-	 * (value is (1<<24)+4)
+	 * (value is (1&lt;&lt;24)+4)
 	 */
 	public static final int ARROW_RIGHT = (1 << 24) + 4;
 
 	/**
 	 * keyboard event constant representing the PAGE UP key
-	 * (value is (1<<24)+5)
+	 * (value is (1&lt;&lt;24)+5)
 	 */
 	public static final int PAGE_UP = (1 << 24) + 5;
 
 	/**
 	 * keyboard event constant representing the PAGE DOWN key
-	 * (value is (1<<24)+6)
+	 * (value is (1&lt;&lt;24)+6)
 	 */
 	public static final int PAGE_DOWN = (1 << 24) + 6;
 
 	/**
 	 * keyboard event constant representing the HOME key
-	 * (value is (1<<24)+7)
+	 * (value is (1&lt;&lt;24)+7)
 	 */
 	public static final int HOME = (1 << 24) + 7;
 
 	/**
 	 * keyboard event constant representing the END key
-	 * (value is (1<<24)+8)
+	 * (value is (1&lt;&lt;24)+8)
 	 */
 	public static final int END = (1 << 24) + 8;
 
 	/**
 	 * keyboard event constant representing the INSERT key
-	 * (value is (1<<24)+9)
+	 * (value is (1&lt;&lt;24)+9)
 	 */
 	public static final int INSERT = (1 << 24) + 9;
 
 	/**
 	 * keyboard event constant representing the F1 key
-	 * (value is (1<<24)+10)
+	 * (value is (1&lt;&lt;24)+10)
 	 */
 	public static final int F1 = (1 << 24) + 10;
 	
 	/**
 	 * keyboard event constant representing the F2 key
-	 * (value is (1<<24)+11)
+	 * (value is (1&lt;&lt;24)+11)
 	 */
 	public static final int F2 = (1 << 24) + 11;
 	
 	/**
 	 * keyboard event constant representing the F3 key
-	 * (value is (1<<24)+12)
+	 * (value is (1&lt;&lt;24)+12)
 	 */
 	public static final int F3 = (1 << 24) + 12;
 	
 	/**
 	 * keyboard event constant representing the F4 key
-	 * (value is (1<<24)+13)
+	 * (value is (1&lt;&lt;24)+13)
 	 */
 	public static final int F4 = (1 << 24) + 13;
 	
 	/**
 	 * keyboard event constant representing the F5 key
-	 * (value is (1<<24)+14)
+	 * (value is (1&lt;&lt;24)+14)
 	 */
 	public static final int F5 = (1 << 24) + 14;
 	
 	/**
 	 * keyboard event constant representing the F6 key
-	 * (value is (1<<24)+15)
+	 * (value is (1&lt;&lt;24)+15)
 	 */
 	public static final int F6 = (1 << 24) + 15;
 	
 	/**
 	 * keyboard event constant representing the F7 key
-	 * (value is (1<<24)+16)
+	 * (value is (1&lt;&lt;24)+16)
 	 */
 	public static final int F7 = (1 << 24) + 16;
 	
 	/**
 	 * keyboard event constant representing the F8 key
-	 * (value is (1<<24)+17)
+	 * (value is (1&lt;&lt;24)+17)
 	 */
 	public static final int F8 = (1 << 24) + 17;
 	
 	/**
 	 * keyboard event constant representing the F9 key
-	 * (value is (1<<24)+18)
+	 * (value is (1&lt;&lt;24)+18)
 	 */
 	public static final int F9 = (1 << 24) + 18;
 	
 	/**
 	 * keyboard event constant representing the F10 key
-	 * (value is (1<<24)+19)
+	 * (value is (1&lt;&lt;24)+19)
 	 */
 	public static final int F10 = (1 << 24) + 19;
 	
 	/**
 	 * keyboard event constant representing the F11 key
-	 * (value is (1<<24)+20)
+	 * (value is (1&lt;&lt;24)+20)
 	 */
 	public static final int F11 = (1 << 24) + 20;
 	
 	/**
 	 * keyboard event constant representing the F12 key
-	 * (value is (1<<24)+21)
+	 * (value is (1&lt;&lt;24)+21)
 	 */
 	public static final int F12 = (1 << 24) + 21;
 	
@@ -805,86 +805,86 @@ public class SWT {
 
 	/**
 	 * <code>MessageBox</code> style constant for information icon
-	 * behavior (value is 1<<1)
+	 * behavior (value is 1&lt;&lt;1)
 	 */
 	public static final int ICON_INFORMATION = 1 << 1;
 
 	/**
 	 * <code>MessageBox</code> style constant for question icon
-	 * behavior (value is 1<<2)
+	 * behavior (value is 1&lt;&lt;2)
 	 */
 	public static final int ICON_QUESTION = 1 << 2;
 
 	/**
 	 * <code>MessageBox</code> style constant for warning icon
-	 * behavior (value is 1<<3)
+	 * behavior (value is 1&lt;&lt;3)
 	 */
 	public static final int ICON_WARNING = 1 << 3;
 
 	/**
 	 * <code>MessageBox</code> style constant for "working" icon
-	 * behavior (value is 1<<4)
+	 * behavior (value is 1&lt;&lt;4)
 	 */
 	public static final int ICON_WORKING = 1 << 4;
 
 	/**
 	 * <code>MessageBox</code> style constant for an OK button.
 	 * Valid combinations are OK, OK|CANCEL
-	 * (value is 1<<5)
+	 * (value is 1&lt;&lt;5)
 	 */
 	public static final int OK = 1 << 5;
 
 	/**
 	 * <code>MessageBox</code> style constant for YES button.
 	 * Valid combinations are YES|NO, YES|NO|CANCEL
-	 * (value is 1<<6)
+	 * (value is 1&lt;&lt;6)
 	 */
 	public static final int YES = 1 << 6;
 
 	/**
 	 * <code>MessageBox</code> style constant for NO button.
 	 * Valid combinations are YES|NO, YES|NO|CANCEL
-	 * (value is 1<<7)
+	 * (value is 1&lt;&lt;7)
 	 */
 	public static final int NO = 1 << 7;
 
 	/**
 	 * <code>MessageBox</code> style constant for a CANCEL button.
 	 * Valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
-	 * (value is 1<<8)
+	 * (value is 1&lt;&lt;8)
 	 */
 	public static final int CANCEL = 1 << 8;
 
 	/**
 	 * <code>MessageBox</code> style constant for an ABORT button.
 	 * The only valid combination is ABORT|RETRY|IGNORE
-	 * (value is 1<<9)
+	 * (value is 1&lt;&lt;9)
 	 */
 	public static final int ABORT = 1 << 9;
 
 	/**
 	 * <code>MessageBox</code> style constant for a RETRY button.
 	 * Valid combinations are ABORT|RETRY|IGNORE, RETRY|CANCEL
-	 * (value is 1<<10)
+	 * (value is 1&lt;&lt;10)
 	 */
 	public static final int RETRY = 1 << 10;
 
 	/**
 	 * <code>MessageBox</code> style constant for an IGNORE button.
 	 * The only valid combination is ABORT|RETRY|IGNORE
-	 * (value is 1<<11)
+	 * (value is 1&lt;&lt;11)
 	 */
 	public static final int	IGNORE = 1 << 11;
 
 	/**
 	 * <code>FileDialog</code> style constant for open file dialog behavior
-	 * (value is 1<<12)
+	 * (value is 1&lt;&lt;12)
 	 */
 	public static final int OPEN = 1 << 12;
 
 	/**
 	 * <code>FileDialog</code> style constant for save file dialog behavior
-	 * (value is 1<<13)
+	 * (value is 1&lt;&lt;13)
 	 */
 	public static final int SAVE = 1 << 13;
 
@@ -1338,37 +1338,37 @@ public class SWT {
 	
 	/**
 	 * traversal event detail field value indicating that the ESC
-	 * key was pressed (value is 1<<1)
+	 * key was pressed (value is 1&lt;&lt;1)
 	 */
 	public static final int TRAVERSE_ESCAPE = 1 << 1;
 
 	/**
 	 * traversal event detail field value indicating that the ENTER
-	 * key was pressed (value is 1<<2)
+	 * key was pressed (value is 1&lt;&lt;2)
 	 */
 	public static final int TRAVERSE_RETURN = 1 << 2;
 
 	/**
 	 * traversal event detail field value indicating that the SHIFT-TAB
-	 * key was pressed (value is 1<<3)
+	 * key was pressed (value is 1&lt;&lt;3)
 	 */
 	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
 
 	/**
 	 * traversal event detail field value indicating that the TAB
-	 * key was pressed (value is 1<<4)
+	 * key was pressed (value is 1&lt;&lt;4)
 	 */
 	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
 
 	/**
 	 * traversal event detail field value indicating that the LEFT-ARROW
-	 * or UP-ARROW keys was pressed (value is 1<<5)
+	 * or UP-ARROW keys was pressed (value is 1&lt;&lt;5)
 	 */
 	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
 
 	/**
 	 * traversal event detail field value indicating that the RIGHT-ARROW
-	 * or DOWN-ARROW keys was pressed (value is 1<<6)
+	 * or DOWN-ARROW keys was pressed (value is 1&lt;&lt;6)
 	 */
 	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
 
@@ -1412,13 +1412,13 @@ public class SWT {
 	
 	/**
 	 * font style constant indicating a bold weight font
-	 * (value is 1<<0)
+	 * (value is 1&lt;&lt;0)
 	 */
 	public static final int BOLD = 1 << 0;
 	
 	/**
 	 * font style constant indicating an italic font
-	 * (value is 1<<1)
+	 * (value is 1&lt;&lt;1)
 	 */
 	public static final int ITALIC = 1 << 1;
 		
@@ -1628,19 +1628,19 @@ public class SWT {
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1<<0)
+	 * contains no transparency information (value is 1&lt;&lt;0)
 	 */
 	public static final int TRANSPARENCY_ALPHA = 1 << 0;
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1<<1)
+	 * contains no transparency information (value is 1&lt;&lt;1)
 	 */
 	public static final int TRANSPARENCY_MASK = 1 << 1;
 	
 	/**
 	 * image transparency constant indicating that the image
-	 * contains no transparency information (value is 1<<2)
+	 * contains no transparency information (value is 1&lt;&lt;2)
 	 */
 	public static final int TRANSPARENCY_PIXEL = 1 << 2;
 
