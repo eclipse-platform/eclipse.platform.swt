@@ -55,13 +55,13 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData) {
-	transferData.result = -1;
-	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	if (!_validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String string = (String)object;
-	if (string.length() == 0) return;
-	
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
+	transferData.result = -1;
 	switch (transferData.type) {
 		case TEXTID: {
 			int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
@@ -144,4 +144,10 @@ protected String[] getTypeNames() {
 	return new String[] {UTEXT, TEXT};
 }
 
+boolean _validate(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
+}
+protected boolean validate(Object object) {
+	return _validate(object);
+}
 }
