@@ -250,10 +250,16 @@ public Image(Device device, Image srcImage, int flag) {
 			OS.memmove(srcData, srcXImage.data, srcData.length);
 			/* Create destination image */
 			int destPixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, srcXImage.depth);
+			int visualPtr = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+			int screenDepth = OS.XDefaultDepthOfScreen(OS.XDefaultScreenOfDisplay(xDisplay));			
+			int destXImagePtr = OS.XCreateImage(xDisplay, visualPtr, screenDepth, OS.ZPixmap, 0, 0, width, height, srcXImage.bitmap_pad, 0);
 			XImage destXImage = new XImage();
-			int destXImagePtr = OS.XGetImage(xDisplay, drawable, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 			OS.memmove(destXImage, destXImagePtr, XImage.sizeof);
-			byte[] destData = new byte[destXImage.bytes_per_line * destXImage.height];
+			int bufSize = destXImage.bytes_per_line * destXImage.height;
+			int bufPtr = OS.XtMalloc(bufSize);
+			destXImage.data = bufPtr;
+			OS.memmove(destXImagePtr, destXImage, XImage.sizeof);
+			byte[] destData = new byte[bufSize];
 			/* Find the colors to map to */
 			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
@@ -311,8 +317,6 @@ public Image(Device device, Image srcImage, int flag) {
 					index = 0;
 					/* Get masks */
 					Visual visual = new Visual();
-					int screenNum = OS.XDefaultScreen(xDisplay);
-					int visualPtr = OS.XDefaultVisual(xDisplay, screenNum);
 					OS.memmove(visual, visualPtr, Visual.sizeof);
 					int redMask = visual.red_mask;
 					int greenMask = visual.green_mask;
@@ -356,8 +360,6 @@ public Image(Device device, Image srcImage, int flag) {
 					index = 0;
 					/* Get masks */
 					visual = new Visual();
-					screenNum = OS.XDefaultScreen(xDisplay);
-					visualPtr = OS.XDefaultVisual(xDisplay, screenNum);
 					OS.memmove(visual, visualPtr, Visual.sizeof);
 					redMask = visual.red_mask;
 					greenMask = visual.green_mask;
