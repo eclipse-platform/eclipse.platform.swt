@@ -438,6 +438,11 @@ public void deselect (int [] indices) {
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=0; i<indices.length; i++) {
+		/*
+		 * An index of -1 will apply the change to all
+		 * items.  Ensure that indices are greater than -1.
+		 */
+		if (indices [i] < 0) continue;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
 		ignoreSelect = false;
@@ -458,6 +463,11 @@ public void deselect (int [] indices) {
  */
 public void deselect (int index) {
 	checkWidget ();
+	/*
+	 * An index of -1 will apply the change to all
+	 * items.  Ensure that index is greater than -1.
+	 */
+	if (index < 0) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	ignoreSelect = true;
@@ -484,6 +494,11 @@ public void deselect (int start, int end) {
 	checkWidget ();
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_SELECTED;
+	/*
+	 * An index of -1 will apply the change to all
+	 * items.  Ensure that indices are greater than -1.
+	 */
+	start = Math.max (0, start);
 	for (int i=start; i<=end; i++) {
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
@@ -1444,6 +1459,11 @@ public void select (int [] indices) {
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=indices.length-1; i>=0; --i) {
+		/*
+		* An index of -1 will apply the change to all
+	 	* items.  Ensure that indices are greater than -1.
+	 	*/
+		if (indices [i] < 0) continue;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
 		ignoreSelect = false;
@@ -1464,6 +1484,11 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
+	/*
+	 * An index of -1 will apply the change to all
+	 * items.  Ensure that index is greater than -1.
+	 */
+	if (index < 0) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
@@ -1492,6 +1517,11 @@ public void select (int start, int end) {
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
+	/*
+	 * An index of -1 will apply the change to all
+	 * items.  Ensure that indices are greater than -1.
+	 */
+	start = Math.max (0, start);
 	for (int i=start; i<=end; i++) {
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
@@ -1685,6 +1715,11 @@ void setCheckboxImageList (int width, int height) {
 
 void setFocusIndex (int index) {
 //	checkWidget ();	
+	/*
+	 * An index of -1 will apply the change to all
+	 * items.  Ensure that index is greater than -1.
+	 */
+	if (index < 0) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_FOCUSED;
 	lvItem.stateMask = OS.LVIS_FOCUSED;
