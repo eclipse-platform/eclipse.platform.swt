@@ -484,12 +484,14 @@ public class StyledText extends Canvas {
 			renderer.drawLine(
 				line, i, paintY, gc, background, foreground, true);
 			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
+				// close full page
 				endPage(page);
 				paintY = clientArea.y - lineHeight;
 				page++;
 			}
 		}
-		if (paintY > clientArea.y && paintY <= clientArea.y + clientArea.height) {
+		if (paintY > clientArea.y) {
+			// close partial page
 			endPage(page);
 		}
 	}
