@@ -115,7 +115,7 @@ void createHandle () {
 		if ((style & SWT.MIN) != 0) attributes |= OS.kWindowCollapseBoxAttribute;
 		if ((style & SWT.MAX) != 0) attributes |= OS.kWindowFullZoomAttribute;
 		if ((style & SWT.RESIZE) != 0) {
-			attributes |= OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute;
+			attributes |= OS.kWindowResizableAttribute; // | OS.kWindowLiveResizeAttribute;
 		}
 	}
 	int windowClass = OS.kDocumentWindowClass;
