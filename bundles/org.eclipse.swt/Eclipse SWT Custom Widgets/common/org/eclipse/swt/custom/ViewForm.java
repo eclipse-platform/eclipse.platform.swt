@@ -52,6 +52,21 @@ public class ViewForm extends Composite {
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
+ 	/**
+	 * horizontalSpacing specifies the number of pixels between the right
+	 * edge of one cell and the left edge of its neighbouring cell to
+	 * the right.
+	 *
+	 * The default value is 1.
+	 */
+ 	public int horizontalSpacing = 1;
+	/**
+	 * verticalSpacing specifies the number of pixels between the bottom
+	 * edge of one cell and the top edge of its neighbouring cell underneath.
+	 *
+	 * The default value is 1.
+	 */
+ 	public int verticalSpacing = 1;
 	
 	/**
 	 * Color of innermost line of drop shadow border.
@@ -74,9 +89,6 @@ public class ViewForm extends Composite {
 	
 	// Configuration and state info
 	private boolean separateTopCenter = false;
-	private int drawLine1 = -1;
-	private int drawLine2 = -1;
-	
 	private boolean showBorder = false;
 	
 	private int BORDER_TOP = 0;
@@ -162,7 +174,6 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	Point leftSize = new Point(0, 0);
 	if (topLeft != null) {
 		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		leftSize.x += 1; // +1 for highlight line
 	}
 	Point centerSize = new Point(0, 0);
 	if (topCenter != null) {
@@ -177,21 +188,29 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (separateTopCenter ||
 	    (wHint != SWT.DEFAULT &&  leftSize.x + centerSize.x + rightSize.x > wHint)) {
 		size.x = leftSize.x + rightSize.x;
+		if (leftSize.x > 0 && rightSize.x > 0) size.x += horizontalSpacing;
 		size.x = Math.max(centerSize.x, size.x);
-		size.y = Math.max(leftSize.y, rightSize.y) + 1; // +1 for highlight line
+		size.y = Math.max(leftSize.y, rightSize.y);
 		if (topCenter != null){
 			size.y += centerSize.y;
-		}
+			if (topLeft != null ||topRight != null)size.y += verticalSpacing;
+		}	
 	} else {
 		size.x = leftSize.x + centerSize.x + rightSize.x;
-		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y)) + 1; // +1 for highlight line
+		int count = -1;
+		if (leftSize.x > 0) count++;
+		if (centerSize.x > 0) count++;
+		if (rightSize.x > 0) count++;
+		if (count > 0) size.x += count * horizontalSpacing;
+		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y));
 	}
 	
 	if (content != null) {
 		Point contentSize = new Point(0, 0);
 		contentSize = content.computeSize(SWT.DEFAULT, SWT.DEFAULT); 
 		size.x = Math.max (size.x, contentSize.x);
-		size.y += contentSize.y + 1; // +1 for line bewteen content and header
+		size.y += contentSize.y;
+		if (size.y > contentSize.y) size.y += verticalSpacing;
 	}
 	
 	size.x += 2 * marginWidth;
@@ -263,9 +282,6 @@ public void layout (boolean changed) {
 	checkWidget();
 	Rectangle rect = getClientArea();
 	
-	drawLine1 = -1;
-	drawLine2 = -1;
-	
 	Point leftSize = new Point(0, 0);
 	if (topLeft != null && !topLeft.isDisposed()) {
 		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -279,75 +295,61 @@ public void layout (boolean changed) {
 		 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 	
-	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth + 1; // +1 for highlight line	
-	int height = rect.y + marginHeight;
+	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth;
+	int count = -1;
+	if (leftSize.x > 0) count++;
+	if (centerSize.x > 0) count++;
+	if (rightSize.x > 0) count++;
+	if (count > 0) minTopWidth += count * horizontalSpacing;
+		
+	int x = rect.x + rect.width - marginWidth;
+	int y = rect.y + marginHeight;
 	
 	boolean top = false;
 	if (separateTopCenter || minTopWidth > rect.width) {
 		int topHeight = Math.max(rightSize.y, leftSize.y);
 		if (topRight != null && !topRight.isDisposed()) {
 			top = true;
-			topRight.setBounds(rect.x + rect.width - marginWidth - rightSize.x, 
-			                   rect.y + 1 + marginHeight, 
-			                   rightSize.x, topHeight);
-			height += 1 + topHeight; // +1 for highlight line
+			x -= rightSize.x;
+			topRight.setBounds(x, y, rightSize.x, topHeight);
+			x -= horizontalSpacing;
 		}
 		if (topLeft != null && !topLeft.isDisposed()) {
 			top = true;
-			leftSize = topLeft.computeSize(rect.width - 2* marginWidth - rightSize.x - 1, SWT.DEFAULT);
-			topLeft.setBounds(rect.x + 1 + marginWidth, 
-			                  rect.y + 1 + marginHeight, 
-			                  leftSize.x, topHeight);
-			height = Math.max(height, rect.y + marginHeight + 1 + topHeight); // +1 for highlight line
+			leftSize = topLeft.computeSize(x - rect.x - marginWidth, SWT.DEFAULT);
+			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
 		}
+		if (top)y += topHeight + verticalSpacing;
 		if (topCenter != null && !topCenter.isDisposed()) {
 			top = true;
-			if (height > rect.y + marginHeight) {
-				drawLine1 = height;
-				height += 1; // +1 for divider line
-			}
 			centerSize = topCenter.computeSize(rect.width - 2 * marginWidth, SWT.DEFAULT);
-			topCenter.setBounds(rect.x + rect.width - marginWidth - centerSize.x, 
-			                    height, 
-			                    centerSize.x, centerSize.y);
-			height += centerSize.y;
-
+			topCenter.setBounds(rect.x + rect.width - marginWidth - centerSize.x, y, centerSize.x, centerSize.y);
+			y += centerSize.y + verticalSpacing;
 		}		
 	} else {
 		int topHeight = Math.max(rightSize.y, Math.max(centerSize.y, leftSize.y));
 		if (topRight != null && !topRight.isDisposed()) {
 			top = true;
-			topRight.setBounds(rect.x + rect.width - marginWidth - rightSize.x, 
-			                   rect.y + marginHeight + 1, // +1 for highlight line
-			                   rightSize.x, topHeight);
-			height += 1 + topHeight; // +1 for highlight line
+			x -= rightSize.x;
+			topRight.setBounds(x, y, rightSize.x, topHeight);
+			x -= horizontalSpacing;
 		}
 		if (topCenter != null && !topCenter.isDisposed()) {
 			top = true;
-			topCenter.setBounds(rect.x + rect.width - marginWidth - rightSize.x - centerSize.x, 
-			                    rect.y + marginHeight + 1, // +1 for highlight line
-			                    centerSize.x, topHeight);
-			height = Math.max(height, rect.y + marginHeight + 1 + topHeight); // +1 for highlight line                    
+			x -= centerSize.x;
+			topCenter.setBounds(x, y, centerSize.x, topHeight);
+			x -= horizontalSpacing;
 		}
 		if (topLeft != null && !topLeft.isDisposed()) {
 			top = true;
-			leftSize = topLeft.computeSize(rect.width - 2 * marginWidth - rightSize.x - centerSize.x - 1, topHeight);
-			topLeft.setBounds(rect.x + marginWidth + 1, // +1 for highlight line
-			                  rect.y + marginHeight + 1, // +1 for highlight line
-			                  leftSize.x, topHeight);
-			height = Math.max(height, rect.y + marginHeight + 1 + topHeight); // +1 for highlight line
+			leftSize = topLeft.computeSize(x - rect.x - marginWidth, topHeight);
+			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
 		}
+		if (top)y += topHeight + verticalSpacing;
 	}
 
 	if (content != null && !content.isDisposed()) {
-		if (top) {
-			drawLine2 = height;
-			height += 1; // +1 for divider line
-		}
-		 content.setBounds(rect.x + marginWidth, 
-		                   height, 
-		                   rect.width - 2 * marginWidth, 
-		                   rect.y + rect.height - height - marginHeight);
+		 content.setBounds(rect.x + marginWidth, y, rect.width - 2 * marginWidth, rect.y + rect.height - y - marginHeight);
 	}
 }
 void onDispose() {
@@ -393,30 +395,6 @@ void onPaint(GC gc) {
 			gc.drawLine(d.x + d.width - 1, d.y + 2,            d.x + d.width - 1, d.y + d.height - 2);
 		}
 	}
-		
-	if (drawLine1 != -1) {
-		// top seperator line
-		gc.setForeground(borderColor1);
-		gc.drawLine(d.x + BORDER_LEFT, drawLine1, d.x + d.width - BORDER_RIGHT, drawLine1);	
-	}
-	if (drawLine2 != -1) {
-		// content separator line
-		gc.setForeground(borderColor1);
-		gc.drawLine(d.x + BORDER_LEFT, drawLine2, d.x + d.width - BORDER_RIGHT, drawLine2);
-	}
-	// highlight on top
-	int y = drawLine1;
-	if (y == -1){
-		y = drawLine2;
-	}
-	if (y != -1) {
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
-		gc.drawLine(d.x + BORDER_LEFT + marginWidth, d.y + BORDER_TOP + marginHeight, 
-		            d.x + BORDER_LEFT + marginWidth, y - 1);
-		gc.drawLine(d.x + BORDER_LEFT + marginWidth, d.y + BORDER_TOP + marginHeight,
-		            d.x + d.width - BORDER_RIGHT - marginWidth - 1, d.y + BORDER_TOP + marginHeight);
-	}
-
 	gc.setForeground(getForeground());
 }
 void onResize() {
