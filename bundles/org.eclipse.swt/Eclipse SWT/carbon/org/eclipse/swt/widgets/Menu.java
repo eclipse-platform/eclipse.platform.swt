@@ -663,7 +663,6 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	lastTarget = null;
 	short [] index = new short [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index) == OS.noErr) {
-		/* TEMPORARY COCDE */
 		if (index [0] > 0) lastTarget = items [index [0] - 1];
 		if (lastTarget != null) {
 			lastTarget.sendEvent (SWT.Arm);
