@@ -3392,9 +3392,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	boolean dragging = false, mouseDown = true;
 	boolean dragDetect = hooks (SWT.DragDetect);
 	if (dragDetect) {
-		POINT pt = new POINT ();
-		pt.x = (short) (lParam & 0xFFFF);
-		pt.y = (short) (lParam >> 16);
 		if (!OS.IsWinCE) {
 			/*
 			* Feature in Windows.  It's possible that the drag
@@ -3404,6 +3401,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			* to cancel the drag.  The fix is to query the state
 			* of the mouse and capture the mouse accordingly.
 			*/
+			POINT pt = new POINT ();
+			pt.x = (short) (lParam & 0xFFFF);
+			pt.y = (short) (lParam >> 16);
+			OS.ClientToScreen(handle, pt);
 			dragging = OS.DragDetect (handle, pt);
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
