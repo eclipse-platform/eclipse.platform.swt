@@ -2072,21 +2072,21 @@ public void test_setSelectionI() {
 	assertEquals(list.getFocusIndex(), 2);
 	
 	list.setSelection(-5);
-	assertEquals(list.getSelectionIndices(), new int[] {2});
+	assertEquals(list.getSelectionIndices(), new int[0]);
 	
 	list.setSelection(0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
 	
 	list.setSelection(number);
-	assertEquals(list.getSelectionIndices(), new int[] {0});
+	assertEquals(list.getSelectionIndices(), new int[0]);
 	
 	list.setSelection(number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
 	
 	list.setSelection(-1);
-	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getSelectionIndices(), new int[0]);
 	
 	list.removeAll();
 	

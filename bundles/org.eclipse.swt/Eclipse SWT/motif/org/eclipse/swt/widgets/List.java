@@ -1370,7 +1370,7 @@ public void setItems (String [] items) {
  */
 public void setSelection (int index) {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	deselectAll ();
 	select (index);
 	showSelection ();
 	if ((style & SWT.MULTI) != 0) {
