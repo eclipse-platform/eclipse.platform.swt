@@ -226,7 +226,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>children [Typical OUT] - an array of childIDs</li>
-	 *    <li>accessible [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
+	 *    <li>children [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
 	 * </ul>
 	 */
 	public void getChildren(AccessibleControlEvent e);
