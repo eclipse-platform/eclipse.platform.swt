@@ -1895,6 +1895,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1rect_1in)
 }
 #endif
 
+#ifndef NO_gdk_1region_1rectangle
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1rectangle)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	GdkRectangle _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1region_1rectangle\n")
+	if (arg0) lparg0 = getGdkRectangleFields(env, arg0, &_arg0);
+	rc = (jint)gdk_region_rectangle(lparg0);
+	if (arg0) setGdkRectangleFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "gdk_1region_1rectangle\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1region_1subtract
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1region_1subtract)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

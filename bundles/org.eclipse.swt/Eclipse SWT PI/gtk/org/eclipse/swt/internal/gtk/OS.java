@@ -464,6 +464,7 @@ public static final synchronized native int gdk_region_new();
 public static final synchronized native void gdk_region_offset(int region, int dx, int dy);
 public static final synchronized native boolean gdk_region_point_in(int region, int x, int y);
 public static final synchronized native int gdk_region_polygon(int[] points, int npoints, int fill_rule);
+public static final synchronized native int gdk_region_rectangle(GdkRectangle rectangle);
 public static final synchronized native int gdk_region_rect_in(int region, GdkRectangle rect);
 public static final synchronized native void gdk_region_subtract(int source1, int source2);
 public static final synchronized native void gdk_region_union(int source1, int source2);

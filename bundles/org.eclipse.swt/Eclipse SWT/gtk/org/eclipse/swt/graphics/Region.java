@@ -244,13 +244,12 @@ public void intersect(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.gdk_region_new();
 	GdkRectangle gdkRect = new GdkRectangle();
 	gdkRect.x = rect.x;
 	gdkRect.y = rect.y;
 	gdkRect.width = rect.width;
 	gdkRect.height = rect.height;
-	OS.gdk_region_union_with_rect(rectRgn, gdkRect);
+	int rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_intersect(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }
@@ -367,13 +366,12 @@ public void subtract(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.gdk_region_new();
 	GdkRectangle gdkRect = new GdkRectangle();
 	gdkRect.x = rect.x;
 	gdkRect.y = rect.y;
 	gdkRect.width = rect.width;
 	gdkRect.height = rect.height;
-	OS.gdk_region_union_with_rect(rectRgn, gdkRect);
+	int rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_subtract(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }

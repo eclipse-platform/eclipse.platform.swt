@@ -1401,9 +1401,9 @@ public void getClipping(Region region) {
 		rect.x = 0; rect.y = 0;
 		rect.width = width[0]; rect.height = height[0];
 		OS.gdk_region_union_with_rect(hRegion, rect);
-		return;
+	} else {
+		OS.gdk_region_union(hRegion, clipRgn);
 	}
-	OS.gdk_region_union(hRegion, clipRgn);
 }
 /** 
  * Returns the font currently being used by the receiver

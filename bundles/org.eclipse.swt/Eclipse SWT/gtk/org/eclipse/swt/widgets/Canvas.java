@@ -175,11 +175,9 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	srcRect.y = y;
 	srcRect.width = width;
 	srcRect.height = height;
-	int copyRegion = OS.gdk_region_new ();
-	OS.gdk_region_union_with_rect (copyRegion, srcRect);
+	int copyRegion = OS.gdk_region_rectangle (srcRect);
 	OS.gdk_region_intersect(copyRegion, visibleRegion);
-	int invalidateRegion = OS.gdk_region_new ();
-	OS.gdk_region_union_with_rect (invalidateRegion, srcRect);	
+	int invalidateRegion = OS.gdk_region_rectangle (srcRect);	
 	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
 	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 	GdkRectangle copyRect = new GdkRectangle();
