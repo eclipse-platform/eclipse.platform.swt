@@ -3234,7 +3234,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					if (!checkData (item, false)) break;
 					TableItem newItem = fixScrollWidth ? null : item;
-					if (setScrollWidth (newItem, true)) redraw ();
+					if (setScrollWidth (newItem, true)) {
+						OS.InvalidateRect (handle, null, true);
+					}
 				}
 				item.cached = true;
 			}
