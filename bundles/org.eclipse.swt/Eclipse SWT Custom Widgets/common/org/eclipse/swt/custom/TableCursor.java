@@ -12,6 +12,7 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Platform;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
@@ -385,21 +386,44 @@ void paint(Event event) {
 	String text = item.getText(column);
 	if (text != "") {
 		Point extent = gc.stringExtent(text);
-		if (column == 0) {
-			x +=  2;
-		} else {
-			TableColumn tableColumn = table.getColumn(column);
-			int alignmnent = tableColumn.getAlignment();
-			switch (alignmnent) {
-				case SWT.LEFT:
-					x += 6;
-					break;
-				case SWT.RIGHT:
-					x = tableColumn.getWidth() - extent.x - 6;
-					break;
-				case SWT.CENTER:
-					x += (tableColumn.getWidth() - x - extent.x) / 2;
-					break;
+		TableColumn[] columns = table.getColumns();
+		// Temporary code - need a better way to determine table trim
+		String platform = SWT.getPlatform();
+		if ("win32".equals(platform)) { //$NON-NLS-1$
+			if (table.getColumns().length == 0 || column == 0) {
+				x += 2; 
+			} else {
+				TableColumn tableColumn = columns[column];
+				int alignmnent = tableColumn.getAlignment();
+				switch (alignmnent) {
+					case SWT.LEFT:
+						x += 6;
+						break;
+					case SWT.RIGHT:
+						x = tableColumn.getWidth() - extent.x - 6;
+						break;
+					case SWT.CENTER:
+						x += (tableColumn.getWidth() - x - extent.x) / 2;
+						break;
+				}
+			}
+		}  else {
+			if (table.getColumns().length == 0) {
+				x += 5; 
+			} else {
+				TableColumn tableColumn = columns[column];
+				int alignmnent = tableColumn.getAlignment();
+				switch (alignmnent) {
+					case SWT.LEFT:
+						x += 5;
+						break;
+					case SWT.RIGHT:
+						x = tableColumn.getWidth() - extent.x - 3;
+						break;
+					case SWT.CENTER:
+						x += (tableColumn.getWidth() - x - extent.x) / 2 + 1;
+						break;
+				}
 			}
 		}
 		int textY = (size.y - extent.y) / 2;
@@ -410,7 +434,6 @@ void paint(Event event) {
 		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 		gc.drawFocus(0, 0, size.x, size.y);
 	}
-
 }
 
 void tableFocusIn(Event event) {
