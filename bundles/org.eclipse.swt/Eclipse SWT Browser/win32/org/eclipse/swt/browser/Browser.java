@@ -160,19 +160,33 @@ public Browser(Composite parent, int style) {
 	
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
-	addListener(SWT.Dispose, new Listener() {
+
+	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
-			if (auto != null)
-				auto.dispose();
-			auto = null;
+			switch (e.type) {
+				case SWT.Dispose: {
+					if (auto != null) auto.dispose();
+					auto = null;
+					break;
+				}
+				case SWT.Resize: {
+					frame.setBounds(getClientArea());
+					break;
+				}
+				case SWT.KeyDown:
+				case SWT.KeyUp: {
+					notifyListeners(e.type, e);
+					break;
+				}
+			}
 		}
-	});
-	addListener(SWT.Resize, new Listener() {
-		public void handleEvent(Event e) {
-			frame.setBounds(getClientArea());
-		}
-	});
-	OleListener listener = new OleListener() {
+	};
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.Resize, listener);
+	site.addListener(SWT.KeyDown, listener);
+	site.addListener(SWT.KeyUp, listener);
+	
+	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			switch (event.type) {
 				case BeforeNavigate2: {
@@ -489,24 +503,24 @@ public Browser(Composite parent, int style) {
 			for (int i = 0; i < arguments.length; i++) arguments[i].dispose();
 		}
 	};
-	site.addEventListener(BeforeNavigate2, listener);
-	site.addEventListener(CommandStateChange, listener);
-	site.addEventListener(DocumentComplete, listener);
-	site.addEventListener(NavigateComplete2, listener);
-	site.addEventListener(NewWindow2, listener);
-	site.addEventListener(OnMenuBar, listener);
-	site.addEventListener(OnStatusBar, listener);
-	site.addEventListener(OnToolBar, listener);
-	site.addEventListener(OnVisible, listener);
-	site.addEventListener(ProgressChange, listener);
-	site.addEventListener(StatusTextChange, listener);
-	site.addEventListener(TitleChange, listener);
-	site.addEventListener(WindowClosing, listener);
-	site.addEventListener(WindowSetHeight, listener);
-	site.addEventListener(WindowSetLeft, listener);
-	site.addEventListener(WindowSetTop, listener);
-	site.addEventListener(WindowSetWidth, listener);
-		
+	site.addEventListener(BeforeNavigate2, oleListener);
+	site.addEventListener(CommandStateChange, oleListener);
+	site.addEventListener(DocumentComplete, oleListener);
+	site.addEventListener(NavigateComplete2, oleListener);
+	site.addEventListener(NewWindow2, oleListener);
+	site.addEventListener(OnMenuBar, oleListener);
+	site.addEventListener(OnStatusBar, oleListener);
+	site.addEventListener(OnToolBar, oleListener);
+	site.addEventListener(OnVisible, oleListener);
+	site.addEventListener(ProgressChange, oleListener);
+	site.addEventListener(StatusTextChange, oleListener);
+	site.addEventListener(TitleChange, oleListener);
+	site.addEventListener(WindowClosing, oleListener);
+	site.addEventListener(WindowSetHeight, oleListener);
+	site.addEventListener(WindowSetLeft, oleListener);
+	site.addEventListener(WindowSetTop, oleListener);
+	site.addEventListener(WindowSetWidth, oleListener);
+	
 	Variant variant = new Variant(true);
 	auto.setProperty(RegisterAsBrowser, variant);
 	variant.dispose();
