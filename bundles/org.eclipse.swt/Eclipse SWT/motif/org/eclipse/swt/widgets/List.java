@@ -849,7 +849,7 @@ public void remove (int start, int end) {
 	if (start > end) return;
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (!(0 <= start && start <= end && start < argList [1])) {
+	if (!(0 <= start && start <= end && end < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int count = end - start + 1;
