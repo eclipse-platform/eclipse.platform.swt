@@ -1061,7 +1061,10 @@ public void setTabList (Control [] tabList) {
 
 void showWidget () {
 	super.showWidget ();
-	if (socketHandle != 0) OS.gtk_widget_show (socketHandle);
+	if (socketHandle != 0) {
+		OS.gtk_widget_show (socketHandle);
+		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
+	}
 }
 
 boolean translateMnemonic (Event event, Control control) {
