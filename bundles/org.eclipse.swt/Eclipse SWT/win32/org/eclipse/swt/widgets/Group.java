@@ -40,7 +40,7 @@ public class Group extends Composite {
 	/*
 	 * Number of pixels between client area and border.
 	 */
-	static final int INSET = 3;
+	static final int CLIENT_INSET = 3;
 	
 	static final int GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
@@ -149,49 +149,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int width = 0, height = 0;
-	RECT rect = new RECT ();
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
-	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	int length = OS.GetWindowTextLength (handle);
-	TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
-	OS.GetWindowText (handle, buffer1, length + 1);
-	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-	OS.DrawText (hDC, buffer1, length, rect, flags);
-	int textInset = 0;
-	if (length > 0) {
-		/* In the (rare) case where the text is wider than the client area,
-		 * allow room for one average character to the right of the text.
-		 */
-		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-		OS.GetTextMetrics (hDC, tm);
-		textInset = tm.tmAveCharWidth;
-	}
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
-	Point size;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize ();
-	}
-	width = size.x;  height = size.y;
-	if (width == 0) width = DEFAULT_WIDTH;
-	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = Math.max (trim.width, rect.right - rect.left + INSET * 2 + textInset);
-	height = trim.height;
-	int border = getBorderWidth ();
-	width += border * 2; height += border * 2;
-	return new Point (width, height);
-}
-
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -201,10 +158,26 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
+
+	int textWidth = 0;
+	int length = OS.GetWindowTextLength (handle);
+	if (length > 0) {
+		/* If the group has text, and the text is wider than the
+		 * client area, pad the width so the text is not clipped.
+		 */
+		TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
+		OS.GetWindowText (handle, buffer1, length + 1);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+		OS.DrawText (hDC, buffer1, length, rect, flags);
+		textWidth = rect.right - rect.left + CLIENT_INSET * 4;
+	}
+	
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	trim.x -= INSET;  trim.y -= tm.tmHeight;
-	trim.width += INSET * 2;  trim.height += tm.tmHeight + INSET;
+	trim.x -= CLIENT_INSET;  trim.y -= tm.tmHeight;
+	trim.width = Math.max (trim.width, textWidth) + CLIENT_INSET * 2;
+	trim.height += tm.tmHeight + CLIENT_INSET;
 	return trim;
 }
 
@@ -226,8 +199,8 @@ public Rectangle getClientArea () {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int x = INSET, y = tm.tmHeight;
-	return new Rectangle (x, y, rect.right - INSET * 2, rect.bottom - y - INSET);
+	int x = CLIENT_INSET, y = tm.tmHeight;
+	return new Rectangle (x, y, rect.right - CLIENT_INSET * 2, rect.bottom - y - CLIENT_INSET);
 }
 
 String getNameText () {
