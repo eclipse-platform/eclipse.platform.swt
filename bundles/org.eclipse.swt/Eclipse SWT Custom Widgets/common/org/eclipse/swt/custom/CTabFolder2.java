@@ -69,6 +69,12 @@ public class CTabFolder2 extends Composite {
 	 */
  	public int marginHeight = 0;
 	
+ 	/**
+	 * A multiple of the tab height that specifies the minimum width to which a tab 
+	 * will be compressed before scrolling arrows are used to navigate the tabs.
+	 */
+	public int MIN_TAB_WIDTH = 3;
+	
 	/**
 	 * Color of innermost line of drop shadow border.
 	 * @deprecated
@@ -84,19 +90,6 @@ public class CTabFolder2 extends Composite {
 	 * @deprecated
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
-	
-	/**
-	 * Color of border.
-	 * 
-	 * @since 3.0
-	 */
-	public static RGB borderRGB = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB(); 
-	
-	/**
-	 * A multiple of the tab height that specifies the minimum width to which a tab 
-	 * will be compressed before scrolling arrows are used to navigate the tabs.
-	 */
-	public int MIN_TAB_WIDTH = 3;
 
 	/* sizing, positioning, appearance */
 	int xClient, yClient;
@@ -121,6 +114,7 @@ public class CTabFolder2 extends Composite {
 	int[] gradientPercents;
 	Color selectionForeground;
 	Color selectionBackground;
+	Color borderColor;
 	
 	// close and chevron buttons
 	boolean showClose = false;
@@ -204,13 +198,14 @@ public class CTabFolder2 extends Composite {
 public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	onBottom = (getStyle() & SWT.BOTTOM) != 0;
-	border = (style & SWT.BORDER) != 0 ? 3 : 0;
+	border = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3) : 0;
 	single = (style & SWT.SINGLE) != 0;
 	
 	//set up default colors
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
 	selectionBackground = display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
+	borderColor = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
 	setForeground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 	setBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND));
 	
@@ -567,7 +562,7 @@ void drawBorder(GC gc) {
 	Point size = getSize();
 	
 	//draw heavy border around outside
-	if (!showBorder) {
+	if (!showBorder || border == 1) {
 		// draw parent colors where border would be
 		gc.setForeground(getParent().getBackground());
 		for (int i = 0; i < border; i++) {
@@ -640,10 +635,8 @@ void drawBorder(GC gc) {
 		Region r = new Region();
 		r.add(outside);
 		r.subtract(inside);
-		Color c = new Color(getDisplay(), borderRGB);
-		gc.setBackground(c);
+		gc.setBackground(borderColor);
 		fillRegion(gc, r);
-		c.dispose();
 		r.dispose();
 		// Shape is non-rectangular, fill in gaps with parent colours
 		r = new Region();
@@ -663,14 +656,13 @@ void drawBorder(GC gc) {
 		gc.setBackground(getBackground());
 		gc.fillRectangle(x, y, width, height);
 		if (border > 0) {
-			Color c = new Color(getDisplay(), borderRGB);
 			x = border - 1;
 			y = (onBottom) ? border - 1 : border + tabHeight - SELECTION_BORDER;
 			width += 1;
 			height = size.y - border - tabHeight + 1;
-			gc.setForeground(c);
+			if (border == 1) height += 2;
+			gc.setForeground(borderColor);
 			gc.drawRectangle(x, y, width, height);
-			c.dispose();
 		}
 	} else { //selected item
 		int x = border;
@@ -783,10 +775,8 @@ void drawBorder(GC gc) {
 				shape[index++] = itemY + itemH - SELECTION_BORDER;
 			}
 	
-			Color c = new Color(getDisplay(), borderRGB);
-			gc.setForeground(c);
+			gc.setForeground(borderColor);
 			gc.drawPolyline(shape);
-			c.dispose();
 		}
 	}
 }
@@ -1415,6 +1405,7 @@ void onDispose() {
 
 	selectionBackground = null;
 	selectionForeground = null;
+	borderColor = null;
 }
 void onFocus(Event event) {
 	checkWidget();
@@ -1847,6 +1838,15 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setBackground (Color color) {
 	if (color == null) color = getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
 	super.setBackground(color);
+	redraw();
+}
+
+/**
+ * @since 3.0
+ */
+public void setBorderColor(Color color) {
+	checkWidget();
+	borderColor = color;
 	redraw();
 }
 
