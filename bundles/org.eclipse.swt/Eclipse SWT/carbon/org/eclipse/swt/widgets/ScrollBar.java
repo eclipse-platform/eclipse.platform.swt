@@ -642,19 +642,9 @@ public void setVisible (boolean visible) {
 	this.visible= visible;
 	if (OS.IsControlVisible(handle) != visible) {
 		OS.HIViewSetVisible(handle, visible);		
-		parent.relayout();
+		parent._relayout();
 		sendEvent(visible ? SWT.Show : SWT.Hide);
 	}
-	
-//    if (this.visible != visible) {
-//	    this.visible= visible;
-//		int topHandle = topHandle ();
-//		if (OS.IsControlVisible(topHandle) != visible) {
-//			OS.HIViewSetVisible(topHandle, visible);
-//			parent.relayout123();
-//			sendEvent (visible ? SWT.Show : SWT.Hide);
-//		}
-//    }
 }
 
 void internalSetBounds(Rect bounds) {

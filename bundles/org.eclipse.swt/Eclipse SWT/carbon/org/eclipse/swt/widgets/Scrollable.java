@@ -347,10 +347,10 @@ int topHandle () {
 
 	void handleResize(int handle, Rect bounds) {
 		super.handleResize(handle, bounds);
-		relayout();
+		_relayout();
 	}
 	
-	void relayout() {
+	void _relayout() {
 		
 		int hndl= scrolledHandle;
 		if (hndl == 0)
