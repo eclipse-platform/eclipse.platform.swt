@@ -470,7 +470,7 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	if (currentCaret == null) return 0;
+	if (currentCaret == null || currentCaret.isDisposed()) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
 		OS.SetEventLoopTimerNextFireTime (id, blinkRate / 1000.0);
