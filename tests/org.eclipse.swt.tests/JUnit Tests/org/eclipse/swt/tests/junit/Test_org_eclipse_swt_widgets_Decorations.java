@@ -112,6 +112,11 @@ public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
 
+public void test_isReparentable() {
+	/* Decorations are not reparentable, see win32 implementation of isReparentable() */
+	assertFalse(decorations.isReparentable());
+}
+
 public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 	assertNull(decorations.getDefaultButton());
 	Button button = new Button(decorations, SWT.NULL);
