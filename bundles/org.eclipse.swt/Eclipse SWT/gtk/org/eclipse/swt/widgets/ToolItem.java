@@ -475,16 +475,19 @@ int gtk_enter_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_event_after (int widget, int event) {
-	GdkEvent gdkEvent = new GdkEvent ();
-	OS.memmove (gdkEvent, event, GdkEvent.sizeof);
-	Menu menu = parent.menu;
-	if (menu != null && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		GdkEventButton gdkEventButton = new GdkEventButton ();
-		OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-		int button = gdkEventButton.button;
-		if (button == 3) menu.setVisible (true);
-	}
+int gtk_event_after (int widget, int gdkEvent) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 3) {
+				parent.showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			}
+			break;
+		}
+	}	
 	return 0;
 }
 
