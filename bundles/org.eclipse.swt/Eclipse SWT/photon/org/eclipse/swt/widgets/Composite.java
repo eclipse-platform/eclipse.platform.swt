@@ -669,7 +669,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		if (events) sendEvent (SWT.Move);
 	}
 	if ((result & RESIZED) != 0) {
-		resizeClientArea (width, height, events);
+		resizeClientArea (width, height, false);
+		if (events) sendEvent (SWT.Resize);
 		if (layout != null) layout (false);
 	}
 	return result;
