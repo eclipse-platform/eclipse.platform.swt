@@ -2473,10 +2473,12 @@ public void setForeground (Color color) {
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
+	XGCValues values = new XGCValues ();
+	OS.XGetGCValues (xDisplay, handle, OS.GCLineWidth, values);
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
 			data.lineStyle = lineStyle;
-			OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineSolid, OS.CapButt, OS.JoinMiter);
+			OS.XSetLineAttributes(xDisplay, handle, values.line_width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
 			return;
 		case SWT.LINE_DASH:
 			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2},2);
@@ -2494,7 +2496,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineOnOffDash, OS.CapButt, OS.JoinMiter);
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, OS.LineOnOffDash, OS.CapButt, OS.JoinMiter);
 	
 }
 /** 
