@@ -665,20 +665,19 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
+	int oldFlags = OS.PtWidgetFlags (topHandle);
 	int flags = visible ? 0 : OS.Pt_DELAY_REALIZE;
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_DELAY_REALIZE);
-	if (OS.PtWidgetIsRealized (parent.handle)) {
-		if (visible != OS.PtWidgetIsRealized (topHandle)) {
-			if (visible) {
-				sendEvent (SWT.Show);
-				OS.PtRealizeWidget (topHandle);
-			} else {
-				OS.PtUnrealizeWidget (topHandle);
-				sendEvent(SWT.Hide);
-			}
+	if ((oldFlags & OS.Pt_DELAY_REALIZE) != flags) {
+		parent.resizeClientArea ();
+		if (visible) {
+			sendEvent (SWT.Show);
+			OS.PtRealizeWidget (topHandle);
+		} else {
+			OS.PtUnrealizeWidget (topHandle);
+			sendEvent(SWT.Hide);
 		}
 	}
-	parent.resizeClientArea ();
 }
 
 }
