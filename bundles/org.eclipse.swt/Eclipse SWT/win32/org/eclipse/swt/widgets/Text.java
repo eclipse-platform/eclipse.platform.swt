@@ -1580,6 +1580,23 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* text control is read only, it still returns a
+	* dialog code indicating that it wants keys.  The
+	* fix is to detect this case and clear the bits.
+	*/
+	if ((style & SWT.READ_ONLY) != 0) {
+		int code = callWindowProc (OS.WM_GETDLGCODE, wParam, lParam);
+		code &= ~(OS.DLGC_WANTALLKEYS | OS.DLGC_WANTTAB | OS.DLGC_WANTARROWS);
+		return new LRESULT (code);
+	}
+	return null;
+}
+
 LRESULT WM_IME_CHAR (int wParam, int lParam) {
 
 	/* Process a DBCS character */
