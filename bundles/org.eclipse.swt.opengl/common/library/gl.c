@@ -4404,13 +4404,10 @@ JNIEXPORT void JNICALL GL_NATIVE(glScissor)
 
 #ifndef NO_glSelectBuffer
 JNIEXPORT void JNICALL GL_NATIVE(glSelectBuffer)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jint *lparg1=NULL;
 	GL_NATIVE_ENTER(env, that, glSelectBuffer_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	glSelectBuffer(arg0, lparg1);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	glSelectBuffer(arg0, arg1);
 	GL_NATIVE_EXIT(env, that, glSelectBuffer_FUNC);
 }
 #endif
