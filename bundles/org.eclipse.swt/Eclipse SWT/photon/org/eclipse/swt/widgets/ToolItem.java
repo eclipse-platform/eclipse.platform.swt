@@ -196,6 +196,7 @@ void createHandle (int index) {
 			OS.Pt_ARG_RESIZE_FLAGS, OS.Pt_RESIZE_Y_ALWAYS, OS.Pt_RESIZE_XY_BITS,
 		};		
 		handle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else if ((style & SWT.DROP_DOWN) != 0) {
 		int [] args =  {
 			OS.Pt_ARG_GROUP_ORIENTATION, OS.Pt_GROUP_HORIZONTAL, 0,
@@ -233,8 +234,8 @@ void createHandle (int index) {
 			OS.Pt_ARG_FLAGS, toggle ? OS.Pt_TOGGLE : 0, OS.Pt_TOGGLE,
 		};
 		handle = button = OS.PtCreateWidget (OS.PtButton (), parentHandle, args.length / 3, args);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if (index != count) {
 		int i = 0;
 		int child = OS.PtWidgetChildBack (parentHandle);
