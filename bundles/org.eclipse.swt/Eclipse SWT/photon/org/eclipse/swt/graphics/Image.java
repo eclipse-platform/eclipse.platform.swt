@@ -421,7 +421,7 @@ void init(Device device, ImageData i) {
 
 		switch (i.depth) {
 			case 8:
-				newDepth = 8;
+				newDepth = 16;
 				newOrder = ImageData.LSB_FIRST;
 				newPalette = new PaletteData(0xF800, 0x7E0, 0x1F);
 				type = OS.Pg_IMAGE_DIRECT_565;
