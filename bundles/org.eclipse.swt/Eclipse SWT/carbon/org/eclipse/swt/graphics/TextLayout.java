@@ -387,7 +387,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	return FontMetrics.carbon_new(OS.Fix2Long(ascent[0]), OS.Fix2Long(descent[0]), 0, 0, height);
 }
 
-public Point getLocation(int offset, int trailing) {
+public Point getLocation(int offset, boolean trailing) {
 	checkLayout();
 	computeRuns();
 	int length = text.length();
@@ -399,9 +399,9 @@ public Point getLocation(int offset, int trailing) {
 		if (lineBreak > offset) break;
 		lineY += lineHeight[i];
 	}
-	if (offset != length && text.charAt(offset) != '\n' && trailing != SWT.LEAD) offset++;
+	if (offset != length && text.charAt(offset) != '\n' && trailing) offset++;
 	ATSUCaret caret = new ATSUCaret();
-	OS.ATSUOffsetToPosition(layout, offset, trailing == SWT.LEAD, caret, null, null);
+	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
 	return new Point(OS.Fix2Long(caret.fX), lineY);
 }
 
@@ -431,7 +431,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	} else {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
 		if (movement == MOVEMENT_WORD) {
-			while (newOffset[0] > 1 && Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
+			while (newOffset[0] > 0 && !Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
 				newOffset[0]--;
 			}
 		}
@@ -463,7 +463,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	int[] offset = new int[]{start};
 	boolean[] leading = new boolean[1];
 	OS.ATSUPositionToOffset(layout, OS.Long2Fix(x), OS.Long2Fix(y - lineY), offset, leading, null);
-	if (trailing != null) trailing[0] = (leading[0] ? SWT.LEAD : SWT.TRAIL);
+	if (trailing != null) trailing[0] = (leading[0] ? 0 : 1);
 	if (!leading[0]) offset[0]--;
 	return offset[0];
 }
