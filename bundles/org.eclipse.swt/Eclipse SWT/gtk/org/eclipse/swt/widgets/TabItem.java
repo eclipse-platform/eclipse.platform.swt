@@ -159,6 +159,10 @@ public String getToolTipText () {
 
 void releaseChild () {
 	super.releaseChild ();
+	int index = parent.indexOf (this);
+	if (index == parent.getSelectionIndex ()) {
+		if (control != null) control.setVisible (false);
+	}
 	parent.destroyItem (this);
 }
 
