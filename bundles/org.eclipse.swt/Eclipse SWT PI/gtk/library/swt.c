@@ -5661,20 +5661,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection
 	gtk_tree_selection_selected_foreach((GtkTreeSelection*)arg0, (GtkTreeSelectionForeachFunc)arg1, (gpointer)arg2);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1from_1string
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	const jbyte *lparg0= NULL;
-	jint rc;
-
-	DEBUG_CALL("gtk_1tree_1path_1new_1from_1string\n")
-
-	if (arg0) lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL);
-	rc = (jint)gtk_tree_path_new_from_string(lparg0);
-	if (arg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
-	return rc;
-}
-
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1path_1is_1selected
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
