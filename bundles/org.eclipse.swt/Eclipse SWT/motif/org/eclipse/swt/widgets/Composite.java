@@ -222,7 +222,10 @@ public Control [] getChildren () {
 	return _getChildren ();
 }
 int getChildrenCount () {
-	// BOGUS - could count non-registered children or gadgets
+	/*
+	* NOTE:  The current implementation will count
+	* non-registered children.
+	* */
 	int [] argList = {OS.XmNnumChildren, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -241,6 +244,29 @@ int getChildrenCount () {
 public Layout getLayout () {
 	checkWidget();
 	return layout;
+}
+
+public Control [] getTabList () {
+	checkWidget ();
+	int count = 0;
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control control = children [i];
+		int [] argList = new int [] {OS.XmNnavigationType, 0};
+		OS.XtGetValues (control.handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) count++;
+	}
+	int index = 0;
+	Control [] tabList = new Control [count];
+	for (int i=0; i<children.length; i++) {
+		Control control = children [i];
+		int [] argList = new int [] {OS.XmNnavigationType, 0};
+		OS.XtGetValues (control.handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) {
+			tabList [index++] = control;
+		}
+	}
+	return tabList;
 }
 
 void hookEvents () {
@@ -509,16 +535,34 @@ public void setSize (int width, int height) {
 	super.setSize (width, height);
 	if (layout != null) layout (false);
 }
+public void setTabList (Control [] tabList) {
+	checkWidget ();
+	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int [] argList1 = new int [] {OS.XmNnavigationType, OS.XmTAB_GROUP};
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control control = children [i];
+		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
+	}
+	int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
+	for (int i=0; i<tabList.length; i++) {
+		Control control = tabList [i];
+		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
+		OS.XtSetValues (control.handle, argList2, argList2.length / 2);
+	}
+}
 int traversalCode () {
-	if ((state & CANVAS) != 0 && hooks (SWT.KeyDown)) return 0;
+	if ((state & CANVAS) != 0) {
+		if (hooks (SWT.KeyDown)) return 0;
+	}
 	return super.traversalCode ();
 }
-boolean traverseMnemonic (char key) {
-	if (super.traverseMnemonic (key)) return true;
+boolean translateMnemonic (char key, XKeyEvent xEvent) {
+	if (super.translateMnemonic (key, xEvent)) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.traverseMnemonic (key)) return true;
+		if (child.translateMnemonic (key, xEvent)) return true;
 	}
 	return false;
 }

@@ -210,7 +210,7 @@ public String getText () {
 	OS.XmStringFree (xmString);
 	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	return setFocus ();
 }
 boolean mnemonicMatch (char key) {

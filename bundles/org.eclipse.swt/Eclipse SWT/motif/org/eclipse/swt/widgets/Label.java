@@ -223,7 +223,7 @@ public String getText () {
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	Composite control = this.parent;
 	while (control != null) {
 		Control [] children = control._getChildren ();

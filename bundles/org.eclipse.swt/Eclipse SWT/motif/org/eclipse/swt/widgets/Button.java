@@ -427,7 +427,7 @@ void hookEvents () {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;	
 	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
 }
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
 	click ();
 	return true;

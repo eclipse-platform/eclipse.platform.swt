@@ -43,6 +43,12 @@ public class OS {
 		LC_CTYPE = OS.IsAIX ? 1 : 0;
 	}
 	
+	/*
+	* Added for XmNnavigationType.
+	*/
+	public static final int XmSTICKY_TAB_GROUP = 0x2;
+	public static final int XmEXCLUSIVE_TAB_GROUP = 0x3;
+	
 	/* BEGIN Visual classes */
 	//public static final int StaticGray = 0;
 	//public static final int GrayScale = 1;

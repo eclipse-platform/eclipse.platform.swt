@@ -412,7 +412,33 @@ void createWidget (int index) {
 	*/
 	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.dragTranslations);
+	
+	/*
+	* Feature in Motif.  When the XmNfontList resource is set for
+	* a widget, Motif creates a copy of the fontList and disposes
+	* the copy when the widget is disposed.  This means that when
+	* the programmer queries the font, not only will the handle be
+	* different but the font will be unexpectedly disposed when
+	* the widget is disposed.  This can cause GP's when the font
+	* is set in another widget.  The fix is to cache the font the
+	* the programmer provides.  The initial value of the cache is
+	* the default font for the widget.
+	*/
 	fontList = defaultFont ();
+	
+	/*
+	* Explicitly set the tab ordering for XmTAB_GROUP widgets to
+	* override the default traversal.  This is done so that the
+	* traversal order can be changed after the widget tree is
+	* created.  Unless explicitly changed, the overridded traversal
+	* order is the same as the default.
+	*/
+	int [] argList1 = new int [] {OS.XmNnavigationType, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	if (argList1 [1] == OS.XmTAB_GROUP) {
+		int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -618,7 +644,7 @@ int getFontAscent () {
 }
 
 int getFontHeight () {
-
+	
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
 	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
@@ -1026,7 +1052,7 @@ void manageChildren () {
 Decorations menuShell () {
 	return parent.menuShell ();
 }
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	return false;
 }
 boolean mnemonicMatch (char key) {
@@ -2341,16 +2367,33 @@ public Point toDisplay (Point point) {
 	OS.XtTranslateCoords (handle, (short) point.x, (short) point.y, root_x, root_y);
 	return new Point (root_x [0], root_y [0]);
 }
-boolean translateMnemonic (int aKey, XKeyEvent xEvent) {
+boolean translateMnemonic (char key, XKeyEvent xEvent) {
+	if (!isVisible () || !isEnabled ()) return false;
+	boolean doit = mnemonicMatch (key);
+	if (hooks (SWT.Traverse)) {
+		Event event = new Event();
+		event.doit = doit;
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		event.time = xEvent.time;
+		setKeyState (event, xEvent);
+		sendEvent (SWT.Traverse, event);
+		doit = event.doit;
+	}
+	if (doit) return mnemonicHit (key);
+	return false;
+}
+boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	if (xEvent.state != OS.Mod1Mask) {
 		if (xEvent.state != 0 || !(this instanceof Button)) {
 			return false;
 		}
 	}
 	Decorations shell = menuShell ();
-	if (!shell.isVisible () || !shell.isEnabled ()) return false;
-	char ch = mbcsToWcs ((char) aKey);
-	return ch != 0 && shell.traverseMnemonic (ch);
+	if (shell.isVisible () && shell.isEnabled ()) {
+		char ch = mbcsToWcs ((char) key);
+		return ch != 0 && shell.translateMnemonic (ch, xEvent);
+	}
+	return false;
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	int detail = 0;
@@ -2423,7 +2466,7 @@ int traversalCode () {
 }
 boolean traverseMnemonic (char key) {
 	if (!isVisible () || !isEnabled ()) return false;
-	return mnemonicMatch (key) && mnemonicHit ();
+	return mnemonicMatch (key) && mnemonicHit (key);
 }
 /**
  * Based on the argument, perform one of the expected platform
@@ -2444,12 +2487,13 @@ public boolean traverse (int traversal) {
 	checkWidget();
 	if (!isFocusControl () && !setFocus ()) return false;
 	switch (traversal) {
-		case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
-		case SWT.TRAVERSE_RETURN:		return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
 		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (??);	
 	}
 	return false;
 }
