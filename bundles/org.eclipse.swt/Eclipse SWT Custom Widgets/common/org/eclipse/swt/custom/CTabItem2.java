@@ -354,7 +354,7 @@ void drawUnselected(GC gc) {
 		shape[index++]=x + width - 3; // -3 = 2 pixel gap between tabs, gap on right side
 		shape[index++]=y + height;
 	}
-	gc.setForeground(CTabFolder2.border1Color);
+	gc.setForeground(CTabFolder2.borderColor1);
 	gc.drawPolyline(shape);
 	
 	// draw Text
