@@ -78,6 +78,8 @@ public class DropTargetEvent extends TypedEvent {
 	 */
 	public TransferData[] dataTypes;
 
+	static final long serialVersionUID = 3256727264573338678L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.

@@ -50,6 +50,8 @@ public class DragSourceEvent extends TypedEvent {
  	 */
 	public TransferData dataType;
 
+	static final long serialVersionUID = 3257002142513770808L;
+	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.
