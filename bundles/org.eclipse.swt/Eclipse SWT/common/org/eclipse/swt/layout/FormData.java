@@ -126,8 +126,6 @@ FormAttachment getBottomAttachment (Control control, int spacing, boolean flushC
 			cacheBottom = bottomAttachment.minus (bottomHeight.minus (getHeight (control, flushCache)).divide (2));
 			break;
 		}
-//		case SWT.TOP:
-//		case SWT.DEFAULT:
 		default: {
 			FormAttachment topAttachment = bottomData.getTopAttachment (bottomControl, spacing, flushCache);
 			cacheBottom = topAttachment.plus (bottom.offset - spacing);	
@@ -161,8 +159,6 @@ FormAttachment getLeftAttachment (Control control, int spacing, boolean flushCac
 			cacheLeft = leftAttachment.plus (leftWidth.minus (getWidth (control, flushCache)).divide (2));
 			break;
 		}
-//		case SWT.RIGHT:
-//		case SWT.DEFAULT:
 		default: {
 			FormAttachment rightAttachment = leftData.getRightAttachment (leftControl, spacing, flushCache);
 			cacheLeft = rightAttachment.plus (left.offset + spacing); 
@@ -202,8 +198,6 @@ FormAttachment getRightAttachment (Control control, int spacing, boolean flushCa
 			cacheRight = rightAttachment.minus (rightWidth.minus (getWidth (control, flushCache)).divide (2));
 			break;
 		}
-//		case SWT.LEFT:
-//		case SWT.DEFAULT:
 		default: {
 			FormAttachment leftAttachment = rightData.getLeftAttachment (rightControl, spacing, flushCache);
 			cacheRight = leftAttachment.plus (right.offset - spacing);
@@ -237,8 +231,6 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
 			cacheTop = topAttachment.plus (topHeight.minus (getHeight (control, flushCache)).divide (2));
 			break;
 		}
-//		case SWT.BOTTOM:
-//		case SWT.DEFAULT:
 		default: {
 			FormAttachment bottomAttachment = topData.getBottomAttachment (topControl, spacing, flushCache);
 			cacheTop = bottomAttachment.plus (top.offset + spacing);
