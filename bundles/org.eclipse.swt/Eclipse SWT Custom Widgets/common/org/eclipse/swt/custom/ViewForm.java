@@ -360,6 +360,7 @@ public void layout (boolean changed) {
 		}
 		if (top)y += topHeight + verticalSpacing;
 	}
+	int oldSeperator = separator;
 	separator = -1;
 	if (content != null && !content.isDisposed()) {
 		if (topLeft != null || topRight!= null || topCenter != null){
@@ -367,6 +368,11 @@ public void layout (boolean changed) {
 			y++;
 		}
 		 content.setBounds(rect.x + marginWidth + highlight, y, rect.width - 2 * marginWidth - 2*highlight, rect.y + rect.height - y - marginHeight - highlight);
+	}
+	if (oldSeperator != -1 && separator != -1) {
+		int t = Math.min(separator, oldSeperator);
+		int b = Math.max(separator, oldSeperator);
+		redraw(borderLeft, t, getSize().x - borderLeft - borderRight, b - t, false);
 	}
 }
 void onDispose() {
