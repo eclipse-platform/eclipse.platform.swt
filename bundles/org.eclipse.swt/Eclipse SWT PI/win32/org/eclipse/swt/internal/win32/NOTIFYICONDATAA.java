@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class NOTIFYICONDATAA extends NOTIFYICONDATA {
-	public byte szTip[] = new byte [OS.SHELL32_MAJOR < 5 ? 64 : 128];
+	public byte szTip[] = new byte [128];
 	public byte szInfo[] = new byte [256];
 	public byte szInfoTitle[] = new byte [64];
 	public static final int sizeof = OS.NOTIFYICONDATAA_V2_SIZE;
