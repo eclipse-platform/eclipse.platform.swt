@@ -483,6 +483,37 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+boolean setTabGroupFocus () {
+	if (isTabItem ()) return setTabItemFocus ();
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+		}
+		if (takeFocus && setTabItemFocus ()) return true;
+	}
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+	}
+	return false;
+}
+
+boolean setTabItemFocus () {
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+		}
+		if (takeFocus) {
+			if (!isShowing ()) return false;
+			if (forceFocus ()) return true;
+		}
+	}
+	return super.setTabItemFocus ();
+}
+
 /**
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.

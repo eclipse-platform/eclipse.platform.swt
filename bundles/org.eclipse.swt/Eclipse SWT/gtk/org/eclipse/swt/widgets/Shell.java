@@ -568,6 +568,8 @@ public Shell [] getShells () {
 */
 public void open () {
 	setVisible (true);
+	int focusHandle = OS.gtk_window_get_focus (shellHandle);
+	if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
 }
 
 int processDeiconify (int int0, int int1, int int2) {
