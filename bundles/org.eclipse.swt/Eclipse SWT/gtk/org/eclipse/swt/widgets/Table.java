@@ -1677,8 +1677,10 @@ public void setRedraw (boolean redraw) {
  * @see Table#select(int)
  */
 public void setSelection (int index) {
-	deselectAll ();
+	checkWidget ();
+	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
+	showSelection ();
 }
 
 /**
@@ -1699,8 +1701,10 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
-	deselectAll ();
+	checkWidget ();
+	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
+	showSelection ();
 }
 
 /**
@@ -1721,8 +1725,11 @@ public void setSelection (int start, int end) {
  * @see Table#select(int[])
  */
 public void setSelection (int [] indices) {
-	deselectAll ();
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
+	showSelection ();
 }
 
 /**
@@ -1747,7 +1754,7 @@ public void setSelection (int [] indices) {
 public void setSelection (TableItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	deselectAll ();
+	if ((style & SWT.MULTI) != 0) deselectAll ();
 	int length = items.length;
 	if (length == 0) return;
 	if ((style & SWT.SINGLE) != 0) length = 1;
@@ -1755,6 +1762,7 @@ public void setSelection (TableItem [] items) {
 		int index = indexOf (items [i]);
 		if (index != -1) select (index);
 	}
+	showSelection ();
 }
 
 /**
