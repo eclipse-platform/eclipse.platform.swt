@@ -9,7 +9,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 /**
- * The superclass for single-click paint tools
+ * The superclass for single-click paint tools.
  */
 public abstract class SimplePaintSession extends BasicPaintSession implements PaintRenderer {
 	/**
@@ -18,7 +18,7 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	protected Point[] cachedPointArray = new Point[] { new Point(-1, -1) };
 
 	/**
-	 * Create a SimplePaintSession
+	 * Constructs a SimplePaintSession.
 	 * 
 	 * @param paintSurface the drawing surface to use
 	 */
@@ -27,7 +27,7 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	}
 
 	/**
-	 * Activate the tool
+	 * Activates the tool.
 	 */
 	public void beginSession() {
 		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
@@ -35,19 +35,19 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	}
 	
 	/**
-	 * Deactivate the tool
+	 * Deactivates the tool.
      */
 	public void endSession() {
 	}
 	
 	/**
-	 * Abort the current operation
+	 * Aborts the current operation.
 	 */
 	public void resetSession() {
 	}
 	
 	/**
-	 * Handle a mouseDown event
+	 * Handles a mouseDown event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -60,7 +60,7 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	}
 
 	/**
-	 * Handle a mouseDoubleClick event
+	 * Handles a mouseDoubleClick event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -69,7 +69,7 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	}
 
 	/**
-	 * Handle a mouseUp event
+	 * Handles a mouseUp event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -77,7 +77,7 @@ public abstract class SimplePaintSession extends BasicPaintSession implements Pa
 	}
 	
 	/**
-	 * Handle a mouseMove event
+	 * Handles a mouseMove event.
 	 * 
 	 * @param event the mouse event detail information
 	 */

@@ -5,12 +5,11 @@ package org.eclipse.swt.examples.paint;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.*;
 
 public interface PaintRenderer {
 	/**
-	 * Render an object on a given point/region
+	 * Renders an object on a given point/region.
 	 * 
 	 * @param points the array of points
 	 * @param numPoints the number of valid points in the array

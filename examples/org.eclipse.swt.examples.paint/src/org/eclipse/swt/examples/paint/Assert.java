@@ -10,7 +10,7 @@ package org.eclipse.swt.examples.paint;
  */
 public class Assert extends Error {
 	/**
-	 * Construct an Assert exception
+	 * Constructs an Assert exception.
 	 */
 	private Assert() {
 		super("Assertion failed: <no reason given>");
@@ -20,7 +20,7 @@ public class Assert extends Error {
 	}
 
 	/**
-	 * Raise an error
+	 * Raises an error.
 	 */
 	public static final void raise() {
 		throw new Assert();
@@ -31,7 +31,7 @@ public class Assert extends Error {
 	}
 
 	/**
-	 * Test an assertion
+	 * Tests an assertion.
 	 */
 	public static final void assert(boolean condition) {
 		if (! condition) raise();

@@ -5,16 +5,16 @@ package org.eclipse.swt.examples.paint;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.events.MouseEvent;import org.eclipse.swt.graphics.GC;import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.events.MouseEvent;import org.eclipse.swt.graphics.*;
 
 /**
  * The superclass for paint tools that use click-drag-release motions to
- * draw objects
+ * draw objects.
  */
 public abstract class DragInteractivePaintSession extends BasicPaintSession 
 	implements PaintRenderer {
 	/**
-	 * True iff a click-drag is in progress
+	 * True if a click-drag is in progress
 	 */
 	private boolean dragInProgress;
 	
@@ -29,7 +29,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	private Point tempPosition = new Point(-1, -1);
 	
 	/**
-	 * Create a DragInteractivePaintSession
+	 * Constructs a DragInteractivePaintSession.
 	 * 
 	 * @param getPaintSurface() the drawing surface to use
 	 */
@@ -38,7 +38,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Activate the tool.
+	 * Activates the tool.
 	 */
 	public void beginSession() {
 		getPaintSurface().getPaintStatus().
@@ -50,13 +50,13 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Deactivate the tool.
+	 * Deactivates the tool.
      */
 	public void endSession() {
 	}
 	
 	/**
-	 * Reset the tool.
+	 * Resets the tool.
 	 * Aborts any operation in progress.
 	 */
 	public void resetSession() {
@@ -70,7 +70,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseDown event
+	 * Handles a mouseDown event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -85,7 +85,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseDoubleClick event
+	 * Handles a mouseDoubleClick event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -93,7 +93,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseUp event
+	 * Handles a mouseUp event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -119,7 +119,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Handle a mouseMove event
+	 * Handles a mouseMove event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -142,7 +142,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Draw a permanent entity given 2 points
+	 * Draws a permanent entity given 2 points.
 	 * 
 	 * @param points[0] and points[1] are two points
 	 * @param numPoints the number of valid points in the array (must be 2)
@@ -154,17 +154,17 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Draw a permanent entity
+	 * Draws a permanent entity.
 	 */
 	protected abstract void drawPermanent(GC gc, Point a, Point b);
 
 	/**
-	 * Draw a temporary entity
+	 * Draws a temporary entity.
 	 */
 	protected abstract void drawTemporary(GC gc, Point a, Point b);
 
 	/**
-	 * Erase a temporary entity
+	 * Erases a temporary entity.
 	 */
 	protected abstract void eraseTemporary(GC gc, Point a, Point b);	
 }

@@ -5,11 +5,11 @@ package org.eclipse.swt.examples.paint;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.events.MouseEvent;import org.eclipse.swt.graphics.GC;import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.events.MouseEvent;import org.eclipse.swt.graphics.*;
 
 /**
  * The superclass for paint tools that contruct objects from individually
- * picked segments
+ * picked segments.
  */
 public abstract class SegmentedInteractivePaintSession extends BasicPaintSession 
 	implements PaintRenderer {
@@ -29,7 +29,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	protected Point firstAnchorPosition = new Point(-1, 0);
 	
 	/**
-	 * Create an SegmentedInteractivePaintSession
+	 * Constructs a SegmentedInteractivePaintSession.
 	 * 
 	 * @param paintSurface the drawing surface to use
 	 */
@@ -38,7 +38,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Activate the tool.
+	 * Activates the tool.
 	 */
 	public void beginSession() {
 		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
@@ -50,13 +50,13 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Deactivate the tool.
+	 * Deactivates the tool.
      */
 	public void endSession() {
 	}
 	
 	/**
-	 * Reset the tool.
+	 * Resets the tool.
 	 * Aborts any operation in progress.
 	 */
 	public void resetSession() {
@@ -75,7 +75,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseDown event
+	 * Handles a mouseDown event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -102,7 +102,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseDoubleClick event
+	 * Handles a mouseDoubleClick event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -125,7 +125,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 
 	/**
-	 * Handle a mouseUp event
+	 * Handles a mouseUp event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -137,7 +137,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Handle a mouseMove event
+	 * Handles a mouseMove event.
 	 * 
 	 * @param event the mouse event detail information
 	 */
@@ -160,7 +160,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}	
 
 	/**
-	 * Draw a permanent entity given 2...n points
+	 * Draws a permanent entity given 2...n points.
 	 * 
 	 * @param points[0] and points[1] are two points
 	 * @param numPoints the number of valid points in the array (n >= 2)
@@ -176,17 +176,17 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 	}
 	
 	/**
-	 * Draw a permanent segment
+	 * Draws a permanent segment.
 	 */
 	protected abstract void drawPermanent(GC gc, Point a, Point b);
 
 	/**
-	 * Draw a temporary segment
+	 * Draws a temporary segment.
 	 */
 	protected abstract void drawTemporary(GC gc, Point a, Point b);
 
 	/**
-	 * Erase a temporary segment
+	 * Erases a temporary segment.
 	 */
 	protected abstract void eraseTemporary(GC gc, Point a, Point b);	
 }

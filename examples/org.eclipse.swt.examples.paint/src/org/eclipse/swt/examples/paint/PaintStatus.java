@@ -1,16 +1,11 @@
-package org.eclipse.swt.examples.paint;import org.eclipse.swt.graphics.Point;import org.eclipse.swt.widgets.Text;
-
-/*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
- */
+package org.eclipse.swt.examples.paint;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import org.eclipse.swt.graphics.Point;import org.eclipse.swt.widgets.Text;
 
 public class PaintStatus {
 	private Text statusText;
 	private String actionInfo, messageInfo, coordInfo;
 	
 	/**
-	 * Create a PaintStatus
+	 * Constructs a PaintStatus.
 	 * 
 	 * @param statusText the handle of status bar text widget to use
 	 */
@@ -20,7 +15,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Clear the status bar
+	 * Clears the status bar.
 	 */
 	public void clear() {
 		clearAction();
@@ -29,7 +24,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Set the status bar action text
+	 * Sets the status bar action text.
 	 *
 	 * @param action the action in progress
 	 */
@@ -39,7 +34,7 @@ public class PaintStatus {
 	}
 	
 	/**
-	 * Clear the status bar action text
+	 * Clears the status bar action text.
 	 */
 	public void clearAction() {
 		actionInfo = "";
@@ -47,7 +42,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Set the status bar message text
+	 * Sets the status bar message text.
 	 * 
 	 * @param message the message to display
 	 */
@@ -57,7 +52,7 @@ public class PaintStatus {
 	}
 	
 	/**
-	 * Clear the status bar message text
+	 * Clears the status bar message text.
 	 */
 	public void clearMessage() {
 		messageInfo = "";
@@ -65,7 +60,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Set the coordinates in the status bar
+	 * Sets the coordinates in the status bar.
 	 * 
 	 * @param coord the coordinates to display
 	 */
@@ -74,7 +69,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Set the coordinate range in the status bar
+	 * Sets the coordinate range in the status bar.
 	 * 
 	 * @param a the "from" coordinate
 	 * @param b the "to" coordinate
@@ -84,7 +79,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Clear the coordinates in the status bar
+	 * Clears the coordinates in the status bar.
 	 */
 	public void clearCoord() {
 		coordInfo = "";
@@ -92,7 +87,7 @@ public class PaintStatus {
 	}
 
 	/**
-	 * Update the display
+	 * Updates the display.
 	 */
 	private void update() {
 		statusText.setText(			PaintPlugin.getResourceString("status.Bar.format", new Object[]			{ actionInfo, messageInfo, coordInfo }));	}

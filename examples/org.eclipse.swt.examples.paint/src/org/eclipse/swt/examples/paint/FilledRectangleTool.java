@@ -8,7 +8,7 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * A rectangle drawing tool
+ * A rectangle drawing tool.
  */
 public class FilledRectangleTool extends DragInteractivePaintSession implements PaintTool {
 	private Color temporaryFGColor;
@@ -17,7 +17,7 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	private Color drawBGColor;
 
 	/**
-	 * Create a RectangleTool.
+	 * Constructs a RectangleTool.
 	 * 
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
@@ -30,7 +30,7 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	}
 	
 	/**
-	 * Set the tool's settings
+	 * Sets the tool's settings.
 	 * 
 	 * @param toolSettings the new tool settings
 	 */
@@ -40,7 +40,7 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	}
 	
 	/**
-	 * Get name associated with this tool
+	 * Returns name associated with this tool.
 	 * 
 	 * @return the localized name of this tool
 	 */
@@ -70,7 +70,7 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	}
 
 	/**
-	 * Draw a filled rectangle
+	 * Draws a filled rectangle.
 	 */
 	protected void fillRectangle(GC gc, Point a, Point b) {
 		final int left = Math.min(a.x, b.x);
