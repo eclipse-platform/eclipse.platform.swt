@@ -893,6 +893,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CELL_1RENDERER_1PIXBUF)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1CELL_1RENDERER_1TEXT
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CELL_1RENDERER_1TEXT)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1CELL_1RENDERER_1TEXT_FUNC);
+	rc = (jboolean)GTK_IS_CELL_RENDERER_TEXT(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1CELL_1RENDERER_1TEXT_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1IMAGE_1MENU_1ITEM
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8156,6 +8168,20 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1editable)
 }
 #endif
 
+#ifndef NO__1gtk_1text_1view_1get_1iter_1at_1location
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1iter_1at_1location)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1get_1iter_1at_1location_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_text_view_get_iter_at_location((GtkTextView *)arg0, (GtkTextIter *)lparg1, (gint)arg2, (gint)arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1get_1iter_1at_1location_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1text_1view_1get_1iter_1location
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1iter_1location)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2)
@@ -8291,6 +8317,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1set_1wrap_1mode)
 	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1set_1wrap_1mode_FUNC);
 	gtk_text_view_set_wrap_mode((GtkTextView *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1set_1wrap_1mode_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1text_1view_1window_1to_1buffer_1coords
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1window_1to_1buffer_1coords)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1window_1to_1buffer_1coords_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	gtk_text_view_window_to_buffer_coords((GtkTextView *)arg0, (GtkTextWindowType)arg1, (gint)arg2, (gint)arg3, (gint *)lparg4, (gint *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1window_1to_1buffer_1coords_FUNC);
 }
 #endif
 

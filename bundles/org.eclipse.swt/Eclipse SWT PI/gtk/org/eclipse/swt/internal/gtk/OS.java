@@ -863,6 +863,15 @@ public static final boolean GTK_IS_CELL_RENDERER_PIXBUF(int /*long*/ obj) {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_CELL_RENDERER_TEXT(int /*long*/ obj);
+public static final boolean GTK_IS_CELL_RENDERER_TEXT(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_CELL_RENDERER_TEXT(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj);
 public static final boolean GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj) {
 	lock.lock();
@@ -5562,6 +5571,15 @@ public static final boolean gtk_text_view_get_editable(int /*long*/ text_view) {
 		lock.unlock();
 	}
 }
+public static final native void _gtk_text_view_get_iter_at_location(int /*long*/ text_view, byte[] iter, int x, int y);
+public static final void gtk_text_view_get_iter_at_location(int /*long*/ text_view, byte[] iter, int x, int y) {
+	lock.lock();
+	try {
+		_gtk_text_view_get_iter_at_location(text_view, iter, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_text_view_get_iter_location(int /*long*/ text_view, byte[] iter, GdkRectangle location);
 public static final void gtk_text_view_get_iter_location(int /*long*/ text_view, byte[] iter, GdkRectangle location) {
 	lock.lock();
@@ -5657,6 +5675,15 @@ public static final void gtk_text_view_set_wrap_mode(int /*long*/ text_view, int
 	lock.lock();
 	try {
 		_gtk_text_view_set_wrap_mode(text_view, wrap_mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_text_view_window_to_buffer_coords(int /*long*/ text_view, int win, int window_x, int window_y, int[] buffer_x, int[] buffer_y);
+public static final void gtk_text_view_window_to_buffer_coords(int /*long*/ text_view,  int win, int window_x, int window_y, int[] buffer_x, int[] buffer_y) {
+	lock.lock();
+	try {
+		_gtk_text_view_window_to_buffer_coords(text_view, win, window_x, window_y, buffer_x, buffer_y);
 	} finally {
 		lock.unlock();
 	}
