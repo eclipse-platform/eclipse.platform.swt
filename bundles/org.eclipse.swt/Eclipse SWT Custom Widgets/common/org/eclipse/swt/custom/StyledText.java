@@ -6297,7 +6297,7 @@ void resetSelection() {
 void scrollHorizontal(int pixels) {
 	Rectangle clientArea;
 	
-	if (pixels == 0 || wordWrap) {
+	if (pixels == 0) {
 		return;
 	}
 	clientArea = getClientArea();
@@ -7532,7 +7532,7 @@ boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
  *	not scrolled. 	
  */
 boolean showLocation(int x, int line) {
-	int clientAreaWidth = getClientArea().width - leftMargin - rightMargin;
+	int clientAreaWidth = getClientArea().width - leftMargin;
 	int verticalIncrement = getVerticalIncrement();
 	int horizontalIncrement = clientAreaWidth / 4;
 	boolean scrolled = false;		
