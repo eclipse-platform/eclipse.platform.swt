@@ -362,8 +362,6 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-
-
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -547,7 +545,7 @@ public void setText (String string) {
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length); 
 	TBBUTTONINFO info = new TBBUTTONINFO ();

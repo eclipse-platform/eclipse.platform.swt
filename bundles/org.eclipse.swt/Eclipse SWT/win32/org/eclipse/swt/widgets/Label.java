@@ -220,7 +220,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -410,7 +410,7 @@ public void setText (String string) {
 		if (hFont != 0) OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 	}
 	string = Display.withCrLf (string);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 

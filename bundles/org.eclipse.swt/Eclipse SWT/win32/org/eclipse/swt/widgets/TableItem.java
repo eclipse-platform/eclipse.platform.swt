@@ -328,7 +328,7 @@ public String getText (int index) {
 	OS.MoveMemory (buffer1, pszText, cchTextMax);
 	OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (parent.getCodePage (), buffer1);
 	int length = 0;
 	while (length < buffer2.length && buffer2 [length] != 0) length++;
 	return new String (buffer2, 0, length);
@@ -555,7 +555,7 @@ public void setText (int index, String string) {
 	if (itemIndex == -1) return;
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();	
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, true);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_TEXT;
@@ -578,7 +578,7 @@ public void setText (String string) {
 	lvItem.mask = OS.LVIF_TEXT;
 	lvItem.iItem = index;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length); 
 	lvItem.pszText = pszText;

@@ -572,6 +572,16 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
+int getCodePage () {
+	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	LOGFONT logFont = new LOGFONT ();
+	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
+	int cs = logFont.lfCharSet & 0xFF;
+	int [] lpCs = new int [8];
+	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
+	return lpCs [1];
+}
+
 /**
  * Returns the display that the receiver was created on.
  *

@@ -166,6 +166,7 @@ public String open () {
 
 	/* Convert the title and copy it into lpstrTitle */
 	if (title == null) title = "";
+	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (0, title, true);
 	int lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer3.length);
 	OS.MoveMemory (lpstrTitle, buffer3, buffer3.length); 
@@ -182,14 +183,17 @@ public String open () {
 	if (filterExtensions.length == 0) {
 		strFilter = strFilter + FILTER + '\0' + FILTER + '\0';
 	}
+	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (0, strFilter, true);
 	int lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer4.length);
 	OS.MoveMemory (lpstrFilter, buffer4, buffer4.length);
 	
 	/* Convert the fileName and filterName to C strings */
 	if (fileName == null) fileName = "";
+	/* Use the character encoding for the default locale */
 	byte [] name = Converter.wcsToMbcs (0, fileName, false);
 	if (filterPath == null) filterPath = "";
+	/* Use the character encoding for the default locale */
 	byte [] path = Converter.wcsToMbcs (0, filterPath, false);
 
 	/*
@@ -273,6 +277,7 @@ public String open () {
 		OS.MoveMemory (buffer, lpstrFile, buffer.length);
 		byte [] prefix = new byte [struct.nFileOffset - 1];
 		System.arraycopy (buffer, 0, prefix, 0, prefix.length);
+		/* Use the character encoding for the default locale */
 		filterPath = new String (Converter.mbcsToWcs (0, prefix));
 		int start = struct.nFileOffset;
 		do {
@@ -281,6 +286,7 @@ public String open () {
 			byte [] buffer1 = new byte [end - start];
 			System.arraycopy (buffer, start, buffer1, 0, buffer1.length);
 			start = end;
+			/* Use the character encoding for the default locale */
 			String string = new String (Converter.mbcsToWcs (0, buffer1));
 			if (count == fileNames.length) {
 				String [] newFileNames = new String [fileNames.length + 4];
