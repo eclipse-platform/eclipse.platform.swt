@@ -714,7 +714,7 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 	boolean translated = super.translateTraversal (key_sym, phEvent);
-	if (!translated && key_sym == OS.Pk_Return) {
+	if ((style & SWT.SINGLE) != 0 && !translated && key_sym == OS.Pk_Return) {
 		postEvent (SWT.DefaultSelection);
 		return true;
 	}
