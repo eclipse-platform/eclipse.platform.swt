@@ -96,6 +96,14 @@ reversed. That is, the "mask" argument should be the source image and the "sourc
 mask image. This problem was discovered too late in the development cycle to be fixed for R1.0. The intent is to
 fix this in a future release, potentially by introducing a new more general constructor.
 
+<h4>
+99.1.8 Use of the "&" character in TabFolder</h4>
+
+The "&" character is not currently supported in TabFolder labels. Doing so on win32, will cause the
+character which follows the "&" to be underlined as if it was a mnemonic, even though mnemonics are
+not available for TabFolders. On other platforms, the "&" character will be displayed correctly, but
+for portability reasons, it should be avoided.
+
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
