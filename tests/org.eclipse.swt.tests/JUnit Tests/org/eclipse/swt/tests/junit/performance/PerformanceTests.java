@@ -22,7 +22,6 @@ import junit.textui.*;
 public class PerformanceTests extends TestSuite {
 
 public static void main(String[] args) {
-System.out.println("PerformanceTests main");
 	SwtTestCase.unimplementedMethods = 0;
 	TestRunner.run(suite());
 	if (SwtTestCase.unimplementedMethods > 0) {
@@ -30,13 +29,13 @@ System.out.println("PerformanceTests main");
 	}
 }
 public static Test suite() {
-System.out.println("PerformanceTests suite");
 	return new PerformanceTests();
 }
 
 public PerformanceTests() {
 	super();
-System.out.println("PerformanceTests constructor");
+	SwtTestCase.performanceTesting = true;
+	
 	/* The logical order to run the tests in is:
 	 * - SWT, SWTError, SWTException
 	 * - Display
@@ -228,7 +227,5 @@ System.out.println("PerformanceTests constructor");
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
-
-
 }
 }

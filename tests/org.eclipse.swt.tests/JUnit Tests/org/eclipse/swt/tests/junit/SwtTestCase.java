@@ -53,6 +53,9 @@ public class SwtTestCase extends TestCase {
 	// be written to System.out
 	public static boolean verbose = false;
 
+	// used to specify that performance measures should be taken
+	public static boolean performanceTesting = false;
+	
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};

@@ -9,6 +9,7 @@
 <requires>
    <import plugin="org.junit"/>
    <import plugin="org.eclipse.swt"/>
+   <import plugin="org.eclipse.test.performance"/>
 </requires>
 
 <runtime>
