@@ -756,6 +756,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
+	 * <li><code>GC</code></li>
 	 * </ul></p>
 	 * 
 	 * @since 3.0
@@ -774,6 +775,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
+	 * <li><code>GC</code></li>
 	 * </ul></p>
 	 * 
 	 * @since 3.0
@@ -785,6 +787,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
+	 * <li><code>GC</code></li>
 	 * </ul></p>
 	 * 
 	 * @since 3.0
