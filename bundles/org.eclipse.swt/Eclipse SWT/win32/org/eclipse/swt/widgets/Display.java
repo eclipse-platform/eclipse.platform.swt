@@ -2148,8 +2148,8 @@ public boolean post (Event event) {
 	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int type = event.type;
 	switch (type){
-		case SWT.KeyDown :
-		case SWT.KeyUp : {
+		case SWT.KeyDown:
+		case SWT.KeyUp: {
 			KEYBDINPUT inputs = new KEYBDINPUT ();
 			inputs.wVk = (short) untranslateKey (event.keyCode);
 			if (inputs.wVk == 0) {
@@ -2176,9 +2176,9 @@ public boolean post (Event event) {
 			OS.HeapFree (hHeap, 0, pInputs);
 			return result;
 		}
-		case SWT.MouseDown :
-		case SWT.MouseMove : 
-		case SWT.MouseUp : {
+		case SWT.MouseDown:
+		case SWT.MouseMove: 
+		case SWT.MouseUp: {
 			MOUSEINPUT inputs = new MOUSEINPUT ();
 			if (type == SWT.MouseMove){
 				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
@@ -2186,10 +2186,10 @@ public boolean post (Event event) {
 				inputs.dy = event.y * 65535 / (OS.GetSystemMetrics (OS.SM_CYSCREEN) - 1);
 			} else {
 				switch (event.button) {
-					case 1 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
-					case 2 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
-					case 3 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
-					default : return false;
+					case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
+					case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
+					case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
+					default: return false;
 				}
 			}
 			int hHeap = OS.GetProcessHeap ();
