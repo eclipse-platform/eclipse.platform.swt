@@ -34,8 +34,20 @@ import org.eclipse.swt.internal.carbon.*;
 public /*final*/ class List extends Scrollable {
 
 	// AW
-	private static final int COL_ID= 1024;
+	private static final int COL_ID= 12345;
 	private ArrayList fData= new ArrayList();
+	private int fRowID= 1000;
+	
+	private class Pair {
+		int fId;
+		String fValue;
+
+		Pair(String v) {
+			fValue= v;
+			fId= fRowID++;
+		}
+		
+	}
 	// AW
 	
 /**
@@ -91,15 +103,9 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.XmListAddItemUnselected (handle, xmString, 0);
-	OS.XmStringFree (xmString);
-    */
-	fData.add(string);
-	ensureSize(fData.size());
+    Pair p= new Pair(string);
+	fData.add(p);
+	OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0);
 }
 /**
  * Adds the argument to the receiver's list at the given
@@ -152,9 +158,9 @@ public void add (String string, int index) {
 	OS.XmListAddItemUnselected (handle, xmString, index + 1);
 	OS.XmStringFree (xmString);
     */
-	fData.add(index, string);
-	invalidateRange(index, size-index);
-	ensureSize(fData.size());
+    Pair p= new Pair(string);
+	fData.add(index, p);
+	OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -274,7 +280,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimY -= argList [1] + argList [3] + argList [7];
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
     */
-	// AW FIXME System.out.println("List.computeTrim: nyi");
+	System.out.println("List.computeTrim: nyi");
 	return new Rectangle (x, y, width, height);
 }
 void createHandle (int index) {
@@ -326,12 +332,8 @@ void createHandle (int index) {
 	//OS.SetDataBrowserSelectionFlags(handle, OS.kDataBrowserSelectOnlyOne + OS.kDataBrowserDragSelect);
 	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	OS.SetDataBrowserListViewHeaderBtnHeight(handle, (short) 0);
-	
-	Display display= getDisplay();
-	OS.setDataBrowserItemDataCallback(handle, display.fDataBrowserDataProc);
-	OS.setDataBrowserItemNotificationCallback(handle, display.fDataBrowserItemNotificationProc);
-	
-	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, OS.kDataBrowserListViewSelectionColumn, (short)30, (short)30);
+		
+	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, OS.kDataBrowserListViewSelectionColumn, (short)30, (short)200);
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 10000);
 	//OS.SetDataBrowserActiveItems(handle, true);
 }
@@ -370,6 +372,7 @@ public void deselect (int index) {
     /* AW
 	if (index != -1) OS.XmListDeselectPos (handle, index + 1);
     */
+    System.out.println("List.deselect: nyi");
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
@@ -399,6 +402,7 @@ public void deselect (int start, int end) {
  		if (index != 0) OS.XmListDeselectPos (handle, index);
 	}
 	*/
+    System.out.println("List.deselect(s,e): nyi");
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
@@ -430,6 +434,8 @@ public void deselect (int [] indices) {
  		if (index != 0) OS.XmListDeselectPos (handle, index);
 	}
 	*/
+	getIds(indices);
+	System.out.println("List.deselect([]): nyi");
 }
 /**
  * Deselects all selected items in the receiver.
@@ -444,6 +450,7 @@ public void deselectAll () {
     /* AW
 	OS.XmListDeselectAllItems (handle);
     */
+	System.out.println("List.deselectAll: nyi");
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -461,7 +468,7 @@ public int getFocusIndex () {
     /* AW
 	return OS.XmListGetKbdItemPos (handle) - 1;
     */
-    return 0;
+    return -1;
 }
 /**
  * Returns the item at the given, zero-relative index in the
@@ -483,36 +490,11 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0, OS.XmNitems, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
 	int size= fData.size();
-	if (!(0 <= index && index < size)) {
+	if (!(0 <= index && index < size))
 		error (SWT.ERROR_INVALID_RANGE);
-	}
-	/* AW
-	if (argList [3] == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	int ptr = argList [3] + (index * 4);
-	int [] buffer1 = new int [1];
-	OS.memmove (buffer1, ptr, 4);
-	ptr = buffer1 [0];
-	int address = OS.XmStringUnparse (
-		ptr,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.XtFree (address);
-	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
-    */
-	return (String) fData.get(index);
+	Pair p= (Pair) fData.get(index);
+	return p.fValue;
 }
 /**
  * Returns the number of items contained in the receiver.
@@ -529,11 +511,6 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
-    */
 	return fData.size();
 }
 /**
@@ -565,7 +542,7 @@ public int getItemHeight () {
     /* AW
 	return getFontHeight () + spacing + highlight + 1;
     */
-	//AW FIXME System.out.println("List.getItemHeight: nyi");
+	System.out.println("List.getItemHeight: nyi");
     return 15;
 }
 /**
@@ -618,7 +595,13 @@ public String [] getItems () {
 	}
 	return result;
     */
-	return (String[])fData.toArray(new String[fData.size()]);
+    int n= fData.size();
+    String[] result= new String[n];
+    for (int i= 0; i < n; i++) {
+    	Pair p= (Pair) fData.get(i);
+    	result[i]= p.fValue;
+    }
+	return result;
 }
 /**
  * Returns an array of <code>String</code>s that are currently
@@ -670,8 +653,20 @@ public String [] getSelection () {
 	}
 	return result;
     */
-	System.out.println("List.getSelection: nyi");
-    return new String[] { "item" };
+    
+    int resultHandle= OS.NewHandle(0);
+	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	
+	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+	String[] result= new String[itemCount];
+	if (itemCount > 0) {	
+		int resultIDs[]= new int[itemCount];
+		OS.getHandleData(resultHandle, resultIDs);
+		for (int i= 0; i < itemCount; i++)
+			result[i]= get(resultIDs[i]);
+	}
+	return result;
 }
 /**
  * Returns the number of selected items contained in the receiver.
@@ -688,13 +683,11 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNselectedItemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
-    */
-	System.out.println("List.getSelectionCount: nyi");
-    return 1;
+	int[] result= new int[1];
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) == OS.kNoErr)
+		return result[0];
+	System.out.println("List.getSelectionCount: error in GetDataBrowserItemCount");
+    return 0;
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -724,8 +717,17 @@ public int getSelectionIndex () {
 	OS.XtFree (address);
 	return indices [0] - 1;
     */
-	System.out.println("List.getSelectionIndex: nyi");
-    return 1;
+    int resultHandle= OS.NewHandle(0);
+	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	
+	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+	if (itemCount > 0) {	
+		int resultIDs[]= new int[1];
+		OS.getHandleData(resultHandle, resultIDs);
+		return getIndex(resultIDs[0]);
+	}
+	return -1;
 }
 /**
  * Returns the zero-relative indices of the items which are currently
@@ -756,8 +758,20 @@ public int [] getSelectionIndices () {
 	for (int i=0; i<result.length; i++) --result [i];
 	return result;
     */
-	System.out.println("List.getSelectionIndices: nyi");
-    return new int[0];
+    
+    int resultHandle= OS.NewHandle(0);
+	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	
+	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+	int[] result= new int[itemCount];
+	if (itemCount > 0) {	
+		int resultIDs[]= new int[itemCount];
+		OS.getHandleData(resultHandle, resultIDs);
+		for (int i= 0; i < itemCount; i++)
+			result[i]= getIndex(resultIDs[i]);
+	}
+	return result;
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -789,6 +803,9 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, SWT.Selection);
 	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, SWT.DefaultSelection);
     */
+	Display display= getDisplay();
+	OS.setDataBrowserItemDataCallback(handle, display.fDataBrowserDataProc);
+	OS.setDataBrowserItemNotificationCallback(handle, display.fDataBrowserItemNotificationProc);
 }
 /**
  * Gets the index of an item.
@@ -812,15 +829,12 @@ void hookEvents () {
 public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) return -1;
-	int index = OS.XmListItemPos (handle, xmString);
-	OS.XmStringFree (xmString);
-	return index - 1;
-    */
-    return fData.indexOf(string);
+	for (int i= 0; i < fData.size(); i++) {
+		Pair p= (Pair) fData.get(i);
+		if (string.equals(p.fValue))
+			return i;
+	}
+    return -1;
 }
 /**
  * Searches the receiver's list starting at the given, 
@@ -847,33 +861,12 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
-	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int items = argList [1], itemCount = argList [3];
-	if (!((0 <= start) && (start < itemCount))) return -1;
-	byte [] buffer1 = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer1);
-	if (xmString == 0) return -1;
-	int index = start;
-	items += start * 4;
-	int [] buffer2 = new int [1];
-	while (index < itemCount) {
-		OS.memmove (buffer2, items, 4);
-		if (OS.XmStringCompare (buffer2 [0], xmString)) break;
-		items += 4;  index++;
+	for (int i= start; i < fData.size(); i++) {
+		Pair p= (Pair) fData.get(i);
+		if (string.equals(p.fValue))
+			return i;
 	}
-	OS.XmStringFree (xmString);
-	if (index == itemCount) return -1;
-	return index;
-    */
-	while (true) {
-		int index= fData.indexOf(string);
-		if (index < 0)
-			return -1;
-		if (index >= start)
-			return index;
-	}
+    return -1;
 }
 /**
  * Returns <code>true</code> if the item is selected,
@@ -898,6 +891,7 @@ public boolean isSelected (int index) {
     return true;
 }
 int processSelection (Object callData) {
+	System.out.println("List.processSelection: " + getSelectionIndex());
 	
 	return super.processSelection(callData);
 }
@@ -938,9 +932,10 @@ public void remove (int index) {
 	/* AW
 	OS.XmListDeletePos (handle, index + 1);
     */
+	
+	Pair p= (Pair) fData.get(index);
 	fData.remove(index);
-	invalidateRange(index, size-index);
-	ensureSize(fData.size());
+	OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0);
 }
 /**
  * Removes the items from the receiver which are
@@ -964,9 +959,7 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	/* AW
 	int count = end - start + 1;
-	*/
 	/*
 	* Feature in Motif.  An index out of range handled
 	* correctly by the list widget but causes an unwanted
@@ -985,6 +978,12 @@ public void remove (int start, int end) {
 	/*
 	OS.LDelRow((short)count, (short)start, OS.getListHandle(handle));
 	*/
+	int[] ids= new int[count];
+	for (int i= 0; i < count; i++) {
+		Pair p= (Pair) fData.get(start+i);
+		ids[i]= p.fId;
+	}
+	OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, count, ids, 0);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -1008,17 +1007,15 @@ public void remove (int start, int end) {
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int index = OS.XmListItemPos (handle, xmString);
-	OS.XmStringFree (xmString);
-	if (index == 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	OS.XmListDeletePos (handle, index);
-    */
-	System.out.println("List.remove: nyi");
-	
+	for (int i= 0; i < fData.size(); i++) {
+		Pair p= (Pair) fData.get(i);
+		if (string.equals(p.fValue)) {
+			if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) == OS.kNoErr)
+				return;
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+	}
+	error (SWT.ERROR_INVALID_ARGUMENT);
 }
 /**
  * Removes the items from the receiver at the given
@@ -1059,7 +1056,9 @@ public void remove (int [] indices) {
 	OS.XmListDeletePositions (handle, newIndices, length);
 	if (length < indices.length) error (SWT.ERROR_INVALID_RANGE);
     */
-	System.out.println("List.remove: nyi");
+	int[] ids= getIds(indices);
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
  * Removes all of the items from the receiver.
@@ -1071,10 +1070,6 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
-    /* AW
-	OS.XmListDeselectAllItems (handle);
-	OS.XmListDeleteAllItems (handle);
-    */
 	fData.clear();
 	OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 0, null, 0);
 }
@@ -1148,7 +1143,8 @@ public void select (int index) {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
     */
-	OS.SetDataBrowserSelectedItems(handle, 1, new int[] { FIRST_ID + index }, OS.kDataBrowserItemsAssign);
+    Pair p= (Pair) fData.get(index);
+	OS.SetDataBrowserSelectedItems(handle, 1, new int[] { p.fId }, OS.kDataBrowserItemsAssign);
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver.
@@ -1211,7 +1207,13 @@ public void select (int start, int end) {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
     */
-	System.out.println("List.select: nyi");
+	int count= end-start+1;
+	int[] ids= new int[count];
+	for (int i= 0; i < count; i++) {
+		Pair p= (Pair) fData.get(start+i);
+		ids[i]= p.fId;
+	}
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver.
@@ -1281,28 +1283,13 @@ public void select (int [] indices) {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
     */
-	System.out.println("List.select: nyi");
+	int[] ids= getIds(indices);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 void select (String [] items) {
 	checkWidget();
-    /* AW
-	int [] table = new int [items.length];
-	String codePage = getCodePage ();
-	for (int i=0; i<items.length; i++) {
-		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
-		int xmString = OS.XmStringCreateLocalized (buffer);
-		table [i] = xmString;
-	}
-	int ptr = OS.XtMalloc (items.length * 4);
-	OS.memmove (ptr, table, items.length * 4);
-	int [] argList = {OS.XmNselectedItems, ptr, OS.XmNselectedItemCount, table.length};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	for (int i=0; i<table.length; i++) OS.XmStringFree (table [i]);
-	OS.XtFree (ptr);
-	OS.XmListUpdateSelectedList (handle);
-    */
-	System.out.println("List.select: nyi");
+	int[] ids= getIds(items);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 /**
  * Selects all the items in the receiver.
@@ -1342,7 +1329,13 @@ public void selectAll () {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
     */
-	System.out.println("List.selectAll: nyi");
+	int count= fData.size();
+	int[] ids= new int[count];
+	for (int i= 0; i < count; i++) {
+		Pair p= (Pair) fData.get(i);
+		ids[i]= p.fId;
+	}
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 void setFocusIndex (int index) {
     /* AW
@@ -1392,8 +1385,9 @@ public void setItem (int index, String string) {
 	if (isSelected) OS.XmListSelectPos (handle, index + 1, false);
 	OS.XmStringFree (xmString);
     */
-	fData.set(index, string);
-	invalidateRange(index, 1);
+    Pair p= (Pair) fData.get(index);
+    p.fValue= string;
+    OS.UpdateDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 /**
  * Sets the receiver's items to be the given array of items.
@@ -1459,11 +1453,14 @@ public void setItems (String [] items) {
 	int oldSize= fData.size();
 	*/
 	fData.clear();
-	for (int i= 0; i < items.length; i++)
-		fData.add(items[i]);
-	int ensureSize= fData.size();
-	ensureSize(ensureSize);
-	invalidateRange(0, ensureSize);
+	int count= items.length;
+	int[] ids= new int[count];
+	for (int i= 0; i < count; i++) {
+		Pair p= new Pair(items[i]);
+		fData.add(p);
+		ids[i]= p.fId;
+	}
+	OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver. 
@@ -1583,7 +1580,14 @@ public void setSelection (String [] items) {
 	OS.XtFree (ptr);
 	OS.XmListUpdateSelectedList (handle);
     */
-	System.out.println("List.setSelection: nyi");
+	int count= items.length;
+	int[] ids= new int[count];
+	for (int i=0; i<count; i++) {
+		int id= get(items [i]);
+		ids[i]= id;
+	}
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
+
 }
 /**
  * Sets the zero-relative index of the item which is currently
@@ -1653,54 +1657,84 @@ public void showSelection () {
 // Mac stuff
 ////////////////////////////////////
 
-private static final int FIRST_ID= 1000;
-
-private void ensureSize(int ensureSize) {
-	int[] numItems= new int[1];
-	OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, 0, numItems);
-	int currentSize= numItems[0];
-	int n= Math.abs(ensureSize-currentSize);
-	if (n != 0) {
-		int[] items= new int[n];
-		for (int i= 0; i < n; i++)
-			items[i]= FIRST_ID+currentSize+i;
-		if (ensureSize > currentSize)
-			OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, n, items, 0);
-		else
-			OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, n, items, 0);
+	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+		//processEvent (type, new MacEvent(eRefHandle));
+		return OS.eventNotHandledErr;
 	}
-}
-
-private void invalidateRange(int start, int numItems) {
-	if (numItems > 0) {
-		int[] items;
-		if (numItems > 20)
-			items= new int[] { OS.kDataBrowserNoItem };
-		else {
-			items= new int[numItems];
-			for (int i= 0; i < numItems; i++)
-				items[i]= FIRST_ID+start+i;
+	
+	int handleItemCallback(int cHandle, int colID, int rowID, int item) {
+		if (colID != COL_ID) {
+			System.out.println("List.handleItemCallback: wrong column ID: " + colID);
+			return 0;
 		}
-		OS.UpdateDataBrowserItems(handle, OS.kDataBrowserNoItem, numItems, items, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	}
-}
-
-int handleItemCallback(int cHandle, int colId, int rowID, int item) {
-	if (rowID == COL_ID) {
-		int x= colId - FIRST_ID;
-		if (x >= 0 && x < fData.size()) {
+			
+		String s= get(rowID);
+		if (s != null) {
 			int sHandle= 0;
 			try {
-				sHandle= OS.CFStringCreateWithCharacters((String) fData.get(x));
+				sHandle= OS.CFStringCreateWithCharacters(s);
 				OS.SetDataBrowserItemDataText(item, sHandle);
 			} finally {
 				if (sHandle != 0)
 					OS.CFRelease(sHandle);
 			}
 		} else {
-			System.out.println("List.handleItemCallback: index out of range: " + x);
+			System.out.println("List.handleItemCallback: index out of range: " + rowID);
 		}
+		return 0;
 	}
-	return 0;
-}
+
+	private String get(int id) {
+		int n= fData.size();
+    	String[] result= new String[n];
+    	for (int i= 0; i < n; i++) {
+    		Pair p= (Pair) fData.get(i);
+    		if (p.fId == id)
+    			return p.fValue;
+    	}
+		return null;
+	}
+
+	private int getIndex(int id) {
+		int n= fData.size();
+    	String[] result= new String[n];
+    	for (int i= 0; i < n; i++) {
+    		Pair p= (Pair) fData.get(i);
+    		if (p.fId == id)
+    			return i;
+    	}
+		return -1;
+	}
+	
+	private int get(String s) {
+		int n= fData.size();
+    	for (int i= 0; i < n; i++) {
+    		Pair p= (Pair) fData.get(i);
+    		if (s.equals(p.fValue))
+    			return p.fId;
+    	}
+		return 0;
+	}
+	
+	private int[] getIds(int[] indices) {
+		int count= fData.size();
+		int[] ids= new int[indices.length];
+		for (int i= 0; i < indices.length; i++) {
+			int index= indices[i];
+			if (!(0 <= index && index < count)) break;
+			Pair p= (Pair) fData.get(index);
+			ids[i]= p.fId;
+		}
+		return ids;
+	}
+	
+	private int[] getIds(String[] items) {
+		int count= items.length;
+		int[] ids= new int[count];
+		for (int i=0; i<count; i++) {
+			int id= get(items[i]);
+			ids[i]= id;
+		}
+		return ids;
+	}
 }
