@@ -2256,11 +2256,21 @@ boolean traverseGroup (boolean next) {
 		if (list [index] == group) break;
 		index++;
 	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
 	if (index == length) return false;
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset + length) % length)) != start) {
-		if (list [index].setTabGroupFocus () && !isFocusControl ()) return true;
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
 	}
+	if (group.isDisposed ()) return false;
 	return group.setTabGroupFocus ();
 }
 
@@ -2272,10 +2282,18 @@ boolean traverseItem (boolean next) {
 		if (children [index] == this) break;
 		index++;
 	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset) + length) % length) != start) {
 		Control child = children [index];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
 	}
 	return false;
 }
