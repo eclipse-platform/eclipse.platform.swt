@@ -1272,8 +1272,10 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
-	if (start < 0 || start > end) return;
-	OS.TXNSetSelection (txnObject, start, end);
+	int length = OS.TXNDataSize (txnObject) / 2;
+	int nStart = Math.min (Math.max (Math.min (start, end), 0), length);
+	int nEnd = Math.min (Math.max (Math.max (start, end), 0), length);
+	OS.TXNSetSelection (txnObject, nStart, nEnd);
 	OS.TXNShowSelection (txnObject, false);
 }
 
