@@ -349,9 +349,6 @@ public void dispose() {
  * @param startAngle the beginning angle
  * @param arcAngle the angular extent of the arc, relative to the start angle
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -366,9 +363,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	/*
 	* Feature in WinCE.  The function Arc is not present in the
 	* WinCE SDK.  The fix is to emulate arc drawing by using
@@ -1436,9 +1431,6 @@ public boolean equals (Object object) {
  * @param startAngle the beginning angle
  * @param arcAngle the angular extent of the arc, relative to the start angle
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1457,9 +1449,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	
 	/*
 	* Feature in WinCE.  The function Pie is not present in the

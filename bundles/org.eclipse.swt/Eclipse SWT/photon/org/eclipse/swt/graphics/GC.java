@@ -404,9 +404,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	if (startAngle > 0) {
 		if (arcAngle > 0) {
 			//No need to modify start angle.
@@ -1447,9 +1445,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	if (startAngle > 0) {
 		if (arcAngle > 0) {
 			//No need to modify start angle.
