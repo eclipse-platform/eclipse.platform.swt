@@ -196,6 +196,22 @@ public class Accessible {
 	}
 
 	/**
+	 * Sends a message to accessible clients that the child selection
+	 * within a custom container control has changed.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.0
+	 */
+	public void selectionChanged () {
+		checkWidget();
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+	}
+	
+	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notifed when an accessible client asks for custom control
 	 * specific information.
@@ -240,6 +256,64 @@ public class Accessible {
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
 	}
 
+	/**
+	 * Sends a message to accessible clients that the text
+	 * caret has moved within a custom control.
+	 *
+	 * @param index the new caret index within the control
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textCaretMoved (int index) {
+		checkWidget();
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, COM.CHILDID_SELF);
+	}
+	
+	/**
+	 * Sends a message to accessible clients that the text
+	 * within a custom control has changed.
+	 *
+	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
+	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param startIndex the text index within the control where the insertion or deletion begins
+	 * @param length the non-negative length in characters of the insertion or deletion
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @see ACC#NOTIFY_TEXT_INSERT
+	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * 
+	 * @since 3.0
+	 */
+	public void textChanged (int type, int startIndex, int length) {
+		checkWidget();
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+	}
+	
+	/**
+	 * Sends a message to accessible clients that the text
+	 * selection has changed within a custom control.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textSelectionChanged () {
+		checkWidget();
+		// not an MSAA event
+	}
+	
 	/**
 	 * Invokes platform specific functionality to dispose an accessible object.
 	 * <p>
