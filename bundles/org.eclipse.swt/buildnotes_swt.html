@@ -11,28 +11,48 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
-SWT Build 3.0 018 - Wednesday August 20, 2003
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+
+<h2> SWT Build 3.0 019 - Wednesday August 20, 2003 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+Region(Device) added
+<br>Region.intersect(Rectangle) added
+<br>Region.intersect(Region) added
+<br>Region.subtract(Rectangle) added
+<br>Region.subtract(Region) added
+<br>Rectangle.intersect(Rectangle) added
+<br>Rectangle.intersects(int, int, int, int) added
+</blockquote>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+</blockquote>
+
+
+<h2> SWT Build 3.0 018 - Wednesday August 20, 2003 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 
 <p>Browser class added for Windows and Linux GTK</p>
 <p>36952:	[Plan Item] Display HTML in a widget</p>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>    
 41201:  GTK-BIDI: RTL support in Label
 <br>41362:  GTK-BIDI: RTL support in Group
 </blockquote>    
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 017a - Tuesday August 19, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 017a - Tuesday August 19, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>    
 22322: AWT Container is a SWT container does not get its background painted in JDK 1.4.0  
 <br>39752: SWT_AWT support for Java 1.4  
@@ -44,13 +64,11 @@ SWT Build 3.0 017a - Tuesday August 19, 2003
 <br>41627: Editable Combo incorrect width  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 017 - Tuesday August 12, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 017 - Tuesday August 12, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>    
 4608: Canvas.setRedraw(true) makes widget visible (1G975VG)  
 <br>6220: Workbench is automatically brought to front in focus follows mouse mode  
@@ -72,26 +90,22 @@ SWT Build 3.0 017 - Tuesday August 12, 2003
 <br>41375: FormLayout.layout takes too long for more controls  
 </blockquote>   
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 015 - Tuesday July 29, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 015 - Tuesday July 29, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>    
 36927: UI does not get focus on multiscreen Suse 8.2  
 <br>37095: BIDI - When starting Eclipse from Arabic locale it is always RTL oriented  
 <br>38349: wizard description showing border and caret  
 </blockquote>   
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 015 - Tuesday July 29, 2003
 
-<h2>
-<a NAME="Breaking Changes"></a>Breaking Changes</h2>
+<h2> SWT Build 3.0 015 - Tuesday July 29, 2003 </h2>
+
+<h3>
+<a NAME="Breaking Changes"></a>Breaking Changes</h3>
 <p>
 <b>Motif and Photon: Change of event ordering in Table and Tree</b>
 <p>
@@ -100,8 +114,8 @@ The ordering of selection events has changed on these platforms to become consis
 <li>The previous ordering of Selection-MouseDown-MouseUp has been changed to MouseDown-Selection-MouseUp for mouse (de)selections</li>
 <li>The previous ordering of Selection-KeyDown-KeyUp has been changed to KeyDown-Selection-KeyUp for keyboard (de)selections</li>
 </ul>
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>    
 33370:  event firing differences (win32/motif)   
 <br>37578:  TableColumn does not notify of Resize event  
@@ -111,13 +125,11 @@ The ordering of selection events has changed on these platforms to become consis
 <br>40652:  GTK Linux - Memory Leak  
 </blockquote>   
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 014f - Tuesday July 22, 2003
 
-<h2>
-<a NAME="Breaking Changes"></a>Breaking Changes</h2>
+<h2> SWT Build 3.0 014f - Tuesday July 22, 2003 </h2>
+
+<h3>
+<a NAME="Breaking Changes"></a>Breaking Changes</h3>
 <p>
 <b>Clipboard API must be called from UI Thread</b>
 <p>
@@ -126,8 +138,8 @@ be executed in the UI Thread.  As a result, on all platforms,
 invoking the Clipboard API from a non UI thread will result 
 in an SWT Exception of ERROR_THREAD_INVALID_ACCESS.
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>   
 33355: Button with ARROW style answers getText() differently  
 <br>35761: ControlExample - Label - Image labels issue with SWT.WRAP  
@@ -148,13 +160,11 @@ in an SWT Exception of ERROR_THREAD_INVALID_ACCESS.
 <br>40242: Text being reversed while hitting Ctrl+Shift  
 </blockquote>   
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 014 - Tuesday July 14, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 014 - Tuesday July 14, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>   
 30021: Font and Color dialogs hang on JVM 1.4.1  
 <br>37030: No focus listener control in SWT combo on Linux platform  
@@ -165,26 +175,22 @@ SWT Build 3.0 014 - Tuesday July 14, 2003
 <br>40030: StyledText - auto scroll next in SINGLE mode does not stop  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 013 - Thursday July 10, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 013 - Thursday July 10, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>   
 37490: BIDI: text in the rtl-oriented Text control can't be aligned to the trailing edge of this control.  
 <br>39013: scrolling down in editor corrupts contents  
 <br>39380: TabFolder not working in QNX 6.2.1  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 012 - Tuesday July 8, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 012 - Tuesday July 8, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>   
 39443: GTK Error calling TreeItem.getExpanded() on a tree item being disposed.  
 <br>39084: Combo.add firing unnecessary events (BBAWT)  
@@ -194,13 +200,11 @@ SWT Build 3.0 012 - Tuesday July 8, 2003
 <br>34386: Traversing out of Table header can lead to warning  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 011 - Tuesday July 1, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 011 - Tuesday July 1, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>   
 38975: PropertySheetViewer gets IllegalArguementException if RootElement set before visible  
 <br>39319: Eclipse often hangs. Right clicking helps sometimes  
@@ -212,13 +216,11 @@ SWT Build 3.0 011 - Tuesday July 1, 2003
 <br>20083: CCombo method redraw() does not work  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 010 - Tuesday June 24, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 010 - Tuesday June 24, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 17656: Inconsistent combo box display behaviour  
 <br>30871: [Cell Editors] Support for multiline text cell editor  
@@ -234,13 +236,11 @@ SWT Build 3.0 010 - Tuesday June 24, 2003
 <br>39078: FormData throws "Widget is disposed" when it's widget is dispose()d  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 009 - Tuesday June 17, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 009 - Tuesday June 17, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 38353:  crash in OS.gtk_main_iteration() when double-click disabled text widget  
 <br>38912:  DBCS: input special symbol breaks input method on ja_JP   
@@ -254,13 +254,11 @@ SWT Build 3.0 009 - Tuesday June 17, 2003
 <br>7946:  List portion of CCombo goes off the bottom of the screen  
 </blockquote>  
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 008 - Tuesday June 10, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 008 - Tuesday June 10, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>  
 38385:  Japanese Input (IME) not doesn't come up  
 <br>38388:  eclipse crash on redhat 9/ ja_JP   
@@ -273,13 +271,11 @@ SWT Build 3.0 008 - Tuesday June 10, 2003
 <br>35493:  OleClientSite hang  
 </blockquote>  
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 007 - Tuesday June 3, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 007 - Tuesday June 3, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>  
 30810:  Umlauts  
 <br>38242:  Border width on Table incorrect - creates unwanted scrollbars  
@@ -305,13 +301,11 @@ SWT Build 3.0 007 - Tuesday June 3, 2003
 <br>4500:  Text widget has 3D effect although SWT.BORDER isn't specified (1FRSQXH)  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 006 - Tuesday May 27, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 006 - Tuesday May 27, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 24877: Cannot get file extension from swt FileDialog  
 <br>37874: "Jumping" layout  
@@ -333,13 +327,13 @@ SWT Build 3.0 006 - Tuesday May 27, 2003
 <br>25278: context menu click does not change selection  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 005 - Tuesday May 20, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+
+<h2> SWT Build 3.0 005 - Tuesday May 20, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 30434:  BIDI: StyledText to support RIGHT_TO_LEFT orientation  
 <br>35657:  Eclipse crashes and throws exception when starting up in Chinese locales  
@@ -368,13 +362,11 @@ SWT Build 3.0 005 - Tuesday May 20, 2003
 <br>36450:  [Key Bindings] Only KeyUp event for Alt+[Shift]+<char> on Windows  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 004 - Tuesday May 13, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 004 - Tuesday May 13, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 29783:  BIDI: drop-down list of rtl-oriented CCombo is displayed in the wrong place.  
 <br>37299:  BIDI:Caret cheese when resizing RIGHT_TO_LEFT StyledText  
@@ -392,13 +384,11 @@ SWT Build 3.0 004 - Tuesday May 13, 2003
 <br>29383:  Tree and Table - no gray check boxes on GTK  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 003 - Tuesday April 6, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 003 - Tuesday April 6, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 36993:  Tracing options not displayed in Run-time Workbench run configuration  
 <br>29781:  BIDI: Lack of leading and trailig styles for alignment of widget's contents.  
@@ -419,13 +409,11 @@ SWT Build 3.0 003 - Tuesday April 6, 2003
 <br>31906:  The file dialog widget does not provide a way to programmatically change the type filter.  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 002 - Tuesday April 28, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 002 - Tuesday April 28, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 36910:  Setting font before setting text on Motif causes X error (BBAWT)  
 <br>29765:  BIDI: ToolTiptext do not have Right to left Reading order  
@@ -451,13 +439,11 @@ SWT Build 3.0 002 - Tuesday April 28, 2003
 <br>36562:  [CVS] commit log dialog doesn't set focus correctly  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 3.0 001 - Tuesday April 22, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 3.0 001 - Tuesday April 22, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 <br>7757 Packages view: title and tooltip should not used compress...  
 <br>9366 Workbench appears with 1st toolbar item showing hover-ove...  
@@ -508,13 +494,11 @@ SWT Build 3.0 001 - Tuesday April 22, 2003
 <br>36722 Mnemonic keys are not working for ToolItems  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 033d - Monday March 24, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 033d - Monday March 24, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 8442: NullPointerException and hang on startup in GTK Eclipse  
 <br>17359: NLS: No Group2 input  
@@ -524,13 +508,11 @@ SWT Build 2.1 033d - Monday March 24, 2003
 <br>35596: Event Processing issues under Photon
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 033 - Tuesday March 18, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 033 - Tuesday March 18, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 30768:  Performance - Typing in Java Editor is unacceptably slow.  
 <br>32204: Signal 11 at at org.eclipse.swt.internal.gtk.OS.gtk_progress_bar_pulse(Native Method)  
@@ -573,13 +555,11 @@ SWT Build 2.1 033 - Tuesday March 18, 2003
 <br>35038: Refactoring dialog (Extract Local Variable) to big  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 032c - Tuesday March 11, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 032c - Tuesday March 11, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4434:  GPF when running SWT Tree code (1FNI25V)  
 <br>23385:  Table vertical column separators redraw incorrectly on MacOSX  
@@ -590,13 +570,11 @@ SWT Build 2.1 032c - Tuesday March 11, 2003
 <br>34614:  Mouse pointer does not change in table header  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 032 - Thursday March 06, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 032 - Thursday March 06, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4592: multi select behavior for file dialog (1G7HZ2Q)  
 <br>4659: Double-clicking on fixed size column header resizes it (1GE3WN6) 
@@ -657,13 +635,11 @@ SWT Build 2.1 032 - Thursday March 06, 2003
 <br>33855: Text Cursor Invisible in RC1  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 031 - Thursday February 27, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 031 - Thursday February 27, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 16808: Icon in Windows taskbar incorrect  
 <br>24494: Incorrect i18n char encoding in text areas  
@@ -691,13 +667,11 @@ SWT Build 2.1 031 - Thursday February 27, 2003
 <br>33119: nullpointer dispose table column  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 030 - Tuesday February 18, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 030 - Tuesday February 18, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 17057: Outliner: focus causes select causes horizontal scroll  
 <br>21469: Accessibility - Tabbing causes a button to become the default
@@ -715,13 +689,11 @@ SWT Build 2.1 030 - Tuesday February 18, 2003
 <br>31880: Layout bug in commit menu  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 029 - Thursday February 13, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 029 - Thursday February 13, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6230: ImageLoader: 32-bit colour depth unsupported  
 <br>23472: Xlib: unexpected async reply (sequence 0x922d2)!  
@@ -738,13 +710,11 @@ SWT Build 2.1 029 - Thursday February 13, 2003
 <br>31566: FontData "equals()" and "hashcode()" methods do not consider height of the the fontdata
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 028 - Thursday February 6, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 028 - Thursday February 6, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 23262: WebBrowser crashes when viewing Shockwave  
 <br>25736: Memory leak while using OLE automation  
@@ -756,13 +726,11 @@ SWT Build 2.1 028 - Thursday February 6, 2003
 <br>30945: Change in mouse clicking behaviour makes FastViews unusable  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 027 - Wednesday February 5, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 027 - Wednesday February 5, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 20755: TVT2:  truncated text in dropdown for Dependencies tab in manifest editor
 <br>22759: Input method does not work on GTK/GTK2  
@@ -777,13 +745,13 @@ SWT Build 2.1 027 - Wednesday February 5, 2003
 <br>30537: setSelection(allItems) not working on GTK  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 026 - Tuesday January 28, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+
+<h2> SWT Build 2.1 026 - Tuesday January 28, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 14814: Button mnemonics are not shown properly on Windows XP  
 <br>24333: DCR - Tree.getTopItem/setTopItem  
@@ -797,13 +765,11 @@ SWT Build 2.1 026 - Tuesday January 28, 2003
 <br>29966: No more handles on startup  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 025 - Tuesday January 21, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 025 - Tuesday January 21, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 25030: (BBAWT) Image Analyzer fails to load a .png file  
 <br>25359: RuntimeExceptions thrown from OleListener.handleEvent crash VM
@@ -827,13 +793,11 @@ SWT Build 2.1 025 - Tuesday January 21, 2003
 <br>29730: RowLayout.computeSize provides wrong parameter to layoutVertical
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 024 - Tuesday January 14, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 024 - Tuesday January 14, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 21063: Can't drop views over some widgets  
 <br>21561: Keyboard navigation in tree widgets on Linux  
@@ -848,13 +812,11 @@ SWT Build 2.1 024 - Tuesday January 14, 2003
 <br>29408: Invoking List.select(*) before open() does not select correct item
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 023 - Tuesday January 7, 2003
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 023 - Tuesday January 7, 2003 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 24283: Default button in the dialog get the enter when typing in japanese
 <br>25486: Eclipse fails with 'no free callback slot'  
@@ -876,13 +838,11 @@ SWT Build 2.1 023 - Tuesday January 7, 2003
 <br>29017: ScrolledComposite always makes it's content  bigger on resize
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 022 - Tuesday December 17, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 022 - Tuesday December 17, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 21409: IllegalArgumentException when editing Java source  
 <br>21993: Can't change font sizes  
@@ -901,26 +861,24 @@ SWT Build 2.1 022 - Tuesday December 17, 2002
 <br>28524: Inconsistent behaviour of tab in password fields  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 021 - Friday December 13, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+
+<h2> SWT Build 2.1 021 - Friday December 13, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 27526: Color selection dialog takes a long time to display in 8-bit mode
 <br>27862: Tree.setSelection() takes > 1 second  
 <br>28035: Different callback behavior on Windows and Mac with Combo widget
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 020 - Tuesday December 10, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 020 - Tuesday December 10, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 24112: Keyboard shortcuts defined as Ctrl-Shift-x don't work  
 <br>24436: Entering Asterisk crashes Eclipse  
@@ -935,13 +893,11 @@ SWT Build 2.1 020 - Tuesday December 10, 2002
 <br>27710: Entry point not found SetLayout in GDI32  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 019 - Tuesday December 3, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 019 - Tuesday December 3, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 19080: Chaff in table tree of property sheet  
 <br>20318: [StyledText] print selection prints whole page (at least in <=f2)
@@ -953,13 +909,11 @@ SWT Build 2.1 019 - Tuesday December 3, 2002
 <br>27442: Mouse click outside horizontal scroll bar does nothing  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 018 - Tuesday November 26, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 018 - Tuesday November 26, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 15031: Font parsing failed  
 <br>17237: Progress monitor flickers  
@@ -983,13 +937,11 @@ SWT Build 2.1 018 - Tuesday November 26, 2002
 <br>27016: Default "Open" action not working in Navigator tree view
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 017 - Tuesday November 19, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 017 - Tuesday November 19, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 21251: Crash in org.eclipse.swt.internal.gtk.OS.pango_layout_set_font_description
 <br>24835: GTK: Multiple selection and right click in tree  
@@ -1007,13 +959,11 @@ SWT Build 2.1 017 - Tuesday November 19, 2002
 <br>26434: PrinterData startPage/endPage invalid when page >32767  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 016 - Tuesday November 12, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 016 - Tuesday November 12, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 23935: Text widget with Tree parent does not lose focus  
 <br>23997: Tracker moves mouse cursor  
@@ -1026,13 +976,11 @@ SWT Build 2.1 016 - Tuesday November 12, 2002
 <br>25989: Radion buttons are not mutually exclusive in same composite  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 015 - Tuesday November 5, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 015 - Tuesday November 5, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4607: Missing API for Font(Display display, FontData fd[]) (1G93TPM)
 <br>14956: StyledText - printing should support pagination, headers, and footers
@@ -1048,13 +996,13 @@ SWT Build 2.1 015 - Tuesday November 5, 2002
 <br>25545: StyledText - printing ignores end page  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 014 - Tuesday October 29, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+
+<h2> SWT Build 2.1 014 - Tuesday October 29, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 10090: Cannot see Combo-box selection in DBCS locale  
 <br>12078: SWT exception when running on debian woody on KDE using the motif build
@@ -1086,13 +1034,11 @@ SWT Build 2.1 014 - Tuesday October 29, 2002
 <br>25149: StyledText - WrappedContent API does not check line index range
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 013 - Tuesday October 22, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 013 - Tuesday October 22, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 20377: StyledText - SWT.WRAP style and widthHint specification  
 <br>22986: SWT Controls Combo box Colors selection tool does not change foreground color
@@ -1100,13 +1046,11 @@ SWT Build 2.1 013 - Tuesday October 22, 2002
 <br>24805: ComputeSize issue  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 012 - Tuesday October 15, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 012 - Tuesday October 15, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 16657: [Open Modes] Search results doesn't respond to double click  
 <br>17334: Icon missing in check box tree  
@@ -1121,13 +1065,11 @@ SWT Build 2.1 012 - Tuesday October 15, 2002
 <br>24702: WinCE: Image 32bits is incorrect  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 011 - Tuesday October 8, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 011 - Tuesday October 8, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4822: Group size doesn't seem to consider group name (1GJYIWB)  
 <br>10019: Right clicking in a list box should select before popping up menu 
@@ -1140,13 +1082,11 @@ SWT Build 2.1 011 - Tuesday October 8, 2002
 <br>24358: Incomplete JavaDoc on MenuItem.setText  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 010 - Tuesday October 1, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 010 - Tuesday October 1, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 10459: I can't run eclipse  
 <br>19148: Tooltip pops up underneath code completion alternatives in F2
@@ -1171,13 +1111,11 @@ SWT Build 2.1 010 - Tuesday October 1, 2002
 <br>24141: Keyboard not functional in editors (mac os x)  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 009 - Tuesday September 24, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 009 - Tuesday September 24, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 7435: ArrayIndexOutBoundsException occurs when using Solaris through remote terminal
 <br>15146: Printing support under Linux?  
@@ -1202,13 +1140,11 @@ SWT Build 2.1 009 - Tuesday September 24, 2002
 <br>23974: Use native ComboBox  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 008 - Tuesday September 17, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 008 - Tuesday September 17, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4637: TreeEditor example does not show how to use double click (1GCP6OH)
 <br>4656: Pop-up menu not showing for Composite (1GENYM0)  
@@ -1237,13 +1173,11 @@ SWT Build 2.1 008 - Tuesday September 17, 2002
 <br>22926: Clipboard copy/paste is cut/paste on Windows 98  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 007 - Tuesday September 10, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 007 - Tuesday September 10, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 10050: StyledText - Change selection color when changing background color
 <br>14637: StyledText - copy-from text edit feature  
@@ -1270,13 +1204,11 @@ SWT Build 2.1 007 - Tuesday September 10, 2002
 <br>23285: Linux Motif has become extremely slow  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 006 - Tuesday August 27, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 006 - Tuesday August 27, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 5678: TVT: Unable to open Filter dialog on Win98 if another view is undocked (free floating)
 <br>12878: Combo setItems removes setText  
@@ -1292,13 +1224,11 @@ SWT Build 2.1 006 - Tuesday August 27, 2002
 <br>22825: Consecutive vertical cursor movement commands don't retain column offset
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 005 - Tuesday August 20, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 005 - Tuesday August 20, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4554: Combo selection scrolls for certain fonts (1G1AD9Y)  
 <br>4577: Ctrl+Backspace & Ctrl+del have the same key code and key event (1G54RAJ)
@@ -1313,13 +1243,11 @@ SWT Build 2.1 005 - Tuesday August 20, 2002
 <br>22507: Modal dialog does not prevent adjusting of table headers in parent.
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 004 - Tuesday August 13, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 004 - Tuesday August 13, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4737: Redraw problem in table (1GFW2PE)  
 <br>9075: Tooltips only partially displayed in Hoverhelp.java example  
@@ -1339,13 +1267,11 @@ SWT Build 2.1 004 - Tuesday August 13, 2002
 <br>22365: SWT_AWT does not compile under JDK 1.4  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 003 - Tuesday August 6, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 003 - Tuesday August 6, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4521: Display.syncExec or Display.asyncExec can block processing of native events (1G03DF0)
 <br>20144: Enter key not working in packages view  
@@ -1362,13 +1288,11 @@ SWT Build 2.1 003 - Tuesday August 6, 2002
 <br>22060: StyledText - bidi - ArrayIndexOutOfBoundsException  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 002 - Tuesday July 30, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 002 - Tuesday July 30, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4578: Ctrl+J & Ctrl+Enter have the same key code (1G54RJJ)  
 <br>4816: TabItem displays & (1GJL704)  
@@ -1399,13 +1323,11 @@ SWT Build 2.1 002 - Tuesday July 30, 2002
 <br>21976: GTK: Combo.getSelectionIndex() changes when an item is removed
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.1 001 - Tuesday July 23, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.1 001 - Tuesday July 23, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4428: Table - Grid lines not drawn correctly (1FE4K5U)  
 <br>4451: Shell: setDefaultButton, default button cannot be reset to null (1FGLS6M)
@@ -1493,74 +1415,62 @@ SWT Build 2.1 001 - Tuesday July 23, 2002
 <br>21598: StyledText - setFont enables caret when it was disabled  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 052 - Wednesday October 30, 2002 (2.0.2 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 052 - Wednesday October 30, 2002 </h2> (2.0.2 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 10459: I can't run eclipse
 <br>24693: org.eclipse.swt.graphics.GC.drawString() fails to draw euro
 <br>24869: GP - Eclipse crashed when entering invalid file name in FileDialog
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 050 - Wednesday October 16, 2002 (2.0.2 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 050 - Wednesday October 16, 2002 </h2> (2.0.2 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 24542: [DND] Crash when drag&drop on the Package Explorer
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 049d - Monday August 26, 2002 (2.0.1 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 049d - Monday August 26, 2002 </h2> (2.0.1 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 22729: Permissions.properties missing from the build script
 <br>22779: Eclipse linux-motif GPFs on exit on J9
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 049b - Wednesday August 21, 2002 (2.0.1 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 049b - Wednesday August 21, 2002 </h2> (2.0.1 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 22448: CoolBar - deleting first item in row does unnecessary collapse/expand of row
 <br>22561: Hover Help broken in 2.0.1 I20020815
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 049 - Wednesday August 14, 2002 (2.0.1 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 049 - Wednesday August 14, 2002 </h2> (2.0.1 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 22055: CoolBar - setWrapIndices causes rows to collapse/expand unnecessarily
 <br>22144: Coolbar - setSize not being honored after setWrapIndices API used
 <br>22320: Coolbar - delete item behavior problem
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 048 - Tuesday August 6, 2002 (2.0.1 stream)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 048 - Tuesday August 6, 2002 </h2> (2.0.1 stream)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 15559: JAWS reads the parent window for dialog shells
 <br>18253: Coolbar - disposing items not honoring setRedraw = false
@@ -1569,13 +1479,11 @@ SWT Build 2.0 048 - Tuesday August 6, 2002 (2.0.1 stream)
 <br>21834: Coolbar - deleting items corrupting layout
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 047 - Monday June 17, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 047 - Monday June 17, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4772: Javadoc: Graphics constructors need to doc if device null (1GHSPUW)
 <br>14144: ScrollBars can't be made invisible on PocketPC  
@@ -1583,13 +1491,11 @@ SWT Build 2.0 047 - Monday June 17, 2002
 <br>20362: Coolbar cannot be traversed to  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 046 - Friday June 14, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 046 - Friday June 14, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 16809: Clicking to close non-active editor doesn't have an affect  
 <br>16939: DnD: Moving the mouse while dropping behaves strangely while dragging views
@@ -1609,13 +1515,11 @@ SWT Build 2.0 046 - Friday June 14, 2002
 <br>20372: Tracker needs more javadoc  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 046 - Tuesday June 11, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 046 - Tuesday June 11, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 16809: Clicking to close non-active editor doesn't have an affect  
 <br>16939: DnD: Moving the mouse while dropping behaves strangely while dragging views
@@ -1635,13 +1539,11 @@ SWT Build 2.0 046 - Tuesday June 11, 2002
 <br>20372: Tracker needs more javadoc  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 045 - Tuesday June 11, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 045 - Tuesday June 11, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 15242: CoolBar - layout issues  
 <br>18517: Coolbar - delete and row layout bug  
@@ -1653,13 +1555,11 @@ SWT Build 2.0 045 - Tuesday June 11, 2002
 <br>19947: GTK2 sends key events with both keyCode and character equals to 0 for some keys
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 044 - Monday June 10, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 044 - Monday June 10, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4807: Text.setEchoChar spec should say 0 <= char < 128 (1GJ6CDM)  
 <br>4837: Javadoc: Cursor constructor ERROR_NO_HANDLES is not spec'ed (1GKA7Q9)
@@ -1711,13 +1611,11 @@ SWT Build 2.0 044 - Monday June 10, 2002
 <br>19769: Internet Explorer and Help, EXCEPTION_ACCESS_VIOLATION  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 043 - Friday May 31, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 043 - Friday May 31, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4692: Empty popup menu appears in Outline view (1GET1B1)  
 <br>8821: Opening editors has become very slow  
@@ -1737,13 +1635,11 @@ SWT Build 2.0 043 - Friday May 31, 2002
 <br>18376: No execute permissions of libraries  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 042 - Thursday May 30, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 042 - Thursday May 30, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4533: Cheese when resizing toolbar (1FWL943)  
 <br>4841: SWT sample imageviewer nothing display at pixel data area (1GKEOUE)
@@ -1765,13 +1661,11 @@ SWT Build 2.0 042 - Thursday May 30, 2002
 <br>18223: Text widget with SWT.MULTI has strange behavior on GTK  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 041 - Tuesday May 28, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 041 - Tuesday May 28, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4398: Visual Coordination: Borders (1FSGONG)  
 <br>4411: DCR - Support printing (1PQ8QCK)  
@@ -1854,13 +1748,11 @@ SWT Build 2.0 041 - Tuesday May 28, 2002
 <br>18005: BusyIndicator should check args  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 040 - Tuesday May 21, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 040 - Tuesday May 21, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 3554: TP125: weird tab order in create project wizard (1G83VP8)  
 <br>4424: Table draws a stray pixel in top left corner (1FS9QBQ)  
@@ -1925,13 +1817,11 @@ SWT Build 2.0 040 - Tuesday May 21, 2002
 <br>16525: Eclipse does not layout properly
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 039 - Tuesday May 14, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 039 - Tuesday May 14, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6103: Menu mnemonics don't work when toolbar has focus  
 <br>8805: Context menus and finding references to methods  
@@ -1946,13 +1836,11 @@ SWT Build 2.0 039 - Tuesday May 14, 2002
 <br>15705: Editor with focus, tab text disappears sometimes  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 038 - Tuesday May 7, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 038 - Tuesday May 7, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6391: Display.getActiveShell() can answer wrong value  
 <br>7170: Tab space size problem  
@@ -1982,13 +1870,11 @@ SWT Build 2.0 038 - Tuesday May 7, 2002
 <br>15348: GPF in OS.MoveMemoryW  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 037 - Tuesday April 30, 2002
 
-<h2>
-<a NAME="LIBRARY LOCATION CHANGE"></a>LIBRARY LOCATION CHANGE</h2>
+<h2> SWT Build 2.0 037 - Tuesday April 30, 2002 </h2>
+
+<h3>
+<a NAME="LIBRARY LOCATION CHANGE"></a>LIBRARY LOCATION CHANGE</h3>
 
 As of this build, libraries are no longer in the org.eclipse.swt plugin.
 
@@ -2001,8 +1887,8 @@ As of this build, libraries are no longer in the org.eclipse.swt plugin.
 <li>org.eclipse.swt.gtk1x
 </ul>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4641: Icon lookup fails for some windows icon paths (1GD2DEY)  
 <br>4802: StyledText - Bidi Support Open Issues (1GIZ5G3)  
@@ -2028,13 +1914,11 @@ As of this build, libraries are no longer in the org.eclipse.swt plugin.
 <br>14872: ArrayIndexOutOfBoundsException in TableItem.insertColumn  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 036 - Tuesday April 23, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 036 - Tuesday April 23, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4834: DCR - mnemonics do not work on tabbed pages (1GK7O0N)  
 <br>7189: Method highlight in border does not match the method  
@@ -2051,20 +1935,18 @@ SWT Build 2.0 036 - Tuesday April 23, 2002
 <br>14047: StyledText - inefficient redraw during text change with word wrap
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 035 - Thursday April 18, 2002
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+<h2> SWT Build 2.0 035 - Thursday April 18, 2002 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 <ul>
 <li>Display.setCursorLocation</li>
 <li>GridLayout(int,boolean)</li>
 </ul>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4602: GridLayout should have GridLayout(numColumns) constructor (1G9Z73D)
 <br>8549: org.eclipse.core.resources 4 Unhandled exception caught in event loop
@@ -2087,13 +1969,11 @@ SWT Build 2.0 035 - Thursday April 18, 2002
 <br>13982: Eclipse won't start on GTK2  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 034 - Tuesday April 9, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 034 - Tuesday April 9, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6774: WinCE - items regarding Pocket PC (including 2002) integration
 <br>8806: Moving views is difficult  
@@ -2113,25 +1993,21 @@ SWT Build 2.0 034 - Tuesday April 9, 2002
 <br>13049: CTabFolder focus traversing is busted  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 033 - Tuesday April 2, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 033 - Tuesday April 2, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 12446: SWT Table Column Image Corruption  
 <br>12447: Tree.getSelection() is slow for large trees  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 032 - Thursday March 28, 2002
 
-<h2>
-<a NAME="StyledText Bidi Printing"></a>StyledText Bidi Printing</h2>
+<h2> SWT Build 2.0 032 - Thursday March 28, 2002 </h2>
+
+<h3>
+<a NAME="StyledText Bidi Printing"></a>StyledText Bidi Printing</h3>
 <blockquote>
 <p>Support has been added for printing the contents of a StyledText widget on
 bidirectional language Windows platforms.</p>
@@ -2142,8 +2018,8 @@ font if text is printed garbled .
 <br></p>
 </blockquote>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4467: DCR - Tree missing keyboard support (1FJH5GY)  
 <br>4525: Property viewer doesn't adapt to bg color changes (1FX8XL1)  
@@ -2155,21 +2031,19 @@ font if text is printed garbled .
 <br>12231: DND : Drag and Drop busted (mouse capture not released)  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 031 - Monday March 18, 2002
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+<h2> SWT Build 2.0 031 - Monday March 18, 2002 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 <ul>
 <li>ScrolledComposite.getOrigin</li>
 <li>ScrolledComposite.setOrigin</li>
 <li>Variant.getType</li>
 </ul>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 7500: Display.getBounds() calls from another thread give incorrect results
 <br>10273: NPEs caused by unitialized 'item' field in event
@@ -2180,13 +2054,11 @@ SWT Build 2.0 031 - Monday March 18, 2002
 <br>11090: CLabel Javadoc says SmartLabel
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 030 - Tuesday March 12, 2002
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+<h2> SWT Build 2.0 030 - Tuesday March 12, 2002 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 <ul>
 <li>OleControlSite.addEventListener(OleAutomation,int,OleListener)</li>
 <li>TableItem.getForeground()</li>
@@ -2203,8 +2075,8 @@ SWT Build 2.0 030 - Tuesday March 12, 2002
 <li>TableTreeItem.setBackground(Color)</li>
 </ul>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 8737:  No Selection event when DND starts
 <br>9950:  ColorDialog weird behavior
@@ -2215,13 +2087,11 @@ SWT Build 2.0 030 - Tuesday March 12, 2002
 <br>10482: View will not Move via Pull Down
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 029 - Tuesday March 5, 2002
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+<h2> SWT Build 2.0 029 - Tuesday March 5, 2002 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 
 <b>Note:</b> The new Accessibility API is experimental, and will likely change.
 <ul>
@@ -2263,8 +2133,8 @@ Here are two examples that use the accessibility API:<ul>
 It is unlikely that application code will need to use it. 
 It is primarily for the use of custom control implementors.
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4436: Grid Layout Problem (1FOLZZE)  
 <br>4666: DCR - Need a way for child shells to disable ESC closing (1GE8RXW)
@@ -2275,13 +2145,11 @@ It is primarily for the use of custom control implementors.
 <br>10426: Esc traverse does not go up hierarchy  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 028 - Thursday February 28, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 028 - Thursday February 28, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4688: J - Font Dialog does not select a font when selecting a font family (1GET5BW)
 <br>7139: FontDialog: Selected font not used  
@@ -2289,13 +2157,11 @@ SWT Build 2.0 028 - Thursday February 28, 2002
 <br>10250: Slider with VERTICAL orientation - down arrow increments  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 027 - Tuesday February 26, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 027 - Tuesday February 26, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6409: Node selection in package view  
 <br>8389: MouseUp not reported correctly if DragDetect hooked  
@@ -2304,13 +2170,11 @@ SWT Build 2.0 027 - Tuesday February 26, 2002
 <br>9950: ColorDialog weird behavior  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 026 - Tuesday February 12, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 026 - Tuesday February 12, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 6679: Image.getImageData() not implemented  
 <br>7962: SWT.getPlatform() javadoc incorrect for return description  
@@ -2322,13 +2186,11 @@ SWT Build 2.0 026 - Tuesday February 12, 2002
 <br>9432: The doc for Tracker widget should specify that rectangles are in screen coordinates
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 025 - Tuesday February 5, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 025 - Tuesday February 5, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 2430: Sorting the Tasks List should display icon for sort key/order (1GF5TQO)
 <br>4485: DCR - Table column header decoration capability needed (1FOQQM8)
@@ -2345,13 +2207,11 @@ SWT Build 2.0 025 - Tuesday February 5, 2002
 <br>8942: Wrong text indent in a table when use image  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 024 - Tuesday January 29, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 024 - Tuesday January 29, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4654: VAJ hangs when dragging from file manager to the desktop. (1GDQFZ6)
 <br>4720: Eclipse freezes during drag & drop operation (1GF7RRH)  
@@ -2365,13 +2225,11 @@ SWT Build 2.0 024 - Tuesday January 29, 2002
 <br>8547: Intellimouse scrolling does not work in eclipse  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 023a - Thursday January 24, 2002 (Eclipse Milestone 2)
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 023a - Thursday January 24, 2002 </h2> (Eclipse Milestone 2)
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4700: NumLock and CapsLock disable accelerators (1GETDT9)  
 <br>6180: Wake mechanism broken on Motif  
@@ -2381,13 +2239,13 @@ SWT Build 2.0 023a - Thursday January 24, 2002 (Eclipse Milestone 2)
 <br>8213: exception: widget is disposed  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 023 - Tuesday January 22, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+
+<h2> SWT Build 2.0 023 - Tuesday January 22, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4610: StyledText - DCR - Word wrap (1GABS6C)  
 <br>4644: Mouse click on a link displayed in embedded IE5 ActiveX is not reliable (1GD7TT2)
@@ -2402,13 +2260,11 @@ SWT Build 2.0 023 - Tuesday January 22, 2002
 <br>7959: Potential problems when running on big endian machines  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 022 - Tuesday January 15, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 022 - Tuesday January 15, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4663: Fail to tab the views. (1GGYV8T)  
 <br>4718: Tool tip is openning when on dragging. (1GF5Z7Z)  
@@ -2424,13 +2280,11 @@ SWT Build 2.0 022 - Tuesday January 15, 2002
 <br>7559: ScrollBar thumb is reset when ScrollBar is hidden, then shown
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 021 - Tuesday January 8, 2002
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 021 - Tuesday January 8, 2002 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4443: Layout: Exceptions when horizontalSpan > remaining columns (1FFC6XZ)
 <br>4462: ScrollBar - vbar.setMaximum does not work after hbar is hidden (and vice versa) (1FIG5CG)
@@ -2448,13 +2302,11 @@ SWT Build 2.0 021 - Tuesday January 8, 2002
 <br>7191: Dialogs not big enough for content  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 020 - Tuesday December 18, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 020 - Tuesday December 18, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4715: First help click on a chapter is ignored (1GF5TV9)  
 <br>4784: MIF Files sometime fail (1GI7H7V)  
@@ -2468,13 +2320,11 @@ SWT Build 2.0 020 - Tuesday December 18, 2001
 <br>7014: Tree not accepting children  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 019 - Tuesday December 11, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 019 - Tuesday December 11, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4461: SWTException should overwrite printStackTrace(..) (1GLDW6P)  
 <br>4493: Check multilingual support on Windows 2000 (1FQFCBQ)  
@@ -2495,13 +2345,11 @@ SWT Build 2.0 019 - Tuesday December 11, 2001
 <br>6654: Text.getSelection() not returning correct info on WINCE  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 018 - Tuesday December 4, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 018 - Tuesday December 4, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4419: Widgets - Missing features and API on MOTIF (1FBPKCT)  
 <br>4494: ColorDialog doesn't open in VA/Java with JDK 1.2 (1FQGM6H)  
@@ -2511,13 +2359,11 @@ SWT Build 2.0 018 - Tuesday December 4, 2001
 <br>6438: StyledText - bidi - isBidi test not working on XP  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 017 - Tuesday November 27, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 017 - Tuesday November 27, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4714: Label draws wrong background when image is set (1GF0IC6)  
 <br>5503: Tabbing broken  
@@ -2526,13 +2372,11 @@ SWT Build 2.0 017 - Tuesday November 27, 2001
 <br>6171: NullPointerException in ImageLoader save method with SWT.IMAGE_JPEG
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 015 - Tuesday November 20, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 015 - Tuesday November 20, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4791: StyledText does not switch colour (1GILHIW)  
 <br>4956: StyledText - change StyledTextBidi.toString to conform with standard SWT format
@@ -2543,26 +2387,22 @@ SWT Build 2.0 015 - Tuesday November 20, 2001
 <br>5990: Printing single page prints entire document  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 014 - Thursday November 15, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 014 - Thursday November 15, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4542: Menu accelerators CTRL+ / and CTRL + SHIFT + / don't work (1FYAF8V)
 <br>4754: Arrow keys not accepted as keyboard accelerators (1GGM4U3)  
 <br>5815: StyledText - setFont refresh problem  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 013 - Tuesday November 13, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 013 - Tuesday November 13, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4846: StyledText - bidi - partial styling of ligatures (1GL3AWT)  
 <br>4859: StyledText - bidi - provide solution for bidi coloring hack (1GL2UNC)
@@ -2580,24 +2420,20 @@ SWT Build 2.0 013 - Tuesday November 13, 2001
 <br>5802: EC: ControlExample does not run on Solaris  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 012 - Monday November 5, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 012 - Monday November 5, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 5470: User is lost when trying to move views around  
 <br>5484: Tab no longer traverses between widgets!!!  
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 011 - Thursday November 1, 2001
-<h2>
-<a NAME="API Changes"></a>API Changes</h2>
+
+<h2> SWT Build 2.0 011 - Thursday November 1, 2001 </h2>
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
 <code>FontData.setLocale(Locale)</code> has been changed to <code>FontData.setLocale(String)</code>.
 <ul>
 <li>
@@ -2617,8 +2453,8 @@ String locale = (locales[i] != null ? locales[i].toString() : null);
 fd.setLocale(locale);
 </pre></code></blockquote></p>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 4664: StyledText does not compute correct text width (1GELJXD)  
@@ -2629,13 +2465,11 @@ fd.setLocale(locale);
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 010 - Thursday October 25, 2001
 
-<h2>
-<a NAME="Behaviour change"></a>Behaviour change</h2>
+<h2> SWT Build 2.0 010 - Thursday October 25, 2001 </h2>
+
+<h3>
+<a NAME="Behaviour change"></a>Behaviour change</h3>
 <p>
 1) The Drag Under effect of scrolling and expanding items as you drag over the <code>Tree</code> or <code>Table</code> has been added.  To enable this drag under effect, in the <code>DragOver</code> event set the <code>event.feedback</code> to have a bitwise combination of <code>DND.FEEDBACK_SCROLL, DND.FEEDBACK_EXPAND</code> and (<code>DND.FEEDBACK_SELECT, DND.FEEDBACK_INSERT_BEFORE, DND.FEEDBACK_INSERT_AFTER</code>) - where the last three items are mutually exclusive.
 <blockquote><code><pre>
@@ -2657,8 +2491,8 @@ source.addDragListener (new DragSourceAdapter () {
 }
 </pre></code></blockquote></p>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1767: Display ASCII for values greater than 127 fails (1GLE8I5)  
@@ -2672,13 +2506,11 @@ source.addDragListener (new DragSourceAdapter () {
 <br>5178: Change BidiUtil calls to handle true Unicode/Windows CE changes
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 009 - Thursday October 18, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 009 - Thursday October 18, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 4444: EWT - incorrect selection feedback when the item's text is changed (1FFP3U2)
@@ -2693,13 +2525,11 @@ SWT Build 2.0 009 - Thursday October 18, 2001
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 008 - Thursday October 11, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 008 - Thursday October 11, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GLDQYB: SWT:WIN - Text widget with DND enabled, MouseDown but no MouseUp
@@ -2716,13 +2546,11 @@ SWT Build 2.0 008 - Thursday October 11, 2001
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 007 - Thursday October 4, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 007 - Thursday October 4, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GKZH74: ITPJUI:WIN2000 - Disappearing Stop icon
@@ -2739,13 +2567,11 @@ SWT Build 2.0 007 - Thursday October 4, 2001
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 006 - Thursday Sept 27, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 006 - Thursday Sept 27, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GHWA19: SWT:WINNT - Problem with callbacks from CCombo
@@ -2755,13 +2581,11 @@ SWT Build 2.0 006 - Thursday Sept 27, 2001
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 005 - Friday Sept 21, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 005 - Friday Sept 21, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GK09Z0: SWT:Linux - setEnabled(false) has no effect on aToolbar
@@ -2770,19 +2594,17 @@ SWT Build 2.0 005 - Friday Sept 21, 2001
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 004 - Thursday Sept 13, 2001
 
-<h2>
-<a NAME="API Behaviour change"></a>API Behaviour change</h2>
+<h2> SWT Build 2.0 004 - Thursday Sept 13, 2001 </h2>
+
+<h3>
+<a NAME="API Behaviour change"></a>API Behaviour change</h3>
 The behaviour of dispose for GCs has been modified such that attempting to dispose of
 a GC on a control <em>after</em> the control has been disposed will generate an
 SWTException.  This fixes an OS resource leak and potential GPF situation.
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GJUAKL: SWT:Neutrino - Control.internal_new_GC() needs !isValidWidget() check
@@ -2797,13 +2619,11 @@ SWTException.  This fixes an OS resource leak and potential GPF situation.
 </blockquote>
 
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 003 - Friday Sept 07, 2001
 
-<h2>
-<a NAME="New APIs"></a>New APIs</h2>
+<h2> SWT Build 2.0 003 - Friday Sept 07, 2001 </h2>
+
+<h3>
+<a NAME="New APIs"></a>New APIs</h3>
 
 <blockquote>
 FontData.setLocale(java.util.Locale) added
@@ -2812,8 +2632,8 @@ FontData.setLocale(java.util.Locale) added
 <br>GC.fillGradientRectangle(int, int, int, int, boolean) added
 </blockquote>
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GJM7KM: SWT:Linux - Table and Tree return a different size for every second call to computeSize
@@ -2858,13 +2678,11 @@ FontData.setLocale(java.util.Locale) added
 <br>1G4IMQ3: SWT:WINNT - Table images incorrect after rapid removal and creation
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 002 - Wednesday July 18, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 002 - Wednesday July 18, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GGZ13T: SWT:Neutrino - invalid mouse state occuring in Photon
@@ -2875,13 +2693,11 @@ SWT Build 2.0 002 - Wednesday July 18, 2001
 <br>1GFPK6G: SWT:Linux - Motif fillPolygon() specifies improper hint
 </blockquote>
 
-<h1>
-Eclipse Platform Build Notes<br>
-SWT</h1>
-SWT Build 2.0 001 - Thursday July 12, 2001
 
-<h2>
-<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2> SWT Build 2.0 001 - Thursday July 12, 2001 </h2>
+
+<h3>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 
 <blockquote>
 1GGET76: SWT:Neutrino - Canvas does not respond to setFocus()
@@ -2916,6 +2732,5 @@ SWT Build 2.0 001 - Thursday July 12, 2001
 <br>1FV1S18: SWT:ALL - Need more WM_* messages passed to ActiveX Control
 <br>1FTWX55: SWT:ALL - Inconsistant commenting of which SWT objects need to be disposed.
 </blockquote>
-<a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
