@@ -2499,6 +2499,7 @@ boolean translateMnemonic (Event event, Control control) {
 }
 
 boolean translateMnemonic (MSG msg) {
+	if (msg.wParam < 0x20) return false;
 	int hwnd = msg.hwnd;
 	if (OS.GetKeyState (OS.VK_MENU) >= 0) {
 		int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
@@ -2507,15 +2508,12 @@ boolean translateMnemonic (MSG msg) {
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		char ch = mbcsToWcs ((char) msg.wParam);
-		if (ch != 0) {
-			display.lastAscii = ch;
-			display.lastVirtual = display.lastNull = false;
-			Event event = new Event ();
-			event.detail = SWT.TRAVERSE_MNEMONIC;
-			if (setKeyState (event, SWT.Traverse)) {
-				return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
-			}
+		display.lastAscii = mbcsToWcs ((char) msg.wParam);
+		display.lastVirtual = display.lastNull = false;
+		Event event = new Event ();
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		if (setKeyState (event, SWT.Traverse)) {
+			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
 		}
 	}
 	return false;
