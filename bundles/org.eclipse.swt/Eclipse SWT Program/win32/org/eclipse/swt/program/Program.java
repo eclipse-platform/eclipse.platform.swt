@@ -39,7 +39,7 @@ Program () {
  * The extension may or may not begin with a '.'.
  *
  * @param extension the program extension
- * @return the program or nil
+ * @return the program or <code>null</code>
  *
  * @exception SWTError <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
@@ -106,17 +106,23 @@ static String getKeyValue (String string, boolean expand) {
 	String result = null;
 	int [] lpcbData = new int [1];
 	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, null, lpcbData) == 0) {
-		/* Use the character encoding for the default locale */
-		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-			if (!OS.IsWinCE && expand) {
-				int nSize = OS.ExpandEnvironmentStrings (lpData, null, 0);
-				TCHAR lpDst = new TCHAR (0, nSize);
-				OS.ExpandEnvironmentStrings (lpData, lpDst, nSize);
-				result = lpDst.toString (0, Math.max (0, nSize - 1));
-			} else {
-				int length = Math.max (0, lpData.length () - 1);
-				result = lpData.toString (0, length);
+		result = "";
+		int length = lpcbData [0] / TCHAR.sizeof;
+		if (length != 0) {
+			/* Use the character encoding for the default locale */
+			TCHAR lpData = new TCHAR (0, length);
+			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
+				if (!OS.IsWinCE && expand) {
+					length = OS.ExpandEnvironmentStrings (lpData, null, 0);
+					if (length != 0) {
+						TCHAR lpDst = new TCHAR (0, length);
+						OS.ExpandEnvironmentStrings (lpData, lpDst, length);
+						result = lpDst.toString (0, Math.max (0, length - 1));
+					}
+				} else {
+					length = Math.max (0, lpData.length () - 1);
+					result = lpData.toString (0, length);
+				}
 			}
 		}
 	}
