@@ -164,22 +164,28 @@ public void test_saveLjava_io_OutputStreamI() {
 			fail("No exception thrown for save to invalid outputStream format");
 		} catch (IllegalArgumentException e) {
 		}
-		
-		String filename = SwtTestCase.imageFilenames[0];
-		// must use jpg since save is not implemented yet in png format		
-		String filetype = "jpg";
-		inStream = SwtTestCase.class.getResourceAsStream(filename + "." + filetype);	
-		loader.load(inStream);
-		try {
-			inStream.close();
-		} catch (IOException e) {}
-	
-		String[] formats = {"bmp", "bmp_rle", "gif", "ico", "jpg", "png", "tif"};
-		for (int i = 0; i < formats.length; i++) {
-			if (formats[i].equals(filetype)) {
-				// save using the appropriate format
-				loader.save(outStream, i);
+		boolean jpgSupported = false;
+		for (int i=0; i<imageFormats.length; i++) {
+			if (imageFormats[i].equals("jpg")) {
+				jpgSupported = true;
 				break;
+			}
+		}
+		if (jpgSupported) {
+			String filename = SwtTestCase.imageFilenames[0];
+			// must use jpg since save is not implemented yet in png format		
+			String filetype = "jpg";
+			inStream = SwtTestCase.class.getResourceAsStream(filename + "." + filetype);	
+			loader.load(inStream);
+			try {
+				inStream.close();
+			} catch (IOException e) {}
+			for (int i = 0; i < imageFormats.length; i++) {
+				if (imageFormats[i].equals(filetype)) {
+					// save using the appropriate format
+					loader.save(outStream, i);
+					break;
+				}
 			}
 		}
 	} finally {
@@ -188,7 +194,6 @@ public void test_saveLjava_io_OutputStreamI() {
 		} catch (Exception e) {
 		}
 	}
-	
 }
 
 public void test_saveLjava_lang_StringI() {
