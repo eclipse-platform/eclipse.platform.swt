@@ -157,6 +157,33 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move, typedListener);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard, by sending
+ * it one of the messages defined in the <code>KeyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #removeKeyListener
+ */
+public void addKeyListener (KeyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.KeyUp,typedListener);
+	addListener (SWT.KeyDown,typedListener);
+}
+
 Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
@@ -775,6 +802,31 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Resize, listener);
 	eventTable.unhook (SWT.Move, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #addKeyListener
+ */
+public void removeKeyListener(KeyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.KeyUp, listener);
+	eventTable.unhook (SWT.KeyDown, listener);
 }
 
 void resizeRectangles (int xChange, int yChange) {
