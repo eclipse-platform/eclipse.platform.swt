@@ -10,7 +10,7 @@ revision=0
 #assumes IVE_HOME is set in the environment
 
 DLLPREFIX=swt
-OSPREFIX="neutrino"
+OSPREFIX="qnx"
 DLLNAME=lib$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).so
 #DLLNAME=lib$(DLLPREFIX)$(maj_ver)$(min_ver)r$(revision).so
 
