@@ -28,7 +28,6 @@ public class CTabItem2 extends Item {
 	Control control; // the tab page
 	
 	String toolTipText;
-	Image disabledImage;
 	String shortenedText;
 	int shortenedTextWidth;
 	
@@ -498,10 +497,12 @@ public Control getControl () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @deprecated
  */
 public Image getDisabledImage(){
 	//checkWidget();
-	return disabledImage;
+	return null;
 }
 /**
  * Returns the receiver's parent, which must be a <code>CTabFolder</code>.
@@ -612,13 +613,11 @@ public void setControl (Control control) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @deprecated
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
-	// !!! this image is never being used
-	if (image != null && image.equals(getDisabledImage())) return;
-	disabledImage = image;
-	//parent.redraw();
 }
 public void setImage (Image image) {
 	checkWidget();

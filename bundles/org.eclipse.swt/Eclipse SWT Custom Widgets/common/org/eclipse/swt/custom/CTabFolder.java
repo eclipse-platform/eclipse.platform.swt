@@ -72,7 +72,7 @@ public class CTabFolder extends Composite {
 	 * 
 	 * NOTE This field is badly named for historical reasons.  It is not static.
 	 */
-	public int MIN_TAB_WIDTH = 3;
+	public int MIN_TAB_WIDTH = 8;
 	
 	/**
 	 * Color of innermost line of drop shadow border.
@@ -1213,6 +1213,10 @@ void drawTabArea(Event event) {
 		gc.drawPolyline(shape);
 	}
 }
+/**
+ * 
+ * @since 3.0
+ */
 public boolean getBorderVisible() {
 	checkWidget();
 	return borderLeft == 1;
@@ -1234,23 +1238,6 @@ public Rectangle getClientArea() {
 	return new Rectangle(xClient, yClient, width, height);
 }
 
-/**
- * Returns <code>false</code> if the receiver is minimized,
- * and true otherwise.
- * <p>
- *
- * @return the minimized state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @deprecated use getMinimized(boolean)
- */
-public boolean getExpanded() {
-	return getMinimized();
-}
 /**
  * Return the tab that is located at the specified index.
  * 
@@ -1347,6 +1334,8 @@ char getMnemonic (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.0
  */
 public boolean getMinimized() {
 	checkWidget();
@@ -1363,6 +1352,8 @@ public boolean getMinimized() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.0
  */
 public boolean getMaximized() {
 	checkWidget();
@@ -2276,6 +2267,8 @@ public void setBackground (Color color) {
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
+ *
+ * @since 3.0
  */
 public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
@@ -2387,6 +2380,8 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.0
  */
 public void setBackground(Image image) {
 	checkWidget();
@@ -2509,22 +2504,6 @@ boolean setButtonBounds() {
 	    oldY != chevronRect.y || oldHeight != chevronRect.height) changed = true;
 	
 	return changed;
-}
-/**
- * Sets the minimized state of the receiver.
- * <p>
- *
- * @param expanded false if folder is to be minimized
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @deprecated use setMinimized(boolean)
- */
-public void setExpanded (boolean expanded) {
-	setMinimized(!expanded);
 }
 void setFirstItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
@@ -2754,7 +2733,7 @@ void setLastItem(int index) {
 }
 /**
  * 
- * 
+ * @since 3.0
  */
 public void setMaximizeVisible(boolean visible) {
 	checkWidget();
@@ -2766,6 +2745,7 @@ public void setMaximizeVisible(boolean visible) {
 }
 /**
  * 
+ * @since 3.0
  */
 public void setMaximized(boolean maximize) {
 	checkWidget ();
@@ -2777,7 +2757,7 @@ public void setMaximized(boolean maximize) {
 }
 /**
  * 
- * 
+ * @since 3.0
  */
 public void setMinimizeVisible(boolean visible) {
 	checkWidget();
@@ -2789,6 +2769,7 @@ public void setMinimizeVisible(boolean visible) {
 }
 /**
  * 
+ * @since 3.0
  */
 public void setMinimized(boolean minimize) {
 	checkWidget ();
@@ -2868,6 +2849,7 @@ void setSelection(int index, boolean notify) {
 	}
 }
 /**
+ * 
  * @since 3.0
  */
 public void setSelectionBackground (Color color) {
@@ -2932,7 +2914,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- *@since 3.0
+ * @since 3.0
  */
 public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
@@ -3366,7 +3348,6 @@ boolean updateTabHeight(int oldHeight, boolean force){
 			curve = newCurve;
 		}
 	}
-	
 	notifyListeners(SWT.Resize, new Event());
 	return true;
 }
