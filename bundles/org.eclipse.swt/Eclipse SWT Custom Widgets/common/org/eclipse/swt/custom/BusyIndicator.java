@@ -15,9 +15,10 @@ import org.eclipse.swt.widgets.*;
  */
 public class BusyIndicator {
 
-	static int[] counts = new int[0];
 	static Display[] displays = new Display[0];
 	static Cursor[] cursors = new Cursor[0];
+	static int nextBusyId = 1;
+	static final String BUSYID_NAME = "SWT BusyIndicator";
 
 /**
  * Runs the given <code>Runnable</code> while providing
@@ -57,37 +58,37 @@ public static void showWhile(Display display, Runnable runnable) {
 			}
 		});
 		
-		int[] newCounts = new int[counts.length + 1];
-		System.arraycopy(counts, 0, newCounts, 0, counts.length);
-		counts = newCounts;
-		
 		Cursor[] newCursors = new Cursor[cursors.length + 1];
 		System.arraycopy(cursors, 0, newCursors, 0, cursors.length);
 		cursors = newCursors;
 	}
 	
-	if (counts[index] == 0) {
+	if (cursors[index] == null) {
 		cursors[index] = new Cursor(display, SWT.CURSOR_WAIT);
 	}
 	
-	counts[index]++;
+	Integer busyId = new Integer(nextBusyId);
+	nextBusyId = (++nextBusyId) % 65536;
 	
 	Shell[] shells = display.getShells();
 	for (int i = 0; i < shells.length; i++) {
-		shells[i].setCursor(cursors[index]);
+		Integer id = (Integer)shells[i].getData(BUSYID_NAME);
+		if (id == null) {
+			shells[i].setCursor(cursors[index]);
+			shells[i].setData(BUSYID_NAME, busyId);
+		}
 	}
 		
 	try {
 		runnable.run();
 	} finally {
-		counts[index]--;
-		if (counts[index] == 0) {
-			shells = display.getShells();
-			for (int i = 0; i < shells.length; i++) {
+		shells = display.getShells();
+		for (int i = 0; i < shells.length; i++) {
+			Integer id = (Integer)shells[i].getData(BUSYID_NAME);
+			if (id == busyId) {
 				shells[i].setCursor(null);
+				shells[i].setData(BUSYID_NAME, null);
 			}
-			cursors[index].dispose();
-			cursors[index] = null;
 		}
 	}
 }
@@ -105,7 +106,6 @@ static void clear(Display display) {
 		cursors[index].dispose();
 	}
 	cursors[index] = null;
-	counts[index] = 0;
 	displays[index] = null;
 }
 }
