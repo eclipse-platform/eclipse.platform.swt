@@ -11,7 +11,44 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
-SWT Build 2.0 009 - Thursday October 25, 2001
+SWT Build 2.0 011 - Thursday November 1, 2001
+<h2>
+<a NAME="API Changes"></a>API Changes</h2>
+<code>FontData.setLocale(Locale)</code> has been changed to <code>FontData.setLocale(String)</code>.
+<ul>
+<li>
+J2SE code can simply create a <code>Locale</code> and invoke <code>toString()</code> to pass it onto the new <code>setLocale</code>.
+<li>
+CLDC code will have to form a string matching the format specified in the J2SE javadoc of <code>java.util.Locale.toString()</code>.
+</ul>
+Example:
+<blockquote><code><pre>
+Locale[] locales = {
+	Locale.US, new Locale("iw", "IL"), new Locale("ar", "SA"), new Locale("ru", "RU"),
+	Locale.GERMAN, new Locale("ja", "JP"),
+	null,
+};
+// old code: fd.setLocale(locales[i]);
+String locale = (locales[i] != null ? locales[i].toString() : null);
+fd.setLocale(locale);
+</pre></code></blockquote></p>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+4664: StyledText does not compute correct text width (1GELJXD)  
+<br>4832: German: Fonts cannot handle German characters (1GKMHHY)  
+<br>4961: Preferences dialog disappears when you click on certain pages
+<br>5180: Open Motif for Linux shared libraries are duplicated in Eclipse  
+<br>5304: StyledText - ArrayIndexOutOfBoundsException in StyledTextBidi.segmentedRangesFor
+</blockquote>
+
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 010 - Thursday October 25, 2001
 
 <h2>
 <a NAME="Behaviour change"></a>Behaviour change</h2>
