@@ -20,9 +20,20 @@ import org.eclipse.swt.*;
  */
 public class TextStyle {
 
-	Font font;
-	Color foreground;
-	Color background;
+	/**
+	 * the font of the style
+	 */
+	public Font font;
+
+	/**
+	 * the foreground of the style
+	 */
+	public Color foreground;
+
+	/**
+	 * the background of the style
+	 */
+	public Color background;
 
 /** 
  * Create a new text style with the specified font, foreground

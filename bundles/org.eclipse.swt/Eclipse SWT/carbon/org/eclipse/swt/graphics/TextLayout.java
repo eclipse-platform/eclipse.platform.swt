@@ -1208,8 +1208,11 @@ public void setStyle (TextStyle style, int start, int end) {
 	if (0 <= high && high < styles.length) {
 		StyleItem item = styles[high];
 		if (item.start == start && styles[high + 1].start - 1 == end) {
-			if (style == item.style) return;
-			if (style != null && style.equals(item.style)) return;
+			if (style == null) {
+				if (item.style == null) return;
+			} else {
+				if (style.equals(item.style)) return;
+			}
 		}
 	}
 	freeRuns();
