@@ -94,7 +94,7 @@ public TabFolder(Composite parent, int style) {
 	addListener (SWT.MouseUp, listener);	
 	addListener (SWT.MouseHover, listener);
 	addListener (SWT.Paint, listener);
-	addListener (SWT.Resize, listener);
+//	addListener (SWT.Resize, listener);
 	addListener (SWT.Traverse, listener);
 	addListener (SWT.KeyDown, listener);
 	addListener (SWT.FocusIn, listener);
@@ -606,9 +606,9 @@ void handleEvents (Event event){
 		case SWT.Paint:
 			paint(event);
 			break;
-		case SWT.Resize:
-			resize();
-			break;
+//		case SWT.Resize:
+//			resize();
+//			break;
 		case SWT.MouseDown:
 			mouseDown(event);
 			break;
@@ -994,6 +994,11 @@ void scrollRight() {
 			redrawTabs();
 		}
 	}	
+}
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) resize ();
+	return changed;
 }
 public void setFont(Font font) {
 	checkWidget();
