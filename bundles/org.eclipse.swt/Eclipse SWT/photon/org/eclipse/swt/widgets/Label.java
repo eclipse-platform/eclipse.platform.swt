@@ -76,7 +76,9 @@ void createHandle (int index) {
 	int alignment = OS.Pt_LEFT;
 	if ((style & SWT.CENTER) != 0) alignment = OS.Pt_CENTER;
 	if ((style & SWT.RIGHT) != 0) alignment = OS.Pt_RIGHT;
+	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};

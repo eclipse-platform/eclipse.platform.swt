@@ -126,7 +126,9 @@ void createHandle (int index) {
 		}
 	}
 	mode |= OS.Pt_SELECTION_MODE_NOFOCUS;
+	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_SELECTION_MODE, mode, 0,
 		OS.Pt_ARG_FLAGS, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,

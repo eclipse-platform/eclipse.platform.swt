@@ -82,10 +82,12 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
+	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	if ((style & SWT.SINGLE) != 0) {
 		int clazz = display.PtText;
 		int [] args = {	
+			OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 			OS.Pt_ARG_FLAGS, OS.Pt_CALLBACKS_ACTIVE, OS.Pt_CALLBACKS_ACTIVE,
 			OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
@@ -97,6 +99,7 @@ void createHandle (int index) {
 	int clazz = display.PtMultiText;
 	int wrapFlags = (style & SWT.WRAP) != 0 ? OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR : 0;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_FLAGS, OS.Pt_CALLBACKS_ACTIVE, OS.Pt_CALLBACKS_ACTIVE,
 		OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
 		OS.Pt_ARG_MULTITEXT_WRAP_FLAGS, wrapFlags, OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR,
