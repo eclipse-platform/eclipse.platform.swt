@@ -1535,16 +1535,16 @@ void releaseItems (TreeItem [] nodes, int [] index) {
 }
 
 void releaseWidget () {
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.releaseResources();
 	}
 	items = null;
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	super.releaseWidget();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;

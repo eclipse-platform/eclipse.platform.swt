@@ -1703,17 +1703,17 @@ void register () {
 }
 
 void releaseWidget () {
-	for (int i=0; i<columnCount; i++) {
-		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	currentItem = null;
+	for (int i=0; i<columnCount; i++) {
+		TableColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;
