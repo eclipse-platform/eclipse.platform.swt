@@ -569,8 +569,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	* Optimization.  Recalculate src and dest rectangles so that
 	* only the clipping area is drawn.
 	*/
-	rect.width = Math.max(rect.width, (int)Compatibility.ceil(destWidth / (float)srcWidth));
-	rect.height = Math.max(rect.height, (int)Compatibility.ceil(destHeight / (float)srcHeight));
+	rect.width = Math.max(rect.width, Compatibility.ceil(destWidth, srcWidth));
+	rect.height = Math.max(rect.height, Compatibility.ceil(destHeight, srcHeight));
 	int sx1 = srcX + (((rect.x - destX) * srcWidth) / destWidth);
 	int sx2 = srcX + ((((rect.x + rect.width) - destX) * srcWidth) / destWidth);
 	int sy1 = srcY + (((rect.y - destY) * srcHeight) / destHeight);

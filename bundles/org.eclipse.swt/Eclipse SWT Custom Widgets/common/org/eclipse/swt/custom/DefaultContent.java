@@ -493,7 +493,7 @@ public String getLine(int index) {
 		while ((length - 1 >=0) && isDelimiter(buf.charAt(length-1))) {
 			length--;
 		}
-		return buf.substring(0, length);
+		return Compatibility.substring(buf, 0, length);
 	}
 }
 /**

@@ -100,13 +100,13 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int index = fileName.lastIndexOf (".");
+	int index = fileName.lastIndexOf ('.');
 	if (index == -1) return false;
 	String extension = fileName.substring (index, fileName.length ());
 	Program program = Program.findProgram (extension);
 	if (program != null && program.execute (fileName)) return true;
 	try {
-		Runtime.getRuntime().exec (fileName);
+		Compatibility.exec(fileName);
 		return true;
 	} catch (IOException e) {
 		return false;
@@ -132,7 +132,7 @@ public boolean execute (String fileName) {
 	String prefix = command.substring (0, index);
 	String suffix = command.substring (index + 2, command.length ());
 	try {
-		Runtime.getRuntime ().exec (prefix + '"' + fileName + '"' + suffix);
+		Compatibility.exec(prefix + '"' + fileName + '"' + suffix);
 	} catch (IOException e) {
 		return false;
 	}

@@ -222,7 +222,7 @@ public boolean execute (String fileName) {
 	}
 	if (quote) fileName = " \"" + fileName + "\"";
 	try {
-		Runtime.getRuntime ().exec (prefix + fileName + suffix);
+		Compatibility.exec(prefix + fileName + suffix);
 	} catch (IOException e) {
 		return false;
 	}

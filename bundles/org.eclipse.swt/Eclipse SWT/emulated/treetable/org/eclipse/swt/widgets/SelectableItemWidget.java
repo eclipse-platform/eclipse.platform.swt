@@ -950,7 +950,7 @@ int getItemCountTruncated(Rectangle rectangle) {
 	int startIndex;
 
 	startIndex = rectangle.y / itemHeight;
-	itemCount = (int) Compatibility.ceil(((float) rectangle.y + rectangle.height) / itemHeight)-startIndex;
+	itemCount = Compatibility.ceil(rectangle.y + rectangle.height, itemHeight)-startIndex;
 	return itemCount;
 }
 /**

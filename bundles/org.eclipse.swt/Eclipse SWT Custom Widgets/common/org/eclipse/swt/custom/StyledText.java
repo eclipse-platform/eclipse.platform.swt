@@ -936,7 +936,7 @@ public void append(String string) {
  */
 void calculateContentWidth() {
 	if (lineHeight != 0) {
-		int itemCount = (int) Compatibility.ceil((float) getClientArea().height / lineHeight);
+		int itemCount = Compatibility.ceil(getClientArea().height, lineHeight);
 		calculateContentWidth(topIndex, Math.min(itemCount, content.getLineCount() - topIndex));
 	}
 }
@@ -2908,7 +2908,7 @@ int getLineCountTruncated() {
 	int lineCount;
 	
 	if (lineHeight != 0) {
-		lineCount = (int) Compatibility.ceil((float) getClientArea().height / lineHeight);
+		lineCount = Compatibility.ceil(getClientArea().height, lineHeight);
 	}
 	else {
 		lineCount = 1;
@@ -3174,7 +3174,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
  * @return index of the last partially visible line.
  */
 int getPartialBottomIndex() {
-	int partialLineCount = (int) Compatibility.ceil((float) getClientArea().height / lineHeight);
+	int partialLineCount = Compatibility.ceil(getClientArea().height, lineHeight);
 
 	return Math.min(content.getLineCount(), topIndex + partialLineCount) - 1;
 }
@@ -4312,7 +4312,7 @@ void handleResize(Event event) {
 	if (clientAreaHeight > oldHeight) {
 		int lineCount = content.getLineCount();
 		int oldBottomIndex = topIndex + oldHeight / lineHeight;
-		int newItemCount = (int) Compatibility.ceil((float) (clientAreaHeight - oldHeight) / lineHeight);
+		int newItemCount = Compatibility.ceil(clientAreaHeight - oldHeight, lineHeight);
 		oldBottomIndex = Math.min(oldBottomIndex, lineCount);
 		newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
 		calculateContentWidth(oldBottomIndex, newItemCount);
@@ -4328,7 +4328,7 @@ void handleResize(Event event) {
  */
 void handleTextChanged(TextChangedEvent event) {
 	int clientAreaHeight = getClientArea().height;
-	int visibleItemCount = (int) Compatibility.ceil((float) clientAreaHeight / lineHeight);
+	int visibleItemCount = Compatibility.ceil(clientAreaHeight, lineHeight);
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	int stopLine;
 			
@@ -6130,10 +6130,10 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	if (verticalIncrement != 0) {
 		int oldTopIndex = topIndex;
 		
-		topIndex = (int) Compatibility.ceil((float) pixelOffset / verticalIncrement);
+		topIndex = Compatibility.ceil(pixelOffset, verticalIncrement);
 		if (topIndex != oldTopIndex) {
 			int lineCount = content.getLineCount();
-			int visibleItemCount = (int) Compatibility.ceil((float) clientArea.height / verticalIncrement);
+			int visibleItemCount = Compatibility.ceil(clientArea.height, verticalIncrement);
 			int oldBottomIndex = Math.min(oldTopIndex + visibleItemCount, lineCount);
 			int newItemCount = topIndex - oldTopIndex;
 

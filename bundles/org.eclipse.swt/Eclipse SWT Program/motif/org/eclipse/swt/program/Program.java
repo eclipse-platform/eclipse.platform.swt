@@ -183,7 +183,7 @@ private static String[] getExtensions( Display display ) {
 		Vector mimeExts = (Vector) mimeInfo.get( mimeType );
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (!extensions.contains( mimeExts.elementAt( index ) )) {
-				extensions.add( mimeExts.elementAt( index ) );
+				extensions.addElement( mimeExts.elementAt( index ) );
 			}
 		}
 	}
@@ -237,7 +237,7 @@ private static Program[] getPrograms( Display display ) {
 			program.command   = command;
 			program.extension = extension;
 			program.display   = display;
-			programs.add( program );
+			programs.addElement( program );
 		}
 	}
 			
@@ -376,7 +376,7 @@ private static void gnome_parseMimeFile( Hashtable info, BufferedReader reader )
 					if (newExt.charAt(0) != '.') {
 						newExt = "." + newExt;
 					}
-					mimeExts.add( newExt );
+					mimeExts.addElement( newExt );
 				} 
 			}
 			
@@ -445,11 +445,11 @@ private static String[] parseCommand( String cmd ) {
 				}
 				if (eIndex >= cmd.length()) { // the terminating quote was not found
 					// Add the argument as is with only one initial quote.
-					args.add( cmd.substring( sIndex, eIndex ) );
+					args.addElement( cmd.substring( sIndex, eIndex ) );
 				}
 				// else add the argument, trimming off the quotes.
 				else {
-					args.add( cmd.substring( sIndex+1, eIndex ) );
+					args.addElement( cmd.substring( sIndex+1, eIndex ) );
 				}
 				sIndex = eIndex + 1;
 			}
@@ -460,7 +460,7 @@ private static String[] parseCommand( String cmd ) {
 				while (eIndex < cmd.length() && !Compatibility.isWhitespace( cmd.charAt(eIndex) )) {
 					eIndex++;
 				}
-				args.add( cmd.substring( sIndex, eIndex ) );
+				args.addElement( cmd.substring( sIndex, eIndex ) );
 				sIndex = eIndex + 1;
 			}
 		}
@@ -586,7 +586,7 @@ private static Hashtable kde_getMimeInfo() {
 			extension = kde_convertQStringAndFree( patString );
 			int period = extension.indexOf( '.' );
 			if (period != -1) {
-				mimeExts.add( extension.substring( period ) );
+				mimeExts.addElement( extension.substring( period ) );
 			}
 
 			// Advance to the next pattern.		
@@ -651,7 +651,7 @@ private static boolean launch( Display display, String fileName ) {
 	if (fileName == null) SWT.error( SWT.ERROR_NULL_ARGUMENT );
 	
 	// If the argument appears to be a data file (it has an extension)
-	int index = fileName.lastIndexOf(".");
+	int index = fileName.lastIndexOf('.');
 	if (index > 0) {
 		
 		// Find the associated program, if one is defined.
@@ -664,7 +664,7 @@ private static boolean launch( Display display, String fileName ) {
 	
 	// Otherwise, the argument was the program itself.
 	try {
-		Runtime.getRuntime().exec( fileName );
+		Compatibility.exec(fileName);
 		return true;
 	} catch (IOException e) {
 		return false;
@@ -729,7 +729,7 @@ public boolean execute (String fileName) {
 	
 			// Execute the command.
 			try {
-				Runtime.getRuntime().exec( args );
+				Compatibility.exec(args);
 			} catch (IOException e) {
 				return false;
 			}
@@ -959,7 +959,7 @@ static Hashtable cde_getDataTypeInfo() {
    			if (!CDE.DtDtsDataTypeIsAction( dataTypeBuf ) &&
 				extension != null && cde_getAction( dataTypeName ) != null) {
 				Vector exts = new Vector();
-				exts.add( extension );
+				exts.addElement( extension );
 				dataTypeInfo.put( dataTypeName, exts );
 	   		}
 			dataType = CDE.listElementAt( dataTypeList, index++ );
