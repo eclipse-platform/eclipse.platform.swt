@@ -4,7 +4,7 @@
  */
 
  /**
- * JNI SWT object field getters and setters declarations for Motif structs.
+ * JNI SWT object field getters and setters declarations for Photon structs.
  */
 
 #include "swt.h"
