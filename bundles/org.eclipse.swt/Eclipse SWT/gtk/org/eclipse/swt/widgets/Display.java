@@ -978,11 +978,15 @@ public Monitor [] getMonitors () {
 			for (int i = 0; i < monitorCount; i++) {
 				OS.gdk_screen_get_monitor_geometry (screen, i, dest);
 				Monitor monitor = new Monitor ();
-				monitor.id = i;
+				monitor.handle = i;
 				monitor.x = dest.x;
 				monitor.y = dest.y;
 				monitor.width = dest.width;
 				monitor.height = dest.height;
+				monitor.clientX = monitor.x;
+				monitor.clientY = monitor.y;
+				monitor.clientWidth = monitor.width;
+				monitor.clientHeight = monitor.height;
 				monitors [i] = monitor;
 			}
 		}
@@ -990,12 +994,15 @@ public Monitor [] getMonitors () {
 	if (monitors == null) {
 		/* No multimonitor support detected, default to one monitor */
 		Monitor monitor = new Monitor ();
-		monitor.id = 0;
 		Rectangle bounds = getBounds ();
 		monitor.x = bounds.x;
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
 		monitor.height = bounds.height;
+		monitor.clientX = monitor.x;
+		monitor.clientY = monitor.y;
+		monitor.clientWidth = monitor.width;
+		monitor.clientHeight = monitor.height;
 		monitors = new Monitor [] { monitor };			
 	}
 	return monitors;

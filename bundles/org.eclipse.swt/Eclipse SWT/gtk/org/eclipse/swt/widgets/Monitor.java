@@ -19,10 +19,11 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 2.2
  */
-public final class Monitor {	
-	int id;
+public final class Monitor {
+	int handle;
 	int x, y, width, height;
-
+	int clientX, clientY, clientWidth, clientHeight;
+	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -33,7 +34,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Monitor)) return false;
 	Monitor monitor = (Monitor) object;
-	return id == monitor.id;
+	return handle == monitor.handle;
 }
 
 /**
@@ -53,11 +54,11 @@ public Rectangle getBounds () {
  * @return the client area
  */
 public Rectangle getClientArea () {
-	return getBounds ();
+	return new Rectangle (clientX, clientY, clientWidth, clientHeight);
 }
 	
 public int hashCode () {
-	return id;
+	return handle;
 }
 
 }
