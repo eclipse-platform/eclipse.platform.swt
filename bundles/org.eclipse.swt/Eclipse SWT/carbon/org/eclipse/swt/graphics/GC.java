@@ -303,7 +303,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 	}	
 	OS.CGContextBeginPath(handle);
     OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextTranslateCTM(handle, x + 0.5f + width / 2f, y + 0.5f + height / 2f);
     OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
     OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
     OS.CGContextRestoreGState(handle);
@@ -501,7 +501,7 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.CGContextBeginPath(handle);
     OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextTranslateCTM(handle, x + 0.5f + width / 2f, y + 0.5f + height / 2f);
     OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
     OS.CGContextMoveToPoint(handle, 1, 0);
     OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
@@ -594,8 +594,8 @@ public void drawRectangle(int x, int y, int width, int height) {
 		height = -height;
 	}
 	CGRect rect = new CGRect();
-	rect.x = x;
-	rect.y = y;
+	rect.x = x + 0.5f;
+	rect.y = y + 0.5f;
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextStrokeRect(handle, rect);
