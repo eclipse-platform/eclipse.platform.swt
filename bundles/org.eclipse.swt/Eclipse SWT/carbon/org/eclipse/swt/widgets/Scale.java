@@ -133,7 +133,8 @@ void createHandle () {
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	int value = (style & SWT.VERTICAL) != 0 ? 100 : 0;
+	int value = 0;
+	if ((style & SWT.VERTICAL) != 0) value = 100;
 	OS.CreateSliderControl (window, null, value, 0, 100, OS.kControlSliderDoesNotPoint, (short)0, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
