@@ -41,6 +41,16 @@ public class ToolBar extends Composite {
 		OS.GetClassInfoEx (0, ToolBarClass, lpWndClass);
 		ToolBarProc = lpWndClass.lpfnWndProc;
 	}
+	
+	/*
+	* From the Windows SDK for TB_SETBUTTONSIZE:
+	*
+	*   "If an application does not explicitly
+	*	set the button size, the size defaults
+	*	to 24 by 22 pixels". 
+	*/
+	static final int DEFAULT_WIDTH = 24;
+	static final int DEFAULT_HEIGHT = 22;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -166,8 +176,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	*	set the button size, the size defaults
 	*	to 24 by 22 pixels". 
 	*/
-	if (width == 0) width = 24;
-	if (height == 0) height = 22;
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
