@@ -22,6 +22,7 @@ public class BusyIndicator {
 
 	static int nextBusyId = 1;
 	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
+	static final String BUSY_CURSOR = "SWT BusyIndicator Cursor"; //$NON-NLS-1$
 
 /**
  * Runs the given <code>Runnable</code> while providing
@@ -54,7 +55,21 @@ public static void showWhile(Display display, Runnable runnable) {
 	
 	Integer busyId = new Integer(nextBusyId);
 	nextBusyId++;
-	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
+	Cursor cursor = (Cursor)display.getData(BUSY_CURSOR);
+	if (cursor == null || cursor.isDisposed()) {
+		cursor = new Cursor(display, SWT.CURSOR_WAIT);
+		display.setData(BUSY_CURSOR, cursor);
+		display.addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event e) {
+				Display display = e.display;
+				Cursor cursor =  (Cursor)display.getData(BUSY_CURSOR);
+				if (cursor != null) {
+					if (!cursor.isDisposed()) cursor.dispose();
+					display.setData(BUSY_CURSOR, null);
+				}
+			}
+		});
+	}
 	
 	Shell[] shells = display.getShells();
 	for (int i = 0; i < shells.length; i++) {
@@ -75,9 +90,6 @@ public static void showWhile(Display display, Runnable runnable) {
 				shells[i].setCursor(null);
 				shells[i].setData(BUSYID_NAME, null);
 			}
-		}
-		if (cursor != null && !cursor.isDisposed()) {
-			cursor.dispose();
 		}
 	}
 }
