@@ -172,7 +172,7 @@ Image() {
  * @param height the height of the new image
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative or zero</li>
  * </ul>
  */
 public Image(Device device, int width, int height) {
