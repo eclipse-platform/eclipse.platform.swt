@@ -432,6 +432,21 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
+public Rectangle getBounds () {
+	checkWidget();
+	PhArea_t area = new PhArea_t ();
+	OS.PtWidgetArea (shellHandle, area);
+	int width = area.size_w, height = area.size_h;
+	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	int flags = args [1];
+	int [] left = new int [1], top = new int [1];
+	int [] right = new int [1], bottom = new int [1];
+	OS.PtFrameSize (flags, 0, left, top, right, bottom);
+	width += left [0] + right [0];
+	height += top [0] + bottom [0];
+	return new Rectangle (area.pos_x, area.pos_y, width, height);
+}
 
 public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -716,50 +731,74 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (changed && resize) resizeBounds (width, height);
 		return changed;
 	}
-	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
-	OS.PtGetResources (shellHandle, args.length / 3, args);
-	int flags = args [1];
-	int [] left = new int [1], top = new int [1];
-	int [] right = new int [1], bottom = new int [1];
-	OS.PtFrameSize (flags, 0, left, top, right, bottom);
-	PhArea_t area = new PhArea_t ();
-	OS.PtWidgetArea (shellHandle, area);
-	int frameWidth = area.size_w + left [0] + right [0];
-	int frameHeight = area.size_h + top [0] + bottom [0];
-	if (!move) {
-		x = area.pos_x;
-		y = area.pos_y;
+	
+	boolean caretVisible = caret != null && caret.isVisible ();
+	if (caretVisible) caret.hideCaret ();
+	
+	if (resize) {
+		/* Get the trimings */
+		int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
+		OS.PtGetResources (shellHandle, args.length / 3, args);
+		int flags = args [1];
+		int [] left = new int [1], top = new int [1];
+		int [] right = new int [1], bottom = new int [1];
+		OS.PtFrameSize (flags, 0, left, top, right, bottom);
+		width = Math.max (width - left [0] - right [0], 0);
+		height = Math.max (height - top [0] - bottom [0], 0);
 	}
-	if (!resize) {
-		width = frameWidth;
-		height = frameHeight;
+	
+	PhArea_t oldArea = new PhArea_t ();
+	OS.PtWidgetArea (shellHandle, oldArea);
+	
+	if (move && resize) {
+		PhArea_t area = new PhArea_t ();
+		area.pos_x = (short) x;
+		area.pos_y = (short) y;
+		area.size_w = (short) width;
+		area.size_h = (short) height;
+		int ptr = OS.malloc (PhArea_t.sizeof);
+		OS.memmove (ptr, area, PhArea_t.sizeof);
+		OS.PtSetResource (shellHandle, OS.Pt_ARG_AREA, ptr, 0);
+		OS.free (ptr);
+	} else {
+		if (move) {
+			PhPoint_t pt = new PhPoint_t ();
+			pt.x = (short) x;
+			pt.y = (short) y;
+			int ptr = OS.malloc (PhPoint_t.sizeof);
+			OS.memmove (ptr, pt, PhPoint_t.sizeof);
+			OS.PtSetResource (shellHandle, OS.Pt_ARG_POS, ptr, 0);
+			OS.free (ptr);
+		} else if (resize) {
+			int [] args = {
+				OS.Pt_ARG_WIDTH, width, 0,
+				OS.Pt_ARG_HEIGHT, height, 0,
+			};
+			OS.PtSetResources (shellHandle, args.length / 3, args);
+		}
 	}
-	boolean sameOrigin = x == area.pos_x && y == area.pos_y;
-	boolean sameExtent = width == frameWidth && height == frameHeight;
-	area.pos_x = (short) x;
-	area.pos_y = (short) y;
-	area.size_w = (short) (Math.max (width - left [0] - right [0], 0));
-	area.size_h = (short) (Math.max (height - top [0] - bottom [0], 0));
-	int ptr = OS.malloc (PhArea_t.sizeof);
-	OS.memmove (ptr, area, PhArea_t.sizeof);
-	OS.PtSetResource (shellHandle, OS.Pt_ARG_AREA, ptr, 0);
-	OS.free (ptr);
+
 	/*
 	* Feature in Photon.  The shell does not issue WM_SIZE
 	* event notificatoin until it is realized.  The fix is
 	* to detect size changes and send the events.
 	*/
 	if (!OS.PtWidgetIsRealized (shellHandle)) {
+		PhArea_t newArea = new PhArea_t ();
+		OS.PtWidgetArea (shellHandle, newArea);
+		boolean sameOrigin = oldArea.pos_x == newArea.pos_x && oldArea.pos_y == newArea.pos_y;
+		boolean sameExtent = oldArea.size_w == newArea.size_w && oldArea.size_h == newArea.size_h;
 		if (!sameOrigin & move) sendEvent (SWT.Move);
 		if (!sameExtent & resize) {
-			resizeBounds (width, height);
+			resizeBounds (newArea.size_w, newArea.size_h);
 			sendEvent (SWT.Resize);
+			if (layout != null) layout (false);
 		}
 	}
-	return !sameOrigin || !sameExtent;
-}
-
-public void setImage (Image image) {
+	
+	if (caretVisible) caret.showCaret ();
+	
+	return move || resize;
 }
 
 /**
