@@ -863,7 +863,6 @@ void sendEvent (int eventType, Event event, boolean send) {
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}
-	if (eventTable == null) return;
 	if (event == null) event = new Event ();
 	event.type = eventType;
 	event.display = display;
