@@ -105,8 +105,8 @@ public class Shell extends Decorations {
 	int shellHandle, windowGroup;
 	boolean resized;
 	Control lastActive;
-	int clipRgn;
-	Rect clipRect;
+	Region region;
+	Rect rgnRect;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -393,7 +393,7 @@ void closeWidget () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
-	if (clipRgn == 0) {
+	if (region == null) {
 		Rect rect = new Rect ();
 		OS.GetWindowStructureWidths (shellHandle, rect);
 		trim.x -= rect.left;
@@ -496,9 +496,9 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	* and ignores the actual origin.  This causes the 
 	* window to be shifted.  The fix is to modify the origin.
 	*/
-	if (clipRgn == 0) return;
+	if (region == null) return;
 	Rect r = new Rect ();
-	OS.GetRegionBounds (clipRgn, r);
+	OS.GetRegionBounds (region.handle, r);
 	if (r.left == 0 && r.top == 0) return;
 	int[] context = new int [1];
 	int port = OS.GetWindowPort (shellHandle);
@@ -560,36 +560,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-/** 
- * Sets the region managed by the argument to the current
- * shape of the shell.
- *
- * @param region the region to fill with the clipping region
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>	
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void getClipping (Region region) {
-	checkWidget ();
-	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	if (clipRgn != 0) {
-		OS.CopyRgn(clipRgn, hRegion);
-	} else {
-		Rect rect = new Rect ();
-		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-		OS.SetRectRgn(hRegion, (short) 0, (short) 0, (short) (rect.right - rect.left), (short) (rect.bottom - rect.top));
-	}
-}
-
 int getDrawCount (int control) {
 	if (!isTrimHandle (control)) return drawCount;
 	return 0;
@@ -638,6 +608,24 @@ public boolean getMinimized () {
 
 float [] getParentBackground () {
 	return null;
+}
+
+/** 
+ * Returns the region that defines the shape of the shell.
+ *
+ * @return the region that defines the shape of the shell
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
 }
 
 public Shell getShell () {
@@ -774,9 +762,9 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		layoutControl (false);
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
-		if (clipRgn != 0) {
-			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, clipRect);
-			OS.SetRect (clipRect, (short) 0, (short) 0, (short) (clipRect.right - clipRect.left), (short) (clipRect.bottom - clipRect.top));
+		if (region != null) {
+			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
+			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));
 			OS.ReshapeCustomWindow (shellHandle);
 		}
 	}
@@ -832,17 +820,17 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowGetRegion (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (clipRgn == 0) return OS.eventNotHandledErr;
+	if (region == null) return OS.eventNotHandledErr;
 	short [] regionCode = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamWindowRegionCode , OS.typeWindowRegionCode , null, 2, null, regionCode);
-	int [] region = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle , OS.typeQDRgnHandle , null, 4, null, region);
-	int hRegion = region [0];
+	int [] temp = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle , OS.typeQDRgnHandle , null, 4, null, temp);
+	int hRegion = temp [0];
 	switch (regionCode [0]) {
 		case OS.kWindowContentRgn:
 		case OS.kWindowStructureRgn:
-			OS.RectRgn (hRegion, clipRect);
-			OS.SectRgn (hRegion, clipRgn, hRegion);
+			OS.RectRgn (hRegion, rgnRect);
+			OS.SectRgn (hRegion, region.handle, hRegion);
 			/*
 			* Bug in the Macintosh. In kEventWindowGetRegion, 
 			* Carbon assumes the origin of the Region is (0, 0)
@@ -880,7 +868,7 @@ int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
 int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowHitTest (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (clipRgn == 0) return OS.eventNotHandledErr;
+	if (region == null) return OS.eventNotHandledErr;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -888,8 +876,8 @@ int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 	OS.GetWindowBounds (shellHandle, (short) OS.kWindowContentRgn, rect);
 	OS.SetPt (pt, (short) (pt.h - rect.left), (short) (pt.v - rect.top));
 	int rgn = OS.NewRgn ();
-	OS.RectRgn (rgn, clipRect);
-	OS.SectRgn (rgn, clipRgn, rgn);
+	OS.RectRgn (rgn, rgnRect);
+	OS.SectRgn (rgn, region.handle, rgn);
 	short inData = OS.PtInRgn (pt, rgn) ? OS.wInContent: OS.wNoHit;
 	OS.DisposeRgn (rgn);
 	OS.SetEventParameter (theEvent, OS.kEventParamWindowDefPart, OS.typeWindowDefPartCode, 2, new short [] {inData});
@@ -972,6 +960,7 @@ void releaseWidget () {
 	display.updateQuitMenu ();
 	windowGroup = 0;
 	lastActive = null;
+	region = null;
 }
 
 /**
@@ -1074,38 +1063,6 @@ public void setBounds (int x, int y, int width, int height) {
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 }
 
-/**
- * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
- *
- * @param rect the clipping region.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setClipping(Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	if (clipRgn != 0) OS.DisposeRgn (clipRgn);
-	if (region == null) {
-		clipRgn = 0;
-		clipRect = null;
-	} else {
-		if (clipRect == null) clipRect = new Rect ();
-		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, clipRect);
-		OS.SetRect (clipRect, (short) 0, (short) 0, (short) (clipRect.right - clipRect.left), (short) (clipRect.bottom - clipRect.top));
-		clipRgn = OS.NewRgn ();
-		OS.CopyRgn (region.handle, clipRgn);
-	}
-	OS.ReshapeCustomWindow (shellHandle);
-}
-
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);
@@ -1161,6 +1118,35 @@ public void setMinimized (boolean minimized) {
 		 OS.SelectWindow (shellHandle);
 	}
 	OS.CollapseWindow (shellHandle, minimized);
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rgn the region that defines the shape of the shell
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region == null) {
+		rgnRect = null;
+	} else {
+		if (rgnRect == null) rgnRect = new Rect ();
+		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rgnRect);
+		OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));	
+	}
+	this.region = region;
+	OS.ReshapeCustomWindow (shellHandle);
 }
 
 public void setSize (int width, int height) {
