@@ -373,6 +373,7 @@ class CoolBarTab extends Tab {
 				/* Get the cool item and convert its bounds to display coordinates. */
 				CoolItem coolItem = (CoolItem) event.widget;
 				Rectangle itemBounds = coolItem.getBounds ();
+				itemBounds.width = event.x - itemBounds.x;
 				Point pt = coolBar.toDisplay(new Point (itemBounds.x, itemBounds.y));
 				itemBounds.x = pt.x;
 				itemBounds.y = pt.y;
