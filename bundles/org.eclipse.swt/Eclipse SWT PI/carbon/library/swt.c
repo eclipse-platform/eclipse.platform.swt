@@ -896,6 +896,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue
 
 //---- GrafPort
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSwapTextFlags(JNIEnv *env, jclass zz, jint flags) {
+	//return (jint) QDSwapTextFlags(flags);
+	return (jint) SwapQDTextFlags(flags);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPort(JNIEnv *env, jclass zz) {
 	GrafPtr p;
 	GetPort(&p);

@@ -416,6 +416,7 @@ void createDisplay (DeviceData data) {
 			OS.RegisterAppearanceClient();
 			OS.TXNInitTextension();
 			OS.InitCursor();
+			OS.QDSwapTextFlags(OS.kQDUseCGTextRendering + OS.kQDUseCGTextMetrics);
 			if (OS.InitContextualMenus() != OS.kNoErr)
 				System.out.println("Display.createDisplay: error in OS.InitContextualMenus");
 		}

@@ -315,6 +315,16 @@ public class OS {
 	public static final short normal	= 0;
 	public static final short bold		= 1;
 	public static final short italic	= 2;
+	
+	public static final int kQDUseDefaultTextRendering = 0;
+	public static final int kQDUseTrueTypeScalerGlyphs = (1 << 0);
+	public static final int kQDUseCGTextRendering = (1 << 1);
+	public static final int kQDUseCGTextMetrics = (1 << 2);
+	public static final int kQDSupportedFlags =
+				kQDUseTrueTypeScalerGlyphs | kQDUseCGTextRendering | kQDUseCGTextMetrics;
+	public static final int kQDDontChangeFlags = 0xFFFFFFFF;
+	
+	public static native int QDSwapTextFlags(int flags);
 
 	public static native int GetPort();
 	public static native int GetWindowFromPort(int pHandle);
