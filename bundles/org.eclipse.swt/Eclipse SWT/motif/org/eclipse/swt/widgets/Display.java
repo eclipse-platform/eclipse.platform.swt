@@ -1265,7 +1265,7 @@ void initializeList () {
 	* since there is no API to query the color, use the list foreground
 	* color.
 	*/
-	switch (argList [7]) {
+	switch ((byte) argList [7]) {
 		case OS.XmDEFAULT_SELECT_COLOR:
 		case OS.XmREVERSED_GROUND_COLORS:
 			listSelect = listForeground;
