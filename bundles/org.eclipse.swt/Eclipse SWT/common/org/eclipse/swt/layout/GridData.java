@@ -56,6 +56,7 @@ public final class GridData {
 	 * SWT.FILL: Resize the control to fill the cell vertically
 	 */
 	public int verticalAlignment = CENTER;
+	
 	/**
 	 * horizontalAlignment specifies how controls will be positioned 
 	 * horizontally within a cell. 
@@ -70,6 +71,7 @@ public final class GridData {
 	 * SWT.FILL: Resize the control to fill the cell horizontally
 	 */
 	public int horizontalAlignment = BEGINNING;
+	
 	/**
 	 * widthHint specifies a minimum width for the column. A value of 
 	 * SWT.DEFAULT indicates that no minimum width is specified.
@@ -77,6 +79,7 @@ public final class GridData {
 	 * The default value is SWT.DEFAULT.
 	 */
 	public int widthHint = SWT.DEFAULT;
+	
 	/**
 	 * heightHint specifies a minimum height for the row. A value of
 	 * SWT.DEFAULT indicates that no minimum height is specified.
@@ -84,6 +87,7 @@ public final class GridData {
 	 * The default value is SWT.DEFAULT.
 	 */
 	public int heightHint = SWT.DEFAULT;
+	
 	/**
 	 * horizontalIndent specifies the number of pixels of indentation
 	 * that will be placed along the left side of the cell.
@@ -91,6 +95,7 @@ public final class GridData {
 	 * The default value is 0.
 	 */
 	public int horizontalIndent = 0;
+	
 	/**
 	 * horizontalSpan specifies the number of column cells that the control
 	 * will take up.
@@ -98,6 +103,7 @@ public final class GridData {
 	 * The default value is 1.
 	 */
 	public int horizontalSpan = 1;
+	
 	/**
 	 * verticalSpan specifies the number of row cells that the control
 	 * will take up.
@@ -105,6 +111,7 @@ public final class GridData {
 	 * The default value is 1.
 	 */
 	public int verticalSpan = 1;
+	
 	/**
 	 * grabExcessHorizontalSpace specifies whether the cell will be made
 	 * wide enough to fit the remaining horizontal space.
@@ -112,6 +119,7 @@ public final class GridData {
 	 * The default value is false.
 	 */	
 	public boolean grabExcessHorizontalSpace = false;
+	
 	/**
 	 * grabExcessVerticalSpace specifies whether the cell will be made
 	 * tall enough to fit the remaining vertical space.
@@ -120,35 +128,154 @@ public final class GridData {
 	 */	
 	public boolean grabExcessVerticalSpace = false;
 
-	// Alignment constants.
+	/**
+	 * Value for horizontalAlignment or verticalAlignment.
+	 * Position the control at the top or left of the cell.
+	 * Not recommended. Use SWT.BEGINNING, SWT.TOP or SWT.LEFT instead.
+	 */
 	public static final int BEGINNING = SWT.BEGINNING;
+	
+	/**
+	 * Value for horizontalAlignment or verticalAlignment.
+	 * Position the control in the vertical or horizontal center of the cell
+	 * Not recommended. Use SWT.CENTER instead.
+	 */
 	public static final int CENTER = 2;
+	
+	/**
+	 * Value for horizontalAlignment or verticalAlignment.
+	 * Position the control at the bottom or right of the cell
+	 * Not recommended. Use SWT.END, SWT.BOTTOM or SWT.RIGHT instead.
+	 */
 	public static final int END = 3;
+	
+	/**
+	 * Value for horizontalAlignment or verticalAlignment.
+	 * Resize the control to fill the cell horizontally or vertically.
+	 * Not recommended. Use SWT.FILL instead.
+	 */
 	public static final int FILL = SWT.FILL;
 
-	// Style constants
+	/**
+	 * Style bit for <code>new GridData(int)</code>.
+	 * Position the control at the top of the cell.
+	 * Not recommended. Use 
+	 * <code>new GridData(int, SWT.BEGINNING, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int VERTICAL_ALIGN_BEGINNING =  1 << 1;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to position the 
+	 * control in the vertical center of the cell.
+	 * Not recommended. Use
+	 * <code>new GridData(int, SWT.CENTER, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int VERTICAL_ALIGN_CENTER = 1 << 2;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to position the 
+	 * control at the bottom of the cell.
+	 * Not recommended. Use
+	 * <code>new GridData(int, SWT.END, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int VERTICAL_ALIGN_END = 1 << 3;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fill the cell vertically.
+	 * Not recommended. Use
+	 * <code>new GridData(int, SWT.FILL, boolean, boolean)</code>
+	 * instead
+	 */
 	public static final int VERTICAL_ALIGN_FILL = 1 << 4;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to position the 
+	 * control at the left of the cell.
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.BEGINNING, int, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int HORIZONTAL_ALIGN_BEGINNING =  1 << 5;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to position the 
+	 * control in the horizontal center of the cell.
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.CENTER, int, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int HORIZONTAL_ALIGN_CENTER = 1 << 6;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to position the 
+	 * control at the right of the cell.
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.END, int, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int HORIZONTAL_ALIGN_END = 1 << 7;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fill the cell horizontally.
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.FILL, int, boolean, boolean)</code>
+	 * instead.
+	 */
 	public static final int HORIZONTAL_ALIGN_FILL = 1 << 8;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fit the remaining horizontal space.
+	 * Not recommended. Use
+	 * <code>new GridData(int, int, true, boolean)</code>
+	 * instead.
+	 */
 	public static final int GRAB_HORIZONTAL = 1 << 9;
+	
+	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fit the remaining vertical space.
+	 * Not recommended. Use
+	 * <code>new GridData(int, int, boolean, true)</code>
+	 * instead.
+	 */
 	public static final int GRAB_VERTICAL = 1 << 10;
 	
-	// Style convenience constants
 	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fill the cell vertically and to fit the remaining
+	 * vertical space.
 	 * FILL_VERTICAL = VERTICAL_ALIGN_FILL | GRAB_VERTICAL
+	 * Not recommended. Use
+	 * <code>new GridData(int, SWT.FILL, boolean, true)</code>
+	 * instead.
 	 */	
 	public static final int FILL_VERTICAL = VERTICAL_ALIGN_FILL | GRAB_VERTICAL;
+	
 	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fill the cell horizontally and to fit the remaining
+	 * horizontal space.
 	 * FILL_HORIZONTAL = HORIZONTAL_ALIGN_FILL | GRAB_HORIZONTAL
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.FILL, int, true, boolean)</code>
+	 * instead.
 	 */	
 	public static final int FILL_HORIZONTAL = HORIZONTAL_ALIGN_FILL | GRAB_HORIZONTAL;
+	
 	/**
+	 * Style bit for <code>new GridData(int)</code> to resize the 
+	 * control to fill the cell horizontally and vertically and 
+	 * to fit the remaining horizontal and vertical space.
 	 * FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL
+	 * Not recommended. Use
+	 * <code>new GridData(SWT.FILL, SWT.FILL, true, true)</code>
+	 * instead.
 	 */	
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
@@ -156,9 +283,21 @@ public final class GridData {
 	int childIndex;
 	boolean isItemData = true;
 	int hSpan;
+	
+/**
+ * Constructs a new instance of GridData using
+ * default values.
+ */
 public GridData() {
 	super();
 }
+
+/**
+ * Constructs a new instance based on the GridData style.
+ * This constructor is not recommended.
+ * 
+ * @param style the GridData style
+ */
 public GridData(int style) {
 	super();
 
@@ -191,16 +330,32 @@ public GridData(int style) {
 		
 }
 
-/*
-* @since 3.0
-*/
+/**
+ * Constructs a new instance of GridData according to the parameters.
+ * 
+ * @param horizontalAlignment how control will be positioned horizontally within a cell
+ * @param verticalAlignment how control will be positioned vertically within a cell
+ * @param grabExcessHorizontalSpace whether cell will be made wide enough to fit the remaining horizontal space
+ * @param grabExcessVerticalSpace whether cell will be made high enough to fit the remaining vertical space
+ * 
+ * @since 3.0
+ */
 public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace) {
 	this(horizontalAlignment, verticalAlignment, grabExcessHorizontalSpace, grabExcessVerticalSpace, 1, 1);
 }
 
-/*
-* @since 3.0
-*/
+/**
+ * Constructs a new instance of GridData according to the parameters.
+ *  
+ * @param horizontalAlignment how control will be positioned horizontally within a cell
+ * @param verticalAlignment how control will be positioned vertically within a cell
+ * @param grabExcessHorizontalSpace whether cell will be made wide enough to fit the remaining horizontal space
+ * @param grabExcessVerticalSpace whether cell will be made high enough to fit the remaining vertical space
+ * @param horizontalSpan the number of column cells that the control will take up
+ * @param verticalSpan the number of row cells that the control will take up
+ * 
+ * @since 3.0
+ */
 public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace, int horizontalSpan, int verticalSpan) {
 	super();
 	this.horizontalAlignment = horizontalAlignment;
@@ -211,9 +366,16 @@ public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExce
 	this.verticalSpan = verticalSpan;
 }
 
-/*
-* @since 3.0
-*/
+/**
+ * Constructs a new instance of GridData according to the parameters.
+ * A value of SWT.DEFAULT indicates that no minimum width or
+ * no minumum height is specified.
+ * 
+ * @param width a minimum width for the column
+ * @param height a minimum height for the row
+ * 
+ * @since 3.0
+ */
 public GridData (int width, int height) {
 	super();
 	this.widthHint = width;
