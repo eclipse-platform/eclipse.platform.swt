@@ -248,7 +248,7 @@ private int DragEnter(
 	dataTypes = new TransferData[0];
 	iDataObject = 0;
 	
-	// Are any types being dragged for which we have a matching transfer object?
+	// Get allowed transfer types
 	// Get enumerator of dragged types
 	IDataObject dataObject = new IDataObject(pDataObject);
 	dataObject.AddRef();
@@ -271,6 +271,7 @@ private int DragEnter(
 		transferData.formatetc = new FORMATETC();
 		COM.MoveMemory(transferData.formatetc, rgelt, FORMATETC.sizeof);
 		transferData.type = transferData.formatetc.cfFormat;
+		transferData.pIDataObject = pDataObject;
 		
 		for (int i = 0; i < transferAgents.length; i++){
 			if (transferAgents[i].isSupportedType(transferData)){
@@ -285,28 +286,28 @@ private int DragEnter(
 	OS.GlobalFree(rgelt);
 	enum.Release();
 	
+	// get allowed operations
+	int style = getStyle();
+	int[] allowedEffects = new int[1];
+	OS.MoveMemory(allowedEffects, pdwEffect, 4);
+	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
+	// get current operation
+	keyState = getOperationFromKeyState(grfKeyState);
+	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
+		keyState = DND.DROP_MOVE;
+	}
+	
 	// give listeners a chance to have input
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.x = pt_x;
 	event.y = pt_y;
-	event.dataTypes = dataTypes;
 	event.feedback = DND.FEEDBACK_SELECT;
-	int[] allowedEffects = new int[1];
-	OS.MoveMemory(allowedEffects, pdwEffect, 4);
-	allowedEffects[0] = osToOp(allowedEffects[0]);
+	event.dataTypes = dataTypes;
+	if (dataTypes.length > 0) event.dataType = dataTypes[0];
 	event.operations = allowedEffects[0];
-	if (dataTypes.length > 0) {
-		event.dataType = dataTypes[0];
-		event.dataType.pIDataObject = pDataObject;
-	}
-	// assign operation if it is allowed
-	keyState = getOperationFromKeyState(grfKeyState);
-	int style = getStyle();
-	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
-		keyState = DND.DROP_MOVE;
-	}
 	event.detail = DND.DROP_NONE;
 	if ((keyState & style) == keyState){
 		event.detail = keyState;
@@ -359,28 +360,28 @@ private int DragOver(
 	int pt_y,
 	int pdwEffect    //Pointer to the effect of the drag-and-drop operation
 ){
+	// get allowed operations
+	int[] allowedEffects = new int[1];
+	int style = getStyle();
+	OS.MoveMemory(allowedEffects, pdwEffect, 4);
+	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
+	// get current operation
+	int oldKeyState = keyState;
+	keyState = getOperationFromKeyState(grfKeyState);
+	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
+		keyState = DND.DROP_MOVE;
+	}
+	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.x = pt_x;
 	event.y = pt_y;
-	event.dataTypes = dataTypes;
 	event.feedback = DND.FEEDBACK_SELECT;
-	int[] allowedEffects = new int[1];
-	OS.MoveMemory(allowedEffects, pdwEffect, 4);
-	allowedEffects[0] = osToOp(allowedEffects[0]);
-	event.operations = allowedEffects[0];
+	event.dataTypes = dataTypes;
 	event.dataType = selectedDataType;
-	if (event.dataType != null) {
-		event.dataType.pIDataObject = iDataObject;
-	}
-	
-	int oldKeyState = keyState;
-	keyState = getOperationFromKeyState(grfKeyState);
-	int style = getStyle();
-	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
-		keyState = DND.DROP_MOVE;
-	}
+	event.operations = allowedEffects[0];
 	try {
 		if (keyState == oldKeyState) {
 			event.detail = lastOperation;
@@ -438,6 +439,12 @@ private int Drop(
 		notifyListeners(DND.DragLeave, event);
 	} catch (Throwable e) {}
 
+	// get allowed operations
+	int[] allowedEffects = new int[1];
+	int style = getStyle();
+	OS.MoveMemory(allowedEffects, pdwEffect, 4);
+	allowedEffects[0] = osToOp(allowedEffects[0]) & style;
+	
 	// Send a DropAccept event to be consistant with Motif
 	event = new DNDEvent();
 	event.widget = this;
@@ -445,14 +452,8 @@ private int Drop(
 	event.x = pt_x;
 	event.y = pt_y;
 	event.dataTypes = dataTypes;
-	int[] allowedEffects = new int[1];
-	OS.MoveMemory(allowedEffects, pdwEffect, 4);
-	allowedEffects[0] = osToOp(allowedEffects[0]);
-	event.operations = allowedEffects[0];		
 	event.dataType = selectedDataType;
-	if (event.dataType != null) {
-		event.dataType.pIDataObject = iDataObject;
-	}
+	event.operations = allowedEffects[0];		
 	event.detail = lastOperation;
 
 	try {
@@ -486,7 +487,6 @@ private int Drop(
 		if (matchingTransfer == null){
 			lastOperation = DND.DROP_NONE;
 		} else {
-			event.dataType.pIDataObject = pDataObject;
 			Object data = matchingTransfer.nativeToJava(event.dataType);
 			event.data = data;
 			try {
@@ -530,7 +530,7 @@ private int getOperationFromKeyState(int grfKeyState) {
 		return DND.DROP_COPY;
 	}
 	if (shift){
-		//CTRL == MOVE
+		//SHIFT == MOVE
 		return DND.DROP_MOVE;
 	}
 
