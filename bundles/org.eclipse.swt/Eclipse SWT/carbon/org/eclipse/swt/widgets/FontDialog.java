@@ -97,7 +97,7 @@ public FontDialog (Shell parent, int style) {
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData for the selected font, or null
- * @deprecated use #getFontDatas ()
+ * @deprecated use #getFontSet ()
  */
 public FontData getFontData () {
 	return fontData;
@@ -110,7 +110,7 @@ public FontData getFontData () {
  * @return the FontData for the selected font, or null
  * @since 3.0
  */
-public FontData [] getFontDatas () {
+public FontData [] getFontSet () {
 	if (fontData == null) return null;
 	FontData [] result = new FontData [1];
 	result [0] = fontData;
@@ -246,7 +246,7 @@ public FontData open () {
  * the platform choose one.
  * 
  * @param fontData the FontData to use initially, or null
- * @deprecated use #setFontDatas (FontData [])
+ * @deprecated use #setFontSet (FontData [])
  */
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
@@ -260,7 +260,7 @@ public void setFontData (FontData fontData) {
  * @param fontData the set of FontData objects to use initially, or null
  * @since 3.0
  */
-public void setFontDatas (FontData [] fontData) {
+public void setFontSet (FontData [] fontData) {
 	if (fontData != null && fontData.length > 0) {
 		this.fontData = fontData [0];
 	} else {
