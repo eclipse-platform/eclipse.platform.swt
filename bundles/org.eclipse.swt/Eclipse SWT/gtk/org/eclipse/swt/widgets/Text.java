@@ -825,11 +825,7 @@ int gtk_delete_range (int widget, int iter1, int iter2) {
 	OS.memmove (endIter, iter2, endIter.length);
 	int start = OS.gtk_text_iter_get_offset (startIter);
 	int end = OS.gtk_text_iter_get_offset (endIter);
-	int address = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
-	byte [] buffer = new byte [end - start];
-	OS.memmove (buffer, address, buffer.length);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
-	String newText = verifyText (oldText, start, end);
+	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
 	}
@@ -838,13 +834,7 @@ int gtk_delete_range (int widget, int iter1, int iter2) {
 
 int gtk_delete_text (int widget, int start_pos, int end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	int address = OS.gtk_editable_get_chars (handle, start_pos, end_pos);
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.g_free (address);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
-	String newText = verifyText (oldText, start_pos, end_pos);
+	String newText = verifyText ("", start_pos, end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 	}
