@@ -1930,14 +1930,11 @@ public void setSelection (int index) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)
-			|| itemCount == 0 || start >= itemCount) {
-		deselectAll();
-		return;
-	}
+	deselectAll();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
-	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 	showSelection ();
 }
