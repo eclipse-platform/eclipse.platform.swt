@@ -883,7 +883,6 @@ public void remove (int start, int end) {
  */
 public void remove (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int index = indexOf (string, 0);
 	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);
