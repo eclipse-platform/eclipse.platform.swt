@@ -3109,6 +3109,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1font_1selection_1dialog_1set_1font_1na
 }
 #endif
 
+#ifndef NO_gtk_1frame_1get_1label_1widget
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1frame_1get_1label_1widget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1frame_1get_1label_1widget\n")
+	rc = (jint)gtk_frame_get_label_widget((GtkFrame *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1frame_1get_1label_1widget\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1frame_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1frame_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)

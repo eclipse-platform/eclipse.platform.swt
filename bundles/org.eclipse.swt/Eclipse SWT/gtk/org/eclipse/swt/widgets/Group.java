@@ -154,6 +154,8 @@ void createHandle(int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	labelHandle = OS.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.g_object_ref (labelHandle);
+	OS.gtk_object_sink (labelHandle);
 	clientHandle = OS.gtk_fixed_new();
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int parentHandle = parent.parentingHandle ();
@@ -162,6 +164,7 @@ void createHandle(int index) {
 	OS.gtk_container_add (handle, clientHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_show (clientHandle);
+	OS.gtk_widget_show (labelHandle);
 	OS.gtk_widget_show (fixedHandle);	
 	if ((style & SWT.SHADOW_IN) != 0) {
 		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
@@ -250,6 +253,7 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (labelHandle != 0) OS.g_object_unref (labelHandle);
 	text = null;
 }
 
@@ -300,11 +304,11 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
-		OS.gtk_frame_set_label_widget (handle, labelHandle);
-		OS.gtk_widget_show (labelHandle);
-	} else {	
+		if (OS.gtk_frame_get_label_widget (handle) == 0) {
+			OS.gtk_frame_set_label_widget (handle, labelHandle);
+		}	
+	} else {
 		OS.gtk_frame_set_label_widget (handle, 0);
-		OS.gtk_widget_hide (labelHandle);
 	}
 	fixGroup ();
 }

@@ -566,6 +566,7 @@ public static final synchronized native int gtk_font_selection_dialog_get_font_n
 public static final synchronized native int gtk_font_selection_dialog_new(byte[] title);
 public static final synchronized native boolean gtk_font_selection_dialog_set_font_name(int fsd, byte[] fontname);
 public static final synchronized native int gtk_frame_new(byte[] label);
+public static final synchronized native int gtk_frame_get_label_widget(int frame);
 public static final synchronized native void gtk_frame_set_label(int frame, byte[] label);
 public static final synchronized native void gtk_frame_set_label_widget(int frame, int label_widget);
 public static final synchronized native void gtk_frame_set_shadow_type(int frame, int type);
