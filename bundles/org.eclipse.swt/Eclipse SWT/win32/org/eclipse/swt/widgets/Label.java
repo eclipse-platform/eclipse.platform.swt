@@ -517,14 +517,35 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	
 	/*
 	* Bug in Windows.  For some reason, a label with
+	* SS_BITMAP or SS_ICON and SS_CENTER does not redraw
+	* properly when resized.  Only the new area is drawn
+	* and the old area is not cleared.  The fix is to
+	* force the redraw.
+	*
+	* NOTE: SS_BITMAP and SS_ICON are not single bit
+	* masks so it is necessary to test for all of the
+	* bits in these masks.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	boolean isBitmap = (bits & OS.SS_BITMAP) == OS.SS_BITMAP;
+	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
+	if (isBitmap || isIcon) {
+		OS.InvalidateRect (handle, null, true);
+		return result;
+	}
+		
+	/*
+	* Bug in Windows.  For some reason, a label with
 	* style SS_LEFT, SS_CENTER or SS_RIGHT does not
 	* redraw the text in the new position when resized.
-	* Note that SS_LEFTNOWORDWRAP does not have the problem.
-	* The fix is to force the redraw.
+	* Note that SS_LEFTNOWORDWRAP does not have the
+	* problem.  The fix is to force the redraw.
 	*/
 	if ((style & (SWT.WRAP | SWT.CENTER | SWT.RIGHT)) != 0) {
 		OS.InvalidateRect (handle, null, true);
+		return result;
 	}
+	
 	return result;
 }
 
