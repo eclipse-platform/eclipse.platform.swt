@@ -2252,7 +2252,7 @@ int msgFilterProc (int code, int wParam, int lParam) {
 		if (code >= 0) {
 			OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
 			if (hookMsg.message == OS.WM_NULL) {
-				if (runAsyncMessages ()) wakeThread ();
+				if (runAsyncMessages (false)) wakeThread ();
 			}
 		}
 	}
@@ -2448,7 +2448,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages ();
+	return runAsyncMessages (false);
 }
 
 static synchronized void register (Display display) {
@@ -2767,8 +2767,8 @@ void removePopup (Menu menu) {
 	}
 }
 
-boolean runAsyncMessages () {
-	return synchronizer.runAsyncMessages ();
+boolean runAsyncMessages (boolean all) {
+	return synchronizer.runAsyncMessages (all);
 }
 
 boolean runDeferredEvents () {
@@ -3052,7 +3052,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages();
+		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
 }

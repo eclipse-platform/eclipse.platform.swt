@@ -77,7 +77,9 @@ protected void asyncExec (Runnable runnable) {
 }
 
 int getMessageCount () {
-	return messageCount;
+	synchronized (messageLock) {
+		return messageCount;
+	}
 }
 
 void releaseSynchronizer () {
@@ -101,24 +103,30 @@ RunnableLock removeFirst () {
 }
 
 boolean runAsyncMessages () {
-	if (messageCount == 0) return false;
-	RunnableLock lock = removeFirst ();
-	if (lock == null) return true;
-	synchronized (lock) {
-		syncThread = lock.thread;
-		try {
-			lock.run ();
-		} catch (Throwable t) {
-			lock.throwable = t;
-			SWT.error (SWT.ERROR_FAILED_EXEC, t);
-		} finally {
-			syncThread = null;
-			lock.notifyAll ();
-		}
-	}
-	return true;
+	return runAsyncMessages (false);
 }
 
+boolean runAsyncMessages (boolean all) {
+	boolean run = false;
+	do {
+		RunnableLock lock = removeFirst ();
+		if (lock == null) return run;
+		run = true;
+		synchronized (lock) {
+			syncThread = lock.thread;
+			try {
+				lock.run ();
+			} catch (Throwable t) {
+				lock.throwable = t;
+				SWT.error (SWT.ERROR_FAILED_EXEC, t);
+			} finally {
+				syncThread = null;
+				lock.notifyAll ();
+			}
+		}
+	} while (all);
+	return run;
+}
 
 /**
  * Causes the <code>run()</code> method of the runnable to
