@@ -48,8 +48,8 @@ import org.eclipse.swt.graphics.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	GC paintGC;
-	int anchorFirst, anchorLast;
-	boolean ignoreSelect, ignoreExpand;
+	int anchorFirst, anchorLast, lastHittest;
+	boolean ignoreSelect, ignoreExpand, wasSelected;
 	TreeItem showItem;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
@@ -682,6 +682,7 @@ public TreeItem getTopItem () {
 }
 
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
+	lastHittest = id;
 	return 1;
 }
 
@@ -770,6 +771,7 @@ int itemNotificationProc (int browser, int id, int message) {
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
+			wasSelected = true;
 			if (ignoreSelect) break;
 			int [] first = new int [1], last = new int [1];
 			OS.GetDataBrowserSelectionAnchor (handle, first, last);
@@ -802,6 +804,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
+			wasSelected = true;
 			Event event = new Event ();
 			event.item = item;
 			postEvent (SWT.DefaultSelection, event);
@@ -901,11 +904,22 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	*/
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
+	wasSelected = false;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	display.ignoreFocus = false;
 	if (oldFocus != this) {
 		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (false, false);
 		if (!isDisposed () && isEnabled ()) sendFocusEvent (true, false);
+	}
+	if (!wasSelected) {
+		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
+			int index = lastHittest - 1;
+			if (0 <= index && index < items.length) {
+				Event event = new Event ();
+				event.item = items [index];
+				postEvent (SWT.Selection, event);
+			}
+		}
 	}
 	return result;
 }
