@@ -110,7 +110,7 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 
 	/* Widget Table */
-	int freeSlot = 0;
+	int freeSlot;
 	int [] indexTable;
 	Control [] controlTable;
 	final static int GROW_SIZE = 1024;
