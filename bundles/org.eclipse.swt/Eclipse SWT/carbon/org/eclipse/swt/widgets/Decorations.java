@@ -446,6 +446,11 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
+	if (image != null) {
+		OS.SetApplicationDockTileImage (image.handle);
+	} else {
+		OS.RestoreApplicationDockTileImage ();
+	}
 }
 
 /**
@@ -478,6 +483,14 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
+	if (images.length > 0) {
+		Image image = images [0];
+		if (image != null) {
+			OS.SetApplicationDockTileImage (image.handle);
+		} else {
+			OS.RestoreApplicationDockTileImage ();
+		}
+	}
 }
 
 /**
