@@ -670,6 +670,8 @@ int[] segmentedRangesFor(int[] ranges) {
 			// range is within one segment
 			newRanges.addElement(new Integer(start));
 			newRanges.addElement(new Integer(end-start));
+		} else if (startSegment > endSegment) {
+			// range is within no segment (i.e., it's empty)
 		} else {
 			// range spans multiple segments
 			newRanges.addElement(new Integer(start));
