@@ -227,13 +227,13 @@ void createHandle () {
 	* to make sure the tool tip is a topmost window.
 	*/
 	/*
-	* Bug in Windows 98 and NT.  Setting the tool tip to be the topmost
-	* window can result in its parent dialog being moved behind its parent
-	* if the dialog has a sibling with style bit ON_TOP.  The workaround
-	* is to lock the active window's position during the SetWindowPos
-	* invocation below.
+	* Bug in Windows 98 and NT.  Setting the tool tip to be the
+	* top most window using HWND_TOPMOST can result in a parent
+	* dialog shell being moved behind its parent if the dialog
+	* has a sibling that is currently on top.  The fix is to lock
+	* the z-order of the active window.
 	*/
-	Display display = getDisplay();
+	Display display = getDisplay ();
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
 	display.lockActiveWindow = true;
 	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);

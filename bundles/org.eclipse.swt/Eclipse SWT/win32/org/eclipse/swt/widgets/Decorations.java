@@ -1077,4 +1077,17 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
+	if (result != null) return result;
+	Display display = getDisplay ();
+	if (display.lockActiveWindow) {
+		WINDOWPOS lpwp = new WINDOWPOS ();
+		OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+		lpwp.flags |= OS.SWP_NOZORDER;
+		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
+	}
+	return result;
+}
+
 }
