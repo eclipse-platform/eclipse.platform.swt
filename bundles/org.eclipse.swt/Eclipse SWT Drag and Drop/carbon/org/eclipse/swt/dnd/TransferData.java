@@ -25,7 +25,7 @@ public class TransferData {
 	 */
 	public int type;
 	
-	/* attributes specific to set/get */
+	// attributes specific to set/get
 	int length;
 	int format;
 	int pValue;

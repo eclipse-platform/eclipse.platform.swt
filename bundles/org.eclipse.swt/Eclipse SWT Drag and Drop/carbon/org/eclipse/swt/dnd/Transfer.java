@@ -4,13 +4,12 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
+ 
 import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * The class <code>Transfer</code> provides a mechanism for converting a Java object to a
+ * The class <code>Transfer</code> provides a mechanism for converting a Java object to a 
  * platform specific format that can be passed around in a Drag and Drop operation and vice versa.
  *
  * <p>You should only need to become familiar with this class if you are implementing
@@ -28,7 +27,7 @@ abstract public TransferData[] getSupportedTypes();
 /**
  * Returns true if the transferData data type can be transferred using this Transfer agent.
  *
- * @param transferData a platform specific description of a data type; only the data type fields
+ * @param transferData a platform specific description of a data type; only the data type fields 
  *                         of the TransferData Object need to be filled in
  *
  * @return true if the transferData data type can be transferred using this Transfer agent
@@ -44,7 +43,7 @@ abstract protected Object nativeToJava(TransferData transferData);
  * <p>You may register the same type more than once, the same unique identifier will be returned if the
  * type has been previously registered.</p>
  *
- * <p>Note: Do <b>not</b> call this method with pre-defined Clipboard Format types such as CF_TEXT
+ * <p>Note: Do <b>not</b> call this method with pre-defined Clipboard Format types such as CF_TEXT 
  * or CF_BITMAP because the pre-defined value will not be returned</p>
  *
  * @param formatName the name of a data type
@@ -52,13 +51,6 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with htis data type
  */
 public static int registerType(String formatName){
-    /* AW
-	int xDisplay = Display.getDefault().xDisplay; // using default because we don't have a particular widget
-	// Use the character encoding for the default locale
-	byte[] bName = Converter.wcsToMbcs (null, formatName, false);
-	int atom = OS.XmInternAtom (xDisplay, bName, false);
-	return atom;
-    */
-    return 0;
+	return 0;
 }
 }

@@ -49,10 +49,6 @@ public static RTFTransfer getInstance () {
  *        with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-
-	String text = (String)object;
-	super.javaToNative(text.getBytes(), transferData);
 }
 /**
  * Converts a platform specific representation of a string to a Java String.
@@ -62,11 +58,7 @@ public void javaToNative (Object object, TransferData transferData){
  *         otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	// convert byte array to a string
-	return new String(buffer);
+	return null;
 }
 protected String[] getTypeNames(){
 	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
