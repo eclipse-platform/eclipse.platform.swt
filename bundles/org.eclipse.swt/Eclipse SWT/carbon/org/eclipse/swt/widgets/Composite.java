@@ -185,10 +185,9 @@ void createHandle (int index) {
         if ((style & SWT.NO_FOCUS) == 0)
         	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
         handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		MacUtil.insertControl(handle, parent.handle, -1);
         OS.HIViewSetVisible(handle, true);
-
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
         /* AW
 		Display display = getDisplay ();
 		OS.XtOverrideTranslations (handle, display.tabTranslations);
@@ -207,6 +206,10 @@ void createScrolledHandle (int topHandle) {
     scrolledHandle= createScrollView(topHandle, style);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
+	int features= OS.kControlSupportsEmbedding;
+    if ((style & SWT.NO_FOCUS) == 0)
+		features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+		
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
         /* AW
 		int thickness = display.buttonShadowThickness;
@@ -232,9 +235,6 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
         */
-        int features= OS.kControlSupportsEmbedding;
-        if ((style & SWT.NO_FOCUS) == 0)
-        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
         handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	} else {
         /* AW
@@ -246,9 +246,6 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
         */
-        int features= OS.kControlSupportsEmbedding;
-        if ((style & SWT.NO_FOCUS) == 0)
-        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
         handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);

@@ -308,9 +308,6 @@ int processPaint (Object callData) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 			gc.drawRectangle(0, 0, w-1, h-1);
 		}
-		
-		// AW: debugging
-		//gc.drawRectangle(0, 0, r.width-1, r.height-1);
 	}
 	
 	gc.carbon_unfocus();
@@ -437,8 +434,6 @@ public void setText (String string) {
 			j--;
 		}
 	}
-	while (j < unicode.length) unicode [j++] = 0;
-
 	redrawWidget (0, 0, 0, 0, false);
 }
 }
