@@ -1690,23 +1690,12 @@ void selectNotify(final SelectableItem item, boolean asyncNotify) {
 			setLastSelection(item, true);
 			update();												// looks better when event notification takes long to return
 		}
-		if (asyncNotify == false) {
-			Event event = new Event();
-			event.item = item;
-			notifyListeners(SWT.Selection, event);
-		}
-		else {
-			display.asyncExec(new Runnable() {
-				public void run() {
-					// Only send a selection event when the item has not been disposed.
-					// Fixes 1GE6XQA
-					if (item.isDisposed() == false) {
-						Event event = new Event();
-						event.item = item;
-						notifyListeners(SWT.Selection, event);
-					}
-				}
-			});
+		Event event = new Event();
+		event.item = item;
+		if (asyncNotify) {
+			postEvent(SWT.Selection, event);
+		} else {
+			sendEvent(SWT.Selection, event);
 		}
 	}
 }
