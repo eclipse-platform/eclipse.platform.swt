@@ -341,6 +341,21 @@ public Browser(Composite parent, int style) {
 					statusBar = arg0.getBoolean();
 					break;
 				}
+				case OnToolBar: {
+					Variant arg0 = event.arguments[0];
+					toolBar = arg0.getBoolean();
+					/*
+					* Feature in Internet Explorer.  OnToolBar FALSE is emitted 
+					* when both tool bar, address bar and menu bar must not be visible.
+					* OnToolBar TRUE is emitted when either of tool bar, address bar
+					* or menu bar is visible.
+					*/
+					if (!toolBar) {
+						addressBar = false;
+						menuBar = false;
+					}
+					break;
+				}
 				case OnVisible: {
 					Variant arg1 = event.arguments[0];
 					boolean visible = arg1.getBoolean();
@@ -348,20 +363,30 @@ public Browser(Composite parent, int style) {
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					if (visible) {
-						int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
-						Variant pVarResult = auto.getProperty(rgdispid[0]);
-						if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
+						if (addressBar) {
+							/*
+							* Bug in Internet Explorer.  There is no distinct notification for
+							* the address bar.  If neither address, menu or tool bars are visible,
+							* OnToolBar FALSE is emitted. For some reason, querying the value of
+							* AddressBar in this case returns true even though it should not be
+							* set visible.  The workaround is to only query the value of AddressBar
+							* when OnToolBar FALSE has not been emitted.
+							*/
+							int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
+							Variant pVarResult = auto.getProperty(rgdispid[0]);
+							if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
+						}
 						newEvent.addressBar = addressBar;
 						newEvent.menuBar = menuBar;
 						newEvent.statusBar = statusBar;
 						newEvent.toolBar = toolBar;
+						newEvent.location = location;
+						newEvent.size = size;
 						for (int i = 0; i < visibilityWindowListeners.length; i++) {
-							newEvent.location = location;
-							newEvent.size = size;
 							visibilityWindowListeners[i].show(newEvent);
-							location = null;
-							size = null;
 						}
+						location = null;
+						size = null;
 					} else {
 						for (int i = 0; i < visibilityWindowListeners.length; i++)
 							visibilityWindowListeners[i].hide(newEvent);
@@ -464,6 +489,7 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(NewWindow2, listener);
 	site.addEventListener(OnMenuBar, listener);
 	site.addEventListener(OnStatusBar, listener);
+	site.addEventListener(OnToolBar, listener);
 	site.addEventListener(OnVisible, listener);
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);
