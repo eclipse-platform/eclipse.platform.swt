@@ -132,13 +132,7 @@ public void test_getBoundsI() {
 }
 
 public void test_getChecked() {
-	Table newTable = new Table(shell, SWT.CHECK);
-	TableItem tItem = new TableItem(newTable,0);
-	assertEquals(false, tItem.getChecked());
-	tItem.setChecked(true);
-	assertTrue(tItem.getChecked());
-	tItem.setChecked(false);
-	assertEquals(false, tItem.getChecked());
+	// tested in test_setCheckedZ
 }
 
 public void test_getFont() {
@@ -547,7 +541,11 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageIndentI() {
-	if (SwtJunit.isCarbon) return; //setImageIndent not implemented on Carbon
+	if (SwtJunit.isCarbon) {
+		//setImageIndent not implemented on Carbon
+		tableItem.setImageIndent(1);
+		return; 
+	}
 	assertEquals(0, tableItem.getImageIndent());
  	tableItem.setImageIndent(1);
 	assertEquals(1, tableItem.getImageIndent());

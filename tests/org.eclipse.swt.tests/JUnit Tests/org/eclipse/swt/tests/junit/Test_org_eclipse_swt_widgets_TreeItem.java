@@ -153,13 +153,7 @@ public void test_getBoundsI() {
 }
 
 public void test_getChecked() {
-	Tree newTree = new Tree(shell, SWT.CHECK);
-	TreeItem tItem = new TreeItem(newTree,0);
-	assertEquals(false, tItem.getChecked());
-	tItem.setChecked(true);
-	assertTrue(tItem.getChecked());
-	tItem.setChecked(false);
-	assertEquals(false, tItem.getChecked());
+	// tested in test_setCheckedZ
 }
 
 public void test_getExpanded() {
