@@ -130,6 +130,7 @@ public Font(Device display, String name, int height, int style) {
 public void dispose() {
 	if (handle != 0) OS.pango_font_description_free(handle);
 	handle = 0;
+	device = null;
 }
 
 /**
