@@ -2377,8 +2377,8 @@ void releaseDisplay () {
 		OS.XmDestroyPixmap (screen, workingImage);
 		OS.XmDestroyPixmap (screen, workingMask);
 	}
-	errorImage = infoImage = questionImage = warningImage = 0;
-	errorMask = infoMask = questionMask = warningMask = 0;
+	errorImage = infoImage = questionImage = warningImage = workingImage = 0;
+	errorMask = infoMask = questionMask = warningMask = workingMask = 0;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
