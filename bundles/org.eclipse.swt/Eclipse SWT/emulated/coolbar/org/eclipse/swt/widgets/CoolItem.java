@@ -69,7 +69,7 @@ public /*final*/ class CoolItem extends Item {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style) {
-	super(parent, checkStyle(style));
+	super(parent, 0);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount());
 	createWidget();
@@ -106,13 +106,10 @@ public CoolItem (CoolBar parent, int style) {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style, int index) {
-	super(parent, checkStyle(style));
+	super(parent, 0);
 	this.parent = parent;
 	parent.createItem (this, index);
 	createWidget();
-}
-static int checkStyle(int style) {
-	return SWT.NONE;
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
@@ -121,12 +118,11 @@ void createWidget () {
 	composite = new Composite(parent, 0);
 	int pixel = parent.getBackgroundPixel ();
 	composite.setBackgroundPixel (pixel);
-
 		
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Paint:		processPaint(event);		break;
+				case SWT.Paint:		processPaint(event.gc);		break;
 				case SWT.MouseDown:	processMouseDown(event);	break;
 				case SWT.MouseUp:	processMouseUp(event);		break;
 				case SWT.MouseExit:	processMouseExit(event);	break;
@@ -177,7 +173,7 @@ public Point computeSize (int wHint, int hHint) {
 	return new Point (width, height);
 }
 public void dispose () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed()) return;
 	composite.dispose();
 	CoolBar parent = this.parent;
@@ -295,8 +291,7 @@ void processMouseUp (Event event) {
 		parent.setCursor(parent.hoverCursor);
 	}
 }
-void processPaint (Event event) {
-	GC gc = new GC(composite);
+void processPaint (GC gc) {
 	Display display = getDisplay();
 	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
@@ -317,8 +312,6 @@ void processPaint (Event event) {
 	gc.setForeground(highlightColor);
 	gc.drawLine(MARGIN_WIDTH, MARGIN_HEIGHT + 1, MARGIN_WIDTH, MARGIN_HEIGHT + grabberHeight - 1);
 	gc.drawLine(MARGIN_WIDTH, MARGIN_HEIGHT, MARGIN_WIDTH + 1, MARGIN_HEIGHT);	
-
-	gc.dispose();
 }
 /**
  * Sets the control which is associated with the receiver
@@ -380,9 +373,6 @@ public void setSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
-}
-void setBackgroundPixel(int pixel) {
-	composite.setBackgroundPixel(pixel);
 }
 void setBounds (int x, int y, int width, int height) {
 	composite.setBounds(x, y, width, height);

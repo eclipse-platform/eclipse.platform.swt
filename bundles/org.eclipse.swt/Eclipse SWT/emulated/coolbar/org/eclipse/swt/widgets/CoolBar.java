@@ -4,7 +4,7 @@ package org.eclipse.swt.widgets;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
- 
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -65,16 +65,16 @@ public /*final*/ class CoolBar extends Composite {
  * @see Widget#getStyle
  */
 public CoolBar (Composite parent, int style) {
-	super (parent, checkStyle(style));
+	super (parent, style);
 	rows = new Vector(5);
 	rows.addElement(new Vector(10));
 	hoverCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
 	dragCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEALL);
 	Listener listener = new Listener() {
-		public void handleEvent(Event e) {
-			switch (e.type) {
+		public void handleEvent(Event event) {
+			switch (event.type) {
 				case SWT.Paint:		
-					processPaint(e);	
+					processPaint(event.gc);	
 					break;
 				case SWT.Dispose:
 					rows = null;
@@ -86,9 +86,6 @@ public CoolBar (Composite parent, int style) {
 	};
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Dispose, listener);
-}
-private static int checkStyle(int style) {
-	return style & SWT.BORDER;
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
@@ -435,9 +432,8 @@ void moveUp(CoolItem item, int x_root) {
 	insertItemIntoRow(item, newRowItems, x_root, newRowY);
 	adjustItemHeights(newRowIndex);
 }
-void processPaint (Event e) {
+void processPaint (GC gc) {
 	if (rows.size() == 0) return;
-	GC gc = new GC(this);
 	Display display = getDisplay();
 	int y = getRowHeight(0) + ROW_SPACING;
 	int stopX = getBounds().width;
@@ -450,7 +446,8 @@ void processPaint (Event e) {
 		gc.drawLine(0, y + 1, stopX, y + 1);
 		y += getRowHeight(i) + ROW_SPACING;
 	}
-	gc.dispose();
+	gc.setForeground(getForeground());
+	gc.setBackground(getBackground());
 }
 /**
  * Remove the item from the row. Adjust the x and width values
