@@ -939,11 +939,11 @@ void setKeyboardLanguage(int logicalIndex) {
 }
 /**
  * Returns a string representation of the receiver.
- * Should change output to conform with other SWT toString output (i.e., Class {value1, value2})
  * <p>
  * 
  * @return a string representation of the receiver for 
- * 	debugging purposes.
+ *	debugging purposes. The output order of the StyledTextbidi values
+ *	is as follows: order, render position, dx, character class, glyphs.
  */
 public String toString() {
 	StringBuffer buf = new StringBuffer();
