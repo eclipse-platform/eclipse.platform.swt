@@ -39,7 +39,7 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
  *
  * gc, renderBuffer, x, y & renderDx are input parameters
  */
-public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x, int y) {
+public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 }
 /*
  * Not implemented.
@@ -54,7 +54,7 @@ public static int getFontBidiAttributes(GC gc) {
  *  classBuffer is input/output parameter
  *	order & dx are output parameters
  */
-public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
+public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	return null;
 }
 /*
@@ -64,7 +64,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  *  classBuffer is input/output parameter
  *	order & dx are output parameters
  */
-public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
+public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
 	return null;
 }
 /*

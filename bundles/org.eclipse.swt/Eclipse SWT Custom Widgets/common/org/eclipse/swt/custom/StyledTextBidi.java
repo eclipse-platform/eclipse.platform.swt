@@ -26,7 +26,7 @@ class StyledTextBidi {
 									// if no character in a line needs reordering all iV and iL are the same.
 	private int[] dx;				// distance between character cells. in visual order. renderPositions[iV + 1] = renderPositions[iV] + dx[iV]
 	private byte[] classBuffer;		// the character types in logical order. see BidiUtil for the possible types.
-	private byte[] glyphBuffer;		// the glyphs in visual order as they will be rendered on screen.
+	private char[] glyphBuffer;		// the glyphs in visual order as they will be rendered on screen.
 
 	/** 
 	 * This class describes a text segment of a single direction, either 
@@ -104,7 +104,7 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 	dx = new int[length];
 	classBuffer = new byte[length];
 	if (length == 0) {
-		glyphBuffer = new byte[0];
+		glyphBuffer = new char[0];
 	}
 	else {
 		glyphBuffer = BidiUtil.getRenderInfo(gc, text, order, classBuffer, dx, 0, offsets);
@@ -257,13 +257,13 @@ int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
  * @param y y location to render at
  */
 private void drawGlyphs(int visualStart, int length, int x, int y) {
-	byte[] renderBuffer = new byte[length * 2];
+	char[] renderBuffer = new char[length];
 	int[] renderDx = new int[length];
 
 	if (length == 0) {
 		return;
 	}	
-	System.arraycopy(glyphBuffer, visualStart * 2, renderBuffer, 0, length * 2);
+	System.arraycopy(glyphBuffer, visualStart, renderBuffer, 0, length);
 	// copy the distance values for the desired rendering range
 	System.arraycopy(dx, visualStart, renderDx, 0, length);	
 	BidiUtil.drawGlyphs(gc, renderBuffer, renderDx, x, y);

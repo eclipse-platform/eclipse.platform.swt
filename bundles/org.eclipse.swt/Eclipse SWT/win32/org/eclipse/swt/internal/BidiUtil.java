@@ -74,12 +74,10 @@ public static void addLanguageListener (int hwnd, Runnable runnable) {
  *
  * gc, renderBuffer, x, y & renderDx are input parameters
  */
-public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x, int y) {
+public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	RECT rect = null;
 
-	// why do we have to specify the WORD count, not the byte count?
-	// when using the ANSI version of ExtTextOut cbCount is supposed to specify the byte count.
-	OS.ExtTextOutA(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length / 2, renderDx);
+	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length, renderDx);
 }
 /*
  *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.
@@ -88,7 +86,7 @@ public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x,
  *  classBuffer is input/output parameter
  *	order & dx are output parameters
  */
-public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
+public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	int hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
@@ -143,7 +141,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
 	}
 
-	byte[] glyphBuffer = new byte[result.nGlyphs * 2];
+	char[] glyphBuffer = new char[result.nGlyphs];
 	int glyphCount = 0;
 	for (int i=0; i<offsets.length-1; i++) {
 		int offset = offsets [i];
@@ -158,13 +156,13 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];
 			OS.MoveMemory(dx2, result.lpDx, dx2.length * 4);
-			System.arraycopy (dx2, 0, dx, glyphCount / 2, dx2.length);
+			System.arraycopy (dx2, 0, dx, glyphCount, dx2.length);
 		}
 		if (order != null) {
 			int [] order2 = new int [length];
 			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
 			for (int j=0; j<length; j++) {
-				order2 [j] += glyphCount / 2;
+				order2 [j] += glyphCount;
 			}
 			System.arraycopy (order2, 0, order, offset, length);
 		}
@@ -173,8 +171,8 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 			OS.MoveMemory(classBuffer2, result.lpClass, classBuffer2.length);
 			System.arraycopy (classBuffer2, 0, classBuffer, offset, length);
 		}
-		byte[] glyphBuffer2 = new byte[result.nGlyphs * 2];
-		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length);
+		char[] glyphBuffer2 = new char[result.nGlyphs];
+		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length * 2);
 		System.arraycopy (glyphBuffer2, 0, glyphBuffer, glyphCount, glyphBuffer2.length);
 		glyphCount += glyphBuffer2.length;
 
@@ -186,7 +184,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		result.lpOrder += length * 4;
 		result.lpDx += length * 4;
 		result.lpClass += length;
-		result.lpGlyphs += glyphBuffer2.length;
+		result.lpGlyphs += glyphBuffer2.length * 2;
 	}
 
 	/* Free the memory that was allocated. */
@@ -200,7 +198,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 /*
  * 
  */
-public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
+public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	int[] offsets = new int[] {0, text.length()};
 	return getRenderInfo(gc, text, order, classBuffer, dx, flags, offsets);
 }
