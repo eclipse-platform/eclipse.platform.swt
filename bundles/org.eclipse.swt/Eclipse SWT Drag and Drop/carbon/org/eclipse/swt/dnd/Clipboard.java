@@ -266,7 +266,7 @@ public TransferData[] getAvailableTypes() {
 	return result;
 }
 
-int[] _getAvailableTypes() {
+private int[] _getAvailableTypes() {
 	int[] types = new int[0];
 	int[] scrap = new int[1];
 	if (OS.GetCurrentScrap(scrap) != OS.noErr) return types;
