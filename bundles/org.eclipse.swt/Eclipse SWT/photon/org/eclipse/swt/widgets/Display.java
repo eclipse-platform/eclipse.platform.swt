@@ -143,6 +143,12 @@ public /*final*/ class Display extends Device {
 	
 	/* Fonts */
 	byte [] TEXT_FONT, LIST_FONT;
+	
+	/* ScrollBars */
+	int SCROLLBAR_WIDTH;
+	int SCROLLBAR_HEIGHT;
+	int SCROLLBAR_VERTICAL_BASIC_FLAGS;
+	int SCROLLBAR_HORIZONTAL_BASIC_FLAGS;
 
 	/* Package name */
 	static final String PACKAGE_NAME;
@@ -451,6 +457,7 @@ protected void init () {
 	initializeWidgetClasses ();
 	initializeWidgetColors ();
 	initializeWidgetFonts ();
+	initializeScrollbars ();
 }
 
 void initializeDisplay () {
@@ -481,6 +488,36 @@ void initializeDisplay () {
 	timerHandle = OS.PtCreateWidget (OS.PtRegion (), 0, args.length / 3, args);
 	if (timerHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.PtRealizeWidget (timerHandle);
+}
+
+void initializeScrollbars () {
+	OS.PtSetParentWidget (0);
+	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, 0, null);
+	int textHandle = OS.PtCreateWidget (OS.PtMultiText (), shellHandle, 0, null);
+	int child = OS.PtWidgetChildFront (textHandle);
+	while (child != 0) {
+		if (OS.PtWidgetClass (child) == OS.PtScrollbar ()) {
+			int [] args = new int [] {
+				OS.Pt_ARG_ORIENTATION, 0, 0,
+				OS.Pt_ARG_WIDTH, 0, 0,
+				OS.Pt_ARG_HEIGHT, 0, 0,
+				OS.Pt_ARG_BASIC_FLAGS, 0, 0,
+			};
+			OS.PtGetResources (child, args.length / 3, args);
+			switch (args [1]) {
+				case OS.Pt_HORIZONTAL:
+					SCROLLBAR_HEIGHT = args [7];
+					SCROLLBAR_HORIZONTAL_BASIC_FLAGS = args [10];
+					break;
+				case OS.Pt_VERTICAL:
+					SCROLLBAR_WIDTH = args [4];
+					SCROLLBAR_VERTICAL_BASIC_FLAGS = args [10];
+					break;
+			}
+		}
+		child = OS.PtWidgetBrotherBehind (child);
+	}
+	OS.PtDestroyWidget (shellHandle);
 }
 
 void initializeWidgetClasses () {
