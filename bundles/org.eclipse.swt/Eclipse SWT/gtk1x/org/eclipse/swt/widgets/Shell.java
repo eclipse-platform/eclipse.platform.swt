@@ -440,6 +440,10 @@ public Point _getLocation() {
 	return new Point(x[0], y[0]);
 }
 
+public Point _getSize() {
+	return UtilFuncs.getSize(vboxHandle);
+}
+
 public Rectangle _getClientArea () {
 	Point clientSize = UtilFuncs.getSize(eventBoxHandle);
 	return new Rectangle (0, 0, clientSize.x, clientSize.y);
@@ -454,7 +458,15 @@ boolean _setSize(int width, int height) {
 	 */
 	GtkWidget gtkWidget = new GtkWidget();
 	OS.memmove(gtkWidget, topHandle, GtkWidget.sizeof);
+
+	OS.gtk_signal_handler_block_by_data (topHandle, SWT.Resize);
 	OS.gdk_window_resize(gtkWidget.window, width, height);
+	UtilFuncs.setSize(vboxHandle, width, height);
+	Point sz = UtilFuncs.getSize(eventBoxHandle);
+	UtilFuncs.setSize(fixedHandle, sz.x, sz.y);
+	UtilFuncs.setSize(handle, sz.x, sz.y);
+	OS.gtk_signal_handler_unblock_by_data (topHandle, SWT.Resize);
+
 	return true;
 }
 
