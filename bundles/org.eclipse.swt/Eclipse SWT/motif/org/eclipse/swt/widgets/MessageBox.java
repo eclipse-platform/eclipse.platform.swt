@@ -4,27 +4,29 @@ package org.eclipse.swt.widgets;
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
- 
-/**
-*	A message box is used to inform or warn the
-* the user that a particular situation has occurred.
-*
-* Styles
-*
-*	ICON_ERROR, ICON_INFORMATION, ICON_QUESTION, ICON_WARNING, ICON_WORKING,
-*	OK, OK_CANCEL, YES_NO, YES_NO_CANCEL
-*
-* Events
-*
-**/
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
-/* Class Definition */
+/**
+ * Instances of this class are used used to inform or warn the user.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>ICON_ERROR, ICON_INFORMATION, ICON_QUESTION, ICON_WARNING, ICON_WORKING</dd>
+ * <dd>OK, OK | CANCEL</dd>
+ * <dd>YES | NO, YES | NO | CANCEL</dd>
+ * <dd>RETRY | CANCEL</dd>
+ * <dd>ABORT | RETRY | IGNORE</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 public /*final*/ class MessageBox extends Dialog {
 	int button;
 	String message = "";

@@ -5,20 +5,26 @@ package org.eclipse.swt.widgets;
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
  
-/* Imports */
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
-*	A progress bar is an unselectable user interface object
-* that is used to display progress in the form of a bar graph.
-*
-* <b>Styles</b><br>
-* <dd>HORIZONTAL, VERTICAL<br>
-*/
+ * Instances of the receiver represent is an unselectable
+ * user interface object that is used to display progress,
+ * typlically in the form of a bar.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SMOOTH, HORIZONTAL, VERTICAL</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 
-/* Class Definition */
 public /*final*/ class ProgressBar extends Control {
 /**
 * Creates a new instance of the widget.
@@ -38,9 +44,6 @@ public ProgressBar (Composite parent, int style) {
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -93,15 +96,15 @@ void disableTraversal () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Gets the maximum.
-* <p>
-* @return maximum
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the maximum value which the receiver will allow.
+ *
+ * @return the maximum
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getMaximum () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -110,15 +113,15 @@ public int getMaximum () {
 	return argList [1];
 }
 /**
-* Gets the minimum.
-* <p>
-* @return minimum
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the minimum value which the receiver will allow.
+ *
+ * @return the minimum
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getMinimum () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -127,15 +130,15 @@ public int getMinimum () {
 	return argList [1];
 }
 /**
-* Gets the selection.
-* <p>
-* @return the selection
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the single <em>selection</em> that is the receiver's position.
+ *
+ * @return the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -165,15 +168,17 @@ void realizeChildren () {
 	disableButtonPress ();
 }
 /**
-* Sets the maximum.
-* <p>
-* @param maximum
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the maximum value which the receiver will allow
+ * to be the argument which must be greater than or
+ * equal to zero.
+ *
+ * @param value the new maximum (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMaximum (int value) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -186,15 +191,17 @@ public void setMaximum (int value) {
 	display.setWarnings (warnings);
 }
 /**
-* Sets the minimum
-* <p>
-* @param minimum
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the minimum value which the receiver will allow
+ * to be the argument which must be greater than or
+ * equal to zero.
+ *
+ * @param value the new minimum (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMinimum (int value) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -223,15 +230,17 @@ public void setMinimum (int value) {
 	setThumb(selection - value);
 }
 /**
-* Sets the selection.
-* <p>
-* @param value new selection
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the single <em>selection</em> that is the receiver's
+ * position to the argument which must be greater than or equal
+ * to zero.
+ *
+ * @param value the new selection (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (int value) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

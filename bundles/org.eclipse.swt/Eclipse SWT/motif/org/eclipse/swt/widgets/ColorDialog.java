@@ -11,8 +11,18 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 
 /**
- * A color dialog allows the user to select a color
- * from all available colors in the current pallette
+ * Instances of this class allow the user to select a color
+ * from a predefined set of available colors.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
  */
 public /*final*/ class ColorDialog extends Dialog {
 	private static final int DEPTH_4 = 0;				// index for COLOR_SWATCH_EXTENTS
@@ -38,9 +48,54 @@ public /*final*/ class ColorDialog extends Dialog {
 														// to display one color
 	private Color colorGrid[][];						// the colors displayed in the dialog
 	
+/**
+ * Constructs a new instance of this class given only its parent.
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ColorDialog(Shell parent) {
 	this(parent, SWT.NULL);
 }
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ColorDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 }
@@ -184,6 +239,13 @@ Color [][] getColorGrid() {
 int getColorSwatchExtent() {
 	return colorSwatchExtent;
 }
+/**
+ * Returns the currently selected color in the receiver.
+ *
+ * @return the RGB value for the selected color
+ *
+ * @see PaletteData#getRGBs
+ */
 public RGB getRGB() {
 	return dialogResult;
 }
@@ -351,6 +413,17 @@ void mouseMove(Event event) {
 	getSampleCanvas().setBackground(color);
 	getSampleText().setBackground(color);
 }
+/**
+ * Makes the receiver visible and brings it to the front
+ * of the display.
+ *
+ * @return the selected color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public RGB open() {
 	Color selectionColor;
 	RGB dialogResult = null;
@@ -375,10 +448,6 @@ public RGB open() {
 	}	
 	return dialogResult;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void paint(Event event) {
 	Color colorGrid[][] = getColorGrid();
 	
@@ -388,10 +457,6 @@ void paint(Event event) {
 		}
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void setColorDepth(int bits) {
 	colorDepth = bits;
 	if (bits == 4) {
@@ -406,7 +471,11 @@ void setColorDepth(int bits) {
 	}
 }
 /**
+ * Returns the receiver's selected color to be the argument.
  *
+ * @param rgb the new RGB value for the selected color
+ *
+ * @see PaletteData#getRGBs
  */
 public void setRGB(RGB rgb) {
 	dialogResult = rgb;

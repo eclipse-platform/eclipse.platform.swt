@@ -11,14 +11,18 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
 /**
-*	A menu is a user interface object contains selectable
-* menu items.
-* <p>
-* <b>Styles</b><br>
-* <dd>BAR, DROP_DOWN, POP_UP<br>
-*/
-
-/* Class Definition */
+ * Instances of this class are user interface objects that contain
+ * menu items.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>BAR, DROP_DOWN, POP_UP</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Help, Hide, Show </dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public /*final*/ class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, defaultItem;
@@ -49,19 +53,25 @@ public Menu (Menu parentMenu) {
 public Menu (MenuItem parentItem) {
 	this (checkNull(parentItem).parent);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the help events are generated for the control, by sending
+ * it one of the messages defined in the <code>HelpListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #removeHelpListener
+ */
 public void addHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -69,19 +79,25 @@ public void addHelpListener (HelpListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the help events are generated for the control, by sending
+ * it one of the messages defined in the <code>MenuListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuListener
+ * @see #removeMenuListener
+ */
 public void addMenuListener(MenuListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -173,39 +189,40 @@ void createWidget (int index) {
 	parent.add (this);
 }
 /**
-* Gets the default item.
-* <p>
-*
-* @return the default menu item.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the default menu item or null if none has
+ * been previously set.
+ *
+ * @return the default menu item.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public MenuItem getDefaultItem () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return defaultItem;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Decorations parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
 /**
-* Gets the enabled state.
-* <p>
-* @return the enabled flag
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -214,24 +231,20 @@ public boolean getEnabled () {
 	return argList [1] != 0;
 }
 /**
-* Gets an item at an index.
-* <p>
-* Indexing is zero based.
-*
-* This operation will fail when the index is out
-* of range or an item could not be queried from
-* the OS.
-*
-* @param index the index of the item
-* @return the item
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_CANNOT_GET_ITEM)
-*	when the operation fails
-*/
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public MenuItem getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -254,15 +267,15 @@ public MenuItem getItem (int index) {
 	return (MenuItem) widget;
 }
 /**
-* Gets the number of items.
-* <p>
-* @return the number of items
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the number of items contained in the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getItemCount () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -278,15 +291,21 @@ public int getItemCount () {
 	return count;	
 }
 /**
-* Gets the items.
-* <p>
-* @return items
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns an array of <code>MenuItem</code>s which are the items
+ * in the receiver. 
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not effect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public MenuItem [] getItems () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -321,45 +340,49 @@ String getNameText () {
 	return result;
 }
 /**
-* Gets the parent.
-* <p>
-* @return the parent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent, which must be a <code>Decorations</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Decorations getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
-* Gets the parent item.
-* <p>
-* @return the parent item
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent item, which must be a
+ * <code>MenuItem</code> or null when the receiver is a
+ * root.
+ *
+ * @return the receiver's parent item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public MenuItem getParentItem () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return cascade;
 }
 /**
-* Gets the parent menu.
-* <p>
-* @return the parent menu
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent item, which must be a
+ * <code>Menu</code> or null when the receiver is a
+ * root.
+ *
+ * @return the receiver's parent item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Menu getParentMenu () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -367,35 +390,42 @@ public Menu getParentMenu () {
 	return null;
 }
 /**
-* Gets the shell.
-* <p>
-* @return the shell
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's shell. For all controls other than
+ * shells, this simply returns the control's nearest ancestor
+ * shell. Shells return themselves, even if they are children
+ * of other shells.
+ *
+ * @return the receiver's shell
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getParent
+ */
 public Shell getShell () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getShell ();
 }
 /**
-* Gets the visibility state.
-* <p>
-*	If the parent is not visible or some other condition
-* makes the widget not visible, the widget can still be
-* considered visible even though it may not actually be
-* showing.
-*
-* @return visible the visibility state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is visible, and
+ * <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getVisible () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -408,23 +438,22 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNunmapCallback, windowProc, SWT.Hide);
 }
 /**
-* Gets the index of an item.
-* <p>
-* The list is searched starting at 0 until an
-* item is found that is equal to the search item.
-* If no item is found, -1 is returned.  Indexing
-* is zero based.
-*
-* @param item the search item
-* @return the index of the item
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int indexOf (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -441,6 +470,19 @@ public int indexOf (MenuItem item) {
 	}
 	return -1;
 }
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -449,20 +491,22 @@ public boolean isEnabled () {
 	return getEnabled () && parentMenu.isEnabled ();
 }
 /**
-* Gets the visibility status.
-* <p>
-*	This method returns the visibility status of the
-* widget in the widget hierarchy.  If the parent is not
-* visible or some other condition makes the widget not
-* visible, this method will return false.
-*
-* @return the actual visibility state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is visible, and
+ * <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isVisible () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -518,19 +562,23 @@ void releaseWidget () {
 	parent = null;
 	cascade = defaultItem = null;
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the help events are generated for the control.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #addHelpListener
+ */
 public void removeHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -538,19 +586,23 @@ public void removeHelpListener (HelpListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the menu events are generated for the control.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuListener
+ * @see #addMenuListener
+ */
 public void removeMenuListener(MenuListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -567,36 +619,56 @@ void sendHelpEvent (int callData) {
 	parent.sendHelpEvent (callData);
 }
 /**
-* Sets the default item.
-* <p>
-* @param item the default menu item (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the default menu item to the argument or removes
+ * the default emphasis when the argument is <code>null</code>.
+ * 
+ * @param item the default menu item or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDefaultItem (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	defaultItem = item;
 }
 /**
-* Sets the enabled state.
-* <p>
-* @param enabled the new value of the enabled flag
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+/**
+ * Sets the receiver's location to the point specified by
+ * the arguments which are relative to the display.
+ * <p>
+ * Note:  This is different from most widgets where the
+ * location of the widget is relative to the parent.
+ * </p>
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLocation (int x, int y) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -606,20 +678,21 @@ public void setLocation (int x, int y) {
 	hasLocation = true;
 }
 /**
-* Sets the visibility state.
-* <p>
-*	If the parent is not visible or some other condition
-* makes the widget not visible, the widget can still be
-* considered visible even though it may not actually be
-* showing.
-*
-* @param visible the new visibility state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Marks the receiver as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

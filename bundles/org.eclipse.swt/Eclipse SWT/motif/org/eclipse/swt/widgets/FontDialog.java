@@ -12,8 +12,12 @@ import java.text.*;
 import java.util.*;
 
 /**
- * A FontDialog allows the user to select a font
+ * Instances of this class allow the user to select a font
  * from all available fonts in the system.
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
  */
 public /*final*/ class FontDialog extends Dialog {
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
@@ -218,34 +222,34 @@ void createChildren() {
 	dialog.setSize(445, 410);
 }
 /**
- * Answer the combo used to display all available character sets.
+ * Returns the combo used to display all available character sets.
  */
 Combo getCharacterSetCombo() {
 	return characterSet;
 }
 /**
- * Answer the combo used to display all extended styles of
+ * Returns the combo used to display all extended styles of
  * the selected font.
  */
 Combo getExtStyleCombo() {
 	return extendedStyle;
 }
 /**
- * Answer the combo used to display the face names of the 
+ * Returns the combo used to display the face names of the 
  * fonts in the selected character set.
  */
 Combo getFaceNameCombo() {
 	return faceName;
 }
 /**
- * Answer the FontData for the selected font.
- * Answer null if no font was selected and the dialog was cancelled.
+ * Returns the FontData for the selected font.
+ * Returns null if no font was selected and the dialog was cancelled.
  */
 public FontData getFontData() {
 	return dialogResult;
 }
 /**
- * Answer the collection of fonts that are displayed by the 
+ * Returns the collection of fonts that are displayed by the 
  * receiver.
  * See the class definition for an explanation of the structure
  * of the returned Hashtable.
@@ -261,13 +265,13 @@ Font getSampleFont() {
 	return sampleFont;
 }
 /**
- * Answer the label used to display a sample of the selected font.
+ * Returns the label used to display a sample of the selected font.
  */
 Label getSampleLabel() {
 	return sampleLabel;
 }
 /**
- * Answer the selected character set in the format used to load 
+ * Returns the selected character set in the format used to load 
  * fonts.
  */
 String getSelectedCharSet() {
@@ -285,7 +289,7 @@ String getSelectedCharSet() {
 	return platformCharSet;
 }
 /**
- * Answer the selected face name in the format used to load 
+ * Returns the selected face name in the format used to load 
  * fonts.
  */
 String getSelectedFaceName() {
@@ -303,7 +307,7 @@ String getSelectedFaceName() {
 	return platformFaceName;
 }
 /**
- * Answer the selected font foundry in the format used to load 
+ * Returns the selected font foundry in the format used to load 
  * fonts.
  */
 String getSelectedFoundry() {
@@ -318,7 +322,7 @@ String getSelectedFoundry() {
 	return foundry;
 }
 /**
- * Answer a FontData object that can be used to load the selected 
+ * Returns a FontData object that can be used to load the selected 
  * font.
  */
 FontData getSelectionFontData() {
@@ -358,21 +362,21 @@ FontData getSelectionFontData() {
 	return fontData;
 }
 /**
- * Answer the combo box used to display the available sizes of 
+ * Returns the combo box used to display the available sizes of 
  * the selected font.
  */
 Combo getSizeCombo() {
 	return fontSize;
 }
 /**
- * Answer the combo box used to display the available styles of 
+ * Returns the combo box used to display the available styles of 
  * the selected font.
  */
 Combo getStyleCombo() {
 	return fontStyle;
 }
 /**
- * Answer the character set found in 'fontData' prefixed
+ * Returns the character set found in 'fontData' prefixed
  * with a string explaining the character set.
  */
 String getTranslatedCharSet(FontData fontData) {
@@ -415,7 +419,7 @@ String getTranslatedCharSet(FontData fontData) {
 	return translatedCharSet;
 }
 /**
- * Answer the face name as specified in FontData.familyName followed by
+ * Returns the face name as specified in FontData.familyName followed by
  * the foundry set in parantheses if available.
  * We display the face name first so that the list box sorts the fonts by 
  * face name, not by foundry. Users generally want to select fonts based 
@@ -786,30 +790,25 @@ void createOkCancel() {
 	cancel.setLayoutData(gridData);
 }
 /**
- * Answer the cancel button
+ * Returns the cancel button
  */
 Button getCancelButton() {
 	return cancel;
 }
 
 /**
- * Answer the dialog shell.
+ * Returns the dialog shell.
  */
 Shell getDialogShell() {
 	return shell;
 }
 /**
- * Answer the ok button.
+ * Returns the ok button.
  */
 Button getOKButton() {
 	return ok;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (08/05/99 12:34:43)
- * @return boolean
- */
 boolean isOkSelected() {
 	return okSelected;
 }

@@ -10,10 +10,18 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 
 /**
- * A file dialog allows the user to navigate the file
- * system and select a file name or type in a new name.
- * The file name is not verified for correctness.
- *
+ * Instances of this class allow the user to navigate
+ * the file system and select or enter a file name.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SAVE, OPEN, MULTI</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
  */
 public /*final*/ class FileDialog extends Dialog {
 	String [] filterNames = new String [0];

@@ -26,6 +26,25 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * Instances of this class provide a surface for drawing
+ * arbitrary graphics.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * This class may be subclassed by custom control implementors
+ * who are building controls that are <em>not</em> constructed
+ * from agregates of other controls. That is, they are either
+ * painted using SWT graphics calls or are handled by native
+ * methods.
+ * </p>
+ *
+ * @see Composite
+ */
 /* Class Definition */
 public class Canvas extends Composite {
 	Caret caret;
@@ -34,19 +53,33 @@ Canvas () {
 	/* Do nothing */
 }
 /**
-* Create a Canvas.
-*
-* PARAMTERS
-*
-*	parent		a composite widget (cannot be null)
-*	style		the bitwise OR'ing of widget styles
-*
-* REMARKS
-*
-*	This method creates a child widget using style bits
-* to select a particular look or set of properties. 
-*
-**/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
@@ -55,19 +88,23 @@ void createWidget (int index) {
 	fontList = defaultFont ();
 }
 /**
-* Get the current caret.
-*
-* REMARKS
-*
-*	This method gets the current caret for the window.
-* The current caret is automatically hidden and shown
-* by the window when:
-*
-*	- during expose and resize
-*	- when focus is gained or lost
-*	- when an the window is scrolled
-*
-**/
+ * Returns the caret.
+ * <p>
+ * The caret for the control is automatically hidden
+ * and shown when the control is painted or resized,
+ * when focus is gained or lost and when an the control
+ * is scrolled.  To avoid drawing on top of the caret,
+ * the programmer must hide and show the caret when
+ * drawing in the window any other time.
+ * </p>
+ *
+ * @return the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Caret getCaret () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -109,6 +146,28 @@ void releaseWidget () {
 	super.releaseWidget();
 }
 
+/**
+ * Scrolls a rectangular area of the receiver by first copying 
+ * the source area to the destination and then causing the area
+ * of the source which is not covered by the destination to
+ * be repainted. Children that intersect the rectangle are
+ * optionally moved during the operation. In addition, outstanding
+ * paint events are flushed before the source area is copied to
+ * ensure that the contents of the canvas are drawn correctly.
+ *
+ * @param destX the x coordinate of the destination
+ * @param destY the y coordinate of the destination
+ * @param x the x coordinate of the source
+ * @param y the y coordinate of the source
+ * @param width the width of the area
+ * @param height the height of the area
+ * @param all <code>true</code>if children should be scrolled, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -164,23 +223,22 @@ public void setBounds (int x, int y, int width, int height) {
 	if (isFocus) caret.setFocus ();
 }
 /**
-* Set the current caret.
-*
-* PARAMTERS
-*
-* 	caret - the new caret or null
-*
-* REMARKS
-*
-*	This method sets the current caret for the window.
-* The current caret is automatically hidden and shown
-* by the window when:
-*
-*	- during expose and resize
-*	- when focus is gained or lost
-*	- when an the window is scrolled
-*
-**/
+ * Sets the receiver's caret.
+ * <p>
+ * The caret for the control is automatically hidden
+ * and shown when the control is painted or resized,
+ * when focus is gained or lost and when an the control
+ * is scrolled.  To avoid drawing on top of the caret,
+ * the programmer must hide and show the caret when
+ * drawing in the window any other time.
+ * </p>
+ * @param caret the new caret for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCaret (Caret caret) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -13,19 +13,54 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
-*	A label is a non-selectable user interface object
-* that represents displays a static value.
-*
-* <b>Styles</b><br>
-* <dd>SEPARATOR, HORIZONTAL, VERTICAL, SHADOW_IN, SHADOW_OUT<br>
-*/
+ * Instances of this class represent a non-selectable
+ * user interface object displays a string or image.
+ * When the SEPARATOR is specified, displays a single
+ * vertical or horizontal line.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SEPARATOR, HORIZONTAL, SHADOW_IN, SHADOW_OUT, VERTICAL</dd>
+ * <dd>CENTER, LEFT, RIGHT, WRAP</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 
 /* Class Definition */
 public /*final*/ class Label extends Control {
 	Image image, bitmap, disabled;
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -33,9 +68,6 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEPARATOR) != 0) return style;
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -117,15 +149,19 @@ int defaultForeground () {
 	return getDisplay ().labelForeground;
 }
 /**
-* Gets the alignment.
-* <p>
-* @return the alignment
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a value which describes the position of the
+ * text or image in the receiver. The value will be one of
+ * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
+ * unless the receiver is a <code>SEPARATOR</code> label, in 
+ * which case, <code>NONE</code> is returned.
+ *
+ * @return the alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getAlignment () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -139,15 +175,16 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 /**
-* Gets the widget image.
-* <p>
-* @return the widget image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -157,15 +194,17 @@ String getNameText () {
 	return getText ();
 }
 /**
-* Gets the widget text.
-* <p>
-* @return the widget text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's text, which will be an empty
+ * string if it has never been set or if the receiver is
+ * a <code>SEPARATOR</code> label.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -266,15 +305,18 @@ int separatorType () {
 	return OS.XmSHADOW_ETCHED_IN;
 }
 /**
-* Sets the alignment.
-* <p>
-* @param aligment
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Controls how text and images will be displayed in the receiver.
+ * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
+ * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
+ * label, the argument is ignored and the alignment is not changed.
+ *
+ * @param alignment the new alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setAlignment (int alignment) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -328,45 +370,34 @@ void setBitmap (Image image) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the widget image.
-* <p>
-* @param image the widget image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's image to the argument, which may be
+ * null indicating that no image should be displayed.
+ *
+ * @param image the image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBitmap (this.image = image);
 }
 /**
-* Set the widget text.
-*
-* PARAMETERS
-*
-* 	string - the new label for the widget
-*
-* REMARKS
-*
-*	This method sets the widget label.  The label may include
-* the mnemonic characters and line delimiters.
-*
-**/
-/**
-* Sets the widget text.
-* <p>
-* @param string the widget text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Sets the receiver's text.
+ *
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -8,9 +8,18 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
  
-/** 
- * This class emulates a windows TabItem, which represents a tab
- * that can be used to switch to a page in the TabbedFolder.
+/**
+ * Instances of this class represent a selectable user interface object
+ * corresponding to a tab for a page in a tab folder.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 
 public /*final*/ class TabItem extends Item {
@@ -74,29 +83,35 @@ Rectangle getBounds () {
 	return new Rectangle(x, y, width, height);
 }
 /**
-* Gets the control.
-* <p>
-* @return the control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the control that is used to fill the client area of
+ * the tab folder when the user selects the tab item.  If no
+ * control has been set, return <code>null</code>.
+ * <p>
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
-/**
- * Answer the display of the receiver's parent widget.
- */
 public Display getDisplay() {
 	if (parent == null) error(SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay();
 }
 /**
- * Return the parent of the TabItem.
+ * Returns the receiver's parent, which must be a <code>TabFolder</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TabFolder getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -105,15 +120,16 @@ public TabFolder getParent () {
 	return parent;
 }
 /**
-* Gets the tool tip text.
-* <p>
-* @return the tool tip text.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -220,15 +236,16 @@ int preferredWidth(GC gc) {
 		RIGHT_HORIZONTAL_MARGIN + ICON_MARGIN + SHADOW_WIDTH * 2;
 }
 /**
-* Sets the control.
-* <p>
-* @param control the new control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the control that is used to fill the client area of
+ * the tab folder when the user selects the tab item.
+ * <p>
+ * @param control the new control (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -269,18 +286,18 @@ public void setImage (Image image) {
 	}
 }
 /**
-* Set the widget text.
-*
-* PARAMETERS
-*
-* 	string - the new label for the widget
-*
-* REMARKS
-*
-*	This method sets the widget label.  The label may include
-* the mnemonic characters but must not contain line delimiters.
-*
-**/
+ * Sets the receiver's text.
+ *
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -293,15 +310,16 @@ public void setText (String string) {
 	}	
 }
 /**
-* Sets the tool tip text.
-* <p>
-* @param string the new tool tip text (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -10,6 +10,20 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.motif.*;
  
+/**
+ * Instances of this class are selectable user interface
+ * objects that represent the dynamically positionable
+ * areas of a <code>CoolBar</code>.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public /*final*/ class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
@@ -25,11 +39,72 @@ public /*final*/ class CoolItem extends Item {
 	static final int GRABBER_WIDTH = 2;
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 		
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>CoolBar</code> and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public CoolItem (CoolBar parent, int style) {
 	super(parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 }
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>CoolBar</code>, a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public CoolItem (CoolBar parent, int style, int index) {
 	super(parent, style);
 	this.parent = parent;
@@ -38,6 +113,28 @@ public CoolItem (CoolBar parent, int style, int index) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+/**
+ * Returns the preferred size of the receiver.
+ * <p>
+ * The <em>prefered size</em> of a <code>CoolItem</code> is the size that
+ * it would best be displayed at. The width hint and height hint arguments
+ * allow the caller to ask the instance questions such as "Given a particular
+ * width, how high does it need to be to show all of the contents?"
+ * To indicate that the caller does not wish to constrain a particular 
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * </p>
+ *
+ * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
+ * @param hHint the height hint (can be <code>SWT.DEFAULT</code>)
+ * @return the preferred size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Layout
+ */
 public Point computeSize (int wHint, int hHint) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -59,6 +156,17 @@ void createHandle (int index) {
 	handle = OS.XmCreateDrawingArea(parent.handle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -66,6 +174,16 @@ public Rectangle getBounds () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
 }
+/**
+ * Gets the control which is associated with the receiver.
+ *
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -81,6 +199,16 @@ Rectangle getGrabberArea () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle(0, 0, MINIMUM_WIDTH, argList[1]);	
 }
+/**
+ * Returns the receiver's parent, which must be a <code>CoolBar</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public CoolBar getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -190,6 +318,17 @@ int processPaint (int callData) {
 	OS.XFreeGC(xDisplay, xGC);
 	return 0;
 }
+/**
+ * Sets the control which is associated with the receiver
+ * to the argument.
+ *
+ * @param control the new control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -4,8 +4,7 @@ package org.eclipse.swt.widgets;
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
- 
-/* Imports */
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -13,17 +12,18 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
-*	A menu item is a selectable user interface object
-* that issues notificiation when pressed and released. 
-*
-* <p>
-* <b>Styles</b><br>
-* <dd>CASCADE, CHECK, PUSH, RADIO, SEPARATOR<br>
-* <b>Events</b><br>
-* <dd>Selection<br>
-*/
-
-/* Class Definition */
+ * Instances of this class represent a selectable user interface object
+ * that issues notificiation when pressed and released. 
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>CHECK, CASCADE, PUSH, RADIO, SEPARATOR</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Arm, Help, Selection</dd>
+ * </dl>
+ *<p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public /*final*/ class MenuItem extends Item {
 	int accelerator;
 	Menu parent, menu;
@@ -44,19 +44,25 @@ public MenuItem (Menu parent, int style, int index) {
 	if (index == OS.XmLAST_POSITION) error (SWT.ERROR_INVALID_RANGE);
 	createWidget (index);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the arm events are generated for the control, by sending
+ * it one of the messages defined in the <code>ArmListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ArmListener
+ * @see #removeArmListener
+ */
 public void addArmListener (ArmListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -64,19 +70,25 @@ public void addArmListener (ArmListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Arm, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the help events are generated for the control, by sending
+ * it one of the messages defined in the <code>HelpListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #removeHelpListener
+ */
 public void addHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -84,19 +96,25 @@ public void addHelpListener (HelpListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -168,48 +186,41 @@ void destroyWidget () {
 	super.destroyWidget ();
 }
 /**
-* Gets the accelerator.
-* <p>
-*   This method gets the widget accelerator.  An accelerator
-* is the bit-wise OR of zero or more modifier masks and a key.
-* Examples:  SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2.
-*
-* @param accelerator the accelerator
-*
-* @return the accelerator
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Return the widget accelerator.  An accelerator is the bit-wise
+ * OR of zero or more modifier masks and a key. Examples:
+ * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ *
+ * @return the accelerator
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getAccelerator () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return accelerator;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Menu parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
 /**
-* Gets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @return a boolean that is the enabled state of the widget.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -218,22 +229,19 @@ public boolean getEnabled () {
 	return argList [1] != 0;
 }
 /**
-* Gets the menu.
-* <p>
-*	For a cascade menu item, the menu is a pulldown menu
-* that is displayed when the user selects the cascade item.
-* For a window, the menu is always a popup menu, that is
-* displayed when the user requests a popup menu for the
-* window.  The sequence of key strokes or button presses
-* that requests a menu is platform specific.
-*
-* @return the menu
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's cascade menu if it has one or null
+ * if it does not. Only <code>CASCADE</code> menu items can have
+ * a pull down menu. The sequence of key strokes, button presses 
+ * and/or button releases that are used to request a pull down
+ * menu is platform specific.
+ *
+ * @return the receiver's menu
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Menu getMenu () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -244,35 +252,34 @@ String getNameText () {
 	return super.getNameText ();
 }
 /**
-* Gets the parent.
-* <p>
-* @return the parent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent, which must be a <code>Menu</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Menu getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
-* Gets the selection state.
-* <p>
-*	This method gets the widget selection state for a
-* widgets with the style CHECK or RADIO.  It
-* returns false for widgets that do not have one of
-* these styles.
-* true or false - for CHECK or RADIO.
-* false - for all other widget styles
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked.
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -282,19 +289,10 @@ public boolean getSelection () {
 	return argList [1] != 0;
 }
 /**
-* Get the button text.
-*
-* RETURNS
-*
-* 	A String that is the label of the button.
-*
-* REMARKS
-*
-*	This method returns the button label.  The label may
+* Returns the button label.  The label may
 * include the mnemonic character but must not contain line
 * delimiters.
-*
-**/
+*/
 String getText2 () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -378,21 +376,18 @@ void hookEvents () {
 	}
 }
 /**
-* Gets the enabled state.
-* <p>
-*	This method gets the enabled state of the widget
-* in the widget hierarchy.  When an ancestor of the
-* widget is disabled, the enabled state of the widget
-* in the widget hierarchy is disabled regardless of
-* the actual enabled state of the widget.
-*
-* @param enabled a boolean that is the enabled state.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	return getEnabled ();
 }
@@ -472,19 +467,23 @@ void releaseWidget () {
 	}
 	parent = null;
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the arm events are generated for the control.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ArmListener
+ * @see #addArmListener
+ */
 public void removeArmListener (ArmListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -492,19 +491,23 @@ public void removeArmListener (ArmListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Arm, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the help events are generated for the control.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #addHelpListener
+ */
 public void removeHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -512,19 +515,23 @@ public void removeHelpListener (HelpListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -534,8 +541,18 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 /**
-* Sets the accelerator.
-*/
+ * Sets the widget accelerator.  An accelerator is the bit-wise
+ * OR of zero or more modifier masks and a key. Examples:
+ * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ *
+ * @param accelerator an integer that is the bit-wise OR of masks and a key
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setAccelerator (int accelerator) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -564,19 +581,18 @@ public void setAccelerator (int accelerator) {
 	if (ptr != 0) OS.XtFree (ptr);
 }
 /**
-* Sets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @param enabled the new value of the enabled flag
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -584,22 +600,24 @@ public void setEnabled (boolean enabled) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the menu.
-* <p>
-*	For a cascade menu item, the menu is a pulldown menu
-* that is displayed when the user selects the cascade item.
-* For a window, the menu is always a popup menu, that is
-* displayed when the user requests a popup menu for the
-* window.  The sequence of key strokes or button presses
-* that requests a menu is platform specific.
-*
-* @param menu the menu
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's cascade menu to the argument.
+ * Only <code>CASCADE</code> menu items can have a
+ * pull down menu. The sequence of key strokes, button presses
+ * and/or button releases that are used to request a pull down
+ * menu is platform specific.
+ *
+ * @param menu the new pop up menu
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
+ *	<li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMenu (Menu menu) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -633,20 +651,18 @@ public void setMenu (Menu menu) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the selection state.
-* <p>
-*	This method sets the widget selection state for a
-* widgets with the style CHECK or RADIO.  It
-* returns false for widgets that do not have one of
-* these styles.
-*
-* @param selected the new selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked.
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
