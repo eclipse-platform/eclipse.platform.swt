@@ -684,7 +684,7 @@ public class Accessible {
 		int osRole = COM.ROLE_SYSTEM_CLIENT;
 		int code = iaccessible.get_accRole(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarRole);
 		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		if (accessibleControlListeners.size() == 0) return code;
+		if (!(control instanceof Tree) && !(control instanceof Table) && accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarRole, 2);
@@ -790,7 +790,7 @@ public class Accessible {
 		int osState = 0;
 		int code = iaccessible.get_accState(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarState);
 		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		if (accessibleControlListeners.size() == 0) return code;
+		if (!(control instanceof Tree) && !(control instanceof Table) && accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarState, 2);
