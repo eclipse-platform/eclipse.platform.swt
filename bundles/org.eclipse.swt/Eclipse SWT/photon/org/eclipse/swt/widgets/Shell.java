@@ -1056,6 +1056,7 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	// TODO implement setRegion
 	this.region = region;
 }

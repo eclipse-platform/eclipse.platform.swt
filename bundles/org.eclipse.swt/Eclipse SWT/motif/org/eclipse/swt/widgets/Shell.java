@@ -1279,6 +1279,7 @@ void setParentTraversal () {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (!OS.XtIsRealized (shellHandle)) realizeWidget ();
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay == 0) return;

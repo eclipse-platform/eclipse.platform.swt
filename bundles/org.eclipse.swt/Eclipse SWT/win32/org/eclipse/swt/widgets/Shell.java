@@ -1022,7 +1022,10 @@ void setParent () {
  * to specify a region.
  *
  * @param region the region that defines the shape of the shell (or null)
- * 
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul>  
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1034,6 +1037,7 @@ void setParent () {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int hRegion = 0;
 	if (region != null) {
 		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
