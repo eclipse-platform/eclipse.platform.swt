@@ -46,15 +46,34 @@ void show(int effect, int x, int y) {
 private TreeItem findItem(int x , int y){
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
+	Rectangle area = tree.getClientArea();
+	if (!area.contains(coordinates)) return null;
+	
 	TreeItem item = tree.getItem(coordinates);
 	if (item != null) return item;
 
-	Rectangle area = tree.getClientArea();
+	// Scan across the width of the tree.
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, y);
-		coordinates = tree.toControl(coordinates);
+		coordinates = new Point(x1, coordinates.y);
 		item = tree.getItem(coordinates);
 		if (item != null) return item;
+	}
+	// Check if we are just below the last item of the tree
+	coordinates = new Point(x, y);
+	coordinates = tree.toControl(coordinates);
+	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {;
+		int y1 = area.y + area.height - tree.getItemHeight();
+		coordinates = new Point(coordinates.x, y1);
+		
+		item = tree.getItem(coordinates);	
+		if (item != null) return item;
+		
+		// Scan across the width of the tree just above the bottom..
+		for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+			coordinates = new Point(x1, y1);
+			item = tree.getItem(coordinates);
+			if (item != null) return item;
+		}
 	}
 	return null;
 }
