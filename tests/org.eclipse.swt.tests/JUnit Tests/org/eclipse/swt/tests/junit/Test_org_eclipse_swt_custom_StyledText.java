@@ -551,19 +551,18 @@ public void test_copy() {
 	String clipboardText;
 	String convertedText;
 
-	clipboard.setContents(new String[]{""}, new Transfer[]{transfer});
-	
+	String before = (String) clipboard.getContents(transfer);
 	text.setSelectionRange(0, 0);
 	text.copy();	
 	clipboardText = (String) clipboard.getContents(transfer);
-	assertTrue(":a:", clipboardText != null && clipboardText.length() == 0);
+	assertTrue(":a:", before == null ? clipboardText == null : before.equals(clipboardText));
 	
+	before = (String) clipboard.getContents(transfer);
 	text.setText("0123456789");
 	text.setSelectionRange(0, 0);
 	text.copy();	
 	clipboardText = (String) clipboard.getContents(transfer);
-	assertTrue(":c:", clipboardText != null && clipboardText.length() == 0);
-	
+	assertTrue(":c:", before == null ? clipboardText == null : before.equals(clipboardText));
 
 	text.setSelectionRange(0, 1);
 	text.copy();	
@@ -611,18 +610,18 @@ public void test_cut() {
 	String clipboardText;
 	String convertedText;
 
-	clipboard.setContents(new String[]{""}, new Transfer[]{transfer});
-		
+	String before = (String) clipboard.getContents(transfer);
 	text.setSelectionRange(0, 0);
 	text.cut();	
 	clipboardText = (String) clipboard.getContents(transfer);
-	assertTrue(":a:", clipboardText != null && clipboardText.length() == 0);
+	assertTrue(":a:", before == null ? clipboardText == null : before.equals(clipboardText));
 	
+	before = (String) clipboard.getContents(transfer);
 	text.setText("0123456789");
 	text.setSelectionRange(0, 0);
 	text.cut();	
 	clipboardText = (String) clipboard.getContents(transfer);
-	assertTrue(":c:", clipboardText != null && clipboardText.length() == 0);
+	assertTrue(":c:", before == null ? clipboardText == null : before.equals(clipboardText));
 
 	text.setSelectionRange(0, 1);
 	text.cut();	
