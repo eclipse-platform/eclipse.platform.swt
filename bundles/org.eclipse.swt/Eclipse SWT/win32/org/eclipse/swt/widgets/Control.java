@@ -44,14 +44,13 @@ public abstract class Control extends Widget implements Drawable {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
-	
 	Composite parent;
-	int drawCount, hCursor;
-	int foreground, background;
+	Cursor cursor;
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
+	int drawCount, foreground, background;
 	
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
@@ -535,8 +534,8 @@ int findBrush (int pixel) {
 	return parent.findBrush (pixel);
 }
 
-int findCursor () {
-	if (hCursor != 0) return hCursor;
+Cursor findCursor () {
+	if (cursor != null) return cursor;
 	return parent.findCursor ();
 }
 
@@ -1418,6 +1417,7 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
+	cursor = null;
 	deregister ();
 	unsubclass ();
 	parent = null;
@@ -1843,11 +1843,9 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget ();
-	hCursor = 0;
-	if (cursor != null) {
-		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		hCursor = cursor.handle;
-	}
+	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.cursor = cursor;
+	int hCursor = cursor != null ? cursor.handle : 0;
 	if (OS.IsWinCE) {
 		OS.SetCursor (hCursor);
 		return;
@@ -2261,6 +2259,22 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	if (fixFocus) fixFocus ();
+}
+
+boolean showMenu (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (!event.doit) return true;
+	if (menu != null && !menu.isDisposed ()) {
+		if (x != event.x || y != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
+		menu.setVisible (true);
+		return true;
+	}
+	return false;
 }
 
 void sort (int [] items) {
@@ -2944,24 +2958,8 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 		y = (short) (pos >> 16);
 	}
 
-	/*
-	* Because context menus can be shared between controls
-	* and the parent of all menus is the shell, the menu may
-	* have been destroyed.
-	*/
-	Event event = new Event ();
-	event.x = x;
-	event.y = y;
-	sendEvent (SWT.MenuDetect, event);
-	if (!event.doit) return LRESULT.ZERO;
-	if (menu != null && !menu.isDisposed ()) {
-		if (x != event.x || y != event.y) {
-			menu.setLocation (event.x, event.y);
-		}
-		menu.setVisible (true);
-		return LRESULT.ZERO;
-	}
-	return null;
+	/* Show the menu */
+	return showMenu (x, y) ? LRESULT.ZERO : null;
 }
 
 LRESULT WM_CTLCOLOR (int wParam, int lParam) {
@@ -3499,13 +3497,13 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);	
 	if (OS.IsPPC) {
-		boolean hasPopup = menu != null && !menu.isDisposed ();
 		/*
-		* Note on WinCE PPC.  Detect the gesture for a popup menu
-		* only if a valid menu has been set or if there are
-		* registered listeners for the MenuDetect event.
+		* Note: On WinCE PPC, only attempt to recognize the gesture for
+		* a context menu when the control contains a valid menu or there
+		* are listeners for the MenuDetect event.
 		*/
-		if (hasPopup || hooks (SWT.MenuDetect)) {
+		boolean hasMenu = menu != null && !menu.isDisposed ();
+		if (hasMenu || hooks (SWT.MenuDetect)) {
 			int x = (short) (lParam & 0xFFFF);
 			int y = (short) (lParam >> 16);
 			SHRGINFO shrg = new SHRGINFO ();
@@ -3515,15 +3513,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			shrg.ptDown_y = y; 
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) {
-				Event event = new Event ();
-				event.x = x;
-				event.y = y;
-				sendEvent (SWT.MenuDetect, event);
-				if (event.doit && hasPopup) {
-					menu.setVisible (true); 
-				} 
-			}
+			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
 		}
 	}
 	if (mouseDown) {
@@ -3934,9 +3924,9 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
  	if (hitTest == OS.HTCLIENT) {
 		Control control = WidgetTable.get (wParam);
 		if (control == null) return null;
-		int hCursor = control.findCursor ();
-		if (hCursor != 0) {
-			OS.SetCursor (hCursor);
+		Cursor cursor = control.findCursor ();
+		if (cursor != null) {
+			OS.SetCursor (cursor.handle);
 			return LRESULT.ONE;
 		}
 	}

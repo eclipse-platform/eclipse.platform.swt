@@ -497,8 +497,8 @@ int findBrush (int pixel) {
 	return hBrush;
 }
 
-int findCursor () {
-	return hCursor;
+Cursor findCursor () {
+	return cursor;
 }
 
 /**
