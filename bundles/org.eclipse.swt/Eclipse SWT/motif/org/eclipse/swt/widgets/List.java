@@ -290,6 +290,10 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
 	}
+	if ((style & SWT.BORDER) == 0) {
+		int [] argList3 = new int [] {OS.XmNshadowThickness, 0};
+		OS.XtSetValues (handle, argList3, argList3.length / 2);
+	}
 }
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);

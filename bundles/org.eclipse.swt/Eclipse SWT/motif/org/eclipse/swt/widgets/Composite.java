@@ -188,14 +188,13 @@ void createScrolledHandle (int topHandle) {
 	int [] argList = {OS.XmNancestorSensitive, 1};
 	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, argList, argList.length / 2);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		int thickness = display.buttonShadowThickness;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0) {
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
 			OS.XmNmarginHeight, 3, 
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNshadowType, OS.XmSHADOW_IN,
-			OS.XmNshadowThickness, thickness,
+			OS.XmNshadowThickness, (style & SWT.BORDER) != 0 ? display.buttonShadowThickness : 0,
 		};
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);

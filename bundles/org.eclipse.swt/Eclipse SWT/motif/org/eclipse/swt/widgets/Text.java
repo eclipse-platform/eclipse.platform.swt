@@ -342,25 +342,25 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		int [] argList2 = new int [] {OS.XmNcursorPositionVisible, 0};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
-		if ((style & SWT.BORDER) == 0) {
-			int [] argList3 = new int [] {
-				/*
-				* Bug in Motif.  Setting the margin width to zero for
-				* a single line text field causes the field to draw
-				* garbage when the caret is placed at the start of
-				* the widget.  The fix is to not set the margin width.
-				*/
-//				OS.XmNmarginWidth, 0,
-				OS.XmNmarginHeight, 0,
-				OS.XmNshadowThickness, 0,
-			};
-			OS.XtSetValues (handle, argList3, argList3.length / 2);
-		}
 	} else {
 		handle = OS.XmCreateScrolledText (parentHandle, new byte [1], argList1, argList1.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
-	}	
+	}
+	if ((style & SWT.BORDER) == 0) {
+		int [] argList3 = new int [] {
+			/*
+			* Bug in Motif.  Setting the margin width to zero for
+			* a single line text field causes the field to draw
+			* garbage when the caret is placed at the start of
+			* the widget.  The fix is to not set the margin width.
+			*/
+//			OS.XmNmarginWidth, 0,
+			OS.XmNmarginHeight, 0,
+			OS.XmNshadowThickness, 0,
+		};
+		OS.XtSetValues (handle, argList3, argList3.length / 2);
+	}
 }
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
