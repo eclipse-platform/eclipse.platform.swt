@@ -84,7 +84,7 @@ Font() {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
  */
-public Font(Device display, FontData fd) {
+public Font(Device device, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -146,7 +146,7 @@ public Font(Device device, FontData[] fds) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-public Font(Device display, String name, int height, int style) {
+public Font(Device device, String name, int height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, name, height, style);
