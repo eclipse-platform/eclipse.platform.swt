@@ -52,7 +52,16 @@ SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(WS_PREFIX)-$(SWT_VERSION).so
 
 # Compile and link options from pkg-config
 GTKCFLAGS = `pkg-config --cflags $(GTKTARGET)` `pkg-config --cflags pango`
-GTKLIBS = `pkg-config --libs $(GTKTARGET)`
+
+# TEMPORARY CODE
+#
+# Note: pkg-config is not being used because it generates flags that are dependent
+# on the machine setup. Some machines do not have free type fonts support. The line
+# below was obtained by running pkg-config and removing "-lpangoxft-1.0" from
+# the result.
+#
+GTKLIBS = -L/usr/local/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
+#GTKLIBS = `pkg-config --libs $(GTKTARGET)`
 
 
 #
