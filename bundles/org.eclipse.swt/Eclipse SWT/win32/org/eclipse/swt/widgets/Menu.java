@@ -473,10 +473,6 @@ public boolean isEnabled () {
 	return getEnabled () && parentMenu.isEnabled ();
 }
 
-boolean isValidWidget () {
-	return handle != 0;
-}
-
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.

@@ -448,6 +448,9 @@ public void setImage (Image [] images) {
  */
 public void setImage (int index, Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (index == 0) {
 		setImage (image);
 		return;
@@ -465,6 +468,9 @@ public void setImage (int index, Image image) {
 
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);

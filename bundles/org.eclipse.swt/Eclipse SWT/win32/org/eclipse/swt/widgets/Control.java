@@ -913,7 +913,7 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int hDC, GCData data) {
-	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (data == null || data.ps == null) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
@@ -1012,10 +1012,6 @@ boolean isTabItem () {
 	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
 	if ((code & OS.DLGC_WANTTAB) != 0) return false;
 	return true;
-}
-
-boolean isValidWidget () {
-	return handle != 0;
 }
 
 /**
@@ -1470,7 +1466,6 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 
 boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	Event event = new Event ();
-	event.time = OS.GetMessageTime ();
 	event.button = button;
 	event.x = (short) (lParam & 0xFFFF);
 	event.y = (short) (lParam >> 16);
@@ -1480,14 +1475,18 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	if ((wParam & OS.MK_LBUTTON) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((wParam & OS.MK_MBUTTON) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((wParam & OS.MK_RBUTTON) != 0) event.stateMask |= SWT.BUTTON3;
-	if (type == SWT.MouseDown || type == SWT.MouseDoubleClick) {
-		if (button == 1) event.stateMask &= ~SWT.BUTTON1;
-		if (button == 2) event.stateMask &= ~SWT.BUTTON2;
-		if (button == 3) event.stateMask &= ~SWT.BUTTON3;
-	} else if (type == SWT.MouseUp) {
-		if (button == 1) event.stateMask |= SWT.BUTTON1;
-		if (button == 2) event.stateMask |= SWT.BUTTON2;
-		if (button == 3) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (button == 3) event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case SWT.MouseUp:
+			if (button == 1) event.stateMask |= SWT.BUTTON1;
+			if (button == 2) event.stateMask |= SWT.BUTTON2;
+			if (button == 3) event.stateMask |= SWT.BUTTON3;
+			break;
 	}
 	return sendMouseEvent (type, msg, wParam, lParam, event);
 }

@@ -318,6 +318,7 @@ public void setPreferredSize (int width, int height) {
 }
 
 public void setPreferredSize (Point size) {
+	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize (size.x, size.y);
 }
