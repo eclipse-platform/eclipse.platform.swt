@@ -2858,11 +2858,10 @@ public void setVisible (boolean visible) {
 			fixFocus = isFocusAncestor (control);
 		}
 		if (fixFocus) {
-			int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
 			fixFocus (control);
 			if (isDisposed ()) return;
-			OS.GTK_WIDGET_SET_FLAGS (topHandle, flags);
+			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 		}
 		OS.gtk_widget_hide (topHandle);
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
