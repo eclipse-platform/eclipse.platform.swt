@@ -615,7 +615,9 @@ void listEvent (Event event) {
 				e.stateMask = event.stateMask;
 				notifyListeners(SWT.DefaultSelection, e);
 			}
-			
+			//At this point the widget may have been disposed.
+			// If so, do not continue.
+			if (isDisposed()) break;
 			Event e = new Event();
 			e.time = event.time;
 			e.character = event.character;
@@ -974,6 +976,10 @@ void textEvent (Event event) {
 				e.stateMask = event.stateMask;
 				notifyListeners(SWT.DefaultSelection, e);
 			}
+			//At this point the widget may have been disposed.
+			// If so, do not continue.
+			if (isDisposed()) break;
+			
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
 				int oldIndex = getSelectionIndex ();
 				if (event.keyCode == SWT.ARROW_UP) {
@@ -988,6 +994,9 @@ void textEvent (Event event) {
 					e.stateMask = event.stateMask;
 					notifyListeners(SWT.Selection, e);
 				}
+				//At this point the widget may have been disposed.
+				// If so, do not continue.
+				if (isDisposed()) break;
 			}
 			
 			// Further work : Need to add support for incremental search in 
