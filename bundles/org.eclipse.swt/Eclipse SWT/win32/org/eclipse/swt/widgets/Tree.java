@@ -1410,7 +1410,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			/*
 			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
 			* instead of using WM_CHAR.  This means that application code
-			* that expects to consume the key press and therefore avoid the
+			* that expects to consume the key press and therefore avoid a
 			* SWT.DefaultSelection event from WM_CHAR will fail.  The fix
 			* is to implement SWT.DefaultSelection in WM_CHAR instead of
 			* using NM_RETURN.

@@ -46,8 +46,8 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	ImageList imageList;
 	int lastIndexOf, lastWidth;
-	boolean fixScrollWidth;
-	boolean ignoreSelect, dragStarted, ignoreRedraw, mouseDown, customDraw, ignoreShrink;
+	boolean customDraw, dragStarted, fixScrollWidth, mouseDown;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -134,21 +134,35 @@ public void addSelectionListener (SelectionListener listener) {
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
-	/*
-	* Bug in Windows.  For some reason, when the user clicks
-	* on this control, the Windows hook WH_MSGFILTER is sent
-	* despite the fact that an input event from a dialog box,
-	* message box, menu, or scroll bar did not seem to occur.
-	* The fix is to ignore the hook.
-	*/
 	switch (msg) {
+		/*
+		* Bug in Windows.  For some reason, when the user clicks
+		* on this control, the Windows hook WH_MSGFILTER is sent
+		* despite the fact that an input event from a dialog box,
+		* message box, menu, or scroll bar did not seem to occur.
+		* The fix is to ignore the hook.
+		*/
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
-		case OS.WM_RBUTTONDOWN:
+		case OS.WM_RBUTTONDOWN: {
 			display.ignoreMsgFilter = true;
 			int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
 			display.ignoreMsgFilter = false;
 			return code;
+		}
+		/*
+		* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
+		* instead of WM_CHAR.  This means that application code that expects
+		* to consume the key press and therefore avoid a SWT.DefaultSelection
+		* event will fail.  The fix is to ignore LVN_ITEMACTIVATE when it is
+		* caused by WM_KEYDOWN and send SWT.DefaultSelection from WM_CHAR.
+		*/
+		case OS.WM_KEYDOWN: {
+			ignoreActivate = true;
+			int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+			ignoreActivate = false;
+			return code;
+		}
 	}
 	return OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
 }
@@ -2840,6 +2854,29 @@ int windowProc () {
 	return TableProc;
 }
 
+LRESULT WM_CHAR (int wParam, int lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case SWT.CR:
+			/*
+			* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
+			* instead of WM_CHAR.  This means that application code that expects
+			* to consume the key press and therefore avoid a SWT.DefaultSelection
+			* event will fail.  The fix is to ignore LVN_ITEMACTIVATE when it is
+			* caused by WM_KEYDOWN and send SWT.DefaultSelection from WM_CHAR.
+			*/
+			int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+			if (index != -1) {
+				Event event = new Event ();
+				event.item = _getItem (index);
+				postEvent (SWT.DefaultSelection, event);
+			}
+			return LRESULT.ZERO;
+	}
+	return result;
+}
+
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
@@ -3364,6 +3401,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		case OS.LVN_ITEMACTIVATE: {
+			if (ignoreActivate) break;
 			NMLISTVIEW pnmlv = new NMLISTVIEW ();
 			OS.MoveMemory(pnmlv, lParam, NMLISTVIEW.sizeof);
 			if (pnmlv.iItem != -1) {
