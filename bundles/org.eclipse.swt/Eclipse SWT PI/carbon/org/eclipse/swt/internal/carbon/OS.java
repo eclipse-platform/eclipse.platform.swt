@@ -479,6 +479,7 @@ public class OS {
 	public static final int kWindowResizableAttribute = (1 << 4);
 	public static final int kWindowStandardHandlerAttribute = (1 << 25);
 	public static final int kWindowStructureRgn = 32;
+	public static final int kWindowUpdateRgn= 34;
 	public static final int mouseDown = 1;
 	public static final int noErr = 0;
 	public static final int normal = 0;
@@ -815,6 +816,7 @@ public static final native int GetWindowFromPort(int pHandle);
 public static final native int GetWindowGroupOfClass (int windowClass);
 public static final native int GetWindowModality(int inWindow, int[] outModalKind, int[] outUnavailableWindow);
 public static final native int GetWindowPort(int wHandle);
+public static final native int GetWindowRegion(int window, short inRegionCode, int ioWinRgn);
 public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
 public static final native int HandleControlSetCursor(int control, Point localPoint, int modifiers, boolean[] cursorWasSet);  
 public static final native int HIComboBoxAppendTextItem(int inComboBox, int inText, int[] outIndex);

@@ -4104,6 +4104,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPort
 }
 #endif /* NO_GetWindowPort */
 
+#ifndef NO_GetWindowRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowRegion
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("GetWindowRegion\n")
+	
+	return (jint)GetWindowRegion((WindowRef)arg0, (WindowRegionCode)arg1, (RgnHandle)arg2);
+}
+#endif /* NO_GetWindowRegion */
+
 #ifndef NO_GetWindowStructureWidths
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowStructureWidths
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
