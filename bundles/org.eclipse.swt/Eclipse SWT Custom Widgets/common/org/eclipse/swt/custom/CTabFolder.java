@@ -271,8 +271,6 @@ public CTabFolder(Composite parent, int style) {
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
 	borderColor = display.getSystemColor(BORDER1_COLOR);
-	setForeground(display.getSystemColor(FOREGROUND));
-	setBackground(display.getSystemColor(BACKGROUND));
 	
 	initAccessible();
 	
@@ -2043,10 +2041,12 @@ void onPaint(Event event) {
 //}
 	
 	if (items.length == 0) {
-		Point size = getSize();	
-		gc.setBackground(getParent().getBackground());
-		gc.fillRectangle(0, 0, size.x, size.y);
-		gc.setBackground(gcBackground);	
+		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+			Point size = getSize();	
+			gc.setBackground(getParent().getBackground());
+			gc.fillRectangle(0, 0, size.x, size.y);
+			gc.setBackground(gcBackground);
+		}
 		return;
 	}
 	
@@ -2216,7 +2216,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.DefaultSelection, listener);	
 }
 public void setBackground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
 	super.setBackground(color);
 	redraw();
 }
@@ -2535,7 +2534,6 @@ public void setFont(Font font) {
 	}
 }
 public void setForeground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(FOREGROUND);
 	super.setForeground(color);
 	redraw();
 }
