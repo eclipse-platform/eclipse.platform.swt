@@ -1383,6 +1383,7 @@ void realizeChildren () {
 		int xDisplay = OS.XtDisplay (handle);
 		if (xDisplay == 0) return;
 		OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
+		OS.XFlush (xDisplay);
 	} else {
 		propagateWidget (false);
 	}
@@ -2031,7 +2032,9 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	if (!isEnabled ()) return;
+	if (!isEnabled ()) {
+		if (this != getShell ()) return;
+	}
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	int xWindow = OS.XtWindow (handle);
@@ -2041,8 +2044,8 @@ public void setCursor (Cursor cursor) {
 	} else {
 		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
-		OS.XFlush (xDisplay);
 	}
+	OS.XFlush (xDisplay);
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,

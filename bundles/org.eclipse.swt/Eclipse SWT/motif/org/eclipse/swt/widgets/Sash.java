@@ -172,6 +172,7 @@ void realizeChildren () {
 	}
 	if (super.cursor == null && isEnabled ()) {
 		OS.XDefineCursor (xDisplay, xWindow, cursor);
+		OS.XFlush (xDisplay);
 	}
 }
 void releaseWidget () {
