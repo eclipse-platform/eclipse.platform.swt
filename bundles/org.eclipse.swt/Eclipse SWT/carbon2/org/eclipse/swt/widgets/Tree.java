@@ -791,10 +791,11 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {
-			if (ignoreExpand) break;	
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Collapse, event);
+			if (!ignoreExpand) {
+				Event event = new Event ();
+				event.item = item;
+				sendEvent (SWT.Collapse, event);
+			}
 			setScrollWidth ();
 			break;
 		}
