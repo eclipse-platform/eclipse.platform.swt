@@ -751,13 +751,9 @@ public void setText (String string) {
 	if (text.equals (string)) return;
 	super.setText (string);
 	int hHeap = OS.GetProcessHeap ();
-	/* Use the character encoding for the default locale */
-	TCHAR buffer = new TCHAR (0, string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount);	
+	int pszText;
 	boolean success = false;
-	if (OS.IsPPC && parent.hwndCB != 0) {
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		/*
 		* Bug in WinCE PPC.  Tool items on the menubar don't resize
 		* correctly when the character '&' is used (even when it
@@ -774,6 +770,11 @@ public void setText (String string) {
 			}
 			if (j < i) string = new String (text, 0, j);
 		}
+		/* Use the character encoding for the default locale */
+		TCHAR buffer = new TCHAR (0, string, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount);	
 		int hwndCB = parent.hwndCB;
 		TBBUTTONINFO info2 = new TBBUTTONINFO ();
 		info2.cbSize = TBBUTTONINFO.sizeof;
@@ -781,6 +782,11 @@ public void setText (String string) {
 		info2.pszText = pszText;
 		success = OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info2) != 0;
 	} else {
+		/* Use the character encoding for the default locale */
+		TCHAR buffer = new TCHAR (0, string, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount);	
 		int hMenu = parent.handle;
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
