@@ -17,6 +17,9 @@ import org.eclipse.swt.events.*;
  * the text occurs.
  */
 public class TextChangedEvent extends TypedEvent {
+
+	static final long serialVersionUID = 3258696524257835065L;
+
 /**
  * Create the TextChangedEvent to be used by the StyledTextContent implementor.
  * <p>

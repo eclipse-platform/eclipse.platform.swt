@@ -59,6 +59,8 @@ public class CTabFolderEvent extends TypedEvent {
 	 */
 	public int height;
 
+	static final long serialVersionUID = 3760566386225066807L;
+	
 /**
  * Constructs a new instance of this class.
  *

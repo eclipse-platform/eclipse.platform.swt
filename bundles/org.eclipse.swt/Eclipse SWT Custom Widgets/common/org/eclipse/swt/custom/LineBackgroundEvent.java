@@ -21,6 +21,8 @@ public class LineBackgroundEvent extends TypedEvent {
 	public String lineText;			// line text
 	public Color lineBackground;	// line background color
 	
+	static final long serialVersionUID = 3978711687853324342L;
+	
 public LineBackgroundEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;

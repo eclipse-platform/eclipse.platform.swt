@@ -20,6 +20,8 @@ public class LineStyleEvent extends TypedEvent {
 	public String lineText;			// line text
 	public StyleRange[] styles;		// array of StyleRanges
 
+	static final long serialVersionUID = 3906081274027192884L;
+	
 public LineStyleEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;

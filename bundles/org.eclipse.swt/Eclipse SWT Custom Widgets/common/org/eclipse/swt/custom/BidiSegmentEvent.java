@@ -63,7 +63,9 @@ public class BidiSegmentEvent extends TypedEvent {
 	/** line text */			
 	public String lineText;
 	/** bidi segments, see above */
-	public int[] segments;			
+	public int[] segments;
+		
+	static final long serialVersionUID = 3257846571587547957L;
 
 BidiSegmentEvent(StyledTextEvent e) {
 	super(e);

@@ -24,6 +24,8 @@ import org.eclipse.swt.events.*;
 public class StatusTextEvent extends TypedEvent {
 	/** status text */
 	public String text;
+	
+	static final long serialVersionUID = 3258407348371600439L;
 
 StatusTextEvent(Widget w) {
 	super(w);

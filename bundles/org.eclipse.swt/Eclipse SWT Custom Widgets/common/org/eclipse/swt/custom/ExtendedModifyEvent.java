@@ -16,9 +16,14 @@ import org.eclipse.swt.events.*;
  * This event is sent after a text change occurs.
  */
 public final class ExtendedModifyEvent extends TypedEvent {
-	public int start;			// start offset of the new text
-	public int length;			// length of the new text
-	public String replacedText;	// replaced text or empty string if no text was replaced
+	/** start offset of the new text */
+	public int start;			
+	/** length of the new text */
+	public int length;
+	/** replaced text or empty string if no text was replaced */
+	public String replacedText;
+	
+	static final long serialVersionUID = 3258696507027830832L;
 	
 public ExtendedModifyEvent(StyledTextEvent e) {
 	super(e);

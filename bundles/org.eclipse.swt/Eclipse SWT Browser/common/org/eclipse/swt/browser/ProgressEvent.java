@@ -26,6 +26,8 @@ public class ProgressEvent extends TypedEvent {
 	public int current;
 	/** total value */
 	public int total;
+	
+	static final long serialVersionUID = 3977018427045393972L;
 
 ProgressEvent(Widget w) {
 	super(w);

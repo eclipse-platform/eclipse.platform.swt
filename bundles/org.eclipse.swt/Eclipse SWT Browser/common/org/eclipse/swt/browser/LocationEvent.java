@@ -39,6 +39,8 @@ public class LocationEvent extends TypedEvent {
 	 */
 	public boolean doit;
 
+	static final long serialVersionUID = 3906644198244299574L;
+	
 LocationEvent(Widget w) {
 	super(w);
 }

@@ -23,6 +23,8 @@ import org.eclipse.swt.events.*;
 public class TitleEvent extends TypedEvent {
 	/** the title of the current document */
 	public String title;
+	
+	static final long serialVersionUID = 4121132532906340919L;
 
 TitleEvent(Widget w) {
 	super(w);

@@ -144,6 +144,8 @@ public class WindowEvent extends TypedEvent {
 	 */
 	public boolean toolBar;
 	
+	static final long serialVersionUID = 3617851997387174969L;
+	
 WindowEvent(Widget w) {
 	super(w);
 }
