@@ -322,7 +322,8 @@ void destroyItem (TreeItem item) {
 	int hItem = item.handle;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	releaseItems (new TreeItem [] {item}, tvItem);
+	releaseItems (item.getItems (), tvItem);
+	releaseItem (item, tvItem);
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
@@ -618,6 +619,16 @@ int imageIndex (Image image) {
 	return imageList.add (image);
 }
 
+boolean releaseItem (TreeItem item, TVITEM tvItem) {
+	int hItem = item.handle;
+	if (hItem == hAnchor) hAnchor = 0;
+	if (item.isDisposed ()) return false;
+	tvItem.hItem = hItem;
+	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+	items [tvItem.lParam] = null;
+	return true;
+}
+
 void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
 	for (int i=0; i<nodes.length; i++) {
 		TreeItem item = nodes [i];
@@ -625,12 +636,7 @@ void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
 		if (sons.length != 0) {
 			releaseItems (sons, tvItem);
 		}
-		int hItem = item.handle;
-		if (hItem == hAnchor) hAnchor = 0;
-		if (!item.isDisposed ()) {
-			tvItem.hItem = hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			items [tvItem.lParam] = null;
+		if (releaseItem (item, tvItem)) {
 			item.releaseResources ();
 		}
 	}
