@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
 public class ProgressBar extends Control {
 	static final int DELAY = 100;
 	static final int TIMER_ID = 100;
+	static final int MINIMUM_WIDTH = 100;
 	static final int ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
@@ -133,13 +134,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	if ((style & SWT.INDETERMINATE) != 0) {
-		if (OS.COMCTL32_MAJOR < 6) {
-			OS.SetTimer (handle, TIMER_ID, DELAY, 0);
-		} else {
-			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 1, DELAY);
-		}
-	}
+	startTimer ();
 }
 
 int defaultForeground () {
@@ -193,9 +188,27 @@ public int getSelection () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	stopTimer ();
+}
+
+void startTimer () {
 	if ((style & SWT.INDETERMINATE) != 0) {
-		if (OS.COMCTL32_MAJOR < 6) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
+			OS.SetTimer (handle, TIMER_ID, DELAY, 0);
+		} else {
+			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 1, DELAY);
+		}
+	}
+}
+
+void stopTimer () {
+	if ((style & SWT.INDETERMINATE) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
 			OS.KillTimer (handle, TIMER_ID);
+		} else {
+			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 0, 0);
 		}
 	}
 }
@@ -304,15 +317,54 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
+LRESULT WM_SIZE (int wParam, int lParam) {
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When a progress bar with the style
+	* PBS_MARQUEE becomes too small, the animation (currently
+	* a small bar moving from right to left) does not have
+	* enough space to draw.  The result is that the progress
+	* bar does not appear to be moving.  The fix is to detect
+	* this case, clear the PBS_MARQUEE style and emulate the
+	* animation using PBM_STEPIT.
+	* 
+	* NOTE:  This only happens on Window XP.
+	*/
+	if ((style & SWT.INDETERMINATE) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6) {
+			forceResize ();
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int newBits = oldBits;
+			if (rect.right - rect.left < MINIMUM_WIDTH) {
+				newBits &= ~OS.PBS_MARQUEE;
+			} else {
+				newBits |= OS.PBS_MARQUEE;
+			}
+			if (newBits != oldBits) {
+				stopTimer ();
+				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+				startTimer ();
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_TIMER (int wParam, int lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (wParam == TIMER_ID) {
-			OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
+	if ((style & SWT.INDETERMINATE) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
+			if (wParam == TIMER_ID) {
+				OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
+			}
 		}
 	}
-	return null;
+	return result;
 }
 
 }
