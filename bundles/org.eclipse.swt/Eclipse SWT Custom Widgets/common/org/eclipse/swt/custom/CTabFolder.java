@@ -2672,11 +2672,9 @@ boolean setItemLocation() {
 
 		CTabItem item = items[items.length - 1];
 		if (item.x + item.width < getRightItemEdge()) {
-			int lastIndex = getLastIndex();
-			if (lastIndex < items.length - 1) {
-				setLastIndex(items.length - 1);
-				changed = true;
-			}
+			int first = firstIndex;
+			setLastIndex(items.length - 1);
+			if (first != firstIndex) changed = true;
 		}
 	}
 	return changed;
