@@ -16,6 +16,21 @@ import org.eclipse.swt.graphics.*;
 import java.io.*;
 
 final class WinICOFileFormat extends FileFormat {
+	
+static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
+	if (pad == newPad) return data;
+	int stride = (width * depth + 7) / 8;
+	int bpl = (stride + (pad - 1)) / pad * pad;
+	int newBpl = (stride + (newPad - 1)) / newPad * newPad;
+	byte[] newData = new byte[height * newBpl];
+	int srcIndex = 0, destIndex = 0;
+	for (int y = 0; y < height; y++) {
+		System.arraycopy(data, srcIndex, newData, destIndex, newBpl);
+		srcIndex += bpl;
+		destIndex += newBpl;
+	}
+	return newData;
+}
 /**
  * Answer the size in bytes of the file representation of the given
  * icon
@@ -97,22 +112,22 @@ ImageData loadIcon(int[] iconHeader) {
 	bmpFormat.inputStream = inputStream;
 	PaletteData palette = bmpFormat.loadPalette(infoHeader);
 	byte[] shapeData = bmpFormat.loadData(infoHeader);
+	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
+	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	infoHeader[14] = 1;
 	infoHeader[15] = 0;
 	byte[] maskData = bmpFormat.loadData(infoHeader);
+	maskData = convertPad(maskData, width, height, 1, 4, 1);
 	bitInvertData(maskData, 0, maskData.length);
-	int infoWidth = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
-	int infoHeight = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	return ImageData.internal_new(
-		infoWidth,
-		infoHeight,
+		width,
+		height,
 		depth,
 		palette,
 		4,
 		shapeData,
-//		4,
-		2,
+		1,
 		maskData,
 		null,
 		-1,
@@ -246,13 +261,14 @@ void unloadIntoByteStream(ImageData image) {
  * and inverted.
  */
 void unloadMaskData(ImageData icon) {
+	ImageData mask = icon.getTransparencyMask();
 	int bpl = (icon.width + 7) / 8;
-	int pad = 4;
+	int pad = mask.scanlinePad;
 	int srcBpl = (bpl + pad - 1) / pad * pad;
 	int destBpl = (bpl + 3) / 4 * 4;
 	byte[] buf = new byte[destBpl];
 	int offset = (icon.height - 1) * srcBpl;
-	byte[] data = icon.getTransparencyMask().data;
+	byte[] data = mask.data;
 	try {
 		for (int i = 0; i < icon.height; i++) {
 			System.arraycopy(data, offset, buf, 0, bpl);
@@ -269,7 +285,7 @@ void unloadMaskData(ImageData icon) {
  */
 void unloadShapeData(ImageData icon) {
 	int bpl = (icon.width * icon.depth + 7) / 8;
-	int pad = 4;
+	int pad = icon.scanlinePad;
 	int srcBpl = (bpl + pad - 1) / pad * pad;
 	int destBpl = (bpl + 3) / 4 * 4;
 	byte[] buf = new byte[destBpl];

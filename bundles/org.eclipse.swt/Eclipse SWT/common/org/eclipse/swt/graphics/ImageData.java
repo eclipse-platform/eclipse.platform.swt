@@ -484,8 +484,7 @@ public static ImageData internal_new(
 
 ImageData colorMaskImage(int pixel) {
 	ImageData mask = new ImageData(width, height, 1, bwPalette(),
-		Image.DEFAULT_SCANLINE_PAD, null, 0, null,
-		null, -1, -1, SWT.IMAGE_UNDEFINED,
+		1, null, 0, null, null, -1, -1, SWT.IMAGE_UNDEFINED,
 		0, 0, 0, 0);
 	int[] row = new int[width];
 	for (int y = 0; y < height; y++) {
@@ -1610,6 +1609,27 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 		}
 	}
 	return nearestPixel;
+}
+
+static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
+	if (pad == newPad) return data;
+	
+	int stride = (width * depth + 7) / 8;
+	int bpl = (stride + (pad - 1)) / pad * pad;
+	
+	
+	pad = bpl - stride + 1; 
+	
+	
+	int newBpl = (stride + (newPad - 1)) / newPad * newPad;
+	byte[] newData = new byte[height * newBpl];
+	int srcIndex = 0, destIndex = 0;
+	for (int y = 0; y < height; y++) {
+		System.arraycopy(data, srcIndex, newData, destIndex, newBpl);
+		srcIndex += bpl;
+		destIndex += newBpl;
+	}
+	return newData;
 }
 
 /**
