@@ -2297,8 +2297,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.LVN_BEGINRDRAG:
 			dragStarted = true;
 			if (hdr.code == OS.LVN_BEGINDRAG) {
-				sendEvent (SWT.DragDetect);
-				// widget could be disposed at this point
+				postEvent (SWT.DragDetect);
 			}
 			break;
 		case OS.LVN_COLUMNCLICK: {

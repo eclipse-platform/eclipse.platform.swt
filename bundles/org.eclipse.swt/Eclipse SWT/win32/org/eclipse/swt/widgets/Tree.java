@@ -1500,8 +1500,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		sendEvent (SWT.DragDetect);
-		// widget could be disposed at this point
+		postEvent (SWT.DragDetect);
 	} else {
 		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 	}

@@ -292,8 +292,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			* returns true.
 			*/
 			if (OS.DragDetect (handle, pt)) {
-				sendEvent (SWT.DragDetect);
-				// widget could be disposed at this point
+				postEvent (SWT.DragDetect);
 			} else {
 				/*
 				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
