@@ -511,13 +511,6 @@ void hookEvents () {
 	}
 }
 
-boolean hasFocus () {
-	if (socketHandle != 0) {
-		return this == display.getFocusControl ();
-	}
-	return super.hasFocus();
-}
-
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
