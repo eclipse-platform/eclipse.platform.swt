@@ -183,8 +183,28 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	} catch (IllegalArgumentException e) {
 	}
 
-	// This test isn't finished yet, don't remove until it is!  Should test mask support.
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData not written");
+	data = new ImageData(10, 10, 8, new PaletteData(0x30, 0x0C, 0x03));
+	// set opaque red pixel at x=9, y=9
+	data.setPixel(9, 9, 0x30);
+	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)}));
+	data1.setPixel(9, 9, 1);
+	image = new Image(display, data, data1);
+	assertEquals(":a:", 10, image.getBounds().width);
+	assertEquals(":b:", 10, image.getBounds().height);
+	Image gcImage = new Image(display, 10, 10);
+	GC gc = new GC(gcImage);
+	Color backgroundColor = display.getSystemColor(SWT.COLOR_BLUE); 
+	gc.setBackground(backgroundColor);
+	gc.fillRectangle(0, 0, 10, 10);
+	gc.drawImage(image, 0, 0);
+	ImageData gcImageData = gcImage.getImageData();
+	int redPixel = gcImageData.getPixel(9, 9);
+	assertEquals(":c:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	int bluePixel = gcImageData.getPixel(0, 0);
+	assertEquals(":d:", backgroundColor.getRGB(), gcImageData.palette.getRGB(bluePixel));
+	gc.dispose();
+	gcImage.dispose();
+	image.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
