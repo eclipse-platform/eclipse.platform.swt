@@ -202,6 +202,9 @@ void hookEvents () {
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
 		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
 	}
+	
+	int /*long*/ topHandle = topHandle ();
+	OS.g_signal_connect (topHandle, OS.map_event, windowProc3, MAP_EVENT);
 }
 
 int /*long*/ hoverProc (int /*long*/ widget) {
@@ -1834,6 +1837,26 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseExit, 0, event);
+	return 0;
+}
+
+int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
+	/*
+	* Feature in GTK. The gdk window is raised to the top of the stack
+	* when gdk_window_show() is called. The fix is restore the stacking 
+	* order after the window  is mapped.
+	*/
+	int index = 0;
+	Control [] children = parent.getChildren ();
+	while (index < children.length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	if (index == 0) {
+		setZOrder (null, true);
+	} else {
+		setZOrder (children [index - 1], false);
+	}
 	return 0;
 }
 
