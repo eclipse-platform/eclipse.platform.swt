@@ -436,9 +436,11 @@ void hookEvents () {
 			OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
 			OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
 			OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
+			OS.g_signal_connect (handle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
+			OS.g_signal_connect (handle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 		
 			/*
-			* Feature in GTK.  Events such as mouse move are propagate up
+			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
 			* correct GTK behavior but not correct for SWT.  The fix is to
 			* hook a signal after and stop the propagation using a negative
