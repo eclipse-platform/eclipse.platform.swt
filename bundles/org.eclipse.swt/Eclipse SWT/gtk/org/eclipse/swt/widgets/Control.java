@@ -412,6 +412,9 @@ public Rectangle getBounds () {
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int y = OS.GTK_WIDGET_Y (topHandle);
+	if ((state & ZERO_SIZED) != 0) {
+		return new Rectangle (x, y, 0, 0);
+	}
 	int width = OS.GTK_WIDGET_WIDTH (topHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
 	return new Rectangle (x, y, width, height);
@@ -521,19 +524,22 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	if (resize) {
-		width = Math.max (1, width);
-		height = Math.max (1, height);
-		int oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
-		int oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
+		int oldWidth = 0, oldHeight = 0;
+		if ((state & ZERO_SIZED) == 0) {
+			oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
+			oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
+		}
 		sameExtent = width == oldWidth && height == oldHeight;
-		if (!sameExtent) {
+		if (!sameExtent && !(width == 0 && height == 0)) {
+			int newWidth = Math.max (1, width);
+			int newHeight = Math.max (1, height);
 			if (redrawWindow != 0) {
-				OS.gdk_window_resize (redrawWindow, width, height);
+				OS.gdk_window_resize (redrawWindow, newWidth, newHeight);
 			}
 			if (enableWindow != 0) {
-				OS.gdk_window_resize (enableWindow, width, height);
+				OS.gdk_window_resize (enableWindow, newWidth, newHeight);
 			}
-			resizeHandle (width, height);
+			resizeHandle (newWidth, newHeight);
 		}
 	}
 	if (!sameOrigin || !sameExtent) {
@@ -545,6 +551,28 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
+	}
+	/*
+	* Bug in GTK.  Widgets cannot be sized smaller than 1x1.
+	* The fix is to hide zero-sized widgets and show them again
+	* when they are resized larger.
+	*/
+	if (!sameExtent) {
+		if (width == 0 && height == 0) {
+			state |= ZERO_SIZED;
+			if (enableWindow != 0) {
+				OS.gdk_window_hide (enableWindow);
+			}
+			OS.gtk_widget_hide (topHandle);
+		} else {
+			state &= ~ZERO_SIZED;
+			if ((state & HIDDEN) == 0) {
+				if (enableWindow != 0) {
+					OS.gdk_window_show_unraised (enableWindow);
+				}
+				OS.gtk_widget_show (topHandle);
+			}
+		}
 	}
 	int result = 0;
 	if (move && !sameOrigin) {
@@ -634,6 +662,9 @@ public void setLocation(int x, int y) {
  */
 public Point getSize () {
 	checkWidget();
+	if ((state & ZERO_SIZED) != 0) {
+		return new Point (0, 0);
+	}
 	int /*long*/ topHandle = topHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (topHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
@@ -1713,7 +1744,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return OS.GTK_WIDGET_VISIBLE (topHandle ()); 
+	return (state & HIDDEN) == 0;
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
@@ -2115,7 +2146,7 @@ boolean isShowing () {
 	Control control = this;
 	while (control != null) {
 		Point size = control.getSize ();
-		if (size.x == 1 || size.y == 1) {
+		if (size.x == 0 || size.y == 0) {
 			return false;
 		}
 		control = control.parent;
@@ -2245,6 +2276,7 @@ void register () {
  */
 public void redraw () {
 	checkWidget();
+	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
 	int /*long*/ paintHandle = paintHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
@@ -2282,6 +2314,7 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
+	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
 	redrawWidget (x, y, width, height, all);
 }
 
@@ -2668,12 +2701,26 @@ void setForegroundColor (GdkColor color) {
 }
 
 void setInitialSize () {
-	resizeHandle (1, 1);
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_resize_children (parentHandle);
+	// Comment this line to disable zero-sized widgets
+	state |= ZERO_SIZED;
+	if ((state & ZERO_SIZED) != 0) {
+		/*
+		* Feature in GTK.  On creation, each widget's allocation is
+		* initialized to a position of (-1, -1) until the widget is
+		* first sized.  The fix is to set the value to (0, 0) as
+		* expected by SWT.
+		*/
+		int /*long*/ topHandle = topHandle ();
+		OS.GTK_WIDGET_SET_X (topHandle, 0);
+		OS.GTK_WIDGET_SET_Y (topHandle, 0);
+	} else {
+		resizeHandle (1, 1);
+		/*
+		* Force the container to allocate the size of its children.
+		*/
+		int /*long*/ parentHandle = parent.parentingHandle ();
+		OS.gtk_container_resize_children (parentHandle);
+	}
 }
 
 /**
@@ -2857,8 +2904,8 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
+	if (((state & HIDDEN) == 0) == visible) return;
 	int /*long*/ topHandle = topHandle();
-	if ((OS.GTK_WIDGET_VISIBLE (topHandle) == visible)) return;
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -2867,8 +2914,11 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (enableWindow != 0) OS.gdk_window_show_unraised (enableWindow);
-		OS.gtk_widget_show (topHandle);
+		state &= ~HIDDEN;
+		if ((state & ZERO_SIZED) == 0) {
+			if (enableWindow != 0) OS.gdk_window_show_unraised (enableWindow);
+			OS.gtk_widget_show (topHandle);
+		}
 	} else {
 		/*
 		* Bug in GTK.  Invoking gtk_widget_hide() on a widget that has
@@ -2891,6 +2941,7 @@ public void setVisible (boolean visible) {
 			if (isDisposed ()) return;
 			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 		}
+		state |= HIDDEN;
 		OS.gtk_widget_hide (topHandle);
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
 		sendEvent (SWT.Hide);
@@ -2984,8 +3035,10 @@ void showWidget () {
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, topHandle);
-	if (handle != 0) OS.gtk_widget_show (handle);
-	if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
+	if (handle != 0 && handle != topHandle) OS.gtk_widget_show (handle);
+	if ((state & ZERO_SIZED) == 0) {
+		if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
+	}
 }
 
 void sort (int [] items) {
@@ -3234,6 +3287,7 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
+	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return; 
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 	int /*long*/ window = paintWindow ();
 	display.flushExposes (window, all);

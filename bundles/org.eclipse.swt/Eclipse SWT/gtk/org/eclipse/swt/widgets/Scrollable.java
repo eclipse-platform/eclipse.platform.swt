@@ -184,8 +184,11 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	//FIXME - List, Table, Tree, ...
 	int /*long*/ clientHandle = clientHandle ();
-	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+	int width = 0, height = 0;
+	if ((state & ZERO_SIZED) == 0) {
+		width = OS.GTK_WIDGET_WIDTH (clientHandle);
+		height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+	}
 	if ((state & CANVAS) != 0) {
 		return new Rectangle (0, 0, width, height);
 	}

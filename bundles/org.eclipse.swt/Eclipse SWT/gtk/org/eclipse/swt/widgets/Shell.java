@@ -662,6 +662,11 @@ public Point getSize () {
 	return new Point (width + trimWidth (), height + trimHeight ());
 }
 
+public boolean getVisible () {
+	checkWidget();
+	return OS.GTK_WIDGET_VISIBLE (shellHandle); 
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.

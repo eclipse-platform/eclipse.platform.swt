@@ -492,6 +492,10 @@ public static final native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(int /*long*/ ac
 public static final native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*long*/ acce_label);
 public static final native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
 public static final native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
+public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int height);
+public static final native void GTK_WIDGET_SET_WIDTH(int /*long*/ widget, int width);
+public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
+public static final native void GTK_WIDGET_SET_Y(int /*long*/ widget, int y);
 
 /** X11 Native methods and constants */
 public static final int Above = 0;

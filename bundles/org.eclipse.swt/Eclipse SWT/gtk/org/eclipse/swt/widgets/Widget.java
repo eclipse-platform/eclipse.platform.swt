@@ -71,6 +71,8 @@ public abstract class Widget {
 	static final int RESIZED                  = 1<<8;
 	static final int LAYOUT_NEEDED    = 1<<9;
 	static final int LAYOUT_CHANGED = 1<<10;
+	static final int ZERO_SIZED = 1<<11;
+	static final int HIDDEN = 1<<12;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
