@@ -24,7 +24,7 @@ class SashFormTab extends Tab {
 	Text text;
 	
 	/* Style widgets added to the "Style" group */
-	Button horizontalButton, verticalButton;
+	Button horizontalButton, verticalButton, smoothButton;
 
 	static String [] ListData0 = {ControlExample.getResourceString("ListData0_0"), //$NON-NLS-1$
 								  ControlExample.getResourceString("ListData0_1"), //$NON-NLS-1$
@@ -85,6 +85,7 @@ class SashFormTab extends Tab {
 		int style = getDefaultStyle();
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
+		if (smoothButton.getSelection ()) style |= SWT.SMOOTH;
 		
 		/* Create the example widgets */
 		form = new SashForm (sashFormGroup, style);
@@ -104,11 +105,14 @@ class SashFormTab extends Tab {
 	
 		/* Create the extra widgets */
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
-		horizontalButton.setText ("SWT.H_SCROLL");
+		horizontalButton.setText ("SWT.HORIZONTAL");
 		horizontalButton.setSelection(true);
 		verticalButton = new Button (styleGroup, SWT.RADIO);
-		verticalButton.setText ("SWT.V_SCROLL");
+		verticalButton.setText ("SWT.VERTICAL");
 		verticalButton.setSelection(false);
+		smoothButton = new Button (styleGroup, SWT.CHECK);
+		smoothButton.setText ("SWT.SMOOTH");
+		smoothButton.setSelection(false);
 	}
 	
 	/**
@@ -132,5 +136,6 @@ class SashFormTab extends Tab {
 		super.setExampleWidgetState ();
 		horizontalButton.setSelection ((form.getStyle () & SWT.H_SCROLL) != 0);
 		verticalButton.setSelection ((form.getStyle () & SWT.V_SCROLL) != 0);
+		smoothButton.setSelection ((form.getStyle () & SWT.SMOOTH) != 0);
 	}
 }
