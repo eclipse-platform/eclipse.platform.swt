@@ -79,7 +79,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_cairo make_atk make_gnome make_awt make_mozilla
+all: make_swt make_atk make_gnome make_awt make_mozilla
 
 all64: make_swt make_atk make_gnome make_awt
 
