@@ -762,7 +762,7 @@ void initAccessible() {
 	
 	getAccessible().addAccessibleControlListener (new AccessibleControlAdapter() {
 		public void getChildAtPoint (AccessibleControlEvent e) {
-			Point testPoint = toControl (new Point(e.x, e.y));
+			Point testPoint = toControl (e.x, e.y);
 			if (getBounds ().contains (testPoint)) {
 				e.childID = ACC.CHILDID_SELF;
 			}
@@ -770,7 +770,7 @@ void initAccessible() {
 		
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle location = getBounds ();
-			Point pt = toDisplay (new Point (location.x, location.y));
+			Point pt = toDisplay (location.x, location.y);
 			e.x = pt.x;
 			e.y = pt.y;
 			e.width = location.width;

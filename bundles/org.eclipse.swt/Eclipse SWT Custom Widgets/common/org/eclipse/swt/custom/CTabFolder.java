@@ -1583,7 +1583,7 @@ void initAccessible() {
 	
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void getChildAtPoint(AccessibleControlEvent e) {
-			Point testPoint = toControl(new Point(e.x, e.y));
+			Point testPoint = toControl(e.x, e.y);
 			int childID = ACC.CHILDID_NONE;
 			for (int i = 0; i < items.length; i++) {
 				if (items[i].getBounds().contains(testPoint)) {
@@ -1612,7 +1612,7 @@ void initAccessible() {
 				location = items[childID].getBounds();
 			}
 			if (location != null) {
-				Point pt = toDisplay(new Point(location.x, location.y));
+				Point pt = toDisplay(location.x, location.y);
 				e.x = pt.x;
 				e.y = pt.y;
 				e.width = location.width;
