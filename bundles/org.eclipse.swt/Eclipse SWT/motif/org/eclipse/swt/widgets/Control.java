@@ -1414,18 +1414,7 @@ int processMouseEnter (int callData) {
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	Event event = new Event ();
-	event.x = xEvent.x;
-	event.y = xEvent.y;
-	postEvent (SWT.MouseEnter, event);
-	return 0;
-}
-int processMouseMove (int callData) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
-	XMotionEvent xEvent = new XMotionEvent ();
-	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, 0, xEvent);
+	sendMouseEvent (SWT.MouseEnter, 0, xEvent);
 	return 0;
 }
 int processMouseExit (int callData) {
@@ -1436,19 +1425,24 @@ int processMouseExit (int callData) {
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	Event event = new Event ();
-	event.x = xEvent.x;
-	event.y = xEvent.y;
-	postEvent (SWT.MouseExit, event);
+	sendMouseEvent (SWT.MouseExit, 0, xEvent);
 	return 0;
 }
 int processMouseHover (int id) {
+	return processMouseHover (id, true);
+}
+int processMouseHover (int id, boolean showTip) {
 	Display display = getDisplay ();
-	Event event = new Event ();
-	Point point = toControl (display.getCursorLocation ());
-	event.x = point.x; event.y = point.y;
-	postEvent (SWT.MouseHover, event);
-	display.showToolTip (handle, toolTipText);
+	if (showTip) display.showToolTip (handle, toolTipText);
+	sendMouseEvent (SWT.MouseHover, 0);
+	return 0;
+}
+int processMouseMove (int callData) {
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
+	XMotionEvent xEvent = new XMotionEvent ();
+	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
+	sendMouseEvent (SWT.MouseMove, 0, xEvent);
 	return 0;
 }
 int processMouseUp (int callData) {
@@ -1901,11 +1895,34 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 		control.postEvent (type, event);
 	}
 }
+void sendMouseEvent (int type, int button) {
+	int xDisplay = OS.XtDisplay (handle);
+	int xWindow = OS.XtWindow (handle);
+	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
+	Event event = new Event ();
+	event.x = windowX [0];
+	event.y = windowY [0];
+	setInputState (event, mask [0]);
+	postEvent (type, event);
+}
+void sendMouseEvent (int type, int button, XCrossingEvent xEvent) {
+	Event event = new Event ();
+	event.time = xEvent.time;
+	event.button = button;
+	event.x = xEvent.x;
+	event.y = xEvent.y;
+	int [] unused = new int [1], mask = new int [1];
+	OS.XQueryPointer (xEvent.display, xEvent.window, unused, unused, unused, unused, unused, unused, mask);
+	setInputState (event, mask [0]);
+	postEvent (type, event);
+}
 void sendMouseEvent (int type, int button, XInputEvent xEvent) {
 	Event event = new Event ();
 	event.time = xEvent.time;
 	event.button = button;
-	event.x = xEvent.x;  event.y = xEvent.y;
+	event.x = xEvent.x;
+	event.y = xEvent.y;
 	setInputState (event, xEvent);
 	postEvent (type, event);
 }

@@ -866,8 +866,11 @@ int processMouseDown (int callData) {
 int processMouseEnter (int callData) {
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (!set);
-	else if ((parent.style & SWT.FLAT) != 0) redraw ();
+	if ((xEvent.state & OS.Button1Mask) != 0) {
+		setDrawPressed (!set);
+	} else {
+		if ((parent.style & SWT.FLAT) != 0) redraw ();
+	}
 	return 0;
 }
 int processMouseExit (int callData) {
@@ -876,8 +879,11 @@ int processMouseExit (int callData) {
 	display.hideToolTip ();
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (set);
-	else if ((parent.style & SWT.FLAT) != 0) redraw ();
+	if ((xEvent.state & OS.Button1Mask) != 0) {
+		setDrawPressed (set);
+	} else {
+		if ((parent.style & SWT.FLAT) != 0) redraw ();
+	}
 	return 0;
 }
 boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
@@ -891,15 +897,12 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {
-	if (parent.toolTipText != null) {
-		return parent.processMouseHover (id);
+	boolean showTip = toolTipText != null;
+	parent.processMouseHover (id, !showTip);
+	if (showTip) {
+		Display display = getDisplay ();
+		display.showToolTip (handle, toolTipText);
 	}
-	Display display = getDisplay ();
-	Event event = new Event ();
-	Point point = parent.toControl (display.getCursorLocation ());
-	event.x = point.x; event.y = point.y;
-	parent.postEvent (SWT.MouseHover, event);
-	display.showToolTip (handle, toolTipText);
 	return 0;
 }
 int processMouseMove (int callData) {

@@ -735,13 +735,16 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
+void setInputState (Event event, int state) {
+	if ((state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
+	if ((state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
+	if ((state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
+	if ((state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
+}
 void setInputState (Event event, XInputEvent xEvent) {
-	if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
-	if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
-	if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
-	if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
+	setInputState (event, xEvent.state);	
 }
 void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
