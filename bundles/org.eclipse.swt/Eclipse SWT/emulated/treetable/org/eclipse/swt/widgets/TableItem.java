@@ -156,8 +156,6 @@ public void dispose() {
 	if (isDisposed()) return;
 	Table parent = getParent();
 	parent.removeItem(this);
-	if (foreground != null) foreground.dispose();
-	if (background != null) background.dispose();
 	super.dispose();
 }
 void doDispose() {
@@ -1040,8 +1038,7 @@ public void setBackground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (background != null) background.dispose();
-	background = new Color(getDisplay(), color.getRGB());
+	background = color;
 	redraw();
 }
 /**
@@ -1066,8 +1063,7 @@ public void setForeground (Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (foreground != null) foreground.dispose();
-	foreground = new Color(getDisplay(), color.getRGB());
+	foreground = color;
 	redraw(); 
 }
 /**
