@@ -175,13 +175,21 @@ public /*final*/ class Display extends Device {
 	static {
 		DeviceFinder = new Runnable () {
 			public void run () {
-				CurrentDevice = getCurrent ();
-				if (CurrentDevice == null) {
-					CurrentDevice = getDefault ();
+				Device device = getCurrent ();
+				if (device == null) {
+					device = getDefault ();
 				}
+				setDevice (device);
 			}
 		};
 	}
+
+/*
+* TEMPORARY CODE.
+*/
+static void setDevice (Device device) {
+	CurrentDevice = device;
+}
 			
 public Display () {
 	this (null);
