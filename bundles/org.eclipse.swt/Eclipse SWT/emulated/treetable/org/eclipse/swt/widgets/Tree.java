@@ -2238,12 +2238,20 @@ void updateColumnWidth (TreeColumn column, int width) {
 	column.width = width;
 	Rectangle bounds = getClientArea ();
 
+	int maximum = 0;
+	for (int i = 0; i < columns.length; i++) {
+		maximum += columns [i].width;
+	}
 	ScrollBar hBar = getHorizontalBar ();
-	TreeColumn lastColumn = columns [columns.length - 1]; 
-	hBar.setMaximum (lastColumn.getX () + lastColumn.width);
+	hBar.setMaximum (maximum);
 	hBar.setThumb (bounds.width);
 	hBar.setPageIncrement (bounds.width);
-	horizontalOffset = hBar.getSelection ();
+	boolean offsetChanged = false;
+	int selection = hBar.getSelection ();
+	if (selection != horizontalOffset) {
+		horizontalOffset = selection;
+		offsetChanged = true;
+	}
 	
 	/* 
 	 * Notify column and all items of column width change so that display labels
@@ -2256,7 +2264,8 @@ void updateColumnWidth (TreeColumn column, int width) {
 	}
 	gc.dispose ();
 
-	int x = column.getX ();
+	int x = 0;
+	if (!offsetChanged) x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);
 	if (getHeaderVisible ()) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);

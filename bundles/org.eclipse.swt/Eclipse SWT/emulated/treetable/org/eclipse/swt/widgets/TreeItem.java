@@ -278,7 +278,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 		/* columns > 0 may not be LEFT so cannot use getTextX (int) */
 		availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;
 		if (images [columnIndex] != null) {
-			availableWidth -= image.getBounds ().width;
+			availableWidth -= images [columnIndex].getBounds ().width;
 			availableWidth -= Tree.MARGIN_IMAGE;
 		}
 	}
