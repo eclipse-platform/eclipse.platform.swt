@@ -1249,9 +1249,15 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	ignoreSelect = true;
+	/*
+	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
+	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The workaround
+	* is to block the firing of these events and fire them ourselves in a consistent manner. 
+	*/
+	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	ignoreSelect = false;
+	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	sendEvent (SWT.Modify);
 }
 
 /**

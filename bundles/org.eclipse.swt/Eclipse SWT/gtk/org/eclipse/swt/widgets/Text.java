@@ -1421,20 +1421,42 @@ void setTabStops (int tabs) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
+	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The workaround
+	* is to block the firing of these events and fire them ourselves in a consistent manner. 
+	*/
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		string = verifyText (string, 0, getCharCount ());
+		if (string == null) return;
+	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_editable_delete_text (handle, 0, -1);
 		int [] position = new int [1];
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_editable_set_position (handle, 0);
 	} else {
 		byte [] position =  new byte [ITER_SIZEOF];
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_text_buffer_set_text (bufferHandle, buffer, buffer.length);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, 0);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
 		int mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
+	sendEvent (SWT.Modify);
 }
 
 /**
@@ -1545,8 +1567,14 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in the verify
+	 * event.  If this happens, answer null to cancel
+	 * the operation.
+	 */
 	sendEvent (SWT.Verify, event);
-	if (!event.doit) return null;
+	if (!event.doit || isDisposed ()) return null;
 	return event.text;
 }
 
