@@ -251,6 +251,10 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+boolean hooksKeys () {
+	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
@@ -451,9 +455,7 @@ boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) {
-			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
-		}
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 		if (takeFocus && setTabItemFocus ()) return true;
 	}
 	Control [] children = _getChildren ();
@@ -471,9 +473,7 @@ boolean setTabGroupFocus () {
 boolean setTabItemFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) {
-			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
-		}
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 		if (takeFocus) {
 			if (!isShowing ()) return false;
 			if (forceFocus ()) return true;
@@ -534,7 +534,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return new LRESULT (OS.DLGC_STATIC);
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+		if (hooksKeys ()) {
 			int flags = OS.DLGC_WANTALLKEYS | OS.DLGC_WANTARROWS | OS.DLGC_WANTTAB;
 			return new LRESULT (flags);
 		}
