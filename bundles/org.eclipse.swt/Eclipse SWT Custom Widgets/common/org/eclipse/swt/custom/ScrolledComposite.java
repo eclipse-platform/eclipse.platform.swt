@@ -306,7 +306,7 @@ private void resize() {
  * 
  * @since 2.0
  */
-public Point getScrollOrigin() {
+public Point getOrigin() {
 	checkWidget();
 	if (content == null) return new Point(0, 0);
 	Point location = content.getLocation();
@@ -319,7 +319,7 @@ public Point getScrollOrigin() {
  * Negative values will be ignored.  Values greater than the maximum scroll 
  * distance will result in scrolling to the end of the scrollbar.
  *
- * @param origin  
+ * @param origin the point on the content to appear in the top left corner 
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -328,8 +328,8 @@ public Point getScrollOrigin() {
  * </ul>
  * @since 2.0
  */
-public void setScrollOrigin(Point origin) {
-	setScrollOrigin(origin.x, origin.y);
+public void setOrigin(Point origin) {
+	setOrigin(origin.x, origin.y);
 }
 /**
  * Scrolls the content so that the specified point in the content is in the top 
@@ -338,9 +338,9 @@ public void setScrollOrigin(Point origin) {
  * Negative values will be ignored.  Values greater than the maximum scroll 
  * distance will result in scrolling to the end of the scrollbar.
  *
- * @param x
+ * @param x the x coordinate of the content to appear in the top left corner 
  * 
- * @param y  
+ * @param y the y coordinate of the content to appear in the top left corner 
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -349,7 +349,7 @@ public void setScrollOrigin(Point origin) {
  * 
  * @since 2.0
  */
-public void setScrollOrigin(int x, int y) {
+public void setOrigin(int x, int y) {
 	checkWidget();
 	if (content == null) return;
 	ScrollBar hBar = getHorizontalBar ();
