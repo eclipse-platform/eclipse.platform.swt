@@ -320,6 +320,7 @@ public static final synchronized native int g_filename_to_utf8(int opsysstring, 
 public static final synchronized native int g_filename_from_utf8(int opsysstring, int len,  int[] bytes_read, int[] bytes_written, int[] error);
 public static final synchronized native void g_free(int mem);
 public static final synchronized native int g_list_append(int list, int data);
+public static final synchronized native int g_list_data(int list);
 public static final synchronized native void g_list_free(int list);
 public static final synchronized native void g_list_free_1(int list);
 public static final synchronized native int g_list_length(int list);
@@ -694,6 +695,7 @@ public static final synchronized native int gtk_tooltips_new();
 public static final synchronized native void gtk_tooltips_set_tip(int tooltips, int widget, byte[] tip_text, byte[] tip_private);
 public static final synchronized native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
 public static final synchronized native boolean gtk_tree_model_get_iter(int tree_model, int iter, int path);
+public static final synchronized native boolean gtk_tree_model_get_iter_first(int tree_model, int iter);
 public static final synchronized native int gtk_tree_model_get_n_columns(int tree_model);
 public static final synchronized native int gtk_tree_model_get_path(int tree_model, int iter);
 public static final synchronized native boolean gtk_tree_model_iter_children(int model, int iter, int parent);
@@ -729,6 +731,8 @@ public static final synchronized native void gtk_tree_store_set(int store, int i
 public static final synchronized native boolean gtk_tree_view_collapse_row(int view, int path);
 public static final synchronized native void gtk_tree_view_column_add_attribute(int treeColumn, int cellRenderer, String attribute, int column);
 public static final synchronized native void gtk_tree_view_column_clear(int tree_column);
+public static final synchronized native void gtk_tree_view_column_cell_get_size(int tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
+public static final synchronized native void gtk_tree_view_column_cell_set_cell_data(int tree_column, int tree_model, int iter, boolean is_expander, boolean is_expanded);
 public static final synchronized native int gtk_tree_view_column_get_cell_renderers(int tree_column);
 public static final synchronized native boolean gtk_tree_view_column_get_resizable(int column);
 public static final synchronized native int gtk_tree_view_column_get_spacing(int tree_column);

@@ -409,16 +409,29 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	// FIXME
-	// I (bgs) am not sure what to do with this.
-	// In GTK2, rows may have different heights, so asking
-	// this question will only make sense given the item.
-	if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) return 18;
-	GdkRectangle rect = new GdkRectangle ();
-	int path = OS.gtk_tree_path_new_first ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-	OS.gtk_tree_path_free (path);
-	return rect.height;
+	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (itemCount == 0) {
+		int column = OS.gtk_tree_view_get_column (handle, 0);
+		int [] w = new int [1], h = new int [1];
+		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		return h [0];
+	} else {
+		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
+		int column = OS.gtk_tree_view_get_column (handle, 0);
+		int renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
+		int list = renderers;
+		while (list != 0) {
+			int renderer = OS.g_list_data (list);
+			OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
+			list = OS.g_list_next (list);
+		}
+		if (renderers != 0) OS.g_list_free (renderers);
+		int [] w = new int [1], h = new int [1];
+		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		OS.g_free (iter);
+		return h [0];
+	}
 }
 
 /**

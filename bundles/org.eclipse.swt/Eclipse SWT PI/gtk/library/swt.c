@@ -412,6 +412,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1append
 }
 #endif
 
+#ifndef NO_g_1list_1data
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1data
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1list_1data\n")
+	
+	return (jint)((GList *)arg0)->data;
+}
+#endif
+
 #ifndef NO_g_1list_1free
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1free
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4722,6 +4732,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model
 }
 #endif
 
+#ifndef NO_gtk_1tree_1model_1get_1iter_1first
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1get_1iter_1first
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1model_1get_1iter_1first\n")
+
+	return (jboolean)gtk_tree_model_get_iter_first((GtkTreeModel *)arg0, (GtkTreeIter *)arg1);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1model_1get_1n_1columns
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1get_1n_1columns
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5099,6 +5119,42 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 	DEBUG_CALL("gtk_1tree_1view_1column_1clear\n")
 
 	gtk_tree_view_column_clear((GtkTreeViewColumn *)arg0);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1cell_1get_1size
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	
+	DEBUG_CALL("gtk_1tree_1view_1column_1cell_1get_1size\n")
+	
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	gtk_tree_view_column_cell_get_size((GtkTreeViewColumn *)arg0, (GdkRectangle *)lparg1, (gint *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1cell_1set_1cell_1data
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1cell_1set_1cell_1data
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1cell_1set_1cell_1data\n")
+	
+	gtk_tree_view_column_cell_set_cell_data((GtkTreeViewColumn *)arg0, (GtkTreeModel *)arg1, (GtkTreeIter *)arg2, arg3, arg4);
 }
 #endif
 
