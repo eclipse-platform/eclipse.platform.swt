@@ -725,6 +725,9 @@ public static final synchronized native void XShapeCombineRegion(int display, in
 public static final synchronized native void XSubtractRegion(int sra, int srb, int dr_return);
 public static final synchronized native void XSync(int display, boolean discard);
 public static final synchronized native int XSynchronize(int display, boolean onoff);
+public static final synchronized native void XTestFakeButtonEvent(int display, int button, boolean is_press, int delay);
+public static final synchronized native void XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay);
+public static final synchronized native void XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay);
 public static final synchronized native void XUndefineCursor(int display, int window);
 public static final synchronized native int XUngrabKeyboard(int display, int time);
 public static final synchronized native int XUngrabPointer(int display, int time);

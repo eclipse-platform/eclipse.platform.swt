@@ -892,19 +892,6 @@ boolean XmProcessTraversal (int widget, int direction) {
 	if (!display.postFocusOut) display.runFocusOutEvents ();
 	return result;
 }
-int wcsToMbcs (char ch) {
-	return wcsToMbcs (ch, null);
-}
-int wcsToMbcs (char ch, String codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-	}
-	return 0;
-}
 int hoverProc (int widget) {
 	return 0;
 }

@@ -137,7 +137,7 @@ void addAccelerator () {
 	if (newKey != 0) {
 		keysym = newKey;
 	} else {
-		keysym = wcsToMbcs ((char) keysym);
+		keysym = Display.wcsToMbcs ((char) keysym);
 	}
 	/*
 	* Feature in Motif.  Motif does not activate an accelerator

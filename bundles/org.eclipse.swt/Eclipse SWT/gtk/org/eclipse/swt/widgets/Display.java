@@ -1673,7 +1673,6 @@ public boolean post (Event event) {
 	return false;
 }
 
-
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.

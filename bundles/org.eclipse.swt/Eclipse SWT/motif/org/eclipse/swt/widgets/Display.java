@@ -2094,13 +2094,41 @@ int mouseHoverProc (int handle, int id) {
 	if (widget == null) return 0;
 	return widget.hoverProc (id);
 }
-
 public boolean post (Event event) {
 	checkDevice ();
 	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	int type = event.type;
+	switch (type) {
+		case SWT.KeyDown :
+		case SWT.KeyUp : {
+			int keyCode = 0;
+			int keysym = untranslateKey (event.keyCode);
+			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+			if (keyCode == 0) {
+				char key = event.character;
+				keysym = wcsToMbcs ((char) key);
+				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+				if (keyCode == 0) return false;
+			}
+			OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
+			return true;
+		}
+		case SWT.MouseDown :
+		case SWT.MouseMove : 
+		case SWT.MouseUp : {
+			if (type == SWT.MouseMove) {
+				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+				return true;
+			} else {
+				int button = event.button;
+				if (button < 1 || button > 3) return false;
+				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+			    return true;
+			}
+		}
+	}
 	return false;
 }
-
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.
@@ -2931,6 +2959,19 @@ public void wake () {
 int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */
 	while (OS.read (read_fd, wake_buffer, 1) != 1);
+	return 0;
+}
+static int wcsToMbcs (char ch) {
+	return wcsToMbcs (ch, null);
+}
+static int wcsToMbcs (char ch, String codePage) {
+	int key = ch & 0xFFFF;
+	if (key <= 0x7F) return ch;
+	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
+	if (buffer.length == 1) return (char) buffer [0];
+	if (buffer.length == 2) {
+		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
+	}
 	return 0;
 }
 int windowTimerProc (int handle, int id) {

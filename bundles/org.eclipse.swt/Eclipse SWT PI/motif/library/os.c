@@ -1595,6 +1595,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(XSynchronize)
 }
 #endif
 
+#ifndef NO_XTestFakeButtonEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeButtonEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XTestFakeButtonEvent\n")
+	XTestFakeButtonEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+	NATIVE_EXIT(env, that, "XTestFakeButtonEvent\n")
+}
+#endif
+
+#ifndef NO_XTestFakeKeyEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeKeyEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XTestFakeKeyEvent\n")
+	XTestFakeKeyEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
+	NATIVE_EXIT(env, that, "XTestFakeKeyEvent\n")
+}
+#endif
+
+#ifndef NO_XTestFakeMotionEvent
+JNIEXPORT void JNICALL OS_NATIVE(XTestFakeMotionEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "XTestFakeMotionEvent\n")
+	XTestFakeMotionEvent((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
+	NATIVE_EXIT(env, that, "XTestFakeMotionEvent\n")
+}
+#endif
+
 #ifndef NO_XUndefineCursor
 JNIEXPORT void JNICALL OS_NATIVE(XUndefineCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
