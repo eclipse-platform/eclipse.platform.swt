@@ -305,6 +305,7 @@ public String open () {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		OS.XmNdialogStyle, OS.XmDIALOG_PRIMARY_APPLICATION_MODAL,
 		OS.XmNwidth, OS.XDisplayWidth (display, OS.XDefaultScreen (display)) * 4 / 9,
+		OS.XmNpathMode, OS.XmPATH_MODE_FULL,
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirectory, xmStringPtr3,
