@@ -34,6 +34,7 @@ public class Snippet168 {
 				int x = 20;
 				int y = 20;
 				int w = 120;
+				int h = 60;
 				int[] caps = {SWT.CAP_FLAT, SWT.CAP_ROUND, SWT.CAP_SQUARE};
 				for (int i = 0; i < caps.length; i++) {
 					gc.setLineCap(caps[i]);
@@ -43,8 +44,8 @@ public class Snippet168 {
 				int[] joins = {SWT.JOIN_BEVEL, SWT.JOIN_MITER, SWT.JOIN_ROUND};
 				for (int i = 0; i < joins.length; i++) {
 					gc.setLineJoin(joins[i]);
-					gc.drawPolygon(new int[] {x, y, x + w/2, y + 60, x + w, y});
-					y += 80;
+					gc.drawPolygon(new int[] {x, y, x + w/2, y + h, x + w, y});
+					y += h + 20;
 				}
 			}
 		});
