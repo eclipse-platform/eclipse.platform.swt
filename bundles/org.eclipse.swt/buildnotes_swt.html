@@ -10,6 +10,33 @@
 
 <h1>
 Eclipse Platform Build Notes<br>
+
+SWT</h1>
+SWT Build 2.0 004 - Thursday Sept 13, 2001
+
+<h2>
+<a NAME="API Behaviour change"></a>API Behaviour change</h2>
+The behaviour of dispose for GCs has been modified such that attempting to dispose of
+a GC on a control <em>after</em> the control has been disposed will generate an
+SWTException.  This fixes an OS resource leak and potential GPF situation.
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GJUAKL: SWT:Neutrino - Control.internal_new_GC() needs !isValidWidget() check
+<br>1GJN52N: SWT:Linux - Text prints system error message for horizontal scrollbar
+<br>1GJBOAV: SWT:ALL - ScrolledComposite bugs
+<br>1GIXELI: SWT:ALL - Need Caret to allow bitmaps so bidi caret can be created
+<br>1GI5O1T: SWT:WINNT - Composite.setFocus takes focus when it should not
+<br>1GHOND7: SWT:WIN2000 - Selection problem with single-selection trees
+<br>1GHG990: SWT:ALL - Probable bug in Slider page increment setting
+<br>1GENJ60: SWT:ALL - ScrolledComposite should include example in its class comment
+<br>1GEA7K7: ITPUI:Linux - Default button not working
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 2.0 003 - Friday Sept 07, 2001
 
