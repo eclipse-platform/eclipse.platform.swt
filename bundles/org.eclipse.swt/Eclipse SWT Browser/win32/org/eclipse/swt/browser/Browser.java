@@ -136,17 +136,12 @@ public Browser(Composite parent, int style) {
 		public void handleEvent(OleEvent event) {
 			switch (event.type) {
 				case BeforeNavigate2 : {
-					Variant varResult = event.arguments[0];
-					IDispatch dispatch = varResult.getDispatch();
-					Variant variant = new Variant(auto);
-					IDispatch top = variant.getDispatch();
-					varResult = event.arguments[1];
+					Variant varResult = event.arguments[1];
 					String url = varResult.getString();
 					LocationEvent newEvent = new LocationEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					newEvent.location = url;
-					newEvent.top = top.getAddress() == dispatch.getAddress();
 					newEvent.doit = true;
 					for (int i = 0; i < locationListeners.length; i++)
 						locationListeners[i].changing(newEvent);
@@ -154,23 +149,7 @@ public Browser(Composite parent, int style) {
 					if (cancel != null) {
 						int pCancel = cancel.getByRef();
 						COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-				   }
-					
-					/*
-					* This code is intentionally commented.  This IDispatch was received
-					* as an argument from the OleEvent and it will be disposed along with
-					* the other arguments.  
-					*/
-					//dispatch.Release();
-
-					/*
-					* This code is intentionally commented.  A Variant constructed from an
-					* OleAutomation object does not increase its reference count.  The IDispatch
-					* obtained from this Variant did not increase the reference count for the
-					* OleAutomation instance either. 
-					*/
-					//top.Release();
-					//variant.dispose();
+				   }					
 					break;
 				}
 				case CommandStateChange : {
