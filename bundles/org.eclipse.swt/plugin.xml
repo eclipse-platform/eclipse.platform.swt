@@ -3,7 +3,7 @@
 <plugin
    name="Eclipse SWT"
    id="org.eclipse.swt"
-   version="0.110"
+   version="0.112"
    provider-name="OTI">
 
 <runtime>
