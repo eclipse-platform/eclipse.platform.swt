@@ -1102,27 +1102,30 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	
+
 	if (!fgInitCursorCalled) {
 		OS.InitCursor();
 		fgInitCursorCalled= true;
 	}
-	
+
 	int[] evt= new int[1];
 	int rc= OS.ReceiveNextEvent(null, OS.kEventDurationNoWait, true, evt);
-	
+
 	switch (rc) {
 	case OS.kNoErr:
-		int event= evt[0];		
-		//System.out.println("event: " + MacUtil.toString(OS.GetEventClass(event)));
+		int event= evt[0];
+		if (OS.GetEventClass(event) == SWT_USER_EVENT && OS.GetEventKind(event) == 54322) {
+			OS.ReleaseEvent(event);
+			break;
+		}
 		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
 		OS.ReleaseEvent(event);
 		runDeferredEvents();
 		return true;
-		
+
 	case OS.eventLoopTimedOutErr:
-		break;	// no event: run async
-		
+		break;
+
 	default:
 		System.out.println("readAndDispatch: error " + rc);
 		break;
