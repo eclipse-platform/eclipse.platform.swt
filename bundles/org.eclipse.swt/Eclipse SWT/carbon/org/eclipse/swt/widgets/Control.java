@@ -307,20 +307,31 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				HMHelpContentRec helpContent = new HMHelpContentRec ();
 				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 		        helpContent.version = OS.kMacHelpVersion;
+		        
 		        /*
-		        * Feature in the Macintosh.
+		        * Feature in the Macintosh.  Despite the fact that the Mac
+		        * provides 23 different types of alignment for the help text,
+		        * it does not allow the text to be positioned at the current
+		        * mouse position.  The fix is to center the text in a rectangle
+				* that surrounds the original position of the mouse.  As the
+				* mouse is moved, this rectangle is grown to include the new
+				* location of the mouse.  The help text is then centered by
+				* the  Mac in the new rectangle that was carefully constructed
+				* such that the help text will stay in the same position.
 		        */
+		        int cursorHeight = 16;
 		        helpContent.tagSide = OS.kHMAbsoluteCenterAligned;
 				int x = (short) (inGlobalMouse & 0xFFFF);
 				int y = (short) (inGlobalMouse >> 16);
 				if (display.hoverControl != this) {
-					lastX = x + 8;
-					lastY = y + 16 + 8;			
+					display.lastHoverX = x + cursorHeight / 2;
+					display.lastHoverY = y + cursorHeight + cursorHeight / 2;			
 				}
-				int deltaX = Math.abs (lastX - x) + 4;
-				int deltaY = Math.abs (lastY - y) + 4;
-				x = lastX - deltaX;
-				y = lastY - deltaY;
+				int jitter = 4;
+				int deltaX = Math.abs (display.lastHoverX - x) + jitter;
+				int deltaY = Math.abs (display.lastHoverY - y) + jitter;
+				x = display.lastHoverX - deltaX;
+				y = display.lastHoverY - deltaY;
 				int width = deltaX * 2;
 				int height = deltaY * 2;
 				display.hoverControl = this;
@@ -328,6 +339,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		     	helpContent.absHotRect_top = (short) y;
 		        helpContent.absHotRect_right = (short) (x + width);
 		        helpContent.absHotRect_bottom = (short) (y + height);
+		        
 		        helpContent.content0_contentType = OS.kHMCFStringContent;
 		        helpContent.content0_tagCFString = display.helpString;
 		        helpContent.content1_contentType = OS.kHMCFStringContent;
