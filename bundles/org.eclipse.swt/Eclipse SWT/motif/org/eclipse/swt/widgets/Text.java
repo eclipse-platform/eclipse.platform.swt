@@ -365,6 +365,11 @@ void createHandle (int index) {
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
 }
+void createWidget (int index) {
+	super.createWidget (index);
+	hiddenText = "";
+	if ((style & SWT.PASSWORD) != 0) setEchoChar ('*');
+}
 /**
  * Cuts the selected text.
  * <p>
@@ -1099,7 +1104,7 @@ public void setEchoChar (char echo) {
 	String newText;
 	if (echo == 0) {
 		newText = hiddenText;
-		hiddenText = null;
+		hiddenText = "";
 	} else {
 		newText = hiddenText = getText();
 	}

@@ -50,6 +50,11 @@ public class Text extends Scrollable {
 	public static final String DELIMITER;
 	
 	/*
+	* This code is intentionally commented.
+	*/
+//	static final char PASSWORD;
+	
+	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
 	* to stop the compiler from inlining.
@@ -65,6 +70,21 @@ public class Text extends Scrollable {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, EditClass, lpWndClass);
 		EditProc = lpWndClass.lpfnWndProc;
+		/*
+		* This code is intentionally commented.
+		*/
+//		int hwndText = OS.CreateWindowEx (0,
+//			EditClass,
+//			null,
+//			OS.WS_OVERLAPPED | OS.ES_PASSWORD,
+//			0, 0, 0, 0,
+//			0,
+//			0,
+//			OS.GetModuleHandle (null),
+//			null);
+//		char echo = (char) OS.SendMessage (hwndText, OS.EM_GETPASSWORDCHAR, 0, 0);
+//		OS.DestroyWindow (hwndText);
+//		PASSWORD = echo != 0 ? echo : '*';
 	}
 
 /**

@@ -45,6 +45,7 @@ public class Text extends Scrollable {
 	char echoCharacter;
 	public static final int LIMIT;
 	public static final String DELIMITER;
+	static final char PASSWORD = '\245';
 
 	/*
 	* These values can be different on different platforms.
@@ -355,6 +356,11 @@ void createHandle () {
 
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (style);
+}
+
+void createWidget () {
+	super.createWidget ();
+	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
 
 /**
