@@ -2422,6 +2422,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IIL
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    VtblCall
+ * Signature: (IILorg/eclipse/swt/internal/win32/RECT;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2
+  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jobject arg0)
+{
+    RECT rect0, *arg01=NULL;
+    P_OLE_FN_2 fn; /* this is a function that returns int */
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2\n");
+#endif
+
+    fn = (P_OLE_FN_2)(*(int **)ppVtbl)[fnNumber];
+    if (arg0) {
+        arg01=&rect0;
+        getRECTFields(env, arg0, arg01);
+    }
+    
+    rc = fn(ppVtbl, (jint)arg01); /* cast it to an OLE function returning int */
+
+    if (arg0) {
+        setRECTFields(env, arg0, arg01);
+    }
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    VtblCall
  * Signature: (III[I[I[I[I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__III_3I_3I_3I_3I
