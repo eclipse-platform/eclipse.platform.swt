@@ -785,6 +785,20 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean result = super.setBounds (x, y, width, height, move, resize);
+	/*
+	* Bug on GTK.  The tree view sometimes does not get a paint
+	* event or resizes to a one pixel square when resized in a new
+	* shell that is not visible after any event loop has been run.  The
+	* problem is intermittent. It doesn't seem to happen the first time
+	* a new shell is created. The fix is to ensure the tree view is realized
+	* after it has been resized.
+	*/
+	OS.gtk_widget_realize (handle);
+	return result;
+}
+
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_text (handle, 0, color);
