@@ -64,9 +64,9 @@ class TabFolderTab extends Tab {
 		for (int i = 0; i < TabItems1.length; i++) {
 			TabItem item = new TabItem(tabFolder1, SWT.NONE);
 			item.setText(TabItems1[i]);
-			Label label = new Label(tabFolder1, SWT.NONE);
-			label.setText(ControlExample.getResourceString("TabItem_content") + ": " + i);
-			item.setControl(label);
+			Text content = new Text(tabFolder1, SWT.WRAP | SWT.MULTI);
+			content.setText(ControlExample.getResourceString("TabItem_content") + ": " + i);
+			item.setControl(content);
 		}
 	}
 	
