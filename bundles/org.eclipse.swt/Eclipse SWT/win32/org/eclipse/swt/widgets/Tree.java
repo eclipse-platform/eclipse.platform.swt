@@ -900,6 +900,21 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 }
 
+void setCursor (int hwndCursor) {
+	/*
+	* Bug in Windows.  Under certain circumstances, when WM_SETCURSOR
+	* is sent using SendMessage(), Windows GP's in the window proc for
+	* the tree.  The fix is to avoid calling the tree window proc and
+	* set the cursor for the tree outside of WM_SETCURSOR.
+	* 
+	* NOTE:  This code assumes that the default cursor for the tree
+	* is IDC_ARROW.
+	*/
+	int hCursor = findCursor ();
+	if (hCursor == 0) hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
+	OS.SetCursor (hCursor);
+}
+
 void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5;

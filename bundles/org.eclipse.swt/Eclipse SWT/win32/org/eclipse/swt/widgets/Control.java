@@ -1861,6 +1861,12 @@ public void setCursor (Cursor cursor) {
 		}
 		if (hwnd == 0) return;
 	}
+	Control control = WidgetTable.get (hwndCursor);
+	if (control == null) control = this;
+	control.setCursor (hwndCursor);
+}
+
+void setCursor (int hwndCursor) {
 	int lParam = OS.HTCLIENT | (OS.WM_MOUSEMOVE << 16);
 	OS.SendMessage (hwndCursor, OS.WM_SETCURSOR, hwndCursor, lParam);
 }
@@ -4220,6 +4226,5 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 LRESULT wmScrollChild (int wParam, int lParam) {
 	return null;
 }
-
 }
 
