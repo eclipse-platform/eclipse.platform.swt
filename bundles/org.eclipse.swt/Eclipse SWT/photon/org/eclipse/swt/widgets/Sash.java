@@ -121,6 +121,7 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	int cursor = ((style & SWT.HORIZONTAL) != 0) ? OS.Ph_CURSOR_DRAG_VERTICAL : OS.Ph_CURSOR_DRAG_HORIZONTAL;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_CURSOR_TYPE, cursor, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};

@@ -68,14 +68,15 @@ public Composite (Composite parent, int style) {
 	
 Control [] _getChildren () {
 	int count = 0;
-	int child = OS.PtWidgetChildFront (handle);
+	int validParent = childrenParent ();
+	int child = OS.PtWidgetChildFront (validParent);
 	while (child != 0) {
 		child = OS.PtWidgetBrotherBehind (child);
 		count++;
 	}
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
-	child = OS.PtWidgetChildFront (handle);
+	child = OS.PtWidgetChildFront (validParent);
 	while (i < count) {
 		Widget widget = WidgetTable.get (child);
 		if (widget != null && widget != this) {
@@ -113,6 +114,27 @@ Control [] _getTabList () {
 
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
+}
+
+int childrenParent () {
+	return handle;
+}
+
+Control [] computeTabList () {
+	Control result [] = super.computeTabList ();
+	if (result.length == 0) return result;
+	Control [] list = tabList != null ? _getTabList () : _getChildren ();
+	for (int i=0; i<list.length; i++) {
+		Control child = list [i];
+		Control [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Control [] newResult = new Control [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	return result;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -300,7 +322,8 @@ public Control [] getChildren () {
 
 int getChildrenCount () {
 	int count = 0;
-	int child = OS.PtWidgetChildFront (handle);
+	int validParent = childrenParent ();
+	int child = OS.PtWidgetChildFront (validParent);
 	while (child != 0) {
 		child = OS.PtWidgetBrotherBehind (child);
 		count++;
@@ -353,20 +376,20 @@ void hookEvents () {
 public Control [] getTabList () {
 	checkWidget ();
 	Control [] tabList = _getTabList ();
-//	if (tabList == null) {
-//		int count = 0;
-//		Control [] list =_getChildren ();
-//		for (int i=0; i<list.length; i++) {
-//			if (list [i].isTabGroup ()) count++;
-//		}
-//		tabList = new Control [count];
-//		int index = 0;
-//		for (int i=0; i<list.length; i++) {
-//			if (list [i].isTabGroup ()) {
-//				tabList [index++] = list [i];
-//			}
-//		}
-//	}
+	if (tabList == null) {
+		int count = 0;
+		Control [] list =_getChildren ();
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) count++;
+		}
+		tabList = new Control [count];
+		int index = 0;
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) {
+				tabList [index++] = list [i];
+			}
+		}
+	}
 	return tabList;
 }
 
@@ -427,8 +450,8 @@ public void layout (boolean changed) {
 int processMouse (int info) {
 
 	/* Set focus for a canvas with no children */
-	if (OS.PtWidgetChildFront (handle) == 0) {
-		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+		if (OS.PtWidgetChildFront (handle) == 0) {
 			if (info == 0) return OS.Pt_END;
 			PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 			OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -621,6 +644,37 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+boolean setTabGroupFocus () {
+	if (isTabItem ()) return setTabItemFocus ();
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+		}
+		if (takeFocus && setTabItemFocus ()) return true;
+	}
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+	}
+	return false;
+}
+
+boolean setTabItemFocus () {
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+		}
+		if (takeFocus) {
+			if (!isShowing ()) return false;
+			if (forceFocus ()) return true;
+		}
+	}
+	return super.setTabItemFocus ();
+}
+
 /**
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
@@ -644,44 +698,16 @@ public void setTabList (Control [] tabList) {
 		Control control = tabList [i];
 		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//		Shell shell = control.getShell ();
-//		while (control != shell && control != this) {
-//			control = control.parent;
-//		}
-//		if (control != this) error (SWT.ERROR_INVALID_PARENT);
 		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
-	/*
-	* This code is intentionally commented.  It is
-	* not yet clear whether setting the tab list 
-	* should force the widget to be a tab group
-	* instead of a tab item or non-traversable.
-	*/
-//	Control [] children = _getChildren ();
-//	for (int i=0; i<children.length; i++) {
-//		Control control = children [i];
-//		if (control != null) {
-//			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//			int index = 0;
-//			while (index < tabList.length) {
-//				if (tabList [index] == control) break;
-//				index++;
-//			}
-//			int hwnd = control.handle;
-//			int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
-//			if (index == tabList.length) {
-//				bits &= ~OS.WS_TABSTOP;
-//			} else {
-//				bits |= OS.WS_TABSTOP;
-//			}
-//			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
-//		}
-//	}
 	this.tabList = tabList;
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
-	if ((state & CANVAS) != 0 && hooks (SWT.KeyDown)) return 0;
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
+	}
 	return super.traversalCode (key_sym, ke);
 }
 

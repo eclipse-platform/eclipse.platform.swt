@@ -1364,14 +1364,16 @@ public void showSelection () {
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
-	if ((style & SWT.SINGLE) != 0) {
-		int code = super.traversalCode (key_sym, ke);
-		if (key_sym == OS.Pk_Right || key_sym == OS.Pk_Left) {
-			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+	int code = super.traversalCode (key_sym, ke);
+	if ((style & SWT.MULTI) != 0) {
+		code &= ~SWT.TRAVERSE_RETURN;
+		if (key_sym == OS.Pk_Tab && ke != null) {
+			if ((ke.key_mods & OS.Pk_KM_Ctrl) == 0) {
+				code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
 		}
-		return code;
 	}
-	return SWT.TRAVERSE_ESCAPE;
+	return code;
 }
 
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {

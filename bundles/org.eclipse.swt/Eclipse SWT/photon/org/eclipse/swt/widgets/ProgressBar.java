@@ -97,6 +97,7 @@ void createHandle (int index) {
 	int clazz = display.PtProgress;
 	int parentHandle = parent.handle;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 //		OS.Pt_ARG_GAUGE_FLAGS, OS.Pt_GAUGE_LIVE, OS.Pt_GAUGE_LIVE,
 		OS.Pt_ARG_ORIENTATION, (style & SWT.HORIZONTAL) != 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
@@ -221,4 +222,9 @@ public void setSelection (int value) {
 	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	return 0;
+}
+
 }

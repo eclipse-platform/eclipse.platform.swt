@@ -186,6 +186,7 @@ void createHandle (int index) {
 	/* ARROW button */
 	if ((style & SWT.ARROW) != 0) {
 		int [] args = {
+			OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_HORIZONTAL_GRADIENT, OS.Pt_STATIC_GRADIENT | OS.Pt_HORIZONTAL_GRADIENT,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
@@ -611,6 +612,12 @@ public void setText (String string) {
 	OS.PtSetResources (handle, args.length / 3, args);
 	OS.free (ptr);
 	OS.free (ptr2);
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	int code = super.traversalCode (key_sym , ke);
+	code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_MNEMONIC;
+	return code;
 }
 
 }

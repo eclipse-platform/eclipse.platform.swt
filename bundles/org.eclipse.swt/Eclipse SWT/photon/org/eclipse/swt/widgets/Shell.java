@@ -573,6 +573,7 @@ public void open () {
 	checkWidget();
 	bringToTop ();
 	setVisible (true);
+	traverseGroup (true);
 }
 
 int processEvent (int widget, int data, int info) {
@@ -735,9 +736,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	}
 	boolean sameOrigin = x == area.pos_x && y == area.pos_y;
 	boolean sameExtent = width == frameWidth && height == frameHeight;
-	if (sameOrigin && sameExtent) return false;
-	if (sameOrigin && move && !resize) return false;
-	if (sameExtent && resize && !move) return false;
 	area.pos_x = (short) x;
 	area.pos_y = (short) y;
 	area.size_w = (short) (Math.max (width - left [0] - right [0], 0));
@@ -759,7 +757,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			sendEvent (SWT.Resize);
 		}
 	}
-	return true;
+	return !sameOrigin || !sameExtent;
 }
 
 public void setImage (Image image) {

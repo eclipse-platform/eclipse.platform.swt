@@ -37,6 +37,7 @@ import org.eclipse.swt.events.*;
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
+	int itemCount;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -117,6 +118,15 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int childrenParent () {
+	/*
+	* Feature in Photon.  Tabfolders have an extra widget which
+	* is the parent of all tab items. PtValidParent() can not be
+	* used, since it does not return that widget.
+	*/
+	return OS.PtWidgetChildBack (handle);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	PhDim_t dim = new PhDim_t();
@@ -180,7 +190,7 @@ void createWidget (int index) {
 void createItem (TabItem item, int index) {
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	int count = args [2];
+	int count = itemCount;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
 		TabItem [] newItems = new TabItem [items.length + 4];
@@ -203,7 +213,7 @@ void createItem (TabItem item, int index) {
 	}
 	int str = OS.malloc (1);
 	if (str == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.memmove (newPtr + ((index) * 4), new int [] {str}, 4);
+	OS.memmove (newPtr + (index * 4), new int [] {str}, 4);
 	args = new int [] {OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count + 1};
 	OS.PtSetResources (handle, args.length / 3, args);
 	for (int i=0; i<count+1; i++) {
@@ -214,12 +224,13 @@ void createItem (TabItem item, int index) {
 	OS.free (newPtr);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+	itemCount++;
 }
 
 void destroyItem (TabItem item) {
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	int count = args [2];
+	int count = itemCount;
 	int index = 0;
 	while (index < count) {
 		if (items [index] == item) break;
@@ -254,6 +265,7 @@ void destroyItem (TabItem item) {
 		System.arraycopy (items, index + 1, items, index, --count - index);
 	}
 	items [count] = null;
+	itemCount--;
 }
 
 /**
@@ -273,9 +285,7 @@ void destroyItem (TabItem item) {
  */
 public TabItem getItem (int index) {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	if (!(0 <= index && index < args [2])) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
 
@@ -297,9 +307,7 @@ public TabItem getItem (int index) {
  */
 public TabItem [] getItems () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	TabItem [] result = new TabItem [args [2]];
+	TabItem [] result = new TabItem [itemCount];
 	System.arraycopy (items, 0, result, 0, result.length);
 	return result;
 }
@@ -316,9 +324,7 @@ public TabItem [] getItems () {
  */
 public int getItemCount () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return args [2];
+	return itemCount;
 }
 
 /**
@@ -424,19 +430,16 @@ int processSelection (int info) {
 	short[] newIndex = new short[1];
 	OS.memmove(oldIndex, cbinfo.cbdata + 8, 2);
 	OS.memmove(newIndex, cbinfo.cbdata + 10, 2);
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	int count = args [2];
 	Control oldControl = null;
 	int index = oldIndex [0];
 	TabItem oldItem = items [index];
-	if (0 <= index && index < count) oldControl = oldItem.control;
+	if (0 <= index && index < itemCount) oldControl = oldItem.control;
 	Control newControl = null;
 	index = newIndex [0];
 	TabItem newItem = items [index];
-	if (0 <= index && index < count) newControl = newItem.control;
-	if (oldControl != null) oldControl.setVisible (false);
-	if (newControl != null) {
+	if (0 <= index && index < itemCount) newControl = newItem.control;
+	if (oldControl != null && !oldControl.isDisposed()) oldControl.setVisible (false);
+	if (newControl != null && !newControl.isDisposed()) {
 		newControl.setBounds (getClientArea ());
 		newControl.setVisible (true);
 	}
@@ -447,10 +450,7 @@ int processSelection (int info) {
 }
 
 void releaseWidget () {
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	int count = args [2];
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<itemCount; i++) {
 		TabItem item = items [i];
 		if (!item.isDisposed ()) {
 			item.releaseWidget ();
@@ -501,6 +501,10 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setSelection (int index) {
 	checkWidget();
+	setSelection (index, false);
+}
+
+void setSelection (int index, boolean notify) {
 	int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int oldIndex = args [1];
@@ -522,6 +526,11 @@ public void setSelection (int index) {
 		if (control != null && !control.isDisposed ()) {
 			control.setBounds (getClientArea ());
 			control.setVisible (true);
+		}
+		if (notify) {
+			Event event = new Event ();
+			event.item = item;
+			postEvent (SWT.Selection, event);
 		}
 	}
 }
@@ -549,6 +558,20 @@ public void setSelection (TabItem [] items) {
 		int index = indexOf (items [i]);
 		if (index != -1) setSelection (index);
 	}
+}
+
+boolean traversePage (boolean next) {
+	int count = getItemCount ();
+	if (count == 0) return false;
+	int index = getSelectionIndex ();
+	if (index == -1) {
+		index = 0;
+	} else {
+		int offset = next ? 1 : -1;
+		index = (index + offset + count) % count;
+	}
+	setSelection (index, true);
+	return true;
 }
 
 }

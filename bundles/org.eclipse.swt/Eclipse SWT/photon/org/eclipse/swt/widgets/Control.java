@@ -399,6 +399,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+Control computeTabGroup () {
+	if (isTabGroup ()) return this;
+	return parent.computeTabGroup ();
+}
+
+Control computeTabRoot () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		int index = 0;
+		while (index < tabList.length) {
+			if (tabList [index] == this) break;
+			index++;
+		}
+		if (index == tabList.length) {
+			if (isTabGroup ()) return this;
+		}
+	}
+	return parent.computeTabRoot ();
+}
+
+Control [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getVisible () && getEnabled ()) {
+			return new Control [] {this};
+		}
+	}
+	return new Control [0];
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	setZOrder ();
@@ -871,6 +900,43 @@ public boolean isReparentable () {
 	return false;
 }
 
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 0 || size.y == 0) {
+			return false;
+		}
+		control = control.parent;
+	}
+	return true;
+	/*
+	* Check to see if current damage is included.
+	*/
+//	if (!OS.IsWindowVisible (handle)) return false;
+//	int flags = OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS;
+//	int hDC = OS.GetDCEx (handle, 0, flags);
+//	int result = OS.GetClipBox (hDC, new RECT ());
+//	OS.ReleaseDC (handle, hDC);
+//	return result != OS.NULLREGION;
+}
+
+boolean isTabGroup () {
+	int code = traversalCode (0, null);
+	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
+	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
+}
+
+boolean isTabItem () {
+	int code = traversalCode (0, null);
+	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -1125,7 +1191,9 @@ int processKey (int info) {
 			case OS.Pk_Up:
 			case OS.Pk_Down:
 			case OS.Pk_Left:
-			case OS.Pk_Right: {
+			case OS.Pk_Right:
+			case OS.Pk_Pg_Up:
+			case OS.Pk_Pg_Down: {
 				if (key != OS.Pk_Return) {
 					ev.processing_flags |= OS.Ph_NOT_CUAKEY;
 					OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
@@ -2039,6 +2107,16 @@ public void setSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
+
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return setFocus ();
+}
+
 /**
  * If the argument is <code>false</code>, causes subsequent drawing
  * operations in the receiver to be ignored. No drawing of any kind
@@ -2203,71 +2281,96 @@ public Point toDisplay (Point point) {
 }
 
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
-	int detail = 0;
-	boolean shift = (phEvent.key_mods & OS.Pk_KM_Shift) != 0;
-	boolean control = (phEvent.key_mods & OS.Pk_KM_Ctrl) != 0;
+	int detail = SWT.TRAVERSE_NONE;
+	int code = traversalCode (key_sym, phEvent);
+	boolean all = false;
 	switch (key_sym) {
-		case OS.Pk_Escape:
+		case OS.Pk_Escape: {
 			Shell shell = getShell ();
-			if (shell.parent == null) return false;
 			if (!shell.isVisible () || !shell.isEnabled ()) return false;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
-		case OS.Pk_Return:
+		}
+		case OS.Pk_Return: {
 			Button button = menuShell ().getDefaultButton ();
 			if (button == null || button.isDisposed ()) return false;
 			if (!button.isVisible () || !button.isEnabled ()) return false;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
+		}
 		case OS.Pk_Tab:
-		case OS.Pk_KP_Tab:
-			detail = SWT.TRAVERSE_TAB_NEXT;
-			if (shift) detail = SWT.TRAVERSE_TAB_PREVIOUS;
+		case OS.Pk_KP_Tab: {
+			boolean next = (phEvent.key_mods & OS.Pk_KM_Shift) == 0;
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
+		}
 		case OS.Pk_Up:
-		case OS.Pk_Left: 
+		case OS.Pk_Left: {
 			detail = SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
+		}
 		case OS.Pk_Down:
-		case OS.Pk_Right:
+		case OS.Pk_Right: {
 			detail = SWT.TRAVERSE_ARROW_NEXT;
 			break;
+		}
+		case OS.Pk_Pg_Down:
+		case OS.Pk_Pg_Up: {
+			all = true;
+			if ((phEvent.key_mods & OS.Pk_KM_Ctrl) == 0) return false;
+			detail = key_sym == OS.Pk_Pg_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			break;
+		}
 		default:
 			return false;
 	}
-	boolean doit = (detail & traversalCode (key_sym, phEvent)) != 0;
-	if (!doit && control && (key_sym == OS.Pk_Tab || key_sym == OS.Pk_Tab)) {
-		doit = true;
-		control = false;
-	}
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event();
-		event.doit = doit;
-		event.detail = detail;
-		setKeyState (event, phEvent);
-		sendEvent (SWT.Traverse, event);
-		if (isDisposed ()) return true;
-		doit = event.doit;
-		detail = event.detail;
-	}
-	if (doit) {
-		switch (detail) {
-			case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
-			case SWT.TRAVERSE_RETURN:		return traverseReturn ();
-			case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true, control);
-			case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false, control);
-			case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-			case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
-		}
-	}
+	Event event = new Event ();
+	event.doit = (code & detail) != 0 || (phEvent.key_mods & OS.Pk_KM_Ctrl) != 0;
+	event.detail = detail;
+	setKeyState (event, phEvent);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (event)) return true;
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
 	return false;
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
-	return
-		SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN |
-		SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS |
-		SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+//	if ((args [1] & OS.Pt_GETS_FOCUS) == 0) return 0;	
+	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	Shell shell = getShell ();
+	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
+	return code;
+}
+
+boolean traverse (Event event) {
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the traverse
+	* event.  If this happens, return true to stop further
+	* event processing.
+	*/	
+	sendEvent (SWT.Traverse, event);
+	if (isDisposed ()) return false;
+	if (!event.doit) return false;
+	switch (event.detail) {
+		case SWT.TRAVERSE_NONE:				return true;
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
+		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
+	}
+	return false;
 }
 
 /**
@@ -2286,17 +2389,12 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
  * </ul>
  */
 public boolean traverse (int traversal) {
-	checkWidget();
+	checkWidget ();
 	if (!isFocusControl () && !setFocus ()) return false;
-	switch (traversal) {
-		case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
-		case SWT.TRAVERSE_RETURN:		return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true, false);
-		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false, false);
-		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
-	}
-	return false;
+	Event event = new Event ();
+	event.doit = true;
+	event.detail = traversal;
+	return traverse (event);
 }
 
 boolean traverseEscape () {
@@ -2307,18 +2405,65 @@ boolean traverseEscape () {
 	return true;
 }
 
-boolean traverseGroup (boolean next, boolean control) {
-	if (control) {
-		if (next) return OS.PtGlobalFocusPrevContainer (handle, null) != 0;
-		return OS.PtGlobalFocusNextContainer (handle, null) != 0;
+boolean traverseGroup (boolean next) {
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
+	int length = list.length;
+	int index = 0;
+	while (index < length) {
+		if (list [index] == group) break;
+		index++;
 	}
-	if (next) return OS.PtGlobalFocusPrev (handle, null) != 0;
-	return OS.PtGlobalFocusNext (handle, null) != 0;
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = ((index + offset + length) % length)) != start) {
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
+	}
+	if (group.isDisposed ()) return false;
+	return group.setTabGroupFocus ();
 }
 
 boolean traverseItem (boolean next) {
-	if (next) return OS.PtContainerFocusPrev (handle, null) != 0;
-	return OS.PtContainerFocusNext (handle, null) != 0;
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
+	}
+	return false;
+}
+
+boolean traversePage (boolean next) {
+	return false;
+}
+
+boolean traverseMnemonic (char key) {
+//	return mnemonicHit (key);
+	return false;
 }
 
 boolean traverseReturn () {

@@ -94,6 +94,15 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int childrenParent () {
+	/*
+	* Feature in Photon.  Toolbars have an extra widget which
+	* is the parent of all tool items. PtValidParent() can not be
+	* used, since it does not return that widget.
+	*/
+	return OS.PtWidgetChildBack (handle);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 //	if (layout != null) return super.computeSize (wHint, hHint, changed);
 	checkWidget();
@@ -119,6 +128,7 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	
 	int [] args = {
+		OS.Pt_ARG_FLAGS, (style & SWT.NO_FOCUS) != 0 ? 0 : OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_FLAGS, hasBorder () ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
@@ -260,6 +270,15 @@ public int getRowCount () {
 	return 1;
 }
 
+boolean hasFocus () {
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		if ((item.style & SWT.SEPARATOR) != 0) continue;
+		if (OS.PtIsFocused(item.handle) != 0) return true;
+	}
+	return super.hasFocus();
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -299,6 +318,18 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
+}
+
+boolean setTabGroupFocus () {
+	for (int i=0; i<itemCount;i++) {
+		ToolItem item = items [i];
+		if ((item.style & SWT.SEPARATOR) != 0) continue;
+		int shellHandle = OS.PtFindDisjoint (handle);
+		OS.PtWindowToFront (shellHandle);
+		OS.PtContainerGiveFocus (item.handle, null);
+		if (OS.PtIsFocused(item.handle) != 0) return true;
+	}
+	return super.setTabGroupFocus ();
 }
 
 }

@@ -152,6 +152,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+Control computeTabGroup () {
+	return this;
+}
+
+Control computeTabRoot () {
+	return this;
+}
+
 /**
  * Returns the receiver's default button if one had
  * previously been set, otherwise returns null.
