@@ -414,7 +414,7 @@ void addGdkEvent (int /*long*/ event) {
 		gdkEventWidgets = newWidgets;
 	}
 	Widget widget = null;
-	int handle = OS.gtk_get_event_widget (event);
+	int /*long*/ handle = OS.gtk_get_event_widget (event);
 	if (handle != 0) {
 		do {
 			widget = getWidget (handle);
@@ -643,7 +643,7 @@ synchronized void createDisplay (DeviceData data) {
 	OS.gdk_event_handler_set (eventProc, 0, 0);
 }
 
-int createImage (String name) {
+int /*long*/ createImage (String name) {
 	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);
