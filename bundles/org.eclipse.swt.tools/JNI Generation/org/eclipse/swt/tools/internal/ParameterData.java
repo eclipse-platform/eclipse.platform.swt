@@ -16,7 +16,6 @@ public class ParameterData extends ItemData {
 	
 	Method method;
 	int parameter;
-	String cast;
 
 public ParameterData(Method method, int parameter, String str) {
 	super(str);
