@@ -2882,6 +2882,7 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 void doPageDown(boolean select) {
 	int lineCount = content.getLineCount();
 	int oldColumnX = columnX;
+	int oldHScrollOffset = horizontalScrollOffset;
 	int caretLine;
 	
 	// do nothing if in single line mode. fixes 5673
@@ -2922,8 +2923,9 @@ void doPageDown(boolean select) {
 	// explicitly go to the calculated caret line. may be different 
 	// from content.getLineAtOffset(caretOffset) when in word wrap mode
 	showCaret(caretLine);
-	// save the original horizontal caret position	
-	columnX = oldColumnX;
+	// restore the original horizontal caret position
+	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+	columnX = oldColumnX + hScrollChange;
 }
 /**
  * Moves the cursor to the end of the last fully visible line.
@@ -2966,6 +2968,7 @@ void doPageStart() {
  */
 void doPageUp() {
 	int oldColumnX = columnX;
+	int oldHScrollOffset = horizontalScrollOffset;
 	int caretLine = getCaretLine();
 	
 	if (caretLine > 0) {	
@@ -2990,8 +2993,9 @@ void doPageUp() {
 	// explicitly go to the calculated caret line. may be different 
 	// from content.getLineAtOffset(caretOffset) when in word wrap mode
 	showCaret(caretLine);
-	// save the original horizontal caret position	
-	columnX = oldColumnX;
+	// restore the original horizontal caret position
+	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+	columnX = oldColumnX + hScrollChange;
 }
 /**
  * Updates the selection to extend to the current caret position.
@@ -5635,7 +5639,7 @@ void initializeRenderer() {
  * @param action one of the actions defined in ST.java
  */
 public void invokeAction(int action) {
-	int oldColumnX;
+	int oldColumnX, oldHScrollOffset, hScrollChange;
 	int caretLine;
 	
 	checkWidget();	
@@ -5644,21 +5648,25 @@ public void invokeAction(int action) {
 		case ST.LINE_UP:
 			caretLine = doLineUp();
 			oldColumnX = columnX;
+			oldHScrollOffset = horizontalScrollOffset;
 			// explicitly go to the calculated caret line. may be different 
 			// from content.getLineAtOffset(caretOffset) when in word wrap mode
 			showCaret(caretLine);
-			// save the original horizontal caret position
-			columnX = oldColumnX;
+			// restore the original horizontal caret position
+			hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+			columnX = oldColumnX + hScrollChange;
 			clearSelection(true);
 			break;
 		case ST.LINE_DOWN:
 			caretLine = doLineDown();
 			oldColumnX = columnX;
+			oldHScrollOffset = horizontalScrollOffset;
 			// explicitly go to the calculated caret line. may be different 
 			// from content.getLineAtOffset(caretOffset) when in word wrap mode
 			showCaret(caretLine);
-			// save the original horizontal caret position
-			columnX = oldColumnX;
+			// restore the original horizontal caret position
+			hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+			columnX = oldColumnX + hScrollChange;
 			clearSelection(true);
 			break;
 		case ST.LINE_START:
