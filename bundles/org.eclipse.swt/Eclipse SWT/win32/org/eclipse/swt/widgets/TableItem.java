@@ -404,7 +404,7 @@ public Rectangle getImageBounds (int index) {
 	/*
 	* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
 	* value even when the subitem does not contain an image.  The
-	* fix is to set the width to zero.
+	* fix is to detect this case set the width to zero.
 	*/
 	if (index != 0) {
 		LVITEM lvItem = new LVITEM ();
@@ -508,7 +508,22 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 						iconRect.left = OS.LVIR_ICON;
 						iconRect.top = column;
 						if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, iconRect) != 0) {
-							rect.left = iconRect.right;
+							/*
+							* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
+							* value even when the subitem does not contain an image.  The
+							* fix is to detect this case and avoid subtracting the image
+							* from the damage rectangle. 
+							*/
+							boolean fixWidth = true;
+							if (column != 0) {
+								LVITEM lvItem = new LVITEM ();
+								lvItem.mask = OS.LVIF_IMAGE;
+								lvItem.iItem = index;
+								lvItem.iSubItem = column;
+								OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
+								if (lvItem.iImage < 0) fixWidth = false;
+							}
+							if (fixWidth) rect.left = iconRect.right;	
 						}
 					}
 					OS.InvalidateRect (hwnd, rect, true);
