@@ -328,6 +328,10 @@ void createWidget () {
 	lastFocusId = -1;
 }
 
+int defaultBackground () {
+	return OS.GetSysColor (OS.COLOR_BTNFACE);
+}
+
 void destroyItem (ToolItem item) {
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
