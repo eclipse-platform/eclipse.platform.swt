@@ -232,7 +232,9 @@ void createItem (TreeItem item, int index) {
 	}
 
 	updateVerticalBar ();
-	updateHorizontalBar ();
+	Rectangle bounds = item.getBounds ();
+	int rightX = bounds.x + bounds.width;
+	updateHorizontalBar (rightX, rightX);
 	int redrawIndex = index;
 	if (redrawIndex > 0) redrawIndex--;
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);
@@ -290,6 +292,8 @@ void destroyItem (TreeColumn column) {
 void destroyItem (TreeItem item) {
 	int availableIndex = item.availableIndex; 
 	if (availableIndex != -1) {
+		Rectangle bounds = item.getBounds ();
+		int rightX = bounds.x + bounds.width;
 		TreeItem[] newAvailableItems = new TreeItem [availableItems.length - 1];
 		System.arraycopy (availableItems, 0, newAvailableItems, 0, availableIndex);
 		System.arraycopy (
@@ -305,7 +309,7 @@ void destroyItem (TreeItem item) {
 		}
 		item.availableIndex = -1;
 		updateVerticalBar ();
-		updateHorizontalBar ();
+		updateHorizontalBar (0, -rightX);
 	}
 	if (item.isSelected ()) {
 		int selectionIndex = getSelectionIndex (item);
@@ -1636,7 +1640,9 @@ void makeAvailable (TreeItem item) {
 		availableItems [i].availableIndex = i;
 	}
 	updateVerticalBar ();
-	updateHorizontalBar ();
+	Rectangle bounds = item.getBounds ();
+	int rightX = bounds.x + bounds.width;
+	updateHorizontalBar (rightX, rightX);
 }
 
 /*
@@ -1665,7 +1671,12 @@ void makeDescendentsAvailable (TreeItem item) {
 	}
 	
 	updateVerticalBar ();
-	updateHorizontalBar ();
+	int rightX = 0;
+	for (int i = 1; i < availableDescendents.length; i++) {
+		Rectangle bounds = availableDescendents [i].getBounds ();
+		rightX = Math.max (rightX, bounds.x + bounds.width);
+	}
+	updateHorizontalBar (rightX, rightX);
 }
 
 /*
@@ -2055,11 +2066,9 @@ void updateColumnWidth (TreeColumn column, int width) {
 	}
 }
 /*
- * This is a naive implementation just to make it work.  The args are not currently used.
+ * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	// TODO revisit
-	
 	/* the horizontal range is never affected by an item change if there are columns */
 	if (columns.length > 0) return;
 	
@@ -2075,7 +2084,7 @@ void updateHorizontalBar () {
 	int pageSize = Math.min (maxX, getClientArea ().width);
 	hBar.setThumb (pageSize);
 	hBar.setPageIncrement (pageSize);
-	
+
 	/* reclaim any space now left on the right */
 	if (maxX < horizontalOffset + pageSize) {
 		horizontalOffset = maxX - pageSize;
@@ -2088,36 +2097,29 @@ void updateHorizontalBar () {
 			redraw ();
 		}
 	}
-	
-	/* 
-	 * The following is intentionally commented, for future reference
-	 */
-//		if (nowAvailable) {
-//			if (rightX <= hBar.getMaximum ()) return;
-//			int maximum = Math.max (1, rightX);
-//			hBar.setMaximum (maximum);
-//			hBar.setThumb (getClientArea ().width);
-//			return;
-//		}
-//		
-//		/* item has become unavailable */
-//		int barMaximum = hBar.getMaximum ();
-//		if (rightX < barMaximum) return;
-//		
-//		/* compute new maximum value */
-//		int newMaxX = 1;
-//		for (int i = 0; i < availableItems.length; i++) {
-//			int maxX = availableItems [i].getRightmostX ();
-//			if (newMaxX < maxX) newMaxX = maxX;
-//		}
-//		if (newMaxX == barMaximum) return;
-//		hBar.setMaximum (newMaxX);
-//		hBar.setThumb (getClientArea ().width);
-//		
-//		/* reclaim any space now left on the right side */
-//		horizontalOffset += newMaxX - barMaximum;
-//		hBar.setSelection (horizontalOffset);
-//		redraw ();
+}
+/*
+ * Update the horizontal bar, if needed, in response to an item change (eg.- created,
+ * disposed, expanded, etc.).  newRightX is the new rightmost X value of the item,
+ * rightXchange is the change that led to the item's rightmost X value becoming
+ * newRightX (so oldRightX + rightXchange = newRightX)
+ */
+void updateHorizontalBar (int newRightX, int rightXchange) {
+	/* the horizontal range is never affected by an item change if there are columns */
+	if (columns.length > 0) return;
+	newRightX += horizontalOffset;
+	ScrollBar hBar = getHorizontalBar ();
+	int maximum = hBar.getMaximum ();
+	if (newRightX > maximum) {	/* item has extended beyond previous maximum */
+		hBar.setMaximum (newRightX);
+		int pageSize = Math.min (newRightX, getClientArea ().width);
+		hBar.setThumb (pageSize);
+		hBar.setPageIncrement (pageSize);
+		return;
+	}
+	int previousRightX = newRightX - rightXchange;
+	if (previousRightX != maximum) return;	/* this is not the rightmost item */
+	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
 	ScrollBar vBar = getVerticalBar ();

@@ -240,8 +240,8 @@ public void dispose () {
 }
 void dispose (boolean notifyParent) {
 	if (isDisposed ()) return;
-	super.dispose ();	/* the use of super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
+	super.dispose ();	/* the use of super is intentional here */
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (notifyParent);
 	}
@@ -276,6 +276,9 @@ public Color getBackground (int columnIndex) {
 	return cellBackgrounds [columnIndex];
 }
 public Rectangle getBounds () {
+	checkWidget ();
+	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
+	
 	int columnCount = parent.columns.length;
 	int focusX = getFocusX ();
 	
@@ -303,6 +306,8 @@ public Rectangle getBounds () {
 }
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
+	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
+
 	int columnCount = parent.columns.length;
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
@@ -957,7 +962,7 @@ public void setExpanded (boolean value) {
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem focusItem = parent.focusItem;
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor (this)) {
-			parent.setFocusItem (this, true);
+			parent.setFocusItem (this, false);
 			if ((style & SWT.SINGLE) != 0) {
 				parent.selectedItems = new TreeItem[] {this};
 			}
@@ -979,6 +984,8 @@ public void setFont (Font value) {
 	if (font == value) return;
 	if (value != null && value.equals (font)) return;
 	
+	Rectangle bounds = getBounds ();
+	int oldRightX = bounds.x + bounds.width;
 	font = value;
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
@@ -986,7 +993,9 @@ public void setFont (Font value) {
 	recomputeTextWidths (gc);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
-	parent.updateHorizontalBar ();
+	bounds = getBounds ();
+	int newRightX = bounds.x + bounds.width;
+	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	redrawItem ();
 }
 public void setFont (int columnIndex, Font value) {
@@ -1112,19 +1121,25 @@ public void setImage (int columnIndex, Image value) {
 }
 public void setText (String value) {
 	checkWidget ();
+	Rectangle bounds = getBounds ();
+	int oldRightX = bounds.x + bounds.width;
 	setText (0, value);
-	parent.updateHorizontalBar ();
+	bounds = getBounds ();
+	int newRightX = bounds.x + bounds.width;
+	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 }
 public void setText (String[] value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-
+	Rectangle bounds = getBounds ();
+	int oldRightX = bounds.x + bounds.width;
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
 		if (value [i] != null) setText (i, value [i]);
 	}
-	
-	parent.updateHorizontalBar ();
+	bounds = getBounds ();
+	int newRightX = bounds.x + bounds.width;
+	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 }
 public void setText (int columnIndex, String value) {
 	checkWidget ();
