@@ -916,11 +916,11 @@ public void setMenuBar (Menu menu) {
 			mbi.dwFlags = 0;
 			mbi.nToolBarId = 100; /* as defined in .rc file */
 			mbi.hInstRes = OS.GetLibraryHandle ();
-			boolean res = OS.SHCreateMenuBar (mbi);
+			boolean success = OS.SHCreateMenuBar (mbi);
 			hwndCB = mbi.hwndMB;
 
-			/* Get ToolBar */
-			if (hwndCB != 0) hwndTB = OS.GetWindow (hwndCB, OS.GW_CHILD);
+			/* get toolbar */
+			if (success && hwndCB != 0) hwndTB = OS.GetWindow (hwndCB, OS.GW_CHILD);
 						
 			if (hwndTB == 0) {
 				/* we can't use the menubar */
@@ -937,6 +937,16 @@ public void setMenuBar (Menu menu) {
 				TBBUTTONINFO info = new TBBUTTONINFO ();
 				info.cbSize = TBBUTTONINFO.sizeof;
 				info.dwMask = OS.TBIF_TEXT;
+				
+				int cch = 128;
+				int hHeap = OS.GetProcessHeap ();
+				int byteCount = cch * TCHAR.sizeof;
+				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				MENUITEMINFO mii = new MENUITEMINFO ();
+				mii.cbSize = MENUITEMINFO.sizeof;
+				mii.fMask = OS.MIIM_STATE | OS.MIIM_TYPE;
+				mii.dwTypeData = pszText;
+
 				for (int i = 0; i < items.length; i++) {
 					MenuItem item = items[i];
 					/* insert item */
@@ -950,22 +960,21 @@ public void setMenuBar (Menu menu) {
 					OS.SendMessage (hwndTB, OS.TB_INSERTBUTTON, i, lpButton);
 
 					if ((item.style & SWT.SEPARATOR) == 0) {
-						/* set text */
-						String string = item.getText();
-						int hHeap = OS.GetProcessHeap ();
-						TCHAR buffer = new TCHAR (0, string, true);
-						int byteCount = buffer.length () * TCHAR.sizeof;
-						int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-						OS.MoveMemory (pszText, buffer, byteCount);
+						/* set text and state info */
+						Menu parent = item.parent;
+						int id = item.id;
+						int hMenu = parent.handle;
+												
+						mii.cch = cch;
+						success = OS.GetMenuItemInfo (hMenu, i, true, mii);
+						if (!success) error (SWT.ERROR_INVALID_ARGUMENT);
+						boolean enabled = (mii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) == 0;
+						if (!enabled) {
+							info.dwMask |= OS.TBIF_STATE;
+							info.fsStyle = 0;
+						}						
 						info.pszText = pszText;
 						OS.SendMessage (hwndTB, OS.TB_SETBUTTONINFO, item.id, info);
-						if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-
-						/* set state */
-						if (!item.isEnabled()) {
-							int fsState = 0;
-							OS.SendMessage (hwndTB, OS.TB_SETSTATE, item.id, fsState);
-						}
 
 						/* set menu */
 						Menu menu2 = item.menu;
@@ -974,6 +983,7 @@ public void setMenuBar (Menu menu) {
 						}
 					}
 				}
+				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 			}
 		}
 		if (resize) setMaximized (true);

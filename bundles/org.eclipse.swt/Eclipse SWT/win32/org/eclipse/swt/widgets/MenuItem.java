@@ -710,6 +710,27 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
+	boolean fixPPCMenuBar = false;
+	if (OS.IsWinCE) {
+		Decorations shell = parent.parent;
+		if (parent == shell.menuBar) {
+			fixPPCMenuBar = true;
+			/*
+			* Bug in WinCE PPC.  Tool items on the menubar don't resize
+			* correctly when the character '&' is used (even when it
+			* is a sequence '&&'.  
+			* The workaround is to remove all '&' in the string. 
+			*/
+			int length = string.length();
+			char[] text = new char[length];
+			string.getChars(0, length, text, 0);
+			int i = 0, j = 0;
+			for (i = 0; i < length; i++) {
+				if (text[i] != '&') text[j++] = text[i];
+			}
+			if (j < i) string = new String(text, 0, j);
+		}
+	}
 	int hMenu = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
 	/* Use the character encoding for the default locale */
@@ -723,16 +744,14 @@ public void setText (String string) {
 	info.fType = widgetStyle ();
 	info.dwTypeData = pszText;
 	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	if (OS.IsWinCE) {
+	if (fixPPCMenuBar) {
 		Decorations shell = parent.parent;
-		if (parent == shell.menuBar) {
-			/* set text on corresponding tool item */
-			TBBUTTONINFO info2 = new TBBUTTONINFO ();
-			info2.cbSize = TBBUTTONINFO.sizeof;
-			info2.dwMask = OS.TBIF_TEXT;
-			info2.pszText = pszText;
-			OS.SendMessage (shell.hwndTB, OS.TB_SETBUTTONINFO, id, info2);
-		}
+		/* set text on corresponding tool item */
+		TBBUTTONINFO info2 = new TBBUTTONINFO ();
+		info2.cbSize = TBBUTTONINFO.sizeof;
+		info2.dwMask = OS.TBIF_TEXT;
+		info2.pszText = pszText;
+		OS.SendMessage (shell.hwndTB, OS.TB_SETBUTTONINFO, id, info2);
 	}
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) error (SWT.ERROR_CANNOT_SET_TEXT);
