@@ -108,11 +108,7 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
-	/*
-	 * TEMPORARY CODE.
-	 * Gtk does support multi-select in native File Dialogs.
-	 */
-	return new String[] {fileName};
+	return fileNames;
 }
 /**
  * Returns the file extensions which the dialog will
@@ -281,7 +277,9 @@ void interpretOsAnswer(String osAnswer) {
 			// Careful! The size, not the length of the string
 			byte[] bytes = new byte[OS.strlen(bytesPtr)];
 			OS.memmove(bytes, bytesPtr, bytes.length);
-			fileNames[i] = new String(bytes);
+			// The better way to do it would be:
+			// fileNames[i] = new String(bytes);
+			fileNames[i] = new String(Converter.mbcsToWcs("UTF8", bytes));
 			/*
 			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
 			 * documentation does not say the resulting UTF8 string should be
