@@ -110,7 +110,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle trim = computeTrim (0, 0, width, height);
 	width = Math.max (trim.width, defaultSize.x);
 	height = trim.height;
-	return new Point (trim.width, trim.height);
+	return new Point (width, height);
 }
 
 /**
