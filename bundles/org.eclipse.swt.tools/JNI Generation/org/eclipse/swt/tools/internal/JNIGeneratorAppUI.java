@@ -93,6 +93,7 @@ public JNIGeneratorAppUI(JNIGeneratorApp app) {
 }
 
 void cleanup() {
+	display.dispose();
 }
 
 void generateStructsHeader () {
