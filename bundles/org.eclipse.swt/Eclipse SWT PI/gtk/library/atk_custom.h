@@ -14,8 +14,3 @@
 *******************************************************************************/
 
 /* Special sizeof's */
-#define AtkObjectFactoryClass_sizeof() sizeof(AtkObjectFactoryClass)
-#define AtkObjectFactory_sizeof() sizeof(AtkObjectFactory)
-#define GInterfaceInfo_sizeof() sizeof(GInterfaceInfo)
-#define GTypeInfo_sizeof() sizeof(GTypeInfo)
-#define GTypeQuery_sizeof() sizeof(GTypeQuery)
