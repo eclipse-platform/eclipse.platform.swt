@@ -171,6 +171,10 @@ void doDispose() {
 	trimmedLabels = null;
 	images = null;
 	selectionExtent = null;
+	foreground = background = null;
+	font = null;
+	cellForeground = cellBackground = null;
+	cellFont = null;
 	super.doDispose();
 }
 

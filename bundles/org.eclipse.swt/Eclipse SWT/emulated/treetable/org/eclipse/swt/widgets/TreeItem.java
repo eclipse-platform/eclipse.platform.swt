@@ -1264,7 +1264,8 @@ void doDispose() {
 	setIndex(-1);
 	setPaintStartX(-1);
 	setTextYPosition(-1);
-	
+	background = foreground = null;
+	font = null;
 	super.doDispose();
 }
 /**
