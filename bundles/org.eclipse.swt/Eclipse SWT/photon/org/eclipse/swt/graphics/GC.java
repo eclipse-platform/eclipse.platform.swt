@@ -268,14 +268,19 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			delta.x = (short)deltaX;
 			delta.y = (short)deltaY;
 			int clipRects = data.clipRects;
-			int child_clip = getClipping(widget, data.topWidget, true, true);
+			short[] unused = new short[1];
+			int[] child_tiles = new int[1];
+			int child_clip = getClipping(widget, data.topWidget, true, true, child_tiles);
 			if (clipRects == 0 && child_clip == 0) {
 				OS.PhBlit(rid, rect, delta);
 			} else {
+				/*
+				* Determine source rectangles that should be copied considering
+				* the clipping region.
+				*/
 				int dest = OS.PhGetTile();
 				OS.memmove(dest, rect, PhRect_t.sizeof);
 				OS.PhTranslateTiles(dest, delta);
-				short[] unused = new short[1];
 				int clip = child_clip;
 				if (clipRects != 0) {
 					clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
@@ -291,6 +296,11 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				inverseDelta.x = (short)(-delta.x);
 				inverseDelta.y = (short)(-delta.y);
 				OS.PhTranslateTiles(dest_tiles, inverseDelta);
+				
+				/* Exclude rectangles obscured by widgets. */
+				dest_tiles = OS.PhClipTilings(dest_tiles, child_tiles[0], null);
+				
+				/* Copy rectangles. */
 				int[] src_rects_count = new int[1];
 				int src_rects = OS.PhTilesToRects(dest_tiles, src_rects_count);
 				OS.PhFreeTiles(dest_tiles);
@@ -301,26 +311,49 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				}
 				OS.free(src_rects);
 			}
+			
+			/*
+			* Damage destination rectangles that where obscured by widgets
+			* in the source rectangle.
+			*/
+			int src = OS.PhGetTile();
+			OS.memmove(src, rect, PhRect_t.sizeof);
+			int widget_damage_tiles = OS.PhIntersectTilings(src, child_tiles[0], unused);
+			OS.PhTranslateTiles(widget_damage_tiles, delta);
+			
+			/*
+			* Damage the source rectangle excluding the intersecting area
+			* with the destination rectangle.
+			*/
+			int src_damage_tiles;
 			if (!overlaps) {
-				OS.PtDamageExtent (widget, rect);
+				src_damage_tiles = src;
 			} else {
-				int src = OS.PhGetTile();
 				int dest = OS.PhGetTile();
-				OS.memmove(src, rect, PhRect_t.sizeof);
 				OS.memmove(dest, rect, PhRect_t.sizeof);
 				OS.PhTranslateTiles(dest, delta);
-				int damage_tile = OS.PhClipTilings(src, dest, null);
-				int[] damage_rects_count = new int[1];
-				int damage_rects = OS.PhTilesToRects(damage_tile, damage_rects_count);
+				src_damage_tiles = OS.PhClipTilings(src, dest, null);
 				OS.PhFreeTiles(dest);
-				OS.PhFreeTiles(damage_tile);
-				for (int i=0; i<damage_rects_count[0]; i++) {
-					OS.memmove(rect, damage_rects + (i * PhRect_t.sizeof), PhRect_t.sizeof);
-					OS.PtDamageExtent (widget, rect);
-				}
-				OS.free(damage_rects);
 			}
-	}
+			
+			/* Merge all damage rectangles. */
+			int damage_tiles = OS.PhAddMergeTiles(src_damage_tiles, widget_damage_tiles, null);
+
+			/* Exclude damage rectangles obscured by widgets. */
+			damage_tiles = OS.PhClipTilings(damage_tiles, child_tiles[0], null);
+
+			OS.PhFreeTiles (child_tiles[0]);
+
+			/* Damage rectangles. */			
+			int[] damage_rects_count = new int[1];
+			int damage_rects = OS.PhTilesToRects(damage_tiles, damage_rects_count);
+			OS.PhFreeTiles(damage_tiles);
+			for (int i=0; i<damage_rects_count[0]; i++) {
+				OS.memmove(rect, damage_rects + (i * PhRect_t.sizeof), PhRect_t.sizeof);
+				OS.PtDamageExtent (widget, rect);
+			}
+			OS.free(damage_rects);
+		}
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
 	}
@@ -2264,7 +2297,7 @@ void setGCClipping() {
 
 	if (widget == 0) return;
 	
-	int clip_tile = getClipping(widget, data.topWidget, true, true);
+	int clip_tile = getClipping(widget, data.topWidget, true, true, null);
 	int[] clip_rects_count = new int[1];
 	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
 	OS.PhFreeTiles(clip_tile);	
@@ -2277,7 +2310,7 @@ void setGCClipping() {
 	OS.free(clip_rects);
 }
 
-int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
+int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings, int[] child_tiles) {
 	int child_tile = 0;
 	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
 
@@ -2340,10 +2373,12 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
 	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
 
+	if (child_tiles != null) child_tiles[0] = child_tile;
+
 	/* Clip the widget's rectangle from the child/siblings rectangle's */
 	if (child_tile != 0) {
 		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
-		OS.PhFreeTiles(child_tile);
+		if (child_tiles == null) OS.PhFreeTiles(child_tile);
 		return clip_tile;
 	}
 	return widget_tile;
