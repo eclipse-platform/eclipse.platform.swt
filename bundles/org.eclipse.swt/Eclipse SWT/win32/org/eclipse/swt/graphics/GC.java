@@ -1499,13 +1499,14 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		rop2 = OS.GetROP2(handle);
 	}
 	if (data.gdipGraphics != 0) {
-		initGdip(false, true);
+		initGdip(true, false);
 		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		PointF pt = new PointF();
 		pt.X = x - (Gdip.Font_GetSize(font) / 6);
 		pt.Y = y;
-		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, data.gdipBrush);
+		int brush = Gdip.Pen_GetBrush(data.gdipPen);
+		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, brush);
 		Gdip.Font_delete(font);
 		return;
 	}
@@ -2797,32 +2798,16 @@ public void setBackground (Color color) {
 void setClipping(int clipRgn) {
 	int hRgn = clipRgn;
 	int gdipGraphics = data.gdipGraphics;
-	if (hRgn != 0) {
-		boolean result;
-		float[] xform = new float[]{1, 0, 0, 1, 0, 0};
-		if (gdipGraphics != 0) {
-			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-			result = Gdip.Graphics_GetTransform(gdipGraphics, matrix) == 0;
-			Gdip.Matrix_GetElements(matrix, xform);
-			Gdip.Matrix_delete(matrix);
-		} else {
-			result = OS.GetWorldTransform(handle, xform);
-		}
-		if (result && !isIdentity(xform)) {
-			int count = OS.GetRegionData(hRgn, 0, null);
-			int[] lpRgnData = new int[count / 4];
-			OS.GetRegionData(hRgn, count, lpRgnData);
-			hRgn = OS.ExtCreateRegion(xform, count, lpRgnData);
-		}
-	}
-	OS.SelectClipRgn (handle, hRgn);
 	if (gdipGraphics != 0) {
 		if (hRgn != 0) {
-			Gdip.Graphics_SetClip(gdipGraphics, hRgn, Gdip.CombineModeReplace);
+			int region = Gdip.Region_new(hRgn);
+			Gdip.Graphics_SetClip(gdipGraphics, region, Gdip.CombineModeReplace);
+			Gdip.Region_delete(region);
 		} else {
 			Gdip.Graphics_ResetClip(gdipGraphics);
 		}
 	}
+	OS.SelectClipRgn (handle, hRgn);
 	if (hRgn != 0 && hRgn != clipRgn) {
 		OS.DeleteObject(hRgn);
 	}
