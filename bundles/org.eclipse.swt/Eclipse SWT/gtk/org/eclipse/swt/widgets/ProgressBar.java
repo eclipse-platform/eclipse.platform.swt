@@ -151,7 +151,7 @@ public void setMaximum (int maximum) {
 	* but unexpected.  The fix is to force all
 	* outstanding redraws to be delivered.
 	*/
-	update ();	
+	updateBar ();
 }
 
 /**
@@ -179,7 +179,7 @@ public void setMinimum (int minimum) {
 	* but unexpected.  The fix is to force all
 	* outstanding redraws to be delivered.
 	*/
-	update ();	
+	updateBar ();
 }
 
 /**
@@ -206,7 +206,13 @@ public void setSelection (int x) {
 	* but unexpected.  The fix is to force all
 	* outstanding redraws to be delivered.
 	*/
-	update ();	
+	updateBar ();
+}
+
+void updateBar () {
+	OS.gdk_flush ();
+	int window = paintWindow ();
+	OS.gdk_window_process_updates (window, false);
 }
 
 }
