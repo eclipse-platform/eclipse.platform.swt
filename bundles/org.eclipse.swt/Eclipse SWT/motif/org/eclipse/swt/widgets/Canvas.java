@@ -90,8 +90,8 @@ public Caret getCaret () {
 	return caret;
 }
 
-short [] getIMECaretPos () {
-	if (caret == null) return super.getIMECaretPos ();
+short [] getIMCaretPos () {
+	if (caret == null) return super.getIMCaretPos ();
 	int width = caret.width;
 	if (width <= 0) width = 2;
 	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
@@ -234,7 +234,7 @@ public void setFont (Font font) {
 void updateCaret () {
 	if (caret == null) return;
 	if (!OS.IsDBLocale) return;
-	short [] point = getIMECaretPos ();
+	short [] point = getIMCaretPos ();
 	int ptr = OS.XtMalloc (4);
 	OS.memmove (ptr, point, 4);
 	int[] argList = {OS.XmNspotLocation, ptr};

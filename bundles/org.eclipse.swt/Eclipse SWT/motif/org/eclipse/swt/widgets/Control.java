@@ -780,7 +780,7 @@ int getForegroundPixel () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
-short [] getIMECaretPos () {
+short [] getIMCaretPos () {
 	return new short[]{0, 0};
 }
 /**
@@ -1312,7 +1312,7 @@ int processFocusIn () {
 	if (handle == 0) return 0;
 	if (!hasIMSupport()) {
 		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			short [] point = getIMECaretPos ();
+			short [] point = getIMCaretPos ();
 			int ptr = OS.XtMalloc (4);
 			OS.memmove (ptr, point, 4);
 			/*
