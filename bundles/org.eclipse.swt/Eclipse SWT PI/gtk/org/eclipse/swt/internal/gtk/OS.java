@@ -264,6 +264,7 @@ public class OS {
 	public static final int GTK_SENSITIVE = 1 << 9;
 	public static final int GTK_CAN_FOCUS = 1 << 11;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
+	public static final int GTK_CAN_DEFAULT = 1 << 13;
 	public static final int GTK_CLIST_SHOW_TITLES         = 1 <<  2;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0;
 	public static final int GTK_PROGRESS_DISCRETE = 1;

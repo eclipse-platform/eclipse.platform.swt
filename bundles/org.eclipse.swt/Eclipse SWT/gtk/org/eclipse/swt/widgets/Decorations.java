@@ -320,6 +320,7 @@ public void setDefaultButton (Button button) {
 	checkWidget();
 	if (button != null) {
 		if (button.isDisposed()) return;
+		OS.GTK_WIDGET_SET_FLAGS(button.handle, OS.GTK_CAN_DEFAULT);
 		OS.gtk_window_set_default(topHandle(), button.handle);
 		return;
 	}
