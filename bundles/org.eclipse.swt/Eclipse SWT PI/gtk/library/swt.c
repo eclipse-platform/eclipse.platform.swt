@@ -1302,6 +1302,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1arrow_1set
 	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkArrowType)arg2);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1atom_1intern
+	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1atom_1intern\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_atom_intern((const gchar *)lparg0, (gboolean)arg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1box_1pack_1end
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jboolean arg3, jint arg4)
 {
@@ -2947,15 +2961,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1selection_1data
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1selection_1data_1set
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-	jbyte *lparg3=NULL;
-
 	DEBUG_CALL("gtk_1selection_1data_1set\n")
 
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	gtk_selection_data_set((GtkSelectionData *)arg0, (GdkAtom)arg1, (gint)arg2, (const guchar *)lparg3, (gint)arg4);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	gtk_selection_data_set((GtkSelectionData *)arg0, (GdkAtom)arg1, (gint)arg2, (const guchar *)arg3, (gint)arg4);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1set_1locale
