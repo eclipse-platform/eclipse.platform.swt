@@ -378,6 +378,7 @@ public void setImage (Image image) {
 	if (isShowing) hideCaret ();
 	this.image = image;
 	if (isShowing) showCaret ();
+	System.out.println("Caret.setImage: nyi");
 }
 /**
  * Sets the receiver's location to the point specified by
