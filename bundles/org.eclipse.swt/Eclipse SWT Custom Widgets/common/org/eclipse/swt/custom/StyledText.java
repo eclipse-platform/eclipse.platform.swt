@@ -4790,15 +4790,18 @@ void handleKeyDown(Event event) {
 /**
  * Support special copy/paste behavior - if ctrl key is down when text is selected, when 
  * the ctrl key is released, the selected text will be copied and pasted at the position that
- * the cursor was when the the ctrl key was pressed.
+ * the cursor was when the the ctrl key was pressed.  If the "paste to" position has selected
+ * text, the text will be replaced with the text that is selected when the ctrl key is released.
  */
 void handleKeyUp(Event event) {
 	if (event.keyCode == SWT.CTRL) {
 		if (pasteToLocation != null) {
 			String toCopy = getSelectionText();
-			setSelection(pasteToLocation);
-			insert(toCopy);
-			setSelection(getSelection().x + toCopy.length());
+			// clear the current selection, will also move caret to pasteToLocation.x
+			setSelection(pasteToLocation.x, pasteToLocation.x);
+			replaceTextRange(pasteToLocation.x, pasteToLocation.y - pasteToLocation.x, toCopy);
+			// place caret at end of the text that was pasted
+			setCaretOffset(pasteToLocation.x + toCopy.length());
 		}
 		pasteToLocation = null;
 	}
