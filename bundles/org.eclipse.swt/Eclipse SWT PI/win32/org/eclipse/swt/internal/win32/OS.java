@@ -337,6 +337,8 @@ public class OS {
 	public static final int EM_SETREADONLY = 0xcf;
 	public static final int EM_SETSEL = 0xb1;
 	public static final int EM_SETTABSTOPS = 0xcb;
+	public static final int EN_ALIGN_LTR_EC = 0x0700;
+	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
 	public static final int ERROR_NO_MORE_ITEMS = 0x103;
 	public static final int ESB_DISABLE_BOTH = 0x3;
@@ -1236,6 +1238,7 @@ public class OS {
 	public static final int WS_EX_LAYOUTRTL = 0x00400000;
 	public static final int WS_EX_MDICHILD = 0x00000040;
 	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
+	public static final int WS_EX_RIGHT = 0x00001000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
 	public static final int WS_EX_TOPMOST = 0x8;

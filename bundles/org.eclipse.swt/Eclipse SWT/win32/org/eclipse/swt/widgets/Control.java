@@ -337,9 +337,11 @@ public void addTraverseListener (TraverseListener listener) {
 
 abstract int callWindowProc (int msg, int wParam, int lParam);
 
-void checkOrientation (Widget parent) {
-	super.checkOrientation (parent);
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.MIRRORED;
+void checkMirrored () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		if ((bits & OS.LAYOUT_RTL) != 0) style |= SWT.MIRRORED;
+	}
 }
 
 /**
@@ -479,6 +481,7 @@ void createWidget () {
 	register ();
 	subclass ();
 	setDefaultFont ();
+	checkMirrored ();
 }
 
 int defaultBackground () {
