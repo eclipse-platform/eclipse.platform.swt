@@ -112,7 +112,7 @@ public CoolItem (CoolBar parent, int style, int index) {
 	super(parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
-	calculatedBorders();
+	calculateChevronTrim ();
 }
 /**
  * Adds the listener to the collection of listeners that will
@@ -158,7 +158,7 @@ protected void checkSubclass () {
 /* 
  * Find the trim size of the Toolbar widget in the current platform.
  */
-void calculatedBorders() {
+void calculateChevronTrim () {
 	ToolBar tb = new ToolBar (parent, SWT.FLAT);
 	ToolItem ti = new ToolItem (tb, SWT.PUSH);
 	Image image = new Image (getDisplay(), 1, 1);
@@ -317,12 +317,6 @@ public Display getDisplay () {
 public Point getMinimumSize () {
 	checkWidget();
 	return minimumSize;
-}
-/**
- * @deprecated use getMinimumSize
- */
-public int getMinimumWidth () {
-	return getMinimumSize().x;
 }
 /**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
@@ -485,13 +479,6 @@ public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);	
 	minimumSize = size;
-}
-/**
- * @deprecated use setMinimumSize
- */
-public void setMinimumWidth (int width) {
-	checkWidget ();
-	setMinimumSize (width, getMinimumSize().y);
 }
 public void setPreferredSize (int width, int height) {
 	checkWidget();
