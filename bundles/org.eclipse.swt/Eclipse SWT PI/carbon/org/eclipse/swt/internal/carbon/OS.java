@@ -167,6 +167,7 @@ public class OS {
 	public static final int kEventClassTextInput	= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassApplication	= ('a'<<24) + ('p'<<16) + ('p'<<8) + 'l';
 	public static final int kEventClassAppleEvent	= ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
+		public static final int kEventAppleEvent	= 1;
 	public static final int kEventClassMenu			= ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int kEventClassWindow		= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int kEventClassControl		= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'l';
@@ -186,8 +187,10 @@ public class OS {
 	public static final int typeControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int typeMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint= ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
+	public static final int typeType= ('t'<<24) + ('y'<<16) + ('p'<<8) + 'e';
 	
 	public static final int kEventParamAEEventID= ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
+	public static final int kEventParamAEEventClass= ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
 	
 	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
 	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
