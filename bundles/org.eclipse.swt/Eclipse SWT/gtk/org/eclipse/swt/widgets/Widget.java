@@ -705,11 +705,19 @@ int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processSelectionIter (int int0, int int1, int int2) {
+	return 0;
+}
+
 int processShow (int int0, int int1, int int2) {
 	return 0;
 }
 
 int processTimer (int id) {
+	return 0;
+}
+
+int processToggle (int int0, int int1) {
 	return 0;
 }
 

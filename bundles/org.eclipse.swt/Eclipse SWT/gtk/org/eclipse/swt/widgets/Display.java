@@ -91,8 +91,9 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
-	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback;
+	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc, selectionIterProc, toggleProc;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5,
+	         keyCallback, selectionIterCallback, toggleCallback;
 	EventTable eventTable;
 
 	/* Sync/Async Widget Communication */
@@ -1114,6 +1115,14 @@ void initializeCallbacks () {
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	selectionIterCallback = new Callback(this, "selectionIterProc", 4);
+	selectionIterProc = selectionIterCallback.getAddress();
+	if (selectionIterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	toggleCallback = new Callback(this, "toggleProc", 3);
+	toggleProc = toggleCallback.getAddress();
+	if (toggleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 /**	 
@@ -1770,6 +1779,18 @@ int windowTimerProc (int handle, int id) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processTimer (id);
+}
+
+int selectionIterProc(int handle, int int0, int int1, int int2) {
+	Widget widget = WidgetTable.get (int2);
+	if (widget == null) return 0;
+	return widget.processSelectionIter(int0, int1, int2);
+}
+
+int toggleProc(int rendererHandle, int int0, int int1) {
+	Widget widget = WidgetTable.get (int1);
+	if (widget == null) return 0;
+	return widget.processToggle(int0, int1);
 }
 
 }
