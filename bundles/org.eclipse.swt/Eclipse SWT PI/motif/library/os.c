@@ -581,6 +581,16 @@ JNIEXPORT void JNICALL OS_NATIVE(XDrawLines)
 }
 #endif
 
+#ifndef NO_XDrawPoint
+JNIEXPORT void JNICALL OS_NATIVE(XDrawPoint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "XDrawPoint\n")
+	XDrawPoint((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "XDrawPoint\n")
+}
+#endif
+
 #ifndef NO_XDrawRectangle
 JNIEXPORT void JNICALL OS_NATIVE(XDrawRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)

@@ -646,6 +646,7 @@ public static final synchronized native void XDrawArc(int display, int drawable,
 public static final synchronized native void XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final synchronized native void XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode);
 public static final synchronized native void XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
+public static final synchronized native void XDrawPoint(int display, int drawable, int gc, int x, int y);
 public static final synchronized native boolean XEmptyRegion(int region);
 public static final synchronized native int XEventsQueued(int display, int mode);
 public static final synchronized native void XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
