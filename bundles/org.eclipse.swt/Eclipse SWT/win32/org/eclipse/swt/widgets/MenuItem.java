@@ -263,7 +263,12 @@ void fillAccel (ACCEL accel) {
 }
 
 void fixMenus (Decorations newParent) {
-	if (menu != null) menu.fixMenus (newParent);
+	/*
+	* Ensure that the current menu item is moved into
+	* the new parent before moving the submenu so that
+	* menu id of the current item will not be assigned
+	* to an item in a submenu.
+	*/
 	int oldId = this.id;
 	parent.parent.remove (this);
 	newParent.add (this);
@@ -282,6 +287,7 @@ void fixMenus (Decorations newParent) {
 		info.wID = info.dwItemData = id;
 		OS.SetMenuItemInfo (hMenu, oldId, false, info);
 	}
+	if (menu != null) menu.fixMenus (newParent);
 }
 
 /**
