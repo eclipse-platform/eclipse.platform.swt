@@ -38,10 +38,10 @@ final class LEDataInputStream extends InputStream {
 	}
 	
 	public void close() throws IOException {
+		buf = null;
 		if (in != null) {
 			in.close();
 			in = null;
-			buf = null;
 		}
 	}
 	
@@ -50,6 +50,14 @@ final class LEDataInputStream extends InputStream {
 	 */
 	public int getPosition() {
 		return position;
+	}
+	
+	/**
+	 * Answers how many bytes are available for reading without blocking
+	 */
+	public int available() throws IOException {
+		if (buf == null) throw new IOException();
+		return (buf.length - pos) + in.available();
 	}
 	
 	/**
@@ -104,27 +112,26 @@ final class LEDataInputStream extends InputStream {
 	 		throw new ArrayIndexOutOfBoundsException();
 		 	}
 				
-		int copiedBytes = 0;
-		int copyLength = 0;
+		int cacheCopied = 0;
 		int newOffset = offset;
 	
 		// Are there pushback bytes available?
-		if (pos < buf.length) {
-			copyLength = (buf.length - pos >= length) ? length : buf.length - pos;
-			System.arraycopy(buf, pos, buffer, newOffset, copyLength);
-			newOffset += copyLength;
-			copiedBytes += copyLength;
-			pos += copyLength;
+		int available = buf.length - pos;
+		if (available > 0) {
+			cacheCopied = (available >= length) ? length : available;
+			System.arraycopy(buf, pos, buffer, newOffset, cacheCopied);
+			newOffset += cacheCopied;
+			pos += cacheCopied;
 		}
 	
 		// Have we copied enough?
-		if (copyLength == length) return length;
+		if (cacheCopied == length) return length;
 
-		int inCopied = in.read(buffer, newOffset, length - copiedBytes);
+		int inCopied = in.read(buffer, newOffset, length - cacheCopied);
 
-		if (inCopied > 0) return inCopied + copiedBytes;
-		if (copiedBytes == 0) return inCopied;
-		return copiedBytes;
+		if (inCopied > 0) return inCopied + cacheCopied;
+		if (cacheCopied == 0) return inCopied;
+		return cacheCopied;
 	}
 	
 	/**
@@ -150,51 +157,23 @@ final class LEDataInputStream extends InputStream {
 		return (short)(((buf[1] & 0xFF) << 8) | (buf[0] & 0xFF));
 	}
 	
+	/**
+	 * Push back the entire content of the given buffer <code>b</code>.
+	 * <p>
+	 * The bytes are pushed so that they would be read back b[0], b[1], etc. 
+	 * If the push back buffer cannot handle the bytes copied from <code>b</code>, 
+	 * an IOException will be thrown and no byte will be pushed back.
+	 * </p>
+	 * 
+	 * @param b the byte array containing bytes to push back into the stream
+	 *
+	 * @exception 	java.io.IOException if the pushback buffer is too small
+	 */
 	public void unread(byte[] b) throws IOException {
-		position -= b.length;
-		unread(b, 0, b.length);
+		int length = b.length;
+		if (length > pos) throw new IOException();
+		position -= length;
+		pos -= length;
+		System.arraycopy(b, 0, buf, pos, length);
 	}
-	
-	/**
-	 * Push back <code>length</code> number of bytes in <code>buffer</code> 
-	 * starting at <code>offset</code>.
-	 * <p>
-	 * The bytes are pushed so that they would be read back buffer[offset], 
-	 * buffer[offset+1], etc. If the push back buffer cannot handle the bytes
-	 * copied from <code>buffer</code>, an IOException will be thrown. 
-	 * Some of the bytes may already be in the buffer after the exception
-	 * is thrown.
-	 * </p>
-	 * 
-	 * @param buffer the byte array containing bytes to push back into the stream
-	 * @param offset the location to start taking bytes to push back
-	 * @param length the number of bytes to push back
-	 *
-	 * @exception 	java.io.IOException if the pushback buffer becomes, or is, full
-	 */
-	private void unread(byte[] buffer, int offset, int length) throws IOException {
-		if (offset < 0 || offset > buffer.length ||
-			length < 0 || (length > buffer.length - offset)) {
-			throw new ArrayIndexOutOfBoundsException();
-			}
-		for (int i = offset + length - 1; i >= offset; i--)
-			unread(buffer[i]); 
-	}
-
-	/**
-	 * Push back one <code>byte</code>.  
-	 * <p>
-	 * Takes the byte <code>oneByte</code> and puts in the local buffer of bytes
-	 * to read back before accessing the target input stream.
-	 * </p>
-	 * 
-	 * @param oneByte the byte to push back into the stream.
-	 *
-	 * @exception java.io.IOException if the pushback buffer is already full.
-	 */
-	private void unread(int oneByte) throws IOException {
-		if (buf == null || pos == 0) throw new IOException();
-		buf[--pos] = (byte)oneByte;
-	}
-	
 }
