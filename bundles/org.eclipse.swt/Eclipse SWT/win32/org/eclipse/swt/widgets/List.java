@@ -985,7 +985,7 @@ public void select (int [] indices) {
 		}
 		return;
 	}
-	for (int i=0; i<indices.length; i++) {
+	for (int i = indices.length - 1; i >= 0; i--) {
 		int index = indices [i];
 		if (index != -1) {
 			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
@@ -1056,8 +1056,8 @@ public void select (int start, int end) {
 	if (start > end) return;
 	if ((style & SWT.SINGLE) != 0) {
 		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-		int index = Math.min (count - 1, end);
-		if (index >= start) select (index);
+		int index = Math.min (count - 1, start);
+		if (index <= end) select (index);
 		return;
 	}
 	/*
@@ -1313,6 +1313,7 @@ void setScrollWidth (int newWidth, boolean grow) {
 public void setSelection(int [] indices) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
+	setFocusIndex(indices[0]);
 }
 
 /**
@@ -1389,6 +1390,7 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
+	setFocusIndex(start);
 }
 
 /**

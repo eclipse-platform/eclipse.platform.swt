@@ -1314,6 +1314,7 @@ public void select (int index) {
 	ignoreSelect = true;
 	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 	ignoreSelect = false;
+	setFocusIndex(index);
 }
 
 /**
@@ -1336,7 +1337,7 @@ public void select (int start, int end) {
 	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=start; i<=end; i++) {
+	for (int i=end; i>= start;i--) {
 		lvItem.iItem = i;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
@@ -1520,6 +1521,15 @@ void setCheckboxImageList () {
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+}
+
+void setFocusIndex (int index) {
+	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_STATE;
+	lvItem.state = OS.LVIS_FOCUSED;
+	lvItem.stateMask = OS.LVIS_FOCUSED;
+	lvItem.iItem = index;
+	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 }
 
 public void setFont (Font font) {
@@ -1722,6 +1732,7 @@ void setScrollWidth () {
 public void setSelection (int [] indices) {
 	deselectAll ();
 	select (indices);
+	setFocusIndex(indices[0]);
 }
 
 /**
@@ -1798,6 +1809,7 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	deselectAll ();
 	select (start, end);
+	setFocusIndex(start);
 }
 
 /**
