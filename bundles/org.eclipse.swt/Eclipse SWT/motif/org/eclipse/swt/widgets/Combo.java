@@ -1219,6 +1219,9 @@ public void setItems (String [] items) {
 	int [] argList4 = {OS.XmNselectedItemCount, 0, OS.XmNselectedItems, 0};
 	OS.XtSetValues (argList3 [1], argList4, argList4.length / 2);
 }
+public boolean setOrientation (int orientation) {
+	return false;
+}
 /**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the

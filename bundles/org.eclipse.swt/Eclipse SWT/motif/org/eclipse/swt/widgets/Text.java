@@ -1137,6 +1137,9 @@ public void setEditable (boolean editable) {
 	int [] argList = {OS.XmNcursorPositionVisible, editable && hasFocus () ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+public boolean setOrientation (int orientation) {
+	return false;
+}
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;

@@ -1272,6 +1272,10 @@ void setFontStyle (Font font) {
 	OS.DisposePtr (ptr);
 }
 
+public boolean setOrientation (int orientation) {
+	return false;
+}
+
 /**
  * Sets the selection.
  * <p>

@@ -1228,6 +1228,10 @@ void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_text (handle, 0, color);
 }
 
+public boolean setOrientation (int orientation) {
+	return false;
+}
+
 /**
  * Sets the selection.
  * <p>

@@ -1179,6 +1179,10 @@ public void setFont (Font font) {
 	setTabStops (tabs);
 }
 
+public boolean setOrientation (int orientation) {
+	return false;
+}
+
 /**
  * Sets the selection.
  * <p>

@@ -1117,6 +1117,10 @@ public void setItems (String [] items) {
 	sendEvent (SWT.Modify);
 }
 
+public boolean setOrientation (int orientation) {
+	return false;
+}
+
 /**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
