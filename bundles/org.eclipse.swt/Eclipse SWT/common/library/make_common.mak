@@ -9,7 +9,7 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
-maj_ver=2
-min_ver=133
+maj_ver=3
+min_ver=001
 bld_num=0
-comma_ver=2,1,3,3
+comma_ver=3,0,0,1
