@@ -5,7 +5,6 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
@@ -31,13 +30,9 @@ public final class GC {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+	
 	Drawable drawable;
 	GCData data;
-
-
-/*
- *   ===  Constructors  ===
- */
 
 GC() {
 }
@@ -61,581 +56,10 @@ GC() {
  */
 public GC(Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	data = new GCData();
-	handle = drawable.internal_new_GC(data);
-	this.drawable = drawable;
-	
-	// The colors we get from the widget are not always right.
-	// Get the default GTK_STATE_NORMAL colors
-/*	setBackground( DefaultGtkStyle.instance().backgroundColorNORMAL() );
-	setForeground( DefaultGtkStyle.instance().foregroundColorNORMAL() );
-*/
-
-	// Feature in GDK.
-	// Sometimes, gdk_gc_new() doesn't get the font from the control,
-	// and also, some controls don't contain a font; so when the GC
-	// was created in internal_new_gc(), the font might or might not
-	// be set; if the font isn't there, just fall back to default.
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	if (values.font == 0) {
-/*		OS.gdk_gc_set_font(handle,  DefaultGtkStyle.instance().loadDefaultFont() );*/
-	}
-	
-	if (data.image != null) {
-		data.image.memGC = this;
-		/*
-		 * The transparent pixel mask might change when drawing on
-		 * the image.  Destroy it so that it is regenerated when
-		 * necessary.
-		 */
-		//if (image.transparentPixel != -1) image.destroyMask();
-	}
-	
+	GCData data = new GCData();
+	int gdkGC = drawable.internal_new_GC(data);
+	init(drawable, data, gdkGC);
 }
-
-
-
-/** 
- * Returns the background color.
- *
- * @return the receiver's background color
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-/*
- *   ===  Access - Get/Set  ===
- */
-
-public Color getBackground() {
-	if (handle == 0) error(SWT.ERROR_WIDGET_DISPOSED);
-	GdkColor gdkColor = _getBackgroundGdkColor();
-	return Color.gtk_new(gdkColor);	
-}
-/**
- * Sets the background color. The background color is used
- * for fill operations and as the background color when text
- * is drawn.
- *
- * @param color the new background color for the receiver
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setBackground(Color color) {	
-	if (color == null) error(SWT.ERROR_NULL_ARGUMENT);
-	if (color.handle == null) error(SWT.ERROR_NULL_ARGUMENT);
-	if (handle == 0) error(SWT.ERROR_WIDGET_DISPOSED);
-	OS.gdk_gc_set_background(handle, color.handle);
-}
-
-/** 
- * Returns the receiver's foreground color.
- *
- * @return the color used for drawing foreground things
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Color getForeground() {	
-	if (handle == 0) error(SWT.ERROR_WIDGET_DISPOSED);
-	GdkColor gdkColor = _getForegroundGdkColor();
-	return Color.gtk_new(gdkColor);	
-}
-
-/**
- * Sets the foreground color. The foreground color is used
- * for drawing operations including when text is drawn.
- *
- * @param color the new foreground color for the receiver
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setForeground(Color color) {	
-	if (handle == 0) error(SWT.ERROR_WIDGET_DISPOSED);
-	if (color == null) error(SWT.ERROR_NULL_ARGUMENT);
-	if (color.handle == null) error(SWT.ERROR_NULL_ARGUMENT);
-	OS.gdk_gc_set_foreground(handle, color.handle);
-}
-
-
-
-
-
-
-
-/**
- * Returns the <em>advance width</em> of the specified character in
- * the font which is currently selected into the receiver.
- * <p>
- * The advance width is defined as the horizontal distance the cursor
- * should move after printing the character in the selected font.
- * </p>
- *
- * @param ch the character to measure
- * @return the distance in the x direction to move past the character before painting the next
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-/*
- *   ===  Access - Get - Calculated  ===
- */
-
-public int getAdvanceWidth(char ch) {	
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
-	return OS.gdk_char_width(_getGCFont(), charBuffer[0]);
-}
-/**
- * Returns the width of the specified character in the font
- * selected into the receiver. 
- * <p>
- * The width is defined as the space taken up by the actual
- * character, not including the leading and tailing whitespace
- * or overhang.
- * </p>
- *
- * @param ch the character to measure
- * @return the width of the character
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public int getCharWidth(char ch) {
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
-	int[] lbearing = new int[1];
-	int[] rbearing = new int[1];
-	int[] unused = new int[1];
-	OS.gdk_string_extents(_getGCFont(), charBuffer, lbearing, rbearing, unused, unused, unused);
-	return rbearing[0] - lbearing[0];
-}
-/** 
- * Returns the bounding rectangle of the receiver's clipping
- * region. If no clipping region is set, the return value
- * will be a rectangle which covers the entire bounds of the
- * object the receiver is drawing on.
- *
- * @return the bounding rectangle of the clipping region
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Rectangle getClipping() {
-	if (data.clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, width, height);
-		return new Rectangle(0, 0, width[0], height[0]);
-	}
-	GdkRectangle rect = new GdkRectangle();
-	OS.gdk_region_get_clipbox(data.clipRgn, rect);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
-}
-/** 
- * Sets the region managed by the argument to the current
- * clipping region of the receiver.
- *
- * @param region the region to fill with the clipping region
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>	
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void getClipping(Region region) {	
-	if (region == null) error(SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	if (data.clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, width, height);
-		hRegion = OS.gdk_region_new();
-		GdkRectangle rect = new GdkRectangle();
-		rect.x = 0; rect.y = 0;
-		rect.width = (short)width[0]; rect.height = (short)height[0];
-		region.handle = OS.gdk_region_union_with_rect(hRegion, rect);
-		return;
-	}
-	hRegion = OS.gdk_region_new();
-	region.handle = OS.gdk_regions_union(data.clipRgn, hRegion);
-}
-/** 
- * Returns the font currently being used by the receiver
- * to draw and measure text.
- *
- * @return the receiver's font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Font getFont() {		
-	return Font.gtk_new(_getGCFont());
-}
-/**
- * Returns a FontMetrics which contains information
- * about the font currently being used by the receiver
- * to draw and measure text.
- *
- * @return font metrics for the receiver's font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-// Not done
-public FontMetrics getFontMetrics() {
-	int fontHandle = _getGCFont();
-	if (fontHandle==0) {
-		error(SWT.ERROR_UNSPECIFIED);
-	}
-	return FontMetrics.gtk_new(fontHandle);
-}
-
-/** 
- * Returns the receiver's line style, which will be one
- * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
- * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT</code>.
- *
- * @return the style used for drawing lines
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public int getLineStyle() {
-	return data.lineStyle;
-}
-/** 
- * Returns the width that will be used when drawing lines
- * for all of the figure drawing operations (that is,
- * <code>drawLine</code>, <code>drawRectangle</code>, 
- * <code>drawPolyline</code>, and so forth.
- *
- * @return the receiver's line width 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public int getLineWidth() {	
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	return values.line_width;
-}
-/** 
- * Returns <code>true</code> if this GC is drawing in the mode
- * where the resulting color in the destination is the
- * <em>exclusive or</em> of the color values in the source
- * and the destination, and <code>false</code> if it is
- * drawing in the mode where the destination color is being
- * replaced with the source color value.
- *
- * @return <code>true</code> true if the receiver is in XOR mode, and false otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public boolean getXORMode() {	
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	return values.function == OS.GDK_XOR;
-}
-/**
- * Returns <code>true</code> if the receiver has a clipping
- * region set into it, and <code>false</code> otherwise.
- * If this method returns false, the receiver will draw on all
- * available space in the destination. If it returns true, 
- * it will draw only in the area that is covered by the region
- * that can be accessed with <code>getClipping(region)</code>.
- *
- * @return <code>true</code> if the GC has a clipping region, and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public boolean isClipped() {
-	return data.clipRgn != 0;
-}
-
-
-/**
- * Sets the area of the receiver which can be changed
- * by drawing operations to the rectangular area specified
- * by the arguments.
- *
- * @param x the x coordinate of the clipping rectangle
- * @param y the y coordinate of the clipping rectangle
- * @param width the width of the clipping rectangle
- * @param height the height of the clipping rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setClipping(int x, int y, int width, int height) {
-/*	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
-	GdkRectangle rect = new GdkRectangle();
-	rect.x = (short)x;  rect.y = (short)y;
-	rect.width = (short)width;  rect.height = (short)height;
-	OS.gdk_gc_set_clip_rectangle(handle, rect);
-	data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
-	data.clipRgn = OS.gdk_region_union_with_rect(data.clipRgn, rect);*/
-}
-/**
- * Sets the area of the receiver which can be changed
- * by drawing operations to the rectangular area specified
- * by the argument.
- *
- * @param rect the clipping rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setClipping(Rectangle rect) {
-	if (rect == null) error(SWT.ERROR_NULL_ARGUMENT);
-	setClipping (rect.x, rect.y, rect.width, rect.height);
-}
-/**
- * Sets the area of the receiver which can be changed
- * by drawing operations to the region specified
- * by the argument.
- *
- * @param rect the clipping region.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setClipping(Region region) {	
-/*	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
-	if (region == null) {
-		data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
-		OS.gdk_gc_set_clip_mask(handle, OS.GDK_NONE);
-	} else {
-		data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
-		data.clipRgn = OS.gdk_regions_union(region.handle, data.clipRgn);
-		OS.gdk_gc_set_clip_region(handle, region.handle);
-	}*/
-}
-/** 
- * Sets the font which will be used by the receiver
- * to draw and measure text to the argument. If the
- * argument is null, then a default font appropriate
- * for the platform will be used instead.
- *
- * @param font the new font for the receiver, or null to indicate a default font
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setFont(Font font) {	
-/*	int fontHandle = 0;
-	if (font == null) {
-		GtkStyle gtkStyle = new GtkStyle();
-		int style = OS.gtk_widget_get_default_style();
-		OS.memmove(gtkStyle, style, GtkStyle.sizeof);
-		fontHandle = gtkStyle.font;
-	} else {
-		fontHandle = font.handle;
-	}
-	OS.gdk_gc_set_font(handle, fontHandle);*/
-}
-
-/** 
- * Sets the receiver's line style to the argument, which must be one
- * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
- * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT</code>.
- *
- * @param lineStyle the style to be used for drawing lines
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setLineStyle(int lineStyle) {
-	switch (lineStyle) {
-		case SWT.LINE_SOLID:
-			this.data.lineStyle = lineStyle;
-			OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
-			return;
-		case SWT.LINE_DASH:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2}, 2);
-			break;
-		case SWT.LINE_DOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {3, 1}, 2);
-			break;
-		case SWT.LINE_DASHDOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1}, 4);
-			break;
-		case SWT.LINE_DASHDOTDOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1, 3, 1}, 6);
-			break;
-		default:
-			error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	this.data.lineStyle = lineStyle;
-	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
-}
-/** 
- * Sets the width that will be used when drawing lines
- * for all of the figure drawing operations (that is,
- * <code>drawLine</code>, <code>drawRectangle</code>, 
- * <code>drawPolyline</code>, and so forth.
- *
- * @param lineWidth the width of a line
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setLineWidth(int width) {	
-	if (data.lineStyle == SWT.LINE_SOLID) {
-		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
-	} else {
-		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
-	}
-}
-/** 
- * If the argument is <code>true</code>, puts the receiver
- * in a drawing mode where the resulting color in the destination
- * is the <em>exclusive or</em> of the color values in the source
- * and the destination, and if the argument is <code>false</code>,
- * puts the receiver in a drawing mode where the destination color
- * is replaced with the source color value.
- *
- * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setXORMode(boolean val) {	
-	if (val) {
-		OS.gdk_gc_set_function(handle, OS.GDK_XOR);
-	} else {
-		OS.gdk_gc_set_function(handle, OS.GDK_COPY);
-	}
-}
-/**
- * Returns the extent of the given string. No tab
- * expansion or carriage return processing will be performed.
- * <p>
- * The <em>extent</em> of a string is the width and height of
- * the rectangular area it would cover if drawn in a particular
- * font (in this case, the current font in the receiver).
- * </p>
- *
- * @param string the string to measure
- * @return a point containing the extent of the string
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Point stringExtent(String string) {	
-	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	int width = OS.gdk_string_width(_getGCFont(), buffer);
-	int height = OS.gdk_string_height(_getGCFont(), buffer);
-	return new Point(width, height);
-}
-/**
- * Returns the extent of the given string. Tab expansion and
- * carriage return processing are performed.
- * <p>
- * The <em>extent</em> of a string is the width and height of
- * the rectangular area it would cover if drawn in a particular
- * font (in this case, the current font in the receiver).
- * </p>
- *
- * @param string the string to measure
- * @return a point containing the extent of the string
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Point textExtent(String string) {		
-	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	int width = OS.gdk_string_width(_getGCFont(), buffer);
-	int height = OS.gdk_string_height(_getGCFont(), buffer);
-	return new Point(width, height);
-}
-
-
-
-/*
- *   ===  Access - Internal utils  ===
- */
- 
-private GdkGCValues _getGCValues() {
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	return values;
-}
-private GdkColor _getForegroundGdkColor() {
-	GdkGCValues values = _getGCValues();
-	GdkColor color = new GdkColor();
-	color.pixel = values.foreground_pixel;
-	color.red   = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue  = values.foreground_blue;
-	return color;
-}
-private GdkColor _getBackgroundGdkColor() {
-	GdkGCValues values = _getGCValues();
-	GdkColor color = new GdkColor();
-	color.pixel = values.background_pixel;
-	color.red   = values.background_red;
-	color.green = values.background_green;
-	color.blue  = values.background_blue;
-	return color;
-}
-private int _getGCFont() {
-	GdkGCValues values = _getGCValues();
-	if (values.font==0) {
-		values.font = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
-		if (values.font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	return values.font;
-}
-
-
 
 /**
  * Copies a rectangular area of the receiver at the source
@@ -651,9 +75,6 @@ private int _getGCFont() {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- */
-/*
- *   ===  Drawing operations proper  ===
  */
 
 /**
@@ -676,16 +97,11 @@ public void copyArea(Image image, int x, int y) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = image.getBounds();
-	int xGC = OS.gdk_gc_new(image.pixmap);
-	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	// is it possible/necessary to set the subwindow mode??
-	OS.gdk_window_copy_area (image.pixmap,  // dest window
-	                         xGC,
-	                         0, 0,          // dest coords
-	                         image.pixmap,  // src window
-	                         x, y,          // src coords
-	                         rect.width, rect.height);
-	OS.gdk_gc_destroy(xGC);
+	int gdkGC = OS.gdk_gc_new(image.pixmap);
+	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.gdk_gc_set_subwindow(gdkGC, OS.GDK_INCLUDE_INFERIORS);
+	OS.gdk_draw_drawable(image.pixmap, gdkGC, data.drawable, x, y, 0, 0, rect.width, rect.height);
+	OS.g_object_unref(gdkGC);
 }
 
 /**
@@ -704,10 +120,56 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-	OS.gdk_window_copy_area (data.drawable, handle,
-	                         destX, destY,
-	                         data.drawable,
-	                         srcX, srcY, width, height);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width <= 0 || height <= 0) return;
+	int deltaX = destX - srcX, deltaY = destY - srcY;
+	if (deltaX == 0 && deltaY == 0) return;
+	int drawable = data.drawable;
+	OS.gdk_gc_set_exposures(handle, true);
+	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
+	OS.gdk_gc_set_exposures(handle, false);
+	if (data.image != null) return;
+	boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+	if (disjoint) {
+		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
+	} else {
+		if (deltaX != 0) {
+			int newX = destX - deltaX;
+			if (deltaX < 0) newX = destX + width;
+			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
+		}
+		if (deltaY != 0) {
+			int newY = destY - deltaY;
+			if (deltaY < 0) newY = destY + height;
+			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
+		}
+	}
+}
+
+/**
+ * Disposes of the operating system resources associated with
+ * the graphics context. Applications must dispose of all GCs
+ * which they allocate.
+ */
+public void dispose() {
+	if (handle == 0) return;
+	if (data.device.isDisposed()) return;
+	
+	/* Free resources */
+	int clipRgn = data.clipRgn;
+	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
+	Image image = data.image;
+	if (image != null) image.memGC = null;
+
+	/* Dispose the GC */
+	drawable.internal_dispose_GC(handle, data);
+
+	data.drawable =	data.clipRgn = 0;
+	drawable = null;
+	data.image = null;
+	data = null;
+	handle = 0;
+	
 }
 
 /**
@@ -743,6 +205,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * </ul>
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -752,10 +215,11 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 		height = -height;
 	}
 	if (width == 0 || height == 0 || endAngle == 0) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}	
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, startAngle * 64, endAngle * 64);
 }
+
 /** 
  * Draws a rectangle, based on the specified arguments, which has
  * the appearance of the platform's <em>focus rectangle</em> if the
@@ -774,6 +238,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  * @see #drawRectangle
  */
 public void drawFocus(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	GtkStyle style = new GtkStyle(OS.gtk_widget_get_default_style());
 	GdkColor color = new GdkColor();
 	color.pixel = style.fg0_pixel;
@@ -790,6 +255,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
+
 /**
  * Draws the given image in the receiver at the specified
  * coordinates.
@@ -810,11 +276,10 @@ public void drawFocus(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
-	if (image == null) error(SWT.ERROR_NULL_ARGUMENT);
-	int pixmap = image.pixmap;
-	int [] width = new int [1];  int [] height = new int [1];
- 	OS.gdk_drawable_get_size(pixmap, width, height);
- 	drawImage(image, 0, 0, width[0], height[0], x, y, width[0], height[0]);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 
 /**
@@ -847,76 +312,149 @@ public void drawImage(Image image, int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
-	/* basic sanity checks */
+public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
+}
 
-	/* source image properties */
+void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	int[] width = new int[1];
 	int[] height = new int[1];
  	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
-	if ((srcY + srcWidth > width[0]) ||
-		(srcY + srcHeight > height[0])) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+ 	int imgWidth = width[0];
+ 	int imgHeight = height[0];
+ 	if (simple) {
+ 		srcWidth = destWidth = imgWidth;
+ 		srcHeight = destHeight = imgHeight;
+ 	} else {
+ 		simple = srcX == 0 && srcY == 0 &&
+ 			srcWidth == destWidth && destWidth == imgWidth &&
+ 			srcHeight == destHeight && destHeight == imgHeight;
+		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+ 	}
+	if (srcImage.alpha != -1 || srcImage.alphaData != null) {
+		drawImageAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
+	} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
+		drawImageMask(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
+	} else {
+		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 	}
-
-	/* Special case:  If we don't need to scale, and there is no alpha/mask,
-	 * then we can just blit the image inside the X server - no net traffic
-	 */
-	boolean needScaling = (srcWidth != destWidth) || (srcHeight != destHeight);
-	boolean simple = !needScaling & (srcImage.mask == 0);
-	
-	if (simple) {
-		OS.gdk_draw_pixmap(data.drawable, handle, srcImage.pixmap,
-			srcX, srcY,
-			destX, destY,
-			width[0], height[0]);
+}
+void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	if (srcWidth == destWidth && srcHeight == destHeight) {
+		OS.gdk_draw_drawable(data.drawable, handle, srcImage.pixmap, srcX, srcY, destX, destY, destWidth, destHeight);
+	} else {
+		int pixbuf = scale(srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destWidth, destHeight);
+		OS.gdk_pixbuf_render_to_drawable(pixbuf, data.drawable, handle, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+		OS.g_object_unref(pixbuf);
+	}
+}
+void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	if (srcImage.alpha == 0) return;
+	if (srcImage.alpha == 255) {
+		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		return;
 	}
-	
-	
-	/* Fetch a local GdkPixbuf from server */
-	Pixbuffer pixbuf = new Pixbuffer(srcImage);
-	
-	/* Scale if necessary */
-	if ((srcWidth != destWidth) || (srcHeight != destHeight)) {
-		double scale_x = (double)destWidth / (double)srcWidth;
-		double scale_y = (double)destHeight / (double)srcHeight;
-		double offset_x = - srcX * scale_x;
-		double offset_y = - srcY * scale_y;
-
-		int destSizePixbuf = GDKPIXBUF.gdk_pixbuf_new (
-			GDKPIXBUF.GDK_COLORSPACE_RGB(),
-			true, 8, destWidth, destHeight);
-		GDKPIXBUF.gdk_pixbuf_scale(
-			pixbuf.handle, // src,
-			destSizePixbuf,
-			0,
-			0,
-			destWidth, destHeight,
-			offset_x, offset_y,
-			scale_x, scale_y,
-			GDKPIXBUF.GDK_INTERP_BILINEAR);
-		pixbuf.handle = destSizePixbuf;
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), true, 8, srcWidth, srcHeight);
+	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int colormap = OS.gdk_colormap_get_system();
+	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+	int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+	byte[] line = new byte[stride];
+	byte alpha = (byte)srcImage.alpha;
+	byte[] alphaData = srcImage.alphaData;
+	for (int y=0; y<srcHeight; y++) {
+		int alphaIndex = (y + srcY) * imgWidth + srcX;
+		OS.memmove(line, pixels + (y * stride), stride);
+		for (int x=3; x<stride; x+=4) {
+			line[x] = alphaData == null ? alpha : alphaData[alphaIndex++];
+		}
+		OS.memmove(pixels + (y * stride), line, stride);
 	}
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+		OS.g_object_unref(pixbuf);
+		if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		pixbuf = scaledPixbuf;
+	}
+	OS.gdk_pixbuf_render_to_drawable_alpha(
+			pixbuf, data.drawable,
+			0, 0, destX, destY, destWidth, destHeight,
+			OS.GDK_PIXBUF_ALPHA_BILEVEL, 128, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+	OS.g_object_unref(pixbuf);
+}
+void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	int drawable = data.drawable;
+	int colorPixmap = srcImage.pixmap;
+	/* Generate the mask if necessary. */
+	if (srcImage.transparentPixel != -1) srcImage.createMask();
+	int maskPixmap = srcImage.mask;
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		//NOT DONE - there must be a better way of scaling a GdkBitmap
+		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), true, 8, srcWidth, srcHeight);
+		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int colormap = OS.gdk_colormap_get_system();
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+		int gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
+		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+		int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		byte[] line = new byte[stride];
+		for (int y=0; y<srcWidth; y++) {
+			OS.memmove(line, pixels + (y * stride), stride);
+			for (int x=0; x<srcHeight; x++) {
+				if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) != 0) {
+					line[x*4+3] = (byte)0xFF;
+				} else {
+					line[x*4+3] = 0;
+				}
+			}
+			OS.memmove(pixels + (y * stride), line, stride);
+		}
+		OS.g_object_unref(gdkImagePtr);
+		int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+		OS.g_object_unref(pixbuf);
+		if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.gdk_pixbuf_render_to_drawable_alpha(
+			scaledPixbuf, data.drawable,
+			0, 0, destX, destY, destWidth, destHeight,
+			OS.GDK_PIXBUF_ALPHA_BILEVEL, 128, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+		OS.g_object_unref(scaledPixbuf);
+	} else {
 	
-	/* Paint it */
-	GDKPIXBUF.gdk_pixbuf_render_to_drawable_alpha(
-			pixbuf.handle,
-			data.drawable,
-			0, 0,
-			destX, destY,
-			destWidth, destHeight,
-			GDKPIXBUF.GDK_PIXBUF_ALPHA_BILEVEL, 128,
-			GDKPIXBUF.GDK_RGB_DITHER_NORMAL,
-			0, 0
-			);
+		/* Blit cliping the mask */
+		GdkGCValues values = new GdkGCValues();
+		OS.gdk_gc_get_values(handle, values);
+		OS.gdk_gc_set_clip_mask(handle, maskPixmap);
+		OS.gdk_gc_set_clip_origin(handle, destX - srcX, destY - srcY);
+		OS.gdk_draw_drawable(drawable, handle, colorPixmap, srcX, srcY, destX, destY, srcWidth, srcHeight);
+		OS.gdk_gc_set_values(handle, values, OS.GDK_GC_CLIP_MASK | OS.GDK_GC_CLIP_X_ORIGIN | OS.GDK_GC_CLIP_Y_ORIGIN);
+	}
+
+	/* Destroy scaled pixmaps */
+	if (colorPixmap != 0 && srcImage.pixmap != colorPixmap) OS.g_object_unref(colorPixmap);
+	if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
+	/* Destroy the image mask if the there is a GC created on the image */
+	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
+}
+int scale(int src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), false, 8, srcWidth, srcHeight);
+	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int colormap = OS.gdk_colormap_get_system();
+	OS.gdk_pixbuf_get_from_drawable(pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+	int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+	OS.g_object_unref(pixbuf);
+	if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return scaledPixbuf;
 }
 
 /** 
@@ -933,8 +471,10 @@ public void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
  * </ul>
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.gdk_draw_line (data.drawable, handle, x1, y1, x2, y2);
 }
+
 /** 
  * Draws the outline of an oval, using the foreground color,
  * within the specified rectangular area.
@@ -957,6 +497,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  * </ul>
  */
 public void drawOval(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -967,6 +508,7 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, 0, 23040);
 }
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -985,12 +527,9 @@ public void drawOval(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawPolygon(int[] pointArray) {
-	if (pointArray == null) error(SWT.ERROR_NULL_ARGUMENT);
-	short[] points = new short[pointArray.length];
-	for (int i = 0; i < pointArray.length; i++) {
-		points[i] = (short)pointArray[i];
-	}
-	OS.gdk_draw_polygon(data.drawable, handle, 0, points, points.length / 2);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	OS.gdk_draw_polygon(data.drawable, handle, 0, pointArray, pointArray.length / 2);
 }
 /** 
  * Draws the polyline which is defined by the specified array
@@ -1010,13 +549,11 @@ public void drawPolygon(int[] pointArray) {
  * </ul>
  */
 public void drawPolyline(int[] pointArray) {
-	if (pointArray == null) error(SWT.ERROR_NULL_ARGUMENT);
-	short[] points = new short[pointArray.length];
-	for (int i = 0; i < pointArray.length; i++) {
-		points[i] = (short)pointArray[i];
-	}
-	OS.gdk_draw_lines(data.drawable, handle, points, points.length / 2);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	OS.gdk_draw_lines(data.drawable, handle, pointArray, pointArray.length / 2);
 }
+
 /** 
  * Draws the outline of the rectangle specified by the arguments,
  * using the receiver's foreground color. The left and right edges
@@ -1033,6 +570,7 @@ public void drawPolyline(int[] pointArray) {
  * </ul>
  */
 public void drawRectangle(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1043,6 +581,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 	}
 	OS.gdk_draw_rectangle(data.drawable, handle, 0, x, y, width, height);
 }
+
 /** 
  * Draws the outline of the specified rectangle, using the receiver's
  * foreground color. The left and right edges of the rectangle are at
@@ -1060,7 +599,7 @@ public void drawRectangle(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawRectangle(Rectangle rect) {
-	if (rect == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
 /** 
@@ -1083,6 +622,7 @@ public void drawRectangle(Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int nx = x;
 	int ny = y;
 	int nw = width;
@@ -1098,21 +638,43 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		nh = 0 - nh;
 		ny = ny -nh;
 	}
-	if (naw < 0) naw = 0 - naw;
-	if (nah < 0) nah = 0 - nah;
+	if (naw < 0)
+		naw = 0 - naw;
+	if (nah < 0)
+		nah = 0 - nah;
 				
-	int naw2 = Compatibility.floor(naw, 2);
-	int nah2 = Compatibility.floor(nah, 2);
+	int naw2 = naw / 2;
+	int nah2 = nah / 2;
 
-	OS.gdk_draw_arc(data.drawable, handle, 0, nx, ny, naw, nah, 5760, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 0, nx, ny + nh - nah, naw, nah, 11520, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 0, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 0, nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.gdk_draw_line(data.drawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
-	OS.gdk_draw_line(data.drawable, handle, nx,ny + nah2, nx, ny + nh - nah2);
-	OS.gdk_draw_line(data.drawable, handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
-	OS.gdk_draw_line(data.drawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+	int drawable = data.drawable;
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny, naw, nah, 5760, 5760);
+			OS.gdk_draw_line(drawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.gdk_draw_arc(drawable, handle, 0, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.gdk_draw_line(drawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.gdk_draw_arc(drawable, handle, 0, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.gdk_draw_line(drawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny + nh - nah, naw, nah, 11520, 5760);
+			OS.gdk_draw_line(drawable, handle,  nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny, naw, nh, 5760, 11520);
+			OS.gdk_draw_line(drawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.gdk_draw_arc(drawable, handle, 0, nx + nw - naw, ny, naw, nh, 17280, 11520);
+			OS.gdk_draw_line(drawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+		}
+	} else {
+		if (nh > nah) {
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny, nw, nah, 0, 11520);
+			OS.gdk_draw_line(drawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny + nh - nah, nw, nah, 11520, 11520);
+			OS.gdk_draw_line(drawable,handle, nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.gdk_draw_arc(drawable, handle, 0, nx, ny, nw, nh, 0, 23040);
+		}
+	}
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
@@ -1155,7 +717,8 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString(String string, int x, int y, boolean isTransparent) {
-	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
 	byte[] buffer1 = Converter.wcsToMbcs(null, "Y", true);
 	int[] unused = new int[1];
@@ -1185,6 +748,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	}
 	OS.gdk_draw_string(data.drawable, fontHandle, handle, x, y + ascent[0], buffer);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
@@ -1206,6 +770,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 public void drawText(String string, int x, int y) {
 	drawText(string, x, y, false);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
@@ -1227,7 +792,8 @@ public void drawText(String string, int x, int y) {
  * </ul>
  */
 public void drawText(String string, int x, int y, boolean isTransparent) {
-	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
 	byte[] buffer1 = Converter.wcsToMbcs(null, "Y", true);
 	int fontHandle = _getGCFont();
@@ -1298,6 +864,22 @@ public void drawText (String string, int x, int y, int flags) {
 }
 
 /**
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param object the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode
+ */
+public boolean equals(Object object) {
+	if (object == this) return true;
+	if (!(object instanceof GC)) return false;
+	return handle == ((GC)object).handle;
+}
+
+/**
  * Fills the interior of a circular or elliptical arc within
  * the specified rectangular area, with the receiver's background
  * color.
@@ -1333,6 +915,7 @@ public void drawText (String string, int x, int y, int flags) {
  * @see #drawArc
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1342,7 +925,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 		height = -height;
 	}
 	if (width == 0 || height == 0 || endAngle == 0) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
@@ -1388,11 +971,10 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
-	GdkColor foregroundGdkColor = new GdkColor();
 	
 	RGB backgroundRGB, foregroundRGB;
-	backgroundRGB = Color.gtk_getRGBIntensities(_getBackgroundGdkColor());
-	foregroundRGB = Color.gtk_getRGBIntensities(_getForegroundGdkColor());
+	backgroundRGB = getBackground().getRGB();
+	foregroundRGB = getForeground().getRGB();
 
 	RGB fromRGB, toRGB;
 	fromRGB = foregroundRGB;
@@ -1414,7 +996,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		fillRectangle(x, y, width, height);
 		return;
 	}
-	ImageData.fillGradientRectangle(this, Display.getCurrent(),
+	ImageData.fillGradientRectangle(this, data.device,
 		x, y, width, height, vertical, fromRGB, toRGB,
 		8, 8, 8);
 }
@@ -1436,6 +1018,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * @see #drawOval
  */
 public void fillOval(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1459,6 +1042,7 @@ public void fillOval(int x, int y, int width, int height) {
 	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
+
 /** 
  * Fills the interior of the closed polygon which is defined by the
  * specified array of integer coordinates, using the receiver's
@@ -1479,11 +1063,8 @@ public void fillOval(int x, int y, int width, int height) {
  * @see #drawPolygon	
  */
 public void fillPolygon(int[] pointArray) {
-	if (pointArray == null) error(SWT.ERROR_NULL_ARGUMENT);
-	short[] points = new short[pointArray.length];
-	for (int i = 0; i < pointArray.length; i++) {
-		points[i] = (short)pointArray[i];
-	}
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
@@ -1492,13 +1073,14 @@ public void fillPolygon(int[] pointArray) {
 	color.green = values.background_green;
 	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
-	OS.gdk_draw_polygon(data.drawable, handle, 1, points, points.length / 2);
+	OS.gdk_draw_polygon(data.drawable, handle, 1, pointArray, pointArray.length / 2);
 	color.pixel = values.foreground_pixel;
 	color.red = values.foreground_red;
 	color.green = values.foreground_green;
 	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
+
 /** 
  * Fills the interior of the rectangle specified by the arguments,
  * using the receiver's background color. 
@@ -1515,6 +1097,7 @@ public void fillPolygon(int[] pointArray) {
  * @see #drawRectangle
  */
 public void fillRectangle(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1523,7 +1106,6 @@ public void fillRectangle(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
@@ -1539,6 +1121,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
+
 /** 
  * Fills the interior of the specified rectangle, using the receiver's
  * background color. 
@@ -1555,9 +1138,11 @@ public void fillRectangle(int x, int y, int width, int height) {
  * @see #drawRectangle
  */
 public void fillRectangle(Rectangle rect) {
-	if (rect == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
+
 /** 
  * Fills the interior of the round-cornered rectangle specified by 
  * the arguments, using the receiver's background color. 
@@ -1576,6 +1161,7 @@ public void fillRectangle(Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int nx = x;
 	int ny = y;
 	int nw = width;
@@ -1595,12 +1181,9 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		naw = 0 - naw;
 	if (nah < 0)
 		nah = 0 - nah;
-
-	naw = Math.min(naw,nw);
-	nah = Math.min(nah, nh);
 		
-	int naw2 = Compatibility.round(naw, 2);
-	int nah2 = Compatibility.round(nah, 2);
+	int naw2 = naw / 2;
+	int nah2 = nah / 2;
 
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
@@ -1610,13 +1193,32 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	color.green = values.background_green;
 	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
-	OS.gdk_draw_arc(data.drawable, handle, 1, nx, ny, naw, nah, 5760, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 1, nx, ny + nh - nah, naw, nah, 11520, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 1, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
-	OS.gdk_draw_arc(data.drawable, handle, 1, nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.gdk_draw_rectangle(data.drawable, handle, 1, nx + naw2, ny, nw - naw, nh);
-	OS.gdk_draw_rectangle(data.drawable, handle, 1, nx, ny + nah2, naw2, nh - nah);
-	OS.gdk_draw_rectangle(data.drawable, handle, 1, nx + nw - (naw / 2), ny + nah2, naw2, nh -nah);
+	
+	int drawable = data.drawable;
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, naw, nah, 5760, 5760);
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny + nh - nah, naw, nah, 11520, 5760);
+			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw, nh);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, naw2, nh - nah);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + nw - naw2, ny + nah2, naw2, nh -nah);
+		} else {
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, naw, nh, 5760, 11520);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw, nh);
+			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny, naw, nh, 17280, 11520);
+		}
+	} else {
+		if (nh > nah) {
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, nw, nah, 0, 11520);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, nw, nh - nah);
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny + nh - nah, nw, nah, 11520, 11520);
+		} else {
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, nw, nh, 0, 23040);
+		}
+	}
+
 	color.pixel = values.foreground_pixel;
 	color.red = values.foreground_red;
 	color.green = values.foreground_green;
@@ -1625,22 +1227,245 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 }
 
 /**
- * Compares the argument to the receiver, and returns true
- * if they represent the <em>same</em> object using a class
- * specific comparison.
+ * Returns the <em>advance width</em> of the specified character in
+ * the font which is currently selected into the receiver.
+ * <p>
+ * The advance width is defined as the horizontal distance the cursor
+ * should move after printing the character in the selected font.
+ * </p>
  *
- * @param object the object to compare with this object
- * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ * @param ch the character to measure
+ * @return the distance in the x direction to move past the character before painting the next
  *
- * @see #hashCode
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
-/*
- *   ===  As yet unclassified  ===
- */
-  
-public boolean equals(Object object) {
-	return (object == this) || ((object instanceof GC) && (handle == ((GC)object).handle));
+public int getAdvanceWidth(char ch) {	
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
+//	return OS.gdk_char_width(_getGCFont(), charBuffer[0]);
+	return 0;
 }
+
+/** 
+ * Returns the background color.
+ *
+ * @return the receiver's background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Color getBackground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	GdkColor color = new GdkColor();
+	color.pixel = values.background_pixel;
+	color.red   = values.background_red;
+	color.green = values.background_green;
+	color.blue  = values.background_blue;
+	return Color.gtk_new(data.device, color);	
+}
+
+/**
+ * Returns the width of the specified character in the font
+ * selected into the receiver. 
+ * <p>
+ * The width is defined as the space taken up by the actual
+ * character, not including the leading and tailing whitespace
+ * or overhang.
+ * </p>
+ *
+ * @param ch the character to measure
+ * @return the width of the character
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getCharWidth(char ch) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
+//	int[] lbearing = new int[1];
+//	int[] rbearing = new int[1];
+//	int[] unused = new int[1];
+//	OS.gdk_string_extents(_getGCFont(), charBuffer, lbearing, rbearing, unused, unused, unused);
+//	return rbearing[0] - lbearing[0];
+	return 0;
+}
+
+/** 
+ * Returns the bounding rectangle of the receiver's clipping
+ * region. If no clipping region is set, the return value
+ * will be a rectangle which covers the entire bounds of the
+ * object the receiver is drawing on.
+ *
+ * @return the bounding rectangle of the clipping region
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Rectangle getClipping() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		int[] width = new int[1]; int[] height = new int[1];
+		OS.gdk_drawable_get_size(data.drawable, width, height);
+		return new Rectangle(0, 0, width[0], height[0]);
+	}
+	GdkRectangle rect = new GdkRectangle();
+	OS.gdk_region_get_clipbox(clipRgn, rect);
+	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+}
+
+/** 
+ * Sets the region managed by the argument to the current
+ * clipping region of the receiver.
+ *
+ * @param region the region to fill with the clipping region
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void getClipping(Region region) {	
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int hRegion = region.handle;
+	int clipRgn = data.clipRgn;
+	OS.gdk_region_subtract(hRegion, hRegion);
+	if (data.clipRgn == 0) {
+		int[] width = new int[1]; int[] height = new int[1];
+		OS.gdk_drawable_get_size(data.drawable, width, height);
+		GdkRectangle rect = new GdkRectangle();
+		rect.x = 0; rect.y = 0;
+		rect.width = width[0]; rect.height = height[0];
+		OS.gdk_region_union_with_rect(hRegion, rect);
+		return;
+	}
+	OS.gdk_region_union(hRegion, clipRgn);
+}
+/** 
+ * Returns the font currently being used by the receiver
+ * to draw and measure text.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Font getFont() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	return Font.gtk_new(_getGCFont());
+	return null;
+}
+
+/**
+ * Returns a FontMetrics which contains information
+ * about the font currently being used by the receiver
+ * to draw and measure text.
+ *
+ * @return font metrics for the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public FontMetrics getFontMetrics() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	int fontHandle = _getGCFont();
+//	if (fontHandle==0) {
+//		SWT.error(SWT.ERROR_UNSPECIFIED);
+//	}
+//	return FontMetrics.gtk_new(fontHandle);
+	return null;
+}
+
+/** 
+ * Returns the receiver's foreground color.
+ *
+ * @return the color used for drawing foreground things
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Color getForeground() {	
+	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	GdkColor color = new GdkColor();
+	color.pixel = values.foreground_pixel;
+	color.red   = values.foreground_red;
+	color.green = values.foreground_green;
+	color.blue  = values.foreground_blue;
+	return Color.gtk_new(data.device, color);	
+}
+
+/** 
+ * Returns the receiver's line style, which will be one
+ * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
+ * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
+ * <code>SWT.LINE_DASHDOTDOT</code>.
+ *
+ * @return the style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getLineStyle() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.lineStyle;
+}
+
+/** 
+ * Returns the width that will be used when drawing lines
+ * for all of the figure drawing operations (that is,
+ * <code>drawLine</code>, <code>drawRectangle</code>, 
+ * <code>drawPolyline</code>, and so forth.
+ *
+ * @return the receiver's line width 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getLineWidth() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	return values.line_width;
+}
+
+/** 
+ * Returns <code>true</code> if this GC is drawing in the mode
+ * where the resulting color in the destination is the
+ * <em>exclusive or</em> of the color values in the source
+ * and the destination, and <code>false</code> if it is
+ * drawing in the mode where the destination color is being
+ * replaced with the source color value.
+ *
+ * @return <code>true</code> true if the receiver is in XOR mode, and false otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public boolean getXORMode() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	return values.function == OS.GDK_XOR;
+}
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -1658,9 +1483,46 @@ public boolean equals(Object object) {
 public int hashCode() {
 	return handle;
 }
-void error(int code) {
-	throw new SWTError(code);
+
+void init(Drawable drawable, GCData data, int gdkGC) {
+	GdkColor foreground = data.foreground;
+	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
+	GdkColor background = data.background;
+	if (background != null) OS.gdk_gc_set_background (gdkGC, background);
+	Image image = data.image;
+	if (image != null) {
+		image.memGC = this;
+		/*
+		 * The transparent pixel mask might change when drawing on
+		 * the image.  Destroy it so that it is regenerated when
+		 * necessary.
+		 */
+		if (image.transparentPixel != -1) image.destroyMask();
+	}
+	this.drawable = drawable;
+	this.data = data;
+	handle = gdkGC;
 }
+
+/**
+ * Returns <code>true</code> if the receiver has a clipping
+ * region set into it, and <code>false</code> otherwise.
+ * If this method returns false, the receiver will draw on all
+ * available space in the destination. If it returns true, 
+ * it will draw only in the area that is covered by the region
+ * that can be accessed with <code>getClipping(region)</code>.
+ *
+ * @return <code>true</code> if the GC has a clipping region, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public boolean isClipped() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.clipRgn != 0;
+}
+
 /**
  * Returns <code>true</code> if the GC has been disposed,
  * and <code>false</code> otherwise.
@@ -1674,45 +1536,294 @@ void error(int code) {
 public boolean isDisposed() {
 	return handle == 0;
 }
+
 /**
- * Disposes of the operating system resources associated with
- * the graphics context. Applications must dispose of all GCs
- * which they allocate.
+ * Sets the background color. The background color is used
+ * for fill operations and as the background color when text
+ * is drawn.
+ *
+ * @param color the new background color for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
-public void dispose() {
-	if (handle == 0) return;
-	
-	/* Free resources */
-	int clipRgn = data.clipRgn;
-	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
-	Image image = data.image;
-	if (image != null) image.memGC = null;
-
-	/* Dispose the GC */
-	if(drawable == null)
-		OS.gdk_gc_unref(handle);
-	else
-		drawable.internal_dispose_GC(handle, data);
-
-	data.drawable = // data.colormap = data.fontList = 
-		data.clipRgn = data.renderTable = 0;
-	drawable = null;
-	data.image = null;
-	data = null;
-	handle = 0;
-	
+public void setBackground(Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.gdk_gc_set_background(handle, color.handle);
 }
 
+/**
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the rectangular area specified
+ * by the arguments.
+ *
+ * @param x the x coordinate of the clipping rectangle
+ * @param y the y coordinate of the clipping rectangle
+ * @param width the width of the clipping rectangle
+ * @param height the height of the clipping rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setClipping(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		data.clipRgn = clipRgn = OS.gdk_region_new();
+	} else {
+		OS.gdk_region_subtract(clipRgn, clipRgn);
+	}
+	GdkRectangle rect = new GdkRectangle();
+	rect.x = x;  rect.y = y;
+	rect.width = width;  rect.height = height;
+	OS.gdk_gc_set_clip_rectangle(handle, rect);
+	OS.gdk_region_union_with_rect(clipRgn, rect);
+}
+/**
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the rectangular area specified
+ * by the argument.
+ *
+ * @param rect the clipping rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setClipping(Rectangle rect) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int clipRgn = data.clipRgn;
+	if (rect == null) {
+		OS.gdk_gc_set_clip_region(handle, 0);
+		if (clipRgn != 0) {
+			OS.gdk_region_destroy(clipRgn);
+			data.clipRgn = clipRgn = 0;
+		}
+		return;
+	}
+	setClipping (rect.x, rect.y, rect.width, rect.height);
+}
+/**
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the region specified
+ * by the argument.
+ *
+ * @param rect the clipping region.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setClipping(Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int clipRgn = data.clipRgn;
+	if (region == null) {
+		OS.gdk_gc_set_clip_region(handle, 0);
+		if (clipRgn != 0) {
+			OS.gdk_region_destroy(clipRgn);
+			data.clipRgn = clipRgn = 0;
+		}
+	} else {
+		if (clipRgn == 0) {
+			data.clipRgn = clipRgn = OS.gdk_region_new();
+		} else {
+			OS.gdk_region_subtract(clipRgn, clipRgn);
+		}
+		OS.gdk_region_union(clipRgn, region.handle);
+		OS.gdk_gc_set_clip_region(handle, clipRgn);
+	}
+}
+
+/** 
+ * Sets the font which will be used by the receiver
+ * to draw and measure text to the argument. If the
+ * argument is null, then a default font appropriate
+ * for the platform will be used instead.
+ *
+ * @param font the new font for the receiver, or null to indicate a default font
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setFont(Font font) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+/*	int fontHandle = 0;
+	if (font == null) {
+		GtkStyle gtkStyle = new GtkStyle();
+		int style = OS.gtk_widget_get_default_style();
+		OS.memmove(gtkStyle, style, GtkStyle.sizeof);
+		fontHandle = gtkStyle.font;
+	} else {
+		fontHandle = font.handle;
+	}
+	OS.gdk_gc_set_font(handle, fontHandle);*/
+}
 
 /**
- * Returns a string containing a concise, human-readable
- * description of the receiver.
+ * Sets the foreground color. The foreground color is used
+ * for drawing operations including when text is drawn.
  *
- * @return a string representation of the receiver
+ * @param color the new foreground color for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
-public String toString () {
-	if (isDisposed()) return "GC {*DISPOSED*}";
-	return "GC {" + handle + "}";
+public void setForeground(Color color) {	
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.gdk_gc_set_foreground(handle, color.handle);
+}
+
+/** 
+ * Sets the receiver's line style to the argument, which must be one
+ * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
+ * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
+ * <code>SWT.LINE_DASHDOTDOT</code>.
+ *
+ * @param lineStyle the style to be used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setLineStyle(int lineStyle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (lineStyle) {
+		case SWT.LINE_SOLID:
+			this.data.lineStyle = lineStyle;
+			OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+			return;
+		case SWT.LINE_DASH:
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2}, 2);
+			break;
+		case SWT.LINE_DOT:
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {3, 1}, 2);
+			break;
+		case SWT.LINE_DASHDOT:
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1}, 4);
+			break;
+		case SWT.LINE_DASHDOTDOT:
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1, 3, 1}, 6);
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.lineStyle = lineStyle;
+	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+}
+
+/** 
+ * Sets the width that will be used when drawing lines
+ * for all of the figure drawing operations (that is,
+ * <code>drawLine</code>, <code>drawRectangle</code>, 
+ * <code>drawPolyline</code>, and so forth.
+ *
+ * @param lineWidth the width of a line
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setLineWidth(int width) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.lineStyle == SWT.LINE_SOLID) {
+		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	} else {
+		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	}
+}
+
+/** 
+ * If the argument is <code>true</code>, puts the receiver
+ * in a drawing mode where the resulting color in the destination
+ * is the <em>exclusive or</em> of the color values in the source
+ * and the destination, and if the argument is <code>false</code>,
+ * puts the receiver in a drawing mode where the destination color
+ * is replaced with the source color value.
+ *
+ * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setXORMode(boolean val) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.gdk_gc_set_function(handle, val ? OS.GDK_XOR : OS.GDK_COPY);
+}
+
+/**
+ * Returns the extent of the given string. No tab
+ * expansion or carriage return processing will be performed.
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Point stringExtent(String string) {	
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	int width = OS.gdk_string_width(_getGCFont(), buffer);
+	int height = OS.gdk_string_height(_getGCFont(), buffer);
+	return new Point(width, height);
+}
+
+/**
+ * Returns the extent of the given string. Tab expansion and
+ * carriage return processing are performed.
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Point textExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);	
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	int width = OS.gdk_string_width(_getGCFont(), buffer);
+	int height = OS.gdk_string_height(_getGCFont(), buffer);
+	return new Point(width, height);
 }
 
 /**
@@ -1749,6 +1860,27 @@ public String toString () {
 public Point textExtent(String string, int flags) {
 	//NOT IMPLEMENTED
 	return textExtent(string);
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "GC {*DISPOSED*}";
+	return "GC {" + handle + "}";
+}
+
+private int _getGCFont() {
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	if (values.font==0) {
+		values.font = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
+		if (values.font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	return values.font;
 }
 
 }

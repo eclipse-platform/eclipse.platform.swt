@@ -57,6 +57,10 @@ public class OS {
 	public static final int GDK_GC_LINE_STYLE    = 1 << 15;
 	public static final int GDK_GC_CAP_STYLE     = 1 << 16;
 	public static final int GDK_GC_JOIN_STYLE    = 1 << 17;
+	
+	/* GdkImage byte order */
+	public static final int GDK_LSB_FIRST = 0;
+	public static final int GDK_MSB_FIRST = 1;
 
 	/* For Display.KeyTable: */
 	/* Keyboard and mouse masks */
