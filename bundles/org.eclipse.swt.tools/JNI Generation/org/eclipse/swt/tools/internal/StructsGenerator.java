@@ -21,7 +21,26 @@ boolean header;
 public StructsGenerator(boolean header) {
 	this.header = header;
 }
-	
+
+public void generateCopyright() {
+	generateMetaData("swt_copyright");
+}
+
+public void generateIncludes() {
+	String className = getClassName(getMainClass()).toLowerCase();
+	if (header) {
+		output("#include \"");
+		output(className);
+		outputln(".h\"");
+	} else {
+		outputln("#include \"swt.h\"");
+		output("#include \"");
+		output(className);
+		outputln("_structs.h\"");
+	}
+	outputln();
+}
+
 public void generate(Class clazz) {
 	if (header) {
 		generateHeaderFile(clazz);
@@ -34,6 +53,14 @@ public void generate(Class clazz) {
 public void generate() {
 	if (!header && getClasses().length == 0) return;
 	super.generate();
+}
+
+public String getExtension() {
+	return header ? ".h" : super.getExtension();
+}
+
+public String getSuffix() {
+	return "_structs";
 }
 
 void generateExcludes(Class[] classes) {

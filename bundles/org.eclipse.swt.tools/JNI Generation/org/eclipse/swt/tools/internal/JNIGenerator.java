@@ -18,6 +18,7 @@ import org.eclipse.swt.SWT;
 
 public abstract class JNIGenerator {
 
+Class mainClass;
 Class[] classes;
 MetaData metaData;
 boolean isCPP;
@@ -253,10 +254,16 @@ static String toC(String str) {
 
 public abstract void generate(Class clazz);
 
+public void generateCopyright() {
+}
+
+public void generateIncludes() {
+}
+
 public void generate() {
 	if (classes == null) return;
-	generateMetaData(getCopyrightKey());
-	generateMetaData(getIncludesKey());
+	generateCopyright();
+	generateIncludes();
 	sort(classes);
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
@@ -284,17 +291,9 @@ public Class[] getClasses() {
 	return classes;
 }
 
-protected String getCopyrightKey() {
-	return "swt_copyright";
-}
-
 protected boolean getGenerate(Class clazz) {
 	ClassData data = getMetaData().getMetaData(clazz);
 	return !data.getFlag("no_gen");
-}
-
-protected String getIncludesKey() {
-	return "swt_includes";
 }
 
 public boolean getCPP() {
@@ -305,8 +304,24 @@ public String getDelimiter() {
 	return delimiter;
 }
 
+public String getExtension() {
+	return getCPP() ? ".cpp" : ".c";
+}
+
+public String getFileName() {
+	return getClassName(getMainClass()).toLowerCase();
+}
+
 public PrintStream getOutput() {
 	return output;
+}
+
+public String getOutputName() {
+	return getFileName() + getSuffix() + getExtension();
+}
+
+public Class getMainClass() {
+	return mainClass;
 }
 
 public MetaData getMetaData() {
@@ -319,6 +334,10 @@ public String getPlatform() {
 
 public ProgressMonitor getProgressMonitor() {
 	return progress;
+}
+
+public String getSuffix() {
+	return "";
 }
 
 public void output(String str) {
@@ -340,6 +359,10 @@ public void setClasses(Class[] classes) {
 
 public void setDelimiter(String delimiter) {
 	this.delimiter = delimiter;
+}
+
+public void setMainClass(Class mainClass) {
+	this.mainClass = mainClass;
 }
 
 public void setMetaData(MetaData data) {

@@ -20,12 +20,35 @@ public StatsGenerator(boolean header) {
 	this.header = header;
 }
 
+public void generateCopyright() {
+	generateMetaData("swt_copyright");
+}
+
+public void generateIncludes() {
+	if (!header) {
+		String className = getClassName(getMainClass()).toLowerCase();
+		outputln("#include \"swt.h\"");
+		output("#include \"");
+		output(className);
+		outputln("_stats.h\"");
+		outputln();
+	}
+}
+
 public void generate(Class clazz) {
 	if (header) {
 		generateHeaderFile(clazz);
 	} else {
 		generateSourceFile(clazz);
 	}
+}
+
+public String getExtension() {
+	return header ? ".h" : super.getExtension();
+}
+
+public String getSuffix() {
+	return "_stats";
 }
 
 void generateHeaderFile(Class clazz){

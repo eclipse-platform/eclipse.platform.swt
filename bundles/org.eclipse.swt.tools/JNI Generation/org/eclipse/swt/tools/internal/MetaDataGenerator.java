@@ -14,6 +14,10 @@ import java.lang.reflect.*;
 
 public class MetaDataGenerator extends JNIGenerator {
 
+public void generateCopyright() {
+	generateMetaData("swt_properties_copyright");
+}
+
 public void generate(Class clazz) {
 	output(toC(clazz.getName()));
 	output("=");
@@ -86,8 +90,12 @@ public void generate(Method method) {
 	}
 }
 
-protected String getCopyrightKey() {
-	return "swt_properties_copyright";
+public String getExtension() {
+	return ".properties";
+}
+
+public String getFileName() {
+	return getMainClass().getName();
 }
 
 protected boolean getGenerate(Class clazz) {

@@ -22,6 +22,22 @@ public NativesGenerator() {
 	enterExitMacro = true;
 }
 
+public void generateCopyright() {
+	generateMetaData("swt_copyright");
+}
+
+public void generateIncludes() {
+	String className = getClassName(getMainClass()).toLowerCase();
+	outputln("#include \"swt.h\"");
+	output("#include \"");
+	output(className);
+	outputln("_structs.h\"");
+	output("#include \"");
+	output(className);
+	outputln("_stats.h\"");
+	outputln();
+}
+
 public void generate(Class clazz, String methodName) {
 	Method[] methods = clazz.getDeclaredMethods();
 	int count = 0;

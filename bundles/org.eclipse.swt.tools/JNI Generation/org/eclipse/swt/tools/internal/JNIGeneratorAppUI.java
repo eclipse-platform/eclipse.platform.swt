@@ -97,6 +97,7 @@ void cleanup() {
 
 void generateStructsHeader () {
 	StructsGenerator gen = new StructsGenerator(true);
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	gen.setClasses(getSelectedClasses());
 	gen.generate();
@@ -104,6 +105,7 @@ void generateStructsHeader () {
 
 void generateStructs () {
 	StructsGenerator gen = new StructsGenerator(false);
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	gen.setClasses(getSelectedClasses());
 	gen.generate();
@@ -111,6 +113,7 @@ void generateStructs () {
 
 void generateSizeof () {
 	SizeofGenerator gen = new SizeofGenerator();
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	gen.setClasses(getSelectedClasses());
 	gen.generate();
@@ -118,6 +121,7 @@ void generateSizeof () {
 
 void generateMetaData () {
 	MetaDataGenerator gen = new MetaDataGenerator();
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	Method[] methods = getSelectedMethods();
 	if (methods.length != 0) {
@@ -130,6 +134,7 @@ void generateMetaData () {
 
 void generateNatives () {
 	NativesGenerator gen = new NativesGenerator();
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	Method[] methods = getSelectedMethods();
 	if (methods.length != 0) {
@@ -204,6 +209,7 @@ void generateAll() {
 
 void generateConstants () {
 	ConstantsGenerator gen = new ConstantsGenerator();
+	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
 	Field[] fields = getSelectedFields();
 	if (fields.length != 0) {
@@ -316,7 +322,7 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 
 	GridData data;
 	mainClassCb = new Combo(panel, SWT.DROP_DOWN);
-	String mainClass = app.getMainClass();
+	String mainClass = app.getMainClassName();
 	mainClassCb.setText(mainClass == null ? "" : mainClass);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	mainClassCb.setLayoutData(data);
@@ -901,9 +907,9 @@ public void run() {
 }
 
 String getPackageString(String className) {
-	int dot = app.getMainClass().lastIndexOf('.');
+	int dot = app.getMainClassName().lastIndexOf('.');
 	if (dot == -1) return "";
-	return app.getMainClass().substring(0, dot);
+	return app.getMainClassName().substring(0, dot);
 }
 
 String getClassString(Class clazz) {
@@ -1142,8 +1148,8 @@ boolean updateOutputDir() {
 void updateMainClass() {
 	String mainClassStr = mainClassCb.getText();
 	if (mainClassStr.length() > 0) {
-		if (!mainClassStr.equals(app.getMainClass())) {
-			app.setMainClass(mainClassStr);
+		if (!mainClassStr.equals(app.getMainClassName())) {
+			app.setMainClassName(mainClassStr);
 		}
 		if (mainClassCb.indexOf(mainClassStr) == -1) {
 			mainClassCb.add(mainClassStr);
@@ -1158,10 +1164,10 @@ void updateMainClass() {
 public static void main(String[] args) {
 	JNIGeneratorApp gen = new JNIGeneratorApp ();
 	if (args.length > 0) {
-		gen.setMainClass(args[0]);
+		gen.setMainClassName(args[0]);
 		if (args.length > 1) gen.setOutputDir(args[1]);
 	} else {
-		gen.setMainClass(JNIGeneratorApp.getDefaultMainClass());
+		gen.setMainClassName(JNIGeneratorApp.getDefaultMainClass());
 	}
 	JNIGeneratorAppUI ui = new JNIGeneratorAppUI(gen);
 	ui.open();
