@@ -164,9 +164,9 @@ public class DND {
 	public static final int ERROR_CANNOT_SET_CLIPBOARD = 2002;
 	
 
-	static final String INIT_DRAG_MESSAGE =  "Can not initialize Drag"; //$NON-NLS-1$
-	static final String INIT_DROP_MESSAGE =  "Can not initialize Drop"; //$NON-NLS-1$
-	static final String CANNOT_SET_CLIPBOARD_MESSAGE =  "Can not set data in clipboard"; //$NON-NLS-1$
+	static final String INIT_DRAG_MESSAGE =  "Cannot initialize Drag"; //$NON-NLS-1$
+	static final String INIT_DROP_MESSAGE =  "Cannot initialize Drop"; //$NON-NLS-1$
+	static final String CANNOT_SET_CLIPBOARD_MESSAGE =  "Cannot set data in clipboard"; //$NON-NLS-1$
 
 /**
  * Throws an appropriate exception based on the passed in error code.
