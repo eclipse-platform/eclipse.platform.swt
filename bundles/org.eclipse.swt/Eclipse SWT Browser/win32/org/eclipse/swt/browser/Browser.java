@@ -70,6 +70,9 @@ public class Browser extends Composite {
 
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
+	static final int INET_E_DEFAULT_ACTION = 0x800C0011;
+	static final int URLPOLICY_ALLOW = 0;
+	static final int URLZONE_INTRANET = 1;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
