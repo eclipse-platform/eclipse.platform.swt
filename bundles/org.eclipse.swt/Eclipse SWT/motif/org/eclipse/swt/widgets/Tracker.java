@@ -453,10 +453,16 @@ public boolean open () {
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					Rectangle [] oldRectangles = rectangles;
+					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+					for (int i = 0; i < rectangles.length; i++) {
+						Rectangle current = rectangles [i];
+						rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+					}
 					Event event = new Event ();
 					event.x = newX [0];
 					event.y = newY [0];
 					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
 						/*
 						 * It is possible (but unlikely) that application code
@@ -468,38 +474,36 @@ public boolean open () {
 							cancelled = true;
 							break;
 						}
+						boolean draw = false;
 						/*
 						 * It is possible that application code could have
 						 * changed the rectangles in the resize event.  If this
-						 * happens then use these new rectangles instead of
-						 * recomputing them based on the last mouse move, and
-						 * only erase the tracker if the rectangles have changed.
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
 						 */
 						if (rectangles != oldRectangles) {
 							int length = rectangles.length;
-							boolean changed = false;
-							if (length != oldRectangles.length) {
-								changed = true;
+							if (length != rectsToErase.length) {
+								draw = true;
 							} else {
 								for (int i = 0; i < length; i++) {
-									if (!rectangles [i].equals (oldRectangles [i])) {
-										changed = true;
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
 										break;
 									}
 								}
 							}
-							if (changed) {
-								drawRectangles (oldRectangles);
-								drawRectangles (rectangles);
-							}
 							adjustResizeOrientation (newX [0] - oldX [0], newY [0] - oldY [0]);
 						} else {
-							drawRectangles (oldRectangles);
-							resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
 							drawRectangles (rectangles);
 						}
 						cursorPos = adjustResizeCursor (xDisplay, xWindow);
 					} else {
+						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
 						/*
 						 * It is possible (but unlikely) that application code
@@ -511,33 +515,30 @@ public boolean open () {
 							cancelled = true;
 							break;
 						}
+						boolean draw = false;
 						/*
 						 * It is possible that application code could have
 						 * changed the rectangles in the move event.  If this
-						 * happens then use these new rectangles instead of
-						 * recomputing them based on the last mouse move, and
-						 * only erase the tracker if the rectangles have changed.
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
 						 */
 						if (rectangles != oldRectangles) {
 							int length = rectangles.length;
-							boolean changed = false;
-							if (length != oldRectangles.length) {
-								changed = true;
+							if (length != rectsToErase.length) {
+								draw = true;
 							} else {
 								for (int i = 0; i < length; i++) {
-									if (!rectangles [i].equals (oldRectangles [i])) {
-										changed = true;
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
 										break;
 									}
 								}
 							}
-							if (changed) {
-								drawRectangles (oldRectangles);
-								drawRectangles (rectangles);
-							}
 						} else {
-							drawRectangles (oldRectangles);
-							moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
 							drawRectangles (rectangles);
 						}
 						cursorPos = adjustMoveCursor (xDisplay, xWindow);
@@ -587,10 +588,16 @@ public boolean open () {
 					}
 					if (xChange != 0 || yChange != 0) {
 						Rectangle [] oldRectangles = rectangles;
+						Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+						for (int i = 0; i < rectangles.length; i++) {
+							Rectangle current = rectangles [i];
+							rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+						}
 						Event event = new Event ();
 						event.x = oldX [0] + xChange;
 						event.y = oldY [0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
+							resizeRectangles (xChange, yChange);
 							sendEvent (SWT.Resize, event);
 							/*
 							 * It is possible (but unlikely) that application code
@@ -602,38 +609,36 @@ public boolean open () {
 								cancelled = true;
 								break;
 							}
+							boolean draw = false;
 							/*
 							 * It is possible that application code could have
 							 * changed the rectangles in the resize event.  If this
-							 * happens then use these new rectangles instead of
-							 * recomputing them based on the last mouse move, and
-							 * only erase the tracker if the rectangles have changed.
+							 * happens then only redraw the tracker if the rectangle
+							 * values have changed.
 							 */
 							if (rectangles != oldRectangles) {
 								int length = rectangles.length;
-								boolean changed = false;
-								if (length != oldRectangles.length) {
-									changed = true;
+								if (length != rectsToErase.length) {
+									draw = true;
 								} else {
 									for (int i = 0; i < length; i++) {
-										if (!rectangles [i].equals (oldRectangles [i])) {
-											changed = true;
+										if (!rectangles [i].equals (rectsToErase [i])) {
+											draw = true;
 											break;
 										}
 									}
 								}
-								if (changed) {
-									drawRectangles (oldRectangles);
-									drawRectangles (rectangles);
-								}
 								adjustResizeOrientation (xChange, yChange);
 							} else {
-								drawRectangles (oldRectangles);
-								resizeRectangles (xChange, yChange);
+								draw = true;
+							}
+							if (draw) {
+								drawRectangles (rectsToErase);
 								drawRectangles (rectangles);
 							}
 							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
+							moveRectangles (xChange, yChange);
 							sendEvent (SWT.Move, event);
 							/*
 							 * It is possible (but unlikely) that application code
@@ -645,33 +650,30 @@ public boolean open () {
 								cancelled = true;
 								break;
 							}
+							boolean draw = false;
 							/*
 							 * It is possible that application code could have
 							 * changed the rectangles in the move event.  If this
-							 * happens then use these new rectangles instead of
-							 * recomputing them based on the last mouse move, and
-							 * only erase the tracker if the rectangles have changed.
+							 * happens then only redraw the tracker if the rectangle
+							 * values have changed.
 							 */
 							if (rectangles != oldRectangles) {
 								int length = rectangles.length;
-								boolean changed = false;
-								if (length != oldRectangles.length) {
-									changed = true;
+								if (length != rectsToErase.length) {
+									draw = true;
 								} else {
 									for (int i = 0; i < length; i++) {
-										if (!rectangles [i].equals (oldRectangles [i])) {
-											changed = true;
+										if (!rectangles [i].equals (rectsToErase [i])) {
+											draw = true;
 											break;
 										}
 									}
 								}
-								if (changed) {
-									drawRectangles (oldRectangles);
-									drawRectangles (rectangles);
-								}
 							} else {
-								drawRectangles (oldRectangles);
-								moveRectangles (xChange, yChange);
+								draw = true;
+							}
+							if (draw) {
+								drawRectangles (rectsToErase);
 								drawRectangles (rectangles);
 							}
 							cursorPos = adjustMoveCursor (xDisplay, xWindow);
