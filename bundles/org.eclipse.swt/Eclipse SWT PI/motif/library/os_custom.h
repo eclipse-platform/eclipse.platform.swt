@@ -11,3 +11,6 @@
  
 /* Special sizeof's */
 #define fd_set_sizeof() sizeof(fd_set)
+
+/* to avoid compiler warnings */
+void _XmSetMenuTraversal(Widget wid, int traversalOn) ;
