@@ -496,15 +496,17 @@ public void setMaximum (int value) {
 	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
-	if (value <= adjustment.lower) return;
-	adjustment.upper = (float) value;
+	int minimum = (int) adjustment.lower;
+	if (value <= minimum) return;
+	adjustment.upper = value;
+	adjustment.page_size = Math.min (adjustment.page_size, value - minimum);
 	adjustment.value = Math.min (adjustment.value, value - adjustment.page_size);
 	OS.memmove (handle, adjustment);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
-
+	
 /**
  * Sets the minimum value which the receiver will allow
  * to be the argument which must be greater than or
@@ -522,14 +524,16 @@ public void setMinimum (int value) {
 	if (value < 0) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
-	if (value >= adjustment.upper) return;
-	adjustment.lower = (float) value;
+	int maximum = (int) adjustment.upper;
+	if (value >= maximum) return;
+	adjustment.lower = value;
+	adjustment.page_size = Math.min (adjustment.page_size, maximum - value);
 	adjustment.value = Math.max (adjustment.value, value);
 	OS.memmove (handle, adjustment);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-}
+	}
 
 /**
  * Sets the amount that the receiver's value will be
