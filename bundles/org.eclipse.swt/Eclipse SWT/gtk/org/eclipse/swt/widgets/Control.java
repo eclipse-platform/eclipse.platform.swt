@@ -1848,8 +1848,7 @@ int processMouseMove (int callData, int arg1, int int2) {
 			}
 		}
 	}
-	
-	if (hooks (SWT.MouseHover)) {
+	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
 		display.addMouseHoverTimeout (handle);
 	}
 	sendMouseEvent (SWT.MouseMove, 0, callData);
@@ -1857,7 +1856,7 @@ int processMouseMove (int callData, int arg1, int int2) {
 }
 
 int processPaint (int callData, int int2, int int3) {
-	if (!hooks (SWT.Paint)) return 0;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
 	Event event = new Event ();

@@ -482,7 +482,7 @@ int processPaint (int callData, int int1, int int2) {
 	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
 		return super.processPaint (callData, int1, int2);
 	}
-	if (!hooks (SWT.Paint)) return 0;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
 	int [] rectangles = new int [1];

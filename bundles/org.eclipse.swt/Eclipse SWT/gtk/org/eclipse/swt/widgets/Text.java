@@ -875,7 +875,7 @@ int processDefaultSelection (int int0, int int1, int int2) {
 }
 
 int processDispose (int int0, int int1, int int2) {
-	if (!hooks (SWT.Verify)) return 0;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if ((style & SWT.SINGLE) != 0) {
 		int address = OS.gtk_editable_get_chars (handle, int0, int1);
 		int length = OS.strlen (address);
@@ -921,7 +921,7 @@ int processModify (int arg0, int arg1, int int2) {
 }
 
 int processVerify (int int0, int int1, int int2) {
-	if (!hooks (SWT.Verify)) return 0;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if ((style & SWT.SINGLE) != 0) {
 		if (int0 == 0 || int1==0) return 0;
 		byte [] buffer = new byte [int1];
