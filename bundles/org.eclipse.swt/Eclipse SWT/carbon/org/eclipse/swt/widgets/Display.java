@@ -508,20 +508,6 @@ public Shell getActiveShell () {
 	return control.getShell ();
 }
 /**
- * Returns a rectangle describing the receiver's size and location.
- *
- * @return the bounding rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Rectangle getBounds () {
-	checkDevice ();
-	//System.out.println("Display.getBounds");
-	return new Rectangle (0, 0, 1152, 768);	// AW FIXME
-}
-/**
  * Returns the display which the currently running thread is
  * the user-interface thread for, or null if the currently
  * running thread is not a user-interface thread for any display.
