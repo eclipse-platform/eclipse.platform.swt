@@ -994,6 +994,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1key_1get
   return (jint) (((GdkEventKey*)event) -> keyval);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1key_1get_1string
+  (JNIEnv *env, jclass that, jint event)
+{
+  return (jint) (((GdkEventKey*)event) -> string);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1key_1get_1length
   (JNIEnv *env, jclass that, jint event)
 {

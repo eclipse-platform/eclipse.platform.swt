@@ -469,7 +469,7 @@ public static final native boolean gdk_event_get_coords(int event, double[] px, 
 public static final native boolean gdk_event_get_root_coords(int event, double[] px, double[] py);
 public static final native int gdk_event_key_get_keyval(int event);
 public static final native int gdk_event_key_get_length(int event);
-public static final native String gdk_event_key_get_string(int event);
+public static final native int gdk_event_key_get_string(int event);
 public static final native int gdk_event_button_get_button(int event);
 
 
