@@ -922,7 +922,7 @@ public class ImageAnalyzer {
 			printer.dispose();
 		} catch (SWTError e) {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-			box.setMessage(bundle.getString("Error") + e.getMessage());
+			box.setMessage(bundle.getString("Printing_error") + e.getMessage());
 			box.open();
 		}
 	}
