@@ -45,6 +45,28 @@ protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
 }
+/**
+ * Return the actual RGB value used for rendering for the given Color.
+ * This may be different from the Color's RGB value on lower-color displays 
+ * (16bpp or less).
+ */
+RGB getRealRGB(Color color) {
+	Image colorImage = new Image(display, 10, 10);
+	GC imageGc = new GC(colorImage);
+	ImageData imageData;
+	PaletteData palette;
+	int pixel;
+	
+	imageGc.setBackground(color);
+	imageGc.setForeground(color);
+	imageGc.fillRectangle(0, 0, 10, 10);
+	imageData = colorImage.getImageData();
+	palette = imageData.palette;
+	imageGc.dispose();
+	colorImage.dispose();
+	pixel = imageData.getPixel(0, 0);
+	return palette.getRGB(pixel);
+}
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	try {
 		GC gc = new GC(null);
@@ -66,16 +88,29 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
+	Class printerClass = null;
 	try {
-		Printer printer = new Printer();
-		GC gc1 = new GC(printer);
-		GC gc2 = new GC(printer);
+		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
+	} catch (ClassNotFoundException e) {
+		// Printer class not present (eSWT). Skip test.
+		return;
+	}
+	try {
+		// Direct instantiation results in a NoClassDefFoundError during class 
+		// loading/initialization. Casting seems to be ok.
+		Object printer = printerClass.newInstance();
+		GC gc1 = new GC((Printer) printer);
+		GC gc2 = new GC((Printer) printer);
 		gc1.dispose();
 		gc2.dispose();
-		printer.dispose();
+		((Printer) printer).dispose();
 		fail("No exception thrown for more than one GC on one printer");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
+	} catch (InstantiationException e) {
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		e.printStackTrace();
 	}
 }
 
@@ -100,28 +135,44 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
-	try {
-		Printer printer = new Printer();
-		GC gc1 = new GC(printer, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC(printer, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		printer.dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	}
-
 	Canvas canvas = new Canvas(shell, SWT.NULL);
 	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	testGC.dispose();
 	testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
 	testGC.dispose();
+	canvas.dispose();
+
+	Class printerClass = null;
+	try {
+		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
+	} catch (ClassNotFoundException e) {
+		// Printer class not present (eSWT). Skip test.
+		return;
+	}
+	try {
+		// Direct instantiation results in a NoClassDefFoundError during class 
+		// loading/initialization. Casting seems to be ok.
+		Object printer = printerClass.newInstance();
+		GC gc1 = new GC((Printer)printer, SWT.RIGHT_TO_LEFT);
+		GC gc2 = new GC((Printer)printer, SWT.LEFT_TO_RIGHT);
+		gc1.dispose();
+		gc2.dispose();
+		((Printer) printer).dispose();
+		fail("No exception thrown for more than one GC on one printer");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
+	} catch (InstantiationException e) {
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		e.printStackTrace();
+	}
 }
 
 public void test_copyAreaIIIIII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB whiteRGB = getRealRGB(white);
+	RGB blueRGB = getRealRGB(blue);
 	int width = 20;
 	int height = 20;
 	int destX = 10;
@@ -140,18 +191,21 @@ public void test_copyAreaIIIIII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette; 
 	int pixel = imageData.getPixel(destX + 4, destY);
-	assertEquals(":a:", white.getRGB(), palette.getRGB(pixel));
+	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 5, destY);
-	assertEquals(":b:", blue.getRGB(), palette.getRGB(pixel));	
+	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 10, destY);
-	assertEquals(":c:", blue.getRGB(), palette.getRGB(pixel));	
+	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 11, destY);
-	assertEquals(":d:", white.getRGB(), palette.getRGB(pixel));
+	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	image.dispose();
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB whiteRGB = getRealRGB(white);
+	RGB blueRGB = getRealRGB(blue);
 	
 	gc.setBackground(white);
 	gc.setForeground(white);
@@ -163,13 +217,14 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette; 
 	int pixel = imageData.getPixel(4, 0);
-	assertEquals(":a:", white.getRGB(), palette.getRGB(pixel));
+	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(5, 0);
-	assertEquals(":b:", blue.getRGB(), palette.getRGB(pixel));
+	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(10, 0);
-	assertEquals(":c:", blue.getRGB(), palette.getRGB(pixel));	
+	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(11, 0);
-	assertEquals(":d:", white.getRGB(), palette.getRGB(pixel));
+	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	image.dispose();
 }
 
 public void test_dispose() {
@@ -459,6 +514,7 @@ public void test_hashCode() {
 	assertTrue(gc.hashCode() == gc.hashCode());
 	GC gc2 = new GC(shell);
 	assertFalse(gc.hashCode() == gc2.hashCode());
+	gc2.dispose();
 }
 
 public void test_isClipped() {
