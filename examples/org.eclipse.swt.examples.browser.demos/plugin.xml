@@ -2,9 +2,9 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.eclipse.swt.examples.browser.demos"
-   name="BrowserDemo Plug-in"
+   name="%plugin.SWTBrowserDemos.name"
    version="3.1.0"
-   provider-name="SWT"
+   provider-name="%providerName"
    class="org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin">
 
    <runtime>
@@ -21,7 +21,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Browser"
+            name="%view.BrowserDemos.name"
             id="org.eclipse.swt.examples.browser.demos.BrowserDemo">
       </category>
       <view
@@ -33,17 +33,23 @@
             id="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
       </view>
    </extension>
+   
    <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
+         point="org.eclipse.swt.examples.launcher.launchItems">
+      <category
+            name="%launchcategory.SWTViewExamples.name"
+            description="%launchcategory.SWTViewExamples.description"
+            id="org.eclipse.swt.examples.launchViewCategory">
+      </category>
+      <item
+            name="%launchitem.BrowserDemos.name"
+            icon="icons/sample.gif"
+            category="org.eclipse.swt.examples.launchViewCategory"
+            description="%launchitem.BrowserDemos.description"
+            id="org.eclipse.swt.examples.browserdemos.viewlauncher">
          <view
-               ratio="0.5"
-               relative="org.eclipse.ui.views.TaskList"
-               relationship="right"
-               id="org.eclipse.swt.examples.browser.demos.BrowserDemo.views.BrowserDemoView">
+               viewId="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
          </view>
-      </perspectiveExtension>
+      </item>
    </extension>
-
 </plugin>
