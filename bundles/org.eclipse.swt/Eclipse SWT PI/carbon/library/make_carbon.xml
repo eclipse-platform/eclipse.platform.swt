@@ -1,23 +1,53 @@
-<project name="swt" default="export" basedir=".">
+<project default="export" basedir=".">
 
 	<target name="init">
 		<tstamp/>
+        <property name="destdir" value="../../../../../export" />
 		<property name="plugin" value="org.eclipse.swt" />
+		<property name="maj_ver" value="20" />
+		<property name="min_ver" value="40" />
+        <mkdir dir="${destdir}" />
 	</target>
 
 	<target name="build" depends="init">
     	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
 	</target>
+	
+	<target name="build_header" depends="build">
+ 		<javah
+ 			destdir="."
+ 			force="yes"
+ 			classpath="../../../bin"
+  			class= "org.eclipse.swt.internal.carbon.OS"
+		/>
+	</target>
 
-	<target name="export" depends="build">
+	<target name="build_dll" depends="build_header">
+	
+		<property name="SWT_VERSION" value="${maj_ver}${min_ver}" />
+		<property name="SWT_PREFIX" value="swt" />
+		<property name="WS_PREFIX" value="carbon" />
+		<property name="SWT_DLL" value="lib${SWT_PREFIX}-${WS_PREFIX}-${SWT_VERSION}.jnilib" />
 		
-		<exec dir="." executable="javah">
-  			<arg line="-classpath ../../../bin" />
-  			<arg line="-force" />
-  			<arg line="-d ." />
-  			<arg line="org.eclipse.swt.internal.carbon.OS" />
+		<exec executable="cc">
+  			<arg line="-bundle" />
+  			<arg line="-I /System/Library/Frameworks/JavaVM.framework/Headers" />
+  			<arg line="-o ${destdir}/${SWT_DLL}" />
+  			<arg line="-framework JavaVM" />
+  			<arg line="-framework Carbon" />
+  			<arg line="OS.c" />
 		</exec>
 		
 	</target>
+		
+    <target name="build_jar" depends="build">
+        <jar
+            jarfile="${destdir}/swt.jar"
+            basedir="../../../bin"
+        />
+    </target>
+
+    <target name="export" depends="build_jar,build_dll">
+    </target>
 	
 </project>
