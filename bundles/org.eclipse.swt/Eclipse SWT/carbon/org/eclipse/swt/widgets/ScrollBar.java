@@ -497,7 +497,7 @@ void releaseChild () {
 	super.releaseChild ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
-	parent.layoutControl ();
+	parent.layoutControl (true);
 }
 
 void releaseHandle () {
@@ -720,7 +720,7 @@ public void setVisible (boolean visible) {
 	}
 	setVisible (handle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
-	parent.layoutControl();
+	parent.layoutControl (true);
 }
 
 void setZOrder () {

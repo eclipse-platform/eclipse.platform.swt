@@ -463,7 +463,7 @@ void createHandle () {
 
 void createWidget () {
 	super.createWidget ();
-	layoutControl ();
+	layoutControl (false);
 }
 
 void deregister () {
@@ -700,7 +700,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
 		resized = true;
-		layoutControl ();
+		layoutControl (false);
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
 	}
@@ -776,12 +776,12 @@ int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-void layoutControl () {
+void layoutControl (boolean events) {
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short)  OS.kWindowContentRgn, rect);
 	int control = scrolledHandle != 0 ? scrolledHandle : handle;
 	setBounds (control, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true, false);
-	super.layoutControl ();
+	super.layoutControl (events);
 }
 
 /**

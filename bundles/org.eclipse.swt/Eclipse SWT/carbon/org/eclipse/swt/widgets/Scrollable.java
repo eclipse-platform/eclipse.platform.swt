@@ -294,7 +294,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-void layoutControl () {
+void layoutControl (boolean events) {
 	if (scrolledHandle == 0) return;
 	int vWidth = 0, hHeight = 0;
 	int [] outMetric = new int [1];
@@ -314,6 +314,9 @@ void layoutControl () {
 	}
 	if (isVisibleVBar) {
 		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
+	}
+	if (events) {
+		sendEvent (SWT.Resize);
 	}
 }
 
@@ -340,7 +343,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 		if (events) sendEvent (SWT.Move);
 	}
 	if ((result & RESIZED) != 0) {
-		if (control == scrolledHandle) layoutControl ();
+		if (control == scrolledHandle) layoutControl (false);
 		if (events) sendEvent (SWT.Resize);
 	}
 	return result;
