@@ -270,11 +270,12 @@ void destroyItem (CoolItem item) {
 }
 
 /**
- * Returns the item at the given, zero-relative index in the
- * receiver. Throws an exception if the index is out of range.
+ * Returns the item that is currently displayed at the given,
+ * zero-relative index. Throws an exception if the index is
+ * out of range.
  *
- * @param index the index of the item to return
- * @return the item at the given index
+ * @param index the visual index of the item to return
+ * @return the item at the given visual index
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
@@ -317,16 +318,20 @@ public int getItemCount () {
 }
 
 /**
- * Returns an array of zero-relative indices which map the order
- * that the items in the receiver were added in to
- * the order which they are currently being displayed.
+ * Returns an array of zero-relative ints that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
  * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
  * not affect the receiver. 
  * </p>
  *
- * @return the receiver's item order
+ * @return the current visual order of the reciever's items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -358,15 +363,15 @@ public int [] getItemOrder () {
 }
 
 /**
- * Returns an array of <code>CoolItems</code>s which are the
- * items in the receiver. 
+ * Returns an array of <code>CoolItems</code>s in the order
+ * in which they are currently being displayed.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
  * not affect the receiver. 
  * </p>
  *
- * @return the receiver's items
+ * @return the receiver's items in their current visual order
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -392,9 +397,10 @@ public CoolItem [] getItems () {
 
 /**
  * Returns an array of points whose x and y coordinates describe
- * the widths and heights (respectively) of the items in the receiver.
+ * the widths and heights (respectively) of the items in the receiver
+ * in the order in which they are currently being displayed.
  *
- * @return the receiver's item sizes
+ * @return the receiver's item sizes in their current visual order
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -447,11 +453,12 @@ public boolean getLocked () {
 }
 
 /**
- * Returns an array of ints which describe the zero-relative
- * row number of the row which each of the items in the 
- * receiver occurs in.
+ * Returns an array of ints that describe the zero-relative
+ * indices of any item(s) in the receiver that will begin on
+ * a new row. The 0th visible item always begins the first row,
+ * therefore it does not count as a wrap index.
  *
- * @return the receiver's wrap indices
+ * @return an array containing the receiver's wrap indices, or an empty array if all items are in one row
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -476,13 +483,13 @@ public int [] getWrapIndices () {
 }
 
 /**
- * Searches the receiver's items, in the order they were
- * added, starting at the first item (index 0) until an item
- * is found that is equal to the argument, and returns the
- * index of that item. If no item is found, returns -1.
+ * Searches the receiver's items in the order they are currently
+ * being displayed, starting at the first item (index 0), until
+ * an item is found that is equal to the argument, and returns
+ * the index of that item. If no item is found, returns -1.
  *
  * @param item the search item
- * @return the index of the item
+ * @return the visual order index of the search item, or -1 if the item is not found
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
@@ -540,17 +547,39 @@ void setItemColors (int foreColor, int backColor) {
 }
 
 /**
- * Sets the receiver's item order, wrap indices, and item
- * sizes at once. This equivalent to calling the setter
- * methods for each of these values individually.
+ * Sets the receiver's item order, wrap indices, and item sizes
+ * all at once. This method is typically used to restore the
+ * displayed state of the receiver to a previously stored state.
+ * <p>
+ * The item order is the order in which the items in the receiver
+ * should be displayed, given in terms of the zero-relative ordering
+ * of when the items were added.
+ * </p><p>
+ * The wrap indices are the indices of all item(s) in the receiver
+ * that will begin on a new row. The indices are given in the order
+ * specified by the item order. The 0th item always begins the first
+ * row, therefore it does not count as a wrap index. If wrap indices
+ * is null or empty, the items will be placed on one line.
+ * </p><p>
+ * The sizes are specified in an array of points whose x and y
+ * coordinates describe the new widths and heights (respectively)
+ * of the receiver's items in the order specified by the item order.
+ * </p>
  *
- * @param itemOrder the new item order
- * @param wrapIndices the new wrap indices
- * @param size the new item sizes
+ * @param itemOrder an array of indices that describe the new order to display the items in
+ * @param wrapIndices an array of wrap indices, or null
+ * @param sizes an array containing the new sizes for each of the receiver's items in visual order
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if item order or sizes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if item order or sizes is not the same length as the number of items</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
@@ -560,17 +589,21 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
 	setItemSizes (sizes); 
 }
 
-/**
- * Sets the the order that the items in the receiver should 
+/*
+ * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
  *
- * @param itemOrder the new item order
+ * @param itemOrder the new order to display the items in
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
@@ -636,14 +669,13 @@ void setItemOrder (int [] itemOrder) {
 	}
 }
 
-/**
- * Sets the width and height of the areas in the receiver which
- * are used to display its items to the ones specified by the
- * argument, which is an array of points whose x and y coordinates
- * describe the widths and heights (respectively) in the order the 
- * items were added.
+/*
+ * Sets the width and height of the receiver's items to the ones
+ * specified by the argument, which is an array of points whose x
+ * and y coordinates describe the widths and heights (respectively)
+ * in the order in which the items are currently being displayed.
  *
- * @param sizes the new sizes for each of the receiver's items
+ * @param sizes an array containing the new sizes for each of the receiver's items in visual order
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of sizes is null</li>
@@ -699,12 +731,14 @@ public void setLocked (boolean locked) {
 }
 
 /**
- * Sets the row that each of the receiver's items will be
- * displayed in to the given array of ints which describe
- * the zero-relative row number of the row for each item.
- * If indices is null, the items will be placed on one line.
+ * Sets the indices of all item(s) in the receiver that will
+ * begin on a new row. The indices are given in the order in
+ * which they are currently being displayed. The 0th item
+ * always begins the first row, therefore it does not count
+ * as a wrap index. If indices is null or empty, the items
+ * will be placed on one line.
  *
- * @param indices the new wrap indices
+ * @param indices an array of wrap indices, or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
