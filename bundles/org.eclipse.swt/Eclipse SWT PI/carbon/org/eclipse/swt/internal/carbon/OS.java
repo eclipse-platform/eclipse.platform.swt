@@ -38,6 +38,11 @@ public class OS {
 	public static final int kAlertNoteAlert = 1;
 	public static final int kAlertPlainAlert = 3;
 	public static final int kAlertStopAlert = 0;
+	public static final int kAlertDefaultOKText           = -1;
+	public static final int kAlertDefaultCancelText       = -1;
+	public static final int kAlertStdAlertOKButton        = 1;
+	public static final int kAlertStdAlertCancelButton    = 2;
+	public static final int kAlertStdAlertOtherButton     = 3;
 	public static final int kAtSpecifiedOrigin = 0;
 	public static final int kATSUCGContextTag = 32767;
 	public static final int kATSUFontTag = 261;
@@ -336,6 +341,7 @@ public class OS {
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
 	public static final int kSheetWindowClass = 11;
+	public static final int kStdCFStringAlertVersionOne = 1;
 	public static final int kControlSliderDoesNotPoint = 2;
 	public static final int kThemeMetricHSliderHeight = 41;
 	public static final int kThemeMetricScrollBarWidth = 0;
@@ -389,6 +395,7 @@ public class OS {
     public static final int kWindowActivationScopeNone = 0;
     public static final int kWindowActivationScopeIndependent = 1;
     public static final int kWindowActivationScopeAll = 2;
+	public static final int kWindowAlertPositionParentWindowScreen = 0x700A;
     public static final int kWindowBoundsChangeOriginChanged = 1<<3;
     public static final int kWindowBoundsChangeSizeChanged = 1<<2;
 	public static final int kWindowCloseBoxAttribute = (1 << 0);
@@ -550,7 +557,7 @@ public static final native int CreateRootControl(int windowHandle, int[] cHandle
 public static final native int CreateSliderControl(int window, Rect boundsRect, int value, int minimum, int maximum, int orientation, short numTickMarks, boolean liveTracking, int liveTrackingProc, int [] outControl);
 public static final native int CreateScrollBarControl(int window, Rect boundsRect, int value, int minimum, int maximum, int viewSize, boolean liveTracking, int liveTrackingProc, int [] outControl);
 public static final native int CreateSeparatorControl(int window, Rect boundsRect, int [] outControl);
-public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, int alertParamHandle, int[] dialogHandle);
+public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, AlertStdCFStringAlertParamRec alertParamHandle, int[] dialogHandle);
 public static final native int CreateStaticTextControl(int window, Rect boundsRect, int text, ControlFontStyleRec style, int [] outControl);    
 public static final native int CreateTabsControl(int window, Rect boundsRect, short size, short direction, short numTabs, int tabArray, int[] outControl);
 public static final native int CreateEditUnicodeTextControl(int window, Rect boundsRect, int text, boolean isPassword, ControlFontStyleRec style, int [] outControl);

@@ -1,13 +1,12 @@
 package org.eclipse.swt.internal.carbon;
 
-/**
- * @author veronikairvine
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+/*
+ * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * This file is made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
  */
+ 
 public class AlertStdCFStringAlertParamRec {
 	public int version;
 	public boolean movable;
