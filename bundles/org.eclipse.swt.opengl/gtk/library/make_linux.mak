@@ -10,8 +10,6 @@
 #*******************************************************************************
 
 # Define the installation directories for various products.
-JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
-
 CC=gcc
 LD=gcc
 

@@ -1,3 +1,4 @@
+#!/bin/sh
 #*******************************************************************************
 # Copyright (c) 2000, 2003 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials 
@@ -9,6 +10,21 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
-#!/bin/sh
+if [ "${OS}" = "" ]; then
+	OS=`uname -s`
+fi
 
-make -f make_gtk.mak ${1+"$@"}
+case $OS in
+	"Linux")
+		JAVA_HOME = /bluebird/teamswt/swt-builddir/ive/bin
+		makefile="make_linux.mak"
+		echo "Building Linux GTK version of SWT OpenGL"
+		;;
+	*)
+		echo "*** Unknown OS <${OS}>"
+		;;
+esac
+
+export JAVA_HOME
+
+make -f $makefile ${1+"$@"}
