@@ -135,9 +135,6 @@ public class StyledText extends Canvas {
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
 	
-	// optimization flag for non-Windows platforms	
-	boolean drawDirect = false;
-	
 	/**
 	 * The Printing class implements printing of a range of text.
 	 * An instance of <class>Printing </class> is returned in the 
@@ -1313,8 +1310,15 @@ public class StyledText extends Canvas {
 	 * @param replaceCharCount the number of deleted characters
 	 */  
 	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
+		int startLine = visualContent.getLineAtOffset(startOffset);
+		
 		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount);
-		parent.internalRedraw();
+		if (startLine <= getPartialBottomIndex()) {
+			// only redraw if the text change is inside or above the 
+			// visible lines. if it is below the visible lines it will
+			// not affect the word wrapping. fixes bug 14047.
+			parent.internalRedraw();
+		}
 	}
 	}
 public StyledText(Composite parent, int style) {
@@ -1659,6 +1663,26 @@ void claimRightFreeSpace() {
 		// client area (window is scrolled right).
 		scrollHorizontalBar(newHorizontalOffset - horizontalScrollOffset);					
 	}
+}
+/**
+ * Clears the widget margin.
+ * 
+ * @param gc GC to render on
+ * @param background background color to use for clearing the margin
+ * @param clientArea widget client area dimensions
+ * @param renderHeight height in pixel of the rendered lines
+ */
+void clearMargin(GC gc, Color background, Rectangle clientArea, int renderHeight) {
+	// clear the margin background
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, clientArea.width, topMargin);
+	gc.fillRectangle(0, 0, leftMargin, renderHeight);	
+	gc.fillRectangle(
+		0, clientArea.height - bottomMargin, 
+		clientArea.width, bottomMargin);
+	gc.fillRectangle(
+		clientArea.width - rightMargin, 0, 
+		rightMargin, renderHeight);
 }
 /**
  * Removes the widget selection.
@@ -4605,28 +4629,27 @@ void handlePaint(Event event) {
 	if (clientArea.width == 0 || event.height == 0) {		
 		return;
 	}
-	performPaint(event.gc, startLine, startY, renderHeight);	
+	performPaint(event.gc, startLine, startY, renderHeight, false);	
 }	
 /**
  * Render the specified area.  Broken out as its own method to support
  * direct drawing.
  * <p>
  *
- * @param gc
- * @param startLine
- * @param startY
- * @param renderHeight
+ * @param gc GC to render on 
+ * @param startLine first line to render
+ * @param startY y pixel location to start rendering at
+ * @param renderHeight renderHeight widget area that needs to be filled with lines
+ * @param drawDirect rendering is done directly without invalidating the paint area
  */
-void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
+void performPaint(GC gc,int startLine,int startY, int renderHeight, boolean drawDirect)	{
 	int lineCount = content.getLineCount();
 	int paintY = topMargin;	
 	Rectangle clientArea = getClientArea();
 	Color background = getBackground();
 	Color foreground = getForeground();
-	Image lineBuffer;
-	GC lineGC;
-	Font font;
-	FontData fontData;
+	Font font = gc.getFont();
+	FontData fontData = font.getFontData()[0];
 	
 	// Check if there is work to do. We never want to try and create 
 	// an Image with 0 width or 0 height.
@@ -4639,12 +4662,11 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			startLine = 1;
 		}
 	}
-	font = gc.getFont();
-	fontData = font.getFontData()[0];
 	// Do double buffering on direct draw operations only
 	if (drawDirect || SWT.getPlatform().equals("win32")) {
-		lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-		lineGC = new GC(lineBuffer);	
+		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+		GC lineGC = new GC(lineBuffer);	
+
 		lineGC.setFont(font);
 		lineGC.setForeground(foreground);
 		lineGC.setBackground(background);
@@ -4671,17 +4693,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			gc.fillRectangle(0, paintY + startY, clientArea.width, renderHeight - paintY);
 		}
 	}
-	
-	// clear the margin background
-	gc.setBackground(background);
-	gc.fillRectangle(0, 0, clientArea.width, topMargin);
-	gc.fillRectangle(0, 0, leftMargin, renderHeight);	
-	gc.fillRectangle(
-		0, clientArea.height - bottomMargin, 
-		clientArea.width, bottomMargin);
-	gc.fillRectangle(
-		clientArea.width - rightMargin, 0, 
-		rightMargin, renderHeight);
+	clearMargin(gc, background, clientArea, renderHeight);
 }
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
@@ -4750,6 +4762,20 @@ void handleTextChanged(TextChangedEvent event) {
 		// fixes bug 8273
 		claimRightFreeSpace();
 	}
+	// do direct drawing if the text change is confined to a single line.
+	// optimization and fixes bug 13999. see also handleTextChanging.
+	if (lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0) {
+		int startLine = content.getLineAtOffset(lastTextChangeStart);
+		int startY = startLine * lineHeight - verticalScrollOffset;
+		GC gc = new GC(this);
+		Caret caret = getCaret();
+		boolean caretVisible = caret.getVisible();
+		
+		caret.setVisible(false);
+		performPaint(gc, startLine, startY, lineHeight, true);
+		caret.setVisible(caretVisible);
+		gc.dispose();
+	}
 }
 /**
  * Updates the screen to reflect a pending content change.
@@ -4781,12 +4807,6 @@ void handleTextChanging(TextChangingEvent event) {
 	textChangeY = firstLine * lineHeight - verticalScrollOffset + topMargin;
 	if (isMultiLineChange) {
 		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
-	}
-	else {
-		// Optimization for non-Windows platforms.  Do direct drawing during typing.
-		if (drawDirect == false) {
-			super.redraw(leftMargin, textChangeY, getClientArea().width - leftMargin - rightMargin, lineHeight, true);
-		}
 	}
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
@@ -5088,10 +5108,6 @@ void modifyContent(Event event, boolean updateCaret) {
 			styledTextEvent.end = event.start + event.text.length();
 			styledTextEvent.text = content.getTextRange(event.start, replacedLength);
 		}
-		// Optimization for non-Windows platforms.  Do direct drawing during typing.
-		if (SWT.getPlatform().equals("win32") == false) {
-			drawDirect = (event.text.length() == 1) || (replacedLength == 1);
-		}
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
@@ -5112,16 +5128,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			else {
 				showCaret();
 			}
-		}		
-		// Optimization for non-Windows platforms.  Do direct drawing during typing.
-		if (drawDirect) {
-			int startLine = content.getLineAtOffset(event.start);
-			int startY = startLine * lineHeight - verticalScrollOffset;
-			GC gc = new GC(this);
-			performPaint(gc, startLine, startY, lineHeight);
-			drawDirect = false;
-			gc.dispose();
-		}
+		}	
 		notifyListeners(SWT.Modify, event);		
 		if (isListening(ExtendedModify)) {
 			notifyListeners(ExtendedModify, styledTextEvent);
