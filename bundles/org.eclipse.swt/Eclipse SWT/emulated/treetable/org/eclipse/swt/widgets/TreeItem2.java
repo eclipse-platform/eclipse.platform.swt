@@ -226,6 +226,9 @@ void dispose (boolean notifyParent) {
 		items[i].dispose (notifyParent);
 	}
 	background = foreground = null;
+	cellBackground = cellForeground = null;
+	font = null;
+	cellFont = null;
 	images = null;
 	texts = null;
 	textWidths = null;
@@ -656,126 +659,126 @@ boolean isSelected () {
 void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	int columnIndex = 0, x = 0;
 	if (column != null) {
-		columnIndex = column.getIndex();
-		x = column.getX();
+		columnIndex = column.getIndex ();
+		x = column.getX ();
 	}
-	int y = parent.getItemY(this);
-	int padding = parent.getCellPadding();
-	int itemHeight = parent.getItemHeight();
-	Rectangle cellBounds = getBounds(columnIndex);
+	int y = parent.getItemY (this);
+	int padding = parent.getCellPadding ();
+	int itemHeight = parent.getItemHeight ();
+	Rectangle cellBounds = getBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
-		cellRightX = column.getX() + column.getWidth();
+		cellRightX = column.getX () + column.getWidth ();
 	} else {
 		cellRightX = cellBounds.x + cellBounds.width;
 	}
 	
 	/* draw the background color if this item has a custom color set */
-	if (background != null && !background.equals(parent.getBackground())) {
-		Color oldBackground = gc.getBackground();
-		gc.setBackground(background);
+	if (background != null && !background.equals (parent.getBackground ())) {
+		Color oldBackground = gc.getBackground ();
+		gc.setBackground (background);
 		if (columnIndex == 0) {
-			int focusX = getFocusX();
-			gc.fillRectangle(focusX, parent.getItemY(this) + 1, cellRightX - focusX - 1, parent.getItemHeight() - 1);
+			int focusX = getFocusX ();
+			gc.fillRectangle (focusX, parent.getItemY (this) + 1, cellRightX - focusX - 1, parent.getItemHeight () - 1);
 		} else {
-			gc.fillRectangle(cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
+			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
 		}
-		gc.setBackground(oldBackground);
+		gc.setBackground (oldBackground);
 	}
 
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected() && columnIndex == 0) {
-		Color oldBackground = gc.getBackground();
-		gc.setBackground(SelectionBackgroundColor);
-		int startX = getFocusX() + 1;
-		gc.fillRectangle(
+	if (isSelected () && columnIndex == 0) {
+		Color oldBackground = gc.getBackground ();
+		gc.setBackground (SelectionBackgroundColor);
+		int startX = getFocusX () + 1;
+		gc.fillRectangle (
 			startX,
 			cellBounds.y + padding,
-			Math.max(0, cellRightX - startX - 2),
-			Math.max(0, cellBounds.height - (padding * 2) + 1));
-		gc.setBackground(oldBackground);
+			Math.max (0, cellRightX - startX - 2),
+			Math.max (0, cellBounds.height - (padding * 2) + 1));
+		gc.setBackground (oldBackground);
 	}
 		
 	if (!paintCellContent) return;
  
-	Rectangle oldClipping = gc.getClipping();
+	Rectangle oldClipping = gc.getClipping ();
 		
 	/* Draw column 0 decorations */
 	if (columnIndex == 0) {
 		/* while painting the cell's contents restrict the clipping region */
-		gc.setClipping(x, cellBounds.y, cellRightX - x, cellBounds.height);
+		gc.setClipping (x, cellBounds.y, cellRightX - x, cellBounds.height);
 
 		/* Draw hierarchy connector lines */
-		Rectangle expanderBounds = getExpanderBounds();
-		Color oldForeground = gc.getForeground();
-		gc.setForeground(LinesColor);
+		Rectangle expanderBounds = getExpanderBounds ();
+		Color oldForeground = gc.getForeground ();
+		gc.setForeground (LinesColor);
 		
 		/* Draw vertical line above expander */
 		int lineX = expanderBounds.x + expanderBounds.width / 2;
-		int itemCount = getItemCount();
+		int itemCount = getItemCount ();
 		int y2 = expanderBounds.y;
 		if (itemCount == 0) {
 			y2 += expanderBounds.height / 2;
 		}
 		
 		/* Do not draw this line iff this is the very first item in the tree */ 
-		if (!isRoot() || getIndex() != 0) {
-			gc.drawLine(lineX, y, lineX, y2);
+		if (!isRoot () || getIndex () != 0) {
+			gc.drawLine (lineX, y, lineX, y2);
 		}
 		
 		/* Draw vertical line below expander if the receiver has lower siblings */
-		if (!isLastChild()) {
+		if (!isLastChild ()) {
 			if (itemCount != 0) y2 += expanderBounds.height;
-			gc.drawLine(lineX, y2, lineX, y + itemHeight);
+			gc.drawLine (lineX, y2, lineX, y + itemHeight);
 		}
 
 		/* Draw horizontal line to right of expander */
-		Point[] endpoints = getHconnectorEndpoints();
-		gc.drawLine(endpoints[0].x, endpoints[0].y, endpoints[1].x - Tree2.MARGIN_IMAGE, endpoints[1].y);
+		Point[] endpoints = getHconnectorEndpoints ();
+		gc.drawLine (endpoints[0].x, endpoints[0].y, endpoints[1].x - Tree2.MARGIN_IMAGE, endpoints[1].y);
 		
 		/* 
 		 * Draw hierarchy lines that are needed by other items that are shown below
 		 * this item but whose parents are shown above.
 		 */
-		TreeItem2 item = getParentItem();
+		TreeItem2 item = getParentItem ();
 		while (item != null) {
-			if (!item.isLastChild()) {
-				Rectangle itemExpanderBounds = item.getExpanderBounds();
+			if (!item.isLastChild ()) {
+				Rectangle itemExpanderBounds = item.getExpanderBounds ();
 				lineX = itemExpanderBounds.x + itemExpanderBounds.width / 2;
-				gc.drawLine(lineX, y, lineX, y + itemHeight);
+				gc.drawLine (lineX, y, lineX, y + itemHeight);
 			}
-			item = item.getParentItem();
+			item = item.getParentItem ();
 		}
-		gc.setForeground(oldForeground);
+		gc.setForeground (oldForeground);
 		
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
 			Image image = expanded ? ExpandedImage : CollapsedImage;
-			gc.drawImage(image, expanderBounds.x, expanderBounds.y);
+			gc.drawImage (image, expanderBounds.x, expanderBounds.y);
 		}
 		
 		/* Draw checkbox if parent Tree has style SWT.CHECK */
 		if ((parent.style & SWT.CHECK) != 0) {
 			Image baseImage = grayed ? GrayUncheckedImage : UncheckedImage;
-			Rectangle checkboxBounds = getCheckboxBounds();
-			gc.drawImage(baseImage, checkboxBounds.x, checkboxBounds.y);
+			Rectangle checkboxBounds = getCheckboxBounds ();
+			gc.drawImage (baseImage, checkboxBounds.x, checkboxBounds.y);
 
 			if (checked) {
-				Rectangle checkmarkBounds = CheckmarkImage.getBounds();
+				Rectangle checkmarkBounds = CheckmarkImage.getBounds ();
 				int xInset = (checkboxBounds.width - checkmarkBounds.width) / 2;
 				int yInset = (checkboxBounds.height - checkmarkBounds.height) / 2;
-				gc.drawImage(CheckmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
+				gc.drawImage (CheckmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
 			}
 		}
 	}
 
-	Image image = internalGetImage(columnIndex);
-	String text = internalGetText(columnIndex);
-	Rectangle imageArea = getImageBounds(columnIndex);
+	Image image = internalGetImage (columnIndex);
+	String text = internalGetText (columnIndex);
+	Rectangle imageArea = getImageBounds (columnIndex);
 	int startX = imageArea.x;
 	
 	/* while painting the cell's contents restrict the clipping region */
-	gc.setClipping(
+	gc.setClipping (
 		startX,
 		cellBounds.y + padding,
 		Math.max (0, cellRightX - startX - padding),
@@ -783,8 +786,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 	/* draw the image */
 	if (image != null) {
-		Rectangle imageBounds = image.getBounds();
-		gc.drawImage(
+		Rectangle imageBounds = image.getBounds ();
+		gc.drawImage (
 			image,
 			0, 0,									/* source x, y */
 			imageBounds.width, imageBounds.height,	/* source width, height */
@@ -797,56 +800,56 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		int fontHeight;
 		Font oldFont = null;
 		if (font != null) {
-			oldFont = gc.getFont();
-			gc.setFont(font);
+			oldFont = gc.getFont ();
+			gc.setFont (font);
 			fontHeight = this.fontHeight;
 		} else {
 			fontHeight = parent.fontHeight;
 		}
 		Color oldForeground = null;
-		if (isSelected() && columnIndex == 0) {
-			oldForeground = gc.getForeground();
-			gc.setForeground(SelectionForegroundColor);
+		if (isSelected () && columnIndex == 0) {
+			oldForeground = gc.getForeground ();
+			gc.setForeground (SelectionForegroundColor);
 		} else {
 			if (foreground != null) {
-				oldForeground = gc.getForeground();
-				gc.setForeground(foreground);
+				oldForeground = gc.getForeground ();
+				gc.setForeground (foreground);
 			}
 		}
-		gc.drawText(text, getTextX(columnIndex), y + (itemHeight - fontHeight) / 2, true);
-		if (oldForeground != null) gc.setForeground(oldForeground);
-		if (oldFont != null) gc.setFont(oldFont);
+		gc.drawText (text, getTextX (columnIndex), y + (itemHeight - fontHeight) / 2, true);
+		if (oldForeground != null) gc.setForeground (oldForeground);
+		if (oldFont != null) gc.setFont (oldFont);
 	}
 	
 	/* restore the original clipping */
-	gc.setClipping(oldClipping);
+	gc.setClipping (oldClipping);
 }
-void recomputeTextWidths(GC gc) {
+void recomputeTextWidths (GC gc) {
 	textWidths = new int[texts.length];
-	if (font != null) gc.setFont(font);
+	if (font != null) gc.setFont (font);
 	for (int i = 0; i < texts.length; i++) {
 		String value = texts[i];
 		if (value != null) {
-			textWidths[i] = gc.textExtent(value).x;
+			textWidths[i] = gc.textExtent (value).x;
 		}
 	}
 }
 void redrawItem () {
-	parent.redraw(0, parent.getItemY(this), parent.getClientArea().width, parent.getItemHeight(), false);
+	parent.redraw (0, parent.getItemY (this), parent.getClientArea().width, parent.getItemHeight (), false);
 }
 /*
  * Make changes that are needed to handle the disposal of a child item.
  */
-void removeItem(TreeItem2 item, int index) {
-	if (isDisposed()) return;
+void removeItem (TreeItem2 item, int index) {
+	if (isDisposed ()) return;
 	TreeItem2[] newItems = new TreeItem2[items.length - 1];
-	System.arraycopy(items, 0, newItems, 0, index);
-	System.arraycopy(items, index + 1, newItems, index, newItems.length - index);
+	System.arraycopy (items, 0, newItems, 0, index);
+	System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
 	// TODO second condition below is ugly, handles creation of item within Expand callback
 	if (items.length == 0 && !parent.inExpand) {
 		expanded = false;
-		if (isAvailable()) redrawItem();	/* expander no longer needed */
+		if (isAvailable ()) redrawItem ();	/* expander no longer needed */
 	}
 }
 public void setBackground (Color value) {
@@ -857,14 +860,14 @@ public void setBackground (Color value) {
 	if (background == value) return;
 	if (background != null && background.equals (value)) return;
 	background = value;
-	redrawItem();
+	redrawItem ();
 }
 public void setBackground (int columnIndex, Color value) {
 	checkWidget ();
 	if (value != null && value.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max(1, parent.getColumnCount());
+	int validColumnCount = Math.max (1, parent.getColumnCount());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellBackground == null) {
 		cellBackground = new Color [validColumnCount];
@@ -872,17 +875,17 @@ public void setBackground (int columnIndex, Color value) {
 	if (cellBackground [columnIndex] == value) return;
 	if (cellBackground [columnIndex] != null && cellBackground [columnIndex].equals (value)) return;
 	cellBackground [columnIndex] = value;
-	redrawItem();
+	redrawItem ();
 }
 public void setChecked (boolean value) {
 	checkWidget();
 	if ((parent.getStyle() & SWT.CHECK) == 0) return;
 	if (checked == value) return;
 	checked = value;
-	Rectangle bounds = getCheckboxBounds();
-	parent.redraw(bounds.x, bounds.y, bounds.width, bounds.height, false);
+	Rectangle bounds = getCheckboxBounds ();
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
-public void setExpanded(boolean value) {
+public void setExpanded (boolean value) {
 	checkWidget ();
 	if (expanded == value) return;
 	if (items.length == 0) return;
@@ -890,26 +893,26 @@ public void setExpanded(boolean value) {
 	if (parent.inExpand) return;
 	if (value) {
 		expanded = value;
-		parent.makeDescendentsAvailable(this);
-		parent.redrawFromItemDownwards(availableIndex);
+		parent.makeDescendentsAvailable (this);
+		parent.redrawFromItemDownwards (availableIndex);
 	} else {
 		int oldAvailableLength = parent.availableItems.length;
-		TreeItem2[] descendents = computeAvailableDescendents();
+		TreeItem2[] descendents = computeAvailableDescendents ();
 		expanded = value;
-		parent.makeDescendentsUnavailable(this, descendents);
+		parent.makeDescendentsUnavailable (this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem2 focusItem = parent.focusItem;
-		if (focusItem != null && focusItem != this && focusItem.hasAncestor(this)) {
-			parent.setFocusItem(this, true);
+		if (focusItem != null && focusItem != this && focusItem.hasAncestor (this)) {
+			parent.setFocusItem (this, true);
 			if ((style & SWT.SINGLE) != 0) {
 				parent.selectedItems = new TreeItem2[] {this};
 			}
 			/* Fire an event since the selection is being changed automatically */
-			Event newEvent = new Event();
+			Event newEvent = new Event ();
 			newEvent.item = this;
-			parent.sendEvent(SWT.Selection, newEvent);
-			if (isDisposed()) return;
-			parent.showItem(this);
+			parent.sendEvent (SWT.Selection, newEvent);
+			if (isDisposed ()) return;
+			parent.showItem (this);
 		}
 		parent.redrawItems(availableIndex, oldAvailableLength - 1);
 	}
@@ -924,20 +927,19 @@ public void setFont (Font value) {
 	
 	font = value;
 	/* recompute cached values for string measurements */
-	GC gc = new GC(parent);
-	if (font != null) gc.setFont(font);
-	recomputeTextWidths(gc);
-	fontHeight = gc.getFontMetrics().getHeight();
-	gc.dispose();
-
-	redrawItem();
+	GC gc = new GC (parent);
+	if (font != null) gc.setFont (font);
+	recomputeTextWidths (gc);
+	fontHeight = gc.getFontMetrics ().getHeight ();
+	gc.dispose ();
+	redrawItem ();
 }
 public void setFont (int columnIndex, Font value) {
 	checkWidget ();
 	if (value != null && value.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max(1, parent.getColumnCount());
+	int validColumnCount = Math.max(1, parent.getColumnCount ());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellFont == null) {
 		cellFont = new Font [validColumnCount];
@@ -945,7 +947,7 @@ public void setFont (int columnIndex, Font value) {
 	if (cellFont [columnIndex] == value) return;
 	if (cellFont [columnIndex] != null && cellFont [columnIndex].equals (value)) return;
 	cellFont [columnIndex] = value;
-	redrawItem();
+	redrawItem ();
 }
 
 public void setForeground (Color value) {
@@ -956,14 +958,14 @@ public void setForeground (Color value) {
 	if (foreground == value) return;
 	if (foreground != null && foreground.equals (value)) return;
 	foreground = value;
-	redrawItem();
+	redrawItem ();
 }
 public void setForeground (int columnIndex, Color value) {
 	checkWidget ();
 	if (value != null && value.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max(1, parent.getColumnCount());
+	int validColumnCount = Math.max(1, parent.getColumnCount ());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellForeground == null) {
 		cellForeground = new Color [validColumnCount];
@@ -971,41 +973,41 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForeground [columnIndex] == value) return;
 	if (cellForeground [columnIndex] != null && cellForeground [columnIndex].equals (value)) return;
 	cellForeground [columnIndex] = value;
-	redrawItem();
+	redrawItem ();
 }
-public void setGrayed(boolean value) {
-	checkWidget();
+public void setGrayed (boolean value) {
+	checkWidget ();
 	if ((parent.getStyle() & SWT.CHECK) == 0) return;
 	if (grayed == value) return;
 	grayed = value;
-	redrawItem();
+	redrawItem ();
 }
 public void setImage (Image value) {
 	checkWidget ();
 	setImage (0, value);
 }
-public void setImage(Image[] value) {
-	checkWidget();
+public void setImage (Image[] value) {
+	checkWidget ();
 	if (value == null) error(SWT.ERROR_NULL_ARGUMENT);
 	
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
-		if (value[i] != null) setImage(i, value[i]);
+		if (value[i] != null) setImage (i, value[i]);
 	}
 }
 public void setImage (int columnIndex, Image value) {
 	checkWidget ();
-	if (value != null && value.isDisposed()) {
+	if (value != null && value.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max(1, parent.getColumnCount());
+	int validColumnCount = Math.max (1, parent.getColumnCount());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (images.length < columnIndex + 1) {
 		Image[] newImages = new Image[columnIndex + 1];
-		System.arraycopy(images, 0, newImages, 0, images.length);
+		System.arraycopy (images, 0, newImages, 0, images.length);
 		images = newImages;
 	} else {
-		Image current = internalGetImage(columnIndex);
+		Image current = internalGetImage (columnIndex);
 		if (current == value) return;				/* same value */
 		if (current != null && current.equals (value)) return;
 	}
@@ -1016,13 +1018,13 @@ public void setImage (int columnIndex, Image value) {
 	 * may be adjusted, in which case a full redraw is needed.
 	 */
 	if (parent.imageHeight == 0) {
-		int oldItemHeight = parent.getItemHeight();
-		parent.setImageHeight(value.getBounds().height);
-		if (oldItemHeight != parent.getItemHeight()) {
+		int oldItemHeight = parent.getItemHeight ();
+		parent.setImageHeight (value.getBounds().height);
+		if (oldItemHeight != parent.getItemHeight ()) {
 			if (columnIndex == 0) {
-				parent.col0ImageWidth = value.getBounds().width;
+				parent.col0ImageWidth = value.getBounds ().width;
 			}
-			parent.redraw();
+			parent.redraw ();
 			return;
 		}
 	}
@@ -1032,54 +1034,54 @@ public void setImage (int columnIndex, Image value) {
 	 * in the column should also indent accordingly. 
 	 */
 	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
-		parent.col0ImageWidth = value.getBounds().width;
+		parent.col0ImageWidth = value.getBounds ().width;
 		/* redraw the column */
-		if (parent.getColumnCount() == 0) {
-			parent.redraw();
+		if (parent.getColumnCount () == 0) {
+			parent.redraw ();
 		} else {
-			parent.redraw(
+			parent.redraw (
 				0, 0,
-				parent.getColumn(0).getWidth(),
-				parent.getClientArea().height,
+				parent.getColumn (0).getWidth (),
+				parent.getClientArea ().height,
 				true);
 		}
 	}
-	redrawItem();
+	redrawItem ();
 }
 public void setText (String value) {
 	checkWidget ();
 	setText (0, value);
 }
-public void setText(String[] value) {
+public void setText (String[] value) {
 	checkWidget();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
-		if (value[i] != null) setText(i, value[i]);
+		if (value[i] != null) setText (i, value[i]);
 	}
 }
 public void setText (int columnIndex, String value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int validColumnCount = Math.max(1, parent.getColumnCount());
+	int validColumnCount = Math.max (1, parent.getColumnCount());
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
-	if (columnIndex == 0) super.setText(value);	// TODO can remove this
+	if (columnIndex == 0) super.setText (value);	// TODO can remove this
 	if (texts.length < columnIndex + 1) {
 		String[] newTexts = new String[columnIndex + 1];
-		System.arraycopy(texts, 0, newTexts, 0, texts.length);
+		System.arraycopy (texts, 0, newTexts, 0, texts.length);
 		texts = newTexts;
 		int[] newTextWidths = new int[columnIndex + 1];
-		System.arraycopy(textWidths, 0, newTextWidths, 0, textWidths.length);
+		System.arraycopy (textWidths, 0, newTextWidths, 0, textWidths.length);
 		textWidths = newTextWidths;
 	} else {
-		if (value.equals(internalGetText(columnIndex))) return;	/* same value */
+		if (value.equals (internalGetText (columnIndex))) return;	/* same value */
 	}
 	texts[columnIndex] = value;
 	GC gc = new GC (parent);
-	textWidths[columnIndex] = gc.textExtent(value).x;
-	gc.dispose();
-	redrawItem();
+	textWidths[columnIndex] = gc.textExtent (value).x;
+	gc.dispose ();
+	redrawItem ();
 }
 /*
  * The parent's font has changed, so if this font was being used by the receiver then
@@ -1088,11 +1090,11 @@ public void setText (int columnIndex, String value) {
  */
 void updateFont (GC gc) {
 	if (font == null) {		/* receiver is using the Tree's font */
-		recomputeTextWidths(gc);
+		recomputeTextWidths (gc);
 	}
 	/* pass notification on to all children */
 	for (int i = 0; i < items.length; i++) {
-		items[i].updateFont(gc);
+		items[i].updateFont (gc);
 	}
 }
 }
