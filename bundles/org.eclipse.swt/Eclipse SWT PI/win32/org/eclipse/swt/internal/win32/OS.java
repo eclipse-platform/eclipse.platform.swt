@@ -1267,6 +1267,11 @@ public static final int EnumFontFamilies (int hdc, TCHAR lpszFamily, int lpEnumF
 	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
 }
 
+public static final boolean EnumSystemCodePages (int lpCodePageEnumProc, int dwFlags) {
+	if (IsUnicode) return EnumSystemCodePagesW (lpCodePageEnumProc, dwFlags);
+	return EnumSystemCodePagesA (lpCodePageEnumProc, dwFlags);
+}
+
 public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags) {
 	if (IsUnicode) return EnumSystemLocalesW (lpLocaleEnumProc, dwFlags);
 	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
@@ -1945,6 +1950,8 @@ public static final native boolean Ellipse (int hdc,int nLeftRect,int nTopRect,i
 public static final native boolean EnableMenuItem (int hMenu, int uIDEnableItem, int uEnable);
 public static final native boolean EnableScrollBar (int hWnd, int wSBflags, int wArrows);
 public static final native boolean EnableWindow (int hWnd, boolean bEnable);
+public static final native boolean EnumSystemCodePagesW (int lpCodePageEnumProc, int dwFlags);
+public static final native boolean EnumSystemCodePagesA (int lpCodePageEnumProc, int dwFlags);
 public static final native boolean EnumSystemLocalesW (int lpLocaleEnumProc, int dwFlags);
 public static final native boolean EnumSystemLocalesA (int lpLocaleEnumProc, int dwFlags);
 public static final native boolean EndDeferWindowPos (int hWinPosInfo);

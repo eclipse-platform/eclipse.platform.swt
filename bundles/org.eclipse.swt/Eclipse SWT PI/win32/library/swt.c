@@ -1207,6 +1207,24 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumFontFamiliesW
 }
 
 #ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemCodePagesA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EnumSystemCodePagesA\n")
+
+	return (jboolean)EnumSystemCodePagesA((CODEPAGE_ENUMPROCA)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemCodePagesW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EnumSystemCodePagesW\n")
+
+	return (jboolean)EnumSystemCodePagesW((CODEPAGE_ENUMPROCW)arg0, arg1);
+}
+
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocalesA
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
