@@ -225,12 +225,19 @@ public String getText () {
 	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 boolean mnemonicHit (char key) {
-	return setFocus ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setFocus ()) return true;
+	}
+	return false;
 }
 boolean mnemonicMatch (char key) {
-	char mnemonic = findMnemonic (getText ());
-	if (mnemonic == '\0') return false;
-	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+	int [] argList = {OS.XmNmnemonic, 0,};
+	OS.XtGetValues (labelHandle, argList, argList.length / 2);
+	int mnemonic = argList [1];
+	if (mnemonic == OS.XK_VoidSymbol) return false;
+	return Character.toUpperCase (key) == Character.toUpperCase ((char) mnemonic);
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
