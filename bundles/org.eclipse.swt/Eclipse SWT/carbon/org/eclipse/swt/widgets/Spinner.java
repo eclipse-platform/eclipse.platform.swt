@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -78,19 +77,23 @@ public Spinner (Composite parent, int style) {
 
 int actionProc (int theControl, int partCode) {
 	int value = getSelectionText ();
+	int newValue = value;
     switch (partCode) {
 	    case OS.kControlUpButtonPart:
-			value += increment;
+			newValue += increment;
 	        break;
 	    case OS.kControlDownButtonPart:
-			value -= increment;
+			newValue -= increment;
 	        break;
 	}
 	int max = OS.GetControl32BitMaximum (buttonHandle);
 	int min = OS.GetControl32BitMinimum (buttonHandle);
-	if (value > max) value = min;
-	if (value < min) value = max;
-	setSelection (value, true);
+	if ((style & SWT.WRAP) != 0) {
+		if (newValue > max) newValue = min;
+		if (newValue < min) newValue = max;
+	}
+	newValue = Math.min (Math.max (min, newValue), max);
+	if (value != newValue) setSelection (newValue, true);
 	return 0;
 }
 
@@ -225,13 +228,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.SetPort (currentPort [0]);
 	}
 	int [] metric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, metric);
-	height = Math.max (height, metric [0]);
 	OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
 	width += metric [0] * 2;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
+	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, metric);
+	trim.height = Math.max (trim.height, metric [0]);
 	return new Point (trim.width, trim.height);
 }
 
@@ -337,7 +340,11 @@ void deregister () {
 }
 
 void drawBackground (int control) {
-	drawBackground (control, background);
+	if (control == textHandle) {
+		drawBackground (control, background);
+	} else {
+		drawBackground (control, getParentBackground ());
+	}
 }
 
 int focusHandle () {
@@ -516,12 +523,16 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 		case 126: /* Up */ delta = increment; break;
 	}
 	if (delta != 0) {
-		int value = getSelectionText () + delta;
+		int value = getSelectionText ();
+		int newValue = value + delta;
 		int max = OS.GetControl32BitMaximum (buttonHandle);
 		int min = OS.GetControl32BitMinimum (buttonHandle);
-		if (value > max) value = min;
-		if (value < min) value = max;
-		setSelection (value, true);
+		if ((style & SWT.WRAP) != 0) {
+			if (newValue > max) newValue = min;
+			if (newValue < min) newValue = max;
+		}
+		newValue = Math.min (Math.max (min, newValue), max);
+		if (value != newValue) setSelection (newValue, true);
 		return OS.noErr;
 	}
 	return result;
@@ -664,7 +675,7 @@ void resizeClientArea () {
 	int height = Math.max (0, rect.bottom - rect.top - inset.top - inset.bottom);
 	buttonHeight = Math.min (buttonHeight, rect.bottom - rect.top);
 	setBounds (textHandle, inset.left, inset.top, width, height, true, true, false);
-	setBounds (buttonHandle, inset.left + inset.right + width, (rect.bottom - rect.top - buttonHeight) / 2, buttonWidth, buttonHeight, true, true, false);
+	setBounds (buttonHandle, inset.left + inset.right + width, inset.top + (height - buttonHeight) / 2, buttonWidth, buttonHeight, true, true, false);
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -725,17 +736,7 @@ boolean sendKeyEvent (int type, Event event) {
 
 void setBackground (float [] color) {
 	super.setBackground (color);
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (textHandle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (color != null) {
-		fontStyle.backColor_red = (short) (color [0] * 0xffff);
-		fontStyle.backColor_green = (short) (color [1] * 0xffff);
-		fontStyle.backColor_blue = (short) (color [2] * 0xffff);
-		fontStyle.flags |= OS.kControlUseBackColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseBackColorMask;
-	}
-	OS.SetControlFontStyle (textHandle, fontStyle);
+	setBackground (textHandle, color);
 }
 
 void setFontStyle (Font font) {
@@ -745,17 +746,7 @@ void setFontStyle (Font font) {
 
 void setForeground (float [] color) {
 	super.setForeground (color);
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (textHandle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (color != null) {
-		fontStyle.foreColor_red = (short) (color [0] * 0xffff);
-		fontStyle.foreColor_green = (short) (color [1] * 0xffff);
-		fontStyle.foreColor_blue = (short) (color [2] * 0xffff);
-		fontStyle.flags |= OS.kControlUseForeColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseForeColorMask;
-	}
-	OS.SetControlFontStyle (textHandle, fontStyle);
+	setForeground (textHandle, color);
 }
 
 /**
