@@ -1619,29 +1619,45 @@ int indexOf (TreeColumn column) {
  * or the parent item was expanded) and the parent is available.
  */
 void makeAvailable (TreeItem item) {
-	TreeItem parentItem = item.parentItem;
-	int parentAvailableIndex = parentItem.availableIndex;
-	TreeItem[] parentAvailableDescendents = parentItem.computeAvailableDescendents ();
-	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + 1];
+	int parentItemCount = item.parentItem.items.length; 
+	int index = 0;
+	if (parentItemCount == 1) {		/* this is the only child of parentItem */
+		index = item.parentItem.availableIndex + 1;
+	} else {
+		/* determine this item's index in its parent */
+		int itemIndex = 0;
+		TreeItem[] items = item.parentItem.items;
+		for (int i = 0; i < items.length; i++) {
+			if (items [i] == item) {
+				itemIndex = i;
+				break;
+			}
+		}
+		if (itemIndex != parentItemCount - 1) {	/* this is not the last child */
+			index = items [itemIndex + 1].availableIndex;
+		} else {	/* this is the last child */
+			TreeItem previousItem = items [itemIndex - 1];
+			index = previousItem.availableIndex + previousItem.computeAvailableDescendentCount ();
+		}
+	}
 	
-	System.arraycopy (availableItems, 0, newAvailableItems, 0, parentAvailableIndex);
-	System.arraycopy (parentAvailableDescendents, 0, newAvailableItems, parentAvailableIndex, parentAvailableDescendents.length);
-	int startIndex = parentAvailableIndex + parentAvailableDescendents.length - 1;
-	System.arraycopy (
-			availableItems,
-			startIndex,
-			newAvailableItems,
-			parentAvailableIndex + parentAvailableDescendents.length,
-			availableItems.length - startIndex);
+	TreeItem[] itemsToInsert = item.computeAvailableDescendents ();
+	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + itemsToInsert.length];
+	System.arraycopy (availableItems, 0, newAvailableItems, 0, index);
+	System.arraycopy (itemsToInsert, 0, newAvailableItems, index, itemsToInsert.length);
+	System.arraycopy (availableItems, index, newAvailableItems, index + itemsToInsert.length, availableItems.length - index);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
-	for (int i = parentAvailableIndex; i < availableItems.length; i++) {
+	for (int i = index; i < availableItems.length; i++) {
 		availableItems [i].availableIndex = i;
 	}
 	updateVerticalBar ();
-	Rectangle bounds = item.getBounds ();
-	int rightX = bounds.x + bounds.width;
+	int rightX = 0;
+	for (int i = 0; i < itemsToInsert.length; i++) {
+		Rectangle bounds = itemsToInsert [i].getBounds ();
+		rightX = Math.max (rightX, bounds.x + bounds.width);
+	}
 	updateHorizontalBar (rightX, rightX);
 }
 
