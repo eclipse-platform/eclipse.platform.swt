@@ -830,7 +830,7 @@ public void setFont (Font font){
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @since 2.0
+ * @since 3.0
  * 
  */
 public void setForeground (Color color){
