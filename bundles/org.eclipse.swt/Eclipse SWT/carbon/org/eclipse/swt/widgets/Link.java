@@ -125,6 +125,7 @@ void createHandle () {
 
 void createWidget () {
 	super.createWidget ();
+	layout.setFont (getFont ());
 	text = "";
 	//TODO accessibility
 }
