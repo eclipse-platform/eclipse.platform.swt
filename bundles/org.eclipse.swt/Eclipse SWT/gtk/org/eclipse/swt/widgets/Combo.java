@@ -280,7 +280,8 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
-	OS.gtk_editable_delete_selection (handle);
+	int position = OS.gtk_editable_get_position (entryHandle);
+	OS.gtk_editable_select_region (entryHandle, position, position);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

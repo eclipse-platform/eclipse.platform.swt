@@ -267,12 +267,15 @@ public void append (String string) {
 public void clearSelection () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		OS.gtk_editable_delete_selection (handle);
+		int position = OS.gtk_editable_get_position (handle);
+		OS.gtk_editable_select_region (handle, position, position);
 	} else {
-		byte [] start =  new byte [ITER_SIZEOF];
-		byte [] end =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, start, end);
-		OS.gtk_text_buffer_delete (bufferHandle, start, end);
+		byte [] position = new byte [ITER_SIZEOF];
+		int insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		int selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
+		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, insertMark);
+		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, position);
+		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, position);
 	}
 }
 
