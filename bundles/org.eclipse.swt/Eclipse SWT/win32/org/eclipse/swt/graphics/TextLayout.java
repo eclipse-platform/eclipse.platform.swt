@@ -15,7 +15,13 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 /**
- * <code>TextLayout</code> is a graphic object to work with text.
+ * <code>TextLayout</code> is a graphic object that represents
+ * styled text.
+ *<p>
+ * Instances of this class provides support for drawing, cursor
+ * navigation, hit testing, text wrapping, alignment, tab expantion
+ * line breaking, etc, envolving internationalized text.
+ * </p>
  * 
  * <p>
  * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
@@ -25,7 +31,6 @@ import org.eclipse.swt.*;
  * 
  *  @since 3.0
  */
-
 public final class TextLayout {
 	Device device;
 	Font font;
@@ -115,18 +120,14 @@ public final class TextLayout {
 	}
 	}
 
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
-TextLayout() {
-}
-
 /**	 
- * Constructs a new instance of this class on the given device
+ * Constructs a new instance of this class on the given device.
  * <p>
  * You must dispose the text layout when it is no longer required. 
  * </p>
- * @param device 
+ * 
+ * @param device the device on which to allocate the text layout
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
@@ -348,7 +349,8 @@ void computeRuns (GC gc) {
 
 /**
  * Disposes of the operating system resources associated with
- * the text layout.
+ * the text layout. Applications must dispose of all text layouts
+ * which they allocate.
  */
 public void dispose () {
 	if (device == null) return;
@@ -367,30 +369,36 @@ public void dispose () {
 }
 
 /**
- * Draws the current text layout
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
  * 
- * @param gc teh gc to be used to draw
- * @param x the x coordinate of where to draw
- * @param y the y coordinate of where to draw
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void draw (GC gc, int x, int y) {
 	draw(gc, x, y, -1, -1, null, null);
 }
 
 /**
- * Draws the current text layout with selection at given x and y coordinates using the given gc
- * x and y are inclusive.
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
  * 
- * The selection offsets are inclusive, out of range values are clamp. If no selection is desire 
- * you use draw() , selectionStart > selectionEnd, selectionStart = selection = -1.
- * 
- * @param gc
- * @param x the x coordinate of where to draw
- * @param y the y coordinate of where to draw
- * @param selectionStart offset where the selections starts, or -1 indicating no selection 
- * @param selectionEnd offset where the selections ends, or -1 indicating no selection 
- * @param selectionForeground selection foreground, or NULL to use system default 
- * @param selectionBackground selection background, or NULL to use system default 
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout();
@@ -544,27 +552,46 @@ void freeRuns () {
 	segmentsText = null;
 }
 
-/**
- * Returns the current alignment of the receiver, the possible return valus are
- * SWT.LEFT, SWT.CENTER, SWT.RIGHT
- * 
- * @return the alignment 
+/** 
+ * Returns the receiver's text alignment, which will be one
+ * of <code>SWT.LEFT</code>, <code>SWT.CENTER</code> or
+ * <code>SWT.RIGHT</code>.
+ *
+ * @return the alignment used to positioned text horizontally
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getAlignment () {
 	checkLayout();
 	return alignment;
 }
 
+/**
+ * Gets the ascent of the receiver.
+ *
+ * @return the ascent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getDescent()
+ */
 public int getAscent () {
 	checkLayout();
 	return ascent;
 }
 
 /**
- * Returns the bounds of the receivers which is equilavent to the sums of the line
- * height and the max line width
- *  
- * @return the boundsof the receiver
+ * Returns the bounds of the receiver.
+ * 
+ * @return the bounds of the receiver
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Rectangle getBounds () {
 	checkLayout();
@@ -581,9 +608,18 @@ public Rectangle getBounds () {
 }
 
 /**
- *  @return Rectangle the rectangle that conver all characters 
- * (considering potencial bidi reordering) between start and end.
- * start and end are inclusive, out of range values are clamp
+ * Returns the bounds for the specified range of characters. The
+ * bounds is the smallest rectangle that encompasses all characters
+ * in the range. The start and end offsets are inclusive and will be
+ * clamped if out of range.
+ * 
+ * @param start the start offset
+ * @param end the end offset
+ * @return the bounds of the character range
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Rectangle getBounds (int start, int end) {
 	checkLayout();
@@ -694,15 +730,31 @@ public Rectangle getBounds (int start, int end) {
 	return new Rectangle (startX, y, width, lineY[startLine + 1] - y);
 }
 
+/**
+ * Gets the descent of the receiver.
+ *
+ * @return the descent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getAscent()
+ */
 public int getDescent () {
 	checkLayout();
 	return descent;
 }
 
-/**
- * Returns the font of the receiver
- * 
- * @return the font
+/** 
+ * Returns the default font currently being used by the receiver
+ * to draw and measure text.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Font getFont () {
 	checkLayout();
@@ -721,10 +773,18 @@ int getItemFont(StyleItem item) {
 }
 
 /**
- * Returns the embedding level at given character offset
+ * Returns the embedding level for the specified character offset. The
+ * embedding level is usually used to determine the directionality of a
+ * character in bidirectional text.
  * 
- * @param offset
- * @return level
+ * @param offset the charecter offset
+ * @return the embedding level
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  */
 public int getLevel (int offset) {
 	checkLayout();
@@ -751,10 +811,17 @@ public int getLevel (int offset) {
 }
 
 /**
- * Returns the bounds of the line at given line index
+ * Returns the bounds of the line for the specified line index.
  * 
- * @param line index
- * @return line bounds 
+ * @param lineIndex the line index
+ * @return the line bounds 
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
@@ -772,9 +839,14 @@ public Rectangle getLineBounds(int lineIndex) {
 }
 
 /**
- * Returns the line count (include hard and soft breaks(wrap lines)).
+ * Returns the receiver's line count. This includes lines caused
+ * by wrapping.
  *
- * @return line count
+ * @return the line count
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getLineCount () {
 	checkLayout();
@@ -783,10 +855,18 @@ public int getLineCount () {
 }
 
 /**
- * Returns the line index of the line that containing the given character offset
+ * Returns the index of the line that containing the specified
+ * character offset.
  * 
- * @param character offset
- * @return line index
+ * @param offset the character offset
+ * @return the line index
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getLineIndex (int offset) {
 	checkLayout();
@@ -803,10 +883,17 @@ public int getLineIndex (int offset) {
 }
 
 /**
- * Returns the font metrics of the line at given line index
+ * Returns the font metrics for the specified line index.
  * 
- * @param line index
- * @return line font metrics 
+ * @param lineIndex the line index
+ * @return the font metrics 
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the line index is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout();
@@ -846,9 +933,15 @@ public FontMetrics getLineMetrics (int lineIndex) {
 }
 
 /**
- * Returns lines offsets, start position is always 0 and the last text.length
+ * Returns the line offsets.  Each value in the array is the
+ * offset for the first character in a line except for the last
+ * value, which contains the length of the text.
  * 
- * @return line offsets
+ * @return the line offsets
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int[] getLineOffsets () {
 	checkLayout();
@@ -861,12 +954,20 @@ public int[] getLineOffsets () {
 }
 
 /**
- *  Returns the location point given a character offset 
+ * Returns the location for the speficied character offset. The
+ * <code>trailing</code> argument indicates whether the offset
+ * corresponds to the leading or trailing edge of the cluster.
  * 
- * For offset equals to length it returns the trail edge of last line
+ * @param offset the character offset
+ * @param trailing the trailing flag
+ * @return the location of the character offset
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  * 
- * @param character offset
- * @return Point location
+ * @see getOffset(Point, int[])
+ * @see getOffset(int, int, int[])
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
@@ -921,13 +1022,22 @@ public Point getLocation (int offset, boolean trailing) {
 }
 
 /**
- * Given a offset and movement type returns the next character offset 
- * The possible values for movement type are:
- * CHARACTER, WORD, CLUSTER
+ * Returns the next offset for the specified offset and movement
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
  * 
- * @param start offset
- * @param movement type 
- * @return end offset
+ * @param offset the start offset
+ * @param movement the movement type 
+ * @return the next offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the offset is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getPreviousOffset(int, int)
  */
 public int getNextOffset (int offset, int movement) {
 	checkLayout();
@@ -1015,11 +1125,23 @@ public int getNextOffset (int offset, int movement) {
 }
 
 /**
- * Returns the character offset under the given a Point 
+ * Returns the character offset for the specified point.  When
+ * the point is over a cluster composed by multiple characters,
+ * the trailing argument will determine each character in the
+ * cluster is under the point.
  * 
- * @param x
- * @param y
- * @return character offset
+ * @param point the point
+ * @param trailing the trailing buffer
+ * @return the character offset
+ *  
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getLocation(int, boolean)
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
@@ -1028,11 +1150,24 @@ public int getOffset (Point point, int[] trailing) {
 }
 
 /**
- * Returns the character offset under the given x and y coordinates 
+ * Returns the character offset for the specified point.  When
+ * the point is over a cluster composed by multiple characters,
+ * the trailing argument will determine each character in the
+ * cluster is under the point.
  * 
- * @param x
- * @param y
- * @return character offset
+ * @param x the x coordinate of the point
+ * @param y the y coordinate of the point
+ * @param trailing the trailing buffer
+ * @return the character offset
+ *  
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getLocation(int, boolean)
  */
 public int getOffset (int x, int y, int[] trailing) {
 	checkLayout();
@@ -1102,7 +1237,13 @@ public int getOffset (int x, int y, int[] trailing) {
 }
 
 /**
- * Returns the receiver orientation
+ * Returns the orientation of the receiver.
+ *
+ * @return the orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getOrientation () {
 	checkLayout();
@@ -1110,13 +1251,22 @@ public int getOrientation () {
 }
 
 /**
- * Given a offset and movement type returns the previous character offset 
- * The possible values for movement type are:
- * CHARACTER, WORD, CLUSTER
+ * Returns the previous offset for the specified offset and movement
+ * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
  * 
- * @param start offset
- * @param movement type 
- * @return end offset
+ * @param offset the start offset
+ * @param movement the movement type 
+ * @return the previous offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the offset is out of range</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see getNextOffset(int, int)
  */
 public int getPreviousOffset (int offset, int movement) {
 	checkLayout();
@@ -1203,6 +1353,15 @@ public int getPreviousOffset (int offset, int movement) {
 	return 0;
 }
 
+/**
+ * Gets the text segments offsets of the receiver.
+ *
+ * @return the text segments offsets
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public int[] getSegments () {
 	checkLayout();
 	return segments;
@@ -1237,7 +1396,13 @@ String getSegmentsText() {
 }
 
 /**
- * Returns the receiver line spacing
+ * Gets the line spacing of the receiver.
+ *
+ * @return the line spacing
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getSpacing () {
 	checkLayout();	
@@ -1245,10 +1410,14 @@ public int getSpacing () {
 }
 
 /**
- *  Returns the text style given a character offset
- * 
- * @param character offset
- * @return text style
+ * Gets the style of the receiver at the specified offset.
+ *
+ * @param offset the text offset
+ * @return the style or <code>null</code> if not set
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public TextStyle getStyle (int offset) {
 	checkLayout();
@@ -1264,9 +1433,13 @@ public TextStyle getStyle (int offset) {
 }
 
 /**
- * Returns the tab list of the receiver
- * 
- * @return tab list
+ * Gets the tab list of the receiver.
+ *
+ * @return the tab list
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int[] getTabs () {
 	checkLayout();
@@ -1274,9 +1447,14 @@ public int[] getTabs () {
 }
 
 /**
- * Returns the text of the receiver
- * 
- * @return text
+ * Gets the receiver's text, which will be an empty
+ * string if it has never been set.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public String getText () {
 	checkLayout();
@@ -1284,15 +1462,29 @@ public String getText () {
 }
 
 /**
- * Returns the width of the receiver
- * 
- * @return width
+ * Gets the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getWidth () {
 	checkLayout();
 	return wrapWidth;
 }
 
+/**
+ * Returns <code>true</code> if the text layout has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the text layout.
+ * When a text layout has been disposed, it is an error to
+ * invoke any other method using the text layout.
+ *
+ * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
+ */
 public boolean isDisposed () {
 	return device == null;
 }
@@ -1391,12 +1583,22 @@ StyleItem[] reorder (StyleItem[] runs) {
 }
 
 /**
- * Sets the alignment, the possible values for alignment are
- * SWT.LEFT, SWT.CENTER, SWT.RIGHT
- * or (equivalent but more suitable for bidi)
- * SWT.LEAD, SWT.CENTER, SWT.TRAIL
+ * Sets the text alignment for the receiver. The alignment controls
+ * how a line of text is positioned horizontally. The argument should
+ * be one of <code>SWT.LEFT</code>, <code>SWT.RIGHT</code> or <code>SWT.CENTER</code>.
+ * <p>
+ * The default alignment is <code>SWT.LEFT</code>.  Note that the receiver's
+ * width must be set in order to use <code>SWT.RIGHT</code> or <code>SWT.CENTER</code>
+ * alignment.
+ *</p>
+ *
+ * @param alignment the new alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  * 
- * @param alignment
+ * @see setWidth()
  */
 public void setAlignment (int alignment) {
 	checkLayout();
@@ -1408,6 +1610,23 @@ public void setAlignment (int alignment) {
 	this.alignment = alignment;
 }
 
+/**
+ * Sets the ascent of the receiver. The ascent is distance in pixels
+ * from the baseline to the top of the line and it is applied to all
+ * lines. The default value is <code>-1</code> which means that the
+ * ascent is calculated from the line fonts.
+ *
+ * @param ascent the new ascent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the ascent is less than <code>-1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see setDescent()
+ */
 public void setAscent(int ascent) {
 	checkLayout();
 	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1416,6 +1635,23 @@ public void setAscent(int ascent) {
 	this.ascent = ascent;
 }
 
+/**
+ * Sets the descent of the receiver. The descent is distance in pixels
+ * from the baseline to the bottom of the line and it is applied to all
+ * lines. The default value is <code>-1</code> which means that the
+ * descent is calculated from the line fonts.
+ *
+ * @param descent the new descent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the descent is less than <code>-1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see setAscent()
+ */
 public void setDescent(int descent) {
 	checkLayout();
 	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1424,10 +1660,21 @@ public void setDescent(int descent) {
 	this.descent = descent;
 }
 
-/**
- * Sets the font
- * 
- * @param font
+/** 
+ * Sets the default font which will be used by the receiver
+ * to draw and measure text to the argument. If the
+ * argument is null, then a default font appropriate
+ * for the platform will be used instead. Note that a text
+ * style can override the default font.
+ *
+ * @param font the new font for the receiver, or null to indicate a default font
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setFont (Font font) {
 	checkLayout();
@@ -1439,7 +1686,15 @@ public void setFont (Font font) {
 }
 
 /**
- *  Sets the receiver default orientation
+ * Sets the orientation of the receiver, which must be one
+ * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ *
+ * @param orientation new orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setOrientation (int orientation) {
 	checkLayout();
@@ -1453,11 +1708,21 @@ public void setOrientation (int orientation) {
 }
 
 /**
- *  Set segments ranges, affects the bidi reordering algorithm
+ * Sets the receiver's text segments offsets. Text segments are used to
+ * override the default behaviour of the bidirectional algorithm.
+ * Bidirectional reordering can happen within a text segment but not 
+ * between two adjacent segments.
+ * Each text segment is determined by two consecutive offsets in the 
+ * <code>segments</code> arrays. The first element of the array should 
+ * always be zero and the last one should always be equals to length of
+ * the text.
+ * <p>
  * 
- * if segments != null the bellow conditions must be true:
- * segments[0] == 0
- * segments[segments.length - 1] = text.length
+ * @param segments the text segments offset
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setSegments(int[] segments) {
 	checkLayout();
@@ -1476,9 +1741,17 @@ public void setSegments(int[] segments) {
 }
 
 /**
- *  Sets the line spacing (space between lines)
- * 
- * @param spacing
+ * Sets the line spacing of the receiver.  The line spacing
+ * is the space left between lines.
+ *
+ * @param spacing the new line spacing 
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the spacing is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setSpacing (int spacing) {
 	checkLayout();
@@ -1488,9 +1761,18 @@ public void setSpacing (int spacing) {
 	this.lineSpacing = spacing;
 }
 
-/** 
- * set a style, a new style overrides existent styles
- * start and end are inclusive
+/**
+ * Sets the receiver's style for the specified range.  Styles previously
+ * set for that range will be overwritten.  The start and end offsets are
+ * inclusive and will be clamped if out of range.
+ * 
+ * @param style the style
+ * @param start the start offset
+ * @param end the end offset
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setStyle (TextStyle style, int start, int end) {
 	checkLayout();
@@ -1556,10 +1838,15 @@ public void setStyle (TextStyle style, int start, int end) {
 }
 
 /**
- *  Sets the tab list, a tab list is a list of spaces in pixels between the previous tab stop and 
- *  the current one.
+ * Sets the receiver's tab list. Each value in the tab list specifies
+ * the space in pixels from the origin of the text layout to the respective
+ * tab stop.  The last tab stop width is repeated continuously.
  * 
- * @param tabs list
+ * @param tabs the new tab list
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setTabs (int[] tabs) {
 	checkLayout();
@@ -1578,9 +1865,16 @@ public void setTabs (int[] tabs) {
 } 
 
 /**
- *  Sets the text in the receiver 
- * 
- * @param text
+ * Sets the receiver's text.
+ *
+ * @param text the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setText (String text) {
 	checkLayout();
@@ -1594,11 +1888,21 @@ public void setText (String text) {
 	styles[1].start = text.length();
 }
 
-/** 
- *  Sets the width in the receiver, setting the width in a TextLayout automatically causes 
- *  word wrap, to desactivate word wrap the width must the set to -1.
+/**
+ * Sets the line width of the receiver, which determines how
+ * text should be wrapped and alignment. The default value is
+ * <code>-1</code> which means wrapping is disabled.
+ *
+ * @param width the new width 
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the width is <code>0</code> or less than <code>-1</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  * 
- * @param width
+ * @see setAlignment()
  */
 public void setWidth (int width) {
 	checkLayout();

@@ -12,12 +12,26 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 
+/**
+ * <code>TextStyle</code> defines a set of styles that can be applied
+ * to a range of text.
+ * 
+ *  @since 3.0
+ */
 public class TextStyle {
 
 	Font font;
 	Color foreground;
 	Color background;
 
+/** 
+ * Create a new text style with the specified font, foreground
+ * and background.
+ *
+ * @param font the font of the style, <code>null</code> if none 
+ * @param foreground the foreground color of the style, <code>null</code> if none 
+ * @param background the background color of the style, <code>null</code> if none
+ */
 public TextStyle (Font font, Color foreground, Color background) {
 	if (font != null && font.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (foreground != null && foreground.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
