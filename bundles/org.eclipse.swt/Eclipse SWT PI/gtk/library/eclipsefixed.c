@@ -486,43 +486,14 @@ static void
 eclipse_fixed_size_request (GtkWidget      *widget,
                             GtkRequisition *requisition)
 {
-  EclipseFixed *fixed;  
-  EclipseFixedChild *child;
-  GList *children;
-  GtkRequisition child_requisition;
-
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (GTK_IS_ECLIPSE_FIXED (widget));
-  g_return_if_fail (requisition != NULL);
-
-  fixed = ECLIPSE_FIXED (widget);
-  requisition->width = 0;
-  requisition->height = 0;
-
-  children = fixed->children;
-  while (children)
-    {
-      child = children->data;
-      children = children->next;
-
-      if (GTK_WIDGET_VISIBLE (child->widget))
-	{
-          int w, h;
-          
-          gtk_widget_size_request (child->widget, &child_requisition);
-
-          w = child->width < 0 ? child_requisition.width : child->width;
-          h = child->height < 0 ? child_requisition.height : child->height;
-          
-          requisition->height = MAX (requisition->height,
-                                     child->y + h);
-          requisition->width = MAX (requisition->width,
-                                    child->x + w);
-	}
-    }
-
-  requisition->height += GTK_CONTAINER (fixed)->border_width * 2;
-  requisition->width += GTK_CONTAINER (fixed)->border_width * 2;
+  /* Needed for determining the size of scrollbars.
+   * This is extremely tricky, but is actually guaranteed to work.
+   * It only matters to getScrollableTrim what this returns;
+   * In all other places, the fixed will be asked about its
+   * preferred minimum size, but nobody will listen to it.
+   */
+  requisition->width = 100;
+  requisition->height = 100;
 }
 
 static void

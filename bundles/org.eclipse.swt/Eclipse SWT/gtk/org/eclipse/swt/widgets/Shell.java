@@ -612,11 +612,6 @@ public Shell [] getShells () {
 	return result;
 }
 
-public void layout (boolean changed) {
-	checkWidget();
-	if (layout == null) return;
-	layout.layout (this, changed);
-}
 
 /**
  * Moves the receiver to the top of the drawing order for
