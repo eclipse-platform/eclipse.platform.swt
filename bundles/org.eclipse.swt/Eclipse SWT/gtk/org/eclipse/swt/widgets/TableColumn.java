@@ -259,6 +259,11 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget();
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int clist = parent.handle;
+	int width = OS.gtk_clist_optimal_column_width (clist, index);
+	OS.gtk_clist_set_column_width (clist, index, width);	
 }
 void releaseChild () {
 	super.releaseChild ();
