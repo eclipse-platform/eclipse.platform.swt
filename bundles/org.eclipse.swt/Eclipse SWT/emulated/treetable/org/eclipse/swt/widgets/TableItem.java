@@ -52,7 +52,7 @@ public class TableItem extends SelectableItem {
 	Font font = null;
 	Color [] cellBackground, cellForeground;
 	Font [] cellFont;
-	int [] textWidthCache;
+	int [] textWidth;
 	boolean cached;
 	
 /**
@@ -172,15 +172,15 @@ void clear() {
 	font = null;
 	cellBackground = cellForeground = null;
 	cellFont = null;
-	textWidthCache = null;
+	textWidth = null;
 	cached = false;
 }
 void clearTextWidthCache() {
-	textWidthCache = null;
+	textWidth = null;
 }
 void clearTextWidthCache(int columnIndex) {
-	if (textWidthCache != null) {
-		textWidthCache [columnIndex] = 0;
+	if (textWidth != null) {
+		textWidth [columnIndex] = 0;
 	}
 }
 public void dispose() {
@@ -198,7 +198,7 @@ void doDispose() {
 	font = null;
 	cellForeground = cellBackground = null;
 	cellFont = null;
-	textWidthCache = null;
+	textWidth = null;
 	super.doDispose();
 }
 
@@ -864,18 +864,18 @@ int getTextIndent(int columnIndex) {
 	return textIndent;
 }
 int getTextWidth (int columnIndex) {
-	if (textWidthCache == null) {
+	if (textWidth == null) {
 		int count = Math.max (1, getParent ().getColumnCount ());
-		textWidthCache = new int [count];
+		textWidth = new int [count];
 	}
-	String text = getText (columnIndex);
-	if (text != null && textWidthCache [columnIndex] == 0 && text.length () > 0) {
+	String text = (String) dataLabels.elementAt (columnIndex);
+	if (text != null && textWidth [columnIndex] == 0 && text.length () > 0) {
 		GC gc = new GC (getParent ());
 		gc.setFont (getFont (columnIndex));
-		textWidthCache [columnIndex] = gc.stringExtent (text).x;
+		textWidth [columnIndex] = gc.stringExtent (text).x;
 		gc.dispose ();
 	}
-	return textWidthCache [columnIndex];
+	return textWidth [columnIndex];
 }
 /**
  * Answer the cached trimmed text for column 'columnIndex'. 

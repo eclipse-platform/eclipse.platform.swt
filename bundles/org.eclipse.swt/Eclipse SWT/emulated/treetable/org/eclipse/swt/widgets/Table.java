@@ -145,12 +145,12 @@ void addColumn(TableColumn column) {
 				System.arraycopy (cellFont, index, temp, index+1, columnCount - index - 1);
 				item.cellFont = temp;
 			}
-			int [] textWidth = item.textWidthCache;
+			int [] textWidth = item.textWidth;
 			if (textWidth != null) {
 				int [] temp = new int [columnCount];
 				System.arraycopy (textWidth, 0, temp, 0, index);
 				System.arraycopy (textWidth, index, temp, index + 1, columnCount - index - 1);
-				item.textWidthCache = temp;
+				item.textWidth = temp;
 			}
 		}
 	
@@ -2148,12 +2148,12 @@ void removeColumn(TableColumn column) {
 					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 					item.cellFont = temp;
 				}
-				int [] textWidth = item.textWidthCache;
+				int [] textWidth = item.textWidth;
 				if (textWidth != null) {
 					int [] temp = new int [columnCount];
 					System.arraycopy (textWidth, 0, temp, 0, index);
 					System.arraycopy (textWidth, index + 1, temp, index, columnCount - index);
-					item.textWidthCache = temp;
+					item.textWidth = temp;
 				}
 			}		
 		}
