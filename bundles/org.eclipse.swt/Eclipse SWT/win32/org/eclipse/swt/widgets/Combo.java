@@ -948,7 +948,7 @@ public void remove (int index) {
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {		
 		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		if (count == 0) OS.InvalidateRect (handle, null, false);
+		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -998,7 +998,7 @@ public void remove (int start, int end) {
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {		
 		count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		if (count == 0) OS.InvalidateRect (handle, null, false);
+		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
 
