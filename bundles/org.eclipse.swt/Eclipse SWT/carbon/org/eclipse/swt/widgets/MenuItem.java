@@ -280,7 +280,8 @@ public void setImage (Image image) {
 	short [] outIndex = new short [1];
 	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) return;
 	int imageHandle = image != null ? image.handle : 0;
-	OS.SetMenuItemIconHandle (parent.handle, outIndex [0], (byte)OS.kMenuCGImageRefType, imageHandle);
+	byte type = image != null ? (byte)OS.kMenuCGImageRefType : (byte)OS.kMenuNoIcon;
+	OS.SetMenuItemIconHandle (parent.handle, outIndex [0], type, imageHandle);
 }
 
 public void setMenu (Menu menu) {

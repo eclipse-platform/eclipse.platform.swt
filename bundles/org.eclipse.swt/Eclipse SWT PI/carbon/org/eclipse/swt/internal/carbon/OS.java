@@ -304,6 +304,7 @@ public class OS {
 	public static final int kMenuLeftArrowDashedGlyph = 24;
 	public static final int kMenuLeftArrowGlyph = 100;
 	public static final int kMenuNoCommandModifier = (1 << 3);
+	public static final int kMenuNoIcon = 0;
 	public static final int kMenuNoModifiers = 0;
 	public static final int kMenuNonmarkingReturnGlyph = 13;
 	public static final int kMenuNullGlyph = 0;
