@@ -87,13 +87,10 @@ boolean drawCaret () {
 	if (parent.isDisposed ()) return false;	
 	int window = parent.paintWindow ();
 	int gc = OS.gdk_gc_new (window);
-	int fontHandle = parent.fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
-	color.red = (short) (style.fg0_red ^ style.bg0_red);
-	color.green = (short) (style.fg0_green ^ style.bg0_green);
-	color.blue = (short) (style.fg0_blue ^ style.bg0_blue);
+	color.red = (short) 0xffff;
+	color.green = (short) 0xffff;
+	color.blue = (short) 0xffff;
 	int colormap = OS.gdk_colormap_get_system ();
 	OS.gdk_colormap_alloc_color (colormap, color, true, true);
 	OS.gdk_gc_set_foreground (gc, color);
