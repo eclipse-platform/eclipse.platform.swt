@@ -678,6 +678,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 						}
 					}
 				}
+				processMouseDown (int0, int1, int2); 
 				break;
 			}
 			case OS.GDK_BUTTON_RELEASE: {
@@ -739,6 +740,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					}
 				}
 				doubleSelected = false;
+				processMouseUp (int0, int1, int2);
 				break;
 			}
 		}
@@ -761,6 +763,14 @@ int processExpand (int int0, int int1, int int2) {
 		OS.gtk_ctree_expand (handle, int0);
 		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Expand);
 	}
+	return 0;
+}
+
+int processMouseDown (int callData, int arg1, int int2) {
+	return 0;
+}
+
+int processMouseUp (int callData, int arg1, int int2) {
 	return 0;
 }
 

@@ -330,11 +330,13 @@ int parentingHandle () {
 }
 
 int processFocusIn(int int0, int int1, int int2) {
-	return super.processFocusIn(int0, int1, int2);
+	int result = super.processFocusIn(int0, int1, int2);
+	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 int processFocusOut(int int0, int int1, int int2) {
-	return super.processFocusOut(int0, int1, int2);
+	int result = super.processFocusOut(int0, int1, int2);
+	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
@@ -350,11 +352,6 @@ int processMouseDown (int callData, int arg1, int int2) {
 			if (count == 0) OS.gtk_widget_grab_focus (handle);
 		}
 	}
-	return result;
-}
-
-int processMouseUp (int callData, int arg1, int int2) {
-	int result = super.processMouseUp (callData, arg1, int2);
 	return result;
 }
 

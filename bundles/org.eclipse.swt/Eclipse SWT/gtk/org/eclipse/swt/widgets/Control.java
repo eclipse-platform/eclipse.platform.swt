@@ -122,6 +122,8 @@ void hookEvents () {
 	OS.gtk_signal_connect (eventHandle, OS.key_press_event, windowProc3, SWT.KeyDown);
 	OS.gtk_signal_connect (eventHandle, OS.key_release_event, windowProc3, SWT.KeyUp);
 	OS.gtk_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
+	OS.gtk_signal_connect (eventHandle, OS.focus_in_event, windowProc3, SWT.FocusIn);
+	OS.gtk_signal_connect (eventHandle, OS.focus_out_event, windowProc3, SWT.FocusOut);
 	OS.gtk_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -SWT.MouseDown);
 	OS.gtk_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -SWT.MouseUp);
 	OS.gtk_signal_connect_after (eventHandle, OS.key_press_event, windowProc3, -SWT.KeyDown);
@@ -129,8 +131,6 @@ void hookEvents () {
 	OS.gtk_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
 	OS.gtk_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
 	OS.gtk_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
-	OS.gtk_signal_connect_after (eventHandle, OS.focus_in_event, windowProc3, SWT.FocusIn);
-	OS.gtk_signal_connect_after (eventHandle, OS.focus_out_event, windowProc3, SWT.FocusOut);
 	OS.gtk_signal_connect_after (eventHandle, OS.expose_event, windowProc3, SWT.Paint);
 }
 

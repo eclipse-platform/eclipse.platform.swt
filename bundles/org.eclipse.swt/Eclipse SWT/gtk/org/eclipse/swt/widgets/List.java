@@ -652,6 +652,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
 				if ((style & SWT.MULTI) != 0) selected = true;
+				processMouseDown (int0, int1, int2);
 				break;
 			}
 			case OS.GDK_BUTTON_RELEASE: {
@@ -680,6 +681,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					}
 					selected = false;
 				}
+				processMouseUp (int0, int1, int2);
 				break;
 			}
 		}
@@ -735,6 +737,13 @@ int processKeyUp (int callData, int arg1, int int2) {
 	return result;
 }
 
+int processMouseDown (int callData, int arg1, int int2) {
+	return 0;
+}
+
+int processMouseUp (int callData, int arg1, int int2) {
+	return 0;
+}
 
 int processSelection (int int0, int int1, int int2) {
 	if (int0 != OS.GTK_CLIST_FOCUS_ROW (handle)) return 0;
