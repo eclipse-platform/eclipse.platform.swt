@@ -12,9 +12,9 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -25,35 +25,6 @@ import org.eclipse.swt.internal.motif.*;
 public class Clipboard {
 
 	Display display;
-	int shellHandle;
-	int clipboardAtom, primaryAtom, targetsAtom;
-	
-	static int[][] convertData = new int[10][3];
-	static Clipboard activeClipboard = null;
-	static Clipboard activePrimaryClipboard = null;
-	static Object[] ClipboardData;
-	static Transfer[] ClipboardDataTypes;
-	static Object[] PrimaryClipboardData;
-	static Transfer[] PrimaryClipboardDataTypes;
-	
-	static boolean done = false;
-	static Object selectionValue;
-	static Transfer selectionTransfer;
-	
-	static byte [] CLIPBOARD = Converter.wcsToMbcs (null, "CLIPBOARD", true);
-	static byte [] PRIMARY = Converter.wcsToMbcs (null, "PRIMARY", true);
-	static byte [] TARGETS = Converter.wcsToMbcs (null, "TARGETS", true);
-	static Callback XtConvertSelectionCallback;
-	static Callback XtLoseSelectionCallback;
-	static Callback XtSelectionDoneCallback;
-	static Callback XtSelectionCallbackCallback;
-	
-	static {
-		XtConvertSelectionCallback = new Callback(Clipboard.class, "XtConvertSelection", 7); //$NON-NLS-1$
-		XtLoseSelectionCallback = new Callback(Clipboard.class, "XtLoseSelection", 2); //$NON-NLS-1$
-		XtSelectionDoneCallback = new Callback(Clipboard.class, "XtSelectionDone", 3); //$NON-NLS-1$
-		XtSelectionCallbackCallback = new Callback(Clipboard.class, "XtSelectionCallback", 7); //$NON-NLS-1$
-	}
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -70,28 +41,19 @@ public class Clipboard {
  * @see Clipboard#dispose
  * @see Clipboard#checkSubclass
  */
-public Clipboard(Display display) {	
-	checkSubclass ();
-	if (display == null) {
-		display = Display.getCurrent();
+	public Clipboard(Display display) {	
+		checkSubclass ();
 		if (display == null) {
-			display = Display.getDefault();
+			display = Display.getCurrent();
+			if (display == null) {
+				display = Display.getDefault();
+			}
 		}
+		if (display.getThread() != Thread.currentThread()) {
+			DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+		}
+		this.display = display;
 	}
-	if (display.getThread() != Thread.currentThread()) {
-		DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
-	this.display = display;
-	
-	int widgetClass = OS.topLevelShellWidgetClass ();
-	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, display.xDisplay, null, 0);
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	OS.XtRealizeWidget (shellHandle);
-	int xDisplay = OS.XtDisplay(shellHandle);
-	clipboardAtom = OS.XmInternAtom(xDisplay, CLIPBOARD, false);
-	primaryAtom = OS.XmInternAtom(xDisplay, PRIMARY, false);
-	targetsAtom = OS.XmInternAtom(xDisplay, TARGETS, false);
-}
 
 /**
  * Checks that this class can be subclassed.
@@ -203,14 +165,8 @@ public void clearContents() {
  */
 public void clearContents(int clipboards) {
 	checkWidget();
-	int xDisplay = OS.XtDisplay(shellHandle);
-	if (xDisplay == 0) return;
-	if ((clipboards & DND.CLIPBOARD) != 0 && activeClipboard == this) {
-		OS.XtDisownSelection(shellHandle, clipboardAtom, OS.CurrentTime);
-	}
-	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && activePrimaryClipboard == this) {
-		OS.XtDisownSelection(shellHandle, primaryAtom, OS.CurrentTime);
-	}
+	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
+	proxy.clear(this, clipboards);
 }
 
 /**
@@ -228,19 +184,6 @@ public void clearContents(int clipboards) {
 public void dispose () {
 	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (shellHandle != 0) {
-		int xDisplay = OS.XtDisplay(shellHandle);
-		if (xDisplay != 0) {
-			if (activeClipboard != null) {
-				OS.XtDisownSelection(shellHandle, clipboardAtom, OS.CurrentTime);
-			}
-			if (activePrimaryClipboard != null) {
-				OS.XtDisownSelection(shellHandle, primaryAtom, OS.CurrentTime);
-			}
-		}
-		OS.XtDestroyWidget (shellHandle);
-		shellHandle = 0;
-	}
 	display = null;
 }
 
@@ -326,41 +269,16 @@ public Object getContents(Transfer transfer) {
 public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return null;
+	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
 	Object result = null;
 	if ((clipboards & DND.CLIPBOARD) != 0) {
-		 result = getContents(xDisplay, transfer, clipboardAtom);
+		 result = proxy.getContents(transfer, DND.CLIPBOARD);
 	}
 	if (result != null) return result;
 	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-		result = getContents(xDisplay, transfer, primaryAtom);
+		result = proxy.getContents(transfer, DND.SELECTION_CLIPBOARD);
 	}
 	return result;
-}
-	
-Object getContents(int xDisplay, Transfer transfer, int selection) {
-	int[] types = getAvailableTypes(xDisplay, selection);
-	int index = -1;
-	TransferData transferData = new TransferData();
-	for (int i = 0; i < types.length; i++) {
-		transferData.type = types[i];
-		if (transfer.isSupportedType(transferData)) {
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return null;
-	done = false;
-	selectionValue = null; selectionTransfer = transfer;
-	OS.XtGetSelectionValue(shellHandle, selection, types[index], XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
-	if (!done) {
-		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
-		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
-		_wait(selectionTimeout);
-		
-	}
-	return (!done) ? null : selectionValue;
 }
 
 /**
@@ -424,14 +342,13 @@ public TransferData[] getAvailableTypes() {
  */
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return null;
+	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
 	int[] types = null;
 	if ((clipboards & DND.CLIPBOARD) != 0) {
-		types = getAvailableTypes(xDisplay, clipboardAtom);
+		types = proxy.getAvailableTypes(DND.CLIPBOARD);
 	}
 	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-		int[] primaryTypes = getAvailableTypes(xDisplay, primaryAtom);
+		int[] primaryTypes = proxy.getAvailableTypes(DND.SELECTION_CLIPBOARD);
 		if (types == null) {
 			types = primaryTypes;
 		} else {
@@ -468,12 +385,12 @@ public TransferData[] getAvailableTypes(int clipboards) {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return new String[0];
-	int[] types = getAvailableTypes(xDisplay, clipboardAtom);
-	int[] primaryTypes = getAvailableTypes(xDisplay, primaryAtom);
+	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
+	int[] types = proxy.getAvailableTypes(DND.CLIPBOARD);
+	int[] primaryTypes = proxy.getAvailableTypes(DND.SELECTION_CLIPBOARD);
 	String[] names = new String[types.length + primaryTypes.length];
 	int index = 0;
+	int xDisplay = display.xDisplay;
 	for (int i = 0; i < types.length; i++) {
 		int ptr = OS.XmGetAtomName(xDisplay, types[i]);
 		int length = OS.strlen(ptr);
@@ -495,19 +412,6 @@ public String[] getAvailableTypeNames() {
 		names[index++] = "PRIMARY "+name;
 	}
 	return names;
-}
-
-int[] getAvailableTypes(int xDisplay, int selection) {
-	done = false;
-	selectionValue = null; selectionTransfer = null;
-	OS.XtGetSelectionValue(shellHandle, selection, targetsAtom, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
-	if (!done) {
-		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
-		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
-		_wait(selectionTimeout);
-		
-	}
-	return (!done || selectionValue == null) ? new int[0] : (int[])selectionValue;
 }
 
 /**
@@ -630,214 +534,7 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 			DND.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
-	if ((clipboards & DND.CLIPBOARD) != 0) {
-		ClipboardData = data;
-		ClipboardDataTypes = dataTypes;
-		_setContents(data, dataTypes, clipboardAtom);
-		activeClipboard = this;
-	}
-	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-		PrimaryClipboardData = data;
-		PrimaryClipboardDataTypes = dataTypes;
-		_setContents(data, dataTypes, primaryAtom);
-		activePrimaryClipboard = this;
-	}
-}
-void _setContents(Object[] data, Transfer[] dataTypes, int selection) {
-	int XtConvertSelectionProc = XtConvertSelectionCallback.getAddress();
-	int XtLoseSelectionProc = XtLoseSelectionCallback.getAddress();
-	int XtSelectionDoneProc = XtSelectionDoneCallback.getAddress();
-	if (!OS.XtOwnSelection(shellHandle, selection, OS.CurrentTime, XtConvertSelectionProc, XtLoseSelectionProc, XtSelectionDoneProc)) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	}
-}
-
-static void storePtr(int ptr, int selection, int target) {
-	int index = -1;
-	for (int i = 0; i < convertData.length; i++) {
-		if (convertData[i][0] == 0){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) {
-		int[][] newConvertData = new int[convertData.length][3];
-		System.arraycopy(convertData, 0, newConvertData, 0, convertData.length);
-		index = convertData.length;
-		convertData = newConvertData;
-	}
-	convertData[index][0] = selection;
-	convertData[index][1] = target;
-	convertData[index][2] = ptr;
-}
-
-void _wait(int timeout) {
-	int xDisplay = OS.XtDisplay(shellHandle);
-	if (xDisplay == 0) return;
-	long start = System.currentTimeMillis();
-	int xEvent = OS.XtMalloc (XEvent.sizeof);
-	Callback checkEventCallback = new Callback(this, "checkEvent", 3);
-	int checkEventProc = checkEventCallback.getAddress();
-	display.timerExec(timeout, new Runnable() {
-		public void run() {
-			// timer required to force display.sleep() to wake up
-			// in the case where no events are received
-		}
-	});
-	while (!done && System.currentTimeMillis() - start <  timeout && !isDisposed()) {
-		if (OS.XCheckIfEvent (xDisplay, xEvent, checkEventProc, 0) != 0) {
-			OS.XtDispatchEvent(xEvent);
-		} else {
-			display.sleep();
-		}
-	}
-	OS.XtFree (xEvent);
-	checkEventCallback.dispose();
-}
-int checkEvent(int display, int event, int arg) {
-	XEvent xEvent = new XEvent();
-	OS.memmove (xEvent, event, XEvent.sizeof);
-	switch (xEvent.type) {
-		case OS.SelectionClear:
-		case OS.SelectionNotify:
-		case OS.SelectionRequest:
-		case OS.PropertyNotify:
-			return 1;
-	}
-	return 0;
-}
-static int XtConvertSelection(int widget, int selection, int target, int type, int value, int length, int format) {
-	int xDisplay = OS.XtDisplay (widget);
-	if (xDisplay == 0) return 0;
-	int selectionAtom = 0;
-	if (selection != 0) {
-		int[] dest = new int[1];
-		OS.memmove(dest, selection, 4);
-		selectionAtom = dest[0];
-	}
-	if (selectionAtom == 0) return 0;
-	int clipboardAtom = OS.XInternAtom (xDisplay, CLIPBOARD, false);
-	int primaryAtom = OS.XInternAtom (xDisplay, PRIMARY, false);
-	int targetsAtom = OS.XInternAtom (xDisplay, TARGETS, false);
-	Transfer[] types = null;
-	if (selectionAtom == clipboardAtom) types = ClipboardDataTypes;
-	if (selectionAtom == primaryAtom) types = PrimaryClipboardDataTypes;
-	if (types == null) return 0;
-	
-	int targetAtom = 0;
-	if (target != 0) {
-		int[] dest = new int[1];
-		OS.memmove(dest, target, 4);
-		targetAtom = dest[0];
-	}
-	if (targetAtom == targetsAtom) {
-		int[] transferTypes = new int[] {targetAtom};
-		for (int i = 0; i < types.length; i++) {
-			TransferData[] subTypes = types[i].getSupportedTypes();
-			int[] newtransferTypes = new int[transferTypes.length + subTypes.length];
-			System.arraycopy(transferTypes, 0, newtransferTypes, 0, transferTypes.length);
-			int index = transferTypes.length;
-			transferTypes = newtransferTypes;
-			for (int j = 0; j < subTypes.length; j++) {
-				transferTypes[index++] = subTypes[j].type;
-			}
-		}
-		int ptr = OS.XtMalloc(transferTypes.length*4);
-		storePtr(ptr, selectionAtom, targetAtom);
-		OS.memmove(ptr, transferTypes, transferTypes.length*4);
-		OS.memmove(type, new int[]{targetsAtom}, 4);
-		OS.memmove(value, new int[] {ptr}, 4);
-		OS.memmove(length, new int[]{transferTypes.length}, 4);
-		OS.memmove(format, new int[]{32}, 4);		
-		return 1;
-	}
-	
-	TransferData tdata = new TransferData();
-	tdata.type = targetAtom;
-	int index = -1;
-	for (int i = 0; i < types.length; i++) {
-		if (types[i].isSupportedType(tdata)) {
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return 0;
-	Object[] data = selectionAtom == clipboardAtom ? ClipboardData : PrimaryClipboardData;
-	types[index].javaToNative(data[index], tdata);
-	if (tdata.format < 8 || tdata.format % 8 != 0) {
-		OS.XtFree(tdata.pValue);
-		return 0;
-	}
-	// copy data back to value
-	OS.memmove(type, new int[]{tdata.type}, 4);
-	OS.memmove(value, new int[]{tdata.pValue}, 4);
-	OS.memmove(length, new int[]{tdata.length}, 4);
-	OS.memmove(format, new int[]{tdata.format}, 4);
-	storePtr(tdata.pValue, selectionAtom, targetAtom);
-	return 1;
-}
-
-static int XtLoseSelection(int widget, int selection) {
-	int xDisplay = OS.XtDisplay (widget);
-	int clipboardAtom = OS.XInternAtom (xDisplay, CLIPBOARD, false);
-	if (selection == clipboardAtom) {
-		activeClipboard = null;
-		ClipboardData = null;
-		ClipboardDataTypes = null;
-	}
-	int primaryAtom = OS.XInternAtom (xDisplay, PRIMARY, false);
-	if (selection == primaryAtom) {
-		activePrimaryClipboard = null;
-		PrimaryClipboardData = null;
-		PrimaryClipboardDataTypes = null;
-	}
-	return 0;
-}
-
-static int XtSelectionCallback(int widget, int client_data, int selection, int type, int value, int length, int format) {
-	done = true;
-	int[] selectionType = new int[1];
-	if (type != 0) OS.memmove(selectionType, type, 4);
-	if (selectionType[0] == 0) return 0;
-	int[] selectionLength = new int[1];
-	if (length != 0) OS.memmove(selectionLength, length, 4);
-	if (selectionLength[0] == 0) return 0;
-	int[] selectionFormat = new int[1];
-	if (format != 0) OS.memmove(selectionFormat, format, 4);
-	int xDisplay = OS.XtDisplay (widget);
-	if (xDisplay == 0) return 0;
-	int targetsAtom = OS.XInternAtom (xDisplay, TARGETS, false);
-	if (selectionType[0] == targetsAtom) {
-		int[] targets = new int[selectionLength[0]];
-		OS.memmove(targets, value, selectionLength[0] * selectionFormat [0] / 8);
-		selectionValue = targets;
-		return 0;
-	}
-	if (selectionTransfer != null) {
-		TransferData transferData = new TransferData();
-		transferData.type = selectionType[0];
-		transferData.length = selectionLength[0];
-		transferData.format = selectionFormat[0];
-		transferData.pValue = value;
-		transferData.result = 1;
-		selectionValue = selectionTransfer.nativeToJava(transferData);
-	}
-	return 0;
-}
-
-static int XtSelectionDone(int widget, int selection, int target) {
-	if (target == 0 || selection == 0) return 0;
-	int[] selectionAtom = new int[1];
-	OS.memmove(selectionAtom, selection, 4);
-	int[] targetAtom = new int[1];
-	OS.memmove(targetAtom, target, 4);
-	for (int i = 0; i < convertData.length; i++) {
-		if (convertData[i][0] == selectionAtom[0] && convertData[i][1] == targetAtom[0]) {
-			OS.XtFree(convertData[i][2]);
-			convertData[i][0] = convertData[i][1] = convertData[i][2] = 0;
-			break;
-		}
-	}
-	return 0;
+	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
+	proxy.setContents(this, data, dataTypes, clipboards);
 }
 }
