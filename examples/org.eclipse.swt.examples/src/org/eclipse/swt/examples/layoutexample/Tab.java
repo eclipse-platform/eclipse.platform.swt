@@ -84,7 +84,7 @@ abstract class Tab {
 		GridLayout layout = new GridLayout ();
 		layout.numColumns = 3;
 		childGroup.setLayout (layout);
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		GridData data = new GridData (GridData.FILL_BOTH);
 		data.horizontalSpan = 2;
 		childGroup.setLayoutData (data); 
 		createChildWidgets ();
@@ -100,8 +100,10 @@ abstract class Tab {
 		/* Controls for adding and removing children */
 		add = new Button (childGroup, SWT.PUSH);
 		add.setText (LayoutExample.getResourceString ("Add"));
+		add.setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		delete = new Button (childGroup, SWT.PUSH);
 		delete.setText (LayoutExample.getResourceString ("Delete"));
+		delete.setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		delete.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
@@ -118,6 +120,7 @@ abstract class Tab {
 		});
 		clear = new Button (childGroup, SWT.PUSH);
 		clear.setText (LayoutExample.getResourceString ("Clear"));
+		clear.setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		clear.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
@@ -135,7 +138,7 @@ abstract class Tab {
 		table = new Table (childGroup, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		table.setLinesVisible (true);
 		table.setHeaderVisible (true);
-		GridData gridData = new GridData (GridData.FILL_HORIZONTAL);
+		GridData gridData = new GridData (GridData.FILL_BOTH);
 		gridData.horizontalSpan = 3;
 		gridData.heightHint = 150;
 		table.setLayoutData (gridData);
@@ -211,7 +214,7 @@ abstract class Tab {
 				}
 			}
 		});
-		GridData data = new GridData ();
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = 2;
 		size.setLayoutData (data);
 		createControlWidgets ();
@@ -226,7 +229,7 @@ abstract class Tab {
 		createChildGroup ();
 		code = new Button (controlGroup, SWT.PUSH);
 		code.setText (LayoutExample.getResourceString ("Code"));
-		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_CENTER);
+		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_CENTER | GridData.GRAB_HORIZONTAL);
 		gridData.horizontalSpan = 2;
 		code.setLayoutData (gridData);
 		code.addSelectionListener (new SelectionAdapter () {

@@ -95,6 +95,7 @@ class SliderTab extends RangeTab {
 		Group incrementGroup = new Group (controlGroup, SWT.NULL);
 		incrementGroup.setLayout (new GridLayout ());
 		incrementGroup.setText (ControlExample.getResourceString("Increment"));
+		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create the scale widget */
 		incrementScale = new Scale (incrementGroup, SWT.NULL);
@@ -102,6 +103,10 @@ class SliderTab extends RangeTab {
 		incrementScale.setSelection (5);
 		incrementScale.setPageIncrement (10);
 		incrementScale.setIncrement (5);
+
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		incrementScale.setLayoutData (data);
 	
 		/* Add the listeners */
 		incrementScale.addSelectionListener (new SelectionAdapter () {
@@ -121,7 +126,8 @@ class SliderTab extends RangeTab {
 		Group pageIncrementGroup = new Group (controlGroup, SWT.NULL);
 		pageIncrementGroup.setLayout (new GridLayout ());
 		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
-	
+		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+			
 		/* Create the scale widget */
 		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NULL);
 		pageIncrementScale.setMaximum (100);
@@ -129,6 +135,10 @@ class SliderTab extends RangeTab {
 		pageIncrementScale.setPageIncrement (10);
 		pageIncrementScale.setIncrement (5);
 	
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		pageIncrementScale.setLayoutData (data);
+
 		/* Add the listeners */
 		pageIncrementScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
@@ -147,7 +157,8 @@ class SliderTab extends RangeTab {
 		Group thumbGroup = new Group (controlGroup, SWT.NULL);
 		thumbGroup.setLayout (new GridLayout ());
 		thumbGroup.setText (ControlExample.getResourceString("Thumb"));
-	
+		thumbGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+		
 		/* Create the scale widget */
 		thumbScale = new Scale (thumbGroup, SWT.NULL);
 		thumbScale.setMaximum (100);
@@ -155,6 +166,10 @@ class SliderTab extends RangeTab {
 		thumbScale.setPageIncrement (10);
 		thumbScale.setIncrement (5);
 	
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		thumbScale.setLayoutData (data);
+
 		/* Add the listeners */
 		thumbScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {

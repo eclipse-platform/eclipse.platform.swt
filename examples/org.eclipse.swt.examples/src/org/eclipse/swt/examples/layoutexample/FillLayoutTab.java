@@ -76,12 +76,15 @@ class FillLayoutTab extends Tab {
 		Group typeGroup = new Group (controlGroup, SWT.NONE);
 		typeGroup.setText (LayoutExample.getResourceString ("Type"));
 		typeGroup.setLayout (new GridLayout ());
+		typeGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 		horizontal = new Button (typeGroup, SWT.RADIO);
 		horizontal.setText ("SWT.HORIZONTAL");
+		horizontal.setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		horizontal.setSelection(true);
 		horizontal.addSelectionListener (selectionListener);
 		vertical = new Button (typeGroup, SWT.RADIO);
 		vertical.setText ("SWT.VERTICAL");
+		vertical.setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		vertical.addSelectionListener (selectionListener); 
 		
 		/* Add common controls */

@@ -255,13 +255,14 @@ class FormLayoutTab extends Tab {
 		GridLayout layout = new GridLayout ();
 		layout.numColumns = 2;
 		marginGroup.setLayout (layout);
+		marginGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 		new Label (marginGroup, SWT.NONE).setText ("marginHeight");
 		marginHeight = new Combo (marginGroup, SWT.NONE);
 		marginHeight.setItems (marginValues);
 		marginHeight.select (0);
 		marginHeight.addSelectionListener (selectionListener);
 		marginHeight.addTraverseListener (traverseListener);
-		GridData data = new GridData ();
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		marginHeight.setLayoutData (data);
 		new Label (marginGroup, SWT.NONE).setText ("marginWidth");
@@ -270,7 +271,7 @@ class FormLayoutTab extends Tab {
 		marginWidth.select (0);
 		marginWidth.addSelectionListener (selectionListener);
 		marginWidth.addTraverseListener (traverseListener);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		marginWidth.setLayoutData (data);
 		

@@ -218,7 +218,7 @@ class GridLayoutTab extends Tab {
 		String [] marginValues = new String [] {"0","3","5","10"};
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
-		GridData data = new GridData ();
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.verticalSpan = 2;
 		marginGroup.setLayoutData (data);
 		GridLayout layout = new GridLayout ();
@@ -228,7 +228,7 @@ class GridLayoutTab extends Tab {
 		marginHeight = new Combo (marginGroup, SWT.NONE);
 		marginHeight.setItems (marginValues);
 		marginHeight.select (2);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		marginHeight.setLayoutData (data);
 		marginHeight.addSelectionListener (selectionListener);
@@ -237,7 +237,7 @@ class GridLayoutTab extends Tab {
 		marginWidth = new Combo (marginGroup, SWT.NONE);
 		marginWidth.setItems (marginValues);
 		marginWidth.select (2);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		marginWidth.setLayoutData (data);
 		marginWidth.addSelectionListener (selectionListener);
@@ -246,7 +246,7 @@ class GridLayoutTab extends Tab {
 		horizontalSpacing = new Combo (marginGroup, SWT.NONE);
 		horizontalSpacing.setItems (marginValues);
 		horizontalSpacing.select (2);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		horizontalSpacing.setLayoutData (data);
 		horizontalSpacing.addSelectionListener (selectionListener);
@@ -255,7 +255,7 @@ class GridLayoutTab extends Tab {
 		verticalSpacing = new Combo (marginGroup, SWT.NONE);
 		verticalSpacing.setItems (marginValues);
 		verticalSpacing.select (2);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 60;
 		verticalSpacing.setLayoutData (data);
 		verticalSpacing.addSelectionListener (selectionListener);
@@ -273,20 +273,21 @@ class GridLayoutTab extends Tab {
 		numColumns.setText ("1");
 		numColumns.addSelectionListener (selectionListener);
 		numColumns.addTraverseListener (traverseListener);
-       	data = new GridData ();
+       	data = new GridData (GridData.FILL_HORIZONTAL);
        	data.widthHint = 15;
        	numColumns.setLayoutData (data);
        	new Label (columnGroup, SWT.NONE).setText ("numColumns");
 		makeColumnsEqualWidth = new Button (columnGroup, SWT.CHECK);
 		makeColumnsEqualWidth.setText ("makeColumnsEqualWidth");
 		makeColumnsEqualWidth.addSelectionListener (selectionListener);
-		data = new GridData ();
+		data = new GridData (GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = 2;
 		data.horizontalIndent = 14;
 		makeColumnsEqualWidth.setLayoutData (data);
 
 		/* Add common controls */
 		super.createControlWidgets ();
+		controlGroup.pack();
 	}
 	
 	/**

@@ -44,6 +44,7 @@ abstract class RangeTab extends Tab {
 		Group maximumGroup = new Group (controlGroup, SWT.NULL);
 		maximumGroup.setLayout (new GridLayout ());
 		maximumGroup.setText (ControlExample.getResourceString("Maximum"));
+		maximumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create a scale widget */
 		maximumScale = new Scale (maximumGroup, SWT.NULL);
@@ -51,6 +52,10 @@ abstract class RangeTab extends Tab {
 		maximumScale.setSelection (100);
 		maximumScale.setPageIncrement (10);
 		maximumScale.setIncrement (5);
+		
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		maximumScale.setLayoutData (data);
 	
 		/* Add the listeners */
 		maximumScale.addSelectionListener(new SelectionAdapter () {
@@ -70,6 +75,7 @@ abstract class RangeTab extends Tab {
 		Group minimumGroup = new Group (controlGroup, SWT.NULL);
 		minimumGroup.setLayout (new GridLayout ());
 		minimumGroup.setText (ControlExample.getResourceString("Minimum"));
+		minimumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create a scale widget */
 		minimumScale = new Scale (minimumGroup, SWT.NULL);
@@ -77,6 +83,10 @@ abstract class RangeTab extends Tab {
 		minimumScale.setPageIncrement (10);
 		minimumScale.setIncrement (5);
 	
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		minimumScale.setLayoutData (data);
+
 		/* Add the listeners */
 		minimumScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
@@ -95,7 +105,7 @@ abstract class RangeTab extends Tab {
 		/* Create the group */
 		Group selectionGroup = new Group(controlGroup, SWT.NULL);
 		selectionGroup.setLayout(new GridLayout());
-		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		selectionGroup.setLayoutData(gridData);
 		selectionGroup.setText(ControlExample.getResourceString("Selection"));
 	
@@ -106,6 +116,10 @@ abstract class RangeTab extends Tab {
 		selectionScale.setPageIncrement (10);
 		selectionScale.setIncrement (5);
 	
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		selectionScale.setLayoutData (data);
+
 		/* Add the listeners */
 		selectionScale.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {

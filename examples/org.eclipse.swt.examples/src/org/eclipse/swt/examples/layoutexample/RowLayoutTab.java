@@ -122,17 +122,19 @@ class RowLayoutTab extends Tab {
 		typeGroup.setLayoutData (data);
 		horizontal = new Button (typeGroup, SWT.RADIO);
 		horizontal.setText ("SWT.HORIZONTAL");
+		horizontal.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
 		horizontal.setSelection(true);
 		horizontal.addSelectionListener (selectionListener);
 		vertical = new Button (typeGroup, SWT.RADIO);
 		vertical.setText ("SWT.VERTICAL");
+		vertical.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
 		vertical.addSelectionListener (selectionListener);
 		
 		/* Controls the margins and spacing of the RowLayout */
 		String [] marginValues = new String [] {"0","3","5","10"};
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
-		data = new GridData (GridData.FILL_HORIZONTAL);
+		data = new GridData (GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
 		data.verticalSpan = 2;
 		marginGroup.setLayoutData (data);
 		GridLayout layout = new GridLayout ();
@@ -177,18 +179,21 @@ class RowLayoutTab extends Tab {
 		/* Controls other parameters of the RowLayout */
 		Group specGroup = new Group (controlGroup, SWT.NONE);
 		specGroup.setText (LayoutExample.getResourceString ("Properties"));
-		specGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+		specGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 		specGroup.setLayout (new GridLayout ());
 		wrap = new Button (specGroup, SWT.CHECK);
 		wrap.setText ("wrap");
 		wrap.setSelection (true);
+		wrap.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
 		wrap.addSelectionListener (selectionListener);
 		pack = new Button (specGroup, SWT.CHECK);
 		pack.setText ("pack");
+		pack.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
 		pack.setSelection (true);
 		pack.addSelectionListener (selectionListener);
 		justify = new Button (specGroup, SWT.CHECK);
 		justify.setText ("justify");
+		justify.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
 		justify.addSelectionListener (selectionListener);
 		
 		/* Add common controls */
