@@ -756,10 +756,10 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * <li><code>GC</code></li>
+	 * <li><code>GC</code></li> 
 	 * </ul></p>
 	 * 
-	 * @since 3.0
+	 * @since 2.1.2
 	 */
 	public static final int LEFT_TO_RIGHT = 1 << 25;
 	
@@ -775,10 +775,10 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * <li><code>GC</code></li>
+	 * <li><code>GC</code></li> 
 	 * </ul></p>
 	 * 
-	 * @since 3.0
+	 * @since 2.1.2
 	 */
 	public static final int RIGHT_TO_LEFT = 1 << 26;
 	
@@ -787,10 +787,9 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * <li><code>GC</code></li>
 	 * </ul></p>
 	 * 
-	 * @since 3.0
+	 * @since 2.1.2
 	 */
 	public static final int MIRRORED = 1 << 27;
 	

@@ -1576,7 +1576,7 @@ boolean isVirtualKey (int key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @since 3.0
+ * @since 2.1.2
  */
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
@@ -1616,7 +1616,7 @@ public Point map (Control from, Control to, Point point) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @since 3.0
+ * @since 2.1.2
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
@@ -1663,7 +1663,7 @@ public Point map (Control from, Control to, int x, int y) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @since 3.0
+ * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
@@ -1705,7 +1705,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @since 3.0
+ * @since 2.1.2
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();

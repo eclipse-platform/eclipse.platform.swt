@@ -105,7 +105,7 @@ public GC(Drawable drawable) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  *  
- * @since 3.0
+ * @since 2.1.2
  */
 public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1987,7 +1987,7 @@ public int getLineWidth() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *   
- * @since 3.0
+ * @since 2.1.2
  */
 public int getStyle () {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
