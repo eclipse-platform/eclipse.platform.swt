@@ -19,7 +19,7 @@ class ToolBarTab extends Tab {
 	Group imageToolBarGroup, textToolBarGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button flatButton, wrapButton;
+	Button horizontalButton, verticalButton, flatButton, shadowOutButton, wrapButton, rightButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -54,9 +54,13 @@ class ToolBarTab extends Tab {
 	
 		/* Compute the widget style */
 		int style = SWT.NONE;
+		if (horizontalButton.getSelection()) style |= SWT.HORIZONTAL;
+		if (verticalButton.getSelection()) style |= SWT.VERTICAL;
 		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (wrapButton.getSelection()) style |= SWT.WRAP;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
+		if (shadowOutButton.getSelection()) style |= SWT.SHADOW_OUT;
+		if (rightButton.getSelection()) style |= SWT.RIGHT;
 	
 		/*
 		* Create the example widgets.
@@ -140,10 +144,18 @@ class ToolBarTab extends Tab {
 		super.createStyleGroup();
 	
 		/* Create the extra widgets */
+		horizontalButton = new Button (styleGroup, SWT.RADIO);
+		horizontalButton.setText ("SWT.HORIZONTAL");
+		verticalButton = new Button (styleGroup, SWT.RADIO);
+		verticalButton.setText ("SWT.VERTICAL");
 		flatButton = new Button (styleGroup, SWT.CHECK);
 		flatButton.setText ("SWT.FLAT");
+		shadowOutButton = new Button (styleGroup, SWT.CHECK);
+		shadowOutButton.setText ("SWT.SHADOW_OUT");
 		wrapButton = new Button (styleGroup, SWT.CHECK);
 		wrapButton.setText ("SWT.WRAP");
+		rightButton = new Button (styleGroup, SWT.CHECK);
+		rightButton.setText ("SWT.RIGHT");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -171,9 +183,13 @@ class ToolBarTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
+		horizontalButton.setSelection ((imageToolBar.getStyle () & SWT.HORIZONTAL) != 0);
+		verticalButton.setSelection ((imageToolBar.getStyle () & SWT.VERTICAL) != 0);
 		flatButton.setSelection ((imageToolBar.getStyle () & SWT.FLAT) != 0);
 		wrapButton.setSelection ((imageToolBar.getStyle () & SWT.WRAP) != 0);
+		shadowOutButton.setSelection ((imageToolBar.getStyle () & SWT.SHADOW_OUT) != 0);
 		borderButton.setSelection ((imageToolBar.getStyle () & SWT.BORDER) != 0);
+		rightButton.setSelection ((imageToolBar.getStyle () & SWT.RIGHT) != 0);
 	}
 	
 	/**
