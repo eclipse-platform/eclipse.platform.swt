@@ -722,7 +722,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int selection) {
 	checkWidget();
-	if (selection < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	int hwnd = hwndScrollBar (), type = scrollBarType ();

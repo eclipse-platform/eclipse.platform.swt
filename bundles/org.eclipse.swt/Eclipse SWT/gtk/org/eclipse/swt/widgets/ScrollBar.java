@@ -503,6 +503,7 @@ public void setMaximum (int value) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	if (value < getSelection() + getThumb()) setSelection (value - getThumb());
 }
 
 /**
@@ -527,6 +528,7 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	if (value > getSelection()) setSelection (value);
 }
 
 /**
@@ -568,7 +570,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	value = Math.min(value, getMaximum() - getThumb());
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_set_value (handle, value);
@@ -591,7 +592,8 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget ();
-	if (value < 1 || value > getMaximum() - getMinimum()) return;
+	int maximum = getMaximum();
+	if (value < 1 || value > maximum - getMinimum()) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
 	adjustment.page_size = (float) value;
@@ -599,6 +601,7 @@ public void setThumb (int value) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	if (getSelection() + value > maximum) setSelection (maximum - value);
 }
 
 /**
