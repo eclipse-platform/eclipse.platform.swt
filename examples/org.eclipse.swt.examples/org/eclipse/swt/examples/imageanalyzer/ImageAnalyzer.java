@@ -1044,16 +1044,20 @@ public class ImageAnalyzer {
 			if (printerData == null) return;
 			
 			Printer printer = new Printer(printerData);
-			
 			Point screenDPI = display.getDPI();
 			Point printerDPI = printer.getDPI();
 			int scaleFactor = printerDPI.x / screenDPI.x;
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			if (printer.startJob(currentName)) {
-				GC gc = new GC(printer);
 				if (printer.startPage()) {
+					GC gc = new GC(printer);
+					int transparentPixel = imageData.transparentPixel;
+					if (transparentPixel != -1 && !transparent) {
+						imageData.transparentPixel = -1;
+					}
+					Image printerImage = new Image(printer, imageData);
 					gc.drawImage(
-						image,
+						printerImage,
 						0,
 						0,
 						imageData.width,
@@ -1062,6 +1066,11 @@ public class ImageAnalyzer {
 						-trim.y,
 						scaleFactor * imageData.width,
 						scaleFactor * imageData.height);
+					if (transparentPixel != -1 && !transparent) {
+						imageData.transparentPixel = transparentPixel;
+					}
+					printerImage.dispose();
+					gc.dispose();
 					printer.endPage();
 				}
 				printer.endJob();
