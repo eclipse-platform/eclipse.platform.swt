@@ -286,15 +286,16 @@ public void deselectAll() {
 
 void destroyItem (TreeItem item) {
 	/*
-	* Bug in GTK. GTK causes a segment fault when a root tree item
-	* is destroyed while a leaf tree item is selected.  This only
-	* happens on versions earlier than 2.0.6.  The fix is to collapse
-	* the tree item being destroyed if it is a root tree item.
+	* Bug in GTK.  GTK segment faults when a root tree item
+	* is destroyed when the tree is expanded and the last leaf of
+	* the root is selected.  This only happens in versions earlier
+	* than 2.0.6.  The fix is to collapse the tree item being destroyed
+	* when it is a root, before it is destroyed.
 	*/
 	if (OS.gtk_major_version () == 2 && OS.gtk_minor_version () == 0 && OS.gtk_micro_version () < 6) {
-		TreeItem[] roots = getItems (0);
+		TreeItem [] roots = getItems (0);
 		for (int i = 0; i < roots.length; i++) {
-			if (item == roots[i]) {
+			if (item == roots [i]) {
 				item.setExpanded (false);
 				break;
 			}
