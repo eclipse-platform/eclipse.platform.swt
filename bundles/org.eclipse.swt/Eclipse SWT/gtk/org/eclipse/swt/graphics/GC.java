@@ -2622,8 +2622,7 @@ public void setTransform(Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	int /*long*/ cairo = data.cairo;
-	Cairo.cairo_concat_matrix(cairo, data.inverseMatrix);
-	Cairo.cairo_concat_matrix(cairo, transform.handle);
+	Cairo.cairo_set_matrix(cairo, transform.handle);
 	Cairo.cairo_matrix_copy(data.matrix, transform.handle);
 	Cairo.cairo_matrix_copy(data.inverseMatrix, transform.handle);
 	Cairo.cairo_matrix_invert(data.inverseMatrix);
