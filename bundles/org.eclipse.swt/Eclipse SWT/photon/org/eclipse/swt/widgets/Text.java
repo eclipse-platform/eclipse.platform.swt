@@ -15,7 +15,7 @@ public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
 	String hiddenText;
-	int lastModifiedText;
+	int tabs, lastModifiedText;
 	PtTextCallback_t textVerify;
 	
 	public static final int LIMIT;
@@ -110,6 +110,12 @@ void createHandle (int index) {
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	createScrollBars();
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+//	doubleClick = true;
+	setTabStops (tabs = 8);
 }
 
 public void addModifyListener (ModifyListener listener) {
@@ -329,8 +335,19 @@ public String getSelectionText () {
 public int getTabs () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
-	return 0;
+	return tabs;
+}
+
+int getTabWidth (int tabs) {
+	int [] args = new int [] {OS.Pt_ARG_TEXT_FONT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	PhRect_t rect = new PhRect_t ();
+	int ptr = OS.malloc (1);
+	OS.memmove (ptr, new byte [] {' '}, 1);
+	OS.PfExtentText(rect, null, args [1], ptr, 1);
+	OS.free (ptr);
+	int width = rect.lr_x - rect.ul_x + 1;
+	return width * tabs;
 }
 
 public String getText (int start, int end) {
@@ -607,6 +624,11 @@ public void setEditable (boolean editable) {
 	OS.PtSetResources(handle, args.length / 3, args);
 }
 
+public void setFont (Font font) {
+	super.setFont (font);
+	setTabStops (tabs);
+}
+
 public void setSelection (int position) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -631,8 +653,17 @@ public void setTabs (int tabs) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (tabs < 0) return;
+	setTabStops (this.tabs = tabs);
+}
 
-	//NOT DONE - NOT NEEDED
+void setTabStops (int tabs) {
+	if ((style & SWT.SINGLE) != 0) return;
+	int tabsWidth = getTabWidth (tabs);
+	int ptr = OS.malloc (4);
+	OS.memmove (ptr, new int [] {tabsWidth}, 4);
+	int [] args = {OS.Pt_ARG_MULTITEXT_TABS, ptr, 1};
+	OS.PtSetResources (handle, args.length / 3, args);
+	OS.free (ptr);
 }
 
 public void setText (String string) {
