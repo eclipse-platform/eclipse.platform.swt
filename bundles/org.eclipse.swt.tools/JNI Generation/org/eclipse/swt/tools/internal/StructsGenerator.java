@@ -56,7 +56,6 @@ public void generate(Class clazz) {
 	} else {
 		generateSourceFile(clazz);
 	}
-	if (progress != null) progress.step();
 }
 
 public void generate() {

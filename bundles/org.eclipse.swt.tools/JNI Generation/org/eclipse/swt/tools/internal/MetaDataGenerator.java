@@ -40,7 +40,6 @@ public void generate(Field[] fields) {
 		if ((mods & Modifier.STATIC) != 0) continue;
 		generate(field);
 		outputln();
-		if (progress != null) progress.step();
 	}
 }
 

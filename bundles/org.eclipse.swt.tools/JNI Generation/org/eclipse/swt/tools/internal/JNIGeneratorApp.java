@@ -146,11 +146,11 @@ void generateSWT_C(Class[] classes) {
 }
 
 
-void generateMetaData() {
+void generateMetaData(Class[] classes) {
 	try {
 		MetaDataGenerator gen = new MetaDataGenerator();
 		gen.setMainClass(mainClass);
-		gen.setClasses(getClasses());
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -175,6 +175,7 @@ public void generate() {
 public void generate(ProgressMonitor progress) {
 	if (mainClassName == null) return;
 	if (progress != null) progress.setMessage("Initializing...");
+	Class[] classes = getClasses();
 	Class[] natives = getNativesClasses();
 	Class[] structs = getStructureClasses();
 	this.progress = progress;
@@ -185,10 +186,15 @@ public void generate(ProgressMonitor progress) {
 			Method[] methods = clazz.getDeclaredMethods();
 			for (int j = 0; j < methods.length; j++) {
 				Method method = methods[j];
-				if ((method.getModifiers() & Modifier.NATIVE) != 0) nativeCount++;
+				if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+				nativeCount++;
 			}
 		}
-		progress.setTotal(nativeCount * 4 + structs.length * 3);
+		int total = nativeCount * 4;
+		total += classes.length;
+		total += natives.length * 3;
+		total += structs.length * 2;
+		progress.setTotal(total);
 		progress.setMessage("Generating structs.h ...");
 	}
 	generateSTRUCTS_H(structs);
@@ -201,7 +207,7 @@ public void generate(ProgressMonitor progress) {
 	if (progress != null) progress.setMessage("Generating stats.c ...");
 	generateSTATS_C(natives);
 	if (progress != null) progress.setMessage("Generating meta data ...");
-	generateMetaData();
+	generateMetaData(classes);
 	if (progress != null) progress.setMessage("Done.");
 	this.progress = null;
 }

@@ -276,6 +276,7 @@ public void generate() {
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		if (getGenerate(clazz)) generate(clazz);
+		if (progress != null) progress.step();
 	}
 	output.flush();
 }
