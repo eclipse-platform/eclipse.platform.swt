@@ -21,8 +21,8 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback actionCallback, itemDataCallback, itemNotificationCallback, scrollBarActionCallback, windowCallback;
-	int actionProc, itemDataProc, itemNotificationProc, scrollBarActionProc, windowProc;
+	Callback actionCallback, commandCallback, controlCallback, itemDataCallback, itemNotificationCallback, keyboardCallback, menuCallback, mouseCallback, windowCallback;
+	int actionProc, commandProc, controlProc, itemDataProc, itemNotificationProc, keyboardProc, menuProc, mouseProc, windowProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -140,6 +140,11 @@ static int untranslateKey (int key) {
 int actionProc (int theControl, int partCode) {
 	Control control = WidgetTable.get (theControl);
 	if (control != null) return control.actionProc (theControl, partCode);
+	//FIXME - don't auto forward do parent for scroll bar case
+	int [] parentControl = new int [1];
+	OS.GetSuperControl (theControl, parentControl);
+	Control parent = WidgetTable.get (parentControl [0]);
+	if (parent != null) return parent.actionProc (theControl, partCode);
 	return OS.noErr;
 }
 
@@ -241,6 +246,45 @@ static synchronized void checkDisplay (Thread thread) {
 			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
+}
+
+int commandProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	HICommand command = new HICommand ();
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
+	switch (eventKind) {
+		case OS.kEventProcessCommand: {
+			if (command.commandID == OS.kAEQuitApplication) {
+				close ();
+				return OS.noErr;
+			}
+			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
+				int menuRef = command.menu_menuRef;
+				short menuID = OS.GetMenuID (menuRef);
+				Menu menu = findMenu (menuID);
+				if (menu != null) {
+					int [] outCommandID = new int [1];
+					short menuIndex = command.menu_menuItemIndex;
+					OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
+					MenuItem item = findMenuItem (outCommandID [0]);
+					return item.kEventProcessCommand (nextHandler, theEvent, userData);
+				}
+				OS.HiliteMenu ((short) 0);
+			}
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
+int controlProc (int nextHandler, int theEvent, int userData) {
+	Control control = WidgetTable.get (userData);
+	if (control == null) {
+		int [] theControl = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+		control = WidgetTable.get (theControl [0]);
+	}
+	if (control != null) return control.controlProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
 }
 
 public void close () {
@@ -502,29 +546,45 @@ public Thread getThread () {
 protected void init () {
 	super.init ();
 	
-	/* Create the callbacks */
+	/* Create Callbacks */
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
 	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	commandCallback = new Callback (this, "commandProc", 3);
+	commandProc = commandCallback.getAddress ();
+	if (commandProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	controlCallback = new Callback (this, "controlProc", 3);
+	controlProc = controlCallback.getAddress ();
+	if (controlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	itemDataCallback = new Callback (this, "itemDataProc", 5);
 	itemDataProc = itemDataCallback.getAddress ();
 	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3);
 	itemNotificationProc = itemNotificationCallback.getAddress ();
 	if (itemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	keyboardCallback = new Callback (this, "keyboardProc", 3);
+	keyboardProc = keyboardCallback.getAddress ();
+	if (keyboardProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	menuCallback = new Callback (this, "menuProc", 3);
+	menuProc = menuCallback.getAddress ();
+	if (menuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	mouseCallback = new Callback (this, "mouseProc", 3);
+	mouseProc = mouseCallback.getAddress ();
+	if (mouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	timerCallback = new Callback (this, "timerProc", 2);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	scrollBarActionCallback = new Callback (this, "scrollBarActionProc", 2);
-	scrollBarActionProc = scrollBarActionCallback.getAddress ();
-	if (scrollBarActionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback = new Callback (this, "windowProc", 3);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
-	/* Install Application Event Handlers */
+	/* Install Event Handlers */
 	int[] mask1 = new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
+	};
+	int appTarget = OS.GetApplicationEventTarget ();
+	OS.InstallEventHandler (appTarget, commandProc, mask1.length / 2, mask1, 0, null);
+	int[] mask2 = new int[] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseDragged,
 		OS.kEventClassMouse, OS.kEventMouseEntered,
@@ -533,18 +593,15 @@ protected void init () {
 		OS.kEventClassMouse, OS.kEventMouseUp,
 		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
-	int appTarget = OS.GetApplicationEventTarget ();
-	OS.InstallEventHandler (appTarget, windowProc, mask1.length / 2, mask1, 0, null);
-	
-	/* Install Keyboard Event Handlers */
-	int [] mask2 = new int[] {
+	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
+	int [] mask3 = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
-	OS.InstallEventHandler (focusTarget, windowProc, mask2.length / 2, mask2, 0, null);
+	OS.InstallEventHandler (focusTarget, keyboardProc, mask3.length / 2, mask3, 0, null);
 }
 
 public int internal_new_GC (GCData data) {
@@ -579,6 +636,23 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
+int keyboardProc (int nextHandler, int theEvent, int userData) {
+	Control control = WidgetTable.get (userData);
+	if (control == null) {
+		int theWindow = OS.FrontWindow ();
+		if (theWindow == 0) return OS.eventNotHandledErr;
+		int [] theControl = new int [1];
+		OS.GetKeyboardFocus (theWindow, theControl);
+		//TEMPORARY CODE
+		if (theControl [0] == 0) {
+			OS.GetRootControl (theWindow, theControl);
+		}
+		control = WidgetTable.get (theControl [0]);
+	}
+	if (control != null) return control.keyboardProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
+}
+
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.
@@ -599,6 +673,62 @@ void postEvent (Event event) {
 		eventQueue = newQueue;
 	}
 	eventQueue [index] = event;
+}
+	
+int menuProc (int nextHandler, int theEvent, int userData) {
+	if (userData != 0) {
+		Control control = WidgetTable.get (userData);
+		if (control != null) return control.menuProc (nextHandler, theEvent, userData);
+	} else {
+		int [] theMenu = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
+		short menuID = OS.GetMenuID (theMenu [0]);
+		Menu menu = findMenu (menuID);
+		if (menu != null) return menu.menuProc (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int mouseProc (int nextHandler, int theEvent, int userData) {
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
+	int theWindow = userData;
+	if (theWindow == 0) {
+		int [] window = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, window);
+		if (window [0] == 0) {
+			int eventKind = OS.GetEventKind (theEvent);
+			short part = OS.FindWindow (where, window);
+			if (eventKind == OS.kEventMouseDown && part == OS.inMenuBar) {
+				OS.MenuSelect (where);
+				return OS.noErr;
+			}
+		}
+		theWindow = window [0];
+	}
+	int [] theRoot = new int [1];
+	OS.GetRootControl (theWindow, theRoot);
+	int [] theControl = new int [1];
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (theWindow, (short) OS.kWindowStructureRgn, rect);
+	CGPoint inPoint = new CGPoint ();
+	inPoint.x = where.h - rect.left;
+	inPoint.y = where.v - rect.top;
+	OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
+	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	//FIXME - look for part code?
+	if (theControl [0] == 0) {
+		if (0 <= inPoint.x && inPoint.x < (rect.right - rect.left)) {
+			if (0 <= inPoint.y && inPoint.y < (rect.bottom - rect.top)) {
+				OS.HIViewGetViewForMouseEvent (theRoot [0], theEvent, theControl);
+			}
+		}
+	}
+	Control control = WidgetTable.get (theControl [0]);
+	if (control != null && control.handle == theControl [0]) {
+		return control.mouseProc (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 public boolean readAndDispatch () {
@@ -652,13 +782,19 @@ protected void release () {
 
 void releaseDisplay () {
 	actionCallback.dispose ();
+	commandCallback.dispose ();
+	controlCallback.dispose ();
 	itemDataCallback.dispose ();
-	timerCallback.dispose ();
-	scrollBarActionCallback.dispose ();
+	itemNotificationCallback.dispose ();
+	keyboardCallback.dispose ();
+	menuCallback.dispose ();
+	mouseCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = itemDataCallback = timerCallback = scrollBarActionCallback = windowCallback = null;
-	actionProc = itemDataProc = timerProc = scrollBarActionProc = windowProc = 0;
-	
+	actionCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
+	actionProc = commandProc = controlProc = itemDataProc = itemNotificationProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
+	timerCallback.dispose ();
+	timerCallback = null;
+	timerProc = 0;
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
@@ -833,14 +969,6 @@ void sendEvent (int eventType, Event event) {
 public static void setAppName (String name) {
 }
 
-int scrollBarActionProc (int scrollBarControl, int partCode) {
-	int [] theControl = new int [1];
-	OS.GetSuperControl (scrollBarControl, theControl);
-	Control control = WidgetTable.get (theControl [0]);
-	if (control != null) return control.scrollBarActionProc (scrollBarControl, partCode);
-	return OS.noErr;
-}
-
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -998,162 +1126,6 @@ public void update () {
 	//NOT DONE
 }
 
-int windowProc (int nextHandler, int theEvent, int userData) {
-	int eventClass = OS.GetEventClass (theEvent);
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventClass) {
-				
-		case OS.kEventClassCommand: {
-			HICommand command = new HICommand ();
-			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
-			switch (eventKind) {
-				case OS.kEventProcessCommand: {
-					if (command.commandID == OS.kAEQuitApplication) {
-						close ();
-						return OS.noErr;
-					}
-					if ((command.attributes & OS.kHICommandFromMenu) != 0) {
-						int menuRef = command.menu_menuRef;
-						short menuID = OS.GetMenuID (menuRef);
-						Menu menu = findMenu (menuID);
-						if (menu != null) {
-							int [] outCommandID = new int [1];
-							short menuIndex = command.menu_menuItemIndex;
-							OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
-							MenuItem item = findMenuItem (outCommandID [0]);
-							return item.kEventProcessCommand (nextHandler, theEvent, userData);
-						}
-						OS.HiliteMenu ((short) 0);
-					}
-				}
-			}
-			break;
-		}
-			
-		case OS.kEventClassControl: {
-			int [] theControl = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-			Control control = WidgetTable.get (theControl [0]);
-			if (control != null) {
-				switch (eventKind) {
-					case OS.kEventControlActivate:				return control.kEventControlActivate (nextHandler, theEvent, userData);
-					case OS.kEventControlBoundsChanged:		return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-					case OS.kEventControlClick:				return control.kEventControlClick (nextHandler, theEvent, userData);
-					case OS.kEventControlContextualMenuClick:	return control.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
-					case OS.kEventControlDeactivate:			return control.kEventControlDeactivate (nextHandler, theEvent, userData);
-					case OS.kEventControlDraw:					return control.kEventControlDraw (nextHandler, theEvent, userData);
-					case OS.kEventControlHit:					return control.kEventControlHit (nextHandler, theEvent, userData);
-					case OS.kEventControlSetFocusPart:			return control.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-				}
-			}
-			break;
-		}
-		
-		case OS.kEventClassKeyboard: {
-			int theWindow = OS.FrontWindow ();
-			if (theWindow == 0) return OS.eventNotHandledErr;
-			int [] theControl = new int [1];
-			OS.GetKeyboardFocus (theWindow, theControl);
-			//TEMPORARY CODE
-			if (theControl [0] == 0) {
-				OS.GetRootControl (theWindow, theControl);
-			}
-			Control control = WidgetTable.get (theControl [0]);
-			if (control != null) {
-				switch (eventKind) {
-					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyRepeat:			return control.kEventRawKeyRepeat (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyUp:				return control.kEventRawKeyUp (nextHandler, theEvent, userData);
-				}
-			}
-			break;
-		}
-		
-		case OS.kEventClassMenu: {
-			int [] theMenu = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
-			short menuID = OS.GetMenuID (theMenu [0]);
-			Menu menu = findMenu (menuID);
-			if (menu != null) {
-				switch (eventKind) {
-					case OS.kEventMenuOpening:	return menu.kEventMenuOpening (nextHandler, theEvent, userData);
-					case OS.kEventMenuClosed:	return menu.kEventMenuClosed (nextHandler, theEvent, userData);
-				}
-			}
-			break;
-		}
-		
-		case OS.kEventClassMouse: {
-			org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
-			int [] theWindow = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, theWindow);
-			if (theWindow [0] == 0) {
-				short part = OS.FindWindow (where, theWindow);
-				if (eventKind == OS.kEventMouseDown && part == OS.inMenuBar) {
-					OS.MenuSelect (where);
-					return OS.noErr;
-				}
-			}
-			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow [0], theRoot);
-			int [] theControl = new int [1];
-			Rect rect = new Rect ();
-			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
-			CGPoint inPoint = new CGPoint ();
-			inPoint.x = where.h - rect.left;
-			inPoint.y = where.v - rect.top;
-			OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
-			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			//FIXME - look for part code?
-			if (theControl [0] == 0) {
-				if (0 <= inPoint.x && inPoint.x < (rect.right - rect.left)) {
-					if (0 <= inPoint.y && inPoint.y < (rect.bottom - rect.top)) {
-						OS.HIViewGetViewForMouseEvent (theRoot [0], theEvent, theControl);
-					}
-				}
-			}
-			Control control = WidgetTable.get (theControl [0]);
-			if (control != null && control.handle == theControl [0]) {
-				switch (eventKind) {
-					case OS.kEventMouseDown: 			return control.kEventMouseDown (nextHandler, theEvent, userData);
-					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);
-					case OS.kEventMouseDragged:		return control.kEventMouseDragged (nextHandler, theEvent, userData);
-//					case OS.kEventMouseEntered:			return control.kEventMouseEntered (nextHandler, theEvent, userData);
-//					case OS.kEventMouseExited:			return control.kEventMouseExited (nextHandler, theEvent, userData);
-					case OS.kEventMouseMoved:			return control.kEventMouseMoved (nextHandler, theEvent, userData);
-					case OS.kEventMouseWheelMoved:		return control.kEventMouseWheelMoved (nextHandler, theEvent, userData);
-				}
-			}
-			break;
-		}
-		
-		case OS.kEventClassWindow: {
-			int [] theWindow = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
-			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow [0], theRoot);
-			Control control = WidgetTable.get (theRoot [0]);
-			if (control != null) {
-				switch (eventKind) {
-					case OS.kEventWindowActivated:			return control.kEventWindowActivated (nextHandler, theEvent, userData);	
-					case OS.kEventWindowBoundsChanged:		return control.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
-					case OS.kEventWindowClose:				return control.kEventWindowClose (nextHandler, theEvent, userData);
-					case OS.kEventWindowCollapsed:			return control.kEventWindowCollapsed (nextHandler, theEvent, userData);
-					case OS.kEventWindowDeactivated:		return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
-					case OS.kEventWindowExpanded:			return control.kEventWindowExpanded (nextHandler, theEvent, userData);
-					case OS.kEventWindowFocusAcquired:		return control.kEventWindowFocusAcquired (nextHandler, theEvent, userData);
-					case OS.kEventWindowFocusRelinquish:	return control.kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
-				}
-			}
-			break;
-		}
-		
-	}
-	return OS.eventNotHandledErr;
-}
-	
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
@@ -1161,4 +1133,18 @@ public void wake () {
 	OS.CreateEvent (0, 0, 0, 0.0, OS.kEventAttributeUserEvent, event);
 	OS.PostEventToQueue (queue, event [0], (short) OS.kEventPriorityStandard);
 }
+
+int windowProc (int nextHandler, int theEvent, int userData) {
+	Control control = WidgetTable.get (userData);
+	if (control == null) {
+		int [] theWindow = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
+		int [] theRoot = new int [1];
+		OS.GetRootControl (theWindow [0], theRoot);
+		control = WidgetTable.get (theRoot [0]);
+	}
+	if (control != null)  return control.windowProc (nextHandler, theEvent, userData); 
+	return OS.eventNotHandledErr;
+}
+
 }

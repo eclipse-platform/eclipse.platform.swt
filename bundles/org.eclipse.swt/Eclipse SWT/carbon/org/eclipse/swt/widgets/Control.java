@@ -112,6 +112,21 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
+int controlProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
+		case OS.kEventControlBoundsChanged:		return kEventControlBoundsChanged (nextHandler, theEvent, userData);
+		case OS.kEventControlClick:				return kEventControlClick (nextHandler, theEvent, userData);
+		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
+		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
+		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
+		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
+		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
@@ -292,6 +307,7 @@ boolean hasFocus () {
 
 void hookEvents () {
 	Display display = getDisplay ();
+	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlActivate,
 		OS.kEventClassControl, OS.kEventControlClick,
@@ -306,7 +322,7 @@ void hookEvents () {
 	//TEMPORARY CODE - hooking kEventControlBoundsChanged on the root control draws garbage
 	int length = mask.length - (this instanceof Shell ? 1 : 0);
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, display.windowProc, length / 2, mask, handle, null);
+	OS.InstallEventHandler (controlTarget, controlProc, length / 2, mask, handle, null);
 }
 
 public int internal_new_GC (GCData data) {
@@ -369,6 +385,24 @@ public boolean isVisible () {
 	return OS.HIViewIsVisible (topHandle ());
 }
 
+int menuProc (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int mouseProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventMouseDown: 		return kEventMouseDown (nextHandler, theEvent, userData);
+		case OS.kEventMouseUp: 		return kEventMouseUp (nextHandler, theEvent, userData);
+		case OS.kEventMouseDragged:	return kEventMouseDragged (nextHandler, theEvent, userData);
+//		case OS.kEventMouseEntered:		return kEventMouseEntered (nextHandler, theEvent, userData);
+//		case OS.kEventMouseExited:		return kEventMouseExited (nextHandler, theEvent, userData);
+		case OS.kEventMouseMoved:		return kEventMouseMoved (nextHandler, theEvent, userData);
+		case OS.kEventMouseWheelMoved:	return kEventMouseWheelMoved (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 Decorations menuShell () {
 	return parent.menuShell ();
 }
@@ -379,6 +413,17 @@ int itemDataProc (int browser, int item, int property, int itemData, int setValu
 
 int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
+}
+
+int keyboardProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventRawKeyDown:				return kEventRawKeyDown (nextHandler, theEvent, userData);
+		case OS.kEventRawKeyModifiersChanged:	return kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
+		case OS.kEventRawKeyRepeat:			return kEventRawKeyRepeat (nextHandler, theEvent, userData);
+		case OS.kEventRawKeyUp:				return kEventRawKeyUp (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
@@ -925,6 +970,10 @@ public Point toDisplay (Point point) {
     return new Point (rect.left + (int) ioPoint.x, rect.top + (int) ioPoint.y);
 }
 
+int toolItemProc (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int topHandle () {
 	return handle;
 }
@@ -987,6 +1036,21 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
+}
+
+int windowProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventWindowActivated:			return kEventWindowActivated (nextHandler, theEvent, userData);	
+		case OS.kEventWindowBoundsChanged:		return kEventWindowBoundsChanged (nextHandler, theEvent, userData);
+		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
+		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
+		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
+		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
+		case OS.kEventWindowFocusAcquired:		return kEventWindowFocusAcquired (nextHandler, theEvent, userData);
+		case OS.kEventWindowFocusRelinquish:	return kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 }

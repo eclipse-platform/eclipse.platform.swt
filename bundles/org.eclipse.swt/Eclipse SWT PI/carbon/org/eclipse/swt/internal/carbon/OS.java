@@ -877,6 +877,7 @@ public static final native int TXNInitTextension(int iDefaultFonts, int iCountDe
 public static final native int TXNNewObject(int iFileSpec, int iWindw, Rect iFrame, int iFrameOptions, int iFrameType, int iFileType, int iPermanentEncoding, int [] oTXNObject, int[] oTXNFrameID, int iRefCpm);
 public static final native int TXNOffsetToPoint(int txHandle, int offset, Point point);
 public static final native int TXNPaste(int txHandle);
+public static final native int TXNPointToOffset (int iTXNObject, Point iPoint, int [] oOffset);
 public static final native void TXNSelectAll(int txHandle);
 public static final native void TXNSetRectBounds(int iTXNObject, Rect iViewRect, TXNLongRect iDestinationRect, boolean iUpdate);
 public static final native int TXNSetData(int iTXNObject, int iDataType, char[] iDataPtr, int iDataSize, int iStartOffset, int iEndOffset);

@@ -353,8 +353,9 @@ int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
 
 void hookEvents () {
 	super.hookEvents ();
-	int[] mask= new int [] {
-		OS.kEventClassMouse, OS.kEventMouseDown,
+	int mouseProc = display.mouseProc;
+	int windowProc = display.windowProc;
+	int[] mask1 = new int [] {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
@@ -365,7 +366,11 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowFocusRelinquish,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
-	OS.InstallEventHandler (windowTarget, display.windowProc, mask.length / 2, mask, shellHandle, null);
+	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
+	int[] mask2 = new int [] {	
+		OS.kEventClassMouse, OS.kEventMouseDown,
+	};
+	OS.InstallEventHandler (windowTarget, mouseProc, mask2.length / 2, mask2, shellHandle, null);
 }
 
 public boolean isEnabled () {

@@ -26,9 +26,37 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
+int actionProc (int theControl, int partCode) {
+	if (handle == theControl || scrolledHandle == theControl) {
+		return super.actionProc (theControl, partCode);
+	}
+	if (horizontalBar != null && horizontalBar.handle == theControl) {
+		return horizontalBar.actionProc (theControl, partCode);
+	}
+	if (verticalBar != null && verticalBar.handle == theControl) {
+		return verticalBar.actionProc (theControl, partCode);
+	}
+	return OS.eventNotHandledErr;
+}
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	return new Rectangle (x, y, width, height);
+}
+
+int controlProc (int nextHandler, int theEvent, int userData) {
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	if (handle == theControl [0] || scrolledHandle == theControl [0]) {
+		return super.controlProc (nextHandler, theEvent, userData);
+	}
+	if (horizontalBar != null && horizontalBar.handle == theControl [0]) {
+		return horizontalBar.controlProc (nextHandler, theEvent, userData);
+	}
+	if (verticalBar != null && verticalBar.handle == theControl [0]) {
+		return verticalBar.controlProc (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 ScrollBar createScrollBar (int type) {
@@ -69,11 +97,12 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0 && scrolledHandle != 0) {
 		Display display = getDisplay ();
+		int controlProc = display.controlProc;
 		int [] mask = new int [] {
 			OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		};
 		int controlTarget = OS.GetControlEventTarget (scrolledHandle);
-		OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, scrolledHandle, null);
+		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, scrolledHandle, null);
 	}
 }
 
@@ -141,16 +170,6 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
-}
-
-int scrollBarActionProc (int theControl, int partCode) {
-	if (horizontalBar != null && horizontalBar.handle == theControl) {
-		return horizontalBar.actionProc (theControl, partCode);
-	}
-	if (verticalBar != null && verticalBar.handle == theControl) {
-		return verticalBar.actionProc (theControl, partCode);
-	}
-	return OS.eventNotHandledErr;
 }
 
 int topHandle () {

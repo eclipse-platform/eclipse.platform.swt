@@ -79,6 +79,17 @@ void destroyWidget () {
 	}
 }
 
+int controlProc (int nextHandler, int theEvent, int userData) {
+	dragging = false;
+	int status = OS.CallNextEventHandler (nextHandler, theEvent);
+	if (dragging) {
+		Event event = new Event ();
+		sendEvent (SWT.Selection, event);
+	}
+	dragging = false;
+	return status;
+}
+
 Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Rect rect = new Rect ();
@@ -104,7 +115,7 @@ Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createWidget () {
 	Display display = getDisplay ();
-	int actionProc = display.scrollBarActionProc;
+	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.scrolledHandle);
 	OS.CreateScrollBarControl (window, null, 0, 0, 100, 10, true, actionProc, outControl);
@@ -166,18 +177,6 @@ public boolean getVisible () {
 	checkWidget();
 	return (state & HIDDEN) == 0;
 }
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	dragging = false;
-	int status = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (dragging) {
-		Event event = new Event ();
-		sendEvent (SWT.Selection, event);
-	}
-	dragging = false;
-	return status;
-}
-
 
 public boolean isEnabled () {
 	checkWidget();

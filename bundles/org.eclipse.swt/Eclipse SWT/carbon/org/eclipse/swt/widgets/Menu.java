@@ -87,6 +87,7 @@ public void addMenuListener (MenuListener listener) {
 
 void createHandle () {
 	Display display = getDisplay ();
+	int menuProc = display.menuProc;
 	display.addMenu (this);
 	int outMenuRef [] = new int [1];
 	if (OS.CreateNewMenu (id, 0, outMenuRef) != OS.noErr) {
@@ -99,7 +100,7 @@ void createHandle () {
 		OS.kEventClassMenu, OS.kEventMenuClosed,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
-	OS.InstallEventHandler (menuTarget, display.windowProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
 }
 
 void createItem (MenuItem item, int index) {
@@ -285,14 +286,13 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-int processHide (Object callData) {
-	sendEvent (SWT.Hide);
-	return 0;
-}
-
-int processShow (Object callData) {
-	sendEvent (SWT.Show);
-	return 0;
+int menuProc (int nextHandler, int theEvent, int userData) {	
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventMenuOpening:	return kEventMenuOpening (nextHandler, theEvent, userData);
+		case OS.kEventMenuClosed:	return kEventMenuClosed (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 void releaseChild () {

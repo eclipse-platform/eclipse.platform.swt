@@ -5932,6 +5932,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNPaste
 }
 #endif /* NO_TXNPaste */
 
+#ifndef NO_TXNPointToOffset
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNPointToOffset
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2)
+{
+	Point _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNPointToOffset\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)TXNPointToOffset((TXNObject)arg0, (Point)*lparg1, (TXNOffset *)lparg2);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_TXNPointToOffset */
+
 #ifndef NO_TXNSelectAll
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSelectAll
 	(JNIEnv *env, jclass that, jint arg0)
