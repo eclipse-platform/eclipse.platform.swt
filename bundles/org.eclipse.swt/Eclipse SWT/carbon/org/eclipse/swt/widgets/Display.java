@@ -865,9 +865,22 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	int theWindow = OS.FrontWindow ();
+	// TEMPORARY CODE
+//	int theWindow = OS.FrontWindow ();
+//	if (theWindow == 0) return null;
+//	if (!OS.IsWindowActive (theWindow)) return null;
+	int theWindow = 0;
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			Shell shell = (Shell) widget;
+			if (OS.IsWindowActive (shell.shellHandle)) {
+				theWindow = shell.shellHandle;
+				break;
+			}
+		}
+	}
 	if (theWindow == 0) return null;
-	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
 	Widget widget = getWidget (theControl [0]);
