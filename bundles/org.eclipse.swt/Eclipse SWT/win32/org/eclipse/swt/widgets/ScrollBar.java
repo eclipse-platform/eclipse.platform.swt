@@ -540,8 +540,11 @@ public void setEnabled (boolean enabled) {
 		int hwnd = hwndScrollBar (), type = scrollBarType ();
 		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
 		OS.EnableScrollBar (hwnd, type, flags);
-		state &= ~DISABLED;
-		if (!enabled) state |= DISABLED;
+		if (enabled) {
+			state &= ~DISABLED;
+		} else {
+			state |= DISABLED;
+		}
 	}
 }
 
@@ -587,46 +590,7 @@ public void setMaximum (int value) {
 	OS.GetScrollInfo (hwnd, type, info);
 	if (value - info.nMin - info.nPage < 1) return;
 	info.nMax = value;
-	OS.SetScrollInfo (hwnd, type, info, (state & DISABLED) == 0);
-	
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo () is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* widget is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, type, false);
-		}
-	}
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
-		}
-	}
+	SetScrollInfo (hwnd, type, info, true);
 }
 
 /**
@@ -652,46 +616,7 @@ public void setMinimum (int value) {
 	OS.GetScrollInfo (hwnd, type, info);
 	if (info.nMax - value - info.nPage < 1) return;
 	info.nMin = value;
-	OS.SetScrollInfo (hwnd, type, info, true);
-	
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo () is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* widget is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, type, false);
-		}
-	}
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
-		}
-	}
+	SetScrollInfo (hwnd, type, info, true);
 }
 
 /**
@@ -713,6 +638,66 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
+boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
+	/*
+	* Bug in Windows.  For some reason, when SetScrollInfo()
+	* is used with SIF_POS and the scroll bar is hidden,
+	* the opposite scroll bar is incorrectly made visible
+	* so that the next time the parent is resized (or another
+	* scroll bar operation is performed), the opposite scroll
+	* bar draws.  The fix is turn off redraw for the parent.
+	*/
+	boolean fixRedraw = false;
+	if ((state & (DISABLED | HIDDEN)) != 0) {
+		fRedraw = false;
+		fixRedraw = OS.IsWindowVisible (hwnd) && parent.drawCount == 0;
+	}
+	if (fixRedraw) OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);	
+	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
+	
+	/*
+	* Bug in Windows.  For some reason, when the widget
+	* is a standard scroll bar, and SetScrollInfo() is
+	* called with SIF_RANGE or SIF_PAGE, the widget is
+	* incorrectly made visible so that the next time the
+	* parent is resized (or another scroll bar operation
+	* is performed), the scroll bar draws.  The fix is
+	* to hide the scroll bar (again) when already hidden.
+	*/
+	if ((state & HIDDEN) != 0) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+		if (!OS.IsWinCE) {
+			OS.ShowScrollBar (hwnd, flags, false);
+		}
+	}
+		
+	/*
+	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
+	* SetScrollInfo () can change enabled and disabled
+	* state of the scroll bar causing a scroll bar that
+	* was disabled by the application to become enabled.
+	* The fix is to disable the scroll bar (again) when
+	* the application has disabled the scroll bar.
+	*/
+	if ((state & DISABLED) != 0) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+		if (!OS.IsWinCE) {
+			OS.EnableScrollBar (hwnd, flags, OS.ESB_DISABLE_BOTH);
+		}
+	}
+
+	if (fixRedraw) OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+	return result;
+}
+
 /**
  * Sets the single <em>selection</em> that is the receiver's
  * value to the argument which must be greater than or equal
@@ -732,7 +717,7 @@ public void setSelection (int selection) {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	info.fMask = OS.SIF_POS;
 	info.nPos = selection;
-	OS.SetScrollInfo (hwnd, type, info, true);
+	SetScrollInfo (hwnd, type, info, true);
 }
 
 /**
@@ -751,8 +736,6 @@ public void setSelection (int selection) {
  */
 public void setThumb (int value) {
 	checkWidget();
-
-	/* Position the thumb */
 	if (value < 1) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -761,46 +744,7 @@ public void setThumb (int value) {
 	OS.GetScrollInfo (hwnd, type, info);
 	info.nPage = value;
 	if (info.nPage != 0) info.nPage++;
-	OS.SetScrollInfo (hwnd, type, info, true);
-	
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo () is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* widget is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, type, false);
-		}
-	}
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
-		}
-	}
+	SetScrollInfo (hwnd, type, info, true);
 }
 
 /**
@@ -842,46 +786,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	info.nPage = thumb;
 	if (info.nPage != 0) info.nPage++;
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	OS.SetScrollInfo (hwnd, type, info, true);
-		
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo () is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* widget is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, type, false);
-		}
-	}
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
-		}
-	}
+	SetScrollInfo (hwnd, type, info, true);
 }
 
 /**

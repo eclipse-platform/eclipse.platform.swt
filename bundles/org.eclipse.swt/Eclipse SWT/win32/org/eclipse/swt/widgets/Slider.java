@@ -212,14 +212,16 @@ int defaultForeground () {
 }
 
 void enableWidget (boolean enabled) {
-	if (OS.IsWinCE) {
-		super.enableWidget (enabled);
-	} else {
+	super.enableWidget (enabled);
+	if (!OS.IsWinCE) {
 		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
 		OS.EnableScrollBar (handle, OS.SB_CTL, flags);
 	}
-	state &= ~DISABLED;
-	if (!enabled) state |= DISABLED;
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
 }
 
 public boolean getEnabled () {
@@ -418,33 +420,7 @@ public void setMaximum (int value) {
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
 	if (value - info.nMin - info.nPage < 1) return;
 	info.nMax = value;
-	OS.SetScrollInfo (handle, OS.SB_CTL, info, (state & DISABLED) == 0);
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) {
-			OS.EnableWindow (handle, false);
-		} else {
-			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
-		}
-	}
-	
-	/*
-	* Bug in Windows.  If the thumb is resized when it has focus,
-	* the flashing cursor that is used to show that the scroll bar has
-	* focus is not moved.  The fix is to post a fake WM_SETFOCUS to
-	* get the scroll bar to recompute the size of the flashing cursor.
-	*/
-	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
-	}
+	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
 /**
@@ -469,33 +445,7 @@ public void setMinimum (int value) {
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
 	if (info.nMax - value - info.nPage < 1) return;
 	info.nMin = value;
-	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
-
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) {
-			OS.EnableWindow (handle, false);
-		} else {
-			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
-		}
-	}
-	
-	/*
-	* Bug in Windows.  If the thumb is resized when it has focus,
-	* the flashing cursor that is used to show that the scroll bar has
-	* focus is not moved.  The fix is to post a fake WM_SETFOCUS to
-	* get the scroll bar to recompute the size of the flashing cursor.
-	*/
-	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
-	}
+	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
 /**
@@ -517,6 +467,37 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
+boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
+	/*
+	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
+	* SetScrollInfo () can change enabled and disabled
+	* state of the scroll bar causing a scroll bar that
+	* was disabled by the application to become enabled.
+	* The fix is to disable the scroll bar (again) when
+	* the application has disabled the scroll bar.
+	*/
+	if ((state & DISABLED) != 0) fRedraw = false;
+	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
+	if ((state & DISABLED) != 0) {
+		OS.EnableWindow (handle, false);
+		if (!OS.IsWinCE) {
+			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
+		}
+	}
+	
+	/*
+	* Bug in Windows.  If the thumb is resized when it has focus,
+	* the flashing cursor that is used to show that the scroll bar
+	* has focus is not moved.  The fix is to post a fake WM_SETFOCUS
+	* to get the scroll bar to recompute the size of the flashing
+	* cursor.
+	*/
+	if (OS.GetFocus () == handle) {
+		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
+	}
+	return result;
+}
+
 /**
  * Sets the single <em>selection</em> that is the receiver's
  * value to the argument which must be greater than or equal
@@ -535,7 +516,7 @@ public void setSelection (int value) {
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_POS;
 	info.nPos = value;
-	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
+	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
 /**
@@ -554,8 +535,6 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget ();
-
-	/* Position the thumb */
 	if (value < 1) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
@@ -563,33 +542,7 @@ public void setThumb (int value) {
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
 	info.nPage = value;
 	if (info.nPage != 0) info.nPage++;
-	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) {
-			OS.EnableWindow (handle, false);
-		} else {
-			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
-		}
-	}
-	
-	/*
-	* Bug in Windows.  If the thumb is resized when it has focus,
-	* the flashing cursor that is used to show that the scroll bar has
-	* focus is not moved.  The fix is to post a fake WM_SETFOCUS to
-	* get the scroll bar to recompute the size of the flashing cursor.
-	*/
-	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
-	}
+	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
 /**
@@ -630,33 +583,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	info.nMax = maximum;
 	info.nPage = thumb;
 	if (info.nPage != 0) info.nPage++;
-	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
-		
-	/*
-	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
-	* SetScrollInfo () can change enabled and disabled
-	* state of the scroll bar causing a scroll bar that
-	* was disabled by the application to become enabled.
-	* The fix is to disable the scroll bar (again) when
-	* the application has disabled the scroll bar.
-	*/
-	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) {
-			OS.EnableWindow (handle, false);
-		} else {
-			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
-		}
-	}
-	
-	/*
-	* Bug in Windows.  If the thumb is resized when it has focus,
-	* the flashing cursor that is used to show that the scroll bar has
-	* focus is not moved.  The fix is to post a fake WM_SETFOCUS to
-	* get the scroll bar to recompute the size of the flashing cursor.
-	*/
-	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
-	}
+	SetScrollInfo (handle, OS.SB_CTL, info, true);
 }
 
 int widgetExtStyle () {
