@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class ToolItem extends Item {
-	int boxHandle, arrowHandle, separatorHandle, labelHandle, pixmapHandle, tooltipsHandle;
+	int boxHandle, arrowHandle, separatorHandle, labelHandle, pixmapHandle;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -204,14 +204,13 @@ void createHandle (int index) {
 			break;
 	}
 	if ((style & SWT.SEPARATOR) == 0) {
-		byte [] button_relief = Converter.wcsToMbcs(null, "button_relief", true);
 		int [] relief = new int [1];
-		OS.gtk_widget_style_get (parent.handle, button_relief, relief, 0);
+		OS.gtk_widget_style_get (parent.handle, OS.button_relief, relief, 0);
 		OS.gtk_button_set_relief (handle, relief [0]);
 		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	}
 	OS.gtk_widget_show (handle);
-	OS.gtk_toolbar_insert_widget (parent.handle, handle, new byte[1], new byte[1], index);
+	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
 }
 
 /**
@@ -518,7 +517,7 @@ int processSelection  (int int0, int int1, int int2) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	tooltipsHandle = boxHandle = arrowHandle = separatorHandle = 
+	boxHandle = arrowHandle = separatorHandle = 
 		labelHandle = pixmapHandle = 0;
 }
 
@@ -747,9 +746,11 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (tooltipsHandle == 0) tooltipsHandle = OS.gtk_tooltips_new ();
 	byte [] buffer = null;
-	if (string != null) buffer = Converter.wcsToMbcs (null, string, true);
+	if (string != null && string.length () > 0) {
+		buffer = Converter.wcsToMbcs (null, string, true);
+	}
+	int tooltipsHandle = parent.tooltipsHandle ();
 	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
 

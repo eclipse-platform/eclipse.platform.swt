@@ -110,6 +110,10 @@ public class Display extends Device {
 	Callback caretCallback;
 	int caretId, caretProc;
 	
+	/* Mouse hover */
+	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
+	Callback mouseHoverCallback;
+	
 	/* Pixmaps */
 	int nullPixmap;
 	
@@ -278,6 +282,12 @@ void addLast (RunnableLock entry) {
 		}
 		messages [messagesSize++] = entry;
 	}
+}
+
+void addMouseHoverTimeout (int handle) {
+	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
+	mouseHoverId = OS.gtk_timeout_add (400, mouseHoverProc, handle);
+	mouseHoverHandle = handle;
 }
 
 /**
@@ -805,13 +815,21 @@ void initializeSystemResources () {
 	int shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize (shellHandle);
+	
+	int tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
+	if (tooltipShellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true);
+	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
+	OS.gtk_widget_realize (tooltipShellHandle);
 
-	nullPixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, -1);
+	nullPixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), 1, 1, -1);
 	if (nullPixmap == 0) error (SWT.ERROR_NO_HANDLES);	
 
 	GdkColor gdkColor;
 	GtkStyle style = new GtkStyle();
-	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));
+	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));	
+	GtkStyle tooltipStyle = new GtkStyle();
+	OS.memmove (tooltipStyle, OS.gtk_widget_get_style (tooltipShellHandle));
 	
 	defaultFont = OS.pango_font_description_copy (style.font_desc);
 
@@ -900,17 +918,17 @@ void initializeSystemResources () {
 	COLOR_LIST_SELECTION = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.text3_pixel;
-	gdkColor.red   = style.text3_red;
-	gdkColor.green = style.text3_green;
-	gdkColor.blue  = style.text3_blue;
+	gdkColor.pixel = tooltipStyle.fg0_pixel;
+	gdkColor.red   = tooltipStyle.fg0_red;
+	gdkColor.green = tooltipStyle.fg0_green;
+	gdkColor.blue  = tooltipStyle.fg0_blue;
 	COLOR_INFO_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.base3_pixel;
-	gdkColor.red   = style.base3_red;
-	gdkColor.green = style.base3_green;
-	gdkColor.blue  = style.base3_blue;
+	gdkColor.pixel = tooltipStyle.bg0_pixel;
+	gdkColor.red   = tooltipStyle.bg0_red;
+	gdkColor.green = tooltipStyle.bg0_green;
+	gdkColor.blue  = tooltipStyle.bg0_blue;
 	COLOR_INFO_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
@@ -955,6 +973,7 @@ void initializeSystemResources () {
 	gdkColor.blue  = style.light4_blue;
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
 
+	OS.gtk_widget_destroy (tooltipShellHandle);
 	OS.gtk_widget_destroy (shellHandle);
 }
 
@@ -1023,6 +1042,10 @@ void initializeCallbacks () {
 	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
 	windowTimerProc = windowTimerCallback.getAddress ();
 	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverProc = mouseHoverCallback.getAddress ();
+	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
@@ -1077,6 +1100,12 @@ public int internal_new_GC (GCData data) {
 
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
+}
+
+int mouseHoverProc (int handle, int id) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processMouseHover (id);
 }
 
 void postEvent (Event event) {
@@ -1204,6 +1233,12 @@ void releaseDisplay () {
 	windowTimerProc = 0;
 	windowTimerCallback.dispose ();
 	windowTimerCallback = null;
+	
+	/* Dispose mouse hover callback */
+	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
+	mouseHoverId = mouseHoverHandle = mouseHoverProc = 0;
+	mouseHoverCallback.dispose ();
+	mouseHoverCallback = null;
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
@@ -1229,6 +1264,12 @@ RunnableLock removeFirst () {
 		if (messagesSize == 0) messages = null;
 		return lock;
 	}
+}
+
+void removeMouseHoverTimeout (int handle) {
+	if (handle != mouseHoverHandle) return;
+	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
+	mouseHoverId = mouseHoverHandle = 0;
 }
 
 boolean runAsyncMessages () {

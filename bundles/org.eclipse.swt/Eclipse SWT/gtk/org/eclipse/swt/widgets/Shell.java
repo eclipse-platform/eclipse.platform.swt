@@ -95,7 +95,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Display display;
-	int shellHandle;
+	int shellHandle, tooltipsHandle;
 	int modal;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
@@ -376,7 +376,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int type = (style & SWT.NO_TRIM) == 0 ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_POPUP;
+	int type = OS.GTK_WINDOW_TOPLEVEL;
+	if ((style & (SWT.ON_TOP | SWT.NO_TRIM)) != 0) type = OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) {
@@ -397,32 +398,46 @@ void createHandle (int index) {
 	*/
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int decorations = 0;
+	if ((style & SWT.NO_TRIM) == 0) {
+		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
+		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
+		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
+		if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
+		if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
+		if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
+		/*
+		* Feature in GTK.  Under some Window Managers (Sawmill), in order
+		* to get any border at all from the window manager it is necessary
+		* to set GDK_DECOR_BORDER.  The fix is to force these bits when any
+		* kind of border is requested.
+		*/
+		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+	}
+	OS.gdk_window_set_decorations (window, decorations);
+	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);
-	} else {
-		int decorations = 0;
-		if ((style & SWT.NO_TRIM) == 0) {
-			if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
-			if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
-			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
-			if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
-			if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
-			if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
-			/*
-			* Feature in GTK.  Under some Window Managers (Sawmill), in order
-			* to get any border at all from the window manager it is necessary
-			* to set GDK_DECOR_BORDER.  The fix is to force these bits when any
-			* kind of border is requested.
-			*/
-			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
-		}
-		OS.gdk_window_set_decorations (window, decorations);
-		OS.gtk_window_set_title (shellHandle, new byte [1]);
+	}
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		OS.gtk_container_set_border_width (shellHandle, 1);
+		GtkStyle style = new GtkStyle ();
+		OS.memmove (style, OS.gtk_widget_get_style (shellHandle));
+		GdkColor color = new GdkColor ();
+		color.red = style.black_red;
+		color.green = style.black_green;
+		color.blue = style.black_blue;
+		color.pixel = style.black_pixel;
+		OS.gtk_widget_modify_bg (shellHandle, 0, color);
 	}
 	//TEMPORARY CODE
 	int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	boolean modal = (style & bits) != 0 || (parent != null && (parent.style & bits) != 0);
 	OS.gtk_window_set_modal (shellHandle, modal);
+}
+
+boolean hasBorder () {
+	return false;
 }
 
 void hookEvents () {
@@ -974,11 +989,25 @@ void releaseShells () {
 		}
 	}
 }
+
 void releaseWidget () {
 	releaseShells ();
 	destroyAccelGroup ();
 	super.releaseWidget ();
+	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
+	tooltipsHandle = 0;
 	display = null;
 	lastActive = null;
 }
+
+int tooltipsHandle() {
+	if (tooltipsHandle == 0) {
+		tooltipsHandle = OS.gtk_tooltips_new ();
+		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.g_object_ref (tooltipsHandle);
+		OS.gtk_object_sink (tooltipsHandle);
+	}
+	return tooltipsHandle;
+}
+
 }

@@ -354,6 +354,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1malloc
 	return (jint)g_malloc((gulong)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1ref
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1object_1ref\n")
+
+	return (jint)g_object_ref((gpointer)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1unref
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1306,14 +1314,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1group_1n
 	return (jint)gtk_accel_group_new();
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1group_1unref
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1accel_1group_1unref\n")
-
-	gtk_accel_group_unref((GtkAccelGroup *)arg0);
-}
-
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1groups_1activate
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1862,6 +1862,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1add
 	DEBUG_CALL("gtk_1container_1add\n")
 
 	gtk_container_add((GtkContainer *)arg0, (GtkWidget *)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1get_1border_1width
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1container_1get_1border_1width\n")
+
+	return (jint)gtk_container_get_border_width((GtkContainer *)arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1get_1children
@@ -2896,14 +2904,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1get_1us
 	return (jint)gtk_object_get_user_data((GtkObject *)arg0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1ref
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1object_1ref\n")
-
-	gtk_object_ref((GtkObject *)arg0);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1set_1user_1data
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -2912,12 +2912,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1set_1us
 	gtk_object_set_user_data((GtkObject *)arg0, (gpointer)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1unref
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1sink
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gtk_1object_1unref\n")
+	DEBUG_CALL("gtk_1object_1sink\n")
 
-	gtk_object_unref((GtkObject *)arg0);
+	gtk_object_sink((GtkObject *)arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1pixmap_1new
@@ -3531,6 +3531,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1set_1do
 	gtk_widget_set_double_buffered((GtkWidget *)arg0, (gboolean)arg1);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1set_1name
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1widget_1set_1name\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_widget_set_name((GtkWidget *)arg0, (const char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1set_1redraw_1on_1allocate
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
@@ -3726,6 +3738,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1new
 	DEBUG_CALL("gtk_1window_1new\n")
 
 	return (jint)gtk_window_new((GtkWindowType)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1remove_1accel_1group
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1window_1remove_1accel_1group\n")
+
+	gtk_window_remove_accel_group((GtkWindow *)arg0, (GtkAccelGroup *)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1resize

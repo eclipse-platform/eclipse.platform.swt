@@ -579,7 +579,6 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.MouseDown:		return processMouseDown       	(int0, int1, int2);
 		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
 		case SWT.MouseExit:		return processMouseExit       	(int0, int1, int2);
-		case SWT.MouseHover:		return processMouseHover      	(int0, int1, int2);
 		case SWT.MouseMove:		return processMouseMove       	(int0, int1, int2);
 		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
 		case SWT.Move:				return processMove		       	(int0, int1, int2);
@@ -664,7 +663,7 @@ int processMouseExit (int arg0, int arg1, int int2) {
 	return 0;
 }
 
-int processMouseHover (int arg0, int arg1, int int2) {
+int processMouseHover (int id) {
 	return 0;
 }
 

@@ -231,6 +231,9 @@ public class OS {
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] value_changed = signal("value_changed");
 	
+	/** Properties */
+	public static final byte[] button_relief = signal("button_relief");
+	
 static byte [] signal (String name) {
 	int length = name.length ();
 	char [] chars = new char [length];
@@ -286,6 +289,7 @@ public static final native void g_log_default_handler(int log_domain, int log_le
 public static final native void g_log_remove_handler(byte[] log_domain, int handler_id);
 public static final native int g_log_set_handler(byte[] log_domain, int log_levels, int log_func, int user_data);
 public static final native int g_malloc(int size);
+public static final native int g_object_ref(int object);
 public static final native void g_object_unref(int object);
 public static final native void g_signal_connect(int handle, String eventName, int proc, int swtEvent);
 public static final native void g_strfreev(int string_array);
@@ -381,7 +385,6 @@ public static final native void gdk_window_set_decorations(int window, int decor
 public static final native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
 public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
 public static final native int gtk_accel_group_new();
-public static final native void gtk_accel_group_unref(int accel_group);
 public static final native boolean gtk_accel_groups_activate(int accelGroup, int accelKey, int accelMods);
 public static final native void gtk_adjustment_changed(int adjustment);
 public static final native double gtk_adjustment_get_value(int adj);
@@ -441,6 +444,7 @@ public static final native void gtk_color_selection_set_current_color(int colors
 public static final native int gtk_combo_new();
 public static final native void gtk_combo_set_popdown_strings(int combo, int strings);
 public static final native void gtk_container_add(int container, int widget);
+public static final native int gtk_container_get_border_width(int container);
 public static final native int gtk_container_get_children(int container);
 public static final native void gtk_container_resize_children(int container);
 public static final native void gtk_container_set_border_width(int container, int border_width);
@@ -551,9 +555,8 @@ public static final native void gtk_notebook_set_scrollable(int notebook, boolea
 public static final native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
 public static final native void gtk_object_destroy(int object);
 public static final native int gtk_object_get_user_data(int object);
-public static final native void gtk_object_ref(int object);
 public static final native void gtk_object_set_user_data(int object, int data);
-public static final native void gtk_object_unref(int object);
+public static final native void gtk_object_sink(int object);
 public static final native int gtk_pixmap_new(int pixmap, int mask);
 public static final native void gtk_pixmap_set(int pixmap, int val, int mask);
 public static final native int gtk_progress_bar_new();
@@ -622,6 +625,7 @@ public static final native void gtk_widget_realize(int widget);
 public static final native void gtk_widget_remove_accelerator(int widget, int accel_group, int accel_key, int accel_mods);
 public static final native void gtk_widget_reparent(int widget, int new_parent);
 public static final native void gtk_widget_set_double_buffered(int widget, boolean double_buffered);
+public static final native void gtk_widget_set_name(int widget, byte[] name);
 public static final native void gtk_widget_set_redraw_on_allocate(int widget, boolean redraw);
 public static final native void gtk_widget_set_sensitive(int widget, boolean sensitive);
 public static final native void gtk_widget_set_size_request(int widget, int width, int height);
@@ -644,6 +648,7 @@ public static final native void gtk_window_maximize(int handle);
 public static final native void gtk_window_move(int handle, int x, int y);
 public static final native int gtk_window_new(int type);
 public static final native void gtk_window_resize(int handle, int x, int y);
+public static final native void gtk_window_remove_accel_group(int window, int accel_group);
 public static final native void gtk_window_set_default(int window, int widget);
 public static final native void gtk_window_set_destroy_with_parent(int window, boolean setting);
 public static final native void gtk_window_set_modal(int window, boolean modal);

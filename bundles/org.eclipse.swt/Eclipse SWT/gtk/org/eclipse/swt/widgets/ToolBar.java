@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
+	int tooltipsHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -257,6 +258,8 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
+	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
+	tooltipsHandle = 0;
 }
 
 static int checkStyle (int style) {
@@ -288,6 +291,16 @@ void setForegroundColor (GdkColor color) {
 			items[i].setForegroundColor (color);
 		}
 	}
+}
+
+int tooltipsHandle() {
+	if (tooltipsHandle == 0) {
+		tooltipsHandle = OS.gtk_tooltips_new ();
+		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.g_object_ref (tooltipsHandle);
+		OS.gtk_object_sink (tooltipsHandle);
+	}
+	return tooltipsHandle;
 }
 
 }

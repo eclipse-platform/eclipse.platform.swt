@@ -1239,7 +1239,7 @@ GdkColor getBaseColor () {
  */
 public int getBorderWidth () {
 	checkWidget();
-	return (style & SWT.BORDER) == 0 ? 0 : 1;
+	return 0;
 }
 
 /**
@@ -1686,11 +1686,23 @@ int processMouseDown (int callData, int arg1, int int2) {
 }
 
 int processMouseEnter (int callData, int arg1, int int2) {
-	sendMouseEvent(SWT.MouseEnter, 0, callData);
+	sendMouseEvent (SWT.MouseEnter, 0, callData);
 	return 0;
 }
 int processMouseExit (int callData, int arg1, int int2) {
-	sendMouseEvent(SWT.MouseExit, 0, callData);
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeout (handle);
+	sendMouseEvent (SWT.MouseExit, 0, callData);
+	return 0;
+}
+
+int processMouseHover (int id) {
+	Event event = new Event ();
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, null);
+	event.x = x [0];
+	event.y = y [0];
+	postEvent (SWT.MouseHover, event);
 	return 0;
 }
 
@@ -1702,6 +1714,8 @@ int processMouseUp (int callData, int arg1, int int2) {
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
+	Display display = getDisplay ();
+	display.addMouseHoverTimeout (handle);
 	sendMouseEvent (SWT.MouseMove, 0, callData);
 	return 0;
 }
@@ -1835,6 +1849,8 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
 	toolTipText = null;
 	parent = null;
@@ -2190,7 +2206,15 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+	byte [] buffer = null;
+	if (string != null && string.length () > 0) {
+		buffer = Converter.wcsToMbcs (null, string, true);
+	}
+	Shell shell = _getShell ();
+	int tooltipsHandle = shell.tooltipsHandle ();
+	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 

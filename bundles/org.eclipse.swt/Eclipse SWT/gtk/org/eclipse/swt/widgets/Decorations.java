@@ -174,7 +174,11 @@ void createWidget (int index) {
 }
 
 void destroyAccelGroup () {
-	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
+	if (accelGroup != 0) {
+		int shellHandle = topHandle ();
+		OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
+		OS.g_object_unref (accelGroup);
+	}
 	accelGroup = 0;
 }
 

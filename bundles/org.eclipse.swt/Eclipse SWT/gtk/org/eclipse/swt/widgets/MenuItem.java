@@ -563,11 +563,6 @@ public void setMenu (Menu menu) {
 	if (oldMenu == menu) return;
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
-		/*
-		* Add a reference to the menu we are about
-		* to replace or GTK will destroy it.
-		*/
-		OS.gtk_object_ref (oldMenu.handle);
 		OS.gtk_menu_item_remove_submenu (handle);
 	}
 	if ((this.menu = menu) != null) {

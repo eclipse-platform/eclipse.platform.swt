@@ -197,8 +197,8 @@ void createScrolledHandle (int parentHandle) {
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		//CHECK WIDTH IS THERE ALREADY THEN DON'T SET
-		if ((style & SWT.BORDER) != 0) {
-			OS.gtk_scrolled_window_set_shadow_type(scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+		if (hasBorder ()) {
+			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
 	} else {
 		OS.gtk_container_add (parentHandle, handle);		
@@ -212,6 +212,12 @@ void createScrolledHandle (int parentHandle) {
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
+}
+
+public int getBorderWidth () {
+	checkWidget();
+	int topHandle = topHandle ();
+	return OS.gtk_container_get_border_width (topHandle);
 }
 
 /**
@@ -264,6 +270,10 @@ public Layout getLayout () {
  */
 public Control [] getTabList () {
 	return new Control [0];
+}
+
+boolean hasBorder () {
+	return (style & SWT.BORDER) != 0;
 }
 
 void hookEvents () {

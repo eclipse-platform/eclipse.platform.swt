@@ -94,10 +94,10 @@ int clientHandle () {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	//FIXME - figure out scrollbar size and border
-	int border = 0;
+	int border = getBorderWidth ();
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
+	//FIXME - figure out scrollbar size
 	if (horizontalBar != null) trimHeight += 18;
 	if (verticalBar != null) trimWidth += 18;
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
