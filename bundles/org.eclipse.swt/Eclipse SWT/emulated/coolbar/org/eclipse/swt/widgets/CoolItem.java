@@ -470,13 +470,8 @@ public void setControl (Control control) {
 			bounds.x + MINIMUM_WIDTH, 
 			bounds.y + MARGIN_HEIGHT, 
 			bounds.width - MINIMUM_WIDTH - MARGIN_WIDTH, 
-			bounds.height - (2 * MARGIN_HEIGHT));
-			
+			bounds.height - (2 * MARGIN_HEIGHT));	
 		control.setVisible(true);
-		if (preferredWidth == -1) {
-			Point size = control.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
-			preferredWidth = size.x;
-		}
 	}
 }
 /**
