@@ -180,7 +180,6 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] buffer = new int[]{0xFFFFFFFF};
 	OS.memcpy(pixel, buffer, 4);
-	int provider = OS.CGDataProviderCreateWithData(0, pixel, 4, 0);
 	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
 	if (context == 0) {
 		OS.DisposePtr(pixel);
