@@ -561,7 +561,10 @@ void fixShellFocus () {
 	int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
 	if (xEvent != 0) {
 		OS.memmove (xEvent, focusEvent, XFocusChangeEvent.sizeof);
-		OS.XSendEvent (xDisplay, xWindow, false, OS.FocusChangeMask, xEvent);
+		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.gtk_get_current_event_time ());
+		OS.gdk_flush ();
+		OS.XSendEvent (xDisplay, xWindow, false, 0, xEvent);
+		OS.gdk_flush ();	
 		OS.g_free (xEvent);
 	}
 }
