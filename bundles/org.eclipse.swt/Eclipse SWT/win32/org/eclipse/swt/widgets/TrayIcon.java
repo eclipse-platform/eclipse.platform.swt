@@ -1,4 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.widgets;
+
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -7,7 +18,7 @@ import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent icons that can be placed on the
- * platform's system tray or task bar status area.
+ * system tray or task bar status area.
  * 
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
