@@ -73,16 +73,14 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	finally {
 		assertTrue(":d:", tabFolder.getItems()[1] == tItem);			
 	}
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			new TabItem(tabFolder, SWT.NULL, tabFolder.getItemCount() + 1);
-			fail("No exception thrown");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		finally {
-			assertTrue(":e:", tabFolder.getItems()[1] == tItem);
-		}
+	try {
+		new TabItem(tabFolder, SWT.NULL, tabFolder.getItemCount() + 1);
+		fail("No exception thrown");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	finally {
+		assertTrue(":e:", tabFolder.getItems()[1] == tItem);
 	}
 	if (fCheckSwtNullExceptions) {
 		try {
