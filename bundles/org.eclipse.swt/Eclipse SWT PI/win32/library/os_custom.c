@@ -114,8 +114,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
 failTag:
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
 	return rc;
 }
