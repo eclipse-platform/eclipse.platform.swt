@@ -567,7 +567,6 @@ int Pt_CB_WEB_NEW_WINDOW(int info) {
 }
 
 int Pt_CB_WEB_START(int info) {
-//	System.out.println("Pt_CB_WEB_START "+browser);
 	currentProgress = 1;
 	ProgressEvent progress = new ProgressEvent(this);
 	progress.display = getDisplay();
@@ -610,7 +609,6 @@ int Pt_CB_WEB_STATUS(int info) {
 }
 
 int Pt_CB_WEB_URL(int info) {
-//	System.out.println("Pt_CB_WEB_URL "+browser);
 	PtCallbackInfo_t cbinfo_t = new PtCallbackInfo_t();
 	OS.memmove(cbinfo_t, info, PtCallbackInfo_t.sizeof);
 	byte[] buffer = new byte[OS.strlen(cbinfo_t.cbdata) + 1];
@@ -621,7 +619,6 @@ int Pt_CB_WEB_URL(int info) {
 	event.display = getDisplay();
 	event.widget = this;
 	event.location = url;
-//	System.out.println("Location changing "+url);
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changing(event);
 	/* Widget could have been disposed */
