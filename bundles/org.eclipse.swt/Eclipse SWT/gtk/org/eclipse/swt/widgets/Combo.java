@@ -320,7 +320,6 @@ boolean hasFocus () {
 	if (super.hasFocus ()) return true;
 	if (OS.GTK_WIDGET_HAS_FOCUS (entryHandle)) return true;
 	if (OS.GTK_WIDGET_HAS_FOCUS (listHandle)) return true;
-	if (OS.GTK_WIDGET_HAS_FOCUS (handle)) return true;
 	return false;
 }
 
