@@ -763,6 +763,13 @@ public int getTextLimit () {
 	return args [1];
 }
 
+int getVisibleCount () {
+	checkWidget ();
+	int [] args = new int [] {OS.Pt_ARG_CBOX_MAX_VISIBLE_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1];
+}
+
 boolean hasFocus () {
 	return OS.PtIsFocused (handle) != 0;
 }
@@ -1251,6 +1258,12 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 		}
 	}
 	return code;
+}
+
+void setVisibleCount (int visibleCount) {
+	checkWidget ();
+	if (visibleCount < 0) return;
+	OS.PtSetResource (handle, OS.Pt_ARG_CBOX_MAX_VISIBLE_COUNT, visibleCount, 0);
 }
 
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
