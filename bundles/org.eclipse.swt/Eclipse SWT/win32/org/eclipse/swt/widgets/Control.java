@@ -2061,8 +2061,8 @@ boolean setRadioFocus () {
 	return false;
 }
 
-void setRadioSelection (boolean value) {
-	/* Do nothing */
+boolean setRadioSelection (boolean value) {
+	return false;
 }
 
 /**

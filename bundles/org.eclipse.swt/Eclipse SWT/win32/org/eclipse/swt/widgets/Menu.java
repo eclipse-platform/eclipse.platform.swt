@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
  * menu items.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BAR, DROP_DOWN, POP_UP</dd>
+ * <dd>BAR, DROP_DOWN, POP_UP, NO_RADIO_GROUP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Help, Hide, Show </dd>
  * </dl>

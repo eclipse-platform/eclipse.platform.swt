@@ -485,6 +485,17 @@ void resizeControl () {
 	}
 }
 
+void selectRadio () {
+	int index = 0;
+	ToolItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
+}
+
 /**
  * Sets the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
@@ -593,6 +604,15 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
 	updateImages ();
+}
+
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 /**
@@ -783,12 +803,23 @@ int widgetStyle () {
 	if ((style & SWT.DROP_DOWN) != 0) return OS.BTNS_DROPDOWN;
 	if ((style & SWT.PUSH) != 0) return OS.BTNS_BUTTON;
 	if ((style & SWT.CHECK) != 0) return OS.BTNS_CHECK;
-	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECKGROUP;
+	/*
+	* This code is intentionally commented.  In order to
+	* consistently support radio tool items across platforms,
+	* the platform radio behavior is not used.
+	*/
+//	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECKGROUP;
+	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECK;
 	if ((style & SWT.SEPARATOR) != 0) return OS.BTNS_SEP;
 	return OS.BTNS_BUTTON;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
 	Event event = new Event ();
 	setInputState (event, SWT.Selection);
 	postEvent (SWT.Selection, event);

@@ -505,6 +505,17 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void selectRadio () {
+	int index = 0;
+	MenuItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
+}
+
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -731,6 +742,15 @@ public void setMenu (Menu menu) {
 	parent.destroyAccelerators ();
 }
 
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
+}
+
 /**
  * Sets the selection state of the receiver.
  * <p>
@@ -882,8 +902,16 @@ int widgetStyle () {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	if ((style & SWT.CHECK) != 0) {
 		setSelection (!getSelection ());
+	} else {
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+				setSelection (!getSelection ());
+			} else {
+				selectRadio ();
+			}
+		}
 	}
 	Event event = new Event ();
 	setInputState (event, SWT.Selection);

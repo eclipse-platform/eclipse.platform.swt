@@ -382,11 +382,13 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 void selectRadio () {
+	int index = 0;
 	Control [] children = parent._getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (this != child) child.setRadioSelection (false);
-	}
+	while (index < children.length && children [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < children.length && children [j].setRadioSelection (false)) j++;
 	setSelection (true);
 }
 
@@ -496,11 +498,13 @@ boolean setRadioFocus () {
 	return setFocus ();
 }
 
-void setRadioSelection (boolean value) {
-	if ((style & SWT.RADIO) == 0) return;
-	if (getSelection () == value) return;
-	setSelection (value);
-	postEvent (SWT.Selection);
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 boolean setSavedFocus () {
