@@ -334,7 +334,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 	outputDelimiter();
 	
 	if (Platform.PLATFORM.equals("win32")) {
-		output("\t\tstatic int initialied = 0;");
+		output("\t\tstatic int initialized = 0;");
 		outputDelimiter();
 		output("\t\tstatic HMODULE hm = NULL;");
 		outputDelimiter();
@@ -372,7 +372,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		output("\t\t}");
 		outputDelimiter();
 	} else {
-		output("\t\tstatic int initialied = 0;");
+		output("\t\tstatic int initialized = 0;");
 		outputDelimiter();
 		output("\t\tstatic void *handle = NULL;");
 		outputDelimiter();
