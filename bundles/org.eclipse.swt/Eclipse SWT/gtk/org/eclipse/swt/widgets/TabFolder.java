@@ -139,7 +139,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (layout != null) {
 		size = layout.computeSize (this, wHint, hHint, changed);
 	} else {
-		size = minimumSize ();
+		size = minimumSize (wHint, hHint, changed);
 	}
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	size.x = trim.width;  size.y = trim.height;
@@ -450,6 +450,29 @@ public int indexOf (TabItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+Point minimumSize (int wHint, int hHint, boolean flushCache) {
+	Control [] children = _getChildren ();
+	int width = 0, height = 0;
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		int index = 0;
+		while (index < items.length) {
+			if (items [index].control == child) break;
+			index++;
+		}
+		if (index == items.length) {
+			Rectangle rect = child.getBounds ();
+			width = Math.max (width, rect.x + rect.width);
+			height = Math.max (height, rect.y + rect.height);
+		} else {
+			Point size = child.computeSize (wHint, hHint, flushCache);
+			width = Math.max (width, size.x);
+			height = Math.max (height, size.y);
+		}
+	}
+	return new Point (width, height);
 }
 
 void releaseWidget () {
