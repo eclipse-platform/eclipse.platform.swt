@@ -289,7 +289,16 @@ public Rectangle getBounds () {
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
-	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
+	int x = area.pos_x, y = area.pos_y;
+	int width = area.size_w, height = area.size_h;
+	/* Check if the item is scrolled */
+	int child = OS.PtWidgetChildBack (parent.handle);
+	if (child != 0) {
+		OS.PtWidgetArea (child, area);
+		x += area.pos_x;
+		y += area.pos_y;
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 /**
