@@ -1041,7 +1041,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 
 boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	int length = keyEvent.length;
-	if (length <= 1) {
+	if (keyEvent.string == 0 || OS.g_utf8_strlen (keyEvent.string, length) <= 1) {
 		Event event = new Event ();
 		event.time = keyEvent.time;
 		if (!setKeyState (event, keyEvent)) return true;
@@ -1092,7 +1092,7 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 	while (index < chars.length) {
 		Event event = new Event ();
 		event.time = time;
-		if (keyEvent != null && keyEvent.length <= 1) {
+		if (keyEvent != null && chars.length <= 1) {
 			setKeyState (event, keyEvent);
 		} else {
 			setInputState (event, state);
@@ -1228,7 +1228,7 @@ boolean setInputState (Event event, int state) {
 }
 
 boolean setKeyState (Event event, GdkEventKey keyEvent) {
-	if (keyEvent.length > 1) return false;
+	if (keyEvent.string != 0 && OS.g_utf8_strlen (keyEvent.string, keyEvent.length) > 1) return false;
 	boolean isNull = false;
 	event.keyCode = Display.translateKey (keyEvent.keyval);
 	switch (keyEvent.keyval) {
