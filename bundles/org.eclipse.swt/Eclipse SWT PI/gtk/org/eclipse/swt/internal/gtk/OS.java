@@ -207,6 +207,7 @@ public class OS {
 	public static final byte[] delete_event = signal("delete_event");
 	public static final byte[] delete_text = signal("delete_text");
 	public static final byte[] enter_notify_event = signal("enter_notify_event");
+	public static final byte[] event = signal("event");
 	public static final byte[] event_after = signal("event_after");
 	public static final byte[] expose_event = signal("expose_event");
 	public static final byte[] focus_in_event = signal("focus_in_event");
