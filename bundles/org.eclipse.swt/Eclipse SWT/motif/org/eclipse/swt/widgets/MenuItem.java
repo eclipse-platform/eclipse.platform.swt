@@ -810,12 +810,12 @@ boolean translateAccelerator (int accel) {
 	if (!getEnabled ()) return false;
 	if (menu != null) return menu.translateAccelerator (accel);
 	int accelerator = this.accelerator;
-	if ((accelerator & 0x1000000) == 0) {
-		int mods = accelerator & 0xFFFF0000;
-		int key = accelerator & 0xFFFF;
+	if ((accelerator & SWT.KEYCODE_BIT) == 0) {
+		int key = accelerator & SWT.KEY_MASK;
 		if ('A' <= key && key <= 'Z') {
 			key += 'a' - 'A';
 		}
+		int mods = accelerator & SWT.MODIFIER_MASK;
 		accelerator = mods | key;
 	}
 	if (accelerator == accel) {
