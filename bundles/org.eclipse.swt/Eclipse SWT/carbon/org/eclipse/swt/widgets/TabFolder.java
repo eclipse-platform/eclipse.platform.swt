@@ -451,6 +451,15 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	short [] part = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+	if (part [0] == OS.kControlFocusNoPart || part [0] == OS.kControlFocusNextPart) {
+		return super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 void releaseWidget () {
 	int count = OS.GetControl32BitMaximum (handle);
 	for (int i=0; i<count; i++) {

@@ -356,7 +356,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 				short [] part = new short [1];
 				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-				drawFocusClipped (scrolledHandle, part [0] != 0 && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+				drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 			}
 		}
 		return OS.noErr;

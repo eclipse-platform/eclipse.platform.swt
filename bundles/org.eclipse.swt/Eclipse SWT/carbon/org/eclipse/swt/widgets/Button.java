@@ -441,7 +441,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if ((style & SWT.PUSH) != 0) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		menuShell ().setDefaultButton ((part [0] != 0) ? this : null, false);	
+		menuShell ().setDefaultButton (part [0] != OS.kControlFocusNoPart ? this : null, false);	
 	}
 	return result;
 }

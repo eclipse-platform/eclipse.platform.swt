@@ -112,7 +112,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (caret != null && !isDisposed ()) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		if (part [0] != 0) {
+		if (part [0] != OS.kControlFocusNoPart) {
 			caret.setFocus ();
 		} else {
 			caret.killFocus ();

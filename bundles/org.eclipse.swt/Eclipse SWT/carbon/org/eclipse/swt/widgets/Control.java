@@ -1370,10 +1370,21 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		sendFocusEvent (part [0] != 0, false);
+
+		/*
+		* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
+		* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
+		* The fix is to remember the focus control and return it during
+		* kEventControlSetFocusPart.
+		*/
+		Display display = this.display;
+		if (part [0] != OS.kControlFocusNoPart) display.focusControl = this;
+		sendFocusEvent (part [0] != OS.kControlFocusNoPart, false);
+		if (part [0] != OS.kControlFocusNoPart) display.focusControl = null;
+
 		// widget could be disposed at this point
+		if (isDisposed ()) return OS.noErr;
 	}
-	if (isDisposed ()) return OS.noErr;
 	return OS.eventNotHandledErr;
 }	
 

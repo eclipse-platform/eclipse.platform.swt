@@ -957,9 +957,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	drawFocusClipped (handle, part [0] != 0 && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+	drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 	OS.TXNDraw (txnObject, 0);
-	OS.TXNFocus (txnObject, part [0] != 0);
+	OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
 	return OS.noErr;
 }
 
