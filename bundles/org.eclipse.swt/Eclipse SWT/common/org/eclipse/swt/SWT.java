@@ -598,7 +598,7 @@ public class SWT {
 	 * Style constant for always on top behavior (value is 1&lt;&lt;14).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Decorations</code>and subclasses</li>
+	 * <li><code>Decorations</code> and subclasses</li>
 	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
