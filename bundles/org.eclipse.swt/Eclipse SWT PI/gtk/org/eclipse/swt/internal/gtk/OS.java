@@ -799,10 +799,13 @@ public static final native void pango_font_family_list_faces(int family, int[] f
 public static final native int pango_font_face_describe(int face);
 
 public static final native int pango_language_from_string(byte[] language);
+public static final native int pango_language_to_string(int language);
 
 public static final native int  pango_layout_new(int context);
 public static final native void pango_layout_set_text(int layout, byte[] text, int length);
 public static final native void pango_layout_get_size(int layout, int[] width, int[] height);
+public static final native void pango_layout_set_font_description(int layout, int desc);
+public static final native void pango_layout_set_markup_with_accel(int layout, byte[] markup, int length, char accel_marker, char[] accel_char);
 
 public static final native int pango_font_description_new();
 public static final native int pango_font_description_from_string(byte[] str);
@@ -943,6 +946,9 @@ public static final native boolean gdk_event_focus_get_in(int event);
 public static final native void gdk_window_set_back_pixmap(int window, int pixmap, boolean parent_relative);
 public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
 
-public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
+public static final native int gtk_widget_send_expose(int widget, int event); 
+public static final native void gdk_window_scroll(int window, int dx, int dy);
+public static final native void gtk_container_set_border_width(int container, int border_width);
 
+public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
 }

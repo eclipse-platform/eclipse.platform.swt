@@ -139,3 +139,9 @@ Java_org_eclipse_swt_internal_gtk_OS_swt_1frame_1get_1trim
 
    (*env)->ReleaseIntArrayElements(env, trims, ctrims, 0);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1set_1border_1width
+  (JNIEnv *env, jclass that, jint container, jint border_width)
+{
+	gtk_container_set_border_width((GtkContainer*)container, border_width);
+}

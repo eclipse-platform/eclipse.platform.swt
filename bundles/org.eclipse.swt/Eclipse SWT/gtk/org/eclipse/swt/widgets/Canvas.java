@@ -137,11 +137,16 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //		OS.gdk_event_free (gdkEvent);
 //		if (event.count == 0) break;
 //	}
-	update ();
 
-	GC gc = new GC (this);
-	gc.copyArea (x, y, width, height, destX, destY);
-	gc.dispose ();
+	update ();
+	int window = paintWindow ();
+//	OS.gdk_window_process_updates (window, all);
+	OS.gdk_window_scroll (window, deltaX, deltaY);
+
+//	update ();
+//	GC gc = new GC (this);
+//	gc.copyArea (x, y, width, height, destX, destY);
+//	gc.dispose ();
 	
 	/* Show the caret */
 	if (isVisible) caret.showCaret ();

@@ -1233,6 +1233,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1ba
 	gdk_window_set_back_pixmap((GdkWindow*)window, (GdkPixmap*)pixmap, (gboolean)parent_relative);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1scroll
+  (JNIEnv *env, jclass that, jint window, jint dx, jint dy)
+{
+	gdk_window_scroll((GdkWindow*)window, dx, dy);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalidate_1rect
   (JNIEnv *env, jclass that, jint window, jobject rectangle, jboolean invalidate_children)
 {
