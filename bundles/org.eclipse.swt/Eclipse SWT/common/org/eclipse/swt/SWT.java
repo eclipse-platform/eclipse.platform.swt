@@ -927,6 +927,13 @@ public class SWT {
 	public static final int BUTTON3 = 1 << 21;
 
 	/**
+	 * keyboard and/or mouse event mask indicating that the COMMAND key
+	 * was pushed on the keyboard when the event was generated
+	 * (value is 1&lt;&lt;22)
+	 */
+	public static final int COMMAND = 1 << 22;
+
+	/**
 	 * keyboard event constant representing the UP ARROW key
 	 * (value is (1&lt;&lt;24)+1)
 	 */
