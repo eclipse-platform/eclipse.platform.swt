@@ -405,6 +405,14 @@ public void setAlignment(int align) {
 
 public void setBackground (Color color) {
 	super.setBackground (color);
+	// Are these settings the same as before?
+	if (color != null && backgroundImage == null && 
+		gradientColors == null && gradientPercents == null) {
+		Color background = getBackground();
+		if (color.equals(background)) {
+			return;
+		}		
+	}
 	backgroundImage = null;
 	gradientColors = null;
 	gradientPercents = null;
