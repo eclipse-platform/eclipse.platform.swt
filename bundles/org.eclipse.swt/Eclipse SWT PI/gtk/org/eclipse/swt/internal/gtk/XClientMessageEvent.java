@@ -14,11 +14,11 @@ package org.eclipse.swt.internal.gtk;
 public class XClientMessageEvent {
 	public int type;
 	public int /*long*/ serial;
-	public int send_event;
+	public boolean send_event;
 	public int /*long*/ display;
 	public int /*long*/ window;
-	public int message_type;
+	public int /*long*/ message_type;
 	public int format;
-	public int[] data = new int[5];
-	public static final int /*long*/ sizeof = 48;
+	public int /*long*/[] data = new int /*long*/[5];
+	public static final int sizeof = OS.XClientMessageEvent_sizeof();
 }

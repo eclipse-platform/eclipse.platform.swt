@@ -35,7 +35,7 @@ public TrayIcon (Display display) {
 	int trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
 	byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
 	int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
-	int xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
+	int /*long*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
 
 	XClientMessageEvent event = new XClientMessageEvent ();
 	event.type = OS.ClientMessage;

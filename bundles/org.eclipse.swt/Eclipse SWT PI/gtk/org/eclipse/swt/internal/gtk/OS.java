@@ -365,6 +365,7 @@ public static final synchronized native int GtkTextIter_sizeof();
 public static final synchronized native int GtkTreeIter_sizeof();
 public static final synchronized native int PangoAttribute_sizeof();
 public static final synchronized native int PangoRectangle_sizeof();
+public static final synchronized native int XClientMessageEvent_sizeof();
 public static final synchronized native int XWindowChanges_sizeof();
 public static final native int strlen(int /*long*/ str);
 
