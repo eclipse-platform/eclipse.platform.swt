@@ -803,16 +803,6 @@ public int getTopPixel () {
 	return getTopIndex () * getLineHeight ();
 }
 
-/*
-* Currently not used.
-*/
-boolean getWrap () {
-	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-	if ((bits & OS.ES_MULTILINE) == 0) return false;
-	return (bits & (OS.WS_HSCROLL | OS.ES_AUTOHSCROLL)) == 0;
-}
-
 /**
  * Inserts a string.
  * <p>
@@ -1423,15 +1413,6 @@ public void setTopIndex (int index) {
 	index = Math.min (Math.max (index, 0), count - 1);
 	int topIndex = OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
 	OS.SendMessage (handle, OS.EM_LINESCROLL, 0, index - topIndex);
-}
-
-/*
-* Not currently used.
-*/
-void setWrap (boolean wrap) {
-	if (wrap == getWrap ()) return;
-	style &= ~SWT.WRAP;
-	if (wrap) style |= SWT.WRAP;
 }
 
 /**
