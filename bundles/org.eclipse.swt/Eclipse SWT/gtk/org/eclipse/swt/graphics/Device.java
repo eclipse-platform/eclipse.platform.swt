@@ -360,6 +360,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 				OS.pango_font_description_free(fontDesc);
 		    }
 		    OS.g_free(faces[0]);
+		    if (faceName != null) break;
 		}
 	}
 	OS.g_free(families[0]);
