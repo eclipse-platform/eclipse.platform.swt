@@ -413,12 +413,14 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 				blues[i] = (byte)((color.blue >> 8) & 0xFF);
 			}
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues, srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues,
+				srcImage.alpha, srcImage.alphaData, imgWidth,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
 				false, false);
 		} else {
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask, srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
+				srcImage.alpha, srcImage.alphaData, imgWidth,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
 				false, false);
 		}
@@ -516,7 +518,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = ((destWidth + 7) / 8 + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch1(srcData, xSrcImage.bytes_per_line, bitOrder, 0, 0, srcWidth, srcHeight, buf, bplX, bitOrder, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 1, xSrcImage.bytes_per_line, bitOrder, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 1, bplX, bitOrder, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 1, OS.XYBitmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -534,7 +540,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = (destWidth + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch4(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, bplX, 0, 0, destWidth, destHeight, null, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 4, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 4, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 4, OS.ZPixmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -544,7 +554,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			int bplX = (destWidth + 3) & 0xFFFC;
 			int bufSize = bplX * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch8(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, bplX, 0, 0, destWidth, destHeight, null, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 8, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 8, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImagePtr = OS.XCreateImage(display, visual, 8, OS.ZPixmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
@@ -557,7 +571,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch16(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 16, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 16, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;
@@ -571,7 +589,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch24(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 24, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 24, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;
@@ -585,7 +607,11 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
-			ImageData.stretch32(srcData, xSrcImage.bytes_per_line, 0, 0, srcWidth, srcHeight, buf, xImage.bytes_per_line, 0, 0, destWidth, destHeight, flipX, flipY);
+			ImageData.blit(ImageData.BLIT_SRC,
+				srcData, 32, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, 32, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
 			xImage.data = bufPtr;

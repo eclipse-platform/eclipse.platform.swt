@@ -1051,7 +1051,7 @@ public static Image motif_new(Device device, int type, int pixmap, int mask) {
 static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int display, int visual, int screenDepth, XColor[] xcolors, int[] transparentPixel, int drawable, int gc) {
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
-		((image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
+		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			return SWT.ERROR_UNSUPPORTED_DEPTH;
 
 	boolean flipX = destWidth < 0;
@@ -1065,7 +1065,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		destY = destY - destHeight;
 	}
 	byte[] srcReds = null, srcGreens = null, srcBlues = null;
-	if (image.depth <= 8) {
+	if (! palette.isDirect) {
 		int length = palette.getRGBs().length;
 		srcReds = new byte[length];
 		srcGreens = new byte[length];
@@ -1081,6 +1081,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	byte[] destReds = null, destGreens = null, destBlues = null;
 	int destRedMask = 0, destGreenMask = 0, destBlueMask = 0;
+	final boolean screenDirect;
 	if (screenDepth <= 8) {
 		if (xcolors == null) return SWT.ERROR_UNSUPPORTED_DEPTH;
 		destReds = new byte[xcolors.length];
@@ -1093,12 +1094,14 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			destGreens[i] = (byte)((color.green >> 8) & 0xFF);
 			destBlues[i] = (byte)((color.blue >> 8) & 0xFF);
 		}
+		screenDirect = false;
 	} else {
 		Visual xVisual = new Visual();
 		OS.memmove(xVisual, visual, Visual.sizeof);
 		destRedMask = xVisual.red_mask;
 		destGreenMask = xVisual.green_mask;
 		destBlueMask = xVisual.blue_mask;
+		screenDirect = true;
 	}
 	if (transparentPixel != null) {
 		RGB rgb = image.palette.getRGB(transparentPixel[0]);
@@ -1125,8 +1128,11 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		xImage.bitmap_bit_order = OS.MSBFirst;
 		OS.memmove(xImagePtr, xImage, XImage.sizeof);
 		int destOrder = ImageData.MSB_FIRST;
-		ImageData.stretch1(image.data, image.bytesPerLine, ImageData.MSB_FIRST, srcX, srcY, srcWidth, srcHeight,
-			buf, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, flipX, flipY);
+		ImageData.blit(ImageData.BLIT_SRC,
+			image.data, 1, image.bytesPerLine, ImageData.MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0,
+			buf, 1, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+			flipX, flipY);
 		OS.memmove(xImage.data, buf, bufSize);
 		XGCValues values = new XGCValues();
 		OS.XGetGCValues(display, gc, OS.GCForeground | OS.GCBackground, values);
@@ -1151,26 +1157,34 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	OS.memmove(xImagePtr, xImage, XImage.sizeof);
 	int srcOrder = image.depth == 16 ? ImageData.LSB_FIRST : ImageData.MSB_FIRST;
 	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-	if (image.depth > 8 && screenDepth > 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
-			flipX, flipY);
-	} else if (image.depth <= 8 && screenDepth > 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
-			flipX, flipY);
-	} else if (image.depth > 8 && screenDepth <= 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
-			flipX, flipY);
-	} else if (image.depth <= 8 && screenDepth <= 8) {
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues, -1, null, 0,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
-			flipX, flipY);
+	if (palette.isDirect) {
+		if (screenDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				flipX, flipY);
+		} else {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				flipX, flipY);
+		}
+	} else {
+		if (screenDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				flipX, flipY);
+		} else {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				flipX, flipY);
+		}
 	}
 	OS.memmove(xImage.data, buf, bufSize);
 	OS.XPutImage(display, drawable, gc, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
