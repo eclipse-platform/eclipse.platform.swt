@@ -2032,7 +2032,6 @@ public void setColumnOrder (int [] order) {
 		if (order [i] != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
-		TableColumn [] moved = new TableColumn [columnCount];
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
 			TableColumn column = columns [index];
@@ -2040,13 +2039,16 @@ public void setColumnOrder (int [] order) {
 			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
 			if (position != column.lastPosition) {
 				column.lastPosition = position;
-				moved [i] = column;
 			}
 		}
+		TableColumn[] newColumns = new TableColumn [columnCount];
+		System.arraycopy (columns, 0, newColumns, 0, columnCount);
 		for (int i=0; i<columnCount; i++) {
-			TableColumn column = moved [i];
-			if (column != null && !column.isDisposed ()) {
-				column.sendEvent (SWT.Move);
+			TableColumn column = newColumns [oldOrder [i]];
+			if (!column.isDisposed ()) {
+				if (order [i] != oldOrder [i]) {
+					column.sendEvent (SWT.Move);
+				}
 			}
 		}
 	}
