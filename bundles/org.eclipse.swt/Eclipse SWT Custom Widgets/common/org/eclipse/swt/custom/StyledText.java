@@ -1279,7 +1279,8 @@ void createKeyBindings() {
 	setKeyBinding(SWT.DEL | SWT.SHIFT, ST.CUT);
 	setKeyBinding(SWT.INSERT | SWT.CTRL, ST.COPY);
 	setKeyBinding(SWT.INSERT | SWT.SHIFT, ST.PASTE);
-
+
+	setKeyBinding(SWT.BS | SWT.SHIFT, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
 	
@@ -5241,7 +5242,8 @@ void setBidiCaretLocation() {
 	gc.dispose();
 }
 /**
- * Switches the keyboard language according to the input part.
+ * Switches the keyboard language according to the current editing 
+ * position and cursor direction.
  */
 void setBidiKeyboardLanguage() {
 	int line = content.getLineAtOffset(caretOffset);
