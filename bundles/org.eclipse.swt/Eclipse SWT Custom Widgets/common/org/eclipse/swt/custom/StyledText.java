@@ -6854,6 +6854,7 @@ void setScrollBars() {
  * </ul> 
  */
 public void setSelection(int start) {
+	// checkWidget test done in setSelectionRange	
 	setSelection(start, start);
 }
 /** 
@@ -6904,24 +6905,8 @@ public void setSelection(Point point) {
  * </ul>
  */
 public void setSelection(int start, int end) {
-	checkWidget();
-	int contentLength = getCharCount();
-	
-	if (start > end || start < 0 || end > contentLength) {
-		SWT.error(SWT.ERROR_INVALID_RANGE);
-	}
-	if (isLineDelimiter(start) || isLineDelimiter(end)) {
-		// the start offset or end offset of the selection range is inside a 
-		// multi byte line delimiter. This is an illegal operation and an exception 
-		// is thrown. Fixes 1GDKK3R
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}				
-	internalSetSelection(start, end - start, false);
-	// always update the caret location. fixes 1G8FODP
-	setCaretLocation();
-	if (isBidi()) {
-		setBidiKeyboardLanguage();	
-	}
+	// checkWidget test done in setSelectionRange
+	setSelectionRange(start, end - start);
 	showSelection();
 }
 /** 
