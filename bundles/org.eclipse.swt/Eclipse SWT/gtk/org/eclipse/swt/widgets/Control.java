@@ -468,11 +468,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		* Force the container to allocate the size of its children.
 		*/
 		int parentHandle = parent.parentingHandle ();
-		Display display = getDisplay ();
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
 		OS.gtk_container_resize_children (parentHandle);
-		display.setWarnings (warnings);
 	}
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
@@ -2304,11 +2300,7 @@ void setInitialSize () {
 	* Force the container to allocate the size of its children.
 	*/
 	int parentHandle = parent.parentingHandle ();
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
 	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
 }
 
 /**

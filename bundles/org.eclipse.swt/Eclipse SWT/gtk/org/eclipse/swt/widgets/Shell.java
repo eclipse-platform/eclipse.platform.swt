@@ -798,11 +798,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	}
 	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
 	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
 	OS.gtk_container_resize_children (fixedHandle);
-	display.setWarnings (warnings);
 	if (notify) {
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
