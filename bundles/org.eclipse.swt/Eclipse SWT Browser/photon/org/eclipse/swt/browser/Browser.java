@@ -541,6 +541,32 @@ public void removeStatusTextListener(StatusTextListener listener) {
 }
 
 /**
+ * Renders HTML.
+ * 
+ * @param html the HTML content to be rendered
+ *
+ * @return true if the operation was successful and false otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *  
+ * @see #setUrl
+ * 
+ * @since 3.0
+ */
+public boolean setText(String html) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
+/**
  * Loads a URL.
  * 
  * @param url the URL to be loaded

@@ -80,6 +80,12 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
+public boolean setText(String html) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
