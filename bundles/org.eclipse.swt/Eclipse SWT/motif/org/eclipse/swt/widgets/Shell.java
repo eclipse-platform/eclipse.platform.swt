@@ -1198,7 +1198,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (move) OS.XtMoveWidget (shellHandle, x, y);
 		if (resize) OS.XtResizeWidget (shellHandle, width, height, 0);
 	}
-	if (resize) updateResizable (width, height);
+	if (resize && OS.IsLinux) updateResizable (width, height);
 	if (isFocus) caret.setFocus ();
 	return move || resize;
 }
@@ -1537,7 +1537,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
 			xEvent.x = root_x [0];  xEvent.y = root_y [0];
 			xEvent.width = argList [1];  xEvent.height = argList [3];
-			updateResizable (xEvent.width, xEvent.height);
+			if (OS.IsLinux) updateResizable (xEvent.width, xEvent.height);
 			// FALL THROUGH
 		}
 		case OS.ConfigureNotify:
