@@ -71,9 +71,7 @@ public class CTabFolder extends Composite {
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
 	 */
 	public static int MIN_TAB_WIDTH = 3;
-	
-	static final char Mnemonic = '&';
-	
+
 	/* sizing, positioning */
 	int xClient, yClient;
 	boolean onBottom = false;
@@ -207,12 +205,25 @@ public CTabFolder(Composite parent, int style) {
 				case SWT.FocusIn:			onFocus(event);	break;
 				case SWT.FocusOut:			onFocus(event);	break;
 				case SWT.KeyDown:			onKeyDown(event); break;
+				case SWT.Traverse:			onTraverse(event); break;
 			}
 		}
 	};
-	
 
-	int[] folderEvents = new int[]{SWT.Dispose, SWT.MouseDown, SWT.MouseDoubleClick, SWT.MouseMove, SWT.MouseExit, SWT.MouseHover, SWT.Paint, SWT.Resize, SWT.FocusIn, SWT.FocusOut, SWT.KeyDown};
+	int[] folderEvents = new int[]{
+		SWT.Dispose, 
+		SWT.MouseDown, 
+		SWT.MouseDoubleClick, 
+		SWT.MouseMove, 
+		SWT.MouseExit, 
+		SWT.MouseHover, 
+		SWT.Paint, 
+		SWT.Resize, 
+		SWT.FocusIn, 
+		SWT.FocusOut, 
+		SWT.KeyDown,
+		SWT.Traverse,
+	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
@@ -420,19 +431,13 @@ void destroyItem (CTabItem item) {
 private void onKeyDown(Event e) {
 	if (e.keyCode == SWT.ARROW_LEFT) {
 		if (selectedIndex > 0) {
-			setSelection(selectedIndex - 1);
+			setSelectionNotify(selectedIndex - 1);
 		}
 	}
 	if (e.keyCode == SWT.ARROW_RIGHT) {
 		if (selectedIndex < items.length - 1) {
-			setSelection(selectedIndex + 1);
+			setSelectionNotify(selectedIndex + 1);
 		}
-	}
-	if (e.character == '\t' || e.character == SWT.CR) {
-		traverse(SWT.TRAVERSE_TAB_NEXT);
-	}
-	if (e.stateMask == SWT.ALT) {
-		mnemonicHit(e.character);
 	}
 }
 /**
@@ -503,6 +508,8 @@ private void onDispose() {
 public void onFocus(Event e) {
 	if (selectedIndex >= 0) {
 		redrawTabArea(selectedIndex);
+	} else {
+		setSelectionNotify(0);
 	}
 }
 /** 
@@ -808,11 +815,11 @@ private void layoutItems() {
 	// resize the scrollbar and close butotns
 	layoutButtons();
 }
-
-boolean mnemonicHit (char key) {
+boolean onMnemonic (Event event) {
+	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
-			char mnemonic = findMnemonic (items[i].getText ());
+			char mnemonic = getMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
 					setSelectionNotify(i);
@@ -1208,9 +1215,7 @@ public void setInsertMark(int index, boolean after) {
  * Set the selection to the tab at the specified index.
  */
 public void setSelection(int index) {
-	if (index < 0 || index >= items.length)
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		
+	if (index < 0 || index >= items.length) return;
 	if (selectedIndex == index) return;
 	
 	if (showClose) {
@@ -1265,13 +1270,13 @@ private void ensureVisible() {
 	}
 }
 
-char findMnemonic (String string) {
+char getMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
 	do {
-		while ((index < length) && (string.charAt (index) != Mnemonic)) index++;
+		while ((index < length) && (string.charAt (index) != '&')) index++;
 		if (++index >= length) return '\0';
-		if (string.charAt (index) != Mnemonic) return string.charAt (index);
+		if (string.charAt (index) != '&') return string.charAt (index);
 		index++;
 	} while (index < length);
  	return '\0';
@@ -1393,7 +1398,7 @@ private void onMouseDoubleClick(Event event) {
  * direction.
  * If a tab was hit select the tab.
  */
-private void onMouseDown(Event event) { 
+private void onMouseDown(Event event) {
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(new Point(event.x, event.y))) {
 			setSelectionNotify(i);
@@ -1482,6 +1487,19 @@ private void onMouseMove(Event event) {
 	inactiveCloseBar.setLocation(x, y);
 	inactiveCloseBar.setVisible(true);
 	inactiveItem = item;
+}
+private void onTraverse (Event event) {
+	switch (event.detail) {
+		case SWT.TRAVERSE_ESCAPE:
+		case SWT.TRAVERSE_RETURN:
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+			event.doit = true;
+			break;
+//		case SWT.TRAVERSE_MNEMONIC:
+//			event.doit = onMnemonic (event);
+//			break;
+	}
 }
 /** 
  * Answer the area where the left scroll button is drawn.
