@@ -346,12 +346,14 @@ void destroyItem (TreeItem item) {
 }
 
 int getBackgroundPixel () {
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
 	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
 	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOW);
 	return pixel;
 }
 
 int getForegroundPixel () {
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
 	int pixel = OS.SendMessage (handle, OS.TVM_GETTEXTCOLOR, 0, 0);
 	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
 	return pixel;
