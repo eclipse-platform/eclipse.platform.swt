@@ -183,12 +183,11 @@ public RGB open () {
 }
 
 /**
- * Returns the receiver's selected color to be the argument.
+ * Sets the receiver's selected color to be the argument.
  *
  * @param rgb the new RGB value for the selected color, may be
  *        null to let the platform to select a default when
  *        open() is called
- *
  * @see PaletteData#getRGBs
  */
 public void setRGB (RGB rgb) {
