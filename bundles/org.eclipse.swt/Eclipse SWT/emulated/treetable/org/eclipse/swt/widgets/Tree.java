@@ -1979,7 +1979,13 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
 		if (columns.length > 0) {
-			int rightX = columns [0].width - horizontalOffset;
+			int rightX = 0;
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				TreeColumn lastColumn = columns [columns.length - 1];
+				rightX = lastColumn.getX () + lastColumn.width;
+			} else {
+				rightX = columns [0].width - horizontalOffset;
+			}
 			if (rightX <= 0) return;	/* first column not visible */
 		}
 		endIndex = Math.min (endIndex, availableItems.length - 1);

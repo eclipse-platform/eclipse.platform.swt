@@ -572,7 +572,12 @@ Rectangle getFocusBounds () {
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
-		width = columns [0].width - parent.horizontalOffset - x - 1;
+		if ((parent.style & SWT.FULL_SELECTION) != 0) {
+			TreeColumn lastColumn = columns [columns.length - 1];
+			width = lastColumn.getX () + lastColumn.width - x - 1;
+		} else {
+			width = columns [0].width - parent.horizontalOffset - x - 1;
+		}
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 }
@@ -660,9 +665,14 @@ Rectangle getHitBounds () {
 	} else {
 		/* 
 		 * If there are columns then this spans from the beginning of the receiver's column 0
-		 * image or text to the end of column 0.
+		 * image or text to the end of either column 0 or the last column (FULL_SELECTION).
 		 */
-		width = columns [0].width - contentX - parent.horizontalOffset;
+		if ((parent.style & SWT.FULL_SELECTION) != 0) {
+			TreeColumn column = columns [columns.length - 1];
+			width = column.getX () + column.width - contentX;
+		} else {
+			width = columns [0].width - contentX - parent.horizontalOffset;
+		}
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
@@ -827,7 +837,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	int cellRightX = 0;
 	if (column != null) {
 		cellRightX = column.getX () + column.width;
-		if (parent.linesVisible) cellRightX--;
 	} else {
 		cellRightX = cellBounds.x + cellBounds.width;
 	}
@@ -849,23 +858,40 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		if (columnIndex == 0) {
 			Rectangle focusBounds = getFocusBounds ();
-			int fillWidth = focusBounds.width;
-			if (parent.columns.length > 0 && !parent.linesVisible) fillWidth++;
+			int fillWidth = 0;
+			if (column == null) {
+				fillWidth = focusBounds.width;
+			} else {
+				fillWidth = column.width - focusBounds.x;
+				if (parent.linesVisible) fillWidth--;
+			}
 			gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
 		} else {
 			int fillWidth = cellBounds.width;
-			if (!parent.linesVisible) fillWidth++;
+			if (parent.linesVisible) fillWidth--;
 			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, fillWidth, cellBounds.height - 1);
 		}
 		gc.setBackground (oldBackground);
 	}
 
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected () && columnIndex == 0) {
+	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		Rectangle focusBounds = getFocusBounds ();
-		gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, focusBounds.width - 2, focusBounds.height - 2);
+		if (columnIndex == 0) {
+			Rectangle focusBounds = getFocusBounds ();
+			int fillWidth = focusBounds.width;
+			if (parent.columns.length == 1 || (parent.style & SWT.FULL_SELECTION) == 0) {
+				fillWidth -= 2;	/* space for right bound of focus rect */
+			}
+			gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+		} else {
+			int fillWidth = column.width;
+			if (columnIndex == parent.columns.length - 1) {
+				fillWidth -= 2;		/* space for right bound of focus rect */
+			}
+			gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+		}
 		gc.setBackground (oldBackground);
 	}
 		
@@ -971,7 +997,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 		int fontHeight = getFontHeight (columnIndex);
 		Color oldForeground = gc.getForeground ();
-		if (isSelected () && columnIndex == 0) {
+		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			foregroundChanged = true;
 		} else {
