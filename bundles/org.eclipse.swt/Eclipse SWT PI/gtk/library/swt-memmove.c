@@ -269,3 +269,24 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove___3I_3BI
 		(*env)->ReleaseByteArrayElements(env, src, src1, 0);
 	}
 }
+
+/* Clipboard */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2I
+  (JNIEnv *env, jclass that, jobject dest, jint src)
+{
+	DECL_GLOB(pGlob)
+	if (dest) {
+		cacheGtkSelectionDataFids(env, dest, &PGLOB(GtkSelectionDataFc));
+		setGtkSelectionDataFields(env, dest, (GtkSelectionData *)src, &PGLOB(GtkSelectionDataFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2
+  (JNIEnv *env, jclass that, jint dest, jobject src)
+{
+	DECL_GLOB(pGlob)
+	if (src) {
+		cacheGtkTargetEntryFids(env, src, &PGLOB(GtkTargetEntryFc));
+		getGtkTargetEntryFields(env, src, (GtkTargetEntry *)dest, &PGLOB(GtkTargetEntryFc));
+	}
+}

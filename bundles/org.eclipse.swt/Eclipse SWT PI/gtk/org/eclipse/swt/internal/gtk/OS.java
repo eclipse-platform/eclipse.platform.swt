@@ -960,6 +960,17 @@ public static final native void gdk_window_invalidate_rect(int window, GdkRectan
 public static final native void gdk_window_invalidate_region(int window, int region, boolean invalidate_children);
 public static final native void  gtk_notebook_set_scrollable(int notebook, boolean scrollable);
 public static final native void  gtk_button_set_relief(int button, int newstyle);
+
+/* Clipboard */
+public static final native int gtk_clipboard_clear( int clipboard );
+public static final native int gtk_clipboard_get( int selection );
+public static final native boolean gtk_clipboard_set_with_data (int clipboard, int targets, int n_targets, int get_func, int clear_func, int user_data);
+public static final native int gtk_clipboard_wait_for_contents (int clipboard, int target);			
+public static final native int gtk_selection_data_free( int selection_data );
+public static final native void gtk_selection_data_set(int selection_data, int type, int format, int data, int length);	
+public static final native void memmove(int dest, GtkTargetEntry src);
+public static final native void memmove(GtkSelectionData dest, int src);
+
 /* Temporary code */
 public static final native void  gtk_style_set_xthickness(int style, int xthickness);
 public static final native void  gtk_style_set_ythickness(int style, int ythickness);
