@@ -427,6 +427,10 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 
+boolean isEnabled () {
+	return true;
+}
+
 protected boolean isListening (int eventType) {
 	checkWidget();
 	return hooks (eventType);

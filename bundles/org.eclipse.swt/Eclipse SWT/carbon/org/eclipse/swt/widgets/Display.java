@@ -986,11 +986,8 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			do {
 				widget = WidgetTable.get (theControl [0]);
 				if (widget != null) {
-					if (widget instanceof Control) {
-						Control control = (Control) widget;
-						if (control.isEnabled ()) break;
-						forward = true;
-					}
+					if (widget.isEnabled ()) break;
+					forward = true;
 				}
 				OS.GetSuperControl (theControl [0], theControl);
 			} while (theControl [0] != 0);

@@ -105,6 +105,10 @@ void drawWidget (int control) {
 	drawBackground (handle, background);
 }
 
+void enableWidget (boolean enabled) {
+	/* Do nothing - A tool bar does not disable items when it is disabled */
+}
+
 public ToolItem getItem (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) return items [index];
