@@ -638,6 +638,10 @@ void fixShell (Shell newShell, Control control) {
 	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
+void forceResize () {
+	/* Do nothing.  Shell keeps the size of its children up to date. */
+}
+
 public Point getLocation () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
