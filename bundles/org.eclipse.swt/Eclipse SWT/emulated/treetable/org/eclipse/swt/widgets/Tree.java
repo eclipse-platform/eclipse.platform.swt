@@ -25,8 +25,6 @@ public class Tree extends Composite {
 	int resizeColumnX = -1;
 	boolean inExpand = false;	/* for item creation within Expand callback */
 
-	Color gridLineColor, highlightShadowColor, normalShadowColor;
-	Color selectionBackgroundColor, selectionForegroundColor;
 	Rectangle expanderBounds, checkboxBounds;
 
 	static final int MARGIN_IMAGE = 3;
@@ -51,11 +49,6 @@ public Tree (Composite parent, int style) {
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
 	itemHeight = fontHeight + (2 * getCellPadding ());
-	gridLineColor = display.getSystemColor (SWT.COLOR_BLACK);
-	highlightShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	normalShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
-	selectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
-	selectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
 	initImages (display);
 	expanderBounds = getExpandedImage ().getBounds ();
 	checkboxBounds = getUncheckedImage ().getBounds ();
@@ -632,7 +625,7 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean pa
 	Color oldForeground = gc.getForeground ();
 	
 	/* draw highlight shadow */
-	gc.setForeground (highlightShadowColor);
+	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 	if (paintHLines) {
 		int endX = bounds.x + bounds.width;
 		gc.drawLine (bounds.x, bounds.y, endX, bounds.y);
@@ -646,7 +639,7 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean pa
 	Point bottomShadowStop = new Point (bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
 
 	/* light inner shadow */
-	gc.setForeground (normalShadowColor);
+	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW));
 	if (paintHLines) {
 		gc.drawLine (
 			bottomShadowStart.x, bottomShadowStart.y,
@@ -1146,8 +1139,6 @@ void onDispose () {
 	header = null;
 	resizeColumn = null;
 	expanderBounds = null;
-	gridLineColor = highlightShadowColor = normalShadowColor = null;
-	selectionBackgroundColor = selectionForegroundColor = null;
 }
 void onEnd (int stateMask) {
 	int lastAvailableIndex = availableItems.length - 1;
@@ -1759,7 +1750,7 @@ void onPaint (Event event) {
 	if (linesVisible) {
 		Color oldForeground = gc.getForeground ();
 		if (numColumns > 0 && startColumn != -1) {
-			gc.setForeground (gridLineColor);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
 				int x = columns [i].getX () + columns [i].width - 1;

@@ -858,7 +858,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	/* draw the selection bar if the receiver is selected */
 	if (isSelected () && columnIndex == 0) {
 		Color oldBackground = gc.getBackground ();
-		gc.setBackground (parent.selectionBackgroundColor);
+		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		Rectangle focusBounds = getFocusBounds ();
 		gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, focusBounds.width - 2, focusBounds.height - 2);
 		gc.setBackground (oldBackground);
@@ -967,7 +967,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		int fontHeight = getFontHeight (columnIndex);
 		Color oldForeground = gc.getForeground ();
 		if (isSelected () && columnIndex == 0) {
-			gc.setForeground (parent.selectionForegroundColor);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			foregroundChanged = true;
 		} else {
 			Color foreground = getForeground (columnIndex);
