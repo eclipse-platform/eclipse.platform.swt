@@ -846,19 +846,16 @@ public FontMetrics getLineMetrics (int lineIndex) {
 }
 
 /**
- * Given a valid line index returns a point holding start character offset of the line in the x field 
- * and the end character offset of the line in the y field.  
+ * Returns lines offsets, start position is always 0 and the last text.length
  * 
- * @param line index
  * @return line offsets
  */
-public Point getLineOffsets (int lineIndex) {
+public int[] getLineOffsets () {
 	checkLayout();
 	computeRuns(null);
-	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int start = lineOffset[lineIndex];
-	int end = lineOffset[lineIndex + 1]  - 1;
-	return new Point (start, Math.max(start, end));
+	int[] offsets = new int[lineOffset.length];
+	System.arraycopy(lineOffset, 0, offsets, 0, offsets.length);
+	return offsets;
 }
 
 /**

@@ -445,10 +445,9 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
    		}
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		layout.setWidth(Math.max(1, width));
-		int lineCount = layout.getLineCount();
-		for (int j = 0; j < lineCount; j++) {
-			Point lineOffsets = layout.getLineOffsets(j);
-			setVisualLine(visualLineIndex++, lineOffset + lineOffsets.x, lineOffsets.y - lineOffsets.x + 1);
+		int[] offsets = layout.getLineOffsets();
+		for (int j = 0; j < offsets.length - 1; j++) {
+			setVisualLine(visualLineIndex++, lineOffset + offsets[j], offsets[j+1] - offsets[j]);
 		}
 		renderer.disposeTextLayout(layout); 
 	}
