@@ -187,11 +187,6 @@ public void setFilterPath (String string) {
  * @param string the message
  */
 public void setMessage (String string) {
-	/*
-	 * The native Gtk file selection dialog does not support message
-	 * strings other than the dialog title.  However, we maintain the set
-	 * message so at least the application programs get back the same string.
-	 */
 	message = string;
 }
 }
