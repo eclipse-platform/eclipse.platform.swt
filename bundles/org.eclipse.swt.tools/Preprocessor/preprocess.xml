@@ -7,7 +7,6 @@
 	<target name="init" depends="properties">
 		<property name="plugindir" value="../org.eclipse.swt"/>
 		<property name="bootclasspath" value=""/>
-		<taskdef name="swt.replace" classname="org.eclipse.swt.tools.internal.SwtReplace" classpath="./bin"/>
 		<taskdef name="swt.jnigen" classname="org.eclipse.swt.tools.internal.SwtJniGen" classpath="./bin;${plugindir}/bin"/>
 		
 	</target>
@@ -18,9 +17,7 @@
 		
 	<!-- Convert SWT 32 bit java source to 64 bit  -->
 	<target name="swt.64" depends="init">
-		<swt.replace from="int /*long*/" to="long /*int*/">
-			<fileset dir="${plugindir}" includes="**/*.java"/>
-		</swt.replace>
+		<replace dir="${plugindir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
 	</target>
 	
 	<!-- Convert SWT 64 bit java source to 32 bit  -->
