@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.*;
 abstract class StyledTextRenderer {
 	private Device device;					// device to render on
 	protected Font regularFont;
-	protected Font boldFont;
+	protected Font boldFont, italicFont, boldItalicFont;
 	private int tabWidth;					// width in pixels of a tab character
 	private int lineHeight;					// height in pixels of a line
 	private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
@@ -38,9 +38,17 @@ abstract class StyledTextRenderer {
 StyledTextRenderer(Device device, Font regularFont) {
 	FontData[] fontDatas = regularFont.getFontData();
 	for (int i = 0; i < fontDatas.length; i++) {
-		fontDatas[i].setStyle(fontDatas[i].getStyle() | SWT.BOLD);
+		fontDatas[i].setStyle(SWT.BOLD);
 	}
 	boldFont = new Font(device, fontDatas);
+	for (int i = 0; i < fontDatas.length; i++) {
+		fontDatas[i].setStyle(SWT.ITALIC );
+	}
+	italicFont = new Font(device, fontDatas);
+	for (int i = 0; i < fontDatas.length; i++) {
+		fontDatas[i].setStyle(SWT.BOLD | SWT.ITALIC );
+	}
+	boldItalicFont = new Font(device, fontDatas);
 	this.device = device;
 	this.regularFont = regularFont;
 }
@@ -58,6 +66,10 @@ void calculateLineHeight() {
 	// fixes bug 41773
 	gc.setFont(boldFont);
 	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	gc.setFont(italicFont);
+	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
+	gc.setFont(boldItalicFont);
+	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());		
 	gc.setFont(originalFont);
 	disposeGC(gc);
 }
@@ -68,6 +80,14 @@ void dispose() {
 	if (boldFont != null) {
 		boldFont.dispose();
 		boldFont = null;
+	}
+	if (italicFont != null) {
+		italicFont.dispose();
+		italicFont = null;
+	}
+	if (boldItalicFont != null) {
+		boldItalicFont.dispose();
+		boldItalicFont = null;
 	}
 }
 /**
@@ -381,7 +401,7 @@ TextLayout getTextLayout(String line, int lineOffset) {
 		for (int styleIndex = 0; styleIndex < styles.length; styleIndex++) {
 			StyleRange style = styles[styleIndex];
 			if (style.isUnstyled()) continue;
-			int start, end; 
+			int start, end;
 			if (lineOffset > style.start) {
 				start = 0;
 				end = Math.min (length, style.length - lineOffset + style.start);
@@ -392,8 +412,15 @@ TextLayout getTextLayout(String line, int lineOffset) {
 			if (start >= length) break;
 			if (lastOffset != start) {
 				layout.setStyle(null, lastOffset, start - 1);				
-			}	
-			Font font = style.fontStyle == SWT.NORMAL ? regularFont : boldFont;
+			}
+			Font font = regularFont;
+			if (style.fontStyle == SWT.BOLD) {
+				font = boldFont;
+			} else if (style.fontStyle == SWT.ITALIC) {
+				font = italicFont;
+			} else if (style.fontStyle == (SWT.BOLD | SWT.ITALIC)) {
+				font = boldItalicFont;
+			} 
 			TextStyle textStyle = new TextStyle(font, style.foreground, style.background);
 			layout.setStyle(textStyle, start, end - 1);
 			lastOffset = end;
