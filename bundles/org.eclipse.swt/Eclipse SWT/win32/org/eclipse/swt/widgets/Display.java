@@ -164,9 +164,9 @@ public class Display extends Device {
 	int nextTrayId = 0;
 	
 	/* Timers */
-	int timerCount;
 	int [] timerIds;
 	Runnable [] timerList;
+	int nextTimerId;
 	
 	/* Keyboard and Mouse State */
 	int lastKey, lastAscii, lastMouse;
@@ -3191,8 +3191,8 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			if (timerList [index] == null) break;
 			index++;
 		}
-		timerCount++;
-		timerId = timerCount;
+		nextTimerId++;
+		timerId = nextTimerId;
 		if (index == timerList.length) {
 			Runnable [] newTimerList = new Runnable [timerList.length + 4];
 			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
