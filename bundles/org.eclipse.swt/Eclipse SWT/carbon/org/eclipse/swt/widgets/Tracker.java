@@ -421,8 +421,10 @@ public boolean open () {
 	OS.ShowWindow (window);
 	drawRectangles (window, false);
 	
-	// if exactly one of UP/DOWN is specified as a style then set the cursor
-	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	/*
+	* If exactly one of UP/DOWN is specified as a style then set the cursor
+	* orientation accordingly (the same is done for LEFT/RIGHT styles below).
+	*/
 	int vStyle = style & (SWT.UP | SWT.DOWN);
 	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
 		cursorOrientation |= vStyle;
