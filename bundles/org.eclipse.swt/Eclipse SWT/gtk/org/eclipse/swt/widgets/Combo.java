@@ -57,6 +57,7 @@ public class Combo extends Composite {
 	int arrowHandle, entryHandle, listHandle;
 	int lastEventTime;
 	String [] items = new String [0];
+	boolean ignoreSelect;
 
 	static final int INNER_BORDER = 2;
 
@@ -735,15 +736,17 @@ int gtk_activate (int widget) {
 }
 
 int gtk_changed (int widget) {
-	int ptr = OS.gtk_entry_get_text (entryHandle);
-	int length = OS.strlen (ptr);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);
-	String text = new String (Converter.mbcsToWcs (null, buffer));
-	for (int i = 0; i < items.length; i++) {
-		if (items [i].equals (text)) {
-			postEvent (SWT.Selection);
-			break;
+	if (!ignoreSelect) {
+		int ptr = OS.gtk_entry_get_text (entryHandle);
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		String text = new String (Converter.mbcsToWcs (null, buffer));
+		for (int i = 0; i < items.length; i++) {
+			if (items [i].equals (text)) {
+				postEvent (SWT.Selection);
+				break;
+			}
 		}
 	}
 	sendEvent (SWT.Modify);
@@ -1127,7 +1130,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	this.items = items;
 	String text = keepText ? getText() : "";
 	int selectedIndex = keepSelection ? getSelectionIndex() : -1;
-	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	ignoreSelect = true;
 	if (items.length == 0) {
 		int itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
@@ -1159,7 +1162,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 		}
 	}
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));
-	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	ignoreSelect = false;
 }
 
 /**
@@ -1210,9 +1213,9 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	ignoreSelect = true;
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	ignoreSelect = false;
 }
 
 /**
