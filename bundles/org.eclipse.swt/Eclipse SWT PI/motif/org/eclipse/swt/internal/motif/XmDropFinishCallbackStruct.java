@@ -20,5 +20,5 @@ public class XmDropFinishCallbackStruct {
 	public byte dropSiteStatus;
 	public byte dropAction;
 	public byte completionStatus;
-	public static final int sizeof = 17;
+	public static final int sizeof = 20;
 }
