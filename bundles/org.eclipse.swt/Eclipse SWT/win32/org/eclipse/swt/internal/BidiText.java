@@ -70,7 +70,10 @@ public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x,
 public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	int hHeap = OS.GetProcessHeap();
-	byte[] textBuffer = Converter.wcsToMbcs(0, text, false);
+	int[] lpCs = new int[8];
+	int cs = OS.GetTextCharset(gc.handle);
+	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
+	byte[] textBuffer = Converter.wcsToMbcs(lpCs[1], text, false);
 	int byteCount = textBuffer.length;
 	boolean linkBefore = (flags & LINKBEFORE) == LINKBEFORE;
 	boolean linkAfter = (flags & LINKAFTER) == LINKAFTER;
