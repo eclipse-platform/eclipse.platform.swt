@@ -35,6 +35,11 @@ case $OS in
 				XTEST_LIB_PATH=/usr/X11R6/lib64
 				KDE_LIB_PATH=/usr/lib64
 				KDE_INCLUDE_PATH=/usr/include/kde
+				if [ "${GECKO_SDK}" = "" ]; then
+					GECKO_SDK=/bluebird/teamswt/chrisx/gentoo/mozilla/dist/sdk
+					GECKO_INCLUDES="-include ${GECKO_SDK}/include/mozilla-config.h -I${GECKO_SDK}/include"
+					GECKO_LIBS="-L${GECKO_SDK}/lib -L${GECKO_SDK}/bin"
+				fi
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
 				makefile="make_linux.mak"
@@ -52,6 +57,8 @@ case $OS in
 				KDE_INCLUDE_PATH=/usr/include/kde
 				if [ "${GECKO_SDK}" = "" ]; then
 					GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+					GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/nspr/include -I${GECKO_SDK}/xpcom/include -I${GECKO_SDK}/string/include -I${GECKO_SDK}/embed_base/include -I${GECKO_SDK}/embedstring/include"
+					GECKO_LIBS="-L${GECKO_SDK}/embedstring/bin -lembedstring -L${GECKO_SDK}/embed_base/bin -lembed_base_s -L${GECKO_SDK}/xpcom/bin -lxpcomglue_s -lxpcom -L${GECKO_SDK}/nspr/bin -lnspr4 -lplds4 -lplc4"
 				fi
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/linux/x86
 				makefile="make_linux.mak"
@@ -110,6 +117,6 @@ case $OS in
 	;;
 esac
 
-export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK GECKO_INCLUDES GECKO_LIBS SWT_PTR_CFLAGS KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
 
 make -f $makefile ${1} ${2} ${3} ${4}

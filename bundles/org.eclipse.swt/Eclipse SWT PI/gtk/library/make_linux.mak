@@ -60,19 +60,11 @@ MOZILLACFLAGS = -O \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I./ \
-	-I$(GECKO_SDK)	\
-	-include $(GECKO_SDK)/mozilla-config.h \
-	-I$(GECKO_SDK)/nspr/include \
-	-I$(GECKO_SDK)/xpcom/include \
-	-I$(GECKO_SDK)/string/include \
-	-I$(GECKO_SDK)/embed_base/include \
-	-I$(GECKO_SDK)/embedstring/include
-MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic \
-	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
-	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
-	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
-	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
-
+	${GECKO_INCLUDES} \
+	${SWT_PTR_CFLAGS}
+	
+MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
+	
 SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
