@@ -2062,7 +2062,8 @@ boolean setRadioFocus () {
 }
 
 boolean setRadioSelection (boolean value) {
-	return false;
+	// TEMPORARY CODE
+	return true;
 }
 
 /**

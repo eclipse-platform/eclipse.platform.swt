@@ -499,7 +499,7 @@ boolean setRadioFocus () {
 }
 
 boolean setRadioSelection (boolean value) {
-	if ((style & SWT.RADIO) == 0) return false;
+	if ((style & SWT.RADIO) == 0) return true;
 	if (getSelection () != value) {
 		setSelection (value);
 		postEvent (SWT.Selection);
