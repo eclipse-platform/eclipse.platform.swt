@@ -16,13 +16,12 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 
 /**
-* DO NOT USE - UNDER CONSTRUCTION
-*
-* @since 3.0
-*/
-
-/**
- * Instances of this class implement a Composite that ...
+ * Instances of this class implement a Composite that lays out its
+ * children and allows programmatic control of the layout. It draws
+ * a separator between the left and right children which can be dragged
+ * to resize the right control.
+ * CBanner is used in the workbench to layout the toolbar area and
+ * perspective switching toolbar at the top of the workbench.
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.
@@ -36,6 +35,8 @@ import org.eclipse.swt.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.0
  */
 
 public class CBanner extends Composite {	
@@ -71,12 +72,28 @@ public class CBanner extends Composite {
 	
 		
 /**
- * DO NOT USE - UNDER CONSTRUCTION
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
  *
  * @param parent a widget which will be the parent of the new instance (cannot be null)
  * @param style the style of widget to construct
- * 
- * @since 3.0
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
  */
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -251,7 +268,11 @@ public int getRightWidth() {
 	return rightWidth;
 }
 /**
- * UNDER CONSTRUCTION
+ * Returns <code>true</code> if the CBanner is rendered
+ * with a simple, traditional shape.
+ * 
+ * @return <code>true</code> if the Cbanner is rendered with a simple shape
+ * 
  * @since 3.0
  */
 public boolean getSimple() {
@@ -537,6 +558,7 @@ public void setRight(Control control) {
 	layout();
 }
 /**
+ * Set the width of the control control that appears on the right side of the banner.
  * 
  * @param width the width of the control on the right
  * 
@@ -554,13 +576,15 @@ public void setRightWidth(int width) {
 	layout(true);
 }
 /**
+ * Sets the shape that the CBanner will use to render itself.  
+ * 
+ * @param simple <code>true</code> if the CBanner should render itself in a simple, traditional style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * UNDER CONSTRUCTION
+ *
  * @since 3.0
  */
 public void setSimple(boolean simple) {
