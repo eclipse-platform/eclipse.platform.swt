@@ -1728,3 +1728,71 @@ void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
 	if (!lpCache->cached) cacheGtkFixedFids(env, lpObject, lpCache);
 	(*env)->SetIntField(env, lpObject, lpCache->children, (jint)lpStruct->children);
 }
+
+typedef struct GdkEventCrossing_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, subwindow, time, x, y, x_root, y_root, mode, detail, focus, state;
+} GdkEventCrossing_FID_CACHE;
+typedef GdkEventCrossing_FID_CACHE *PGdkEventCrossing_FID_CACHE;
+
+GdkEventCrossing_FID_CACHE GdkEventCrossingFc;
+
+void cacheGdkEventCrossingFids(JNIEnv *env, jobject lpObject, PGdkEventCrossing_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGdkEventFids(env, lpObject, &GdkEventFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->send_event = (*env)->GetFieldID(env, lpCache->clazz, "send_event", "B");
+	lpCache->subwindow = (*env)->GetFieldID(env, lpCache->clazz, "subwindow", "I");
+	lpCache->time = (*env)->GetFieldID(env, lpCache->clazz, "time", "I");
+	lpCache->x = (*env)->GetFieldID(env, lpCache->clazz, "x", "D");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->clazz, "y", "D");
+	lpCache->x_root = (*env)->GetFieldID(env, lpCache->clazz, "x_root", "D");
+	lpCache->y_root = (*env)->GetFieldID(env, lpCache->clazz, "y_root", "D");
+	lpCache->mode = (*env)->GetFieldID(env, lpCache->clazz, "mode", "I");
+	lpCache->detail = (*env)->GetFieldID(env, lpCache->clazz, "detail", "I");
+	lpCache->focus = (*env)->GetFieldID(env, lpCache->clazz, "focus", "Z");
+	lpCache->state = (*env)->GetFieldID(env, lpCache->clazz, "state", "I");
+	lpCache->cached = 1;
+}
+
+GdkEventCrossing *getGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *lpStruct)
+{
+	PGdkEventCrossing_FID_CACHE lpCache = &GdkEventCrossingFc;
+	if (!lpCache->cached) cacheGdkEventCrossingFids(env, lpObject, lpCache);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, lpCache->send_event);
+	lpStruct->subwindow = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->subwindow);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, lpCache->time);
+	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->x);
+	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->y);
+	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->x_root);
+	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->y_root);
+	lpStruct->mode = (GdkCrossingMode)(*env)->GetIntField(env, lpObject, lpCache->mode);
+	lpStruct->detail = (GdkNotifyType)(*env)->GetIntField(env, lpObject, lpCache->detail);
+	lpStruct->focus = (gboolean)(*env)->GetBooleanField(env, lpObject, lpCache->focus);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, lpCache->state);
+	return lpStruct;
+}
+
+void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *lpStruct)
+{
+	PGdkEventCrossing_FID_CACHE lpCache = &GdkEventCrossingFc;
+	if (!lpCache->cached) cacheGdkEventCrossingFids(env, lpObject, lpCache);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, lpCache->send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, lpCache->subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, lpCache->time, (jint)lpStruct->time);
+	(*env)->SetDoubleField(env, lpObject, lpCache->x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, lpCache->y, (jdouble)lpStruct->y);
+	(*env)->SetDoubleField(env, lpObject, lpCache->x_root, (jdouble)lpStruct->x_root);
+	(*env)->SetDoubleField(env, lpObject, lpCache->y_root, (jdouble)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, lpCache->mode, (jint)lpStruct->mode);
+	(*env)->SetIntField(env, lpObject, lpCache->detail, (jint)lpStruct->detail);
+	(*env)->SetBooleanField(env, lpObject, lpCache->focus, (jboolean)lpStruct->focus);
+	(*env)->SetIntField(env, lpObject, lpCache->state, (jint)lpStruct->state);
+}

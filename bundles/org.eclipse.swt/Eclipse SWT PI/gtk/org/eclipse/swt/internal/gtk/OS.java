@@ -709,6 +709,7 @@ public static final native void memmove(GtkCombo dest, int src);
 public static final native void memmove(GtkAdjustment dest, int src);
 public static final native void memmove(GdkEvent dest, int src, int size);
 public static final native void memmove(GdkEventButton dest, int src, int size);
+public static final native void memmove(GdkEventCrossing dest, int src, int size);
 public static final native void memmove(GdkEventExpose dest, int src, int size);
 public static final native void memmove(GdkEventFocus dest, int src, int size);
 public static final native void memmove(GdkEventKey dest, int src, int size);

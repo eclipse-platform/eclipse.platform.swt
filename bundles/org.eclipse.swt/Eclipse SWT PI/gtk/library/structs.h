@@ -84,5 +84,8 @@ void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpSt
 GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
 void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
 
+GdkEventCrossing *getGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *lpStruct);
+void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *lpStruct);
+
 #endif // INC_structs_H
 

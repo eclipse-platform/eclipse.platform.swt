@@ -4116,6 +4116,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	if (arg0) setGdkEventButtonFields(env, arg0, lparg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkEventCrossing _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II\n")
+
+	if (arg0) lparg0 = &_arg0;
+	memmove(lparg0, arg1, arg2);
+	if (arg0) setGdkEventCrossingFields(env, arg0, lparg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
