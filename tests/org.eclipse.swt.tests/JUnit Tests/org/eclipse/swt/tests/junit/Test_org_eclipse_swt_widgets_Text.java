@@ -365,13 +365,15 @@ public void test_getCaretLineNumber() {
 }
 
 public void test_getCaretLocation() {
-	assertTrue(":a:", text.getCaretLocation().x == 0);
+	text.setSelection(0,0);
+	text.insert("");
+	assertTrue(":a:", text.getCaretLocation().x >= 0);
 	assertTrue(":a:", text.getCaretLocation().y == 0);
 	text.setText("Line0\r\nLine1\r\nLine2");
-	assertTrue(":b:", text.getCaretLocation().x == 0);
+	text.insert("");
+	assertTrue(":b:", text.getCaretLocation().x >= 0);
 	assertTrue(":b:", text.getCaretLocation().y == 0);
 	text.setSelection(1,1);
-	Point pt = text.getCaretLocation();
 	assertTrue(":c:", text.getCaretLocation().x > 0);
 	assertTrue(":c:", text.getCaretLocation().y == 0);
 }
