@@ -1262,8 +1262,6 @@ public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDst, int 
 	return ExpandEnvironmentStringsA (lpSrc1, lpDst1, nSize);
 }
 
-
-
 public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons) {
 	if (IsUnicode) {
 		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
