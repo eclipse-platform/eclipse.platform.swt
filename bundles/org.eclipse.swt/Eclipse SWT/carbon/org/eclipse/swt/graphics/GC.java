@@ -220,6 +220,21 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
+void createLayout () {
+	int[] buffer = new int[1];
+	OS.ATSUCreateTextLayout(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.layout = buffer[0];	
+	int ptr = OS.NewPtr(4);
+	buffer[0] = handle;
+	OS.memcpy(ptr, buffer, 4);
+	int[] tags = new int[]{OS.kATSUCGContextTag};
+	int[] sizes = new int[]{4};
+	int[] values = new int[]{ptr};
+	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the graphics context. Applications must dispose of all GCs
@@ -723,6 +738,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return;
+	if (data.layout == 0) createLayout ();
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextSetFillColor(handle, data.foreground);
@@ -1387,20 +1403,6 @@ void init(Drawable drawable, GCData data, int context) {
 	float[] background = data.background;
 	if (background != null) OS.CGContextSetFillColor(context, background);
 
-	int[] buffer = new int[1];
-	OS.ATSUCreateTextLayout(buffer);
-	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.layout = buffer[0];
-	
-	int ptr = OS.NewPtr(4);
-	buffer[0] = context;
-	OS.memcpy(ptr, buffer, 4);
-	int[] tags = new int[]{OS.kATSUCGContextTag};
-	int[] sizes = new int[]{4};
-	int[] values = new int[]{ptr};
-	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr);
-
 	Image image = data.image;
 	if (image != null) image.memGC = this;
 	this.drawable = drawable;
@@ -1734,6 +1736,7 @@ public Point stringExtent(String string) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
+	if (data.layout == 0) createLayout ();
 	if (string != data.string) {
 		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
 		Font font = data.font;
