@@ -450,21 +450,21 @@ public void setAlignment (int alignment) {
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
-	OS.gtk_widget_modify_bg (labelHandle, 0, color);
-	OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
 }
 	
 void setFontDescription (int font) {
 	super.setFontDescription (font);
-	OS.gtk_widget_modify_font (labelHandle, font);
-	OS.gtk_widget_modify_font (pixmapHandle, font);
+	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_font (pixmapHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
-	OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 /**
