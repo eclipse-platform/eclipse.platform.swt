@@ -177,6 +177,13 @@ void computeRuns (GC gc) {
 		shape(srcHdc, run);
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
+	int[] ppSp = new int[1];
+	int[] piNumScripts = new int[1];
+	OS.ScriptGetProperties(ppSp, piNumScripts);
+	int[] scripts = new int[piNumScripts[0]];
+	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
+	if (device.logFontsCache == null) 	device.logFontsCache = new LOGFONT[piNumScripts[0]];
+	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
 	int lineWidth = 0, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
@@ -218,62 +225,79 @@ void computeRuns (GC gc) {
 					break;
 				}
 			}
-		} else {
-			if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
-				int start = 0;
-				int[] piDx = new int[run.length];
-				OS.ScriptGetLogicalWidths(run.analysis, run.length, run.glyphCount, run.advances, run.clusters, run.visAttrs, piDx);
-				int width = 0, maxWidth = wrapWidth - lineWidth;
-				while (width + piDx[start] < maxWidth) {
-					width += piDx[start++];
+		} 
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
+			int start = 0;
+			int[] piDx = new int[run.length];
+			OS.ScriptGetLogicalWidths(run.analysis, run.length, run.glyphCount, run.advances, run.clusters, run.visAttrs, piDx);
+			int width = 0, maxWidth = wrapWidth - lineWidth;
+			while (width + piDx[start] < maxWidth) {
+				width += piDx[start++];
+			}
+			int firstStart = start;
+			int firstIndice = i;
+			while (i >= lineStart) {
+				breakRun(run);
+				while (start >= 0) {
+					OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+					if (logAttr.fSoftBreak || logAttr.fWhiteSpace) break;
+					start--;
 				}
-				int firstStart = start;
-				int firstIndice = i;
-				while (i >= lineStart) {
-					breakRun(run);
-					while (start >= 0) {
-						OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
-						if (logAttr.fSoftBreak || logAttr.fWhiteSpace) break;
-						start--;
-					}
-					if (start >= 0 || i == lineStart) break;
-					run = allRuns[--i];
-					start = run.length - 1;
-				}
+				
+				/*
+				*  Bug in Windows. For some reason Uniscribe sets the fSoftBreak flag for the first letter
+				*  after a letter with an accent. This cause a break line to be set in the middle of a word.
+				*  The fix is to detect the case and ignore fSoftBreak forcing the algorithm keep searching.
+				*/
 				if (start == 0 && i != lineStart) {
-					run = allRuns[--i];
-				}
-				if (start <= 0 && i == lineStart) {
-					i = firstIndice;
-					run = allRuns[i];
-					start = Math.max(1, firstStart);
-					breakRun(run);
-					while (start < run.length) {
-						OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
-						if (!logAttr.fWhiteSpace) break;
-						start++;
+					if (logAttr.fSoftBreak && !logAttr.fWhiteSpace) {
+						OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+						int langID = properties.langid;
+						StyleItem pRun = allRuns[i - 1];
+						OS.MoveMemory(properties, scripts[pRun.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+						if (properties.langid == langID) {
+							breakRun(pRun);
+							OS.MoveMemory(logAttr, pRun.psla + ((pRun.length - 1) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+							if (!logAttr.fWhiteSpace) start = -1;
+						}
 					}
-				}
-				if (0 < start && start < run.length) {
-					StyleItem newRun = new StyleItem();
-					newRun.start = run.start + start;
-					newRun.length = run.length - start;
-					newRun.style = run.style;
-					newRun.analysis = run.analysis;
-					run.free();
-					run.length = start;
-					OS.SelectObject(srcHdc, getItemFont(run));
-					shape (srcHdc, run);
-					shape (srcHdc, newRun);
-					StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
-					System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
-					System.arraycopy(allRuns, i + 1, newAllRuns, i + 2, allRuns.length - i - 1);
-					allRuns = newAllRuns;
-					allRuns[i + 1] = newRun;
-				}
-				if (i != allRuns.length - 2) {
-					run.softBreak = run.lineBreak = true;
-				}
+				}		
+				if (start >= 0 || i == lineStart) break;
+				run = allRuns[--i];
+				start = run.length - 1;
+			}
+			if (start == 0 && i != lineStart) {
+				run = allRuns[--i];
+			} else 	if (start <= 0 && i == lineStart) {
+				i = firstIndice;
+				run = allRuns[i];
+				start = Math.max(1, firstStart);
+			}
+			breakRun(run);
+			while (start < run.length) {
+				OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+				if (!logAttr.fWhiteSpace) break;
+				start++;
+			}
+			if (0 < start && start < run.length) {
+				StyleItem newRun = new StyleItem();
+				newRun.start = run.start + start;
+				newRun.length = run.length - start;
+				newRun.style = run.style;
+				newRun.analysis = run.analysis;
+				run.free();
+				run.length = start;
+				OS.SelectObject(srcHdc, getItemFont(run));
+				shape (srcHdc, run);
+				shape (srcHdc, newRun);
+				StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
+				System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
+				System.arraycopy(allRuns, i + 1, newAllRuns, i + 2, allRuns.length - i - 1);
+				allRuns = newAllRuns;
+				allRuns[i + 1] = newRun;
+			}
+			if (i != allRuns.length - 2) {
+				run.softBreak = run.lineBreak = true;
 			}
 		}
 		lineWidth += run.width;
@@ -901,7 +925,7 @@ public int getNextOffset (int offset, int movement) {
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	boolean previousWhitespace = false;
 	int i = 0;	
-	int lastScript  = -1;
+	int lastLangID  = -1;
 	for (; i < allRuns.length; i++) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
@@ -909,7 +933,8 @@ public int getNextOffset (int offset, int movement) {
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
 			previousWhitespace = logAttr.fWhiteSpace;
-			lastScript = run.analysis.eScript;
+			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+			lastLangID = properties.langid;
 			break;
 		}
 	}
@@ -932,11 +957,11 @@ public int getNextOffset (int offset, int movement) {
 			}
 			breakRun(run);
 			if ((movement & MOVEMENT_WORD) != 0) {
-				if (run.analysis.eScript != lastScript) {
+				if (properties.langid != lastLangID) {
 					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 					if (!logAttr.fWhiteSpace) return untranslateOffset(offset);
-				}				
-				lastScript = run.analysis.eScript;
+				}
+				lastLangID = properties.langid;
 			}
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
@@ -1088,7 +1113,7 @@ public int getPreviousOffset (int offset, int movement) {
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	boolean previousWhitespace = false;
 	int i = allRuns.length - 1;
-	int lastScript  = -1;
+	int lastLangID  = -1;
 	offset--;
 	if (segments != null && segments.length > 2) {
 		for (int j = 0; j < segments.length; j++) {
@@ -1105,7 +1130,8 @@ public int getPreviousOffset (int offset, int movement) {
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
 			previousWhitespace = logAttr.fWhiteSpace;
-			lastScript = run.analysis.eScript;
+			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+			lastLangID = properties.langid;
 			break;
 		}
 	}
@@ -1118,10 +1144,10 @@ public int getPreviousOffset (int offset, int movement) {
 				return untranslateOffset(offset);
 			}
 			if ((movement & MOVEMENT_WORD) != 0) {
-				if (run.analysis.eScript != lastScript) {
+				if (properties.langid != lastLangID) {
 					if (!previousWhitespace) return untranslateOffset(offset + 1);
 				}
-				lastScript = run.analysis.eScript;
+				lastLangID = properties.langid;
 			}
 			breakRun(run);
 			while (run.start <= offset && offset < run.start + run.length) {
