@@ -52,6 +52,7 @@ public class XPCOM {
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 	
 	public static final String NS_CATEGORYMANAGER_CONTRACTID = "@mozilla.org/categorymanager;1"; //$NON-NLS-1$
+	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
 	
@@ -88,6 +89,7 @@ public static final native void memmove(int[] dest, int src, int nbytes);
 public static final native void memmove(byte[] dest, int src, int nbytes);
 public static final native void memmove(char[] dest, int src, int nbytes);
 public static final native void memmove(int dest, byte[] src, int nbytes);
+public static final native void memmove(int dest, char[] src, int nbytes);
 public static final native int NS_GetComponentManager(int[] result);
 public static final native int NS_GetServiceManager(int[] result);
 public static final native int NS_InitEmbedding(int aMozBinDirectory, int aAppFileLocProvider);
