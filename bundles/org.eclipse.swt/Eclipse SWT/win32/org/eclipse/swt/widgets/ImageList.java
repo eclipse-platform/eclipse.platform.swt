@@ -137,18 +137,22 @@ int copyIcon (int hImage, int width, int height) {
 
 int createMask (int hBitmap, int width, int height, int background) {
 	int hMask = OS.CreateBitmap (width, height, 1, 1, null);
+	int hDC = OS.GetDC (0);
+	int hdc1 = OS.CreateCompatibleDC (hDC);
 	if (background != -1) {
-		int hDC = OS.GetDC (0);
-		int hdc1 = OS.CreateCompatibleDC (hDC);
 		OS.SelectObject (hdc1, hBitmap);
 		int hdc2 = OS.CreateCompatibleDC (hDC);
 		OS.SelectObject (hdc2, hMask);
 		OS.SetBkColor (hdc1, background);
 		OS.BitBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, OS.SRCCOPY);
-		OS.ReleaseDC (0, hDC);
-		OS.DeleteDC (hdc1);
 		OS.DeleteDC (hdc2);
+	} else {
+		int hOldBitmap = OS.SelectObject (hdc1, hMask);
+		OS.PatBlt (hdc1, 0, 0, width, height, OS.BLACKNESS);
+		OS.SelectObject (hdc1, hOldBitmap);
 	}
+	OS.ReleaseDC (0, hDC);
+	OS.DeleteDC (hdc1);
 	return hMask;
 }
 

@@ -266,11 +266,26 @@ public void pack () {
 	if (index == -1) return;
 	int hwnd = parent.handle;
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + 10;
+	if (image != null) {
+		int margin = 0;
+		if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) >= (5 << 16 | 80)) {
+			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+		} else {
+			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
+		}
+		Rectangle rect = image.getBounds ();
+		headerWidth += rect.width + margin * 2;
+	}
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
 	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (headerWidth > columnWidth) {
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+		if (image == null) {
+			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+		} else {
+			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
+		}
 	}
 }
 
@@ -362,6 +377,29 @@ public void setAlignment (int alignment) {
 	lvColumn.mask = OS.LVCF_FMT;
 	lvColumn.fmt = fmt;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+}
+
+public void setImage (Image image) {
+	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	super.setImage (image);
+	int hwnd = parent.handle;
+	LVCOLUMN lvColumn = new LVCOLUMN ();
+	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
+	lvColumn.fmt = OS.LVCFMT_IMAGE;
+	lvColumn.iImage = parent.imageIndex (image);
+	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	if (image == null) {
+		lvColumn.mask = OS.LVCF_FMT;
+		if ((style & SWT.LEFT) == SWT.LEFT) lvColumn.fmt = OS.LVCFMT_LEFT;
+		if ((style & SWT.CENTER) == SWT.CENTER) lvColumn.fmt = OS.LVCFMT_CENTER;
+		if ((style & SWT.RIGHT) == SWT.RIGHT) lvColumn.fmt = OS.LVCFMT_RIGHT;
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	}
 }
 
 /**

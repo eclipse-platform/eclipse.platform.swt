@@ -116,6 +116,7 @@ public class OS {
 	public static final int BIF_RETURNONLYFSDIRS = 0x1;
 	public static final int BIF_VALIDATE = 0x20;
 	public static final int BITSPIXEL = 0xc;
+	public static final int BLACKNESS = 0x42;
 	public static final int BM_CLICK = 0xf5;
 	public static final int BM_GETCHECK = 0xf0;
 	public static final int BM_SETCHECK = 0xf1;
@@ -341,6 +342,7 @@ public class OS {
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
 	public static final int HDI_WIDTH = 0x1;
 	public static final int HDM_FIRST = 0x1200;
+	public static final int HDM_GETBITMAPMARGIN = HDM_FIRST + 21;
 	public static final int HDM_GETITEMCOUNT = 0x1200;
 	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
 	public static final int HDN_BEGINTRACKW = 0xfffffeba;
@@ -453,9 +455,11 @@ public class OS {
 	public static final int LPSTR_TEXTCALLBACK = 0xffffffff;
 	public static final int LR_DEFAULTCOLOR = 0x0;
 	public static final int LVCFMT_CENTER = 0x2;
+	public static final int LVCFMT_IMAGE = 0x800;
 	public static final int LVCFMT_LEFT = 0x0;
 	public static final int LVCFMT_RIGHT = 0x1;
 	public static final int LVCF_FMT = 0x1;
+	public static final int LVCF_IMAGE = 0x10;
 	public static final int LVCF_TEXT = 0x4;
 	public static final int LVCF_WIDTH = 0x2;
 	public static final int LVHT_ONITEM = 0xe;

@@ -246,6 +246,8 @@ void createItem (TableColumn column, int index) {
 			LVCOLUMN lvColumn = new LVCOLUMN ();
 			lvColumn.mask = OS.LVCF_WIDTH;
 			OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 1, lvColumn);
+			OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, lvColumn);
+			int width = lvColumn.cx;
 			int cchTextMax = 1024;
 			int hHeap = OS.GetProcessHeap ();
 			int byteCount = cchTextMax * TCHAR.sizeof;
@@ -266,11 +268,19 @@ void createItem (TableColumn column, int index) {
 				lvItem.iImage = OS.I_IMAGENONE;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 			}
-			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_WIDTH | OS.LVCF_FMT;
+			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
 			lvColumn.pszText = pszText;
 			lvColumn.cchTextMax = cchTextMax;
 			OS.SendMessage (handle, OS.LVM_GETCOLUMN, 0, lvColumn);
 			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 1, lvColumn);
+			lvColumn.fmt = OS.LVCFMT_IMAGE;
+			lvColumn.cx = width;
+			lvColumn.iImage = OS.I_IMAGENONE;
+			lvColumn.pszText = lvColumn.cchTextMax = 0;
+			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
+			lvColumn.mask = OS.LVCF_FMT;
+			lvColumn.fmt = OS.LVCFMT_LEFT;
+			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		}
 	} else {
