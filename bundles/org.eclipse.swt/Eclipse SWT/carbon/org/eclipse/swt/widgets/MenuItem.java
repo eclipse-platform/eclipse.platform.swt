@@ -832,13 +832,13 @@ private static int parseShortcut(String text) {
 				accelerator |= SWT.DEL;
 			else if ("ENTER".equals(t))
 				accelerator |= SWT.CR;
-			else if ("ARROW UP".equals(t))
+			else if ("ARROW UP".equals(t) || "ARROW_UP".equals(t))
 				accelerator |= SWT.ARROW_UP;
-			else if ("ARROW DOWN".equals(t))
+			else if ("ARROW DOWN".equals(t) || "ARROW_DOWN".equals(t))
 				accelerator |= SWT.ARROW_DOWN;
-			else if ("ARROW LEFT".equals(t))
+			else if ("ARROW LEFT".equals(t) || "ARROW_LEFT".equals(t))
 				accelerator |= SWT.ARROW_LEFT;
-			else if ("ARROW RIGHT".equals(t))
+			else if ("ARROW RIGHT".equals(t) || "ARROW_RIGHT".equals(t))
 				accelerator |= SWT.ARROW_RIGHT;
 			else if ("SPACE".equals(t))
 				accelerator |= ' ';
