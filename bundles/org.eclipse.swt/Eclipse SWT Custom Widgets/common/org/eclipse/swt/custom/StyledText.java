@@ -1598,9 +1598,8 @@ public StyledText(Composite parent, int style) {
 	else {
 	    lineCache = new ContentWidthCache(this, content);
 	}	
-	new Caret(this, SWT.NULL);
 	if (isBidi) createCaretBitmaps();
-	setCaretImage(isBidi ? (isMirrored ? SWT.RIGHT : SWT.LEFT) : SWT.DEFAULT);
+	new Caret(this, SWT.NULL);
 	Runnable runnable = new Runnable() {
 		public void run() {
 			int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
