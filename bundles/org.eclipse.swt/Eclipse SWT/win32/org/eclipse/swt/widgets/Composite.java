@@ -167,12 +167,6 @@ void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
 }
-void drawBackground (int hDC, RECT rect) {
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) != 0) return;
-	}
-	super.drawBackground (hDC, rect);
-}
 
 /**
  * Returns an array containing the receiver's children.
@@ -483,11 +477,12 @@ int widgetStyle () {
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
-		return super.WM_ERASEBKGND (wParam, lParam);
+		if ((style & SWT.NO_BACKGROUND) != 0) return LRESULT.ONE;
 	}
-	drawBackground (wParam);
-	return LRESULT.ONE;
+	return result;
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
@@ -631,19 +626,21 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	event.gc = gc;
 	if (isComplex && exposeRegion) {
 		RECT rect = new RECT ();
-		int nCount = lpRgnData [2];
-		for (int i=0; i<nCount; i++) {
+		int count = lpRgnData [2];
+		for (int i=0; i<count; i++) {
 			OS.SetRect (rect,
 				lpRgnData [8 + (i << 2)],
 				lpRgnData [8 + (i << 2) + 1],
 				lpRgnData [8 + (i << 2) + 2],
 				lpRgnData [8 + (i << 2) + 3]);
-			drawBackground (hDC, rect);	
+			if ((style & SWT.NO_BACKGROUND) == 0) {
+				drawBackground (hDC, rect);
+			}
 			event.x = rect.left;
 			event.y = rect.top;
 			event.width = rect.right - rect.left;
 			event.height = rect.bottom - rect.top;
-			event.count = nCount - 1 - i;
+			event.count = count - 1 - i;
 			/*
 			* It is possible (but unlikely), that application
 			* code could have disposed the widget in the paint
@@ -655,9 +652,11 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			if (isDisposed ()) break;
 		}
 	} else {
-		RECT rect = new RECT ();
-		OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-		drawBackground (hDC, rect);
+		if ((style & SWT.NO_BACKGROUND) == 0) {
+			RECT rect = new RECT ();
+			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+			drawBackground (hDC, rect);
+		}
 		event.x = ps.left;
 		event.y = ps.top;
 		event.width = ps.right - ps.left;

@@ -35,11 +35,33 @@ import org.eclipse.swt.graphics.*;
 
 public class Group extends Composite {
 	static final int GroupProc;
-	static final TCHAR GroupClass = new TCHAR (0, "BUTTON", true);
+	static final TCHAR GroupClass = new TCHAR (0, "SWT_GROUP", true);
 	static {
+		/*
+		* Feature in Windows.  The group box window class
+		* uses the CS_HREDRAW and CS_VREDRAW style bits to
+		* force a full redraw of the control and all children
+		* when resized.  This causes flashing.  The fix is to
+		* register a new window class without these bits and
+		* implement special code that damages only the exposed
+		* area.
+		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
-		OS.GetClassInfo (0, GroupClass, lpWndClass);
+		TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
+		OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
 		GroupProc = lpWndClass.lpfnWndProc;
+		int hInstance = OS.GetModuleHandle (null);
+		if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
+			int hHeap = OS.GetProcessHeap ();
+			lpWndClass.hInstance = hInstance;
+			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
+			int byteCount = GroupClass.length () * TCHAR.sizeof;
+			int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, GroupClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
+			OS.RegisterClass (lpWndClass);
+//			OS.HeapFree (hHeap, 0, lpszClassName);
+		}
 	}
 
 /**
@@ -266,6 +288,35 @@ int windowProc () {
 	return GroupProc;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feaure in Windows.  Group boxes do not erase
+	* the background before drawing.  The fix is to
+	* fill the background.
+	*/
+	drawBackground (wParam);
+	return LRESULT.ONE;
+}
+
+LRESULT WM_NCHITTEST (int wParam, int lParam) {
+	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  The window proc for the group box
+	* returns HTTRANSPARENT indicating that mouse messages
+	* should not be delivered to the receiver and any children.
+	* Normally, group boxes in Windows do not have children and
+	* this is the correct behavior for this case.  Because we
+	* allow children, answer HTCLIENT to allow mouse messages
+	* to be delivered to the children.
+	*/
+	int code = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
+	if (code == OS.HTTRANSPARENT) code = OS.HTCLIENT;
+	return new LRESULT (code);
+}
+
 LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
@@ -288,21 +339,10 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_NCHITTEST (int wParam, int lParam) {
-	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  The window proc for the group box
-	* returns HTTRANSPARENT indicating that mouse messages
-	* should not be delivered to the receiver and any children.
-	* Normally, group boxes in Windows do not have children and
-	* this is the correct behavior for this case.  Because we
-	* allow children, answer HTCLIENT to allow mouse messages
-	* to be delivered to the children.
-	*/
-	int code = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
-	if (code == OS.HTTRANSPARENT) code = OS.HTCLIENT;
-	return new LRESULT (code);
+LRESULT WM_SIZE (int wParam, int lParam) {
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	OS.InvalidateRect (handle, null, true);
+	return result;
 }
 
 }

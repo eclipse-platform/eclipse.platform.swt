@@ -679,7 +679,7 @@ public int indexOf (String string, int start) {
 
 	/* Use LB_FINDSTRINGEXACT to search for the item */
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-	if (!((0 <= start) && (start < count))) return -1;
+	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last;
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	do {

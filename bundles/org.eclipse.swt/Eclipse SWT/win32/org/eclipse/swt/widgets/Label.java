@@ -468,11 +468,13 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* bits in these masks.
 	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.SS_BITMAP) != OS.SS_BITMAP && (bits & OS.SS_ICON) != OS.SS_ICON) {
-		return result;
+	boolean isBitmap = (bits & OS.SS_BITMAP) == OS.SS_BITMAP;
+	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
+	if (isBitmap || isIcon) {
+		drawBackground (wParam);
+		return LRESULT.ONE;
 	}
-	drawBackground (wParam);
-	return LRESULT.ONE;
+	return result;
 }
 
 LRESULT WM_GETFONT (int wParam, int lParam) {
