@@ -38,4 +38,24 @@ char * GNOME_nativeFunctionNames[] = {
 	"memmove", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GNOME_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return GNOME_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(GNOME_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, GNOME_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GNOME_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return GNOME_nativeFunctionCallCount[index];
+}
+
 #endif

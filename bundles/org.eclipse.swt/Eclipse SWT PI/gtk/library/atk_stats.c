@@ -60,4 +60,24 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(ATK_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return ATK_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(ATK_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, ATK_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(ATK_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return ATK_nativeFunctionCallCount[index];
+}
+
 #endif

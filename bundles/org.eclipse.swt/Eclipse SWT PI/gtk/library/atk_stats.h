@@ -14,8 +14,9 @@
 *******************************************************************************/
 
 #ifdef NATIVE_STATS
-int ATK_nativeFunctionCallCount[];
-char* ATK_nativeFunctionNames[];
+extern int ATK_nativeFunctionCount;
+extern int ATK_nativeFunctionCallCount[];
+extern char* ATK_nativeFunctionNames[];
 #define ATK_NATIVE_ENTER(env, that, func) ATK_nativeFunctionCallCount[func]++;
 #define ATK_NATIVE_EXIT(env, that, func) 
 #else

@@ -10,8 +10,9 @@
 *******************************************************************************/
 
 #ifdef NATIVE_STATS
-int KDE_nativeFunctionCallCount[];
-char* KDE_nativeFunctionNames[];
+extern int KDE_nativeFunctionCount;
+extern int KDE_nativeFunctionCallCount[];
+extern char* KDE_nativeFunctionNames[];
 #define KDE_NATIVE_ENTER(env, that, func) KDE_nativeFunctionCallCount[func]++;
 #define KDE_NATIVE_EXIT(env, that, func) 
 #else

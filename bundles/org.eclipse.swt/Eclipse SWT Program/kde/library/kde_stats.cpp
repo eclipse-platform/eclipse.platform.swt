@@ -58,4 +58,24 @@ char * KDE_nativeFunctionNames[] = {
 	"malloc", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(KDE_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return KDE_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(KDE_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return env->NewStringUTF(KDE_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(KDE_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return KDE_nativeFunctionCallCount[index];
+}
+
 #endif

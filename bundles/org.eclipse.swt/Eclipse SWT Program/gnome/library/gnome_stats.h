@@ -14,8 +14,9 @@
 *******************************************************************************/
 
 #ifdef NATIVE_STATS
-int GNOME_nativeFunctionCallCount[];
-char* GNOME_nativeFunctionNames[];
+extern int GNOME_nativeFunctionCount;
+extern int GNOME_nativeFunctionCallCount[];
+extern char* GNOME_nativeFunctionNames[];
 #define GNOME_NATIVE_ENTER(env, that, func) GNOME_nativeFunctionCallCount[func]++;
 #define GNOME_NATIVE_EXIT(env, that, func) 
 #else

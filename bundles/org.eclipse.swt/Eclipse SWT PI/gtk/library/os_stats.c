@@ -910,4 +910,24 @@ char * OS_nativeFunctionNames[] = {
 	"strlen", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(OS_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return OS_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(OS_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, OS_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(OS_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return OS_nativeFunctionCallCount[index];
+}
+
 #endif
