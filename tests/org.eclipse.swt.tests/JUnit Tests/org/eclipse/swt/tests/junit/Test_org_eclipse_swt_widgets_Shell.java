@@ -232,6 +232,7 @@ public void test_removeShellListenerLorg_eclipse_swt_events_ShellListener() {
 }
 
 public void test_setActive() {
+	shell.setVisible(true);
 	shell.setActive();
 	assertTrue(":a:", shell.getDisplay().getActiveShell() == shell);
 }
