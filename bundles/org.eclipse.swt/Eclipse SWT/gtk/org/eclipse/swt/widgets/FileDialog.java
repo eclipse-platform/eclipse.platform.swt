@@ -109,8 +109,7 @@ public String getFileName () {
 }
 /**
  * Returns the paths of all files that were selected
- * in the dialog relative to the filter path, or null
- * if none are available.
+ * in the dialog relative to the filter path.
  * 
  * @return the relative paths of the files
  */
