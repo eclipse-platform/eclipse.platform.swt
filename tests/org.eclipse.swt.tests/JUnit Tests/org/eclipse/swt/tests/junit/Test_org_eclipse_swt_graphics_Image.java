@@ -192,14 +192,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	// set red pixel at x=9, y=9
 	data.setPixel(9, 9, 0x30);
 	image = new Image(display, data);
-	assertEquals(":a:", 10, image.getBounds().width);
-	assertEquals(":b:", 10, image.getBounds().height);
 	Image gcImage = new Image(display, 10, 10);
 	GC gc = new GC(gcImage);
 	gc.drawImage(image, 0, 0);
 	ImageData gcImageData = gcImage.getImageData();
 	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(":c:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	assertEquals(":a:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
@@ -264,8 +262,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)}));
 	data1.setPixel(9, 9, 1);
 	image = new Image(display, data, data1);
-	assertEquals(":a:", 10, image.getBounds().width);
-	assertEquals(":b:", 10, image.getBounds().height);
 	Image gcImage = new Image(display, 10, 10);
 	GC gc = new GC(gcImage);
 	Color backgroundColor = display.getSystemColor(SWT.COLOR_BLUE); 
@@ -274,9 +270,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	gc.drawImage(image, 0, 0);
 	ImageData gcImageData = gcImage.getImageData();
 	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(":c:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	assertEquals(":a:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
 	int bluePixel = gcImageData.getPixel(0, 0);
-	assertEquals(":d:", backgroundColor.getRGB(), gcImageData.palette.getRGB(bluePixel));
+	assertEquals(":b:", backgroundColor.getRGB(), gcImageData.palette.getRGB(bluePixel));
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
@@ -468,6 +464,7 @@ public void test_getBackground() {
 		image.getBackground();
 		fail("No exception thrown for disposed image");
 	} catch (SWTException e) {
+		assertEquals("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
 	}
 	// remainder tested in setBackground method
 }
@@ -480,7 +477,7 @@ public void test_getBounds() {
 		image.getBounds();
 		fail("No exception thrown for disposed image");
 	} catch (SWTException e) {
-		image.dispose();
+		assertEquals("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
 	}
 		
 	// creates bitmap image
@@ -488,13 +485,18 @@ public void test_getBounds() {
 	Rectangle bounds1 = image.getBounds();
 	image.dispose();
 	assertEquals(":a:", bounds, bounds1);
-	
+
+	image = new Image(display, bounds);
+	bounds1 = image.getBounds();
+	image.dispose();
+	assertEquals(":b:", bounds, bounds1);
+
 	// create icon image
 	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	image = new Image(display, imageData);
 	bounds1 = image.getBounds();
 	image.dispose();
-	assertEquals(":b:", bounds, bounds1);
+	assertEquals(":c:", bounds, bounds1);
 }
 
 public void test_getImageData() {	
@@ -551,6 +553,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		image.setBackground(null);
 		fail("No exception thrown for color == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for color == null", SWT.ERROR_NULL_ARGUMENT, e);
 	} finally {
 		image.dispose();
 	}
@@ -562,6 +565,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		image.setBackground(color);
 		fail("No exception thrown for disposed color");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for disposed color", SWT.ERROR_INVALID_ARGUMENT, e);
 	} finally {
 		image.dispose();
 	}
@@ -573,6 +577,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		image.setBackground(color);
 		fail("No exception thrown for disposed image");
 	} catch (SWTException e) {
+		assertEquals("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
 	} finally {
 		color.dispose();
 	}
