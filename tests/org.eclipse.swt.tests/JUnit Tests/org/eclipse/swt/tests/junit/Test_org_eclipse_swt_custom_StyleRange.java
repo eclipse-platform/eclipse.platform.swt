@@ -1,19 +1,22 @@
 package org.eclipse.swt.tests.junit;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2002. All rights reserved.
+ * (c) Copyright IBM Corp. 2000, 2003. All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.widgets.*;
-import junit.framework.*;
-import junit.textui.*;
 import java.util.*;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyleRange
@@ -98,7 +101,15 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
-	// does not make sense to test
+	Set set = new HashSet();
+	Color testColor = new Color(Display.getDefault(), 0, 0, 0);
+	
+	//regression test for bug 30924
+	set.add(new StyleRange());
+	set.add(new StyleRange(0, 1, testColor, null));
+	set.add(new StyleRange(0, 1, testColor, testColor));
+	set.add(new StyleRange(0, 1, testColor, testColor, SWT.BOLD));
+	testColor.dispose();
 }
 
 public void test_isUnstyled() {
