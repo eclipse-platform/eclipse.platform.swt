@@ -1980,7 +1980,7 @@ void calculateTopIndex() {
  */
 static int checkStyle(int style) {
 	if ((style & SWT.SINGLE) != 0) {
-		style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+		style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 	} else {
 		style |= SWT.MULTI;
 	}
