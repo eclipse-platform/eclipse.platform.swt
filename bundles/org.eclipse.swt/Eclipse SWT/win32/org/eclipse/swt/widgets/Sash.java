@@ -28,6 +28,12 @@ import org.eclipse.swt.events.*;
 public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
+		
+	/*
+	* The following values mirror step sizes on Windows
+	*/
+	final static int STEPSIZE_SMALL = 1;
+	final static int STEPSIZE_LARGE = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -173,6 +179,70 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	int hBrush = findBrush (pixel);
 	OS.FillRect (wParam, rect, hBrush);
 	return LRESULT.ONE;
+}
+
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return result;
+	int stepSize = OS.GetKeyState (OS.VK_CONTROL) < 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+	int xChange = 0, yChange = 0;
+	if ((style & SWT.VERTICAL) != 0) {
+		switch (wParam) {
+			case OS.VK_LEFT:
+				xChange = -stepSize;
+				break;
+			case OS.VK_RIGHT:
+				xChange = stepSize;
+				break;
+		}
+	} else {
+		switch (wParam) {
+			case OS.VK_UP:
+				yChange = -stepSize;
+				break;
+			case OS.VK_DOWN:
+				yChange = stepSize;
+				break;
+		}
+	}
+	if (xChange == 0 && yChange == 0) return result;
+	
+	POINT pt = new POINT ();
+	pt.x = xChange;
+	pt.y = yChange;
+	int hwndTrack = parent.handle;
+	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
+	RECT rect = new RECT (), clientRect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	OS.GetClientRect (hwndTrack, clientRect);
+	int clientWidth = clientRect.right - clientRect.left;
+	int clientHeight = clientRect.bottom - clientRect.top;
+	int newX = lastX, newY = lastY;
+	if ((style & SWT.VERTICAL) != 0) {
+		newX = Math.min (Math.max (0, pt.x - startX), clientWidth - width);
+	} else {
+		newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
+	}
+	if (newX == lastX && newY == lastY) return result;
+
+	/* The event must be sent because doit flag is used */
+	Event event = new Event ();
+	event.x = newX;  event.y = newY;
+	event.width = width;  event.height = height;
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the selection
+	* event.  If this happens, end the processing of the
+	* Windows message by returning zero as the result of
+	* the window proc.
+	*/
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return LRESULT.ZERO;
+	return result;
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
