@@ -1376,6 +1376,10 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = indexOf (string);
+		if (index == -1) return;
+	}
 	/*
 	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
 	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
