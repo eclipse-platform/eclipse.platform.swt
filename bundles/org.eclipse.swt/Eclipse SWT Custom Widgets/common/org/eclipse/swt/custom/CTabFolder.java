@@ -951,7 +951,7 @@ private void redrawTabArea(int index) {
 		y = item.y;
 		Rectangle area = super.getClientArea();
 		width = area.x + area.width - x;
-		height = item.height;
+		height = area.y + area.height - y;
 	}
 	redraw(x, y, width, height, false);
 }
