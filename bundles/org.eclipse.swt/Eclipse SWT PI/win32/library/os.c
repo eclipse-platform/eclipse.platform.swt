@@ -687,6 +687,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreatePen)
 }
 #endif
 
+#ifndef NO_CreatePolygonRgn
+JNIEXPORT jint JNICALL OS_NATIVE(CreatePolygonRgn)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CreatePolygonRgn\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)CreatePolygonRgn((CONST POINT *)lparg0, arg1, arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "CreatePolygonRgn\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CreatePopupMenu
 JNIEXPORT jint JNICALL OS_NATIVE(CreatePopupMenu)
 	(JNIEnv *env, jclass that)
@@ -3019,6 +3034,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetWindowRect)
 	rc = (jboolean)GetWindowRect((HWND)arg0, lparg1);
 	if (arg1) setRECTFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "GetWindowRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetWindowRgn
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GetWindowRgn\n")
+	rc = (jint)GetWindowRgn((HWND)arg0, (HRGN)arg1);
+	NATIVE_EXIT(env, that, "GetWindowRgn\n")
 	return rc;
 }
 #endif
@@ -6374,6 +6401,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetWindowPos)
 	NATIVE_ENTER(env, that, "SetWindowPos\n")
 	rc = (jboolean)SetWindowPos((HWND)arg0, (HWND)arg1, arg2, arg3, arg4, arg5, arg6);
 	NATIVE_EXIT(env, that, "SetWindowPos\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowRgn
+JNIEXPORT jint JNICALL OS_NATIVE(SetWindowRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "SetWindowRgn\n")
+	rc = (jint)SetWindowRgn((HWND)arg0, (HRGN)arg1, arg2);
+	NATIVE_EXIT(env, that, "SetWindowRgn\n")
 	return rc;
 }
 #endif
