@@ -158,7 +158,11 @@ public void moveTo(float x, float y) {
 
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx, cy, cx, cy, x, y);
+	float cx1 = currentPoint.X + 2 * (cx - currentPoint.X) / 3;
+	float cy1 = currentPoint.Y + 2 * (cy - currentPoint.Y) / 3;
+	float cx2 = cx1 + (x - currentPoint.X) / 3;
+	float cy2 = cy1 + (y - currentPoint.Y) / 3;
+	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx1, cy1, cx2, cy2, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 
