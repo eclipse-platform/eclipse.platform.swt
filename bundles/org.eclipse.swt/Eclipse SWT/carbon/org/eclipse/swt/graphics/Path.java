@@ -166,6 +166,32 @@ public void addString(String string, float x, float y, Font font) {
 	closePathCallback.dispose();
 }
 
+CGPathElement element;
+int count, typeCount;
+byte[] types;
+float[] points;
+int applierFunc(int info, int elementPtr) {
+	OS.memcpy(element, elementPtr, CGPathElement.sizeof);
+	int type = 0, length = 1;
+	switch (element.type) {
+		case OS.kCGPathElementMoveToPoint: type = SWT.PATH_MOVE_TO; break;
+		case OS.kCGPathElementAddLineToPoint: type = SWT.PATH_LINE_TO; break;
+		case OS.kCGPathElementAddQuadCurveToPoint: type = SWT.PATH_QUAD_TO; length = 2; break;
+		case OS.kCGPathElementAddCurveToPoint: type = SWT.PATH_CUBIC_TO; length = 3; break;
+		case OS.kCGPathElementCloseSubpath: type = SWT.PATH_CLOSE; length = 0; break;
+	}
+	if (types != null) {
+		types[typeCount] = (byte)type;
+		if (length > 0) {
+			OS.memcpy(point, element.points, length * 8);
+			System.arraycopy(point, 0, points, count, length * 2);
+		}
+	}
+	typeCount++;
+	count += length * 2;
+	return 0;
+}
+
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathCloseSubpath(handle);
@@ -206,7 +232,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	return buffer[0] != 0xFFFFFFFF;
 }
 
-public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
+public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
 }
@@ -239,6 +265,30 @@ public void getCurrentPoint(float[] point) {
 	OS.CGPathGetCurrentPoint(handle, pt);
 	point[0] = pt.x;
 	point[1] = pt.y;
+}
+
+public PathData getPathData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Callback callback = new Callback(this, "applierFunc", 2);
+	int proc = callback.getAddress();
+	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	count = typeCount = 0;
+	element = new CGPathElement();
+	OS.CGPathApply(handle, 0, proc);
+	types = new byte[typeCount];
+	points = new float[count];
+	point = new float[6];
+	count = typeCount = 0;
+	OS.CGPathApply(handle, 0, proc);
+	callback.dispose();
+	PathData result = new PathData();
+	result.types = types;
+	result.points = points;
+	element = null;
+	types = null;
+	points = null;
+	point = null;
+	return result;
 }
 
 public boolean isDisposed() {
