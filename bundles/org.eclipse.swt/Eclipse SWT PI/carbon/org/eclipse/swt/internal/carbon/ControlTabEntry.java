@@ -11,5 +11,5 @@ public class ControlTabEntry {
 	public int icon;
 	public int name;
 	public boolean enabled;
-	public static final int sizeof = 9;
+	public static final int sizeof = 10;
 }

@@ -1418,7 +1418,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabsControl
 	jint *lparg6=NULL;
 	jint rc;
 
-printf("size of ControlTabEntry %d", sizeof(ControlTabEntry));
 	DEBUG_CALL("CreateTabsControl\n")
 
 	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
