@@ -44,6 +44,8 @@ public final class GC {
 	private boolean fXorMode= false;
 	private int fDamageRgn;
 	private boolean fPendingClip;
+	
+	private int[] fContext= new int[1];
 	//---- AW
 
 GC() {
@@ -2138,4 +2140,31 @@ public String toString () {
 		}
 		return 32;
 	}
+		
+	// new Core Graphic stuff
+	
+	public int carbon_CG_focus() {
+		
+		if (OS.QDBeginCGContext(handle, fContext) != OS.kNoErr)
+			return 0;
+			
+		int context= fContext[0];
+		
+		MacRect b= new MacRect();
+		OS.GetPortBounds(handle, b.getData()); 
+		
+		int clip= OS.NewRgn();
+		OS.GetPortClipRegion(handle, clip);
+		OS.ClipCGContextToRegion(context, b.getData(), clip);
+		OS.DisposeRgn(clip);
+	              		
+		OS.CGContextTranslateCTM(context, 0, b.getHeight());
+		OS.CGContextScaleCTM(context, 1, -1);
+		return context;
+	}
+
+	public void carbon_CG_unfocus() {
+		OS.QDEndCGContext(handle, fContext);							
+	}
+
 }
