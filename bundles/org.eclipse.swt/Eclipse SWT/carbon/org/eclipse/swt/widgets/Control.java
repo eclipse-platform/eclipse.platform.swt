@@ -967,9 +967,9 @@ public int internal_new_GC (GCData data) {
 	}
 
 	int wHandle= OS.GetControlOwner(handle);
-	int xGC= OS.GetWindowPort(wHandle);
-	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-    return xGC;
+	int port= OS.GetWindowPort(wHandle);
+	if (port == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+    return port;
 }
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -1352,18 +1352,13 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	return OS.noErr;
 }
 int processPaint (Object callData) {
-	
 	MacControlEvent mce= (MacControlEvent) callData;
 	GC gc= new GC (this);
 	Rectangle r= gc.carbon_focus(mce.getDamageRegionHandle(), mce.getGCContext());
 	if (r == null || !r.isEmpty()) {
-				
 		// erase background
-		if ((style & SWT.NO_BACKGROUND) == 0) {
-			if ((state & CANVAS) != 0)
-				gc.fillRectangle(r);
-		}
-		
+		if ((state & CANVAS) != 0 && (style & SWT.NO_BACKGROUND) == 0)
+			gc.fillRectangle(r);
 		if (hooks (SWT.Paint)) {
 			Event event = new Event();
 			//event.count = xEvent.count;
@@ -1371,16 +1366,12 @@ int processPaint (Object callData) {
 			event.gc = gc;
 			event.x = r.x;  event.y = r.y;
 			event.width = r.width;  event.height = r.height;
-			
 			sendEvent (SWT.Paint, event);
 		}
 	}
-	
 	gc.carbon_unfocus ();
-	
 	if (!gc.isDisposed ())
 		gc.dispose ();
-
 	return OS.noErr;
 }
 int processResize (Object callData) {
