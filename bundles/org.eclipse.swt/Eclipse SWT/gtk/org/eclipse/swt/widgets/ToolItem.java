@@ -495,21 +495,6 @@ int processMouseExit (int int0, int int1, int int2) {
 }
 
 int processSelection  (int int0, int int1, int int2) {
-	if ((style & SWT.RADIO) != 0) {
-		this.setSelection (true);
-		ToolItem [] items = parent.getItems ();
-		int index = 0;
-		while (index < items.length && items [index] != this) index++;
-		ToolItem item;
-		int i = index;
-		while (--i >= 0 && ((item = items [i]).style & SWT.RADIO) != 0) {
-			item.setSelection (false);
-		}
-		i = index;
-		while (++i < items.length && ((item = items [i]).style & SWT.RADIO) != 0) {
-			item.setSelection (false);
-		}
-	}
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int eventPtr = OS.gtk_get_current_event ();
@@ -530,6 +515,11 @@ int processSelection  (int int0, int int1, int int2) {
 				}
 			}
 			OS.gdk_event_free (eventPtr);
+		}
+	}
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
 		}
 	}
 	postEvent (SWT.Selection, event);
@@ -577,6 +567,17 @@ void resizeControl () {
 	if (control == null) return;
 	//FIXME - we should not use computeSize()
 	control.setSize (control.computeSize (OS.GTK_WIDGET_WIDTH (handle), SWT.DEFAULT));
+}
+
+void selectRadio () {
+	int index = 0;
+	ToolItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
 }
 
 /**
@@ -709,6 +710,15 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+}
+
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 /**

@@ -533,19 +533,14 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 void selectRadio () {
-	this.setSelection (true);
-	ToolItem [] items = parent.getItems ();
 	int index = 0;
+	ToolItem [] items = parent.getItems ();
 	while (index < items.length && items [index] != this) index++;
-	ToolItem item;
-	int i = index;
-	while (--i >= 0 && ((item = items [i]).style & SWT.RADIO) != 0) {
-		item.setSelection (false);
-	}
-	i = index;
-	while (++i < items.length && ((item = items [i]).style & SWT.RADIO) != 0) {
-		item.setSelection (false);
-	}
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
 }
 void setBackgroundPixel(int pixel) {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
@@ -695,7 +690,14 @@ public void setImage (Image image) {
 	setSize (size.x, size.y, true);
 	redraw ();
 }
-
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
+}
 /**
  * Sets the selection state of the receiver.
  * <p>

@@ -472,7 +472,9 @@ int processFocusOut () {
 }
 int processSelection (int callData) {
 	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) selectRadio ();
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
 	}
 	return super.processSelection (callData);
 }
@@ -512,19 +514,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 void selectRadio () {
+	int index = 0;
 	Control [] children = parent._getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (this != child && child instanceof Button) {
-			Button button = (Button) child;
-			if ((button.getStyle () & SWT.RADIO) != 0) {
-				if (button.getSelection ()) {
-					button.setSelection (false);
-					button.postEvent (SWT.Selection);
-				}
-			}
-		}
-	}
+	while (index < children.length && children [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < children.length && children [j].setRadioSelection (false)) j++;
 	setSelection (true);
 }
 /**
@@ -627,6 +623,14 @@ void setDefault (boolean value) {
 public void setImage (Image image) {
 	checkWidget();
 	setBitmap (this.image = image);
+}
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 /**
  * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 

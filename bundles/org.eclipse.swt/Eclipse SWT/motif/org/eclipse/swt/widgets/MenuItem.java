@@ -515,6 +515,11 @@ int processSelection (int callData) {
 				break;
 		}
 	}
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
 	postEvent (SWT.Selection, event);
 	return 0;
 }
@@ -619,6 +624,16 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+void selectRadio () {
+	int index = 0;
+	MenuItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
 }
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
@@ -726,6 +741,14 @@ public void setMenu (Menu menu) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	
 	if (isActive) addAccelerators ();
+}
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 /**
  * Sets the selection state of the receiver.
