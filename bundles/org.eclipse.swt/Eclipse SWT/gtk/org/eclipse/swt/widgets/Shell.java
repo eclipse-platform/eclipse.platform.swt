@@ -373,7 +373,12 @@ void createHandle (int index) {
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
-	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
+	// The following line represents the approach we used in 1.2.
+	// The set_policy call is deprecated, and we achieve the same effect
+	// with the two lines that follow.
+	// OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
+	OS.gtk_widget_set_size_request(shellHandle, 0, 0);
+	OS.gtk_window_set_resizable(shellHandle, true);
 	createScrolledHandle (shellHandle);
 	/*
 	* High level GTK helpers, like gtk_window_set_decorated, simply
