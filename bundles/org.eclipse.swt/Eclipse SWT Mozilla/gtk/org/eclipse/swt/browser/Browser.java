@@ -368,11 +368,7 @@ public Browser(Composite parent, int style) {
 	OS.gtk_container_add (handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
 	
-	/*
-	* Note. The following code compiles without warning on a 
-	* 64 bit platform but won't run. 
-	*/
-	rc = baseWindow.InitWindow((int)/*64*/embedHandle, 0, 0, 0, rect.width, rect.height);
+	rc = baseWindow.InitWindow(embedHandle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
@@ -1645,7 +1641,7 @@ int /*long*/ QueryReferent(int /*long*/ riid, int /*long*/ ppvObject) {
 
 /* nsIInterfaceRequestor */
 
-int /*long*/ GetInterface(int /*long*/ riid,int /*long*/ ppvObject) {
+int /*long*/ GetInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
