@@ -339,6 +339,13 @@ void createHandle (int index) {
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 		if ((style & SWT.BORDER) == 0) {
 			int [] argList3 = new int [] {
+				/*
+				* Bug in Motif.  Setting the margin width to zero for
+				* a single line text field causes the field to draw
+				* garbage when the caret is placed at the start of
+				* the widget.  The fix is to not set the margin width.
+				*/
+//				OS.XmNmarginWidth, 0,
 				OS.XmNmarginHeight, 0,
 				OS.XmNshadowThickness, 0,
 			};
