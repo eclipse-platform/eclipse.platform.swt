@@ -6915,3 +6915,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMoveCursorAbs
 #endif
 	PhMoveCursorAbs(input_group, x, y);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtWidgetFlags
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetFlags
+  (JNIEnv *env, jobject that, jint widget)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtWidgetFlags\n");
+#endif
+	
+	return (jint)PtWidgetFlags((PtWidget_t *)widget);
+}

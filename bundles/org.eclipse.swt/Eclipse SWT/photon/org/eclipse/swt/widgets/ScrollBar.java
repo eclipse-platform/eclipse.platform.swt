@@ -182,10 +182,9 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	checkWidget();
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return (args [1] & OS.Pt_BLOCKED) == 0;
+	checkWidget ();
+	int topHandle = topHandle ();
+	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
 }
 
 /**
@@ -349,11 +348,9 @@ public int getThumb () {
  * </ul>
  */
 public boolean getVisible () {
-	checkWidget();
+	checkWidget ();
 	int topHandle = topHandle ();
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (topHandle, args.length / 3, args);
-	return (args [1] & OS.Pt_DELAY_REALIZE) == 0;
+	return (OS.PtWidgetFlags (topHandle) & OS.Pt_DELAY_REALIZE) == 0;
 }
 
 void hookEvents () {
@@ -403,7 +400,7 @@ public boolean isEnabled () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return OS.PtWidgetIsRealized (handle);
+	return getVisible() && parent.isVisible();
 }
 
 int processSelection (int info) {
@@ -493,12 +490,11 @@ void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	checkWidget();
-	int [] args = {
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
-	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	checkWidget ();
+	int topHandle = topHandle ();
+	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
+	OS.PtSetResources (topHandle, args.length / 3, args);
 }
 /**
  * Sets the amount that the receiver's value will be
@@ -648,7 +644,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 		OS.Pt_ARG_PAGE_INCREMENT, pageIncrement, 0,
 		OS.Pt_ARG_SLIDER_SIZE, thumb, 0,
 		OS.Pt_ARG_MINIMUM, minimum, 0,
-		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
+		OS.Pt_ARG_MAXIMUM, maximum-1, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
@@ -670,21 +666,21 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  * </ul>
  */
 public void setVisible (boolean visible) {
-	checkWidget();
-	if (visible == OS.PtWidgetIsRealized (handle)) return;
+	checkWidget ();
+	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResources (topHandle, args.length / 3, args);
 	if (visible) {
 		sendEvent (SWT.Show);
-		OS.PtRealizeWidget (handle);
+		OS.PtRealizeWidget (topHandle);
 		parent.resizeClientArea ();
 	} else {
-		OS.PtUnrealizeWidget (handle);
+		OS.PtUnrealizeWidget (topHandle);
 		parent.resizeClientArea ();
 		sendEvent(SWT.Hide);
-	}	
+	}
 }
 
 }

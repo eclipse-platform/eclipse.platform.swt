@@ -176,10 +176,9 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	checkWidget();
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return (args [1] & OS.Pt_BLOCKED) == 0;
+	checkWidget ();
+	int topHandle = topHandle ();
+	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
 }
 
 /**
@@ -580,12 +579,11 @@ public void setDefaultItem (MenuItem item) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	checkWidget();
-	int [] args = {
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
-	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	checkWidget ();
+	int topHandle = topHandle ();
+	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
+	OS.PtSetResources (topHandle, args.length / 3, args);
 }
 
 /**

@@ -266,16 +266,15 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	checkWidget();
+	checkWidget ();
 	/*
 	* Bug in Photon. The Pt_BLOCKED flag of a menu item is cleared
 	* when its parent menu is realized. The fix is to remember
 	* the menu item state and reset it when the menu item is
 	* realized.
 	*/
-//	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-//	OS.PtGetResources (handle, args.length / 3, args);
-//	return (args [1] & OS.Pt_BLOCKED) == 0;
+//	int topHandle = topHandle ();
+//	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
 	return enabled;
 }
 
@@ -335,9 +334,7 @@ public Menu getParent () {
 public boolean getSelection () {	
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return (args [1] & OS.Pt_SET) != 0;
+	return (OS.PtWidgetFlags (handle) & OS.Pt_SET) != 0;
 }
 
 void hookEvents () {
@@ -586,13 +583,12 @@ public void setAccelerator (int accelerator) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	checkWidget ();
 	this.enabled = enabled;
-	int [] args = {
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
-		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
-	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	int topHandle = topHandle ();
+	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
+	OS.PtSetResources (topHandle, args.length / 3, args);
 }
 
 public void setImage (Image image) {

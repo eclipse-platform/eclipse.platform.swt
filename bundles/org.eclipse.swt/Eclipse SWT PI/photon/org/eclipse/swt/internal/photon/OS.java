@@ -2656,6 +2656,7 @@ public static final native int PtWidgetRid (int widget);
 public static final native void PtMainLoop ();
 public static final native int PtEventHandler (int event);
 public static final native int PtDestroyWidget (int widget);
+public static final native int PtWidgetFlags (int widget);
 public static final native int PtWidgetCanvas (int widget, int canvas_rect);
 public static final native int PtLabelWidgetCanvas (int widget, PhRect_t canvas_rect);
 public static final native int PtWidgetExtent (int widget, int extent);

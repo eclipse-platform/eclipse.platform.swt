@@ -303,9 +303,7 @@ public Image getImage () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return (args [1] & OS.Pt_SET) != 0;
+	return (OS.PtWidgetFlags (handle) & OS.Pt_SET) != 0;
 }
 
 String getNameText () {
