@@ -159,7 +159,7 @@ void createHandle (int index) {
 	}
 	int [] args = {
 		sizeArg, size, 0,
-		OS.Pt_ARG_MAXIMUM, 100, 0,
+		OS.Pt_ARG_MAXIMUM, 99, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, 10, 0,
 		OS.Pt_ARG_SLIDER_SIZE, 10, 0,
 		OS.Pt_ARG_BASIC_FLAGS, basicFlags, ~0,
@@ -248,7 +248,7 @@ public int getMaximum () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_MAXIMUM, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	return args [1];
+	return args [1] + 1;
 }
 
 /**
@@ -636,12 +636,12 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	int [] args = {
+		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
+		OS.Pt_ARG_MINIMUM, minimum, 0,
+		OS.Pt_ARG_SLIDER_SIZE, thumb, 0,
 		OS.Pt_ARG_GAUGE_VALUE, selection, 0,
 		OS.Pt_ARG_INCREMENT, increment, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, pageIncrement, 0,
-		OS.Pt_ARG_SLIDER_SIZE, thumb, 0,
-		OS.Pt_ARG_MINIMUM, minimum, 0,
-		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
