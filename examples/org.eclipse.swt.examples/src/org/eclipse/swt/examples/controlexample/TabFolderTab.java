@@ -57,6 +57,7 @@ class TabFolderTab extends Tab {
 		int style = getDefaultStyle();
 		if (topButton.getSelection ()) style |= SWT.TOP;
 		if (bottomButton.getSelection ()) style |= SWT.BOTTOM;
+		if (borderButton.getSelection ()) style |= SWT.BORDER;
 
 		/* Create the example widgets */
 		tabFolder1 = new TabFolder (tabFolderGroup, style);
@@ -81,6 +82,8 @@ class TabFolderTab extends Tab {
 		topButton.setSelection(true);
 		bottomButton = new Button (styleGroup, SWT.RADIO);
 		bottomButton.setText ("SWT.BOTTOM");
+		borderButton = new Button (styleGroup, SWT.CHECK);
+		borderButton.setText ("SWT.BORDER");
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
@@ -114,5 +117,15 @@ class TabFolderTab extends Tab {
 	 */
 	String getTabText () {
 		return "TabFolder";
+	}
+
+	/**
+	 * Sets the state of the "Example" widgets.
+	 */
+	void setExampleWidgetState () {
+		super.setExampleWidgetState ();
+		topButton.setSelection ((tabFolder1.getStyle () & SWT.TOP) != 0);
+		bottomButton.setSelection ((tabFolder1.getStyle () & SWT.BOTTOM) != 0);
+		borderButton.setSelection ((tabFolder1.getStyle () & SWT.BORDER) != 0);
 	}
 }

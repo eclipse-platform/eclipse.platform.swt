@@ -59,6 +59,7 @@ public class ControlExample {
 			new ComboTab (this),
 			new CoolBarTab (this),
 			new DialogTab (this),
+			new GroupTab (this),
 			new LabelTab (this),
 			new ListTab (this),
 			new ProgressBarTab (this),
