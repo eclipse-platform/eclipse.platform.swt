@@ -2973,10 +2973,16 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = itemRect.right - gridWidth;
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						for (int i=phdn.iItem; i<count; i++) {
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, itemRect);
+						}
+						rect.right = itemRect.right;
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						//TODO - column flashes when resized
 						if (phdn.iItem != 0) {
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
 							rect.left = itemRect.left;
 							rect.right = itemRect.right;
 							OS.InvalidateRect (handle, rect, true);
@@ -3008,6 +3014,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							}
 						}
 					}
+					setScrollWidth ();
 				}
 				break;
 			}
