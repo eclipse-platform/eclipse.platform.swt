@@ -2558,7 +2558,7 @@ public void setTopIndex(int index) {
 		} else if (index > itemCount - itemCountWhole) {
 			super.setTopIndex(itemCount - itemCountWhole, true);
 		} else {
-			showItem(getItem(index));
+			showSelectableItem(getItem(index));
 		}
 	}
 }
