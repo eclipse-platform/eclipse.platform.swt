@@ -231,7 +231,7 @@ class TableTab extends ScrollableTab {
 	void setItemsBackground () {
 		if (itemBackgroundButton == null) return;
 		Color color = itemBackgroundColor;
-		if (color == null) color = itemBackgroundButton.getBackground ();
+		if (color == null) color = table1.getItem (0).getBackground ();
 		Image image = itemBackgroundButton.getImage ();
 		drawImage (image, color);
 		itemBackgroundButton.setImage (image);
@@ -248,7 +248,7 @@ class TableTab extends ScrollableTab {
 	void setItemsForeground () {
 		if (itemForegroundButton == null) return;
 		Color color = itemForegroundColor;
-		if (color == null) color = itemForegroundButton.getForeground ();
+		if (color == null) color = table1.getItem (0).getForeground ();
 		Image image = itemForegroundButton.getImage ();
 		drawImage (image, color);
 		itemForegroundButton.setImage (image);

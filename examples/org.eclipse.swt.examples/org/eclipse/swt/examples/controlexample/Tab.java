@@ -390,13 +390,13 @@ abstract class Tab {
 	 */
 	void setExampleWidgetBackground () {
 		if (backgroundButton == null) return;
+		Control [] controls = getExampleWidgets ();
 		Color color = backgroundColor;
-		if (color == null) color = backgroundButton.getBackground ();
+		if (color == null) color = controls [0].getBackground ();
 		Image image = backgroundButton.getImage ();
 		drawImage (image, color);
 		backgroundButton.setImage (image);
 		if (backgroundColor == null) return;
-		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {
 			Control control = controls[i];
 			control.setBackground (backgroundColor);
@@ -430,13 +430,13 @@ abstract class Tab {
 	 */
 	void setExampleWidgetForeground () {
 		if (foregroundButton == null) return;
+		Control [] controls = getExampleWidgets ();
 		Color color = foregroundColor;
-		if (color == null) color = foregroundButton.getForeground ();
+		if (color == null) color = controls [0].getForeground ();
 		Image image = foregroundButton.getImage ();
 		drawImage (image, color);
 		foregroundButton.setImage (image);
 		if (foregroundColor == null) return;
-		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {
 			Control control = controls[i];
 			control.setForeground (foregroundColor);
