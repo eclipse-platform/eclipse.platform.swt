@@ -1,12 +1,10 @@
 package org.eclipse.swt.examples.controlexample;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
@@ -19,7 +17,6 @@ import java.util.ResourceBundle;
 * user to interact with a control.
 */
  
-/* Class Definition */
 public class ControlExample {
 	Shell shell;
 	TabFolder tabFolder;

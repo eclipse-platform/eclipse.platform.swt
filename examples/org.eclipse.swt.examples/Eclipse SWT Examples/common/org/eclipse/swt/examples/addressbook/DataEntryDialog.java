@@ -1,5 +1,10 @@
 package org.eclipse.swt.examples.addressbook;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 /* Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;

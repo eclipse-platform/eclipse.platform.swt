@@ -1,5 +1,10 @@
 package org.eclipse.swt.examples.explorer;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;

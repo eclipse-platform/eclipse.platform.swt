@@ -1,12 +1,10 @@
 package org.eclipse.swt.examples.controlexample;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
@@ -18,7 +16,6 @@ import org.eclipse.swt.events.*;
 * aligned.
 */
 
-/* Class Definition */
 abstract class AlignableTab extends Tab {
 
 	/* Allignment Controls */
