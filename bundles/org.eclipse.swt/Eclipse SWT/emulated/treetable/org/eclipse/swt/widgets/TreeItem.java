@@ -357,7 +357,7 @@ Rectangle getCellBounds (int columnIndex) {
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
 	int itemHeight = parent.itemHeight;
-	Rectangle result = parent.uncheckedImage.getBounds ();
+	Rectangle result = parent.checkboxBounds;
 	Point[] hLinePoints = getHconnectorEndpoints ();
 	result.x = hLinePoints [1].x;
 	result.y = parent.getItemY (this) + (itemHeight - result.height) / 2;
@@ -784,21 +784,22 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
-			Image image = expanded ? parent.expandedImage : parent.collapsedImage;
+			Image image = expanded ? parent.getExpandedImage () : parent.getCollapsedImage ();
 			gc.drawImage (image, expanderBounds.x, expanderBounds.y);
 		}
 		
 		/* Draw checkbox if parent Tree has style SWT.CHECK */
 		if ((parent.style & SWT.CHECK) != 0) {
-			Image baseImage = grayed ? parent.grayUncheckedImage : parent.uncheckedImage;
+			Image baseImage = grayed ? parent.getGrayUncheckedImage () : parent.getUncheckedImage ();
 			Rectangle checkboxBounds = getCheckboxBounds ();
 			gc.drawImage (baseImage, checkboxBounds.x, checkboxBounds.y);
 			/* Draw checkmark if item is checked */
 			if (checked) {
-				Rectangle checkmarkBounds = parent.checkmarkImage.getBounds ();
+				Image checkmarkImage = parent.getCheckmarkImage ();
+				Rectangle checkmarkBounds = checkmarkImage.getBounds ();
 				int xInset = (checkboxBounds.width - checkmarkBounds.width) / 2;
 				int yInset = (checkboxBounds.height - checkmarkBounds.height) / 2;
-				gc.drawImage (parent.checkmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
+				gc.drawImage (checkmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
 			}
 		}
 	}

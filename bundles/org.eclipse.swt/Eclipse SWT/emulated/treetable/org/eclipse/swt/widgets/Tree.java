@@ -27,9 +27,7 @@ public class Tree extends Composite {
 
 	Color connectorLineColor, gridLineColor, highlightShadowColor, normalShadowColor;
 	Color selectionBackgroundColor, selectionForegroundColor;
-	Image expandedImage, collapsedImage;
-	Image uncheckedImage, grayUncheckedImage, checkmarkImage;
-	Rectangle expanderBounds;
+	Rectangle expanderBounds, checkboxBounds;
 	Cursor resizeCursor;
 	
 	static final int MARGIN_IMAGE = 3;
@@ -38,53 +36,11 @@ public class Tree extends Composite {
 	static final int TOLLERANCE_COLUMNRESIZE = 2;
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
-	static final ImageData IMAGEDATA_CHECKMARK;
-	static final ImageData IMAGEDATA_GRAY_UNCHECKED;
-	static final ImageData IMAGEDATA_UNCHECKED;
-	static final ImageData IMAGEDATA_COLLAPSED;
-	static final ImageData IMAGEDATA_EXPANDED;
-	
-	static {
-		PaletteData fourBit = new PaletteData (new RGB[] {
-			new RGB (0, 0, 0), new RGB (128, 0, 0), new RGB (0, 128, 0), new RGB (128, 128, 0),
-			new RGB (0, 0, 128), new RGB (128, 0, 128), new RGB (0, 128, 128), new RGB (128, 128, 128),
-			new RGB (192, 192, 192), new RGB (255, 0, 0), new RGB (0, 255, 0), new RGB (255, 255, 0),
-			new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});	
-		IMAGEDATA_COLLAPSED = new ImageData (
-			9, 9, 4, 										/* width, height, depth */
-			fourBit, 4,
-			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		IMAGEDATA_COLLAPSED.transparentPixel = 15;			/* white for transparency */
-		IMAGEDATA_EXPANDED = new ImageData (
-			9, 9, 4, 										/* width, height, depth */
-			fourBit, 4,
-			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		IMAGEDATA_EXPANDED.transparentPixel = 15;			/* use white for transparency */
-		
-		PaletteData uncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
-		PaletteData grayUncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
-		PaletteData checkMarkPalette = new PaletteData (	
-			new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
-		byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
-		IMAGEDATA_UNCHECKED = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
-		IMAGEDATA_GRAY_UNCHECKED = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
-		IMAGEDATA_CHECKMARK = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
-		IMAGEDATA_CHECKMARK.transparentPixel = 1;
-	}
+	static final String ID_EXPANDED = "Tree.Expanded";
+	static final String ID_COLLAPSED = "Tree.Collapsed";
+	static final String ID_UNCHECKED = "Tree.Unchecked";
+	static final String ID_GRAYUNCHECKED = "Tree.GrayUnchecked";
+	static final String ID_CHECKMARK = "Tree.Checkmark";
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
@@ -100,13 +56,10 @@ public Tree (Composite parent, int style) {
 	selectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 	selectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
 	resizeCursor = display.getSystemCursor (SWT.CURSOR_SIZEWE);
-	expandedImage = new Image (display, IMAGEDATA_EXPANDED);
-	collapsedImage = new Image (display, IMAGEDATA_COLLAPSED);
-	uncheckedImage = new Image (display, IMAGEDATA_UNCHECKED);
-	grayUncheckedImage = new Image (display, IMAGEDATA_GRAY_UNCHECKED);
-	checkmarkImage = new Image (display, IMAGEDATA_CHECKMARK);
 	connectorLineColor = new Color (display, 170, 170, 170);
-	expanderBounds = expandedImage.getBounds ();
+	initImages (display);
+	expanderBounds = getExpandedImage ().getBounds ();
+	checkboxBounds = getUncheckedImage ().getBounds ();
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -646,11 +599,6 @@ void doDispose () {
 		columns [i].dispose (false);
 	}
 	connectorLineColor.dispose ();
-	expandedImage.dispose ();
-	collapsedImage.dispose ();
-	uncheckedImage.dispose ();
-	grayUncheckedImage.dispose ();
-	checkmarkImage.dispose ();
 	availableItems = items = selectedItems = null;
 	columns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
@@ -660,8 +608,6 @@ void doDispose () {
 	gridLineColor = highlightShadowColor = normalShadowColor = connectorLineColor = null;
 	selectionBackgroundColor = selectionForegroundColor = null;
 	resizeCursor = null;
-	expandedImage = collapsedImage = uncheckedImage = null;
-	grayUncheckedImage = checkmarkImage = null;
 }
 void doEnd (int stateMask) {
 	int lastAvailableIndex = availableItems.length - 1;
@@ -1386,6 +1332,9 @@ TreeItem[] getAllItems () {
 int getCellPadding () {
 	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
 }
+Image getCheckmarkImage () {
+	return (Image) display.getData (ID_CHECKMARK);
+}
 public Control[] getChildren () {
 	checkWidget ();
 	Control[] controls = _getChildren ();
@@ -1399,6 +1348,9 @@ public Control[] getChildren () {
 		 }
 	}
 	return result;
+}
+Image getCollapsedImage () {
+	return (Image) display.getData (ID_COLLAPSED);
 }
 public TreeColumn getColumn (int index) {
 	checkWidget ();
@@ -1414,6 +1366,12 @@ public TreeColumn[] getColumns () {
 	TreeColumn[] result = new TreeColumn [columns.length];
 	System.arraycopy (columns, 0, result, 0, columns.length);
 	return result;
+}
+Image getExpandedImage () {
+	return (Image) display.getData (ID_EXPANDED);
+}
+Image getGrayUncheckedImage () {
+	return (Image) display.getData (ID_GRAYUNCHECKED);
 }
 public int getGridLineWidth () {
 	checkWidget ();
@@ -1493,6 +1451,9 @@ public TreeItem getTopItem () {
 	checkWidget ();
 	if (availableItems.length == 0) return null;
 	return availableItems [topIndex];
+}
+Image getUncheckedImage () {
+	return (Image) display.getData (ID_UNCHECKED);
 }
 void handleEvents (Event event) {
 	switch (event.type) {
@@ -1713,6 +1674,70 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean pa
 int indexOf (TreeColumn column) {
 	checkWidget ();
 	return column.getIndex ();
+}
+static void initImages (final Display display) {
+	if (display.getData (ID_CHECKMARK) != null) return;
+	
+	PaletteData fourBit = new PaletteData (new RGB[] {
+		new RGB (0, 0, 0), new RGB (128, 0, 0), new RGB (0, 128, 0), new RGB (128, 128, 0),
+		new RGB (0, 0, 128), new RGB (128, 0, 128), new RGB (0, 128, 128), new RGB (128, 128, 128),
+		new RGB (192, 192, 192), new RGB (255, 0, 0), new RGB (0, 255, 0), new RGB (255, 255, 0),
+		new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});	
+	ImageData collapsed = new ImageData (
+		9, 9, 4, 										/* width, height, depth */
+		fourBit, 4,
+		new byte[] {
+			119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+			112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+			127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+			112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+			127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+			112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+	collapsed.transparentPixel = 15;			/* white for transparency */
+	ImageData expanded = new ImageData (
+		9, 9, 4, 										/* width, height, depth */
+		fourBit, 4,
+		new byte[] {
+			119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+			112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+			127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+			112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+			127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+			112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+	expanded.transparentPixel = 15;			/* use white for transparency */
+		
+	PaletteData uncheckedPalette = new PaletteData (	
+		new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
+	PaletteData grayUncheckedPalette = new PaletteData (	
+		new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
+	PaletteData checkMarkPalette = new PaletteData (	
+		new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
+	byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
+	ImageData unchecked = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
+	ImageData grayUnchecked = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
+	ImageData checkmark = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
+	checkmark.transparentPixel = 1;
+
+	display.setData (ID_EXPANDED, new Image (display, expanded));
+	display.setData (ID_COLLAPSED, new Image (display, collapsed));
+	display.setData (ID_UNCHECKED, new Image (display, unchecked));
+	display.setData (ID_GRAYUNCHECKED, new Image (display, grayUnchecked));
+	display.setData (ID_CHECKMARK, new Image (display, checkmark));
+	
+	display.disposeExec (new Runnable () {
+		public void run() {
+			Image expanded = (Image) display.getData (ID_EXPANDED);
+			if (expanded != null) expanded.dispose ();
+			Image collapsed = (Image) display.getData (ID_COLLAPSED);
+			if (collapsed != null) collapsed.dispose ();
+			Image unchecked = (Image) display.getData (ID_UNCHECKED);
+			if (unchecked != null) unchecked.dispose ();
+			Image grayUnchecked = (Image) display.getData (ID_GRAYUNCHECKED);
+			if (grayUnchecked != null) grayUnchecked.dispose ();
+			Image checkmark = (Image) display.getData (ID_CHECKMARK);
+			if (checkmark != null) checkmark.dispose ();
+		}
+	});
 }
 /*
  * Important: Assumes that item just became available (ie.- was either created
