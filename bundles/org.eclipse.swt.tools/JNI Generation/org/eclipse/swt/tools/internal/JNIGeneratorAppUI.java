@@ -763,10 +763,23 @@ void createActionButtons(Composite parent) {
 			if (!updateOutputDir()) return;
 			Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
 			shell.setCursor(cursor);
-			app.generate();
+			shell.setEnabled(false);
+			final boolean[] done = new boolean[1];
+			new Thread() {
+				public void run() {
+					try {
+						app.generate();
+					} finally {
+						done[0] = true;
+					}
+				}
+			}.start();
+			while (!done[0]) {
+				if (!display.readAndDispatch()) display.sleep();
+			}
+			shell.setEnabled(true);
 			shell.setCursor(null);
 			cursor.dispose();
-			
 		}
 	});
 	
