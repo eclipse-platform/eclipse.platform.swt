@@ -2060,6 +2060,7 @@ void resizeRedraw(TableColumn column, int oldColumnWidth, int newColumnWidth) {
 void scrollHorizontal(int numPixel) {
 	Rectangle clientArea = getClientArea();	
 
+	moveColumns(TableColumn.FILL, numPixel);
 	scroll(
 		numPixel, 0, 								// destination x, y
 		0, 0, 										// source x, y
@@ -2068,7 +2069,6 @@ void scrollHorizontal(int numPixel) {
 		numPixel, 0, 								// destination x, y
 		0, 0, 										// source x, y
 		clientArea.width, clientArea.height, true);
-	moveColumns(TableColumn.FILL, numPixel);
 }
 /**
  * Scroll vertically by 'scrollIndexCount' items.
