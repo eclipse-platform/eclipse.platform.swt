@@ -2685,7 +2685,30 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	return super.WM_LBUTTONDBLCLK (wParam, lParam);
+	LRESULT result =  super.WM_LBUTTONDBLCLK (wParam, lParam);
+	/*
+	 * In a tree with multiple columns, the NM_DBLCLK event is only received 
+	 * for the first column.  The following code detects a double click
+	 * in the other columns and issues a DefaultSelection event.
+	 */
+	if (!ignoreSelect) {
+		if (hwndHeader != 0 && (style & SWT.FULL_SELECTION) != 0) {
+			TVHITTESTINFO lpht = new TVHITTESTINFO ();
+			lpht.x = (short) (lParam & 0xFFFF);
+			lpht.y = (short) (lParam >> 16);
+			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+			if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEM) == 0) {
+				Event event = new Event ();
+				TVITEM tvItem = new TVITEM ();
+				tvItem.hItem = lpht.hItem;
+				tvItem.mask = OS.TVIF_PARAM;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				event.item = items [tvItem.lParam];
+				postEvent (SWT.DefaultSelection, event);
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
