@@ -55,10 +55,11 @@ protected void checkSubclass () {
 }
 public void dispose () {
 	if (isDisposed ()) return;
-	dispose (true);
-	Rectangle bounds = parent.getClientArea ();
+	Rectangle parentBounds = parent.getClientArea ();
 	int x = getX ();
-	parent.redraw (x, 0, bounds.width - x, bounds.height, true);
+	Tree parent = this.parent;
+	dispose (true);
+	parent.redraw (x, 0, parentBounds.width - x, parentBounds.height, true);
 }
 void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */

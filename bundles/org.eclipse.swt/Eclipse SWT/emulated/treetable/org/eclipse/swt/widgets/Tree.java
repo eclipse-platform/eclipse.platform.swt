@@ -90,6 +90,11 @@ void addColumn (TreeColumn column, int index) {
 	newColumns[index] = column;
 	System.arraycopy (columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
+	
+	/* allow all items to update their internal structures accordingly */
+	for (int i = 0; i < items.length; i++) {
+		items [i].columnAdded (column);
+	}
 
 	/* no visual update needed because column's initial width is 0 */
 }
@@ -1342,6 +1347,7 @@ void headerDoPaint(Event event) {
 	}
 }
 void headerPaintShadow(GC gc, Rectangle bounds, boolean paintHorizontalLines, boolean paintVerticalLines) {
+	gc.setClipping (bounds.x, bounds.y, bounds.width, getHeaderHeight ());
 	Color oldForeground = gc.getForeground();
 	
 	/* draw highlight shadow */
@@ -1637,11 +1643,17 @@ void removeColumn(TreeColumn column) {
 
 	TreeColumn[] newColumns = new TreeColumn[columns.length - 1];
 	System.arraycopy(columns, 0, newColumns, 0, index);
-	System.arraycopy(columns, index + 1, newColumns, index, columns.length - index);
+	System.arraycopy(columns, index + 1, newColumns, index, newColumns.length - index);
 	columns = newColumns;
 	
 	TreeColumn lastColumn = columns[columns.length - 1];
 	getHorizontalBar().setMaximum(lastColumn.getX() + lastColumn.width);
+	
+	/* allow all items to update their internal structures accordingly */
+	for (int i = 0; i < items.length; i++) {
+		items [i].columnRemoved (column, index);
+	}
+
 }
 void removeSelectedItem(int index) {
 	TreeItem[] newSelectedItems = new TreeItem[selectedItems.length - 1];
