@@ -71,8 +71,11 @@ public final class RowLayout extends Layout {
 	 */
 	public boolean wrap = true;
 	/**
-	 * pack specifies whether all controls in the layout are forced
-	 * to be the same size.
+	 * pack specifies whether all controls in the layout take
+	 * their preferred size.  If pack is false, all controls will 
+	 * have the same size which is the size required to accommodate the 
+	 * largest preferred height and the largest preferred width of all 
+	 * the controls in the layout.
 	 *
 	 * The default value is true.
 	 */
