@@ -179,8 +179,7 @@ public boolean forceFocus () {
  */
 public ToolItem getItem (int index) {
 	checkWidget();
-	ToolItem [] items = getItems ();
-	if (0 <= index && index < items.length) return items [index];
+	if (0 <= index && index < itemCount) return items [index];
 	error (SWT.ERROR_INVALID_RANGE);
 	return null;
 }
@@ -204,8 +203,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point pt) {
 	checkWidget();
 	if (pt == null) error (SWT.ERROR_NULL_ARGUMENT);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		Rectangle rect = items [i].getBounds ();
 		if (rect.contains (pt)) return items [i];
 	}
@@ -288,8 +286,7 @@ public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
@@ -297,14 +294,12 @@ public int indexOf (ToolItem item) {
 int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
 	int marginWidth = 0, marginHeight = 0;
-	ToolItem [] children = getItems ();
-	int length = children.length;
 	int x = marginWidth, y = marginHeight;
 	int maxHeight = 0, maxX = 0, rows = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		Rectangle rect = item.getBounds ();
 		if (wrap && i != 0 && x + rect.width > nWidth) {
 			rows++;
 			x = marginWidth;  y += ySpacing + maxHeight;
@@ -312,7 +307,7 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 		}
 		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
-			child.setBounds (x, y, rect.width, rect.height);
+			item.setBounds (x, y, rect.width, rect.height);
 		}
 		x += xSpacing + rect.width;
 		maxX = Math.max (maxX, x);
@@ -322,14 +317,12 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
 	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
-	ToolItem [] children = getItems ();
-	int length = children.length;
 	int x = marginWidth, y = marginHeight;
 	int maxWidth = 0, maxY = 0, cols = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		Rectangle rect = item.getBounds ();
 		if (wrap && i != 0 && y + rect.height > nHeight) {
 			cols++;
 			x += xSpacing + maxWidth;  y = marginHeight;
@@ -337,7 +330,7 @@ int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
 		}
 		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
-			child.setBounds (x, y, rect.width, rect.height);
+			item.setBounds (x, y, rect.width, rect.height);
 		}
 		y += ySpacing + rect.height;
 		maxY = Math.max (maxY, y);
@@ -352,25 +345,23 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 	}
 }
 boolean mnemonicHit (char key) {
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null) {
-			char mnemonic = findMnemonic (item.getText ());
-			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					XmProcessTraversal (item.handle, OS.XmTRAVERSE_CURRENT);
-					item.click (false, 0);
-					return true;
-				}
+		char mnemonic = findMnemonic (item.getText ());
+		if (mnemonic != '\0') {
+			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+				XmProcessTraversal (item.handle, OS.XmTRAVERSE_CURRENT);
+				item.click (false, 0);
+				return true;
 			}
 		}
 	}
 	return false;
 }
 boolean mnemonicMatch (char key) {
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null && item.getEnabled ()) {
+		if (item.getEnabled ()) {
 			char mnemonic = findMnemonic (item.getText ());
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
@@ -406,20 +397,15 @@ void releaseWidget () {
 }
 void removeControl (Control control) {
 	super.removeControl (control);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null && item.control == control) {
-			item.setControl (null);
-		}
+		if (item.control == control) item.setControl (null);
 	}
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setBackgroundPixel (pixel);
-		}
+	for (int i=0; i<itemCount; i++) {
+		items[i].setBackgroundPixel (pixel);
 	}
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -433,21 +419,17 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 public void setFont (Font font) {
 	checkWidget();
 	super.setFont (font);
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null) {
-			Point size = item.computeSize ();
-			item.setSize (size.x, size.y, false);
-		}
+		Point size = item.computeSize ();
+		item.setSize (size.x, size.y, false);
 	}
 	relayout ();
 }
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setForegroundPixel (pixel);
-		}
+	for (int i = 0; i < itemCount; i++) {
+		items[i].setForegroundPixel (pixel);
 	}
 }
 public void setRedraw (boolean redraw) {
@@ -460,14 +442,14 @@ public void setRedraw (boolean redraw) {
 }
 boolean setTabItemFocus (boolean next) {
 	int index = 0;
-	while (index < items.length) {
+	while (index < itemCount) {
 		ToolItem item = items [index];
-		if (item != null && (item.style & SWT.SEPARATOR) == 0) {
+		if ((item.style & SWT.SEPARATOR) == 0) {
 			if (item.getEnabled ()) break;
 		}
 		index++;
 	}
-	if (index == items.length) return false;
+	if (index == itemCount) return false;
 	return super.setTabItemFocus (next);
 }
 int traversalCode (int key, XKeyEvent xEvent) {
@@ -476,7 +458,6 @@ int traversalCode (int key, XKeyEvent xEvent) {
 int xFocusIn (XFocusChangeEvent xEvent) {
 	int newFocus = OS.XmGetFocusWidget (handle); 
 	if (newFocus != focusHandle ()) {
-		/* a child ToolItem has received focus */
 		for (int i = 0; i < itemCount; i++) {
 			if (items [i].handle == newFocus) {
 				lastFocus = items [i];
