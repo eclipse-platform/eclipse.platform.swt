@@ -122,7 +122,7 @@ public class StyledText extends Canvas {
 	int columnX;							// keep track of the horizontal caret position
 										// when changing lines/pages. Fixes bug 5935
 	int caretOffset = 0;
-	Point selection = new Point(0, 0);	// x is character offset, y is length
+	Point selection = new Point(0, 0);	// x and y are start and end caret offsets of selection
 	int selectionAnchor;				// position of selection anchor. 0 based offset from beginning of text
 	Point doubleClickSelection;			// selection after last mouse double click
 	boolean editable = true;
@@ -1846,7 +1846,11 @@ public void addModifyListener(ModifyListener modifyListener) {
  * Adds a selection listener. A Selection event is sent by the widget when the 
  * selection has changed.
  * <p>
- *
+ * When <code>widgetSelected</code> is called, the event x amd y fields contain
+ * the start and end caret indices of the selection.
+ * <code>widgetDefaultSelected</code> is not called for StyledTexts.
+ * </p>
+ * 
  * @param listener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
