@@ -10,6 +10,8 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
+cd `dirname $0`
+
 export IVE_HOME=~/ive/bin
 
 make -f make_qnx.mak $1 $2 $3 $4
