@@ -1864,6 +1864,7 @@ void shape (final int hdc, final StyleItem run) {
 				int hFont = OS.SelectObject(hdc, hNewFont[0]);
 				if (shape(hdc, run, chars, buffer, maxGlyphs)) {
 					run.fallbackFont = hNewFont[0];
+					OS.SelectObject(hdc, hFont);
 				} else {
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
