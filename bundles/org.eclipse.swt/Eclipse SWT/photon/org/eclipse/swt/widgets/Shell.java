@@ -744,7 +744,10 @@ int Pt_CB_RESIZE (int widget, int info) {
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	resizeBounds (args [1], args [4]);
 	sendEvent(SWT.Resize);
-	if (layout != null) layout (false);
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false);
+	}
 	return OS.Pt_CONTINUE;
 }
 
@@ -986,7 +989,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		if (!sameExtent & resize) {
 			resizeBounds (newArea.size_w, newArea.size_h);
 			sendEvent(SWT.Resize);
-			if (layout != null) layout (false);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
+			}
 		}
 	}
 	
