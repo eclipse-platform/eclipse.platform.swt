@@ -5995,16 +5995,23 @@ public void setEditable(boolean editable) {
  */
 public void setFont(Font font) {
 	checkWidget();
-
+	int oldLineHeight;
+	
 	super.setFont(font);	
 	if (boldFont != null) {
 		boldFont.dispose();
 	}
 	initializeFonts();
+	oldLineHeight = lineHeight;
 	calculateLineHeight();
+	// keep the same top line visible. fixes 5815
+	if (lineHeight != oldLineHeight) {
+		setVerticalScrollOffset(verticalScrollOffset * lineHeight / oldLineHeight, true);
+		claimBottomFreeSpace();
+	}
 	calculateContentWidth();
 	calculateScrollBars();
-	setTabs(getTabs());
+	calculateTabWidth();
 	if (isBidi()) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
@@ -6707,7 +6714,10 @@ public void setTopIndex(int topIndex) {
  * Scrolls the widget vertically.
  * <p>
  *
- * @param pixels number of pixels to scroll. > 0 = scroll up, < 0 scroll down
+ * @param pixelOffset the new vertical scroll offset
+ * @param adjustScrollBar 
+ * 	true= the scroll thumb will be moved to reflect the new scroll offset.
+ * 	false = the scroll thumb will not be moved
  */
 void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	Rectangle clientArea;
