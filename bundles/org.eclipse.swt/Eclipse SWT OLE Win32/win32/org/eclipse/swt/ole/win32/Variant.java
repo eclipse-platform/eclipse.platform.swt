@@ -191,6 +191,10 @@ public Variant(boolean val) {
  */
 public void dispose() {
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
+		if (byRefPtr == 0) return;
+		int[] data = new int[1];
+		COM.MoveMemory(data, byRefPtr, 4);
+		if (data[0] != 0) COM.VariantClear(data[0]);
 		OS.GlobalFree(byRefPtr);
 		return;
 	}
