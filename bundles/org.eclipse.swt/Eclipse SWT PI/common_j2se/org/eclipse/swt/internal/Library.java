@@ -41,7 +41,7 @@ public static int getVersion () {
  * @return the platform name of the currently running SWT
  */
 static String getPlatform () {
-	String [] names = new String [] {"motif", "gtk", "win32", "photon",};
+	String [] names = new String [] {"motif", "gtk", "win32", "photon", "carbon"};
 	for (int i = 0; i < names.length; i++) {
 		try {
 			Class.forName("org.eclipse.swt.internal."+names[i]+".OS");
