@@ -54,7 +54,6 @@ int callback(int index, ...);
 
 typedef struct SWT_CALLBACKINFO {
     jobject callin;
-    JNIEnv *env;
     jmethodID methodID;
 } SWT_CALLBACKINFO;
 

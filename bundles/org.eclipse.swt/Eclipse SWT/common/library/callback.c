@@ -14,18 +14,22 @@
 
 /* --------------- callback globals ----------------- */
 
-SWT_CALLBACKINFO dllCallbackInfo[MAX_CALLBACKS];
-jfieldID objectID;
-jfieldID addressID;
-jfieldID methodID;
-jfieldID signatureID;
-jfieldID isStaticID;
-jfieldID argCountID;
-jfieldID isArrayBasedID;
-int callbackCached;
-int initialized;
-int counter;
-int CallbacksEnabled = 1;
+static JavaVM *jvm = NULL;
+static SWT_CALLBACKINFO dllCallbackInfo[MAX_CALLBACKS];
+static jfieldID objectID = NULL;
+static jfieldID addressID = NULL;
+static jfieldID methodID = NULL;
+static jfieldID signatureID = NULL;
+static jfieldID isStaticID = NULL;
+static jfieldID argCountID = NULL;
+static jfieldID isArrayBasedID = NULL;
+static int callbackIDsCached = 0;
+static int callbacksEnabled = 1;
+static int initialized = 0;
+
+#ifdef DEBUG_CALL_PRINTS
+static int counter = 0;
+#endif
 
 /* --------------- callback functions --------------- */
 
@@ -152,7 +156,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
 ** unless the Callback class is reloaded. 
 */
 {
-	DECL_GLOB(pGlob)
 	int i;
 	jclass javaClass;
    	jobject javaObject, javaMethod, javaSignature;
@@ -160,24 +163,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
 	jint argCount;
 	jmethodID mid;
 	const char *methodString, *sigString;
+	
+	if (jvm == NULL) (*env)->GetJavaVM(env, &jvm);
 
     javaClass = that;
-    if (!PGLOB(callbackCached)) {
-        PGLOB(objectID) = (*env)->GetFieldID(env,javaClass,"object","Ljava/lang/Object;");
-        PGLOB(addressID) = (*env)->GetFieldID(env,javaClass,"address","I");
-        PGLOB(methodID) = (*env)->GetFieldID(env,javaClass,"method","Ljava/lang/String;");
-        PGLOB(signatureID) = (*env)->GetFieldID(env,javaClass,"signature","Ljava/lang/String;");
-        PGLOB(isStaticID) = (*env)->GetFieldID(env,javaClass,"isStatic","Z");
-        PGLOB(argCountID) = (*env)->GetFieldID(env,javaClass,"argCount","I");
-        PGLOB(isArrayBasedID) = (*env)->GetFieldID(env,javaClass,"isArrayBased","Z");
-        PGLOB(callbackCached) = 1;
+    if (!callbackIDsCached) {
+        objectID = (*env)->GetFieldID(env,javaClass,"object","Ljava/lang/Object;");
+        addressID = (*env)->GetFieldID(env,javaClass,"address","I");
+        methodID = (*env)->GetFieldID(env,javaClass,"method","Ljava/lang/String;");
+        signatureID = (*env)->GetFieldID(env,javaClass,"signature","Ljava/lang/String;");
+        isStaticID = (*env)->GetFieldID(env,javaClass,"isStatic","Z");
+        argCountID = (*env)->GetFieldID(env,javaClass,"argCount","I");
+        isArrayBasedID = (*env)->GetFieldID(env,javaClass,"isArrayBased","Z");
+        callbackIDsCached = 1;
     }
-    javaObject = (*env)->GetObjectField(env,lpCallback,PGLOB(objectID));
-    javaMethod = (*env)->GetObjectField(env,lpCallback,PGLOB(methodID));
-    javaSignature = (*env)->GetObjectField(env,lpCallback,PGLOB(signatureID));
-    isStatic = (*env)->GetBooleanField(env,lpCallback,PGLOB(isStaticID));
-    argCount = (*env)->GetIntField(env,lpCallback,PGLOB(argCountID));
-    isArrayBased = (*env)->GetBooleanField(env,lpCallback,PGLOB(isArrayBasedID));
+    javaObject = (*env)->GetObjectField(env,lpCallback,objectID);
+    javaMethod = (*env)->GetObjectField(env,lpCallback,methodID);
+    javaSignature = (*env)->GetObjectField(env,lpCallback,signatureID);
+    isStatic = (*env)->GetBooleanField(env,lpCallback,isStaticID);
+    argCount = (*env)->GetIntField(env,lpCallback,argCountID);
+    isArrayBased = (*env)->GetBooleanField(env,lpCallback,isArrayBasedID);
     methodString = (const char *) (*env)->GetStringUTFChars(env, javaMethod, NULL);
     sigString = (const char *) (*env)->GetStringUTFChars(env, javaSignature, NULL);
     if (isStatic) {
@@ -189,16 +194,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
     }
     (*env)->ReleaseStringUTFChars(env, javaMethod, methodString);
     (*env)->ReleaseStringUTFChars(env, javaSignature, sigString);
-    if (PGLOB(initialized)==0) {
-        memset((void *)&PGLOB(dllCallbackInfo), 0, sizeof(PGLOB(dllCallbackInfo)));
-        PGLOB(initialized) = 1;
+    if (initialized==0) {
+        memset((void *)&dllCallbackInfo, 0, sizeof(dllCallbackInfo));
+        initialized = 1;
     }
     for (i=0; i<MAX_CALLBACKS; i++) {
-        if (!PGLOB(dllCallbackInfo)[i].callin) {
-            PGLOB(dllCallbackInfo)[i].callin = (*env)->NewGlobalRef(env,lpCallback);
-            PGLOB(dllCallbackInfo)[i].env = env;
-            PGLOB(dllCallbackInfo)[i].methodID = mid;
-
+        if (!dllCallbackInfo[i].callin) {
+            dllCallbackInfo[i].callin = (*env)->NewGlobalRef(env,lpCallback);
+            dllCallbackInfo[i].methodID = mid;
             return (jint) fnx_array[argCount][i];
         }
     }
@@ -214,19 +217,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
   (JNIEnv *env, jclass that, jobject lpCallback)
 {
-	DECL_GLOB(pGlob)
 	int i, address, argCount;
-	if (!PGLOB(callbackCached)) return;
+	if (!callbackIDsCached) return;
 
-    address = (*env)->GetIntField(env,lpCallback,PGLOB(addressID));
-    argCount = (*env)->GetIntField(env,lpCallback,PGLOB(argCountID));
+    address = (*env)->GetIntField(env,lpCallback,addressID);
+    argCount = (*env)->GetIntField(env,lpCallback,argCountID);
     
     for (i=0; i<MAX_CALLBACKS; i++) {        
         if ((int)fnx_array[argCount][i] == address) {
-            (*env)->DeleteGlobalRef(env, PGLOB(dllCallbackInfo)[i].callin);
-            PGLOB(dllCallbackInfo)[i].callin = 0;        
-            PGLOB(dllCallbackInfo)[i].env = 0;
-            PGLOB(dllCallbackInfo)[i].methodID = 0;
+            (*env)->DeleteGlobalRef(env, dllCallbackInfo[i].callin);
+            dllCallbackInfo[i].callin = 0;      
+            dllCallbackInfo[i].methodID = 0;
         }
     }
 }
@@ -239,7 +240,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_setEnabled
   (JNIEnv *env, jclass that, jboolean enable)
 {
-	CallbacksEnabled = enable;
+	callbacksEnabled = enable;
 }
 
 /*
@@ -250,28 +251,27 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_setEnabled
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
   (JNIEnv *env, jclass that, jboolean enable)
 {
-	return (jboolean)CallbacksEnabled;
+	return (jboolean)callbacksEnabled;
 }
 
 int callback(int index, ...)
 {
-	if (!CallbacksEnabled)  {
+	if (!callbacksEnabled)  {
 		return 0;
 	} else {
-	
-		DECL_GLOB(pGlob)
-		jobject callback = PGLOB(dllCallbackInfo)[index].callin;
-		JNIEnv *env = PGLOB(dllCallbackInfo)[index].env;
-		jmethodID mid = PGLOB(dllCallbackInfo)[index].methodID;
+		JNIEnv *env;
+		jobject callback = dllCallbackInfo[index].callin;
+		jmethodID mid = dllCallbackInfo[index].methodID;
 		jobject javaObject;
 		jboolean isStatic, isArrayBased;
-
 		int result = 0;
 		va_list vl;
 
 #ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* callback starting %d\n", PGLOB(counter)++);
+		fprintf(stderr, "* callback starting %d\n", counter++);
 #endif
+
+		(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_1);
 
 		/* An exception has already occurred. Allow the stack to unwind so that
 		the exception will be thrown in Java */
@@ -284,14 +284,14 @@ int callback(int index, ...)
 			return 0;
 		}
 
-		javaObject = (*env)->GetObjectField(env,callback,PGLOB(objectID));
-		isStatic = ((*env)->GetBooleanField(env,callback,PGLOB(isStaticID))) != 0;
-		isArrayBased = ((*env)->GetBooleanField(env,callback,PGLOB(isArrayBasedID))) != 0;
+		javaObject = (*env)->GetObjectField(env,callback,objectID);
+		isStatic = ((*env)->GetBooleanField(env,callback,isStaticID)) != 0;
+		isArrayBased = ((*env)->GetBooleanField(env,callback,isArrayBasedID)) != 0;
 
 		va_start(vl, index);
 		if (isArrayBased) {
 			int i;
-			jint argCount = (*env)->GetIntField(env,callback,PGLOB(argCountID));
+			jint argCount = (*env)->GetIntField(env,callback,argCountID);
 			jintArray javaArray = (*env)->NewIntArray(env,argCount);
 			jint *elements = (*env)->GetIntArrayElements(env,javaArray,NULL);
 			for (i=0; i<argCount; i++) {
@@ -319,7 +319,7 @@ int callback(int index, ...)
 		(*env)->DeleteLocalRef(env,javaObject);
 
 #ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* callback exiting %d\n", --PGLOB(counter));
+		fprintf(stderr, "* callback exiting %d\n", --counter);
 #endif
 		return result;
 	}
@@ -333,8 +333,7 @@ int callback(int index, ...)
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_reset
   (JNIEnv *env, jclass that)
 {
-	DECL_GLOB(pGlob)
-    memset((void *)&PGLOB(dllCallbackInfo), 0, sizeof(PGLOB(dllCallbackInfo)));
+    memset((void *)&dllCallbackInfo, 0, sizeof(dllCallbackInfo));
 }
 
 /*
