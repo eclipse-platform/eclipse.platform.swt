@@ -227,10 +227,6 @@ void createWidget (int index) {
 	parent.add (this);
 }
 
-void destroyAccelGroup () {
-	parent.destroyAccelGroup ();
-}
-
 /**
  * Returns the default menu item or null if none has
  * been previously set.
@@ -577,8 +573,6 @@ int processHide (int int0, int int1, int int2) {
 int processShow (int int0, int int1, int int2) {
 	if ((style & SWT.POP_UP) != 0) return 0;
 	sendEvent (SWT.Show);
-	if ((style & SWT.BAR) != 0) return 0;
-	parent.createAccelGroup ();
 	return 0;
 }
 
@@ -625,6 +619,14 @@ public void removeMenuListener (MenuListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Hide, listener);
 	eventTable.unhook (SWT.Show, listener);
+}
+
+void removeAccelerators (int accelGroup) {
+	MenuItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		MenuItem item = items[i];
+		item.removeAccelerator (accelGroup);
+	}
 }
 
 /**

@@ -278,6 +278,15 @@ public int getAccelerator () {
 	return accelerator;
 }
 
+int getAccelGroup () {
+	Menu menu = parent;
+	while (menu != null && menu.cascade != null) {
+		menu = menu.cascade.parent;
+	}
+	Decorations shell = menu.parent;
+	return shell.menuBar == menu ? shell.accelGroup : 0;
+}
+
 public Display getDisplay () {
 	Menu parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -421,9 +430,33 @@ void releaseWidget () {
 	if (menu != null) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
-	if (accelerator != 0) parent.destroyAccelGroup ();
+	int accelGroup = getAccelGroup ();
+	if (accelGroup != 0) removeAccelerator (accelGroup);
 	accelerator = 0;
 	parent = null;
+}
+
+void removeAccelerator (int accelGroup) {
+	if (menu != null) {
+		menu.removeAccelerators (accelGroup);
+		return;
+	}
+	if (accelerator == 0) return;
+	int mask = 0;
+	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
+	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
+	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.GDK_SHIFT_MASK;
+	int keysym = accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CTRL);
+	int newKey = Display.untranslateKey (keysym);
+	if (newKey != 0) {
+		keysym = newKey;
+	} else {
+		switch (keysym) {
+			case '\r': keysym = OS.GDK_Return; break;
+			default: keysym = wcsToMbcs ((char) keysym);
+		}
+	}
+	OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
 }
 
 /**
@@ -513,8 +546,10 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget();
+	int accelGroup = getAccelGroup ();
+	if (accelGroup != 0) removeAccelerator (accelGroup);
 	this.accelerator = accelerator;
-	parent.destroyAccelGroup ();
+	if (accelGroup != 0) addAccelerator (accelGroup);
 }
 
 /**
@@ -601,6 +636,8 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
+	int accelGroup = getAccelGroup ();
+	if (accelGroup != 0) removeAccelerator (accelGroup);
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
 		/*
@@ -614,7 +651,7 @@ public void setMenu (Menu menu) {
 		menu.cascade = this;
 		OS.gtk_menu_item_set_submenu (handle, menu.handle);
 	}
-	parent.destroyAccelGroup ();	
+	if (accelGroup != 0) addAccelerator (accelGroup);
 }
 
 /**

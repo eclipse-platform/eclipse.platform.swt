@@ -176,7 +176,6 @@ void createAccelGroup () {
 	//FIXME - what should we do for Decorations
 	int shellHandle = topHandle ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
-	if (menuBar != null) menuBar.addAccelerators (accelGroup);
 }
 
 void createWidget (int index) {
@@ -185,12 +184,11 @@ void createWidget (int index) {
 }
 
 void destroyAccelGroup () {
-	if (accelGroup != 0) {
-		int shellHandle = topHandle ();
-		OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
-		//TEMPORARY CODE
-//		OS.g_object_unref (accelGroup);
-	}
+	if (accelGroup == 0) return;
+	int shellHandle = topHandle ();
+	OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
+	//TEMPORARY CODE
+//	OS.g_object_unref (accelGroup);
 	accelGroup = 0;
 }
 
