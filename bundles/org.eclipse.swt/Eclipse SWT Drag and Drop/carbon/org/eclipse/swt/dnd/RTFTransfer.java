@@ -32,8 +32,7 @@ public class RTFTransfer extends ByteArrayTransfer {
 	private static final String RTF = "RTF ";
 	private static final int RTFID = registerType(RTF);
 
-private RTFTransfer() {
-}
+private RTFTransfer() {}
 
 /**
  * Returns the singleton instance of the RTFTransfer class.
@@ -57,10 +56,11 @@ public void javaToNative (Object object, TransferData transferData){
 	transferData.result = -1;
 	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
 	String string = (String)object;
-	if (string.length() == 0) return;
-	char[] chars = new char[string.length()];
-	string.getChars (0, chars.length, chars, 0);
-	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	int count = string.length();
+	if (count == 0) return;
+	char[] chars = new char[count];
+	string.getChars(0, count, chars, 0);
+	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, count);
 	if (cfstring == 0) return;
 	try {
 		CFRange range = new CFRange();
@@ -110,11 +110,12 @@ public Object nativeToJava(TransferData transferData){
 	}
 }
 
+protected int[] getTypeIds() {
+	return new int[] {RTFID};
+}
+
 protected String[] getTypeNames() {
 	return new String[]{RTF};
 }
 
-protected int[] getTypeIds() {
-	return new int[] {RTFID};
-}
 }

@@ -34,8 +34,8 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final int TEXTID = OS.kScrapFlavorTypeText;
 	private static final int UTEXTID = OS.kScrapFlavorTypeUnicode;
 
-private TextTransfer() {
-}
+private TextTransfer() {}
+
 /**
  * Returns the singleton instance of the TextTransfer class.
  *
@@ -135,11 +135,12 @@ public Object nativeToJava(TransferData transferData){
 	return null;
 }
 
+protected int[] getTypeIds() {
+	return new int[] {UTEXTID, TEXTID};
+}
+
 protected String[] getTypeNames() {
 	return new String[] {UTEXT, TEXT};
 }
 
-protected int[] getTypeIds() {
-	return new int[] {UTEXTID, TEXTID};
-}
 }

@@ -38,12 +38,13 @@ public class FileTransfer extends ByteArrayTransfer {
 	//the text/uri-list is used only for transfers within the same application
 	private static final String URILIST = "text/uri-list";
 	private static final String HFS = "hfs ";
-	static final int URILISTID = registerType(URILIST);
-	static final int HFSID = registerType(HFS);
-	static final String URILIST_PREFIX = "file:";
-	static final String URILIST_SEPARATOR = "\r";
+	private static final int URILISTID = registerType(URILIST);
+	private static final int HFSID = registerType(HFS);
+	private static final String URILIST_PREFIX = "file:";
+	private static final String URILIST_SEPARATOR = "\r";
 	
 private FileTransfer() {}
+
 /**
  * Returns the singleton instance of the FileTransfer class.
  *
@@ -52,6 +53,7 @@ private FileTransfer() {}
 public static FileTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts a list of file names
  * represented by a java <code>String[]</code> to a platform specific representation.
@@ -192,10 +194,13 @@ public Object nativeToJava(TransferData transferData) {
 	}
 	return null;
 }
-protected String[] getTypeNames(){
-	return new String[] {URILIST, HFS};
-}
+
 protected int[] getTypeIds(){
 	return new int[] {URILISTID, HFSID};
 }
+
+protected String[] getTypeNames(){
+	return new String[] {URILIST, HFS};
+}
+
 }

@@ -115,11 +115,11 @@ package org.eclipse.swt.dnd;
  * }
  */
 public abstract class ByteArrayTransfer extends Transfer {
-	
+
 public TransferData[] getSupportedTypes() {
 	int[] types = getTypeIds();
 	TransferData[] data = new TransferData[types.length];
-	for (int i=0; i<types.length; i++) {
+	for (int i = 0; i < types.length; i++) {
 		data[i] = new TransferData();
 		data[i].type = types[i];
 	}
@@ -129,7 +129,7 @@ public TransferData[] getSupportedTypes() {
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
 	int[] types = getTypeIds();
-	for (int i=0; i<types.length; i++) {
+	for (int i = 0; i < types.length; i++) {
 		if (transferData.type == types[i]) return true;
 	}
 	return false;

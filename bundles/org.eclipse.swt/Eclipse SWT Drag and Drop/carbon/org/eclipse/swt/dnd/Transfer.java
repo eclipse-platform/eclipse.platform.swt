@@ -35,6 +35,7 @@ public abstract class Transfer {
  * @return a list of the data types that can be converted using this transfer agent
  */
 abstract public TransferData[] getSupportedTypes();
+
 /**
  * Returns true if the <code>TransferData</code> data type can be converted 
  * using this transfer agent.
@@ -48,15 +49,6 @@ abstract public TransferData[] getSupportedTypes();
 abstract public boolean isSupportedType(TransferData transferData);
 
 /**
- * Returns the platform specfic names of the  data types that can be converted 
- * using this transfer agent.
- * 
- * @return the platform specfic names of the data types that can be converted 
- * using this transfer agent.
- */
-abstract protected String[] getTypeNames();
-
-/**
  * Returns the platform specfic ids of the  data types that can be converted using 
  * this transfer agent.
  * 
@@ -64,6 +56,15 @@ abstract protected String[] getTypeNames();
  * this transfer agent
  */
 abstract protected int[] getTypeIds();
+
+/**
+ * Returns the platform specfic names of the  data types that can be converted 
+ * using this transfer agent.
+ * 
+ * @return the platform specfic names of the data types that can be converted 
+ * using this transfer agent.
+ */
+abstract protected String[] getTypeNames();
 
 /**
  * Converts a java representation of data to a platform specific representation of 
