@@ -194,7 +194,7 @@ public class CTabFolder extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	static final int BUTTON_SIZE = 16;
+	static final int BUTTON_SIZE = 18;
 
 	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 	static final int[] TOP_RIGHT_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
@@ -836,8 +836,10 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
 	Display display = getDisplay();
+	Point dpi = display.getDPI();
+	int fontHeight = 72 * 10 / dpi.y;
 	FontData fd = getFont().getFontData()[0];
-	fd.setHeight(7);
+	fd.setHeight(fontHeight);
 	Font f = new Font(display, fd);
 	int fHeight = f.getFontData()[0].getHeight() * display.getDPI().y / 72;
 	int indent = Math.max(2, (chevronRect.height - fHeight - 4) /2);
@@ -848,8 +850,9 @@ void drawChevron(GC gc) {
 		count = selectedIndex == -1 ? items.length : items.length - 1;
 	} else {
 		int lastIndex = getLastIndex();
-		count = Math.max(0, items.length - (lastIndex - firstIndex + 1));
+		count = items.length - (lastIndex - firstIndex + 1);
 	}
+	String chevronString = count > 99 ? "99+" : String.valueOf(count);
 	switch (chevronImageState) {
 		case NORMAL: {
 			Color chevronBorder = single ? getSelectionForeground() : getForeground();
@@ -863,7 +866,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			gc.drawString(String.valueOf(count), x+7, y+3, true);
+			gc.drawString(chevronString, x+7, y+3, true);
 			break;
 		}
 		case HOT: {
@@ -880,7 +883,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+2, x+5,y+4);
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
-			gc.drawString(String.valueOf(count), x+7, y+3, true);
+			gc.drawString(chevronString, x+7, y+3, true);
 			break;
 		}
 		case SELECTED: {
@@ -897,7 +900,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+7,y+3, x+6,y+5);
 			gc.drawLine(x+6,y+1, x+8,y+3);
 			gc.drawLine(x+8,y+3, x+5,y+5);
-			gc.drawString(String.valueOf(count), x+8, y+4, true);
+			gc.drawString(chevronString, x+8, y+4, true);
 			break;
 		}
 	}
@@ -1270,12 +1273,13 @@ public CTabItem [] getItems() {
 int getLastIndex() {
 	if (single) return selectedIndex;
 	if (items.length == 0) return -1;
+	if (items[items.length - 1].isShowing()) return items.length - 1;
 	for (int i = firstIndex; i < items.length; i++) {
 		CTabItem item = items[i];
 		if (item.isShowing()) continue;
 		return i == firstIndex ? firstIndex : i - 1;
 	}
-	return items.length - 1;
+	return firstIndex;
 }
 char getMnemonic (String string) {
 	int index = 0;
@@ -1373,7 +1377,7 @@ int getRightItemEdge (){
 	if (showMax) x -= BUTTON_SIZE;
 	if (showChevron) x -= 3*BUTTON_SIZE/2;
 	if (topRight != null && topRightAlignment != SWT.FILL) x -= topRightRect.width + 3;
-	return x;
+	return Math.max(0, x);
 }
 /**
  * Return the selected tab item, or an empty array if there
@@ -2804,31 +2808,35 @@ boolean setItemSize() {
 		} else {
 			// try to compress items
 			totalWidth = 0;
-			int large = 0;
 			int[] minWidths = new int[items.length];
 			for (int i = 0 ; i < count; i++) {
 				minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
-				totalWidth += Math.min(widths[i], minWidths[i]);
-				if (widths[i] > minWidths[i]) large++;
+				totalWidth += minWidths[i];
 			}
 			if (totalWidth > tabAreaWidth) {
 				//  maximum compression required and a chevron
 				showChevron = items.length > 1;
-				if (showChevron) tabAreaWidth -= 3 *BUTTON_SIZE/2; 
-				for (int i = 0; i < count; i++) {
-					int minWidth = Math.min(tabAreaWidth, minWidths[i]);
-					widths[i] = Math.min(widths[i], minWidth);
+				if (showChevron) tabAreaWidth -= 3*BUTTON_SIZE/2;
+				widths = minWidths;
+				int index = selectedIndex != -1 ? selectedIndex : 0;
+				if (tabAreaWidth < widths[index]) {
+					widths[index] = Math.max(0, tabAreaWidth);
 				}
 			} else {
 				firstIndex = 0;
 				// determine compression for each item
-				int extra = (tabAreaWidth - totalWidth)/large;
+				int extra = (tabAreaWidth - totalWidth) / items.length;
+				int large = 0;
 				while (true) {
 					totalWidth = 0;
 					large = 0;
 					for (int i = 0 ; i < count; i++) {
-						totalWidth += Math.min(widths[i], minWidths[i] + extra);
-						if (widths[i] > minWidths[i] + extra) large++;
+						if (widths[i] > minWidths[i] + extra) {
+ 							totalWidth += minWidths[i] + extra;
+							large++;
+						} else {
+							totalWidth += widths[i];
+						}
 					}
 					if (totalWidth >= tabAreaWidth) {
 						extra--;
