@@ -74,11 +74,11 @@ public Tree2 (Composite parent, int style) {
 	header.addListener(SWT.MouseExit, listener);
 
 	ScrollBar vBar = getVerticalBar();
-	vBar.setMaximum(1);	// TODO ok?
+	vBar.setMaximum(1);
 	vBar.addListener(SWT.Selection, listener);
 	ScrollBar hBar = getHorizontalBar();
 	hBar.addListener(SWT.Selection, listener);
-	hBar.setMaximum(1);	// TODO ok?
+	hBar.setMaximum(1);
 }
 void addColumn(TreeColumn column, int index) {
 	/* insert column into the columns collection */
@@ -906,18 +906,15 @@ public Control [] getChildren() {
 	return result;
 }
 public TreeColumn getColumn(int index) {
-	// TODO public?
 	checkWidget();
 	if (!(0 <= index && index < columns.length)) error(SWT.ERROR_INVALID_RANGE);
 	return columns[index];
 }
 public int getColumnCount() {
-	// TODO public?
 	checkWidget();
 	return columns.length;
 }
 public TreeColumn[] getColumns() {
-	// TODO public?
 	checkWidget();
 	TreeColumn[] result = new TreeColumn[columns.length];
 	System.arraycopy(columns, 0, result, 0, columns.length);
