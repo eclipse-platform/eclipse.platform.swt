@@ -395,7 +395,7 @@ public Image(Device display, ImageData source, ImageData mask) {
 	if (source.width != mask.width || source.height != mask.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	mask = ImageData.convertMask(mask);
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;

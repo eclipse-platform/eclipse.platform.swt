@@ -228,14 +228,14 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (mask.width != source.width || mask.height != source.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Check color depths */
-	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (source.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	/* Convert depth to 1 */
+	mask = ImageData.convertMask(mask);
+	source = ImageData.convertMask(source);
 
 	/* Find the first non transparent pixel if cursor bigger than 16x16. */
 	int width = source.width;
