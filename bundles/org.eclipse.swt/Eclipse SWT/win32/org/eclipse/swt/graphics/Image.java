@@ -817,6 +817,7 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
+	if (memGC != null) memGC.dispose();
 	if (type == SWT.ICON) {
 		if (OS.IsWinCE) data = null;
 		OS.DestroyIcon (handle);
