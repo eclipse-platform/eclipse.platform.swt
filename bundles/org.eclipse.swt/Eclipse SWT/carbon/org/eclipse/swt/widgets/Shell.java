@@ -566,6 +566,7 @@ public boolean getMaximized () {
 
 public boolean getMinimized () {
 	checkWidget();
+	if (!getVisible ()) return super.getMinimized ();
 	return OS.IsWindowCollapsed (shellHandle);
 }
 
@@ -719,6 +720,7 @@ int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowCollapsed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	minimized = true;
 	sendEvent (SWT.Iconify);
 	return result;
 }
@@ -749,6 +751,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	minimized = false;
 	sendEvent (SWT.Deiconify);
 	return result;
 }
@@ -991,7 +994,7 @@ public void setMaximized (boolean maximized) {
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	super.setMinimized (minimized);
-	OS.CollapseWindow (shellHandle, true);
+	OS.CollapseWindow (shellHandle, minimized);
 }
 
 public void setSize (int width, int height) {
@@ -1055,6 +1058,9 @@ void setWindowVisible (boolean visible) {
 	    	OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 		}
 		OS.ShowWindow (shellHandle);
+		if (minimized != OS.IsWindowCollapsed (shellHandle)) {
+			OS.CollapseWindow (shellHandle, minimized);
+		}
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.SetWindowActivationScope (shellHandle, scope [0]);
 		}
