@@ -258,7 +258,19 @@ private void drag(Event dragEvent) {
 	OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 }
 
-int dragEnd(int widget, int context, int data){ 
+int dragEnd(int widget, int context, int data){
+	/*
+	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the 
+	 * mouse is released immediately, the mouse and keyboard remain
+	 * grabbed.  The fix is to release the grab on the mouse and keyboard
+	 * whenever the drag is terminated.
+	 * 
+	 * NOTE: We believe that it is never an error to ungrab when
+	 * a drag is finished.
+	 */
+	OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME); 
+	OS.gdk_keyboard_ungrab(OS.GDK_CURRENT_TIME);
+	
 	int op = DND.DROP_NONE;
 	if (context != 0) {
 		GdkDragContext gdkDragContext = new GdkDragContext ();
