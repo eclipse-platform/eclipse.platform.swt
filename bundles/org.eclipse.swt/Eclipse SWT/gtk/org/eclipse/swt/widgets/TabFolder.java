@@ -145,12 +145,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	width = Math.max (width, size.x);
 	height = Math.max (height, size.y);
+	Rectangle trim = computeTrim (0, 0, width, height);
+	width = trim.width;  height = trim.height;
 	return new Point (width, height);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	return new Rectangle(x-2, y-33, width+4, height+35);
+	int clientHandle = clientHandle ();
+	int clientX = OS.GTK_WIDGET_X (clientHandle);
+	int clientY = OS.GTK_WIDGET_Y (clientHandle);
+	x -= clientX;
+	y -= clientY;
+	width +=  clientX + clientX;
+	height +=  clientX + clientY;
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle (int index) {
