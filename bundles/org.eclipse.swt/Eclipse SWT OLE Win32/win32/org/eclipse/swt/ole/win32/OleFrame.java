@@ -670,7 +670,8 @@ public void setWindowMenus(MenuItem[] windowMenus){
 }
 private boolean translateOleAccelerator(MSG msg) {
 	if (objIOleInPlaceActiveObject == null) return false;
-	return objIOleInPlaceActiveObject.TranslateAccelerator(msg) != OLE.S_FALSE;
+	int result = objIOleInPlaceActiveObject.TranslateAccelerator(msg);
+	return (result != OLE.S_FALSE && result != OLE.E_NOTIMPL);
 }
 private int TranslateAccelerator(int lpmsg, int wID){
 	Menu menubar = getShell().getMenuBar();
