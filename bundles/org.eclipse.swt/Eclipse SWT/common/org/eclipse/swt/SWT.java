@@ -715,7 +715,7 @@ public class SWT {
 	public static final int NO_BACKGROUND = 1 << 18;
 
 	/**
-	 * Style constant for does not take focus behavior (value is 1&lt;&lt;19).
+	 * Style constant for no focus from the mouse behavior (value is 1&lt;&lt;19).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
