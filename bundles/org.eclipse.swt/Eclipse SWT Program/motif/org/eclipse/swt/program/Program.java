@@ -219,9 +219,9 @@ static Program findProgram(Display display, String extension) {
 	if (mimeInfo == null) return null;
 
 	/* Find the data type matching the extension. */
-	Iterator keys = mimeInfo.keySet().iterator();
-	while (name == null && keys.hasNext()) {
-		String mimeType = (String)keys.next();
+	Enumeration keys = mimeInfo.keys();
+	while (name == null && keys.hasMoreElements()) {
+		String mimeType = (String)keys.nextElement();
 		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (extension.equals(mimeExts.elementAt(index))) {
@@ -318,9 +318,9 @@ static String[] getExtensions(Display display) {
 
 	/* Create a unique set of the file extensions. */
 	Vector extensions = new Vector();
-	Iterator keys = mimeInfo.keySet().iterator();
-	while (keys.hasNext()) {
-		String mimeType = (String)keys.next();
+	Enumeration keys = mimeInfo.keys();
+	while (keys.hasMoreElements()) {
+		String mimeType = (String)keys.nextElement();
 		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (!extensions.contains(mimeExts.elementAt(index))) {
@@ -364,9 +364,9 @@ static Program[] getPrograms(Display display) {
 	Vector programs = new Vector();
 	boolean[] gnomeExpectUri = null;
 	if (desktop == DESKTOP_GNOME) gnomeExpectUri = new boolean[1];
-	Iterator keys = mimeInfo.keySet().iterator();
-	while (keys.hasNext()) {
-		String mimeType = (String)keys.next();
+	Enumeration keys = mimeInfo.keys();
+	while (keys.hasMoreElements()) {
+		String mimeType = (String)keys.nextElement();
 		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
 		String extension = "";
 		if (mimeExts.size() > 0) extension = (String)mimeExts.elementAt(0);
@@ -427,7 +427,7 @@ static Hashtable gnome_getMimeInfo() {
 				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
 				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
 				extension = '.' + extension;
-				extensions.add(extension);
+				extensions.addElement(extension);
 				extensionElement = GNOME.g_list_next(extensionElement); 
 			}
 			GNOME.gnome_vfs_mime_extensions_list_free(extensionList);
