@@ -9221,6 +9221,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1fixed_1width)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1column_1get_1reorderable
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1reorderable)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1get_1reorderable_FUNC);
+	rc = (jboolean)gtk_tree_view_column_get_reorderable((GtkTreeViewColumn *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1get_1reorderable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1column_1get_1resizable
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1resizable)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9341,6 +9353,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1fixed_1width)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1column_1set_1reorderable
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1reorderable)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1reorderable_FUNC);
+	gtk_tree_view_column_set_reorderable((GtkTreeViewColumn *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1reorderable_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1column_1set_1resizable
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1resizable)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -9441,6 +9463,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1column)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1column_FUNC);
 	rc = (jint)gtk_tree_view_get_column((GtkTreeView *)arg0, (gint)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1column_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1get_1columns
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1columns)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1columns_FUNC);
+	rc = (jint)gtk_tree_view_get_columns((GtkTreeView *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1columns_FUNC);
 	return rc;
 }
 #endif
@@ -9558,6 +9592,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1insert_1column)
 	rc = (jint)gtk_tree_view_insert_column((GtkTreeView *)arg0, (GtkTreeViewColumn *)arg1, (gint)arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1insert_1column_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1move_1column_1after
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1move_1column_1after)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1move_1column_1after_FUNC);
+	gtk_tree_view_move_column_after((GtkTreeView *)arg0, (GtkTreeViewColumn *)arg1, (GtkTreeViewColumn *)arg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1move_1column_1after_FUNC);
 }
 #endif
 

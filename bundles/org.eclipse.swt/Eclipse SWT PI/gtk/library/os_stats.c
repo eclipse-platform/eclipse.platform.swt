@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 964;
-int OS_nativeFunctionCallCount[964];
+int OS_nativeFunctionCount = 968;
+int OS_nativeFunctionCallCount[968];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -729,6 +729,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1column_1clear",
 	"_1gtk_1tree_1view_1column_1get_1cell_1renderers",
 	"_1gtk_1tree_1view_1column_1get_1fixed_1width",
+	"_1gtk_1tree_1view_1column_1get_1reorderable",
 	"_1gtk_1tree_1view_1column_1get_1resizable",
 	"_1gtk_1tree_1view_1column_1get_1spacing",
 	"_1gtk_1tree_1view_1column_1get_1visible",
@@ -740,6 +741,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1column_1set_1cell_1data_1func",
 	"_1gtk_1tree_1view_1column_1set_1clickable",
 	"_1gtk_1tree_1view_1column_1set_1fixed_1width",
+	"_1gtk_1tree_1view_1column_1set_1reorderable",
 	"_1gtk_1tree_1view_1column_1set_1resizable",
 	"_1gtk_1tree_1view_1column_1set_1sizing",
 	"_1gtk_1tree_1view_1column_1set_1title",
@@ -749,6 +751,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1get_1bin_1window",
 	"_1gtk_1tree_1view_1get_1cell_1area",
 	"_1gtk_1tree_1view_1get_1column",
+	"_1gtk_1tree_1view_1get_1columns",
 	"_1gtk_1tree_1view_1get_1cursor",
 	"_1gtk_1tree_1view_1get_1expander_1column",
 	"_1gtk_1tree_1view_1get_1headers_1visible",
@@ -757,6 +760,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1get_1selection",
 	"_1gtk_1tree_1view_1get_1visible_1rect",
 	"_1gtk_1tree_1view_1insert_1column",
+	"_1gtk_1tree_1view_1move_1column_1after",
 	"_1gtk_1tree_1view_1new_1with_1model",
 	"_1gtk_1tree_1view_1remove_1column",
 	"_1gtk_1tree_1view_1row_1expanded",

@@ -6243,6 +6243,15 @@ public static final void gtk_tree_view_column_clear(int /*long*/ tree_column) {
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_tree_view_column_get_reorderable(int /*long*/ column);
+public static final boolean gtk_tree_view_column_get_reorderable(int /*long*/ column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_reorderable(column);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);
 public static final int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column) {
 	lock.lock();
@@ -6360,6 +6369,15 @@ public static final void gtk_tree_view_column_set_fixed_width(int /*long*/ colum
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_view_column_set_reorderable(int /*long*/ column, boolean reorderable);
+public static final void gtk_tree_view_column_set_reorderable(int /*long*/ column, boolean reorderable) {
+	lock.lock();
+	try {
+		_gtk_tree_view_column_set_reorderable(column, reorderable);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_view_column_set_resizable(int /*long*/ column, boolean resizable);
 public static final void gtk_tree_view_column_set_resizable(int /*long*/ column, boolean resizable) {
 	lock.lock();
@@ -6459,6 +6477,15 @@ public static final int /*long*/ gtk_tree_view_get_column(int /*long*/ tree_view
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_tree_view_get_columns(int /*long*/ tree_view);
+public static final int /*long*/ gtk_tree_view_get_columns(int /*long*/ tree_view) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_get_columns(tree_view);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_view_get_cursor(int /*long*/ tree_view, int /*long*/[] path, int /*long*/[] focus_column);
 public static final void gtk_tree_view_get_cursor(int /*long*/ tree_view, int /*long*/[] path, int /*long*/[] focus_column) {
 	lock.lock();
@@ -6518,6 +6545,15 @@ public static final int gtk_tree_view_insert_column(int /*long*/ tree_view, int 
 	lock.lock();
 	try {
 		return _gtk_tree_view_insert_column(tree_view, column, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_tree_view_move_column_after(int /*long*/ tree_view, int /*long*/ column, int /*long*/ base_column);
+public static final void gtk_tree_view_move_column_after(int /*long*/ tree_view, int /*long*/ column, int /*long*/base_column) {
+	lock.lock();
+	try {
+		_gtk_tree_view_move_column_after(tree_view, column, base_column);
 	} finally {
 		lock.unlock();
 	}
