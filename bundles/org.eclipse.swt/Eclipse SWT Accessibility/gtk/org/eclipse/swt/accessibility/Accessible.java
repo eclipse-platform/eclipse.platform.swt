@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.*;
 public class Accessible {
 	Vector accessibleListeners = new Vector ();
 	Vector controlListeners = new Vector ();
+	Vector textListeners = new Vector ();
 	AccessibleObject accessibleObject;
 	Control control;
 	
@@ -90,6 +91,35 @@ public class Accessible {
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		controlListeners.addElement (listener);		
 	}
+
+	/**
+	 * Adds the listener to the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information. The listener is notified by sending it
+	 * one of the messages defined in the <code>AccessibleTextListener</code>
+	 * interface.
+	 *
+	 * @param listener the listener that should be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #removeAccessibleTextListener
+	 * 
+	 * @since 3.0
+	 */
+	public void addAccessibleTextListener (AccessibleTextListener listener) {
+		checkWidget ();
+		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		textListeners.addElement (listener);		
+	}
 	
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
 	void checkWidget () {
@@ -97,15 +127,21 @@ public class Accessible {
 		if (control.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	}
 	
+	AccessibleListener[] getAccessibleListeners () {
+		AccessibleListener[] result = new AccessibleListener [accessibleListeners.size ()];
+		accessibleListeners.copyInto (result);
+		return result;
+	}
+
 	AccessibleControlListener[] getControlListeners () {
 		AccessibleControlListener[] result = new AccessibleControlListener [controlListeners.size ()];
 		controlListeners.copyInto (result);
 		return result;
 	}
-	
-	AccessibleListener[] getAccessibleListeners () {
-		AccessibleListener[] result = new AccessibleListener [accessibleListeners.size ()];
-		accessibleListeners.copyInto (result);
+
+	AccessibleTextListener[] getTextListeners () {
+		AccessibleTextListener[] result = new AccessibleTextListener [textListeners.size ()];
+		textListeners.copyInto (result);
 		return result;
 	}
 	
@@ -182,7 +218,52 @@ public class Accessible {
 	}
 
 	/**
-	 * Sends a message to accessible clients indicating that the focus
+	 * Removes the listener from the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #addAccessibleTextListener
+	 * 
+	 * @since 3.0
+	 */
+	public void removeAccessibleTextListener (AccessibleTextListener listener) {
+		checkWidget ();
+		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		textListeners.remove (listener);
+	}
+	
+	/**
+	 * Sends notification to accessible clients that the child selection
+	 * within a custom container control has changed.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.0
+	 */
+	public void selectionChanged () {
+		checkWidget ();
+		if (accessibleObject != null) {
+			accessibleObject.selectionChanged ();
+		}
+	}
+
+	/**
+	 * Sends notification to accessible clients that the focus
 	 * has changed within a custom control.
 	 *
 	 * @param childID an identifier specifying a child of the control
@@ -191,11 +272,76 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
+	 * 
 	 */
 	public void setFocus (int childID) {
 		checkWidget ();
 		if (accessibleObject != null) {
-			accessibleObject.setFocusToChild (childID);
+			accessibleObject.setFocus (childID);
+		}
+	}
+	
+	/**
+	 * Sends notification to accessible clients that the text
+	 * caret has moved within a custom control.
+	 *
+	 * @param index the new caret index within the control
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textCaretMoved (int index) {
+		checkWidget ();
+		if (accessibleObject != null) {
+			accessibleObject.textCaretMoved (index);
+		}
+	}
+
+	/**
+	 * Sends notification to accessible clients that the text
+	 * within a custom control has changed.
+	 *
+	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
+	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param startIndex the text index within the control where the insertion or deletion begins
+	 * @param length the non-negative length in characters of the insertion or deletion
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @see ACC#NOTIFY_TEXT_INSERT
+	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * 
+	 * @since 3.0
+	 */
+	public void textChanged (int type, int startIndex, int length) {
+		checkWidget ();
+		if (accessibleObject != null) {
+			accessibleObject.textChanged (type, startIndex, length);
+		}
+	}
+
+	/**
+	 * Sends notification to accessible clients that the text
+	 * selection has changed within a custom control.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @since 3.0
+	 */
+	public void textSelectionChanged () {
+		checkWidget ();
+		if (accessibleObject != null) {
+			accessibleObject.textSelectionChanged ();
 		}
 	}
 }

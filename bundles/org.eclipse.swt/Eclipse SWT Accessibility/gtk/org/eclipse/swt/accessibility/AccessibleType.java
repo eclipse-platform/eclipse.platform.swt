@@ -38,7 +38,10 @@ class AccessibleType {
 	static Callback atkObjectCB_ref_child;
 	static Callback atkObjectCB_ref_state_set;
 	static Callback atkSelectionCB_is_child_selected;
-	static Callback atkSelectionCB_ref_selection;	
+	static Callback atkSelectionCB_ref_selection;
+	static Callback atkTextCB_get_caret_offset;
+	static Callback atkTextCB_get_n_selections;
+	static Callback atkTextCB_get_selection;
 	static Callback atkTextCB_get_text;
 	static Callback atkTextCB_get_text_after_offset;
 	static Callback atkTextCB_get_text_at_offset;
@@ -50,7 +53,7 @@ class AccessibleType {
 	static Callback initActionIfaceCB;		
 	static Callback initComponentIfaceCB;		
 	static Callback gTypeInfo_base_init;
-	static Callback initSelectionIfaceCB;	
+	static Callback initSelectionIfaceCB;
 	static Callback initTextIfaceCB;
 	// interface definitions
 	static int actionIfaceDefinition;
@@ -80,6 +83,9 @@ class AccessibleType {
 		gObjectClass_finalize = new Callback (AccessibleType.class, "gObjectClass_finalize", 1);
 		atkSelectionCB_is_child_selected = new Callback (AccessibleType.class, "atkSelection_is_child_selected", 2);
 		atkSelectionCB_ref_selection = new Callback (AccessibleType.class, "atkSelection_ref_selection", 2);
+		atkTextCB_get_caret_offset = new Callback (AccessibleType.class, "atkText_get_caret_offset", 1);
+		atkTextCB_get_n_selections = new Callback (AccessibleType.class, "atkText_get_n_selections", 1);
+		atkTextCB_get_selection = new Callback (AccessibleType.class, "atkText_get_selection", 4);
 		atkTextCB_get_text = new Callback (AccessibleType.class, "atkText_get_text", 3);
 		atkTextCB_get_text_after_offset = new Callback (AccessibleType.class, "atkText_get_text_after_offset", 5);
 		atkTextCB_get_text_at_offset = new Callback (AccessibleType.class, "atkText_get_text_at_offset", 5);
@@ -282,6 +288,51 @@ class AccessibleType {
 		return 0;
 	}
 	
+	static int atkText_get_caret_offset (int atkObject) {
+		if (DEBUG) System.out.println ("-->atkText_get_caret_offset");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			return object.atkText_get_caret_offset ();
+		}
+		return 0;
+	}
+
+	static int atkText_get_character_at_offset (int atkObject, int offset) {
+		if (DEBUG) System.out.println ("-->atkText_get_character_at_offset");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			return object.atkText_get_character_at_offset (offset);
+		}
+		return 0;
+	}
+
+	static int atkText_get_character_count (int atkObject) {
+		if (DEBUG) System.out.println ("-->atkText_get_character_count");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			return object.atkText_get_character_count ();
+		}
+		return 0;
+	}
+
+	static int atkText_get_n_selections (int atkObject) {
+		if (DEBUG) System.out.println ("-->atkText_get_n_selections");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			return object.atkText_get_n_selections ();
+		}
+		return 0;
+	}
+
+	static int atkText_get_selection (int atkObject, int selection_num, int start_offset, int end_offset) {
+		if (DEBUG) System.out.println ("-->atkText_get_selection");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			return object.atkText_get_selection (selection_num, start_offset, end_offset);
+		}
+		return 0;
+	}
+	
 	static int atkText_get_text (int atkObject, int start_offset, int end_offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_text: " + start_offset + "," + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -318,24 +369,6 @@ class AccessibleType {
 		return 0;
 	}
 
-	static int atkText_get_character_at_offset (int atkObject, int offset) {
-		if (DEBUG) System.out.println ("-->atkText_get_character_at_offset");
-		AccessibleObject object = getAccessibleObject (atkObject);
-		if (object != null) {
-			return object.atkText_get_character_at_offset (offset);
-		}
-		return 0;
-	}
-
-	static int atkText_get_character_count (int atkObject) {
-		if (DEBUG) System.out.println ("-->atkText_get_character_count");
-		AccessibleObject object = getAccessibleObject (atkObject);
-		if (object != null) {
-			return object.atkText_get_character_count ();
-		}
-		return 0;
-	}
-	
 	int createObject (Accessible accessible, int widget) {
 		int type = handle;
 		Accessible acc = accessible;
@@ -419,16 +452,19 @@ class AccessibleType {
 		ATK.memmove (iface, selectionIface);
 		return 0;
 	}
-		
+
 	static int initTextIfaceCB (int iface) {
 		AtkTextIface textInterface = new AtkTextIface ();
 		ATK.memmove (textInterface, iface);
+		textInterface.get_caret_offset = atkTextCB_get_caret_offset.getAddress ();
+		textInterface.get_character_at_offset = atkTextCB_get_character_at_offset.getAddress ();
+		textInterface.get_character_count = atkTextCB_get_character_count.getAddress ();
+		textInterface.get_n_selections = atkTextCB_get_n_selections.getAddress ();
+		textInterface.get_selection = atkTextCB_get_selection.getAddress ();
 		textInterface.get_text = atkTextCB_get_text.getAddress ();
 		textInterface.get_text_after_offset = atkTextCB_get_text_after_offset.getAddress ();
 		textInterface.get_text_at_offset = atkTextCB_get_text_at_offset.getAddress ();
 		textInterface.get_text_before_offset = atkTextCB_get_text_before_offset.getAddress ();
-		textInterface.get_character_at_offset = atkTextCB_get_character_at_offset.getAddress ();
-		textInterface.get_character_count = atkTextCB_get_character_count.getAddress ();
 		ATK.memmove (iface, textInterface);
 		return 0;
 	}

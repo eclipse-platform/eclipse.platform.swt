@@ -109,17 +109,20 @@ public class AccessibleObject {
 	}	
 
 	int atkComponent_get_extents (int x, int y, int width, int height, int coord_type) {
-		int parentResult = 0;
+		OS.memmove (x, new int[] {0}, 4);
+		OS.memmove (y, new int[] {0}, 4);
+		OS.memmove (width, new int[] {0}, 4);
+		OS.memmove (height, new int[] {0}, 4);
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_extents, handle, x, y, width, height, coord_type);
+				ATK.call (componentIface.get_extents, handle, x, y, width, height, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
-		if (listeners.length == 0) return parentResult;
+		if (listeners.length == 0) return 0;
 		
 		int[] parentX = new int [1], parentY = new int [1];
 		int[] parentWidth = new int [1], parentHeight = new int [1];
@@ -166,17 +169,18 @@ public class AccessibleObject {
 	}
 
 	int atkComponent_get_position (int x, int y, int coord_type) {
-		int parentResult = 0;
+		OS.memmove (x, new int[] {0}, 4);
+		OS.memmove (y, new int[] {0}, 4);
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_position, handle, x, y, coord_type);
+				ATK.call (componentIface.get_position, handle, x, y, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
-		if (listeners.length == 0) return parentResult;
+		if (listeners.length == 0) return 0;
 		
 		int[] parentX = new int [1], parentY = new int [1];
 		OS.memmove (parentX, x, 4);
@@ -217,17 +221,18 @@ public class AccessibleObject {
 	}
 
 	int atkComponent_get_size (int width, int height, int coord_type) {
-		int parentResult = 0;
+		OS.memmove (width, new int[] {0}, 4);
+		OS.memmove (height, new int[] {0}, 4);
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_size, handle, width, height, coord_type);
+				ATK.call (componentIface.get_size, handle, width, height, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
-		if (listeners.length == 0) return parentResult;
+		if (listeners.length == 0) return 0;
 		
 		int[] parentWidth = new int [1], parentHeight = new int [1];
 		OS.memmove (parentWidth, width, 4);
@@ -443,42 +448,44 @@ public class AccessibleObject {
 		return ATK.call (objectClass.ref_child, handle, index);
 	}
 
-	int atkObject_ref_state_set  () {
-		if (accessible.getControlListeners ().length != 0) {
-			int set = ATK.atk_state_set_new ();
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.detail = -1;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getState (event);
-			} 
-			if (event.detail != -1) {
-				//	Convert from win32 state values to atk state values
-				int state = event.detail;
-				if ((state & ACC.STATE_BUSY) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_BUSY);
-				if ((state & ACC.STATE_CHECKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_CHECKED);
-				if ((state & ACC.STATE_EXPANDED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EXPANDED);
-				if ((state & ACC.STATE_FOCUSABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSABLE);
-				if ((state & ACC.STATE_FOCUSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSED);
-				if ((state & ACC.STATE_HOTTRACKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ARMED); ;
-				if ((state & ACC.STATE_INVISIBLE) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_VISIBLE);
-				if ((state & ACC.STATE_MULTISELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_MULTISELECTABLE);
-				if ((state & ACC.STATE_OFFSCREEN) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SHOWING);												
-				if ((state & ACC.STATE_PRESSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_PRESSED);
-				if ((state & ACC.STATE_READONLY) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EDITABLE);
-				if ((state & ACC.STATE_SELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTABLE);
-				if ((state & ACC.STATE_SELECTED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTED);
-				if ((state & ACC.STATE_SIZEABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_RESIZABLE);
-				// Note: STATE_COLLAPSED and STATE_NORMAL have no ATK equivalents
-				return set;
-			}	
-		}
+	int atkObject_ref_state_set () {
+		int parentResult = 0;
 		int superType = ATK.g_type_class_peek (parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
-		if (objectClass.ref_state_set == 0) return 0;
-		return ATK.call (objectClass.ref_state_set, handle);
+		if (objectClass.ref_state_set != 0) { 
+			parentResult = ATK.call (objectClass.ref_state_set, handle);
+		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+
+		int set = parentResult;
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.detail = -1;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getState (event);
+		} 
+		if (event.detail != -1) {
+			//	Convert from win32 state values to atk state values
+			int state = event.detail;
+			if ((state & ACC.STATE_BUSY) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_BUSY);
+			if ((state & ACC.STATE_CHECKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_CHECKED);
+			if ((state & ACC.STATE_EXPANDED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EXPANDED);
+			if ((state & ACC.STATE_FOCUSABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSABLE);
+			if ((state & ACC.STATE_FOCUSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSED);
+			if ((state & ACC.STATE_HOTTRACKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ARMED); ;
+			if ((state & ACC.STATE_INVISIBLE) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_VISIBLE);
+			if ((state & ACC.STATE_MULTISELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_MULTISELECTABLE);
+			if ((state & ACC.STATE_OFFSCREEN) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SHOWING);												
+			if ((state & ACC.STATE_PRESSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_PRESSED);
+			if ((state & ACC.STATE_READONLY) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EDITABLE);
+			if ((state & ACC.STATE_SELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTABLE);
+			if ((state & ACC.STATE_SELECTED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTED);
+			if ((state & ACC.STATE_SIZEABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_RESIZABLE);
+			// Note: STATE_COLLAPSED and STATE_NORMAL have no ATK equivalents
+		}
+		return set;
 	}
 
 	int atkSelection_is_child_selected (int index) {
@@ -533,6 +540,28 @@ public class AccessibleObject {
 		return parentResult;
 	}
 
+	int atkText_get_caret_offset () {
+		int parentResult = 0;
+		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
+			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
+			AtkTextIface textIface = new AtkTextIface ();
+			ATK.memmove (textIface, superType);
+			if (textIface.get_caret_offset != 0) {
+				parentResult = ATK.call (textIface.get_caret_offset, handle);
+			}
+		}
+		AccessibleTextListener[] listeners = accessible.getTextListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		AccessibleTextEvent event = new AccessibleTextEvent (this);
+		event.childID = id;
+		event.offset = parentResult;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getCaretOffset (event);	
+		} 
+		return event.offset; 	
+	}
+	
 	int atkText_get_character_at_offset (int offset) {
 		String text = getText ();
 		if (text != null) return (int)text.charAt (offset); // TODO
@@ -561,6 +590,60 @@ public class AccessibleObject {
 				return ATK.call (textIface.get_character_count, handle);
 			}
 		}
+		return 0;
+	}
+
+	int atkText_get_n_selections () {
+		int parentResult = 0;
+		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
+			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
+			AtkTextIface textIface = new AtkTextIface ();
+			ATK.memmove (textIface, superType);
+			if (textIface.get_n_selections != 0) {
+				parentResult = ATK.call (textIface.get_n_selections, handle);
+			}
+		}
+		AccessibleTextListener[] listeners = accessible.getTextListeners ();
+		if (listeners.length == 0) return parentResult;
+
+		AccessibleTextEvent event = new AccessibleTextEvent (this);
+		event.childID = id;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getSelectionRange (event);
+		}
+		return event.length == 0 ? parentResult : 1;
+	}
+
+	int atkText_get_selection (int selection_num, int start_offset, int end_offset) {
+		// TODO next line is workaround for disposed widget exception;
+		// should not be needed  
+		if (accessible.control.isDisposed ()) return 0;
+		OS.memmove (start_offset, new int[] {0}, 4);
+		OS.memmove (end_offset, new int[] {0}, 4);
+		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
+			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
+			AtkTextIface textIface = new AtkTextIface ();
+			ATK.memmove (textIface, superType);
+			if (textIface.get_selection != 0) {
+				ATK.call (textIface.get_selection, handle, selection_num, start_offset, end_offset);
+			}
+		}
+		AccessibleTextListener[] listeners = accessible.getTextListeners ();
+		if (listeners.length == 0) return 0;
+
+		AccessibleTextEvent event = new AccessibleTextEvent (this);
+		event.childID = id;
+		int[] parentStart = new int [1];
+		int[] parentEnd = new int [1];
+		OS.memmove (parentStart, start_offset, 4);
+		OS.memmove (parentEnd, end_offset, 4);
+		event.offset = parentStart [0];
+		event.length = parentEnd [0] - parentStart [0];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getSelectionRange (event);
+		}
+		OS.memmove (start_offset, new int[] {event.offset}, 4);
+		OS.memmove (end_offset, new int[] {event.offset + event.length}, 4);
 		return 0;
 	}
 
@@ -1074,18 +1157,17 @@ public class AccessibleObject {
 				}
 			}
 		}
-		AccessibleControlListener[] listeners = accessible.getControlListeners ();
-		if (listeners.length == 0) return parentText;
-		
+		AccessibleControlListener[] controlListeners = accessible.getControlListeners ();
+		if (controlListeners.length == 0) return parentText;
 		AccessibleControlEvent event = new AccessibleControlEvent (this);
 		event.childID = id;
 		event.result = parentText;
-		for (int i = 0; i < listeners.length; i++) {
-			listeners [i].getValue (event);				
-		} 
+		for (int i = 0; i < controlListeners.length; i++) {
+			controlListeners [i].getValue (event);				
+		}
 		return event.result;
 	}
-
+	
 	int nextIndexOfChar (String string, String searchChars, int startIndex) {
 		int result = string.length ();
 		for (int i = 0; i < searchChars.length (); i++) {
@@ -1134,17 +1216,37 @@ public class AccessibleObject {
 		children.remove (new Integer (child.handle));
 		if (unref && child.isLightweight) OS.g_object_unref (child.handle);
 	}
-
-	void setFocusToChild (int childId) {
+	
+	void selectionChanged () {
+		OS.g_signal_emit_by_name (handle, ATK.selection_changed);
+	}
+	
+	void setFocus (int childID) {
 		updateChildren ();
-		AccessibleObject accObject = getChildByID (childId);
+		AccessibleObject accObject = getChildByID (childID);
 		if (accObject != null) {
 			ATK.atk_focus_tracker_notify (accObject.handle);
 		}
 	}
-	
+
 	void setParent (AccessibleObject parent) {
 		this.parent = parent;
+	}
+	
+	void textCaretMoved(int index) {
+		OS.g_signal_emit_by_name (handle, ATK.text_caret_moved, index);
+	}
+
+	void textChanged(int type, int startIndex, int length) {
+		if (type == ACC.TEXT_DELETE) {
+			OS.g_signal_emit_by_name (handle, ATK.text_changed_delete, startIndex, length);
+		} else {
+			OS.g_signal_emit_by_name (handle, ATK.text_changed_insert, startIndex, length);
+		}
+	}
+
+	void textSelectionChanged() {
+		OS.g_signal_emit_by_name (handle, ATK.text_selection_changed);
 	}
 
 	void updateChildren () {
