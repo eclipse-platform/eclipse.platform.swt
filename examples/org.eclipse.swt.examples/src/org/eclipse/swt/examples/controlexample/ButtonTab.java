@@ -92,9 +92,17 @@ class ButtonTab extends AlignableTab {
 		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (radioButton.getSelection()) style |= SWT.RADIO;
 		if (toggleButton.getSelection()) style |= SWT.TOGGLE;
-		if (arrowButton.getSelection()) style |= SWT.ARROW;
 		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
+		if (leftButton.getSelection()) style |= SWT.LEFT;
+		if (rightButton.getSelection()) style |= SWT.RIGHT;
+		if (arrowButton.getSelection()) {
+			style |= SWT.ARROW; 
+			if (upButton.getSelection()) style |= SWT.UP;
+			if (downButton.getSelection()) style |= SWT.DOWN;
+		} else {
+			if (centerButton.getSelection()) style |= SWT.CENTER;			
+		}
 	
 		/* Create the example widgets */
 		button1 = new Button(textButtonGroup, style);
