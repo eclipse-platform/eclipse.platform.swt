@@ -64,6 +64,7 @@ public class Browser extends Composite {
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
+	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 
 	static nsIAppShell AppShell;
@@ -420,6 +421,32 @@ public void addStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
 	statusTextListeners = newStatusTextListeners;
 	statusTextListeners[statusTextListeners.length - 1] = listener;
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
+	titleListeners = newTitleListeners;
+	titleListeners[titleListeners.length - 1] = listener;
 }
 
 /**	 
@@ -1063,6 +1090,44 @@ public void removeStatusTextListener(StatusTextListener listener) {
  * 
  * @since 3.0
  */
+public void removeTitleListener(TitleListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (titleListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < titleListeners.length; i++) {
+		if (listener == titleListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (titleListeners.length == 1) {
+		titleListeners = new TitleListener[0];
+		return;
+	}
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
+	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
+	titleListeners = newTitleListeners;
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1687,15 +1752,15 @@ int SetFocus() {
 	return XPCOM.NS_OK;     	
 }	
 
-int GetVisibility(int value) {
+int GetVisibility(int aVisibility) {
 	return XPCOM.NS_OK;     	
 }
    
-int SetVisibility(int value) {
+int SetVisibility(int aVisibility) {
 	WindowEvent event = new WindowEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	if (value == 1) {
+	if (aVisibility == 1) {
 		event.location = location;
 		event.size = size;
 		for (int i = 0; i < visibilityWindowListeners.length; i++)
@@ -1709,15 +1774,25 @@ int SetVisibility(int value) {
 	return XPCOM.NS_OK;     	
 }
 
-int GetTitle(int value) {
+int GetTitle(int aTitle) {
 	return XPCOM.NS_OK;     	
 }
  
-int SetTitle(int value) {
+int SetTitle(int aTitle) {
+	if (titleListeners.length == 0) return XPCOM.NS_OK;
+	TitleEvent event = new TitleEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
+	int length = XPCOM.nsCRT_strlen_PRUnichar(aTitle);
+	char[] dest = new char[length];
+	XPCOM.memmove(dest, aTitle, length * 2);
+	event.title = new String(dest);
+	for (int i = 0; i < titleListeners.length; i++)
+		titleListeners[i].changed(event);
 	return XPCOM.NS_OK;     	
 }
 
-int GetSiteWindow(int siteWindow) {
+int GetSiteWindow(int aSiteWindow) {
 	return XPCOM.NS_OK;     	
 }  
  
