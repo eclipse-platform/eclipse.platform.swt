@@ -21,7 +21,6 @@ ScrollBar () {
 ScrollBar (Scrollable parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	createWidget (0);
 }
 
 public void addSelectionListener(SelectionListener listener) {

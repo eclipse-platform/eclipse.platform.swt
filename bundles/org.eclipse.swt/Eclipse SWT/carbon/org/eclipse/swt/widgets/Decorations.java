@@ -44,7 +44,7 @@ Control computeTabRoot () {
 }
 
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= CANVAS;
 }
 
 public Button getDefaultButton () {

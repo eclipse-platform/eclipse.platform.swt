@@ -7,13 +7,21 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.OS;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Display extends Device {
 
+	/* Windows and Events */
 	Event [] eventQueue;
+	Callback windowCallback;
+	int windowProc;
 	EventTable eventTable, filterTable;
+	int lastModifiers;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -29,6 +37,7 @@ public class Display extends Device {
 	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
+		
 		/* Non-Numeric Keypad Keys */
 		{126,	SWT.ARROW_UP},
 		{125,	SWT.ARROW_DOWN},
@@ -101,12 +110,18 @@ static void setDevice (Device device) {
 	CurrentDevice = device;
 }
 
-public Display () {
-	this (null);
+static int translateKey (int key) {
+	for (int i=0; i<KeyTable.length; i++) {
+		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
+	}
+	return 0;
 }
 
-public Display (DeviceData data) {
-	super (data);
+static int untranslateKey (int key) {
+	for (int i=0; i<KeyTable.length; i++) {
+		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
+	}
+	return 0;
 }
 
 public void addFilter (int eventType, Listener listener) {
@@ -132,15 +147,21 @@ public void beep () {
 	checkDevice ();
 }
 
-protected void checkSubclass () {
-	if (!Display.isValidClass (getClass ())) {
-		error (SWT.ERROR_INVALID_SUBCLASS);
-	}
-}
-
 protected void checkDevice () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+}
+
+protected void checkSubclass () {
+	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Display () {
+	this (null);
+}
+
+public Display (DeviceData data) {
+	super (data);
 }
 
 static synchronized void checkDisplay (Thread thread) {
@@ -279,7 +300,7 @@ public Object getData () {
 
 public int getDoubleClickTime () {
 	checkDevice ();
-	return 0; 
+	return 500; 
 }
 
 public Control getFocusControl () {
@@ -289,6 +310,11 @@ public Control getFocusControl () {
 
 public int getIconDepth () {
 	return 0;
+}
+
+int getLastEventTime () {
+//	return (int) (OS.GetLastUserEventTime () * 1000.0);
+	return (int) System.currentTimeMillis ();
 }
 
 public Shell [] getShells () {
@@ -365,7 +391,28 @@ public Thread getThread () {
 
 protected void init () {
 	super.init ();
-
+	
+	/* Create the callbacks */
+	windowCallback = new Callback (this, "windowProc", 3);
+	windowProc = windowCallback.getAddress ();
+	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	/* Install Application Event Handlers */
+	int[] mask1 = new int[] {
+		OS.kEventClassMouse, OS.kEventMouseDown,
+	};
+	int appTarget = OS.GetApplicationEventTarget ();
+	OS.InstallEventHandler (appTarget, windowProc, mask1.length / 2, mask1, 0, null);
+	
+	/* Install Keyboard Event Handlers */
+	int [] mask2 = new int[] {
+		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
+		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
+		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
+	};
+	int focusTarget = OS.GetUserFocusEventTarget ();
+	OS.InstallEventHandler (focusTarget, windowProc, mask2.length / 2, mask2, 0, null);
 }
 
 public int internal_new_GC (GCData data) {
@@ -410,7 +457,15 @@ void postEvent (Event event) {
 
 public boolean readAndDispatch () {
 	checkDevice ();
-	return false;
+	int [] outEvent = new int [1];
+	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
+	if (status == OS.noErr) {
+		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+		runDeferredEvents ();
+		return true;
+	}
+	return runAsyncMessages ();
 }
 
 static synchronized void register (Display display) {
@@ -448,6 +503,10 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	/* Dispose callbacks */
+	windowCallback.dispose ();
+	windowCallback = null;
+	windowProc = 0;
 }
 
 public void removeFilter (int eventType, Listener listener) {
@@ -511,7 +570,7 @@ void sendEvent (int eventType, Event event) {
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	//if (event.time == 0) event.time = getLastEventTime ();
+	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}
@@ -614,7 +673,8 @@ public void setSynchronizer (Synchronizer synchronizer) {
 
 public boolean sleep () {
 	checkDevice ();
-	return false;
+	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null);
+	return status == OS.noErr;
 }
 
 public void syncExec (Runnable runnable) {
@@ -653,6 +713,85 @@ public void update () {
 	checkDevice ();
 }
 
+int windowProc (int nextHandler, int theEvent, int userData) {
+	int eventClass = OS.GetEventClass (theEvent);
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventClass) {
+		case OS.kEventClassWindow: {
+			int [] theWindow = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow [0], theRoot);
+			Control control = WidgetTable.get (theRoot [0]);
+			if (control != null) {
+				switch (eventKind) {
+					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowClose:			return control.kEventWindowClose (nextHandler, theEvent, userData);
+				}
+			}
+			break;
+		}
+		case OS.kEventClassMouse: {
+			switch (eventKind) {
+				case OS.kEventMouseDown: {
+					int [] w = new int [1];
+					short[] loc= new short[2];
+					OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc);
+					org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point();
+					OS.SetPt (where, loc[1], loc[0]);
+					short part = OS.FindWindow (where, w);
+					if (part == OS.inMenuBar) {
+						OS.MenuSelect (where);
+						return OS.noErr;
+					}
+					break;
+				}
+			}
+			break;
+		}
+		case OS.kEventClassKeyboard: {
+//			// decide whether a SWT control has the focus
+//			Control focus= getFocusControl();
+//			if (focus == null || focus.handle == 0)
+//				return OS.eventNotHandledErr;
+//				
+//			int frontWindow= OS.FrontWindow();
+//			if (findWidget(frontWindow) == null) {
+//				int w= OS.GetControlOwner(focus.handle);
+//				if (w != OS.FrontWindow())	// its probably a standard dialog
+//					return OS.eventNotHandledErr;
+//			}	
+			switch (eventKind) {
+				case OS.kEventRawKeyDown:
+					int [] keyCode = new int [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+					if (keyCode [0] == 114) {	// help key
+//						windowProc(focus.handle, SWT.Help);
+//						return OS.noErr;
+					}
+					//FALL THROUGH
+				case OS.kEventRawKeyRepeat:
+					break;
+				case OS.kEventRawKeyUp:
+					break;
+				case OS.kEventRawKeyModifiersChanged:
+					int [] modifiers = new int [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+					int eventType = SWT.KeyUp;
+					if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) eventType = SWT.KeyDown;
+					if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) eventType = SWT.KeyDown;
+					if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) eventType = SWT.KeyDown;
+					if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) eventType = SWT.KeyDown;
+					lastModifiers = modifiers [0];
+					break;			
+			}
+			break;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+	
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;

@@ -8,12 +8,11 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
 public abstract class Widget {
-
-	public int handle;
 	int style, state;
 	EventTable eventTable;
 	Object data;
@@ -28,16 +27,18 @@ public abstract class Widget {
 //	static final int RESIZEREDRAW	= 1 << 4;
 //	static final int WRAP			= 1 << 5;
 //	static final int DISABLED		= 1 << 6;
-	static final int HIDDEN		= 1 << 7;
+//	static final int HIDDEN		= 1 << 7;
 //	static final int FOREGROUND		= 1 << 8;
 //	static final int BACKGROUND		= 1 << 9;
 	static final int DISPOSED	= 1 << 10;
-	static final int HANDLE		= 1 << 11;
+//	static final int HANDLE		= 1 << 11;
 	static final int CANVAS		= 1 << 12;
 
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
+	
+	static final boolean EMULATE_RIGHT_BUTTON = true;
 
 Widget () {
 	/* Do nothing */
@@ -90,18 +91,8 @@ protected void checkWidget () {
 	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
-void createHandle (int index) {
-	/* Do nothing */
-}
-void createWidget (int index) {
-	createHandle (index);
-	register ();
-}
-void deregister () {
-	if (handle == 0) return;
-	WidgetTable.remove (handle);
-}
 void destroyWidget () {
+	releaseHandle ();
 }
 
 public void dispose () {
@@ -114,9 +105,6 @@ public void dispose () {
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
-}
-
-void enableHandle (boolean enabled, int widgetHandle) {
 }
 
 void error (int code) {
@@ -167,8 +155,6 @@ boolean hooks (int eventType) {
 }
 
 public boolean isDisposed () {
-	if (handle != 0) return false;
-	if ((state & HANDLE) != 0) return true;
 	return (state & DISPOSED) != 0;
 }
 
@@ -195,20 +181,21 @@ public void notifyListeners (int eventType, Event event) {
 	eventTable.sendEvent (event);
 }
 
-void register () {
-	if (handle == 0) return;
-	WidgetTable.put (handle, this);
-}
 void releaseChild () {
 	/* Do nothing */
 }
+
 void releaseHandle () {
-	handle = 0;
 	state |= DISPOSED;
 }
+
+void releaseResources () {
+	releaseWidget ();
+	releaseHandle ();
+}
+
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
-	deregister ();
 	eventTable = null;
 	data = null;
 	keys = null;
@@ -261,7 +248,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		//event.time = display.getLastEventTime ();
+		event.time = display.getLastEventTime ();
 	}
 	if (send) {
 		sendEvent (event);
@@ -321,6 +308,114 @@ public void setData (String key, Object value) {
 	newValues [values.length] = value;
 	keys = newKeys;
 	values = newValues;
+}
+
+void setInputState (Event event, int theEvent) {
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+	if ((modifiers [0] & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
+	if ((modifiers [0] & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
+	if ((modifiers [0] & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
+	if ((modifiers [0] & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
+	short[] button = new short[1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, button.length * 2, null, button);
+	switch (button [0]) {
+		case OS.kEventMouseButtonPrimary: event.stateMask |= SWT.BUTTON1; break;
+		case OS.kEventMouseButtonSecondary: event.stateMask |= SWT.BUTTON3; break;
+		case OS.kEventMouseButtonTertiary:	event.stateMask |= SWT.BUTTON2; break;
+	}
+	switch (event.type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case SWT.MouseUp:
+			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
+			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
+			if (event.button == 3) {
+				event.stateMask |= SWT.BUTTON3;	
+				if (EMULATE_RIGHT_BUTTON) event.stateMask &= ~SWT.CONTROL;
+			}
+			break;
+		case SWT.KeyDown:
+		case SWT.Traverse: {
+			if (event.keyCode != 0 || event.character != 0) return;
+			Display display = getDisplay ();
+			int lastModifiers = display.lastModifiers;
+			if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
+				event.stateMask &= ~SWT.SHIFT;
+				event.keyCode = SWT.SHIFT;
+				return;
+			}
+			if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
+				event.stateMask &= ~SWT.CONTROL;
+				event.keyCode = SWT.CONTROL;
+				return;
+			}
+			if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
+				event.stateMask &= ~SWT.COMMAND;
+				event.keyCode = SWT.COMMAND;
+				return;
+			}	
+			if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+				event.stateMask &= ~SWT.ALT;
+				event.keyCode = SWT.ALT;
+				return;
+			}
+			break;
+		}
+		case SWT.KeyUp: {
+			if (event.keyCode != 0 || event.character != 0) return;
+			Display display = getDisplay ();
+			int lastModifiers = display.lastModifiers;
+			if ((modifiers [0] & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
+				event.stateMask |= SWT.SHIFT;
+				event.keyCode = SWT.SHIFT;
+				return;
+			}
+			if ((modifiers [0] & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
+				event.stateMask |= SWT.CONTROL;
+				event.keyCode = SWT.CONTROL;
+				return;
+			}
+			if ((modifiers [0] & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
+				event.stateMask |= SWT.COMMAND;
+				event.keyCode = SWT.COMMAND;
+				return;
+			}	
+			if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+				event.stateMask |= SWT.ALT;
+				event.keyCode = SWT.ALT;
+				return;
+			}
+			break;
+		}
+	}
+}
+
+void setKeyState (Event event, int theEvent) {
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	event.keyCode = Display.translateKey (keyCode [0]);
+	switch (event.keyCode) {
+		case 0:
+		case SWT.BS:
+		case SWT.CR:
+		case SWT.DEL:
+		case SWT.ESC:
+		case SWT.TAB: {
+			byte [] charCode = new byte [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode);
+			event.character = (char) charCode [0];
+			break;
+		}
+		case SWT.LF:
+			event.character = '\n';
+			break;
+	}
+	setInputState (event, theEvent);
 }
 
 public String toString () {

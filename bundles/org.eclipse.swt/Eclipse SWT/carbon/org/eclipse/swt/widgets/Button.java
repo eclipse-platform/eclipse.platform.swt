@@ -42,8 +42,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	return new Point(0, 0);
 }
+
 void createHandle (int index) {
-	state |= HANDLE;
 }
 
 public int getAlignment () {

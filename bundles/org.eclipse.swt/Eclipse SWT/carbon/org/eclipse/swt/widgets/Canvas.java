@@ -8,6 +8,7 @@ package org.eclipse.swt.widgets;
  */
 
 public class Canvas extends Composite {
+//	Caret caret;
 
 Canvas () {
 	/* Do nothing */
@@ -17,27 +18,17 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
+//public Caret getCaret () {
+//	checkWidget();
+//    return caret;
+//}
 
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-}
-
-void releaseWidget () {
-	super.releaseWidget();
-}
+//public void setCaret (Caret caret) {
+//	checkWidget();
+//}
 
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 }
 
-public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
-}
-
-public void setLocation (int x, int y) {
-	checkWidget();
-}
-
-public void setSize (int width, int height) {
-	checkWidget();
-}
 }

@@ -7,19 +7,23 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.OS;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public abstract class Control extends Widget implements Drawable {
+	/**
+	* the handle to the OS resource
+	* (Warning: This field is platform dependent)
+	*/
+	public int handle;
 	Composite parent;
-	int foreground, background;
 	String toolTipText;
 	Object layoutData;
-	
 	int drawCount;
 
-	
 Control () {
 	/* Do nothing */
 }
@@ -27,7 +31,7 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	createWidget (0);
+	createWidget ();
 }
 
 public void addControlListener(ControlListener listener) {
@@ -145,9 +149,26 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
-void createWidget (int index) {
-	super.createWidget (index);
-	foreground = background = -1;
+void createHandle () {
+}
+
+void createWidget () {
+	createHandle ();
+	register ();
+	hookEvents ();
+}
+
+void deregister () {
+	if (handle == 0) return;
+	WidgetTable.remove (handle);
+}
+
+void destroyWidget () {
+	int theControl = handle;
+	releaseHandle ();
+	if (theControl != 0) {
+		OS.DisposeControl (theControl);
+	}
 }
 
 public boolean forceFocus () {
@@ -157,11 +178,7 @@ public boolean forceFocus () {
 
 public Color getBackground () {
 	checkWidget();
-	return Color.carbon_new (getDisplay (), getBackgroundPixel (), false);
-}
-
-int getBackgroundPixel () {
-	return background;
+	return Color.carbon_new (getDisplay (), 1, false);
 }
 
 public int getBorderWidth () {
@@ -198,10 +215,7 @@ public Font getFont () {
 
 public Color getForeground () {
 	checkWidget();
-	return Color.carbon_new (getDisplay (), getForegroundPixel (), false);
-}
-int getForegroundPixel () {
-	return foreground;
+	return Color.carbon_new (getDisplay (), 0, false);
 }
 
 public Object getLayoutData () {
@@ -256,8 +270,23 @@ public boolean getVisible () {
 	return false;
 }
 
+int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowClose (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
+}
+
+void hookEvents () {
 }
 
 public int internal_new_GC (GCData data) {
@@ -317,17 +346,15 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
-	redrawWidget (0, 0, 0, 0, false);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	if (width <= 0 || height <= 0) return;
-	redrawWidget (x, y, width, height, all);
 }
 
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-
+void register () {
+	if (handle == 0) return;
+	WidgetTable.put (handle, this);
 }
 
 void releaseWidget () {
@@ -476,6 +503,16 @@ public boolean setParent (Composite parent) {
 
 public void setRedraw (boolean redraw) {
 	checkWidget();
+	if (redraw) {
+		if (--drawCount == 0) {
+			OS.HIViewSetDrawingEnabled (handle, true);
+			OS.HIViewSetNeedsDisplay (handle, true);
+		}
+	} else {
+		if (drawCount++ == 0) {
+			OS.HIViewSetDrawingEnabled (handle, false);
+		}
+	}
 }
 
 public void setSize (int width, int height) {

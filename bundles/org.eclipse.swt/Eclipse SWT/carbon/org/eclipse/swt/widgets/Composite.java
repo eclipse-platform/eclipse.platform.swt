@@ -7,7 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.OS;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Composite extends Scrollable {
@@ -28,13 +30,11 @@ Control [] _getChildren () {
 
 Control [] _getTabList () {
 	if (tabList == null) return null;
-	// ensure to return only non-disposed controls
 	int count = 0;
 	for (int i=0; i<tabList.length; i++) {
 		if (!tabList [i].isDisposed ()) count++;
 	}
 	if (count == tabList.length) return tabList;
-	// copy only non-disposed controls
 	Control [] newList = new Control [count];
 	int index = 0;
 	for (int i=0; i<tabList.length; i++) {
@@ -72,13 +72,23 @@ Control [] computeTabList () {
 	return result;
 }
 
-void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+void createHandle () {
+	state |= CANVAS;
 }
 
 public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
+}
+
+int getChildrenCount () {
+	/*
+	* NOTE:  The current implementation will count
+	* non-registered children.
+	*/
+	short [] count = new short[1];
+	OS.CountSubControls (handle, count);
+	return count [0];
 }
 
 public Layout getLayout () {
@@ -118,13 +128,9 @@ public void layout () {
 public void layout (boolean changed) {
 	checkWidget();
 	if (layout == null) return;
-	//int count = getChildrenCount ();
-	//if (count == 0) return;
+	int count = getChildrenCount ();
+	if (count == 0) return;
 	layout.layout (this, changed);
-}
-
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-	super.redrawWidget (x, y, width, height, all);
 }
 
 void releaseChildren () {
@@ -143,9 +149,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;
-}
-void setBackgroundPixel (int pixel) {
-	super.setBackgroundPixel (pixel);
 }
 
 public void setBounds (int x, int y, int width, int height) {
