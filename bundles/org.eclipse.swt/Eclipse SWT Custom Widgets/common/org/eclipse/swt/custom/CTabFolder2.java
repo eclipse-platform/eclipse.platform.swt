@@ -129,6 +129,9 @@ public class CTabFolder2 extends Composite {
 	boolean expanded = true;
 	int expandImageState = NORMAL;
 	
+	Control topRight;
+	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
+	
 	boolean tipShowing;
 	int upCount = 0;
 	
@@ -1316,7 +1319,7 @@ char getMnemonic (String string) {
  	return '\0';
 }
 int getRightItemEdge (){
-	return getSize().x - borderRight - closeRect.width - expandRect.width - chevronRect.width - 1;
+	return getSize().x - borderRight - closeRect.width - expandRect.width - topRightRect.width - chevronRect.width - 1;
 }
 /**
  * Return the selected tab item, or an empty array if there
@@ -1389,7 +1392,7 @@ public int getTabHeight(){
  */
 public Control getTopRight() {
 	checkWidget();
-	return null;
+	return topRight;
 }
 
 /**
@@ -2284,14 +2287,14 @@ public void setBorderVisible(boolean show) {
 }
 boolean setButtonBounds() {
 	int decoratorWidth = 16;
-
+	int oldX, oldY, oldWidth, oldHeight;
 	boolean changed = false;
 	Point size = getSize();
 	
-	int oldX = closeRect.x;
-	int oldY = closeRect.y;
-	int oldWidth = closeRect.width;
-	int oldHeight = closeRect.height;
+	oldX = closeRect.x;
+	oldY = closeRect.y;
+	oldWidth = closeRect.width;
+	oldHeight = closeRect.height;
 	closeRect.x = closeRect.y = closeRect.height = closeRect.width = 0;
 	if (showClose && selectedIndex != -1) {
 		closeRect.x = size.x - borderRight - decoratorWidth;
@@ -2320,6 +2323,29 @@ boolean setButtonBounds() {
 	if (oldX != expandRect.x || oldWidth != expandRect.width ||
 	    oldY != expandRect.y || oldHeight != expandRect.height) changed = true;
 	
+	oldX = topRightRect.x;
+	oldY = topRightRect.y;
+	oldWidth = topRightRect.width;
+	oldHeight = topRightRect.height;
+	topRightRect.x = topRightRect.y = topRightRect.width = topRightRect.height = 0;
+	if (topRight != null) {
+		Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
+		if (single && selectedIndex > -1) {
+			CTabItem2 item = items[selectedIndex];
+			topRightRect.x = Math.min(item.x +item.width + decoratorWidth, size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x - 3);
+		} else {
+			topRightRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x;
+		}
+		topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		topRightRect.width = topRightSize.x;
+		topRightRect.height = tabHeight - 1;
+		topRight.setBounds(topRightRect);
+	}
+	if (oldX != topRightRect.x || oldWidth != topRightRect.width ||
+		oldY != topRightRect.y || oldHeight != topRightRect.height) {	
+		changed = true;
+	}
+		
 	oldX = chevronRect.x;
 	oldY = chevronRect.y;
 	oldWidth = chevronRect.width;
@@ -2328,7 +2354,7 @@ boolean setButtonBounds() {
 	if (items.length > 1) {
 		if (single && selectedIndex != -1){
 			CTabItem2 item = items[selectedIndex];
-			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
+			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - decoratorWidth - 3);
 			if (borderRight > 0) chevronRect.x += 1;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = decoratorWidth;
@@ -2337,7 +2363,7 @@ boolean setButtonBounds() {
 			int rightEdge = getRightItemEdge();
 			CTabItem2 item = items[items.length-1];
 			if (topTabIndex > 0 || item.x + item.width >= rightEdge) {
-				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
+				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - decoratorWidth;
 				if (borderRight > 0) chevronRect.x += 1;
 				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 				chevronRect.width = decoratorWidth;
@@ -2870,6 +2896,11 @@ public void setTabHeight(int height) {
  */
 public void setTopRight(Control control) {
 	checkWidget();
+	if (control != null && control.getParent() != this) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	topRight = control;
+	if (setButtonBounds()) redraw();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
