@@ -402,6 +402,8 @@ int processPaint (int damage) {
 
 int processFocusIn (int info) {
 	sendEvent (SWT.FocusIn);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
 	int index = 0;
 	Shell shell = getShell ();
 	Control [] focusIn = getPath ();
@@ -433,6 +435,8 @@ int processFocusIn (int info) {
 
 int processFocusOut (int info) {
 	sendEvent (SWT.FocusOut);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
 	Shell shell = getShell ();
 	shell.lastFocus = this;
 	Display display = getDisplay ();
