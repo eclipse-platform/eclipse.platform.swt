@@ -192,6 +192,12 @@ void createHandle (int index) {
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 
 	if ((style & SWT.CHECK) != 0) {
+		uncheck = createCheckPixmap(false);
+		check = createCheckPixmap(true);
+	}
+}
+
+int createCheckPixmap(boolean checked) {
 		/*
 		* This code is intentionally commented.  At this
 		* point, the item height has not been set for the
@@ -202,16 +208,41 @@ void createHandle (int index) {
 //		OS.memmove (clist, handle, GtkCList.sizeof);
 //		int height = clist.row_height + 1, width = height;
 		int width = CHECK_WIDTH, height = CHECK_HEIGHT;
-		int style = OS.gtk_widget_get_style (handle);
-		GdkVisual visual = new GdkVisual ();
-		OS.memmove (visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
-		uncheck = OS.gdk_pixmap_new (0, width, height, visual.depth);
-		if (uncheck == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.gtk_draw_check (style, uncheck, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, 0, 0, width, height);
-		check = OS.gdk_pixmap_new (0, width, height, visual.depth);
-		if (check == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.gtk_draw_check (style, check, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, 0, 0, width, height);
-	}
+
+		GdkVisual visual = new GdkVisual();
+		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+		int pixmap = OS.gdk_pixmap_new(0, width, height, visual.depth);
+		
+		int gc = OS.gdk_gc_new(pixmap);
+		
+		GdkColor fgcolor = new GdkColor();
+		fgcolor.pixel = 0xFFFFFFFF;
+		fgcolor.red = (short) 0xFFFF;
+		fgcolor.green = (short) 0xFFFF;
+		fgcolor.blue = (short) 0xFFFF;
+		OS.gdk_gc_set_foreground(gc, fgcolor);
+		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, width,height);
+
+		fgcolor = new GdkColor();
+		fgcolor.pixel = 0;
+		fgcolor.red = (short) 0;
+		fgcolor.green = (short) 0;
+		fgcolor.blue = (short) 0;
+		OS.gdk_gc_set_foreground(gc, fgcolor);
+		
+		OS.gdk_draw_line(pixmap, gc, 0,0, 0,height-1);
+		OS.gdk_draw_line(pixmap, gc, 0,height-1, width-1,height-1);
+		OS.gdk_draw_line(pixmap, gc, width-1,height-1, width-1,0);
+		OS.gdk_draw_line(pixmap, gc, width-1,0, 0,0);
+
+		/* now the cross check */
+		if (checked) {
+			OS.gdk_draw_line(pixmap, gc, 0,0, width-1,height-1);
+			OS.gdk_draw_line(pixmap, gc, 0,height-1, width-1,0);
+		}
+		
+		OS.gdk_gc_destroy(gc);
+		return pixmap;
 }
 
 void createItem (TreeItem item, int node, int index) {
