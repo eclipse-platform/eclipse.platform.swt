@@ -400,7 +400,7 @@ public boolean isEnabled () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return getVisible() && parent.isVisible();
+	return OS.PtWidgetIsRealized (handle);
 }
 
 int processSelection (int info) {
@@ -660,17 +660,20 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
-	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
-	if (visible == OS.PtWidgetIsRealized (topHandle)) return;
-	if (visible) {
-		sendEvent (SWT.Show);
-		OS.PtRealizeWidget (topHandle);
-		parent.resizeClientArea ();
-	} else {
-		OS.PtUnrealizeWidget (topHandle);
-		parent.resizeClientArea ();
-		sendEvent(SWT.Hide);
+	int flags = visible ? 0 : OS.Pt_DELAY_REALIZE;
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_DELAY_REALIZE);
+	if (OS.PtWidgetIsRealized (parent.handle)) {
+		if (visible != OS.PtWidgetIsRealized (topHandle)) {
+			if (visible) {
+				sendEvent (SWT.Show);
+				OS.PtRealizeWidget (topHandle);
+			} else {
+				OS.PtUnrealizeWidget (topHandle);
+				sendEvent(SWT.Hide);
+			}
+		}
 	}
+	parent.resizeClientArea ();
 }
 
 }

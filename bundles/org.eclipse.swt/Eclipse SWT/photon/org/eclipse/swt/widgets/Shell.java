@@ -884,7 +884,16 @@ public void setVisible (boolean visible) {
 		if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 		blockedList = 0;
 	}
-	super.setVisible (visible);
+
+	int flags = visible ? 0 : OS.Pt_DELAY_REALIZE;
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_DELAY_REALIZE);
+	if (visible) {
+		sendEvent (SWT.Show);
+		OS.PtRealizeWidget (shellHandle);
+	} else {
+		OS.PtUnrealizeWidget (shellHandle);
+		sendEvent(SWT.Hide);
+	}
 
 	/*
 	* Feature in Photon.  When a shell is shown, it may have child
