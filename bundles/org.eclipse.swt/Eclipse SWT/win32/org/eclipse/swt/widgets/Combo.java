@@ -332,14 +332,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 	}	
+	TEXTMETRIC tm = new TEXTMETRIC ();
+	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + (tm.tmInternalLeading + border) * 2;
 	int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
-	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + 8;
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = textHeight + 6;
 	} else {
