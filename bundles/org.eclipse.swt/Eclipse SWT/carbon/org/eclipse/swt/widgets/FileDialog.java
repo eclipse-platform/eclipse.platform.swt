@@ -188,11 +188,11 @@ public String open () {
 		if (status == 0) {
 			dialog= dialogHandle[0];
 		} else {
-			System.out.println("FileDialog.open: status " + status);
+			//System.out.println("FileDialog.open: status " + status);
 		}
 		
 		if (dialog != 0) {
-			System.out.println("FileDialog.open: got dialog");
+			//System.out.println("FileDialog.open: got dialog");
 		
 			if ((style & SWT.SAVE) != 0) {
 				int fileNameHandle= 0;
@@ -205,9 +205,9 @@ public String open () {
 				}
 			}
 		
-			System.out.println("FileDialog.open: vor run");
+			//System.out.println("FileDialog.open: vor run");
 			OS.NavDialogRun(dialog);
-			System.out.println("FileDialog.open: nach run");
+			//System.out.println("FileDialog.open: nach run");
 		
 			int action= OS.NavDialogGetUserAction(dialog);
 			switch (action) {
@@ -225,8 +225,9 @@ public String open () {
 				result= MacUtil.getStringAndRelease(OS.NavDialogGetSaveFileName(dialog));
 				break;
 			}
-		} else
-			System.out.println("FileDialog.open: dialog == null");
+		} else {
+			//System.out.println("FileDialog.open: dialog == null");
+		}
 
 	} finally {
 		if (titleHandle != 0)
