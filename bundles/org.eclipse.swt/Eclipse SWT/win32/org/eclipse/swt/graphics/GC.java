@@ -580,15 +580,26 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			newIconInfo.hbmColor = OS.CreateCompatibleBitmap(srcHdc, destWidth, destHeight);
 			if (newIconInfo.hbmColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int oldDestBitmap = OS.SelectObject(dstHdc, newIconInfo.hbmColor);
-			if (!OS.IsWinCE) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
-			OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
-
+			boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
+			if (!OS.IsWinCE) {
+				if (stretch) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
+			}
+			if (stretch) {
+				OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
+			} else {
+				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCCOPY);
+			}
+			
 			/* Blt the mask bitmap */
 			OS.SelectObject(srcHdc, srcIconInfo.hbmMask);
 			newIconInfo.hbmMask = OS.CreateBitmap(destWidth, destHeight, 1, 1, null);
 			if (newIconInfo.hbmMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.SelectObject(dstHdc, newIconInfo.hbmMask);
-			OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
+			if (stretch) {
+				OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
+			} else {
+				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+			}
 			
 			/* Select old bitmaps before creating the icon */			
 			OS.SelectObject(srcHdc, oldSrcBitmap);
@@ -731,7 +742,10 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	
 	/* Scale the foreground pixels with alpha */
-	if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+	boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
+	if (!OS.IsWinCE) {
+		if (stretch) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+	} 
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	/* 
 	* Bug in WinCE and Win98.  StretchBlt does not correctly stretch when
@@ -744,13 +758,21 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		int tempHdc = OS.CreateCompatibleDC(handle);
 		int tempDib = createDIB(destWidth, destHeight);
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		if (stretch) {
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		} else {
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
+		}
 		OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
 		OS.SelectObject(tempHdc, oldTempBitmap);
 		OS.DeleteObject(tempDib);
 		OS.DeleteDC(tempHdc);
 	} else {
-		OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		if (stretch) {
+			OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		} else {
+			OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
+		}
 	}
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 	
@@ -884,10 +906,19 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
 		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-		if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
+		if (!OS.IsWinCE) {
+			if (stretch) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+		}
+		if (stretch) {
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		} else {
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, OS.SRCAND);
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+		}
 		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
 	
 		/* Release resources */
@@ -910,17 +941,22 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 	int mode = 0, rop2 = 0;
+	boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
 	if (!OS.IsWinCE) {
 		rop2 = OS.GetROP2(handle);
-		mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		if (stretch) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 	} else {
 		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
 		OS.SetROP2 (handle, rop2);
 	}
 	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
-	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+	if (stretch) {
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+	} else {
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop);
+	}
 	if (!OS.IsWinCE) {
-		OS.SetStretchBltMode(handle, mode);
+		if (stretch) OS.SetStretchBltMode(handle, mode);
 	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	OS.DeleteDC(srcHdc);
