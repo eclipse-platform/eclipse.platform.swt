@@ -49,14 +49,6 @@ public void test_nativeToJavaLorg_eclipse_swt_dnd_TransferData() {
 	warnUnimpl("Test test_nativeToJavaLorg_eclipse_swt_dnd_TransferData not written");
 }
 
-public void test_getTypeIds() {
-	warnUnimpl("Test test_getTypeIds not written");
-}
-
-public void test_getTypeNames() {
-	warnUnimpl("Test test_getTypeNames not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -71,8 +63,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getInstance");
 	methodNames.addElement("test_javaToNativeLjava_lang_ObjectLorg_eclipse_swt_dnd_TransferData");
 	methodNames.addElement("test_nativeToJavaLorg_eclipse_swt_dnd_TransferData");
-	methodNames.addElement("test_getTypeIds");
-	methodNames.addElement("test_getTypeNames");
 	methodNames.addAll(Test_org_eclipse_swt_dnd_ByteArrayTransfer.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -80,8 +70,6 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_getInstance")) test_getInstance();
 	else if (getName().equals("test_javaToNativeLjava_lang_ObjectLorg_eclipse_swt_dnd_TransferData")) test_javaToNativeLjava_lang_ObjectLorg_eclipse_swt_dnd_TransferData();
 	else if (getName().equals("test_nativeToJavaLorg_eclipse_swt_dnd_TransferData")) test_nativeToJavaLorg_eclipse_swt_dnd_TransferData();
-	else if (getName().equals("test_getTypeIds")) test_getTypeIds();
-	else if (getName().equals("test_getTypeNames")) test_getTypeNames();
 	else super.runTest();
 }
 }

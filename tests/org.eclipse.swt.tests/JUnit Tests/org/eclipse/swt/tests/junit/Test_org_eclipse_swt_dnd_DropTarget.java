@@ -49,10 +49,6 @@ public void test_getControl() {
 	warnUnimpl("Test test_getControl not written");
 }
 
-public void test_getDisplay() {
-	warnUnimpl("Test test_getDisplay not written");
-}
-
 public void test_getTransfer() {
 	warnUnimpl("Test test_getTransfer not written");
 }
@@ -69,10 +65,6 @@ public void test_setTransfer$Lorg_eclipse_swt_dnd_Transfer() {
 	warnUnimpl("Test test_setTransfer$Lorg_eclipse_swt_dnd_Transfer not written");
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -87,12 +79,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ControlI");
 	methodNames.addElement("test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener");
 	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getTransfer");
 	methodNames.addElement("test_notifyListenersILorg_eclipse_swt_widgets_Event");
 	methodNames.addElement("test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener");
 	methodNames.addElement("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -100,12 +90,10 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
 	else if (getName().equals("test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener")) test_addDropListenerLorg_eclipse_swt_dnd_DropTargetListener();
 	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getTransfer")) test_getTransfer();
 	else if (getName().equals("test_notifyListenersILorg_eclipse_swt_widgets_Event")) test_notifyListenersILorg_eclipse_swt_widgets_Event();
 	else if (getName().equals("test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener")) test_removeDropListenerLorg_eclipse_swt_dnd_DropTargetListener();
 	else if (getName().equals("test_setTransfer$Lorg_eclipse_swt_dnd_Transfer")) test_setTransfer$Lorg_eclipse_swt_dnd_Transfer();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else super.runTest();
 }
 }

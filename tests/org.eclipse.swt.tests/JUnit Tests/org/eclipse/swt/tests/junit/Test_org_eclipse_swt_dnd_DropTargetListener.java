@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import junit.framework.*;
+import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.dnd.DropTargetListener
@@ -22,6 +24,9 @@ public Test_org_eclipse_swt_dnd_DropTargetListener(String name) {
 	super(name);
 }
 
+public static void main(String[] args) {
+	TestRunner.run(suite());
+}
 
 protected void setUp() {
 }
@@ -45,12 +50,23 @@ public void test_dragOverLorg_eclipse_swt_dnd_DropTargetEvent() {
 	warnUnimpl("Test test_dragOverLorg_eclipse_swt_dnd_DropTargetEvent not written");
 }
 
+public void test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent() {
+	warnUnimpl("Test test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent not written");
+}
+
 public void test_dropLorg_eclipse_swt_dnd_DropTargetEvent() {
 	warnUnimpl("Test test_dropLorg_eclipse_swt_dnd_DropTargetEvent not written");
 }
 
-public void test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent() {
-	warnUnimpl("Test test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent not written");
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_dnd_DropTargetListener((String)e.nextElement()));
+	}
+	return suite;
 }
 
 public static java.util.Vector methodNames() {
@@ -59,8 +75,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_dragLeaveLorg_eclipse_swt_dnd_DropTargetEvent");
 	methodNames.addElement("test_dragOperationChangedLorg_eclipse_swt_dnd_DropTargetEvent");
 	methodNames.addElement("test_dragOverLorg_eclipse_swt_dnd_DropTargetEvent");
-	methodNames.addElement("test_dropLorg_eclipse_swt_dnd_DropTargetEvent");
 	methodNames.addElement("test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent");
+	methodNames.addElement("test_dropLorg_eclipse_swt_dnd_DropTargetEvent");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -68,7 +84,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_dragLeaveLorg_eclipse_swt_dnd_DropTargetEvent")) test_dragLeaveLorg_eclipse_swt_dnd_DropTargetEvent();
 	else if (getName().equals("test_dragOperationChangedLorg_eclipse_swt_dnd_DropTargetEvent")) test_dragOperationChangedLorg_eclipse_swt_dnd_DropTargetEvent();
 	else if (getName().equals("test_dragOverLorg_eclipse_swt_dnd_DropTargetEvent")) test_dragOverLorg_eclipse_swt_dnd_DropTargetEvent();
-	else if (getName().equals("test_dropLorg_eclipse_swt_dnd_DropTargetEvent")) test_dropLorg_eclipse_swt_dnd_DropTargetEvent();
 	else if (getName().equals("test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent")) test_dropAcceptLorg_eclipse_swt_dnd_DropTargetEvent();
+	else if (getName().equals("test_dropLorg_eclipse_swt_dnd_DropTargetEvent")) test_dropLorg_eclipse_swt_dnd_DropTargetEvent();
 }
 }
