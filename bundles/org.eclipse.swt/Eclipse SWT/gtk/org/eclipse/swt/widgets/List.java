@@ -230,8 +230,15 @@ void hookEvents () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (wHint == SWT.DEFAULT) wHint = 200;
-	return super.computeSize (wHint, hHint, changed);
+	Point size = super.computeSize (wHint, hHint, changed);
+	if (wHint != SWT.DEFAULT) {
+		size.x = wHint;
+	} else {
+		GtkStyle st = new GtkStyle ();
+		OS.memmove (st, OS.gtk_widget_get_style (handle));
+		size.x = OS.gtk_clist_optimal_column_width (handle, 0) + vScrollBarWidth() + st.xthickness * 2;
+	}
+	return size;
 }
 
 /**
