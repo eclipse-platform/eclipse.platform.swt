@@ -1037,6 +1037,7 @@ public void paste () {
 }
 
 void releaseWidget () {
+	super.releaseWidget ();
 	if (menuHandle != 0) {
 		OS.DeleteMenu (OS.GetMenuID (menuHandle));
 		OS.DisposeMenu (menuHandle);
