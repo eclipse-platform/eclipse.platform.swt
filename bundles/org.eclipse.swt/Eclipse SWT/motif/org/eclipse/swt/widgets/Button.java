@@ -336,7 +336,9 @@ public String getText () {
 	if ((style & SWT.ARROW) != 0) return "";
 	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1], mnemonic = argList [3];
+	int xmString = argList [1];
+	int mnemonic = argList [3];
+	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
 	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
 	char [] result = null;	
 	int address = OS.XmStringUnparse (
@@ -620,6 +622,7 @@ public void setText (String string) {
 		0,
 		0);	
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,
