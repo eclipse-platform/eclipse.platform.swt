@@ -999,7 +999,6 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_delete_text (entryHandle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
@@ -1024,8 +1023,8 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	this.textLimit = (short) limit;
-	OS.gtk_entry_set_max_length (entryHandle, (short) limit);
+	this.textLimit = limit;
+	OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
 }

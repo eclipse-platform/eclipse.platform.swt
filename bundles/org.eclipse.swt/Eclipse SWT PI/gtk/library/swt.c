@@ -2156,7 +2156,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1edi
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1max_1length
-	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	DEBUG_CALL("gtk_1entry_1set_1max_1length\n")
 

@@ -427,7 +427,7 @@ public static final native void gtk_entry_append_text(int entry, byte[] text);
 public static final native int gtk_entry_get_text(int entry);
 public static final native int gtk_entry_new();
 public static final native void gtk_entry_set_editable(int entry, boolean editable);
-public static final native void gtk_entry_set_max_length(int entry, short max);
+public static final native void gtk_entry_set_max_length(int entry, int max);
 public static final native void gtk_entry_set_text(int entry, byte[] text);
 public static final native void gtk_entry_set_visibility(int entry, boolean visible);
 public static final native int gtk_event_box_new();

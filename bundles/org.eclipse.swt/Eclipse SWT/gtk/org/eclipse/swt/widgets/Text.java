@@ -1130,8 +1130,8 @@ public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	if ((style & SWT.SINGLE) != 0) {
-		textLimit = (short) limit;
-		OS.gtk_entry_set_max_length (handle, (short) limit);
+		textLimit = limit;
+		OS.gtk_entry_set_max_length (handle, limit);
 	}
 }
 
