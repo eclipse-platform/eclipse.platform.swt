@@ -39,6 +39,11 @@ import org.eclipse.swt.internal.*;
  */
 public class SWT {
 	
+	/* Initialize the class */
+//	static {
+//		/* NOTE: the static initialization is at the end of file */
+//	}
+	
 	/* Widget Event Constants */
 	
 	/**
@@ -932,7 +937,41 @@ public class SWT {
 	 * (value is 1&lt;&lt;22)
 	 */
 	public static final int COMMAND = 1 << 22;
+	
+	/**
+	 * keyboard and/or mouse event mask indicating that the MOD1 key
+	 * was pushed on the keyboard when the event was generated.  This
+	 * is the primary keyboard modifier for the platform.
+	 * 
+	 * @since 2.1
+	 */
+	public static final int MOD1;
+	
+	/**
+	 * keyboard and/or mouse event mask indicating that the MOD2 key
+	 * was pushed on the keyboard when the event was generated.  This
+	 * is the secondary keyboard modifier for the platform.
+	 * 
+	 * @since 2.1
+	 */
+	public static final int MOD2;
 
+	/**
+	 * keyboard and/or mouse event mask indicating that the MOD3 key
+	 * was pushed on the keyboard when the event was generated.
+	 * 
+	 * @since 2.1
+	 */
+	public static final int MOD3;
+
+	/**
+	 * keyboard and/or mouse event mask indicating that the MOD4 key
+	 * was pushed on the keyboard when the event was generated.
+	 * 
+	 * @since 2.1
+	 */
+	public static final int MOD4;
+	
 	/**
 	 * keyboard event constant representing the UP ARROW key
 	 * (value is (1&lt;&lt;24)+1)
@@ -2044,7 +2083,7 @@ public static String getMessage(String key) {
 	
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "motif", "gtk", "photon"
+ * Examples: "win32", "motif", "gtk", "photon", "carbon"
  *
  * @return the SWT platform name
  */
@@ -2098,21 +2137,23 @@ public static void error (int code) {
  */
 public static void error (int code, Throwable throwable) {
 
-	// This code prevents the creation of "chains" of SWTErrors and
-	// SWTExceptions which in turn contain other SWTErrors and 
-	// SWTExceptions as their throwable. This can occur when low level
-	// code throws an exception past a point where a higher layer is
-	// being "safe" and catching all exceptions. (Note that, this is
-	// _a_bad_thing_ which we always try to avoid.)
-	//
-	// On the theory that the low level code is closest to the
-	// original problem, we simply re-throw the original exception here.
+	/*
+	* This code prevents the creation of "chains" of SWTErrors and
+	* SWTExceptions which in turn contain other SWTErrors and 
+	* SWTExceptions as their throwable. This can occur when low level
+	* code throws an exception past a point where a higher layer is
+	* being "safe" and catching all exceptions. (Note that, this is
+	* _a_bad_thing_ which we always try to avoid.)
+	*
+	* On the theory that the low level code is closest to the
+	* original problem, we simply re-throw the original exception here.
+	*/
 	if (throwable instanceof SWTError) throw (SWTError) throwable;
 	if (throwable instanceof SWTException) throw (SWTException) throwable;
 		
 	switch (code) {
 		
-		// Illegal Arguments (non-fatal)
+		/* Illegal Arguments (non-fatal) */
 		case ERROR_NULL_ARGUMENT: 
 		case ERROR_CANNOT_BE_ZERO:
 		case ERROR_INVALID_ARGUMENT:
@@ -2125,7 +2166,7 @@ public static void error (int code, Throwable throwable) {
 			throw new IllegalArgumentException (findErrorText (code));
 		}
 		
-		// SWT Errors (non-fatal)
+		/* SWT Errors (non-fatal) */
 		case ERROR_INVALID_SUBCLASS:
 		case ERROR_THREAD_INVALID_ACCESS:
 		case ERROR_WIDGET_DISPOSED:
@@ -2141,7 +2182,7 @@ public static void error (int code, Throwable throwable) {
 			throw exception;
 		}
 		
-		// OS Failure/Limit (fatal, may occur only on some platforms)
+		/* OS Failure/Limit (fatal, may occur only on some platforms) */
 		case ERROR_CANNOT_GET_COUNT:
 		case ERROR_CANNOT_GET_ENABLED:
 		case ERROR_CANNOT_GET_ITEM:
@@ -2154,9 +2195,10 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_CANNOT_SET_TEXT:
 		case ERROR_ITEM_NOT_ADDED:
 		case ERROR_ITEM_NOT_REMOVED:
-		case ERROR_NO_HANDLES: // fall through
+		case ERROR_NO_HANDLES:
+		//FALL THROUGH
 		
-		// SWT Failure/Limit (fatal, may occur only on some platforms)
+		/* SWT Failure/Limit (fatal, may occur only on some platforms) */
 		case ERROR_FAILED_LOAD_LIBRARY:
 		case ERROR_NO_MORE_CALLBACKS:
 		case ERROR_NOT_IMPLEMENTED:
@@ -2167,10 +2209,24 @@ public static void error (int code, Throwable throwable) {
 		}
 	}
 	
-	// Unknown/Undefined Error
+	/* Unknown/Undefined Error */
 	SWTError error = new SWTError (code);
 	error.throwable = throwable;
 	throw error;
 }
 
+static {
+	String platform = getPlatform ();
+	if ("carbon".equals (platform)) {
+		MOD1 = COMMAND;
+		MOD2 = ALT;
+		MOD3 = SHIFT;
+		MOD4 = CONTROL;
+	} else {
+		MOD1 = CONTROL;
+		MOD2 = SHIFT;
+		MOD3 = ALT;
+		MOD4 = ALT;
+	}
+}
 }
