@@ -35,22 +35,24 @@ public class JNIGeneratorAppUI {
 	JNIGeneratorApp app;
 
 	static final int CLASS_NAME_COLUMN = 0;
-	static final int CLASS_EXCLUDE_COLUMN = 1;
+	static final int CLASS_FLAGS_COLUMN = 1;
+	static final int CLASS_EXCLUDE_COLUMN = 2;
 	
 	static final int FIELD_NAME_COLUMN = 0;
-	static final int FIELD_CAST_COLUMN = 1;
-	static final int FIELD_ACCESSOR_COLUMN = 2;
-	static final int FIELD_FLAGS_COLUMN = 3;
+	static final int FIELD_FLAGS_COLUMN = 1;
+	static final int FIELD_CAST_COLUMN = 2;
+	static final int FIELD_ACCESSOR_COLUMN = 3;
 	static final int FIELD_EXCLUDE_COLUMN = 4;
 	
 	static final int METHOD_NAME_COLUMN = 0;
 	static final int METHOD_FLAGS_COLUMN = 1;
-	static final int METHOD_EXCLUDE_COLUMN = 2;
+	static final int METHOD_ACCESSOR_COLUMN = 2;
+	static final int METHOD_EXCLUDE_COLUMN = 3;
 	
 	static final int PARAM_INDEX_COLUMN = 0;
 	static final int PARAM_TYPE_COLUMN = 1;
-	static final int PARAM_CAST_COLUMN = 2;
-	static final int PARAM_FLAGS_COLUMN = 3;
+	static final int PARAM_FLAGS_COLUMN = 2;
+	static final int PARAM_CAST_COLUMN = 3;
 	
 public JNIGeneratorAppUI() {
 	this (new JNIGeneratorApp());
@@ -255,10 +257,101 @@ void createClassesPanel(Composite panel) {
 	TableColumn column;
 	column = new TableColumn(classesLt, SWT.NONE, CLASS_NAME_COLUMN);
 	column.setText("Class");
+	column = new TableColumn(classesLt, SWT.NONE, CLASS_FLAGS_COLUMN);
+	column.setText("Flags");
 	/*
 	column = new TableColumn(classesLt, SWT.NONE, CLASS_EXCLUDE_COLUMN);
 	column.setText("Exclude");
 	*/
+	
+	classTextEditor = new TableEditor(classesLt);
+	classTextEditor.grabHorizontal = true;
+	classEditorTx = new Text(classesLt, SWT.SINGLE);
+	classTextEditor.setEditor(classEditorTx);
+	Listener classTextListener = new Listener() {
+		public void handleEvent(Event e) {
+			classEditorTx.setVisible(false);
+			TableItem item = classTextEditor.getItem();
+			if (item == null) return;
+			int column = classTextEditor.getColumn();
+			ClassData classData = (ClassData)item.getData();
+			if (column == CLASS_EXCLUDE_COLUMN) {
+				String text = classEditorTx.getText();
+				classData.setExclude(text);
+				item.setText(column, classData.getExclude());
+				MetaData metaData = app.getMetaData();
+				metaData.setMetaData(classData.getClazz(), classData);
+				classesLt.getColumn(column).pack();
+			}
+		}
+	};
+	classEditorTx.addListener(SWT.DefaultSelection, classTextListener);
+	classEditorTx.addListener(SWT.FocusOut, classTextListener);
+	
+	classListEditor = new TableEditor(classesLt);
+	classEditorLt = new List(classesLt, SWT.MULTI | SWT.BORDER);
+	classEditorLt.setItems(ClassData.getAllFlags());
+	Point size = classEditorLt.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	classListEditor.minimumWidth = size.x;
+	classListEditor.minimumHeight = size.y;
+	classListEditor.setEditor(classEditorLt);
+	Listener classesListListener = new Listener() {
+		public void handleEvent(Event e) {
+			classEditorLt.setVisible(false);
+			TableItem item = classListEditor.getItem();
+			if (item == null) return;
+			int column = classListEditor.getColumn();
+			ClassData classData = (ClassData)item.getData();
+			if (column == CLASS_FLAGS_COLUMN) {
+				String[] flags = classEditorLt.getSelection();
+				classData.setFlags(flags);
+				item.setText(column, getFlagsString(classData.getFlags()));
+				item.setChecked(classData.isGenerate());
+				MetaData metaData = app.getMetaData();
+				metaData.setMetaData(classData.getClazz(), classData);
+				classesLt.getColumn(column).pack();
+			}
+		}
+	};
+	classEditorLt.addListener(SWT.DefaultSelection, classesListListener);
+	classEditorLt.addListener(SWT.FocusOut, classesListListener);
+
+	classesLt.addListener(SWT.MouseDown, new Listener() {
+		public void handleEvent(Event e) {
+			if (e.button != 1) return;
+			Point pt = new Point(e.x, e.y);
+			TableItem item = classesLt.getItem(pt);
+			if (item == null) return;
+			int column = -1;
+			for (int i = 0; i < classesLt.getColumnCount(); i++) {
+				if (item.getBounds(i).contains(pt)) {
+					column = i;
+					break;
+				}				
+			}
+			if (column == -1) return;
+			ClassData data = (ClassData)item.getData();
+			if (column == CLASS_EXCLUDE_COLUMN) {
+				classTextEditor.setColumn(column);
+				classTextEditor.setItem(item);
+				classEditorTx.setText(data.getExclude());
+				classEditorTx.selectAll();
+				classEditorTx.setVisible(true);
+				classEditorTx.setFocus();
+			} else if (column == CLASS_FLAGS_COLUMN) {
+				if (classesLt.getClientArea().contains(pt.x, pt.y + classEditorLt.getSize().y)) {
+					classListEditor.verticalAlignment = SWT.TOP;
+				} else {
+					classListEditor.verticalAlignment = SWT.BOTTOM;
+				}
+				classListEditor.setColumn(column);
+				classListEditor.setItem(item);
+				classEditorLt.setSelection(data.getFlags());
+				classEditorLt.setVisible(true);
+				classEditorLt.setFocus();
+			}
+		}
+	});
 }
 
 void createMembersPanel(Composite panel) {
@@ -408,10 +501,15 @@ void createMembersPanel(Composite panel) {
 				}
 			} else if (itemData instanceof MethodData) {
 				MethodData data = (MethodData)itemData;
-				if (column == METHOD_EXCLUDE_COLUMN) {
+				if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
 					memberTextEditor.setColumn(column);
 					memberTextEditor.setItem(item);
-					memberEditorTx.setText(data.getExclude());
+					String text = "";
+					switch (column) {
+						case METHOD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
+						case METHOD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+					}
+					memberEditorTx.setText(text);
 					memberEditorTx.selectAll();
 					memberEditorTx.setVisible(true);
 					memberEditorTx.setFocus();
@@ -458,10 +556,10 @@ void createParametersPanel(Composite panel) {
 	column = new TableColumn(paramsLt, SWT.NONE, PARAM_INDEX_COLUMN);
 	column = new TableColumn(paramsLt, SWT.NONE, PARAM_TYPE_COLUMN);
 	column.setText("Type");
-	column = new TableColumn(paramsLt, SWT.NONE, PARAM_CAST_COLUMN);
-	column.setText("Cast");
 	column = new TableColumn(paramsLt, SWT.NONE, PARAM_FLAGS_COLUMN);
 	column.setText("Flags");
+	column = new TableColumn(paramsLt, SWT.NONE, PARAM_CAST_COLUMN);
+	column.setText("Cast");
 	
 	paramTextEditor = new TableEditor(paramsLt);
 	paramTextEditor.grabHorizontal = true;
@@ -685,6 +783,7 @@ void updateClasses() {
 		TableItem item = new TableItem(classesLt, SWT.NONE);
 		item.setData(classData);
 		item.setText(CLASS_NAME_COLUMN, getClassString(clazz));
+		item.setText(CLASS_FLAGS_COLUMN, getFlagsString(classData.getFlags()));
 		item.setChecked(classData.isGenerate());
 	}
 	TableColumn[] columns = classesLt.getColumns();
@@ -722,6 +821,8 @@ void updateMembers() {
 		column.setText("Method");
 		column = new TableColumn(membersLt, SWT.NONE, METHOD_FLAGS_COLUMN);
 		column.setText("Flags");
+		column = new TableColumn(membersLt, SWT.NONE, METHOD_ACCESSOR_COLUMN);
+		column.setText("Accessor");
 		/*
 		column = new TableColumn(membersLt, SWT.NONE, METHOD_EXCLUDE_COLUMN);
 		column.setText("Exclude");
@@ -736,6 +837,7 @@ void updateMembers() {
 			item.setText(METHOD_NAME_COLUMN, getMethodString(method));
 			item.setChecked(methodData.isGenerate());
 			item.setText(METHOD_FLAGS_COLUMN, getFlagsString(methodData.getFlags()));
+			item.setText(METHOD_ACCESSOR_COLUMN, methodData.getAccessor());
 			/*
 			item.setText(METHOD_EXCLUDE_COLUMN, methodData.getExclude());
 			*/
@@ -744,12 +846,12 @@ void updateMembers() {
 		TableColumn column;
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_NAME_COLUMN);
 		column.setText("Field");
+		column = new TableColumn(membersLt, SWT.NONE, FIELD_FLAGS_COLUMN);
+		column.setText("Flags");
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_CAST_COLUMN);
 		column.setText("Cast");
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_ACCESSOR_COLUMN);
 		column.setText("Accessor");
-		column = new TableColumn(membersLt, SWT.NONE, FIELD_FLAGS_COLUMN);
-		column.setText("Flags");
 		/*
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_EXCLUDE_COLUMN);
 		column.setText("Exclude");
@@ -767,8 +869,8 @@ void updateMembers() {
 			item.setText(FIELD_NAME_COLUMN, getFieldString(field));
 			item.setChecked(fieldData.isGenerate());
 			item.setText(FIELD_CAST_COLUMN, fieldData.getCast());
-			item.setText(FIELD_ACCESSOR_COLUMN, fieldData.getAccessor());
 			item.setText(FIELD_FLAGS_COLUMN, getFlagsString(fieldData.getFlags()));
+			item.setText(FIELD_ACCESSOR_COLUMN, fieldData.getAccessor());
 			/*
 			item.setText(FIELD_EXCLUDE_COLUMN, fieldData.getExclude());
 			*/
