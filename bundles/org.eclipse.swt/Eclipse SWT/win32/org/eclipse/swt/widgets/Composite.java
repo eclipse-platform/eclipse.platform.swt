@@ -596,8 +596,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 			int flags = OS.DLGC_WANTALLKEYS | OS.DLGC_WANTARROWS | OS.DLGC_WANTTAB;
 			return new LRESULT (flags);
 		}
-		int count = getChildrenCount ();
-		if (count != 0) return new LRESULT (OS.DLGC_STATIC);
+		if (OS.GetWindow (handle, OS.GW_CHILD) != 0) return new LRESULT (OS.DLGC_STATIC);
 	}
 	return result;
 }
@@ -616,8 +615,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 	/* Set focus for a canvas with no children */
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) return result;
-		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) setFocus ();
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			if (OS.GetWindow (handle, OS.GW_CHILD) == 0) setFocus ();
+		}
 	}
 	return result;
 }
