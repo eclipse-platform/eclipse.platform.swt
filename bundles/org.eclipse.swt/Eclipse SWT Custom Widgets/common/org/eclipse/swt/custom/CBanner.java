@@ -242,13 +242,8 @@ public void layout (boolean changed) {
 	curveStart = x - indentLeft;
 	x += curveWidth - indentLeft - indentRight;
 	if (right != null) {
+		int height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
 		int y = BORDER_TOP + BORDER_STRIPE;
-		int height = 0;
-		if (leftRect == null) {
-			height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
-		} else {
-			height = leftRect.height;
-		}
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
