@@ -229,7 +229,7 @@ public class StyledText extends Canvas {
 	 * 	widget document. Any text occurring before the start offset or after the 
 	 * 	end offset specified during object creation is ignored.
 	 * @exception SWTException <ul>
-	 *   <li>ERROR_IO when the writer is closed. @see close()</li>
+	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
 	public void writeLine(String line, int lineOffset) {
@@ -259,7 +259,7 @@ public class StyledText extends Canvas {
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
 	 * @exception SWTException <ul>
-	 *   <li>ERROR_IO when the writer is closed. @see close()</li>
+	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
 	public void writeLineDelimiter(String lineDelimiter) {
@@ -517,7 +517,7 @@ public class StyledText extends Canvas {
 	 * 	widget document. Any text occurring before the start offset or after the 
 	 *	end offset specified during object creation is ignored.
 	 * @exception SWTException <ul>
-	 *   <li>ERROR_IO when the writer is closed. @see close()</li>
+	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
 	public void writeLine(String line, int lineOffset) {
@@ -550,7 +550,7 @@ public class StyledText extends Canvas {
 	 *
 	 * @param lineDelimiter line delimiter to write
 	 * @exception SWTException <ul>
-	 *   <li>ERROR_IO when the writer is closed. @see close()</li>
+	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
 	public void writeLineDelimiter(String lineDelimiter) {
@@ -623,8 +623,6 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @see org.eclipse.swt.SWT
- * @see org.eclipse.swt.ST
  */
 public void setKeyBinding(int key, int action) {
 	checkWidget();
@@ -2373,8 +2371,6 @@ public int getHorizontalPixel() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @see org.eclipse.swt.SWT
- * @see org.eclipse.swt.ST
  */
 public int getKeyBinding(int key) {
 	checkWidget();
@@ -2696,7 +2692,7 @@ String getPlatformDelimitedText(TextWriter writer) {
  *
  * @return start and end of the selection, x is the offset of the first selected 
  *  character, y is the offset after the last selected character
- * @see getSelectionRange()
+ * @see #getSelectionRange
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3190,7 +3186,7 @@ void installDefaultContent() {
  * Removed when the user sets a LineStyleListener.
  * <p>
  *
- * @see addLineStyleListener
+ * @see #addLineStyleListener
  */
 void installDefaultLineStyler() {
 	defaultLineStyler = new DefaultLineStyler(content);
@@ -3668,7 +3664,6 @@ void initializeFonts() {
  * <p>
  *
  * @param action one of the actions defined in ST.java
- * @see ST.java
  */
 public void invokeAction(int action) {
 	switch (action) {
@@ -4785,7 +4780,7 @@ void setScrollBars() {
  *   <li>ERROR_INVALID_RANGE when start is outside the widget content
  * </ul> 
  */
-public void setSelection (int start) {
+public void setSelection(int start) {
 	setSelection(start, start);
 }
 /** 
