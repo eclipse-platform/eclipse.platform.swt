@@ -14,7 +14,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
-import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -151,33 +150,28 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 
 	if (isImage && image != null) {
-		Rectangle bounds = image.getBounds();
+		Rectangle bounds = image.getBounds ();
 		width = bounds.width;
 		height = bounds.height;
 	} else {
 		int [] ptr = new int [1];
-		OS.CopyControlTitleAsCFString(handle, ptr);
+		OS.CopyControlTitleAsCFString (handle, ptr);
 		if (ptr [0] != 0) {
+			org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
 			if (font == null) {
-				org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-				short [] baseLine = new short [1];
-				OS.GetThemeTextDimensions(ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, false, ioBounds, baseLine);
-				width = ioBounds.h;
-				height = ioBounds.v;
+				OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, false, ioBounds, null);
 			} else {
-				// NEEDS WORK - alternatively we could use GetThemeTextDimensions with OS.kThemeCurrentPortFont
-				int length = OS.CFStringGetLength (ptr [0]);
-				char [] buffer = new char [length];
-				CFRange range = new CFRange ();
-				range.length = length;
-				OS.CFStringGetCharacters (ptr [0], range, buffer);
-				String string = new String (buffer);
-				GC gc = new GC (this);
-				Point extent = gc.stringExtent (string);
-				gc.dispose ();
-				width = extent.x;
-				height = extent.y;
+				int [] currentPort = new int [1];
+				OS.GetPort (currentPort);
+				OS.SetPortWindowPort (OS.GetControlOwner (handle));
+				OS.TextFont (font.id);
+				OS.TextFace (font.style);
+				OS.TextSize (font.size);
+				OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
+				OS.SetPort (currentPort [0]);
 			}
+			width = ioBounds.h;
+			height = ioBounds.v;
 			OS.CFRelease (ptr [0]);
 		} else {
 			width = DEFAULT_WIDTH;
@@ -190,7 +184,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int metric = ((style & SWT.CHECK) != 0) ? OS.kThemeMetricCheckBoxWidth : OS.kThemeMetricRadioButtonWidth;
 		OS.GetThemeMetric (metric, outMetric);	
  		width += outMetric [0] + 3; // +3 for gap between button and text/image
-		height = Math.max(outMetric [0], height);
+		height = Math.max (outMetric [0], height);
 	} else {
 		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
 			width += 10;
