@@ -103,7 +103,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 	Color lineBackground = null;
 	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	TextLayout layout = getTextLayout(line, lineOffset, event);
-	
+	Rectangle client = getClientArea();
 	event = getLineBackgroundData(lineOffset, line);
 	if (event != null) {
 		lineBackground = event.lineBackground;
@@ -120,9 +120,9 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		// completely selected
 		gc.setBackground(lineBackground);
 		gc.setForeground(lineBackground);
-		gc.fillRectangle(leftMargin, paintY, getClientArea().width, lineHeight);
+		gc.fillRectangle(client.x + leftMargin, paintY, client.width, lineHeight);
 	}
-	int paintX = leftMargin - getHorizontalPixel();
+	int paintX = client.x + leftMargin - getHorizontalPixel();
 	if (selectionStart != selectionEnd) {
 		Rectangle rect = layout.getLineBounds(0);
 		drawLineBreakSelection(line, lineOffset, paintX + rect.x + rect.width, paintY, gc);

@@ -70,7 +70,8 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
 	gc.setBackground(parent.getSelectionBackground());
 	gc.setForeground(parent.getSelectionForeground());
 	if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
-		gc.fillRectangle(paintX, paintY, getClientArea().width - paintX, lineHeight);
+		Rectangle rect = getClientArea();
+		gc.fillRectangle(paintX, paintY, rect.width - paintX, lineHeight);
 	} else {
 		boolean isWrappedLine = false;
 		if (parent.internalGetWordWrap()) {

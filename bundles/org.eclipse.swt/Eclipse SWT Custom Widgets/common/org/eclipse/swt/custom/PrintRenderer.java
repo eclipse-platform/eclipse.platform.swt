@@ -53,7 +53,7 @@ PrintRenderer(
 		StyledTextContent logicalContent, Hashtable lineBackgrounds, 
 		Hashtable lineStyles, Hashtable bidiSegments,
 		int tabLength, Rectangle clientArea) {
-	super(device, regularFont, clientArea.x);
+	super(device, regularFont, 0);
 	this.logicalContent = logicalContent;
 	this.lineBackgrounds = lineBackgrounds;
 	this.lineStyles = lineStyles;
