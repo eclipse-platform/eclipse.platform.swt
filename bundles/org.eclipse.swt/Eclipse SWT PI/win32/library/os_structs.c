@@ -1132,6 +1132,80 @@ void setINITCOMMONCONTROLSEXFields(JNIEnv *env, jobject lpObject, INITCOMMONCONT
 }
 #endif
 
+#ifndef NO_INPUT
+typedef struct INPUT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type;
+} INPUT_FID_CACHE;
+
+INPUT_FID_CACHE INPUTFc;
+
+void cacheINPUTFields(JNIEnv *env, jobject lpObject)
+{
+	if (INPUTFc.cached) return;
+	INPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	INPUTFc.type = (*env)->GetFieldID(env, INPUTFc.clazz, "type", "I");
+	INPUTFc.cached = 1;
+}
+
+INPUT *getINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct)
+{
+	if (!INPUTFc.cached) cacheINPUTFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, INPUTFc.type);
+	return lpStruct;
+}
+
+void setINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct)
+{
+	if (!INPUTFc.cached) cacheINPUTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, INPUTFc.type, (jint)lpStruct->type);
+}
+#endif
+
+#ifndef NO_KEYBDINPUT
+typedef struct KEYBDINPUT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID wVk, wScan, dwFlags, time, dwExtraInfo;
+} KEYBDINPUT_FID_CACHE;
+
+KEYBDINPUT_FID_CACHE KEYBDINPUTFc;
+
+void cacheKEYBDINPUTFields(JNIEnv *env, jobject lpObject)
+{
+	if (KEYBDINPUTFc.cached) return;
+	KEYBDINPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	KEYBDINPUTFc.wVk = (*env)->GetFieldID(env, KEYBDINPUTFc.clazz, "wVk", "S");
+	KEYBDINPUTFc.wScan = (*env)->GetFieldID(env, KEYBDINPUTFc.clazz, "wScan", "S");
+	KEYBDINPUTFc.dwFlags = (*env)->GetFieldID(env, KEYBDINPUTFc.clazz, "dwFlags", "I");
+	KEYBDINPUTFc.time = (*env)->GetFieldID(env, KEYBDINPUTFc.clazz, "time", "I");
+	KEYBDINPUTFc.dwExtraInfo = (*env)->GetFieldID(env, KEYBDINPUTFc.clazz, "dwExtraInfo", "I");
+	KEYBDINPUTFc.cached = 1;
+}
+
+KEYBDINPUT *getKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct)
+{
+	if (!KEYBDINPUTFc.cached) cacheKEYBDINPUTFields(env, lpObject);
+	lpStruct->wVk = (*env)->GetShortField(env, lpObject, KEYBDINPUTFc.wVk);
+	lpStruct->wScan = (*env)->GetShortField(env, lpObject, KEYBDINPUTFc.wScan);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, KEYBDINPUTFc.dwFlags);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, KEYBDINPUTFc.time);
+	lpStruct->dwExtraInfo = (*env)->GetIntField(env, lpObject, KEYBDINPUTFc.dwExtraInfo);
+	return lpStruct;
+}
+
+void setKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct)
+{
+	if (!KEYBDINPUTFc.cached) cacheKEYBDINPUTFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, KEYBDINPUTFc.wVk, (jshort)lpStruct->wVk);
+	(*env)->SetShortField(env, lpObject, KEYBDINPUTFc.wScan, (jshort)lpStruct->wScan);
+	(*env)->SetIntField(env, lpObject, KEYBDINPUTFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, KEYBDINPUTFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, KEYBDINPUTFc.dwExtraInfo, (jint)lpStruct->dwExtraInfo);
+}
+#endif
+
 #ifndef NO_LOGBRUSH
 typedef struct LOGBRUSH_FID_CACHE {
 	int cached;
@@ -1830,6 +1904,52 @@ void setMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct)
 	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_right, (jint)lpStruct->rcWork.right);
 	(*env)->SetIntField(env, lpObject, MONITORINFOFc.rcWork_bottom, (jint)lpStruct->rcWork.bottom);
 	(*env)->SetIntField(env, lpObject, MONITORINFOFc.dwFlags, (jint)lpStruct->dwFlags);
+}
+#endif
+
+#ifndef NO_MOUSEINPUT
+typedef struct MOUSEINPUT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dx, dy, mouseData, dwFlags, time, dwExtraInfo;
+} MOUSEINPUT_FID_CACHE;
+
+MOUSEINPUT_FID_CACHE MOUSEINPUTFc;
+
+void cacheMOUSEINPUTFields(JNIEnv *env, jobject lpObject)
+{
+	if (MOUSEINPUTFc.cached) return;
+	MOUSEINPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MOUSEINPUTFc.dx = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "dx", "I");
+	MOUSEINPUTFc.dy = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "dy", "I");
+	MOUSEINPUTFc.mouseData = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "mouseData", "I");
+	MOUSEINPUTFc.dwFlags = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "dwFlags", "I");
+	MOUSEINPUTFc.time = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "time", "I");
+	MOUSEINPUTFc.dwExtraInfo = (*env)->GetFieldID(env, MOUSEINPUTFc.clazz, "dwExtraInfo", "I");
+	MOUSEINPUTFc.cached = 1;
+}
+
+MOUSEINPUT *getMOUSEINPUTFields(JNIEnv *env, jobject lpObject, MOUSEINPUT *lpStruct)
+{
+	if (!MOUSEINPUTFc.cached) cacheMOUSEINPUTFields(env, lpObject);
+	lpStruct->dx = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.dx);
+	lpStruct->dy = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.dy);
+	lpStruct->mouseData = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.mouseData);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.dwFlags);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.time);
+	lpStruct->dwExtraInfo = (*env)->GetIntField(env, lpObject, MOUSEINPUTFc.dwExtraInfo);
+	return lpStruct;
+}
+
+void setMOUSEINPUTFields(JNIEnv *env, jobject lpObject, MOUSEINPUT *lpStruct)
+{
+	if (!MOUSEINPUTFc.cached) cacheMOUSEINPUTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.dx, (jint)lpStruct->dx);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.dy, (jint)lpStruct->dy);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.mouseData, (jint)lpStruct->mouseData);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, MOUSEINPUTFc.dwExtraInfo, (jint)lpStruct->dwExtraInfo);
 }
 #endif
 

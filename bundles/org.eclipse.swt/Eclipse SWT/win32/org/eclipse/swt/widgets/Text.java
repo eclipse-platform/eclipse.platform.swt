@@ -643,7 +643,7 @@ public boolean getDoubleClickEnabled () {
 public char getEchoChar () {
 	checkWidget ();
 	char echo = (char) OS.SendMessage (handle, OS.EM_GETPASSWORDCHAR, 0, 0);
-	if (echo != 0 && (echo = mbcsToWcs (echo, getCodePage ())) == 0) echo = '*';
+	if (echo != 0 && (echo = Display.mbcsToWcs (echo, getCodePage ())) == 0) echo = '*';
 	return echo;
 }
 
@@ -1324,7 +1324,7 @@ public void setEchoChar (char echo) {
 	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return;
 	if (echo != 0) {
-		if ((echo = (char) wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
+		if ((echo = (char) Display.wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
 	}
 	OS.SendMessage (handle, OS.EM_SETPASSWORDCHAR, echo, 0);
 	/*

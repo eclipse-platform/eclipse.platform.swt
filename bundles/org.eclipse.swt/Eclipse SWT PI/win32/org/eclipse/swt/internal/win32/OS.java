@@ -512,10 +512,13 @@ public class OS {
 	public static final int IME_CMODE_NATIVE = 0x1;
 	public static final int IME_CMODE_ROMAN = 0x10;
 	public static final int INFINITE = 0xffffffff;
+	public static final int INPUT_KEYBOARD = 1;
+	public static final int INPUT_MOUSE = 0;
 	public static final int KEY_ENUMERATE_SUB_KEYS = 0x8;
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
+	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
 	public static final int LBN_SELCHANGE = 0x1;
@@ -715,6 +718,14 @@ public class OS {
 	public static final int MNS_CHECKORBMP = 0x4000000;
 	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
 	public static final int MONITORINFOF_PRIMARY = 0x1;
+	public static final int MOUSEEVENTF_ABSOLUTE = 0x8000;
+	public static final int MOUSEEVENTF_LEFTDOWN = 0x0002; 
+	public static final int MOUSEEVENTF_LEFTUP = 0x0004; 
+	public static final int MOUSEEVENTF_MIDDLEDOWN = 0x0020; 
+	public static final int MOUSEEVENTF_MIDDLEUP = 0x0040; 
+	public static final int MOUSEEVENTF_MOVE = 0x0001;
+	public static final int MOUSEEVENTF_RIGHTDOWN = 0x0008; 
+	public static final int MOUSEEVENTF_RIGHTUP = 0x0010; 
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
 	public static final int NIF_ICON = 0x00000002;
 	public static final int NIF_INFO = 0x00000010;
@@ -2443,6 +2454,8 @@ public static final native void MoveMemory(int DestinationPtr, float[] Source, i
 public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native void MoveMemory (SCRIPT_ITEM Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (SCRIPT_LOGATTR Destination, int SourcePtr, int Length);
+public static final native void MoveMemory (int Destination, KEYBDINPUT Source, int Length);
+public static final native void MoveMemory (int Destination, MOUSEINPUT Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MsgWaitForMultipleObjectsEx (int nCount, int pHandles, int dwMilliseconds, int dwWakeMask, int dwFlags);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
@@ -2505,6 +2518,7 @@ public static final native int ScrollWindowEx (int hWnd, int dx, int dy, RECT pr
 public static final native  int SelectClipRgn (int hdc, int hrgn);
 public static final native int SelectObject(int hDC, int HGDIObj);
 public static final native int SelectPalette(int hDC, int hpal, boolean bForceBackground);
+public static final native int SendInput (int nInputs, int pInputs, int cbSize);
 public static final native int SendMessageW (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int [] wParam, int lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, char [] lParam);

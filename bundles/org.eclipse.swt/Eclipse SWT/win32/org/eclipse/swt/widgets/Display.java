@@ -1901,6 +1901,47 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
+/*
+ * Returns a single character, converted from the default
+ * multi-byte character set (MBCS) used by the operating
+ * system widgets to a wide character set (WCS) used by Java.
+ *
+ * @param ch the MBCS character
+ * @return the WCS character
+ */
+static char mbcsToWcs (int ch) {
+	return mbcsToWcs (ch, 0);
+}
+
+/*
+ * Returns a single character, converted from the specified
+ * multi-byte character set (MBCS) used by the operating
+ * system widgets to a wide character set (WCS) used by Java.
+ *
+ * @param ch the MBCS character
+ * @param codePage the code page used to convert the character
+ * @return the WCS character
+ */
+static char mbcsToWcs (int ch, int codePage) {
+	if (OS.IsUnicode) return (char) ch;
+	int key = ch & 0xFFFF;
+	if (key <= 0x7F) return (char) ch;
+	byte [] buffer;
+	if (key <= 0xFF) {
+		buffer = new byte [1];
+		buffer [0] = (byte) key;
+	} else {
+		buffer = new byte [2];
+		buffer [0] = (byte) ((key >> 8) & 0xFF);
+		buffer [1] = (byte) (key & 0xFF);
+	}
+	char [] unicode = new char [1];
+	int cp = codePage != 0 ? codePage : OS.CP_ACP;
+	int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
+	if (count == 0) return 0;
+	return unicode [0];
+}
+
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
 		case SWT_KEYMSG:
@@ -2046,6 +2087,122 @@ int numpadKey (int key) {
 		case OS.VK_DIVIDE:		return '/';
 	}
 	return 0;
+}
+
+/**
+ * Generate a low level system event.
+ * 
+ * <code>post</code> is used to generate low level keyboard
+ * and mouse events. This enables automated UI testing which is
+ * indistinguishable from an actual user.
+ * <p>
+ * <b>Event Types:</b>
+ * <p>KeyDown, KeyUp
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type KeyDown or KeyUp</li>
+ * <p> Either one of:
+ * <li>(in) character a character that corresponds to a keyboard key</li>
+ * <li>(in) keyCode the key code of the key that was typed,
+ *          as defined by the key code constants in class <code>SWT</code></li>
+ * </ul>
+ * <p>MouseDown, MouseUp</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseDown or MouseUp
+ * <li>(in) button the button that is pressed or released
+ * </ul>
+ * <p>MouseMove</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseMove
+ * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates
+ * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates
+ * </ul>
+ * </dl>
+ * 
+ * @param event the event to be generated
+ * 
+ * @return true if the event was generated or false otherwise
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * </p><p>
+ * NOTE: This API is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
+ * </p>
+ *
+ * @since 3.0
+ * 
+ */
+public boolean post (Event event) {
+	checkDevice ();
+	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	int type = event.type;
+	switch (type){
+		case SWT.KeyDown :
+		case SWT.KeyUp : {
+			int keyCode = event.keyCode;
+			KEYBDINPUT inputs = new KEYBDINPUT ();
+			inputs.wVk = (short) Display.untranslateKey (keyCode);
+			if (inputs.wVk == 0) {
+				char key = event.character;
+				switch (key) {
+					case 27: inputs.wVk = OS.VK_ESCAPE; break;
+					case 127: inputs.wVk = OS.VK_DELETE; break;
+					default : {
+						if (OS.IsWinCE) {
+							inputs.wVk = OS.CharUpper ((short) key);
+						} else {
+							inputs.wVk = (short) OS.VkKeyScan ((short) wcsToMbcs (key,0));
+							if (inputs.wVk == -1) return false;
+						}
+					}
+				}
+			}
+			inputs.dwFlags = type == SWT.KeyUp ? OS.KEYEVENTF_KEYUP : 0;
+			int hHeap = OS.GetProcessHeap ();
+			int pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+			OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
+			OS.MoveMemory (pInputs + 4, inputs, KEYBDINPUT.sizeof);
+			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
+			OS.HeapFree (hHeap, 0, pInputs);
+			return result;
+		}
+		case SWT.MouseDown :
+		case SWT.MouseMove : 
+		case SWT.MouseUp : {
+			MOUSEINPUT inputs = new MOUSEINPUT ();
+			if (type == SWT.MouseMove){
+				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
+				inputs.dx = event.x * 65535 / (OS.GetSystemMetrics (OS.SM_CXSCREEN) - 1);
+				inputs.dy = event.y * 65535 / (OS.GetSystemMetrics (OS.SM_CYSCREEN) - 1);
+			} else {
+				switch (event.button) {
+					case 1 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
+					case 2 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
+					case 3 : inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
+					default : return false;
+				}
+			}
+			int hHeap = OS.GetProcessHeap ();
+			int pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+			OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
+			OS.MoveMemory (pInputs + 4, inputs, MOUSEINPUT.sizeof);
+			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
+			OS.HeapFree (hHeap, 0, pInputs);
+			return result;
+		}
+	} 
+	return false;
 }
 
 void postEvent (Event event) {
@@ -2956,6 +3113,36 @@ void wakeThread () {
 	} else {
 		OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 	}
+}
+
+/*
+ * Returns a single character, converted from the wide
+ * character set (WCS) used by Java to the specified
+ * multi-byte character set used by the operating system
+ * widgets.
+ *
+ * @param ch the WCS character
+ * @param codePage the code page used to convert the character
+ * @return the MBCS character
+ */
+static int wcsToMbcs (char ch, int codePage) {
+	if (OS.IsUnicode) return ch;
+	if (ch <= 0x7F) return ch;
+	TCHAR buffer = new TCHAR (codePage, ch, false);
+	return buffer.tcharAt (0);
+}
+
+/*
+ * Returns a single character, converted from the wide
+ * character set (WCS) used by Java to the default
+ * multi-byte character set used by the operating system
+ * widgets.
+ *
+ * @param ch the WCS character
+ * @return the MBCS character
+ */
+static int wcsToMbcs (char ch) {
+	return wcsToMbcs (ch, 0);
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {

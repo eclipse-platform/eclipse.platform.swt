@@ -4425,6 +4425,18 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_GR
 }
 #endif
 
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	KEYBDINPUT _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I\n")
+	if (arg1) lparg1 = getKEYBDINPUTFields(env, arg1, &_arg1);
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I\n")
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -4458,6 +4470,18 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_ME
 	if (arg1) lparg1 = getMEASUREITEMSTRUCTFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I\n")
+}
+#endif
+
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	MOUSEINPUT _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I\n")
+	if (arg1) lparg1 = getMOUSEINPUTFields(env, arg1, &_arg1);
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I\n")
 }
 #endif
 
@@ -6218,6 +6242,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SelectPalette)
 	NATIVE_ENTER(env, that, "SelectPalette\n")
 	rc = (jint)SelectPalette((HDC)arg0, (HPALETTE)arg1, arg2);
 	NATIVE_EXIT(env, that, "SelectPalette\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SendInput
+JNIEXPORT jint JNICALL OS_NATIVE(SendInput)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "SendInput\n")
+	rc = (jint)SendInput(arg0, (LPINPUT)arg1, arg2);
+	NATIVE_EXIT(env, that, "SendInput\n")
 	return rc;
 }
 #endif

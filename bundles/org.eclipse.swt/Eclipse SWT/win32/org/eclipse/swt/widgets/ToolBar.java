@@ -517,7 +517,7 @@ void layoutItems () {
 }
 
 boolean mnemonicHit (char ch) {
-	int key = wcsToMbcs (ch);
+	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
 	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
 		return false;
@@ -531,7 +531,7 @@ boolean mnemonicHit (char ch) {
 }
 
 boolean mnemonicMatch (char ch) {
-	int key = wcsToMbcs (ch);
+	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
 	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
 		return false;

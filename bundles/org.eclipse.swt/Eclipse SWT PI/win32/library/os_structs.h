@@ -231,6 +231,26 @@ void setINITCOMMONCONTROLSEXFields(JNIEnv *env, jobject lpObject, INITCOMMONCONT
 #define INITCOMMONCONTROLSEX_sizeof() 0
 #endif
 
+#ifndef NO_INPUT
+INPUT *getINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct);
+void setINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct);
+#define INPUT_sizeof() sizeof(INPUT)
+#else
+#define getINPUTFields(a,b,c) NULL
+#define setINPUTFields(a,b,c)
+#define INPUT_sizeof() 0
+#endif
+
+#ifndef NO_KEYBDINPUT
+KEYBDINPUT *getKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct);
+void setKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct);
+#define KEYBDINPUT_sizeof() sizeof(KEYBDINPUT)
+#else
+#define getKEYBDINPUTFields(a,b,c) NULL
+#define setKEYBDINPUTFields(a,b,c)
+#define KEYBDINPUT_sizeof() 0
+#endif
+
 #ifndef NO_LOGBRUSH
 LOGBRUSH *getLOGBRUSHFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpStruct);
 void setLOGBRUSHFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpStruct);
@@ -359,6 +379,16 @@ void setMONITORINFOFields(JNIEnv *env, jobject lpObject, MONITORINFO *lpStruct);
 #define getMONITORINFOFields(a,b,c) NULL
 #define setMONITORINFOFields(a,b,c)
 #define MONITORINFO_sizeof() 0
+#endif
+
+#ifndef NO_MOUSEINPUT
+MOUSEINPUT *getMOUSEINPUTFields(JNIEnv *env, jobject lpObject, MOUSEINPUT *lpStruct);
+void setMOUSEINPUTFields(JNIEnv *env, jobject lpObject, MOUSEINPUT *lpStruct);
+#define MOUSEINPUT_sizeof() sizeof(MOUSEINPUT)
+#else
+#define getMOUSEINPUTFields(a,b,c) NULL
+#define setMOUSEINPUTFields(a,b,c)
+#define MOUSEINPUT_sizeof() 0
 #endif
 
 #ifndef NO_MSG

@@ -37,6 +37,7 @@
 #include <initguid.h>
 #include <oleacc.h>
 #include <usp10.h>
+#include <winable.h>
 #endif // _WIN32_WCE
 
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)

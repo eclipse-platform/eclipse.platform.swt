@@ -239,7 +239,7 @@ void fillAccel (ACCEL accel) {
 			case 27: key = OS.VK_ESCAPE; break;
 			case 127: key = OS.VK_DELETE; break;
 			default: {
-				key = wcsToMbcs ((char) key);
+				key = Display.wcsToMbcs ((char) key);
 				if (key == 0) return;
 				if (OS.IsWinCE) {
 					key = OS.CharUpper ((short) key);

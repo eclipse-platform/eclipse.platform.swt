@@ -4240,7 +4240,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 						Decorations shell = menuShell ();
 						Menu menu = shell.getMenuBar ();
 						if (menu != null) {
-							char key = mbcsToWcs (lParam);
+							char key = Display.mbcsToWcs (lParam);
 							if (key != 0) {
 								key = Character.toUpperCase (key);
 								MenuItem [] items = menu.getItems ();
