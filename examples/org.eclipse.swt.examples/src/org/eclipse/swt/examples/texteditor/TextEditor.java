@@ -143,7 +143,6 @@ void createShell (Display display) {
 	images.loadAll (display);
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
-	shell.setSize(500, 300);
 	shell.setLayout(layout);
 	shell.addDisposeListener (new DisposeListener () {
 		public void widgetDisposed (DisposeEvent e) {
@@ -314,6 +313,7 @@ public Shell open (Display display) {
 	createMenuBar ();
 	createToolBar ();
 	createStyledText ();
+	shell.setSize(500, 300);
 	shell.open ();
 	return shell;
 }
