@@ -43,7 +43,6 @@ public class Table extends SelectableItemWidget {
 	private Vector items;
 	private Vector columns;
 	private boolean drawGridLines = false;
-	private boolean hasColumnFocus = false;				// true if a column currently has focus
 	private boolean firstColumnImage = false;			// true if any item in the first column has an image
 	private int columnResizeX;							// last position of the cursor in a column resize operation
 	private Cursor columnResizeCursor;					// cursor displayed when a column resize is in progress. 
@@ -545,57 +544,6 @@ void drawSelectionFocus(TableItem item, GC gc) {
 	gc.drawFocus(position.x, position.y, extent.x, extent.y);
 }
 
-/**	Not used right now. Replace focusIn/focusOut with this method once 
- *	Display.getFocusWindow returns the new focus window on FocusOut event
- * The focus has moved in to or out of the receiver.
- * Redraw the item selection to reflect the focus change.
- * @param event - the focus change event
- */
-void focusChange(Event event) {
-	TableColumn focusColumn = getColumnAtX(event.x);
-	Control focusWindow = getDisplay().getFocusControl();
-
-	if (focusColumn != null && 
-		focusColumn.getIndex() == TableColumn.FIRST) {
-		hasColumnFocus = true;
-	}
-	else {
-		hasColumnFocus = false;
-	}
-	super.focusChange(event);
-	event.widget = this;									// the ficus event is never sent to the table itself but only to the focus widget
-	notifyListeners(event.type, event);						// make sure that listeners of the table get the focus event, too
-}
-/**
- * The focus has moved in to or out of the receiver.
- * @param event - the focus change event
- */
-void focusIn(Event event) {
-	TableColumn focusColumn = getColumnAtX(event.x);
-
-	if (focusColumn != null && 
-		focusColumn.getIndex() == TableColumn.FIRST) {
-		hasColumnFocus = true;
-	}
-	super.focusIn(event);
-	event.widget = this;									// the focus event is never sent to the table itself but only to the focus widget
-	notifyListeners(event.type, event);						// make sure that listeners of the table get the focus event, too
-}
-/**
- * The focus has moved in to or out of the receiver.
- * @param event - the focus change event
- */
-void focusOut(Event event) {
-	TableColumn focusColumn = getColumnAtX(event.x);
-
-	if (focusColumn != null && 
-		focusColumn.getIndex() == TableColumn.FIRST) {
-		hasColumnFocus = false;
-	}
-	super.focusOut(event);
-	event.widget = this;									// the focus event is never sent to the table itself but only to the focus widget
-	notifyListeners(event.type, event);						// make sure that listeners of the table get the focus event, too
-}
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1308,9 +1256,6 @@ void handleEvents(Event event) {
 boolean hasFirstColumnImage() {
 	return firstColumnImage;
 }
-public boolean isFocusControl() {
-	return hasColumnFocus;
-}
 /**
  * The mouse pointer was pressed down on the receiver's header
  * widget. Start a column resize operation if apropriate.
@@ -1452,8 +1397,6 @@ void installListeners() {
 	tableHeader.addListener(SWT.MouseDown, listener);
 	tableHeader.addListener(SWT.MouseUp, listener);
 	
-	removeListener(SWT.FocusOut, listener);
-	removeListener(SWT.FocusIn, listener);	
 	addListener(SWT.MouseMove, listener);
 	addListener(SWT.MouseDown, listener);
 	addListener(SWT.MouseDoubleClick, listener);
@@ -1597,7 +1540,6 @@ void mouseUp(Event event) {
 	Rectangle oldColumnBounds;
 	int resizeXPosition;
 	int widthChange;
-	
 	if (isColumnResizeStarted() == true) {
 		oldColumnBounds = resizeColumn.getBounds();
 		resizeXPosition = getColumnResizeX();	
