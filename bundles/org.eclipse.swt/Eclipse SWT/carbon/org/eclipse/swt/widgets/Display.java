@@ -1697,6 +1697,12 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+public boolean post (Event event) {
+	checkDevice ();
+	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.

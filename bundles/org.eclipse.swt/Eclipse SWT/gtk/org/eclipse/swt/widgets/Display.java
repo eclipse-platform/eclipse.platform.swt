@@ -1615,6 +1615,12 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 	return widget.hoverProc (handle);
 }
 
+public boolean post (Event event) {
+	checkDevice ();
+	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.

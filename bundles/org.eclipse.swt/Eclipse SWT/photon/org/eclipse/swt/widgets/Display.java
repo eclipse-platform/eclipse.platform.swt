@@ -1494,7 +1494,13 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	}
 	return rect;
 }
-	
+
+public boolean post (Event event) {
+	checkDevice ();
+	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.
