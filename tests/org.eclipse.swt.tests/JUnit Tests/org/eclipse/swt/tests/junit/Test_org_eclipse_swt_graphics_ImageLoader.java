@@ -162,7 +162,7 @@ public void test_saveLjava_io_OutputStreamI() {
 		try {
 			loader.save(outStream, -1);
 			fail("No exception thrown for save to invalid outputStream format");
-		} catch (IllegalArgumentException e) {
+		} catch (SWTException e) {
 		}
 		boolean jpgSupported = false;
 		for (int i=0; i<imageFormats.length; i++) {
