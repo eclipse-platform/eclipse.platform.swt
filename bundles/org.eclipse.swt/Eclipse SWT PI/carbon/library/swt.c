@@ -346,6 +346,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserIte
 	return (jint) RC(SetDataBrowserItemDataIcon((DataBrowserItemDataRef) itemId, (IconRef)iconRef));
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataButtonValue(JNIEnv *env, jclass zz,
+			jint itemId, jshort themeButtonValue) {
+	return (jint) RC(SetDataBrowserItemDataButtonValue((DataBrowserItemDataRef) itemId, (ThemeButtonValue)themeButtonValue));
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars(JNIEnv *env, jclass zz,	
 				jint cHandle, jboolean hScroll, jboolean vScroll) {
 	return RC(SetDataBrowserHasScrollBars((ControlRef) cHandle, hScroll, vScroll));
@@ -392,7 +397,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectedItems(JNIEnv *env, jclass zz,
 				jint cHandle, jint numItems, jintArray items, jint operation) {
 	jint *sa= (*env)->GetIntArrayElements(env, items, 0);
-	OSStatus status= RC(SetDataBrowserSelectedItems((ControlRef)cHandle, numItems, sa, operation));
+	OSStatus status= RC(SetDataBrowserSelectedItems((ControlRef)cHandle, numItems, (DataBrowserItemID*)sa, operation));
 	(*env)->ReleaseIntArrayElements(env, items, sa, 0);
 	return status;
 }
