@@ -80,6 +80,9 @@ public /*final*/ class ScrollBar extends Widget {
 	// AW
 	private int fIncrement= 1;
 	private int fPageIncrement= 10;
+	boolean fVisible= true;
+	
+	private static final boolean WORKS= true;
 	// AW
 	
 ScrollBar () {
@@ -134,39 +137,6 @@ static int checkStyle (int style) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-    /* AW
-	int [] argList = {
-		OS.XmNancestorSensitive, 1,
-		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
-		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
-	};
-    */
-	/*
-	handle= 0;
-	int[] outHandle= new int[1];
-	int status= 0;
-	int count= OS.CountSubControls(parent.scrolledHandle);
-	if (count < 3)
-		count= count;
-	if (MacUtil.REVERSE) {
-		if ((style & SWT.H_SCROLL) != 0) {
-			status= OS.GetIndexedSubControl(parent.scrolledHandle, (short)2, outHandle);
-		} else if ((style & SWT.V_SCROLL) != 0) {
-			status= OS.GetIndexedSubControl(parent.scrolledHandle, (short)1, outHandle);
-		}
-	} else {
-		if ((style & SWT.H_SCROLL) != 0) {
-			status= OS.GetIndexedSubControl(parent.scrolledHandle, (short)1, outHandle);
-		} else if ((style & SWT.V_SCROLL) != 0) {
-			status= OS.GetIndexedSubControl(parent.scrolledHandle, (short)2, outHandle);
-		}
-	}
-	if (status == 0)
-		handle= outHandle[0];
-	else {
-		error (SWT.ERROR_NO_HANDLES);
-	}
-	*/
 	handle= 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		handle= parent.fHScrollBar;
@@ -303,12 +273,6 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int borders = argList [5] * 2;
-	return new Point (argList [1] + borders, argList [3] + borders);
-    */
 	MacRect bounds= new MacRect();
 	OS.GetControlBounds(handle, bounds.getData());
 	return bounds.getSize();
@@ -349,7 +313,9 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return OS.IsControlVisible(handle);
+	if (WORKS)
+		return OS.IsControlVisible(handle);
+	return fVisible;
 }
 /* AW
 void hookEvents () {
@@ -409,11 +375,15 @@ void manageChildren () {
 int processSelection (Object callData) {
 
 	MacControlEvent macEvent= (MacControlEvent) callData;
-	if (! macEvent.isMouseDown())
+	int partCode= macEvent.getPartCode();
+	boolean mouseDown= macEvent.isMouseDown();
+	
+	if ((partCode != OS.kControlIndicatorPart) && !mouseDown)
 		return 0;
 	
 	Event event= new Event ();
-    switch (macEvent.getPartCode()) {
+	
+    switch (partCode) {
     case OS.kControlUpButtonPart:
 		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - fIncrement);
         event.detail = SWT.ARROW_UP;
@@ -431,7 +401,7 @@ int processSelection (Object callData) {
         event.detail = SWT.ARROW_DOWN;
         break;
     case OS.kControlIndicatorPart:	// end of drag or continuos drag
-		if (macEvent.isMouseDown()) {
+		if (mouseDown) {
 			event.detail = SWT.DRAG;	// continuos drag
 		} else {
 			/*
@@ -444,8 +414,8 @@ int processSelection (Object callData) {
 		
 	sendEvent (SWT.Selection, event);
 
-	Display.processAllUpdateEvents(handle);
-	
+	getDisplay().update();
+
 	return 0;
 }
 void releaseChild () {
@@ -664,37 +634,33 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	/*
-	* Feature in Motif.  Hiding or showing a scroll bar
-	* can cause the widget to automatically resize in
-	* the OS.  This behavior is unwanted.  The fix is
-	* to force the widget to resize to original size.
-	*/
-    /* AW
-	int scrolledHandle = parent.scrolledHandle;
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-    */
-
-	/* Hide or show the scroll bar */
-	/* AW
-	if (visible) {
-		OS.XtManageChild (handle);
-	} else {
-		OS.XtUnmanageChild (handle);
+    
+    if (WORKS) {
+		fVisible= visible;
+		if (OS.IsControlVisible(handle) != visible) {
+			OS.SetControlVisibility(handle, visible, true);
+			
+			parent.relayout123();
+	
+			sendEvent(visible ? SWT.Show : SWT.Hide);
+		}
+    } else {
+		if (visible != fVisible) {
+		    fVisible= visible;
+			int topHandle = topHandle ();
+			if (OS.IsControlVisible(topHandle) != visible) {
+				if (visible) {
+					OS.SetControlVisibility(topHandle, true, false);
+					parent.relayout123();
+					sendEvent(SWT.Show);
+					redrawHandle (0, 0, 0, 0, topHandle, true);
+				} else {
+					OS.SetControlVisibility(topHandle, false, true);
+					parent.relayout123();
+					sendEvent(SWT.Hide);
+				}
+			}
+		}
 	}
-    */
-	if (OS.IsControlVisible(handle) != visible) {
-		OS.SetControlVisibility(handle, visible, true);
-		
-		parent.relayout123(parent.topHandle());
-
-		sendEvent(visible ? SWT.Show : SWT.Hide);
-	}
-
-	/* Restore the size */
-    /* AW
-	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
-    */
 }
 }
