@@ -61,6 +61,8 @@ public static TextTransfer getInstance () {
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.E_FAIL;
 	if (object == null || !(object instanceof String)) return;
+	String string = (String)object;
+	if (string.length() == 0) return;
 	if (!isSupportedType(transferData)) {
 		// did not match the TYMED
 		transferData.stgmedium = new STGMEDIUM();
@@ -69,7 +71,7 @@ public void javaToNative (Object object, TransferData transferData){
 	}
 	switch (transferData.type) {
 		case COM.CF_UNICODETEXT: {
-			TCHAR buffer = new TCHAR(0, (String)object, true);
+			TCHAR buffer = new TCHAR(0, string, true);
 			int byteCount = buffer.length() * TCHAR.sizeof;
 			int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
 			COM.MoveMemory(newPtr, buffer, byteCount);	
@@ -81,9 +83,7 @@ public void javaToNative (Object object, TransferData transferData){
 			break;
 		}
 		case COM.CF_TEXT: {
-			String string = (String)object;
 			int count = string.length();
-			if (count == 0) return;
 			char[] chars = new char[count + 1];
 			string.getChars(0, count, chars, 0);
 			int cchMultiByte = COM.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);

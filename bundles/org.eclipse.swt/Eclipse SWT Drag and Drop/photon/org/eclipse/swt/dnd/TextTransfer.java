@@ -54,7 +54,9 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	String string = (String)object;
+	if (string.length() == 0) return;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	super.javaToNative(buffer, transferData);
 }
 /**
