@@ -3411,15 +3411,21 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 				if (string != null) {
 					/*
-					* Bug in Windows.  When pszText points to a zero length NULL
-					* terminated string, Windows correctly draws the empty string
-					* but the cache of the bounds for the item is not reset.  This
-					* means that when the text for an item is set and then reset
-					* to an empty string, the selection draws using the bounds of
-					* the previous text.  The fix is to assign a NULL pointer to
-					* pszText rather than a pointer to a zero-length string.
+					* Bug in Windows.  When pszText points to a zero length
+					* NULL terminated string, Windows correctly draws the
+					* empty string but the cache of the bounds for the item
+					* is not reset.  This means that when the text for the
+					* item is set and then reset to an empty string, the
+					* selection draws using the bounds of the previous text.
+					* The fix is to assign a NULL pointer to pszText rather
+					* than a pointer to a zero length string.
+					* 
+					* NOTE: This is only a problem for items in the first
+					* column.  Assigning NULL to other columns stops Windows
+					* from drawing the selection when LVS_EX_FULLROWSELECT
+					* is set.
 					*/
-					if (string.length () == 0) {
+					if (string.length () == 0 && plvfi.iSubItem == 0) {
 						plvfi.pszText = 0;
 						plvfi.cchTextMax = 0;
 					} else {
