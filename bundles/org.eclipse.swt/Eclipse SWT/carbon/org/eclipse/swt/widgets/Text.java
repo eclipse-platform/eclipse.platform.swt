@@ -17,7 +17,6 @@ import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
-import org.eclipse.swt.internal.carbon.CFRange;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -511,11 +510,11 @@ public int getCaretPosition () {
  * </ul>
  */
 public int getCharCount () {
-	checkWidget();
+	checkWidget ();
 	return OS.TXNDataSize (txnObject) / 2;
 }
 
-String getClipboardText() {
+String getClipboardText () {
 	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
 	int [] size = new int [1];
