@@ -170,14 +170,12 @@ public class Display extends Device {
 		/* Keyboard and Mouse Masks */
 		{OS.XK_Alt_L,		SWT.ALT},
 		{OS.XK_Alt_R,		SWT.ALT},
+		{OS.XK_Meta_L,		SWT.ALT},
+		{OS.XK_Meta_R,		SWT.ALT},
 		{OS.XK_Shift_L,		SWT.SHIFT},
 		{OS.XK_Shift_R,		SWT.SHIFT},
 		{OS.XK_Control_L,	SWT.CONTROL},
 		{OS.XK_Control_R,	SWT.CONTROL},
-		
-//		{OS.VK_LBUTTON, SWT.BUTTON1},
-//		{OS.VK_MBUTTON, SWT.BUTTON3},
-//		{OS.VK_RBUTTON, SWT.BUTTON2},
 		
 		/* Non-Numeric Keypad Keys */
 		{OS.XK_Up,			SWT.ARROW_UP},

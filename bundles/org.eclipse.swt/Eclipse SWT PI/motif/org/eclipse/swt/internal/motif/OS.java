@@ -218,6 +218,8 @@ public class OS {
 	public static final int XK_KP_Enter = 0xFF8D;
 	public static final int XK_Left = 0xFF51;
 	public static final int XK_Linefeed = 0xFF0A;
+	public static final int XK_Meta_L = 0xFFE7;
+	public static final int XK_Meta_R = 0xFFE8;
 	public static final int XK_Num_Lock= 0xFF7F;
 	public static final int XK_Page_Down = 0xFF56;
 	public static final int XK_Page_Up = 0xFF55;

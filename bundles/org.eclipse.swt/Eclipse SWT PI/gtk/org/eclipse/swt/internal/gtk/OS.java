@@ -119,6 +119,8 @@ public class OS {
 	public static final int GDK_Linefeed = 0xff0A;
 	public static final int GDK_LSB_FIRST = 0x0;
 	public static final int GDK_Left = 0xff51;
+	public static final int GDK_Meta_L = 0xFFE7;
+	public static final int GDK_Meta_R = 0xFFE8;
 	public static final int GDK_MOD1_MASK = 0x8;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NONE = 0;
