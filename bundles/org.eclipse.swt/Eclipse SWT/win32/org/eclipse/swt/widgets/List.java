@@ -1174,7 +1174,8 @@ public void setItem (int index, String string) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the items array, or any item in the array, is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1185,7 +1186,7 @@ public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) error (SWT.ERROR_NULL_ARGUMENT);
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, ListProc);
