@@ -4438,6 +4438,23 @@ void sendSelectionEvent() {
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
 }
+/**
+ * Sets the BIDI coloring mode.  When true the BIDI text display
+ * algorithm is applied to segments of text that are the same
+ * color.
+ *
+ * @param mode the new coloring mode
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * <p>
+ * IMPORTANT: This API is in-progress and may change in the future.
+ * </p>
+ */
+public void setBidiColoring(boolean mode) {
+	checkWidget();
+}
 
 /**
  * Moves the Caret to the current caret offset.
