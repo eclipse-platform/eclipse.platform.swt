@@ -359,8 +359,7 @@ public Display (DeviceData data) {
 	super (data);
 }
 
-public Control _getFocusControl () {
-	checkDevice ();
+Control _getFocusControl () {
 	return findControl (OS.GetFocus ());
 }
 
