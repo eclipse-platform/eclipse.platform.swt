@@ -644,11 +644,13 @@ void onPaint(Event event) {
 			if (!gc.getClipping().intersects(bounds)) continue;
 
 			/* Draw separator. */
-			gc.setForeground(shadowColor);
-			gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
-			gc.setForeground(highlightColor);
-			gc.drawLine(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
-		
+			if (i != 0) {
+				gc.setForeground(shadowColor);
+				gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
+				gc.setForeground(highlightColor);
+				gc.drawLine(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
+			}
+
 			/* Draw grabber. */
 			if (!isLocked) {
 				int grabberTrim = 2; 
