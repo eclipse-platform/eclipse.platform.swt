@@ -771,6 +771,7 @@ public static final native void gtk_window_iconify(int handle);
 public static final native void gtk_window_maximize(int handle);
 public static final native void gtk_window_move(int handle, int x, int y);
 public static final native int gtk_window_new(int type);
+public static final native int gtk_window_present(int window);
 public static final native void gtk_window_resize(int handle, int x, int y);
 public static final native void gtk_window_remove_accel_group(int window, int accel_group);
 public static final native void gtk_window_set_default(int window, int widget);

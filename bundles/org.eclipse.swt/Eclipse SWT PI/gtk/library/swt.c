@@ -4632,6 +4632,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1new
 	return (jint)gtk_window_new((GtkWindowType)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1present
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1window_1present\n")
+
+	gtk_window_present((GtkWindow *)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1remove_1accel_1group
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {

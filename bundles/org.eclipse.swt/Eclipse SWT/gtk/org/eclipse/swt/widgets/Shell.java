@@ -386,6 +386,14 @@ void adjustTrim () {
 	}
 }
 
+void bringToTop (boolean force) {
+	if ((style & SWT.ON_TOP) != 0) return;
+	Shell shell = display.getActiveShell ();
+	if (shell != null) shell.hasFocus = false;
+	OS.gtk_window_present (shellHandle);
+	hasFocus = true;
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -632,6 +640,7 @@ public Shell [] getShells () {
  * @see Shell#forceActive
 */
 public void open () {
+	bringToTop (false);
 	setVisible (true);
 	int focusHandle = OS.gtk_window_get_focus (shellHandle);
 	if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
@@ -739,8 +748,7 @@ public void removeShellListener (ShellListener listener) {
 */
 public void setActive () {
 	checkWidget ();
-	//NOT IMPLEMENTED
-	setVisible (true);
+	bringToTop (false);
 }
 
 void setActiveControl (Control control) {
@@ -984,6 +992,31 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
+public void dispose () {
+	/*
+	* Note:  It is valid to attempt to dispose a widget
+	* more than once.  If this happens, fail silently.
+	*/
+	if (isDisposed()) return;
+
+	/*
+	* Feature in GTK.  When the active shell is disposed,
+	* Motif assigns focus temporarily to the root window
+	* unless it has previously been told to do otherwise.
+	* The fix is to make the parent be the active top level
+	* shell when the child shell is disposed.
+	*/
+	OS.gtk_widget_hide (shellHandle);
+	if (parent != null) {
+		Shell activeShell = display.getActiveShell ();
+		if (activeShell == this) {
+			Shell shell = parent.getShell ();	
+			shell.bringToTop (false);
+		}
+	}
+	super.dispose ();
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -1007,8 +1040,7 @@ void deregister () {
 */
 public void forceActive () {
 	checkWidget ();
-	//NOT IMPLEMENTED
-	setVisible (true);
+	bringToTop (true);
 }
 
 public Rectangle getBounds () {
