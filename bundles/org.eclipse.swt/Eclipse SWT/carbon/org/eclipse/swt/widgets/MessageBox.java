@@ -110,6 +110,13 @@ static int checkStyle (int style) {
 	return style;
 }
 
+int createCFString (String id) {
+	String string = SWT.getMessage(id);
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	return OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+}
+
 /**
  * Returns the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
@@ -119,13 +126,6 @@ static int checkStyle (int style) {
  */
 public String getMessage () {
 	return message;
-}
-
-int createCFString (String id) {
-	String string = SWT.getMessage(id);
-	char [] buffer = new char [string.length ()];
-	string.getChars (0, buffer.length, buffer, 0);
-	return OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 }
 
 /**
