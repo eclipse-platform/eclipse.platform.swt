@@ -1304,7 +1304,7 @@ void setScrollWidth (int newWidth, boolean grow) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected of first cleared, then the new items are selected.
+ * The current selection is first cleared, then the new items are selected.
  *
  * @param indices the indices of the items to select
  *
@@ -1325,8 +1325,10 @@ public void setSelection(int [] indices) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
 	if ((style & SWT.MULTI) != 0) {
-		int focusIndex = indices [0];
-		if (focusIndex != -1) setFocusIndex (focusIndex);
+		if (indices.length != 0) {
+			int focusIndex = indices [0];
+			if (focusIndex != -1) setFocusIndex (focusIndex);
+		}
 	}
 }
 
@@ -1362,6 +1364,11 @@ public void setSelection (String [] items) {
 				if (localFocus == -1) localFocus = index;
 				select (index);
 				if ((style & SWT.SINGLE) != 0 && isSelected (index)) {
+					/*
+					* Return and rely on the fact that select ()
+					* for single-select lists clears the previous
+					* selection.
+					*/
 					return;
 				}
 				index++;

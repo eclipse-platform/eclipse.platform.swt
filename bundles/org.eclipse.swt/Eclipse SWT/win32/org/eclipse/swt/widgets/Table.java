@@ -1735,8 +1735,10 @@ public void setSelection (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	select (indices);
-	int focusIndex = indices [0];
-	if (focusIndex != -1) setFocusIndex (focusIndex);
+	if (indices.length != 0) {
+		int focusIndex = indices [0];
+		if (focusIndex != -1) setFocusIndex (focusIndex);
+	}
 }
 
 /**
