@@ -536,7 +536,10 @@ public void setLocale(String locale) {
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	char [] chars = new char [32];
-	name.getChars (0, name.length(), chars, 0);
+
+	/* The field lfFaceName must be NULL terminated */
+	int length = name.length();
+	name.getChars (0, length <= 31 ? length : 31, chars, 0);
 	data.lfFaceName0 = chars[0];
 	data.lfFaceName1 = chars[1];
 	data.lfFaceName2 = chars[2];
@@ -650,7 +653,7 @@ public String toString() {
 	};
 	int i = 0;
 	while (i < faceName.length && faceName[i] != 0) {
-		buffer.append((char)faceName[i++]);
+		buffer.append(faceName[i++]);
 	}
 	return buffer.toString();
 }
@@ -670,16 +673,7 @@ public String toString() {
  * @private
  */
 public static FontData win32_new(LOGFONT data, int height) {
-	/*
-	 * Feature in Windows 98.  When setting the faceName,
-	 * Windows 98 null terminates the string but does not
-	 * clear the rest of the buffer while Windows NT does.
-	 * The fix is to get and set the name which fills the
-	 * rest of the faceName buffer with null.
-	 */
-	FontData fontData = new FontData(data, height);
-	fontData.setName(fontData.getName());
-	return fontData;
+	return new FontData(data, height);
 }
 
 }
