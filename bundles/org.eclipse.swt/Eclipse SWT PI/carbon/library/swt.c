@@ -2142,6 +2142,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrontWindow
 }
 #endif /* NO_FrontWindow */
 
+#ifndef NO_GetAppFont
+JNIEXPORT jshort JNICALL OS_NATIVE(GetAppFont)
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetAppFont\n")
+
+	return (jshort)GetAppFont();
+}
+#endif
+
 #ifndef NO_GetApplicationEventTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetApplicationEventTarget
 	(JNIEnv *env, jclass that)
