@@ -2750,7 +2750,7 @@ boolean setItemSize() {
 			firstIndex = 0;
 		} else {
 			// try to compress items
-			int minWidth = Math.min(tabAreaWidth, MIN_TAB_WIDTH * tabHeight);
+			int minWidth = MIN_TAB_WIDTH * tabHeight;
 			totalWidth = 0;
 			int large = 0;
 			for (int i = 0 ; i < count; i++) {
@@ -2758,8 +2758,10 @@ boolean setItemSize() {
 				if (widths[i] > minWidth) large++;
 			}
 			if (totalWidth > tabAreaWidth) {
-				// maximum compression required
+				//  maximum compression required and a chevron
 				showChevron = items.length > 1;
+				if (showChevron) tabAreaWidth -= 3 *BUTTON_SIZE/2; 
+				minWidth = Math.min(tabAreaWidth, MIN_TAB_WIDTH * tabHeight);
 				for (int i = 0; i < count; i++) {
 					widths[i] = Math.min(widths[i], minWidth);
 				}
