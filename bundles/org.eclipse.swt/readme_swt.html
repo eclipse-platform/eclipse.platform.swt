@@ -97,12 +97,19 @@ mask image. This problem was discovered too late in the development cycle to be 
 fix this in a future release, potentially by introducing a new more general constructor.
 
 <h4>
-99.1.8 Use of the "&" character in TabFolder</h4>
+99.1.9 Use of the "&" character in TabFolder</h4>
 
 The "&" character is not currently supported in TabFolder labels. Doing so on win32, will cause the
 character which follows the "&" to be underlined as if it was a mnemonic, even though mnemonics are
 not available for TabFolders. On other platforms, the "&" character will be displayed correctly, but
 for portability reasons, it should be avoided.
+
+<h4>
+99.1.10  ToolBar on Windows</h4>
+
+On Windows, you must create all tool bars with the FLAT style bit set. If you do not do this,
+the "hot" (rollover) images of <em>all</em> toolbars may display incorrectly.
+This will be fixed in a future release.
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
