@@ -590,17 +590,25 @@ public void test_setExpandedZ() {
 	assertEquals(false, ti.getExpanded());
 }
 
+boolean compareFonts(Font font1, Font font2) {
+	if (SwtJunit.isGTK) {
+		FontData fontData1 = font1.getFontData()[0];
+		FontData fontData2 = font2.getFontData()[0];
+		return fontData1.equals(fontData2);
+	}
+	return font1.handle == font2.handle;
+}
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = treeItem.getFont();
 	treeItem.setFont(font);
-	assertEquals(font, treeItem.getFont());
+	assertTrue(compareFonts(font, treeItem.getFont()));
 	
 	font = new Font(treeItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
 	treeItem.setFont(font);
-	assertEquals(font, treeItem.getFont());
+	assertTrue(compareFonts(font,treeItem.getFont()));
 
 	treeItem.setFont(null);
-	assertEquals(tree.getFont(), treeItem.getFont());
+	assertTrue(compareFonts(tree.getFont(), treeItem.getFont()));
 	
 	font.dispose();
 	try {
@@ -616,14 +624,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
-	assertEquals(tree.getFont(), treeItem.getFont(0));
-	assertEquals(treeItem.getFont(), treeItem.getFont(0));
+	assertTrue(compareFonts(tree.getFont(), treeItem.getFont(0)));
+	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(0)));
 	treeItem.setFont(0, font);
-	assertEquals(font, treeItem.getFont(0));
+	assertTrue(compareFonts(font, treeItem.getFont(0)));
 	
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertEquals(treeItem.getFont(), treeItem.getFont(10));
+	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(10)));
 	
 	// with columns
 	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
@@ -631,24 +639,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertEquals(treeItem.getFont(), treeItem.getFont(10));
+	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(10)));
 	
 	treeItem.setFont(0, font);
-	assertEquals(font, treeItem.getFont(0));
+	assertTrue(compareFonts(font, treeItem.getFont(0)));
 	treeItem.setFont(0, null);
-	assertEquals(tree.getFont(), treeItem.getFont(0));
+	assertTrue(compareFonts(tree.getFont(), treeItem.getFont(0)));
 	
 	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 	
 	treeItem.setFont(0, font);
 	treeItem.setFont(font2);
-	assertEquals(font, treeItem.getFont(0));
+	assertTrue(compareFonts(font, treeItem.getFont(0)));
 	
 	treeItem.setFont(0, null);
-	assertEquals(font2, treeItem.getFont(0));
+	assertTrue(compareFonts(font2, treeItem.getFont(0)));
 	
 	treeItem.setFont(null);
-	assertEquals(tree.getFont(),treeItem.getFont(0));
+	assertTrue(compareFonts(tree.getFont(),treeItem.getFont(0)));
 	
 	font.dispose();
 	font2.dispose();

@@ -511,18 +511,27 @@ public void test_setCheckedZ() {
 	t.dispose();
 }
 
+boolean compareFonts(Font font1, Font font2) {
+	if (SwtJunit.isGTK) {
+		FontData fontData1 = font1.getFontData()[0];
+		FontData fontData2 = font2.getFontData()[0];
+		return fontData1.equals(fontData2);
+	}
+	return font1.handle == font2.handle;
+}
+
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
 	Font font = tableItem.getFont();
 	tableItem.setFont(font);
-	assertEquals(font, tableItem.getFont());
+	assertTrue(compareFonts(font, tableItem.getFont()));
 	
 	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
-	assertEquals(font, tableItem.getFont());
+	assertTrue(compareFonts(font, tableItem.getFont()));
 
 	tableItem.setFont(null);
-	assertEquals(table.getFont(), tableItem.getFont());
+	assertTrue(compareFonts(table.getFont(), tableItem.getFont()));
 	
 	font.dispose();
 	try {
@@ -538,14 +547,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
-	assertEquals(table.getFont(), tableItem.getFont(0));
-	assertEquals(tableItem.getFont(), tableItem.getFont(0));
+	assertTrue(compareFonts(table.getFont(), tableItem.getFont(0)));
+	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(0)));
 	tableItem.setFont(0, font);
-	assertEquals(font, tableItem.getFont(0));
+	assertTrue(compareFonts(font, tableItem.getFont(0)));
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertEquals(tableItem.getFont(), tableItem.getFont(10));
+	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(10)));
 	
 	// with columns
 	TableColumn column1 = new TableColumn(table, SWT.LEFT);
@@ -553,24 +562,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertEquals(tableItem.getFont(), tableItem.getFont(10));
+	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(10)));
 	
 	tableItem.setFont(0, font);
-	assertEquals(font, tableItem.getFont(0));
+	assertTrue(compareFonts(font, tableItem.getFont(0)));
 	tableItem.setFont(0, null);
-	assertEquals(table.getFont(), tableItem.getFont(0));
+	assertTrue(compareFonts(table.getFont(), tableItem.getFont(0)));
 	
 	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 	
 	tableItem.setFont(0, font);
 	tableItem.setFont(font2);
-	assertEquals(font, tableItem.getFont(0));
+	assertTrue(compareFonts(font, tableItem.getFont(0)));
 	
 	tableItem.setFont(0, null);
-	assertEquals(font2, tableItem.getFont(0));
+	assertTrue(compareFonts(font2, tableItem.getFont(0)));
 	
 	tableItem.setFont(null);
-	assertEquals(table.getFont(),tableItem.getFont(0));
+	assertTrue(compareFonts(table.getFont(),tableItem.getFont(0)));
 	
 	font.dispose();
 	font2.dispose();
@@ -733,7 +742,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageIndentI() {
-	if (SwtJunit.isCarbon) {
+	if (SwtJunit.isCarbon || SwtJunit.isGTK) {
 		//setImageIndent not implemented on Carbon
 		tableItem.setImageIndent(1);
 		return; 
