@@ -1310,6 +1310,11 @@ public void setVisible (boolean visible) {
 		adjustTrim ();
 		
 		sendEvent (SWT.Show);
+		
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
+		if ((style & mask) != 0) {
+			OS.XUngrabPointer (display.xDisplay, OS.CurrentTime);
+		}
 	} else {
 	
 		/* Hide the shell */
