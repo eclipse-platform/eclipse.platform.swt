@@ -159,6 +159,7 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNshadowType, OS.XmSHADOW_IN,
 			OS.XmNshadowThickness, thickness,
+			OS.XmNtraversalOn, 0,
 		};
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -171,6 +172,7 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
+			OS.XmNtraversalOn, 0,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 	} else {
@@ -196,6 +198,12 @@ void enableTraversal (boolean enable) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return;
 		int [] argList = {OS.XmNtraversalOn, enable ? 1 : 0};
+		if (formHandle != 0) {
+			OS.XtSetValues (formHandle, argList, argList.length / 2);
+		}
+		if (scrolledHandle != 0) {
+			OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
+		}
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
