@@ -81,5 +81,8 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct);
 GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
 void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
 
+GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
+void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
+
 #endif // INC_structs_H
 

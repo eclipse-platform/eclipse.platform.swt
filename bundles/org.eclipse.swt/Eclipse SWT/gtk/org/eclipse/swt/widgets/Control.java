@@ -208,6 +208,7 @@ Control computeTabRoot () {
 void createWidget (int index) {
 	super.createWidget (index);
 	setInitialSize ();
+	setZOrder ();
 }
 
 /**
@@ -560,11 +561,8 @@ public void setSize (int width, int height) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-//	int siblingHandle = 0;
-//	if (control != null) siblingHandle = control.topHandle();
-	int topHandle = topHandle ();
-	int window = OS.GTK_WIDGET_WINDOW (topHandle);
-	if (window != 0) OS.gdk_window_raise (window);
+	if (control != null && parent != control.parent) return;
+	parent.moveAbove (topHandle (), control != null ? control.topHandle () : 0);
 }
 
 /**
@@ -586,11 +584,8 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-//	int siblingHandle = 0;
-//	if (control != null) siblingHandle = control.topHandle();
-	int topHandle = topHandle ();
-	int window = OS.GTK_WIDGET_WINDOW (topHandle);
-	if (window != 0) OS.gdk_window_lower (window);
+	if (control != null && parent != control.parent) return;
+	parent.moveBelow (topHandle (), control != null ? control.topHandle () : 0);
 }
 
 /**
@@ -2264,6 +2259,11 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 }
+
+void setZOrder () {
+	parent.moveBelow (topHandle (), 0);
+}
+
 void sort (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;

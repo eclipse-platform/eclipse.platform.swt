@@ -315,6 +315,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1free
 	g_list_free((GList *)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1free_11
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1list_1free_11\n")
+
+	g_list_free_1((GList *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1length
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -337,6 +345,62 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1nth_1data
 	DEBUG_CALL("g_1list_1nth_1data\n")
 
 	return (jint)g_list_nth_data((GList *)arg0, (guint)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1prepend
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1list_1prepend\n")
+
+	return (jint)g_list_prepend((GList *)arg0, (gpointer)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1next__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1list_1next__I\n")
+
+	return (jint)g_list_next((GList *)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1previous__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1list_1previous__I\n")
+
+	return (jint)g_list_previous((GList *)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1remove_1link
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1list_1remove_1link\n")
+
+	return (jint)g_list_remove_link((GList *)arg0, (GList *)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1reverse
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1list_1reverse\n")
+
+	return (jint)g_list_reverse((GList *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1next__II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1list_1next__II\n")
+
+	((GList *)arg0)->next = (GList *)arg1;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1list_1previous__II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1list_1previous__II\n")
+
+	((GList *)arg0)->prev = (GList *)arg1;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1default_1handler
@@ -4056,6 +4120,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	if (arg1) getGtkAdjustmentFields(env, arg1, (GtkAdjustment *)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DEBUG_CALL("memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2\n")
+
+	if (arg1) getGtkFixedFields(env, arg1, (GtkFixed *)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GtkStyle_2
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -4086,6 +4158,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I\n")
 
 	if (arg0) setGtkComboFields(env, arg0, (GtkCombo *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I\n")
+
+	if (arg0) setGtkFixedFields(env, arg0, (GtkFixed *)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I

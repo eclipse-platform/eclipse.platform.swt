@@ -72,6 +72,7 @@ Control [] _getChildren () {
 	int parentHandle = parentingHandle ();
 	int list = OS.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
+	list = OS.g_list_reverse (list);
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
@@ -321,6 +322,92 @@ public void layout (boolean changed) {
 	checkWidget();
 	if (layout == null) return;
 	layout.layout (this, changed);
+}
+
+void moveAbove (int child, int sibling) {
+	if (child == sibling) return;
+	int parentHandle = parentingHandle ();
+	GtkFixed fixed = new GtkFixed ();
+	OS.memmove (fixed, parentHandle);
+	int children = fixed.children;
+	if (children == 0) return;
+	int [] data = new int [1];
+	int [] widget = new int [1];
+	int childData = 0, childLink = 0, siblingLink = 0, temp = children;
+	while (temp != 0) {
+		OS.memmove (data, temp, 4);
+		OS.memmove (widget, data [0], 4);
+		if (child == widget [0]) {
+			childLink = temp;
+			childData = data [0];
+		} else if (sibling == widget [0]) {
+			siblingLink = temp;
+		}
+		if (childData != 0 && (sibling == 0 || siblingLink != 0)) break;
+		temp = OS.g_list_next (temp);
+	}
+	children = OS.g_list_remove_link (children, childLink);
+	if (siblingLink == 0 || OS.g_list_next (siblingLink) == 0) {
+		OS.g_list_free_1 (childLink);
+		children = OS.g_list_append (children, childData);
+		int window = OS.GTK_WIDGET_WINDOW (child);
+		if (window != 0) OS.gdk_window_raise (window);
+	} else {
+		temp = OS.g_list_next (siblingLink);
+		OS.g_list_next (childLink, temp);
+		OS.g_list_previous (temp, childLink);
+		OS.g_list_previous (childLink, siblingLink);
+		OS.g_list_next (siblingLink, childLink);
+		
+		//FIXME - not done
+		int window = OS.GTK_WIDGET_WINDOW (child);
+		if (window != 0) OS.gdk_window_raise (window);
+	}
+	fixed.children = children;
+	OS.memmove (parentHandle, fixed);
+}
+
+void moveBelow (int child, int sibling) {
+	if (child == sibling) return;
+	int parentHandle = parentingHandle ();
+	GtkFixed fixed = new GtkFixed ();
+	OS.memmove (fixed, parentHandle);
+	int children = fixed.children;
+	if (children == 0) return;
+	int [] data = new int [1];
+	int [] widget = new int [1];
+	int childData = 0, childLink = 0, siblingLink = 0, temp = children;
+	while (temp != 0) {
+		OS.memmove (data, temp, 4);
+		OS.memmove (widget, data [0], 4);
+		if (child == widget [0]) {
+			childLink = temp;
+			childData = data [0];
+		} else if (sibling == widget [0]) {
+			siblingLink = temp;
+		}
+		if (childData != 0 && (sibling == 0 || siblingLink != 0)) break;
+		temp = OS.g_list_next (temp);
+	}
+	children = OS.g_list_remove_link (children, childLink);
+	if (siblingLink == 0 || OS.g_list_previous (siblingLink) == 0) {
+		OS.g_list_free_1 (childLink);
+		children = OS.g_list_prepend (children, childData);
+		int window = OS.GTK_WIDGET_WINDOW (child);
+		if (window != 0) OS.gdk_window_lower (window);
+	} else {
+		temp = OS.g_list_previous (siblingLink);
+		OS.g_list_previous (childLink, temp);
+		OS.g_list_next (temp, childLink);
+		OS.g_list_next (childLink, siblingLink);
+		OS.g_list_previous (siblingLink, childLink);
+		
+		//FIXME - not done
+		int window = OS.GTK_WIDGET_WINDOW (child);
+		if (window != 0) OS.gdk_window_lower (window);
+	}
+	fixed.children = children;
+	OS.memmove (parentHandle, fixed);
 }
 
 Point minimumSize () {

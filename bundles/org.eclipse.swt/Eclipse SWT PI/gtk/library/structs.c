@@ -1697,3 +1697,34 @@ void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpSt
 	(*env)->SetIntField(env, lpObject, lpCache->info, (jint)lpStruct->info);
 }
 
+typedef struct GtkFixed_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID children;
+} GtkFixed_FID_CACHE;
+typedef GtkFixed_FID_CACHE *PGtkFixed_FID_CACHE;
+
+GtkFixed_FID_CACHE GtkFixedFc;
+
+void cacheGtkFixedFids(JNIEnv *env, jobject lpObject, PGtkFixed_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->children = (*env)->GetFieldID(env, lpCache->clazz, "children", "I");
+	lpCache->cached = 1;
+}
+
+GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
+{
+	PGtkFixed_FID_CACHE lpCache = &GtkFixedFc;
+	if (!lpCache->cached) cacheGtkFixedFids(env, lpObject, lpCache);
+	lpStruct->children = (GList *)(*env)->GetIntField(env, lpObject, lpCache->children);
+	return lpStruct;
+}
+
+void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
+{
+	PGtkFixed_FID_CACHE lpCache = &GtkFixedFc;
+	if (!lpCache->cached) cacheGtkFixedFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->children, (jint)lpStruct->children);
+}
