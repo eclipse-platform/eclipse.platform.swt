@@ -1767,7 +1767,15 @@ void showToolTip (int handle, String toolTipText) {
 public boolean sleep () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	return OS.XtAppPeekEvent (xtContext, xEvent);
+	/*
+	* Bug in Xt.  Under certain circumstances Xt waits
+	* forever looking for X events, ignoring alternate
+	* inputs.  The fix is to never sleep forever.
+	*/
+	int sleepID = OS.XtAppAddTimeOut (xtContext, 100, 0, 0);
+	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
+	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+	return result;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
