@@ -2375,7 +2375,7 @@ static {
 		MOD1 = CONTROL;
 		MOD2 = SHIFT;
 		MOD3 = ALT;
-		MOD4 = ALT;
+		MOD4 = 0;
 	}
 }
 }
