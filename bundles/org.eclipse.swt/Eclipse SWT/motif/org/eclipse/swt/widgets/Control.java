@@ -1746,20 +1746,15 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	boolean send = false;
 	switch (button) {
 		case 4:
-			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
-			if (type != SWT.MouseDown) return false;
-			detail = SWT.SCROLL_LINE;
-			count = 3;
-			type = SWT.MouseWheel;
-			button = 0;
-			break;
 		case 5:
 			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
 			if (type != SWT.MouseDown) return false;
 			detail = SWT.SCROLL_LINE;
-			count = -3;
+			count = button == 4 ? 3 : - 3;
 			type = SWT.MouseWheel;
 			button = 0;
+			send = true;
+			break;
 		case 6:
 			button = 4;
 			break;
@@ -1767,7 +1762,21 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 			button = 5;
 			break;
 	}
-	return sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state);
+	if (type == SWT.MouseWheel) {
+		Control control = this;
+		Shell shell = getShell ();
+		do {
+			if (!control.sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state)) return false;
+			if (control == shell) break;
+			control = control.parent;
+			OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, x_root, y_root);
+			x = xEvent.x_root - x_root [0];
+			y = xEvent.y_root - y_root [0];			
+		} while (control != null);
+	} else {
+		sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state);
+	}
+	return true;	
 }
 boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
 	short [] x_root = new short [1], y_root = new short [1];
