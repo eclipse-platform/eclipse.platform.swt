@@ -150,8 +150,13 @@ public class StyledText extends Canvas {
 	 * invoked from any thread.
 	 */
 	class Printing implements Runnable {
+		final static int LEFT = 0;						// left aligned header/footer segment
+		final static int CENTER = 1;					// centered header/footer segment
+		final static int RIGHT = 2;						// right aligned header/footer segment
+
 		Printer printer;
 		PrintRenderer renderer;
+		StyledTextPrintOptions printOptions;
 		StyledTextContent printerContent;				// copy of the widget content
 		Rectangle clientArea;							// client area to print on
 		Font printerFont;
@@ -161,11 +166,11 @@ public class StyledText extends Canvas {
 		Hashtable lineStyles = new Hashtable();			// cached line styles
 		Hashtable bidiSegments = new Hashtable();		// cached bidi segments when running on a bidi platform
 		GC gc;											// printer GC
+		int pageWidth;									// width of a printer page in pixels
 		int startPage;									// first page to print
 		int endPage;									// last page to print
 		int pageSize;									// number of lines on a page
 		int startLine;									// first (wrapped) line to print
-		int endLine;									// last (wrapped) line to print
 		boolean singleLine;								// widget single line mode
 
 	/**
@@ -175,11 +180,13 @@ public class StyledText extends Canvas {
 	 * </p>
 	 * @param parent StyledText widget to print.
 	 * @param printer printer device to print on.
+	 * @param printOptions print options
 	 */		
-	Printing(StyledText parent, Printer printer) {
+	Printing(StyledText parent, Printer printer, StyledTextPrintOptions printOptions) {
 		PrinterData data = printer.getPrinterData();
 		
 		this.printer = printer;
+		this.printOptions = printOptions;
 		singleLine = parent.isSingleLine();
 		startPage = 1;
 		endPage = Integer.MAX_VALUE;
@@ -230,8 +237,12 @@ public class StyledText extends Canvas {
 			int lineOffset = printerContent.getOffsetAtLine(i);
 			String line = printerContent.getLine(i);
 	
-			cacheLineBackground(lineOffset, line);
-			cacheLineStyle(lineOffset, line);
+			if ((printOptions.options & ST.LINE_BACKGROUND) != 0) {
+				cacheLineBackground(lineOffset, line);
+			}
+			if ((printOptions.options & (ST.TEXT_BACKGROUND | ST.TEXT_FOREGROUND | ST.TEXT_FONT_STYLE)) != 0) {
+				cacheLineStyle(lineOffset, line);
+			}
 			if (isBidi()) {
 				cacheBidiSegments(lineOffset, line);
 			}
@@ -248,6 +259,29 @@ public class StyledText extends Canvas {
 		StyledTextEvent event = getLineStyleData(lineOffset, line);
 		
 		if (event != null) {
+			StyleRange[] styles = event.styles;
+			for (int i = 0; i < styles.length; i++) {
+				StyleRange styleCopy = null;
+				if ((printOptions.options & ST.TEXT_BACKGROUND) == 0 && styles[i].background != null) {
+					styleCopy = (StyleRange) styles[i].clone();
+					styleCopy.background = null;
+				}
+				if ((printOptions.options & ST.TEXT_FOREGROUND) == 0 && styles[i].foreground != null) {
+					if (styleCopy == null) {
+						styleCopy = (StyleRange) styles[i].clone();
+					}
+					styleCopy.foreground = null;
+				}
+				if ((printOptions.options & ST.TEXT_FONT_STYLE) == 0 && styles[i].fontStyle != SWT.NORMAL) {
+					if (styleCopy == null) {
+						styleCopy = (StyleRange) styles[i].clone();
+					}
+					styleCopy.fontStyle = SWT.NORMAL;
+				}
+				if (styleCopy != null) {
+					styles[i] = styleCopy;
+				}
+			}	
 			lineStyles.put(new Integer(lineOffset), event);
 		}
 	}
@@ -271,77 +305,6 @@ public class StyledText extends Canvas {
 			printerContent.replaceTextRange(insertOffset, 0, original.getTextRange(insertOffset, insertEndOffset - insertOffset));
 			insertOffset = insertEndOffset;
 		}
-	}
-	/**
-	 * Disposes of the resources and the <class>PrintRenderer</class>.
-	 */
-	void dispose() {
-		if (printerColors != null) {
-			Enumeration colors = printerColors.elements();
-			
-			while (colors.hasMoreElements()) {
-				Color color = (Color) colors.nextElement();
-				color.dispose();
-			}
-			printerColors = null;
-		}
-		if (gc != null) {
-			gc.dispose();
-			gc = null;
-		}
-		if (printerFont != null) {
-			printerFont.dispose();
-			printerFont = null;
-		}
-		if (renderer != null) {
-			renderer.dispose();
-			renderer = null;
-		}
-	}
-	/**
-	 * Creates a <class>PrintRenderer</class> and calculate the line range
-	 * to print.
-	 */
-	void initializeRenderer() {
-		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
-		Point dpi = printer.getDPI();
-		
-		printerFont = new Font(printer, displayFontData.getName(), displayFontData.getHeight(), SWT.NORMAL);
-		clientArea = printer.getClientArea();
-		// one inch margin around text
-		clientArea.x = dpi.x + trim.x; 				
-		clientArea.y = dpi.y + trim.y;
-		clientArea.width -= (clientArea.x + trim.width);
-		clientArea.height -= (clientArea.y + trim.height);
-		
-		gc = new GC(printer);
-		gc.setFont(printerFont);				
-		renderer = new PrintRenderer(
-			printer, printerFont, isBidi(), gc, printerContent,
-			lineBackgrounds, lineStyles, bidiSegments, 
-			tabLength, clientArea);
-		pageSize = clientArea.height / renderer.getLineHeight();
-		startLine = (startPage - 1) * pageSize;
-		endLine = Math.max(Integer.MAX_VALUE, endPage * pageSize);
-	}
-	/**
-	 * Returns the printer color for the given display color.
-	 * </p>
-	 * @param color display color
-	 * @return color create on the printer with the same RGB values 
-	 * 	as the display color.
- 	 */
-	Color getPrinterColor(Color color) {
-		Color printerColor = null;
-		
-		if (color != null) {
-			printerColor = (Color) printerColors.get(color);		
-			if (printerColor == null) {
-				printerColor = new Color(printer, color.getRGB());
-				printerColors.put(color, printerColor);
-			}
-		}
-		return printerColor;
 	}
 	/**
 	 * Replaces all display colors in the cached line backgrounds and 
@@ -374,16 +337,92 @@ public class StyledText extends Canvas {
 		}		
 	}
 	/**
-	 * Starts a print job and prints the pages specified in the constructor.
+	 * Disposes of the resources and the <class>PrintRenderer</class>.
 	 */
-	public void run() {
-		if (printer.startJob("Printing")) {
-			createPrinterColors();
-			initializeRenderer();
-			print();
-			dispose();
-			printer.endJob();			
+	void dispose() {
+		if (printerColors != null) {
+			Enumeration colors = printerColors.elements();
+			
+			while (colors.hasMoreElements()) {
+				Color color = (Color) colors.nextElement();
+				color.dispose();
+			}
+			printerColors = null;
 		}
+		if (gc != null) {
+			gc.dispose();
+			gc = null;
+		}
+		if (printerFont != null) {
+			printerFont.dispose();
+			printerFont = null;
+		}
+		if (renderer != null) {
+			renderer.dispose();
+			renderer = null;
+		}
+	}
+	/**
+	 * Finish printing the indicated page.
+	 * 
+	 * @param page page that was printed
+	 */
+	void endPage(int page) {
+		printDecoration(page, false);
+		printer.endPage();
+	}
+	/**
+	 * Creates a <class>PrintRenderer</class> and calculate the line range
+	 * to print.
+	 */
+	void initializeRenderer() {
+		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
+		Point dpi = printer.getDPI();
+		
+		printerFont = new Font(printer, displayFontData.getName(), displayFontData.getHeight(), SWT.NORMAL);
+		clientArea = printer.getClientArea();
+		pageWidth = clientArea.width;
+		// one inch margin around text
+		clientArea.x = dpi.x + trim.x; 				
+		clientArea.y = dpi.y + trim.y;
+		clientArea.width -= (clientArea.x + trim.width);
+		clientArea.height -= (clientArea.y + trim.height); 
+		
+		gc = new GC(printer);
+		gc.setFont(printerFont);				
+		renderer = new PrintRenderer(
+			printer, printerFont, isBidi(), gc, printerContent,
+			lineBackgrounds, lineStyles, bidiSegments, 
+			tabLength, clientArea);
+		if (printOptions.header != null) {
+			int lineHeight = renderer.getLineHeight();
+			clientArea.y += lineHeight * 2;
+			clientArea.height -= lineHeight * 2;
+		}
+		if (printOptions.footer != null) {
+			clientArea.height -= renderer.getLineHeight() * 2;
+		}
+		pageSize = clientArea.height / renderer.getLineHeight();
+		startLine = (startPage - 1) * pageSize;
+	}
+	/**
+	 * Returns the printer color for the given display color.
+	 * </p>
+	 * @param color display color
+	 * @return color create on the printer with the same RGB values 
+	 * 	as the display color.
+ 	 */
+	Color getPrinterColor(Color color) {
+		Color printerColor = null;
+		
+		if (color != null) {
+			printerColor = (Color) printerColors.get(color);		
+			if (printerColor == null) {
+				printerColor = new Color(printer, color.getRGB());
+				printerColors.put(color, printerColor);
+			}
+		}
+		return printerColor;
 	}
 	/**
 	 * Prints the lines in the specified page range.
@@ -396,27 +435,147 @@ public class StyledText extends Canvas {
 		int lineHeight = renderer.getLineHeight();
 		int lineCount = content.getLineCount();
 		int paintY = clientArea.y;
+		int page = startPage;
 		
 		if (singleLine) {
 			lineCount = 1;
 		}
-		if (startPage == 1) {
-			printer.startPage();
-		}			
-		for (int i = startLine; i < lineCount && i < endLine; i++, paintY += lineHeight) {
+		for (int i = startLine; i < lineCount && page <= endPage; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
 			
-			if (paintY + lineHeight > clientArea.y + clientArea.height) {
-				printer.endPage();
-				printer.startPage();
-				paintY = clientArea.y;
+			if (paintY == clientArea.y) {
+				startPage(page);
 			}
 			renderer.drawLine(
 				line, i, paintY, gc, background, foreground, printerFontData, true);
+			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
+				endPage(page);
+				paintY = clientArea.y;
+				page++;
+				if (page > endPage || i == lineCount - 1) {
+					break;
+				}				
+			}
 		}
 		if (paintY > clientArea.y && paintY <= clientArea.y + clientArea.height) {
-			printer.endPage();
+			endPage(page);
 		}
+	}
+	/**
+	 * Print header or footer decorations.
+	 * 	 * @param page page number to print, if specified in the StyledTextPrintOptions header or footer.	 * @param header true = print the header, false = print the footer	 */
+	void printDecoration(int page, boolean header) {
+		int lastSegmentIndex = 0;
+		final int SegmentCount = 3;
+		String text;
+		
+		if (header) {
+			text = printOptions.header;
+		}
+		else {
+			text = printOptions.footer;
+		}
+		if (text == null) {
+			return;
+		}
+		for (int i = 0; i < SegmentCount; i++) {
+			int segmentIndex = text.indexOf(StyledTextPrintOptions.SEPARATOR, lastSegmentIndex);
+			String segment;
+			
+			if (segmentIndex == -1) {
+				segment = text.substring(lastSegmentIndex);
+				printDecorationSegment(segment, i, page, header);
+				break;
+			}
+			else {
+				segment = text.substring(lastSegmentIndex, segmentIndex);
+				printDecorationSegment(segment, i, page, header);
+				lastSegmentIndex = segmentIndex + StyledTextPrintOptions.SEPARATOR.length();
+			}
+		}
+	}
+	/**
+	 * Print one segment of a header or footer decoration.
+	 * Headers and footers have three different segments.
+	 * One each for left aligned, centered, and right aligned text.
+	 * 
+	 * @param segment decoration segment to print
+	 * @param alignment alignment of the segment. 0=left, 1=center, 2=right 
+	 * @param page page number to print, if specified in the decoration segment.
+	 * @param header true = print the header, false = print the footer
+	 */
+	void printDecorationSegment(String segment, int alignment, int page, boolean header) {		
+		int pageIndex = segment.indexOf(StyledTextPrintOptions.PAGE_TAG);
+		
+		if (pageIndex != -1) {
+			final int PageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
+			StringBuffer buffer = new StringBuffer(segment);
+			buffer.replace(pageIndex, pageIndex + PageTagLength, new Integer(page).toString());
+			segment = buffer.toString();
+		}
+		if (segment.length() > 0) {
+			int segmentWidth;
+			int drawX = 0;
+			int drawY;
+			StyledTextBidi bidi = null;
+			
+			if (isBidi()) {
+				bidi = new StyledTextBidi(gc, tabLength, segment, null, null, new int[] {0, segment.length()});
+				segmentWidth = bidi.getTextWidth();
+			}			
+			else {
+				segmentWidth = gc.textExtent(segment).x;
+			}
+			if (header) {
+				drawY = clientArea.y - renderer.getLineHeight() * 2;
+			}
+			else {
+				drawY = clientArea.y + clientArea.height + renderer.getLineHeight();
+			}			
+			if (alignment == LEFT) {
+				drawX = clientArea.x;
+			}
+			else				
+			if (alignment == CENTER) {
+				drawX = (pageWidth - segmentWidth) / 2;
+			}
+			else 
+			if (alignment == RIGHT) {
+				drawX = clientArea.x + clientArea.width - segmentWidth;
+			}
+			if (bidi != null) {
+				bidi.drawBidiText(0, segment.length(), drawX, drawY);
+			}
+			else {
+				gc.drawString(segment, drawX, drawY, true);
+			}
+		}
+	}
+	/**
+	 * Starts a print job and prints the pages specified in the constructor.
+	 */
+	public void run() {
+		String jobName = printOptions.jobName;
+		
+		if (jobName == null) {
+			jobName = "Printing";
+		}		
+		if (printer.startJob(jobName)) {
+			createPrinterColors();
+			initializeRenderer();
+			print();
+			dispose();
+			printer.endJob();			
+		}
+	}
+	/**
+	 * Start printing a new page.
+	 * 
+	 * @param page page number to be started
+	 */
+	void startPage(int page) {
+		printer.startPage();
+		printDecoration(page, true);
 	}	
 	}
 	/**
@@ -5567,7 +5726,9 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 public void print() {
 	checkWidget();
 	Printer printer = new Printer();
-	new Printing(this, printer).run();
+	StyledTextPrintOptions options = new StyledTextPrintOptions(null, null, null, ST.TEXT_FOREGROUND | ST.TEXT_BACKGROUND | ST.TEXT_FONT_STYLE | ST.LINE_BACKGROUND);
+	
+	new Printing(this, printer, options).run();
 	printer.dispose();
 }
 /** 
@@ -5583,15 +5744,42 @@ public void print() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT when string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT when printer is null</li>
  * </ul>
  */
 public Runnable print(Printer printer) {
-	checkWidget();
+	StyledTextPrintOptions options = new StyledTextPrintOptions(null, null, null, ST.TEXT_FOREGROUND | ST.TEXT_BACKGROUND | ST.TEXT_FONT_STYLE | ST.LINE_BACKGROUND);
+	
+	checkWidget();	
 	if (printer == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	return new Printing(this, printer);
+	return print(printer, options);
+}
+/** 
+ * Returns a runnable that will print the widget's text
+ * to the specified printer.
+ * <p>
+ * The runnable may be run in a non-UI thread.
+ * </p>
+ * 
+ * @param printer the printer to print to
+ * @param options print options to use during printing
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when printer or options is null</li>
+ * </ul>
+ * @since 2.1
+ */
+public Runnable print(Printer printer, StyledTextPrintOptions options) {
+	checkWidget();
+	if (printer == null || options == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	return new Printing(this, printer, options);
 }
 /**
  * Causes the entire bounds of the receiver to be marked
