@@ -61,7 +61,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	
 	int width = 0;
 	int height = 0;
-	boolean vertical = (getStyle() & SWT.VERTICAL) != 0;
+	boolean vertical = (orientation == SWT.VERTICAL);
 	if (vertical) {
 		width = wHint;
 		height += (controls.length - 1) * SASH_WIDTH;
