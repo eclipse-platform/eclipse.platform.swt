@@ -367,6 +367,15 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	Rectangle trim = super.computeTrim (x, y, width, height);
+	int trimWidth = trimWidth (), trimHeight = trimHeight ();
+	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
+	trim.width += trimWidth; trim.height += trimHeight;
+	return trim;
+}
+
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	int type = (style & SWT.NO_TRIM) == 0 ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_POPUP;
