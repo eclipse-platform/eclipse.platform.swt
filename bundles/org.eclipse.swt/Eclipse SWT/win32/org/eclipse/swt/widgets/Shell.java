@@ -759,13 +759,16 @@ public void open () {
 	* a call to BringToTop(), when a long time elapses between the
 	* ShowWindow() and the time the event queue is read.  The icon
 	* in the window trimming is correct but the one in the task
-	* bar does not get updated until a new icon is set into the
-	* window or the window text is changed.  The fix is to call
-	* PeekMessage() with the flag PM_NOREMOVE to touch the event
-	* queue but not dispatch events.
+	* bar does not get updated.  The fix is to call PeekMessage()
+	* with the flag PM_NOREMOVE and PM_QS_SENDMESSAGE to respond
+	* to a cross thread WM_GETICON.
+	* 
+	* NOTE: This allows other cross thread messages to be delivered,
+	* most notably WM_ACTIVATE.
 	*/
 	MSG msg = new MSG ();
-	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+	OS.PeekMessage (msg, 0, 0, 0, flags);
 	if (!restoreFocus ()) traverseGroup (true);
 }
 
