@@ -18,7 +18,6 @@ public class TreeColumn extends Item {
 	Tree parent;
 	int width;
 	boolean resizable = true;
-	int textWidth;
 	
 public TreeColumn (Tree parent, int style) {
 	this (parent, style, checkNull (parent).getColumnCount ());
@@ -76,9 +75,6 @@ public int getAlignment () {
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
 }
-Rectangle getBounds () {
-	return new Rectangle (getX (), 0, width, parent.getClientArea ().height);
-}
 int getIndex () {
 	TreeColumn[] columns = parent.getColumns ();
 	for (int i = 0; i < columns.length; i++) {
@@ -114,7 +110,7 @@ void paint (GC gc) {
 	int x = getX ();
 	int startX = x + padding;
 	if ((style & SWT.LEFT) == 0) {
-		int contentWidth = textWidth;
+		int contentWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
 		if (image != null) {
 			contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
 		}
@@ -216,24 +212,11 @@ public void setText (String value) {
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (value.equals (text)) return;						/* same value */
 	super.setText (value);
-	GC gc = new GC (parent);
-	textWidth = gc.textExtent (value, SWT.DRAW_MNEMONIC).x;
-	gc.dispose ();
 	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 }
 public void setWidth (int value) {
 	checkWidget ();
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
-}
-/*
- * The parent's font has changed, so recompute the receiver's cached text size using
- * the gc argument. 
- */
-void updateFont (GC gc) {
-	String text = getText ();
-	if (text.length () > 0) {
-		textWidth = gc.textExtent (text).x;
-	}
 }
 }

@@ -1340,7 +1340,8 @@ void headerDoPaint (Event event) {
 	/* paint each of the column headers */
 	if (numColumns == 0) return;
 	for (int i = startColumn; i <= endColumn; i++) {
-		headerPaintShadow (gc, columns[i].getBounds (), false, true);
+		Rectangle bounds = new Rectangle (columns[i].getX (), 0, columns[i].width, getClientArea ().height);
+		headerPaintShadow (gc, bounds, false, true);
 		columns[i].paint (gc);
 	}
 }
@@ -1730,14 +1731,6 @@ public void setFont (Font value) {
 	int newHeaderHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	if (headerSize.y != newHeaderHeight) {
 		header.setSize (headerSize.x, newHeaderHeight);
-	}
-
-	/* 
-	 * Notify all columns of the font change so that they can recompute
-	 * their cached string widths.
-	 */
-	for (int i = 0; i < columns.length; i++) {
-		columns[i].updateFont (gc);
 	}
 
 	/* 
