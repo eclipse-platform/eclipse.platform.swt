@@ -419,6 +419,7 @@ public int getItemHeight () {
 	OS.gtk_widget_realize (handle);
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_path_new_first ();
+	OS.gtk_widget_realize (handle);
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 	OS.gtk_tree_path_free (path);
 	return rect.height;
@@ -977,6 +978,7 @@ void showItem (int path, boolean scroll) {
 	}
 	if (scroll) {
 		GdkRectangle rect = new GdkRectangle ();
+		OS.gtk_widget_realize (handle);
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 		boolean isHidden = rect.y == 0 && rect.height == 0;
 		if (!isHidden) {

@@ -227,6 +227,7 @@ public Rectangle getBounds () {
 	GdkRectangle rect = new GdkRectangle ();
 	int column = OS.gtk_tree_view_get_column (parentHandle, 0);
 	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	return new Rectangle (rect.x, rect.y, rect.width, rect.height);

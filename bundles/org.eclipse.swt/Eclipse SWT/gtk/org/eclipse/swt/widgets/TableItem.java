@@ -148,6 +148,7 @@ public Rectangle getBounds (int index) {
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	int headerHeight = parent.getHeaderHeight ();
@@ -281,6 +282,7 @@ public Rectangle getImageBounds (int index) {
 	if (pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	int [] w = new int[1], h = new int[1];
