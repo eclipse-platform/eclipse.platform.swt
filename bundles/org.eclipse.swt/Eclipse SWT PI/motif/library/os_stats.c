@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 432;
-int OS_nativeFunctionCallCount[432];
+int OS_nativeFunctionCount = 433;
+int OS_nativeFunctionCallCount[433];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -201,6 +201,7 @@ char * OS_nativeFunctionNames[] = {
 	"XmCreateToggleButton", 
 	"XmCreateToggleButtonGadget", 
 	"XmCreateWarningDialog", 
+	"XmCreateWorkingDialog", 
 	"XmDestroyPixmap", 
 	"XmDragCancel", 
 	"XmDragStart", 

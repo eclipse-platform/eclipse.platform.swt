@@ -64,37 +64,6 @@ void setVisualFields(JNIEnv *env, jobject lpObject, Visual *lpStruct)
 }
 #endif
 
-#ifndef NO_XEvent
-typedef struct XEvent_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID type;
-} XEvent_FID_CACHE;
-
-XEvent_FID_CACHE XEventFc;
-
-void cacheXEventFields(JNIEnv *env, jobject lpObject)
-{
-	if (XEventFc.cached) return;
-	XEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XEventFc.type = (*env)->GetFieldID(env, XEventFc.clazz, "type", "I");
-	XEventFc.cached = 1;
-}
-
-XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
-{
-	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
-	lpStruct->type = (*env)->GetIntField(env, lpObject, XEventFc.type);
-	return lpStruct;
-}
-
-void setXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
-{
-	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, XEventFc.type, (jint)lpStruct->type);
-}
-#endif
-
 #ifndef NO_XAnyEvent
 typedef struct XAnyEvent_FID_CACHE {
 	int cached;
@@ -578,6 +547,37 @@ void setXDestroyWindowEventFields(JNIEnv *env, jobject lpObject, XDestroyWindowE
 	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.display, (jint)lpStruct->display);
 	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.event, (jint)lpStruct->event);
 	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.window, (jint)lpStruct->window);
+}
+#endif
+
+#ifndef NO_XEvent
+typedef struct XEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type;
+} XEvent_FID_CACHE;
+
+XEvent_FID_CACHE XEventFc;
+
+void cacheXEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XEventFc.cached) return;
+	XEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XEventFc.type = (*env)->GetFieldID(env, XEventFc.clazz, "type", "I");
+	XEventFc.cached = 1;
+}
+
+XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, XEventFc.type);
+	return lpStruct;
+}
+
+void setXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XEventFc.type, (jint)lpStruct->type);
 }
 #endif
 

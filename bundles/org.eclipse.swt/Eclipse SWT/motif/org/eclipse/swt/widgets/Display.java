@@ -133,6 +133,9 @@ public class Display extends Device {
 	XColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
 	Color COLOR_INFO_BACKGROUND;
 	
+	/* System Images */
+	int errorImage, infoImage, questionImage, warningImage, workingImage;
+
 	/* Initial Guesses for Shell Trimmings. */
 	int leftBorderWidth = 2, rightBorderWidth = 2;
 	int topBorderHeight = 2, bottomBorderHeight = 2;
@@ -688,6 +691,18 @@ void createDisplay (DeviceData data) {
 		OS.XtFree (ptr2);
 	}
 	if (ptr1 != 0) OS.XtFree (ptr1);
+}
+int createImage (String name) {
+	int screen  = OS.XDefaultScreenOfDisplay (xDisplay);
+	int fgPixel = OS.XBlackPixel (xDisplay, OS.XDefaultScreen (xDisplay));
+	int bgPixel = OS.XWhitePixel (xDisplay, OS.XDefaultScreen (xDisplay));
+	byte[] buffer = Converter.wcsToMbcs (null, name, true);
+	int pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
+	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
+		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
+		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
+	}
+	return pixmap;
 }
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
@@ -1533,6 +1548,53 @@ public Font getSystemFont () {
 	checkDevice ();
 	return defaultFont;
 }
+public Image getSystemImage (int style) {
+	int image = 0;
+	switch (style) {
+		case SWT.ICON_ERROR: {
+			if (errorImage == 0) {
+				errorImage = createImage ("xm_error");
+			}
+			image = errorImage;
+			break;
+		}
+		case SWT.ICON_INFORMATION: {
+			if (infoImage == 0) {
+				infoImage = createImage ("xm_information");
+			}
+			image = infoImage;
+			break;
+		}
+		case SWT.ICON_QUESTION: {
+			if (questionImage == 0) {
+				questionImage = createImage ("xm_question");
+			}
+			image = questionImage;
+			break;
+		}
+		case SWT.ICON_WARNING: {
+			if (warningImage == 0) {
+				warningImage = createImage ("xm_warning");
+			}
+			image = warningImage;
+			break;
+		}
+		case SWT.ICON_WORKING: {
+			if (workingImage == 0) {
+				workingImage = createImage ("xm_working");
+			}
+			image = workingImage;
+			break;
+		}
+		default: return null;
+	}
+	if (image == OS.XmUNSPECIFIED_PIXMAP) error (SWT.ERROR_NO_HANDLES);
+	Image temp = Image.motif_new (this, SWT.ICON, image, 0);
+	ImageData data = temp.getImageData ();
+	temp.dispose ();
+	data.transparentPixel = data.palette.getPixel (new RGB (255,255,255));
+	return new Image (this, data);
+}
 public Tray getSystemTray () {
 	if (tray != null) return tray;
 	return tray = new Tray (this, SWT.NULL);
@@ -1770,13 +1832,12 @@ void initializeDisplay () {
 	OS.XtRealizeWidget (shellHandle);
 	
 	/*
-	* Bug in MOTIF.  For some reason, calls to XmGetPixmap ()
-	* and XmGetPixmapByDepth fail to find the pixmap unless at
-	* least one message box has been created.  The fix is to
-	* create and destroy a message box.
+	* Feature in Motif.  The system images are initially installed the first
+	* time a system dialog is created, so create and destroy a system dialog
+	* in order to make these images available to us.  
 	*/
-//	int dialog = OS.XmCreateInformationDialog (shellHandle, null, null, 0);
-//	OS.XtDestroyWidget (dialog);
+	int dialog = OS.XmCreateErrorDialog (shellHandle, null, null, 0);
+	OS.XtDestroyWidget (dialog);
 }
 void initializeLabel () {
 	int shellHandle, widgetHandle;
@@ -2263,6 +2324,13 @@ protected void release () {
 	super.release ();
 }
 void releaseDisplay () {
+	/* destroy the System Images */
+	int screen = OS.XDefaultScreenOfDisplay (xDisplay);
+	if (errorImage != 0) OS.XmDestroyPixmap (screen, errorImage);
+	if (infoImage != 0) OS.XmDestroyPixmap (screen, infoImage);
+	if (questionImage != 0) OS.XmDestroyPixmap (screen, questionImage);
+	if (warningImage != 0) OS.XmDestroyPixmap (screen, warningImage);
+	if (workingImage != 0) OS.XmDestroyPixmap (screen, workingImage);
 
 	/* Destroy the hidden Override shell parent */
 	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);

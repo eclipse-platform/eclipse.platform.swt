@@ -787,6 +787,7 @@ public static final synchronized native int XmCreateTextField(int parent, byte[]
 public static final synchronized native int XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final synchronized native int XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native boolean XmDestroyPixmap(int screen, int pixmap);
 public static final synchronized native void XmDragCancel(int dragcontext);
 public static final synchronized native int XmDragStart(int widget, int event, int[] arglist, int argcount);

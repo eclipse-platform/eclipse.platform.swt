@@ -2524,6 +2524,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmCreateWarningDialog)
 }
 #endif
 
+#ifndef NO_XmCreateWorkingDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateWorkingDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XmCreateWorkingDialog_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateWorkingDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, XmCreateWorkingDialog_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XmDestroyPixmap
 JNIEXPORT jboolean JNICALL OS_NATIVE(XmDestroyPixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

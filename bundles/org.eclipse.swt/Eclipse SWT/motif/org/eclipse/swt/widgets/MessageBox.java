@@ -120,6 +120,7 @@ int createHandle (int parentHandle, int [] argList) {
 	if ((style & SWT.ICON_INFORMATION) != 0) return OS.XmCreateInformationDialog (parentHandle, null, argList, argList.length / 2);
 	if ((style & SWT.ICON_QUESTION) != 0) return OS.XmCreateQuestionDialog (parentHandle, null, argList, argList.length / 2);
 	if ((style & SWT.ICON_WARNING) != 0) return OS.XmCreateWarningDialog (parentHandle, null, argList, argList.length / 2);
+	if ((style & SWT.ICON_WORKING) != 0) return OS.XmCreateWorkingDialog (parentHandle, null, argList, argList.length / 2);
 	return OS.XmCreateMessageDialog (parentHandle, null, argList, argList.length / 2);
 }
 
@@ -194,6 +195,7 @@ public int open () {
 		OS.XmNdialogTitle, xmStringPtr,
 	};
 	int dialog = createHandle (parentHandle, argList);
+	if (dialog == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.XmStringFree (xmStringPtr);
 	setMessage (dialog);
 	setButtons (dialog);
