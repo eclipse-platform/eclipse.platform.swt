@@ -809,14 +809,22 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNselectionCallback, windowProc, SELECTION_CALLBACK);
-	int [] argList = {OS.XmNtextField, 0};
+	int [] argList = {OS.XmNlist, 0, OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
-	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
-	OS.XtAddCallback (argList[1], OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
-	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, KEY_PRESS);
-	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
-	OS.XtInsertEventHandler (argList[1], OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	int listHandle = argList [1];
+	int textHandle = argList [3];
+	OS.XtAddEventHandler (listHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (listHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtAddCallback (textHandle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+	OS.XtAddCallback (textHandle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (textHandle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
+	OS.XtAddEventHandler (textHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+	OS.XtAddEventHandler (textHandle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+	OS.XtAddEventHandler (textHandle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+	OS.XtAddEventHandler (textHandle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
+	OS.XtAddEventHandler (textHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (textHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtInsertEventHandler (textHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -980,9 +988,10 @@ public void remove (int start, int end) {
 }
 void register () {
 	super.register ();
-	int [] argList = {OS.XmNtextField, 0};
+	int [] argList = {OS.XmNlist, 0, OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	display.addWidget (argList[1], this);
+	display.addWidget (argList[3], this);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -1486,9 +1495,10 @@ public void setVisibleItemCount (int count) {
 }
 void deregister () {
 	super.deregister ();
-	int [] argList = {OS.XmNtextField, 0};
+	int [] argList = {OS.XmNlist, 0, OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	display.removeWidget (argList[1]);
+	display.removeWidget (argList[3]);
 }
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
