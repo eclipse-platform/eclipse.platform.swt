@@ -98,6 +98,10 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+void drawBackground (int control) {
+	drawBackground (control, background);
+}
+
 /**
  * Returns the maximum value which the receiver will allow.
  *
