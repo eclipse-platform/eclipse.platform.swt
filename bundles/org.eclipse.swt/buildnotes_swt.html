@@ -14,6 +14,14 @@ SWT</h1>
 
 <h2> SWT Build 3.0 022 - Tuesday September 23, 2003 </h2>
 
+<h3>
+<a NAME="Breaking Changes"></a>Breaking Changes</h3>
+
+<p>The Event.keyCode field now contains the unaffected keycode value.  For example,
+when the user types Ctrl+Shift+'a', the keyCode field contains 'a'.  The character
+field is unaffected and contains the same value as before (0x01).
+</p>
+
 <h3><a NAME="New APIs"></a>New APIs</h3>
 <blockquote>
 Combo.getOrientation() added
