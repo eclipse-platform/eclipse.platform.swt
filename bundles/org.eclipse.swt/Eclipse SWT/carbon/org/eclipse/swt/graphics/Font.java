@@ -189,7 +189,8 @@ public void dispose() {
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
-	return handle == ((Font)object).handle;
+	Font font = (Font)object;
+	return handle == font.handle && size == font.size;
 }
 
 /**

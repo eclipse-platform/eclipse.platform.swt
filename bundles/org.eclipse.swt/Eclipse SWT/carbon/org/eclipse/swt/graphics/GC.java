@@ -1611,6 +1611,7 @@ void setGCFont() {
 		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
 		data.atsuiStyle = font.createStyle();
 	}
+	data.string = null;
 }
 
 /**
