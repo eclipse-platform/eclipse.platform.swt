@@ -3333,22 +3333,22 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	} else {
 		curve = bezier(0, 0,
 		               CURVE_LEFT, 0, 
-		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 2,
-		               CURVE_WIDTH, tabHeight + 2,
+		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
+		               CURVE_WIDTH, tabHeight + 1,
 		               CURVE_WIDTH);
 		// workaround to get rid of blip at end of bezier
-		int index = -1;
-		for (int i = 0; i < curve.length/2; i++) {
-			if (curve[2*i+1] > tabHeight) {
-				index = i;
-				break;
-			}
-		}
-		if (index > 0) {
-			int[] newCurve = new int[2*(index-1)];
-			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
-			curve = newCurve;
-		}
+//		int index = -1;
+//		for (int i = 0; i < curve.length/2; i++) {
+//			if (curve[2*i+1] > tabHeight+1) {
+//				index = i;
+//				break;
+//			}
+//		}
+//		if (index > 0) {
+//			int[] newCurve = new int[2*(index-1)];
+//			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
+//			curve = newCurve;
+//		}
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
