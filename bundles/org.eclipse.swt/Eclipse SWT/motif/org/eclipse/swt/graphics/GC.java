@@ -418,10 +418,39 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
 				false, false);
 		} else {
+			int srcRedMask = xSrcImage.red_mask;
+			int srcGreenMask = xSrcImage.green_mask;
+			int srcBlueMask = xSrcImage.blue_mask;
+			int destRedMask = xDestImage.red_mask;
+			int destGreenMask = xDestImage.green_mask;
+			int destBlueMask = xDestImage.blue_mask;
+			
+			/*
+			* Feature in X.  XGetImage does not retrieve the RGB masks if the drawable
+			* is a Pixmap.  The fix is to detect that the masks are not valid and use
+			* the default visual masks instead.
+			* 
+			* NOTE: It is safe to use the default Visual masks, since we always
+			* create images with these masks. 
+			*/
+			int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+			Visual xVisual = new Visual();
+			OS.memmove(xVisual, visual, Visual.sizeof);
+			if (srcRedMask == 0 && srcGreenMask == 0 && srcBlueMask == 0) {
+				srcRedMask = xVisual.red_mask;
+				srcGreenMask = xVisual.green_mask;
+				srcBlueMask = xVisual.blue_mask;
+			}
+			if (destRedMask == 0 && destGreenMask == 0 && destBlueMask == 0) {
+				destRedMask = xVisual.red_mask;
+				destGreenMask = xVisual.green_mask;
+				destBlueMask = xVisual.blue_mask;
+			}
+			
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, srcRedMask, srcGreenMask, srcBlueMask,
 				srcImage.alpha, srcImage.alphaData, imgWidth,
-				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xDestImage.red_mask, xDestImage.green_mask, xDestImage.blue_mask,
+				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destRedMask, destGreenMask, destBlueMask,
 				false, false);
 		}
 		
