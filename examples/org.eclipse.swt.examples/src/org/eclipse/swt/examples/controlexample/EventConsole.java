@@ -9,23 +9,23 @@ public class EventConsole {
 	Shell shell;
 	Text text;
 	boolean isActive = true;
-	static boolean [] eventsFilter = new boolean [35];
-	static {
-		int [] defaultFilter = {
-			SWT.KeyDown, SWT.KeyUp, SWT.MouseDown,
-			SWT.MouseUp, SWT.MouseDoubleClick, SWT.Selection,
-			SWT.DefaultSelection, SWT.Expand, SWT.Collapse,
-			SWT.Iconify, SWT.Deiconify, SWT.Close,
-			SWT.Show, SWT.Hide, SWT.Modify,
-			SWT.Verify, SWT.Activate, SWT.Deactivate,
-			SWT.Help, SWT.DragDetect, SWT.Arm,
-			SWT.Traverse, SWT.HardKeyDown, SWT.HardKeyUp
-		};
-		for (int i = 0; i < defaultFilter.length; i++) {
-			eventsFilter [defaultFilter [i]] = true;
-		}
-	}
+	boolean [] eventsFilter = new boolean [35];
 	
+	final static String [] EVENT_TYPES = {
+		"KeyDown", "KeyUp", "MouseDown", "MouseUp", "MouseMove", "MouseEnter",		
+		"MouseExit", "MouseDoubleClick", "Paint", "Move", "Resize", "Dispose",
+		"Selection", "DefaultSelection", "FocusIn", "FocusOut", "Expand", "Collapse",
+		"Iconify", "Deiconify", "Close", "Show", "Hide", "Modify",
+		"Verify", "Activate", "Deactivate", "Help", "DragDetect", "Arm",
+		"Traverse", "MouseHover", "HardKeyDown", "HardKeyUp"
+	};
+	final static int [] DEFAULT_FILTER = {
+		SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.Selection,
+		SWT.DefaultSelection, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify, SWT.Close,
+		SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate, SWT.Deactivate,
+		SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse, SWT.HardKeyDown, SWT.HardKeyUp
+	};
+
 	public EventConsole (Shell parent) {
 		super ();
 		shell = new Shell (parent);
@@ -63,6 +63,10 @@ public class EventConsole {
 				isActive = false;
 			}
 		});
+		
+		for (int i = 0; i < DEFAULT_FILTER.length; i++) {
+			eventsFilter [DEFAULT_FILTER [i]] = true;
+		}
 	}
 	
 	public void close () {
@@ -76,7 +80,7 @@ public class EventConsole {
 			output.append ("Control: ");
 			output.append (event.widget.toString ());
 			output.append (" Type: ");
-			output.append (event.type);
+			output.append (EVENT_TYPES[event.type]);
 			output.append (" X: ");
 			output.append (event.x);
 			output.append (" Y: ");
