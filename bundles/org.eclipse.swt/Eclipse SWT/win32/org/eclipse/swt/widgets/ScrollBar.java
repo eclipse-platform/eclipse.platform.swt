@@ -906,6 +906,11 @@ public void setVisible (boolean visible) {
 	boolean isVisible = (state & HIDDEN) == 0;
 	if (isVisible == visible) return;
 	
+	/*
+	* On Windows CE, use SIF_DISABLENOSCROLL to show and
+	* hide the scroll bar when the page size is equal to
+	* the range.
+	*/
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
