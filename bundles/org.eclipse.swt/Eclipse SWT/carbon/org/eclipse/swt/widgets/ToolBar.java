@@ -334,6 +334,8 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
 			item.setBounds (x, y, rect.width, itemHeight);
+			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setVisible (item.handle, visible);
 		}
 		x += xSpacing + rect.width;
 		maxX = Math.max (maxX, x);
@@ -364,6 +366,8 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
 			item.setBounds (x, y, itemWidth, rect.height);
+			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setVisible (item.handle, visible);
 		}
 		y += ySpacing + rect.height;
 		maxY = Math.max (maxY, y);
