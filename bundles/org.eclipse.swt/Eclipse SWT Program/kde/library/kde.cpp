@@ -11,6 +11,7 @@
 
 #include "swt.h"
 #include "kde_structs.h"
+#include "kde_stats.h"
 
 extern "C" {
 

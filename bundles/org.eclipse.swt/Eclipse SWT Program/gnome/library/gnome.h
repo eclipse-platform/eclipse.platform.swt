@@ -12,7 +12,10 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
- 
+
+#ifndef INC_gnome_H
+#define INC_gnome_H
+
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -23,4 +26,4 @@
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-info.h>
 
-#include "gnome_stats.h"
+#endif

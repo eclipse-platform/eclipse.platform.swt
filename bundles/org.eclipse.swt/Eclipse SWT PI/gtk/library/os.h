@@ -76,7 +76,6 @@
 #include <X11/extensions/XTest.h>
 #endif
 
-#include "os_stats.h"
 #include "os_custom.h"
 
 #endif /* INC_os_H */

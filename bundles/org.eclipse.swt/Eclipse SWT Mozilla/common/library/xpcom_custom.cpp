@@ -28,6 +28,7 @@
 
 #include "swt.h"
 #include "xpcom_structs.h"
+#include "xpcom_stats.h"
 
 extern "C" {
 

@@ -14,7 +14,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "os_structs.h"
+#include "atk_stats.h"
 
 #ifdef NATIVE_STATS
 

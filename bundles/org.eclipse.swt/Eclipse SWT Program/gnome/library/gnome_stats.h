@@ -23,18 +23,20 @@ char* GNOME_nativeFunctionNames[];
 #define GNOME_NATIVE_EXIT(env, that, func) 
 #endif
 
-#define GnomeVFSMimeApplication_1sizeof_FUNC 0
-#define g_1free_FUNC 1
-#define g_1list_1next_FUNC 2
-#define g_1object_1unref_FUNC 3
-#define gnome_1icon_1lookup_FUNC 4
-#define gnome_1icon_1theme_1lookup_1icon_FUNC 5
-#define gnome_1icon_1theme_1new_FUNC 6
-#define gnome_1vfs_1get_1registered_1mime_1types_FUNC 7
-#define gnome_1vfs_1init_FUNC 8
-#define gnome_1vfs_1mime_1application_1free_FUNC 9
-#define gnome_1vfs_1mime_1extensions_1list_1free_FUNC 10
-#define gnome_1vfs_1mime_1get_1default_1application_FUNC 11
-#define gnome_1vfs_1mime_1get_1extensions_1list_FUNC 12
-#define gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC 13
-#define memmove_FUNC 14
+typedef enum {
+	GnomeVFSMimeApplication_1sizeof_FUNC,
+	g_1free_FUNC,
+	g_1list_1next_FUNC,
+	g_1object_1unref_FUNC,
+	gnome_1icon_1lookup_FUNC,
+	gnome_1icon_1theme_1lookup_1icon_FUNC,
+	gnome_1icon_1theme_1new_FUNC,
+	gnome_1vfs_1get_1registered_1mime_1types_FUNC,
+	gnome_1vfs_1init_FUNC,
+	gnome_1vfs_1mime_1application_1free_FUNC,
+	gnome_1vfs_1mime_1extensions_1list_1free_FUNC,
+	gnome_1vfs_1mime_1get_1default_1application_FUNC,
+	gnome_1vfs_1mime_1get_1extensions_1list_FUNC,
+	gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC,
+	memmove_FUNC,
+} GNOME_FUNCS;

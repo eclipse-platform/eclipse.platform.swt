@@ -26,8 +26,6 @@
 #include "prmem.h"
 #include "prenv.h"
 
-#include "xpcom_stats.h"
-
 #ifdef WIN32
 #define STDMETHODCALLTYPE __stdcall
 #else

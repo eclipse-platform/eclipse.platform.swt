@@ -15,6 +15,7 @@
 
 #include "swt.h"
 #include "gnome_structs.h"
+#include "gnome_stats.h"
 
 #define GNOME_NATIVE(func) Java_org_eclipse_swt_internal_gnome_GNOME_##func
 

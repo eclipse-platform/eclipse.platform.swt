@@ -26,7 +26,6 @@
 #include <X11/xpm.h>
 #include <X11/X.h>
 
-#include "kde_stats.h"
 #include "kde_custom.h"
 
 #endif /* INC_kde_H */
