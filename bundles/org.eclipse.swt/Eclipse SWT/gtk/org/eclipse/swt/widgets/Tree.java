@@ -220,7 +220,7 @@ void createHandle (int index) {
 	* to be activatable.
 	*/
 	if ((style & SWT.CHECK) != 0) {
-		OS.g_object_set (pixbufRenderer, OS.mode, OS.GTK_CELL_RENDERER_MODE_ACTIVATABLE);
+		OS.g_object_set (pixbufRenderer, OS.mode, OS.GTK_CELL_RENDERER_MODE_ACTIVATABLE, 0);
 	}
 	int textRenderer = OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);

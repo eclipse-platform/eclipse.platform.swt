@@ -341,8 +341,8 @@ public static final synchronized native int g_log_set_handler(byte[] log_domain,
 public static final synchronized native int g_malloc(int size);
 public static final synchronized native int g_object_get_qdata(int object, int quark);
 public static final synchronized native int g_object_ref(int object);
-public static final synchronized native void g_object_set(int object, byte[] first_property_name, int data);
-public static final synchronized native void g_object_set(int object, byte[] first_property_name, float data);
+public static final synchronized native void g_object_set(int object, byte[] first_property_name, int data, int terminator);
+public static final synchronized native void g_object_set(int object, byte[] first_property_name, float data, int terminator);
 public static final synchronized native void g_object_set_qdata(int object, int quark, int data);
 public static final synchronized native void g_object_unref(int object);
 public static final synchronized native int g_quark_from_string(byte[] string);
