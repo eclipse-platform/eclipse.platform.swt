@@ -229,46 +229,92 @@ void drawSelected(GC gc ) {
 	}
 }
 void drawUnselected(GC gc) {
-	int[] border = null;
+	int[] shape = null;
 	if (this.parent.onBottom) {
-		int[] corner = CTabFolder2.BOTTOM_LEFT_CORNER;
-		border = new int[corner.length+6];
+		int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
+		int[] right = CTabFolder2.BOTTOM_RIGHT_CORNER;
+		shape = new int[left.length+right.length+4];
 		int index = 0;
-		for(int i = 0; i < corner.length/2; i++) {
-			border[index++] = x+corner[2*i]; 
-			border[index++] = y+height-1+corner[2*i+1];
+		shape[index++]=x;
+		shape[index++]=y;
+		for(int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i]; 
+			shape[index++] = y+height-1+left[2*i+1]; // -1 = unselected tab 1 pixel shorter than selected tab
 		}
-		border[index++]=x+width-2; // -2 = 2 pixel gap between tabs, gap on right side
-		border[index++]=y+height-1; // -1 = unselected tab 1 pixel shorter than selected tab
-		border[index++]=x+width-2; // -2 = 2 pixel gap between tabs, gap on right side
-		border[index++]=y;
-		border[index++]=x;
-		border[index++]=y;
+		for(int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width-3+right[2*i]; // -2 = 2 pixel gap between tabs, gap on right side
+			shape[index++] = y+height-1+right[2*i+1]; // -1 = unselected tab 1 pixel shorter than selected tab
+		}
+		shape[index++]=x+width-3; // -2 = 2 pixel gap between tabs, gap on right side + 1 pixel for border
+		shape[index++]=y;
 	} else {
-		int[] corner = CTabFolder2.TOP_LEFT_CORNER;
-		border = new int[corner.length+6];
+		int[] left = CTabFolder2.TOP_LEFT_CORNER;
+		int[] right = CTabFolder2.TOP_RIGHT_CORNER;
+		shape = new int[left.length+right.length+4];
 		int index = 0;
-		for(int i = 0; i < corner.length/2; i++) {
-			border[index++] = x+corner[2*i];
-			border[index++] = y+1+corner[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
+		shape[index++]=x;
+		shape[index++]=y+height;
+		for(int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i];
+			shape[index++] = y+1+left[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
 		}
-		border[index++]=x+width-2; // -2 = 2 pixel gap between tabs, gap on right side
-		border[index++]=y+1; // +1 = unselected tab 1 pixel shorter than selected tab
-		border[index++]=x+width-2; // -2 = 2 pixel gap between tabs, gap on right side
-		border[index++]=y+height;
-		border[index++]=x;
-		border[index++]=y+height;
+		for(int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width-2+right[2*i]; // -2 = 2 pixel gap between tabs, gap on right side
+			shape[index++] = y+1+right[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
+		}
+		shape[index++]=x+width-2; // -2 = 2 pixel gap between tabs, gap on right side
+		shape[index++]=y+height;
 	}
 	gc.setBackground(parent.getBackground());
-	gc.fillPolygon(border);
+	gc.fillPolygon(shape);
 	
 	// Shape is non-rectangular, fill in gaps with parent colours
 	Region r = new Region();
 	r.add(new Rectangle(x, y, width, height));
-	r.subtract(border);
+	r.subtract(shape);
 	gc.setBackground(parent.getParent().getBackground());
 	CTabFolder2.fillRegion(gc, r);
 	r.dispose();
+	
+	// draw border
+	shape = null;
+	if (this.parent.onBottom) {
+		int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
+		int[] right = CTabFolder2.BOTTOM_RIGHT_CORNER;
+		shape = new int[left.length+right.length+4];
+		int index = 0;
+		shape[index++]=x;
+		shape[index++]=y;
+		for(int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i]; 
+			shape[index++] = y+height-2+left[2*i+1]; // -1 = unselected tab 1 pixel shorter than selected tab
+		}
+		for(int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width-3+right[2*i]; // -2 = 2 pixel gap between tabs, gap on right side
+			shape[index++] = y+height-2+right[2*i+1]; // -1 = unselected tab 1 pixel shorter than selected tab
+		}
+		shape[index++]=x+width-3; // -2 = 2 pixel gap between tabs, gap on right side
+		shape[index++]=y;
+	} else {
+		int[] left = CTabFolder2.TOP_LEFT_CORNER;
+		int[] right = CTabFolder2.TOP_RIGHT_CORNER;
+		shape = new int[left.length+right.length+4];
+		int index = 0;
+		shape[index++]=x;
+		shape[index++]=y+height;
+		for(int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i];
+			shape[index++] = y+1+left[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
+		}
+		for(int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width-3+right[2*i]; // -2 = 2 pixel gap between tabs, gap on right side
+			shape[index++] = y+1+right[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
+		}
+		shape[index++]=x+width-3; // -2 = 2 pixel gap between tabs, gap on right side
+		shape[index++]=y+height;
+	}
+	gc.setForeground(CTabFolder2.border1Color);
+	gc.drawPolyline(shape);
 	
 	// draw Text
 	int textWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
