@@ -78,12 +78,18 @@ class Spinner extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-Spinner (Composite parent, int style) {
+public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int msg, int wParam, int lParam) {
+int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	if (hwnd == hwndText) {
+		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
+	}
+	if (hwnd == hwndUpDown) {
+		return OS.CallWindowProc (UpDownProc, hwnd, msg, wParam, lParam);
+	}
 	return OS.DefWindowProc (handle, msg, wParam, lParam);
 }
 
@@ -110,6 +116,7 @@ protected void checkSubclass () {
 
 void createHandle () {
 	super.createHandle ();
+	state &= ~CANVAS;
 	int hwndParent = handle;
 	int hInstance = OS.GetModuleHandle(null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
@@ -837,25 +844,44 @@ int widgetExtStyle () {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
-	if (hwnd == hwndText) {
+	if (hwnd == hwndText || hwnd == hwndUpDown) {
 		LRESULT result = null;
 		switch (msg) {
 			/* Keyboard messages */
-			case OS.WM_CHAR:		result = WM_CHAR (wParam, lParam); break;
-			case OS.WM_IME_CHAR:	result = WM_IME_CHAR (wParam, lParam); break;
-			case OS.WM_KEYDOWN:		result = WM_KEYDOWN (wParam, lParam); break;
-			case OS.WM_KEYUP:		result = WM_KEYUP (wParam, lParam); break;
-			case OS.WM_SYSCHAR:		result = WM_SYSCHAR (wParam, lParam); break;
-			case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (wParam, lParam); break;
-			case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (wParam, lParam); break;
-						
-			case OS.WM_CONTEXTMENU:
-				/* Pretend the WM_CONTEXTMENU was sent to the spinner */
-				result = WM_CONTEXTMENU (handle, lParam); break;
-				
-//			/* Focus messaegs */	
-//			case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
-//			case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
+			case OS.WM_CHAR:		result = wmChar (hwnd, wParam, lParam); break;
+			case OS.WM_IME_CHAR:	result = wmIMEChar (hwnd, wParam, lParam); break;
+			case OS.WM_KEYDOWN:		result = wmKeyDown (hwnd, wParam, lParam); break;
+			case OS.WM_KEYUP:		result = wmKeyUp (hwnd, wParam, lParam); break;
+			case OS.WM_SYSCHAR:		result = wmSysChar (hwnd, wParam, lParam); break;
+			case OS.WM_SYSKEYDOWN:	result = wmSysKeyDown (hwnd, wParam, lParam); break;
+			case OS.WM_SYSKEYUP:	result = wmSysKeyUp (hwnd, wParam, lParam); break;
+	
+			/* Mouse Messages */
+			case OS.WM_LBUTTONDBLCLK:	result = wmLButtonDblClk (hwnd, wParam, lParam); break;
+			case OS.WM_LBUTTONDOWN:		result = wmLButtonDown (hwnd, wParam, lParam); break;
+			case OS.WM_LBUTTONUP:		result = wmLButtonUp (hwnd, wParam, lParam); break;
+			case OS.WM_MBUTTONDBLCLK:	result = wmMButtonDblClk (hwnd, wParam, lParam); break;
+			case OS.WM_MBUTTONDOWN:		result = wmMButtonDown (hwnd, wParam, lParam); break;
+			case OS.WM_MBUTTONUP:		result = wmMButtonUp (hwnd, wParam, lParam); break;
+			case OS.WM_MOUSEHOVER:		result = wmMouseHover (hwnd, wParam, lParam); break;
+			case OS.WM_MOUSELEAVE:		result = wmMouseLeave (hwnd, wParam, lParam); break;
+			case OS.WM_MOUSEMOVE:		result = wmMouseMove (hwnd, wParam, lParam); break;
+	//		case OS.WM_MOUSEWHEEL:		result = wmMouseWheel (hwnd, wParam, lParam); break;
+			case OS.WM_RBUTTONDBLCLK:	result = wmRButtonDblClk (hwnd, wParam, lParam); break;
+			case OS.WM_RBUTTONDOWN:		result = wmRButtonDown (hwnd, wParam, lParam); break;
+			case OS.WM_RBUTTONUP:		result = wmRButtonUp (hwnd, wParam, lParam); break;
+			
+			/* Focus Messages */
+			case OS.WM_SETFOCUS:		result = wmSetFocus (hwnd, wParam, lParam); break;
+			case OS.WM_KILLFOCUS:		result = wmKillFocus (hwnd, wParam, lParam); break;
+	
+			/* Paint messages */
+			case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;
+	
+			/* Menu messages */
+			case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam);
+	//		case OS.WM_MENUCHAR:		result = WM_MENUCHAR (wParam, lParam); break;
+	//		case OS.WM_MENUSELECT:		result = WM_MENUSELECT (wParam, lParam); break;
 				
 			/* Clipboard messages */
 			case OS.WM_CLEAR:
@@ -864,62 +890,24 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			case OS.WM_UNDO:
 			case OS.EM_UNDO:
 			case OS.WM_SETTEXT:
-				result = wmClipboard (hwndText, msg, wParam, lParam);
-				break;					
+				if (hwnd == hwndText) {
+					result = wmClipboard (hwnd, msg, wParam, lParam);
+				}
+				break;
 		}
 		if (result != null) return result.value;
-		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
-	}
-	if (hwnd == hwndUpDown) {
-		return OS.CallWindowProc (UpDownProc, hwnd, msg, wParam, lParam);
+		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_CHAR (int wParam, int lParam) {
-	LRESULT result = super.WM_CHAR (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  For some reason, when the
-	* widget is a single line text widget, when the
-	* user presses tab, return or escape, Windows beeps.
-	* The fix is to look for these keys and not call
-	* the window proc.
-	*/
-	switch (wParam) {
-		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
-			// FALL THROUGH		
-		case SWT.TAB:
-		case SWT.ESC: return LRESULT.ZERO;
-	}
-	return result;
+LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+	return null;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
-	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
-	if (result != null) return result;
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
-	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
-	switch (wParam) {
-		case OS.VK_UP:
-			update (pos + increment, true, false);
-			break;
-		case OS.VK_DOWN:
-			update (pos - increment, true, false);
-			break;
-		case OS.VK_PRIOR:
-			update (pos + pageIncrement, true, false);
-			break;
-		case OS.VK_NEXT:
-			update (pos - pageIncrement, true, false);
-			break;
-	}
-	return result;
+LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	OS.SetFocus (hwndText);
+	return null;
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
@@ -947,6 +935,26 @@ LRESULT WM_SIZE (int wParam, int lParam) {
     int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;    
     SetWindowPos (hwndText, 0, 0, 0, textWidth, height, flags);
     SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);              	
+	return result;
+}
+
+LRESULT wmChar (int hwnd, int wParam, int lParam) {
+	LRESULT result = super.wmChar (hwnd, wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  For some reason, when the
+	* widget is a single line text widget, when the
+	* user presses tab, return or escape, Windows beeps.
+	* The fix is to look for these keys and not call
+	* the window proc.
+	*/
+	switch (wParam) {
+		case SWT.CR:
+			postEvent (SWT.DefaultSelection);
+			// FALL THROUGH		
+		case SWT.TAB:
+		case SWT.ESC: return LRESULT.ZERO;
+	}
 	return result;
 }
 
@@ -1035,7 +1043,6 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	return null;
 }
 
-
 LRESULT wmCommandChild (int wParam, int lParam) {
 	int code = wParam >> 16;
 	switch (code) {
@@ -1053,6 +1060,32 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
+	if (result != null) return result;
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
+	switch (wParam) {
+		case OS.VK_UP:
+			update (pos + increment, true, false);
+			break;
+		case OS.VK_DOWN:
+			update (pos - increment, true, false);
+			break;
+		case OS.VK_PRIOR:
+			update (pos + pageIncrement, true, false);
+			break;
+		case OS.VK_NEXT:
+			update (pos - pageIncrement, true, false);
+			break;
+	}
+	return result;
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {

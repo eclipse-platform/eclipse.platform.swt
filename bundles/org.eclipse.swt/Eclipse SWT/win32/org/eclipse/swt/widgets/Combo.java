@@ -1733,8 +1733,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					break;
 			}
 			if (result != null) return result.value;
-			int windowProc = hwnd == hwndText ? EditProc : ListProc;
-			return OS.CallWindowProc (windowProc, hwnd, msg, wParam, lParam);
+			return callWindowProc (hwnd, msg, wParam, lParam);
 		}
 	}
 	if (msg == OS.CB_SETCURSEL) {
