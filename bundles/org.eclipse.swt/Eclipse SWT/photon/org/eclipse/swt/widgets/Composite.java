@@ -687,7 +687,6 @@ public boolean setFocus () {
 		Control child = children [i];
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
-	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
 
@@ -709,29 +708,15 @@ public void setLayout (Layout layout) {
 
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
-	if ((style & SWT.NO_FOCUS) == 0) {
-		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus && setTabItemFocus ()) return true;
-	}
+	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
+	if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+	if (takeFocus && setTabItemFocus ()) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.isTabItem () && child.setTabItemFocus ()) return true;
 	}
 	return false;
-}
-
-boolean setTabItemFocus () {
-	if ((style & SWT.NO_FOCUS) == 0) {
-		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus) {
-			if (!isShowing ()) return false;
-			if (forceFocus ()) return true;
-		}
-	}
-	return super.setTabItemFocus ();
 }
 
 /**
