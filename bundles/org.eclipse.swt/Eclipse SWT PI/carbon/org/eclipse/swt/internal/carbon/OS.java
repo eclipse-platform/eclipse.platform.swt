@@ -14,12 +14,7 @@ public class OS {
 
     static {
 		Library.loadLibrary("swt");
-		Init();
-	}
-	
-	public static final int MSBFirst= 1;
-	public static final int LSBFirst= 0;
-	
+	}	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Carbon Toolbox native API
@@ -408,6 +403,7 @@ public class OS {
 	
 	// BitMaps
 	public static native int NewBitMap(short w, short h, short rowBytes);
+	public static native int duplicateBitMap(int srcBitMap);
 	
 	public static native int getRowBytes(int bmHandle);
 	public static native int getBaseAddr(int bmHandle);
@@ -420,13 +416,14 @@ public class OS {
 			short pixelType, short pixelSize, short cmpSize, short cmpCount, short pixelFormat);
 	public static native void DisposePixMap(int pHandle);
 	
+	public static native int GetPixRowBytes(int pixmapHandle);
+
 	public static native void initBitMapData(int pixMapHandle, int dataSize, byte value);
 	public static native void setBitMapData(int pixMapHandle, byte[] data);
-	public static native void setColorTable(int pixMapHandle, int slots,
-									short[] reds, short[] greens, short[] blues);
+	public static native void setColorTable(int pixMapHandle, short[] colorSpec);
 
 	public static native int duplicatePixMap(int srcPixmap);
-	public static native int copyPixmapData(byte[] srcData, int pixmap, int length);
+	public static native int copyPixmapData(int pixmap, byte[] srcData);
 	public static native int getRGB(int pixmap, int srcPixel);
 
 	public static native void GetPixBounds(int pHandle, short[] bounds);
@@ -458,8 +455,8 @@ public class OS {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	// window class
-	public static final int kAlertWindowClass             = 1;   /* ÒI need your attention now.Ó*/
-	public static final int kMovableAlertWindowClass      = 2;   /* ÒI need your attention now, but IÕm kind enough to let you switch out of this app to do other things.Ó*/
+	public static final int kAlertWindowClass             = 1;   /* I need your attention now.*/
+	public static final int kMovableAlertWindowClass      = 2;   /* I need your attention now, but I'm kind enough to let you switch out of this app to do other things.*/
 	public static final int kModalWindowClass             = 3;   /* system modal, not draggable*/
 	public static final int kMovableModalWindowClass      = 4;   /* application modal, draggable*/
 	public static final int kFloatingWindowClass          = 5;   /* floats above all other application windows*/
@@ -906,8 +903,8 @@ public class OS {
 	
 	public static short kControlContentCIconHandle= 130;
 
-	public static final int kControlBevelButtonOwnedMenuRefTag = OSType("omrf"); /* MenuRef (control will dispose)*/
-	public static final int kControlBevelButtonCenterPopupGlyphTag = OSType("pglc"); /* Boolean: true = center, false = bottom right*/
+	public static final int kControlBevelButtonOwnedMenuRefTag = ('o'<<24) + ('m'<<16) + ('r'<<8) + 'f'; /* MenuRef (control will dispose)*/
+	public static final int kControlBevelButtonCenterPopupGlyphTag = ('p'<<24) + ('g'<<16) + ('l'<<8) + 'c'; /* Boolean: true = center, false = bottom right*/
 
 	public static native int SetBevelButtonContentInfo(int cHandle, short controlContentType, int controlContentHandle);	
 
@@ -921,17 +918,17 @@ public class OS {
 	// Data Browser
 	public static final int kDataBrowserNoItem= 0;
 	public static final int kDataBrowserDefaultPropertyFlags = 0;
-	public static final int kDataBrowserTextType= OSType("text");	/* CFStringRef */
+	public static final int kDataBrowserTextType= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';	/* CFStringRef */
 	public static final int kDataBrowserItemNoProperty= 0;	/* The anti-property (no associated data) */
 	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
 	
-	public static final int kDataBrowserDragSelect        = 1 << 0; /* Å ListMgr lNoRect */
-	public static final int kDataBrowserSelectOnlyOne     = 1 << 1; /* Å ListMgr lOnlyOne */
-	public static final int kDataBrowserResetSelection    = 1 << 2; /* Å ListMgr lNoExtend */
-	public static final int kDataBrowserCmdTogglesSelection = 1 << 3; /* Å ListMgr lUseSense */
-	public static final int kDataBrowserNoDisjointSelection = 1 << 4; /* Å ListMgr lNoDisjoint */
-	public static final int kDataBrowserAlwaysExtendSelection = 1 << 5; /* Å ListMgr lExtendDrag */
-	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6; /* Å ListMgr lNoNilHilite */
+	public static final int kDataBrowserDragSelect        = 1 << 0;
+	public static final int kDataBrowserSelectOnlyOne     = 1 << 1;
+	public static final int kDataBrowserResetSelection    = 1 << 2;
+	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
+	public static final int kDataBrowserNoDisjointSelection = 1 << 4;
+	public static final int kDataBrowserAlwaysExtendSelection = 1 << 5;
+	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
 
 	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
 	public static final int kDataBrowserListViewSelectionColumn= 1 << kDataBrowserViewSpecificFlagsOffset;
@@ -1076,8 +1073,8 @@ public class OS {
 	//public static native int TXNSetBackground(int txHandle, TXNBackground *iBackgroundInfo);
 
 	// TabFolder
-	public static final int kControlTabInfoTag= OSType("tabi");	/* ControlTabInfoRec*/
-	public static final int kControlTabContentRectTag= OSType("rect");	/* Rect*/
+	public static final int kControlTabInfoTag= ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';	/* ControlTabInfoRec*/
+	public static final int kControlTabContentRectTag= ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';	/* Rect*/
 
 	public static native int CreateTabFolderControl(int wHandle, int[] cHandle);
 	public static native int setTabText(int cHandle, int index, int sHandle);
@@ -1181,7 +1178,7 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public static native void Init();
-	public static native void ExitToShell();
+	//public static native void ExitToShell();
     public static native void InitCursor();
 	public static native short HiWord(int doubleWord);
 	public static native short LoWord(int doubleWord);
@@ -1191,24 +1188,5 @@ public class OS {
 	public static native int GetCaretTime();
 	public static native int GetMainDevice();
 	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
-	
-	/*
-	// desktop
-	//short kOnSystemDisk
-	//public static native int GetIconRef(SInt16 vRefNum, OSType creator, OSType iconType, IconRef *theIconRef);
-	//public static native int ReleaseIconRef(IconRef theIconRef);
-OSErr GetIconRefFromFile (
-    const FSSpec *theFile, 
-    IconRef *theIconRef, 
-    SInt16 *theLabel
-);
-	*/
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// some helpers
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-			
-	public static int OSType(String s) {
-		return ((s.charAt(0) & 0xff) << 24) | ((s.charAt(1) & 0xff) << 16) | ((s.charAt(2) & 0xff) << 8) | (s.charAt(3) & 0xff);
-	}
+	public static native short HasDepth(int gdHandle, short depth, short whichFlags, short flags);
 }
