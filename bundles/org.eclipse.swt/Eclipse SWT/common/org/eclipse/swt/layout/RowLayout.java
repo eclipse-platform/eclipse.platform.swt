@@ -118,6 +118,9 @@ public final class RowLayout extends Layout {
 	 */
 	public int marginBottom = 3;
 
+/**
+ * Constructs a new instance of this class.
+ */
 public RowLayout () {
 }
 

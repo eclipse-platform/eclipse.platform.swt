@@ -48,9 +48,19 @@ public final class FillLayout extends Layout {
 	 */
 	public int type = SWT.HORIZONTAL;
 	
+/**
+ * Constructs a new instance of this class.
+ */
 public FillLayout () {
 }
 
+/**
+ * Constructs a new instance of this class given the type.
+ *
+ * @param type the type of fill layout
+ * 
+ * @since 2.0
+ */
 public FillLayout (int type) {
 	this.type = type;
 }
