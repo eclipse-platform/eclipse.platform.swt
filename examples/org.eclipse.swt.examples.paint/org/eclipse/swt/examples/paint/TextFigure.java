@@ -48,6 +48,7 @@ public class TextFigure extends Figure {
 	}
 	public void erasePreview(GC gc, Point offset, Object rememberedData) {
 		Image backingStore = (Image) rememberedData;
+		gc.setFont(font);
 		gc.setXORMode(false);
 		gc.drawImage(backingStore, x + offset.x, y + offset.y);
 		gc.setXORMode(true);

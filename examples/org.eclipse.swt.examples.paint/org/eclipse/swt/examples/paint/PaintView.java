@@ -169,7 +169,8 @@ public class PaintView extends ViewPart {
 		// this can be very tedious.
 		
 		// paint canvas
-		final Canvas paintCanvas = new Canvas(displayArea, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		final Canvas paintCanvas = new Canvas(displayArea, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL |
+			SWT.NO_REDRAW_RESIZE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		paintCanvas.setLayoutData(gridData);
 		paintCanvas.setBackground(paintColorWhite);
