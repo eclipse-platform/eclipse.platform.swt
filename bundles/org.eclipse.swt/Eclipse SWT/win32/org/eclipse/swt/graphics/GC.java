@@ -688,7 +688,25 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	/* Scale the foreground pixels with alpha */
 	if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
-	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+	/* 
+	* Bug in WinCE.  StretchBlt does not correctly stretch when the
+	* source and destination HDCs are the same.  The workaround is to
+	* stretch to a temporary HDC and blit back into the original HDC.
+	* Note that StretchBlt correctly compresses the image when the
+	* source and destination HDCs are the same.
+	*/
+	if (OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) {
+		int tempHdc = OS.CreateCompatibleDC(handle);
+		int tempDib = createDIB(destWidth, destHeight);
+		int oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
+		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
+		OS.SelectObject(tempHdc, oldTempBitmap);
+		OS.DeleteObject(tempDib);
+		OS.DeleteDC(tempHdc);
+	} else {
+		OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+	}
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 	
 	/* Compose the pixels */
