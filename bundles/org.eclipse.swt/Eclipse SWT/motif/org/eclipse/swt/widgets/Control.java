@@ -481,6 +481,13 @@ char findMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
+void fixFocus () {
+	Shell shell = getShell ();
+	Control control = this;
+	while ((control = control.parent) != null) {
+		if (control.setFocus () || control == shell) return;
+	}
+}
 int fontHandle () {
 	return handle;
 }
@@ -1038,6 +1045,14 @@ public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
+boolean isFocusAncestor () {
+	Display display = getDisplay ();
+	Control control = display.getFocusControl ();
+	while (control != null && control != this) {
+		control = control.parent;
+	}
+	return control == this;
+}
 /**
  * Returns <code>true</code> if the receiver has the user-interface
  * focus, and <code>false</code> otherwise.
@@ -1143,36 +1158,14 @@ void manageChildren () {
 	* NOTE: This code currently does not work when a
 	* sibling will take focus.
 	*/
-	boolean fixFocus = false;
 	int [] argList1 = {OS.XmNtraversalOn, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	if (argList1 [1] != 0) {
-		int xDisplay = OS.XtDisplay (handle);
-		if (xDisplay != 0) {
-			int [] buffer1 = new int [1], buffer2 = new int [1];
-			OS.XGetInputFocus (xDisplay, buffer1, buffer2);
-			int xWindow = buffer1 [0];
-			if (xWindow != 0) {
-				int focusHandle = OS.XtWindowToWidget (xDisplay, xWindow);
-				if (focusHandle != 0) {
-					focusHandle = OS.XmGetFocusWidget (focusHandle);
-					if (focusHandle != 0) {
-						int tempHandle = handle;
-						do {
-							if (tempHandle == focusHandle) break;
-						} while ((tempHandle = OS.XtParent (tempHandle)) != 0);
-						fixFocus = tempHandle != 0;
-					}
-				}
-			}
-		}
-	}	
-	if (fixFocus) {
 		int [] argList2 = {OS.XmNtraversalOn, 0};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
 	OS.XtManageChild (handle);
-	if (fixFocus) {
+	if (argList1 [1] != 0) {
 		OS.XtSetValues (handle, argList1, argList1.length / 2);
 	}
 	Display display = getDisplay ();
@@ -2421,7 +2414,10 @@ public void setVisible (boolean visible) {
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	if ((argList [1] != 0) == visible) return;
-	OS.XtSetMappedWhenManaged (topHandle, visible);
+	boolean fixFocus = false;
+	if (!visible) fixFocus = isFocusAncestor ();	
+	OS.XtSetMappedWhenManaged (topHandle, visible);	
+	if (fixFocus) fixFocus ();	
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 void setZOrder (Control control, boolean above) {
