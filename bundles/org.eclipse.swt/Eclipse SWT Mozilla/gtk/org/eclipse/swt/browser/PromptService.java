@@ -135,7 +135,7 @@ Browser getBrowser(int aDOMWindow) {
 	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
 	* and not directly into the parent Composite handle.
 	*/
-	int handle = OS.gtk_widget_get_parent(result[0]);
+	int /*long*/ handle = OS.gtk_widget_get_parent(result[0]);
 	Display display = Display.getCurrent();
 	return (Browser)display.findWidget(handle); 
 }

@@ -33,7 +33,7 @@ import org.eclipse.swt.layout.*;
  * @since 3.0
  */
 public class Browser extends Composite {
-	int boxHandle;
+	int /*long*/ boxHandle;
 	nsIWebBrowser webBrowser;
 
 	/* Interfaces for this Mozilla embedding notification */
@@ -274,7 +274,7 @@ public Browser(Composite parent, int style) {
 	* causing the child of the GtkFixed handle to be resized to 1.
 	* The workaround is to embed Mozilla into a GtkHBox handle.
 	*/
-	boxHandle = OS.gtk_hbox_new (false, (int)/*64*/0);
+	boxHandle = OS.gtk_hbox_new (false, 0);
 	OS.gtk_container_add (handle, boxHandle);
 	OS.gtk_widget_show (boxHandle);
 	/*

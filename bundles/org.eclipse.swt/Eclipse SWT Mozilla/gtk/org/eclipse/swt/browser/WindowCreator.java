@@ -118,7 +118,7 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
 	* and not directly into the parent Composite handle.
 	*/
-	int handle = OS.gtk_widget_get_parent(aParentNativeWindow[0]);
+	int /*long*/ handle = OS.gtk_widget_get_parent(aParentNativeWindow[0]);
 	Browser src = (Browser)display.findWidget(handle);
 	final Browser browser;
 	boolean doit = false;
