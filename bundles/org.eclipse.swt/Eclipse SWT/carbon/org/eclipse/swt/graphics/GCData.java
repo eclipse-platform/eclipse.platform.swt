@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are descriptions of GCs in terms

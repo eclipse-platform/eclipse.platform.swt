@@ -7,7 +7,6 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 
 /**

@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
