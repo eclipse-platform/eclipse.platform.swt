@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.win32.TVITEM;;
 class TreeDragUnderEffect extends DragUnderEffect {
 	private Tree tree;
 	private int currentEffect = DND.FEEDBACK_NONE;
+	private TreeItem[] selection = new TreeItem[0];
 	
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
@@ -35,9 +36,24 @@ void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
+	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
+		selection = tree.getSelection();
+		tree.deselectAll();
+	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
+	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
+		for (int i = 0; i < selection.length; i++) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_STATE;
+			tvItem.state = OS.TVIS_SELECTED;
+			tvItem.stateMask = OS.TVIS_SELECTED;
+			tvItem.hItem = selection[i].handle;
+			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+		}
+		selection = new TreeItem[0];
+	}
 	currentEffect = effect;
 }
 private int checkEffect(int effect) {
@@ -103,20 +119,8 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		setDropSelection(null);
 	}
 }
-private void setDropSelection(TreeItem item) {	
+private void setDropSelection (TreeItem item) {	
 	int hItem = (item != null) ? item.handle : 0;
-	if (item != null) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.stateMask = OS.TVIS_SELECTED;
-		tvItem.hItem = item.handle;
-		OS.SendMessage(tree.handle, OS.TVM_GETITEM, 0, tvItem);
-		// don't set drop highlight on selected items because this will
-		// clear the selection
-		if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-			hItem = 0;
-		}
-	}
 	OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_DROPHILITED, hItem);
 }
 private void setInsertMark(TreeItem item, boolean before) {

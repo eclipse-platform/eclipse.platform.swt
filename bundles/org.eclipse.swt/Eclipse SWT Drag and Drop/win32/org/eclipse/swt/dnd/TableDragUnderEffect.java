@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.win32.OS;
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
 	int currentEffect = DND.FEEDBACK_NONE;
+	private int[] selection = new int[0];
 	private TableItem scrollItem;
 	private long scrollBeginTime;
 	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
@@ -29,8 +30,16 @@ TableDragUnderEffect(Table table) {
 void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
+	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
+		selection = table.getSelectionIndices();
+		table.deselectAll();
+	}
 	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
+	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
+		table.select(selection);
+		selection = new int[0];
+	}
 	currentEffect = effect;
 }
 private TableItem findItem(int x, int y){

@@ -471,10 +471,38 @@ public void notifyListeners (int eventType, Event event) {
 	Point coordinates = new Point(event.x, event.y);
 	coordinates = control.toControl(coordinates);
 	if (this.control instanceof Tree) {
-		event.item = ((Tree)control).getItem(coordinates);
+		Tree tree = (Tree)control;
+		event.item = tree.getItem(coordinates);
+		if (event.item == null) {
+			Rectangle area = tree.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the tree.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					event.item = tree.getItem(pt);
+					if (event.item != null) {
+						break;
+					}
+				}
+			}
+		}
 	}
 	if (this.control instanceof Table) {
-		event.item = ((Table)control).getItem(coordinates);
+		Table table = (Table)control;
+		event.item = table.getItem(coordinates);
+		if (event.item == null) {
+			Rectangle area = table.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the tree.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					event.item = table.getItem(pt);
+					if (event.item != null) {
+						break;
+					}
+				}
+			}
+		}
 	}
 	super.notifyListeners(eventType, event);
 }
