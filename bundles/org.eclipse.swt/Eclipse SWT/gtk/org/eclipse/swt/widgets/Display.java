@@ -538,7 +538,7 @@ Control findControl(int h) {
 public Point getCursorLocation () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, 0);
+	OS.gdk_window_get_pointer (0, x, y, null);
 	return new Point (x [0], y [0]);
 }
 
@@ -1216,6 +1216,9 @@ boolean runDeferredEvents () {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
 				widget.notifyListeners (event.type, event);
+				if (event.type == SWT.MouseMove && (widget.style & SWT.NO_MERGE_MOUSE) == 0) {
+					OS.gdk_window_get_pointer (0, null, null, null);
+				}
 			}
 		}
 

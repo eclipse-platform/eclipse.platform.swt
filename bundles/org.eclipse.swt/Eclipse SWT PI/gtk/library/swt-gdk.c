@@ -950,18 +950,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1po
 	jint rc;
 	jint *x1 = NULL;
 	jint *y1 = NULL;
+	jint *mask1 = NULL;
 	if (x) {
 		x1 = (*env)->GetIntArrayElements(env, x, NULL);
 	}
 	if (y) {
 		y1 = (*env)->GetIntArrayElements(env, y, NULL);
 	}
-	rc = (jint)gdk_window_get_pointer((GdkWindow*)window, (gint*)x1, (gint*)y1, (GdkModifierType*)mask);
+	if (mask) {
+		mask1 = (*env)->GetIntArrayElements(env, mask, NULL);
+	}
+	rc = (jint)gdk_window_get_pointer((GdkWindow*)window, (gint*)x1, (gint*)y1, (GdkModifierType*)mask1);
 	if (x) {
 		(*env)->ReleaseIntArrayElements(env, x, x1, 0);
 	}
 	if (y) {
 		(*env)->ReleaseIntArrayElements(env, y, y1, 0);
+	}
+	if (mask) {
+		(*env)->ReleaseIntArrayElements(env, mask, mask1, 0);
 	}
 	return rc;
 }

@@ -626,17 +626,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1new
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
- * Method:	gtk_notebook_append_page
+ * Method:	gtk_notebook_insert_page
  * Signature:	
  */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1append_1page
-  (JNIEnv *env, jclass that, jint notebook, jint child, jint tab_label)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1insert_1page
+  (JNIEnv *env, jclass that, jint notebook, jint child, jint tab_label, jint position)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "gtk_notebook_append_page");
+	fprintf(stderr, "gtk_notebook_insertpage");
 #endif
 
-	gtk_notebook_append_page((GtkNotebook*)notebook, (GtkWidget*)child, (GtkWidget*)tab_label);
+	gtk_notebook_insert_page((GtkNotebook*)notebook, (GtkWidget*)child, (GtkWidget*)tab_label, (gint) position);
 }
 
 /*
@@ -1766,3 +1766,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1
 	return rc;
 }
 
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	gtk_notebook_insert_page
+ * Signature:	
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1scrollable
+  (JNIEnv *env, jclass that, jint notebook, jboolean scrollable)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_notebook_set_scrollable");
+#endif
+
+	gtk_notebook_set_scrollable((GtkNotebook*)notebook, (gboolean) scrollable);
+}

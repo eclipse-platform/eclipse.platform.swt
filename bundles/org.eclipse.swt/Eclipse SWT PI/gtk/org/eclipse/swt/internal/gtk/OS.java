@@ -522,7 +522,7 @@ public static final native int  gdk_drawable_get_depth(int drawable);
 public static final native void gdk_window_raise(int window);
 public static final native void gdk_window_lower(int window);
 public static final native int gdk_window_get_origin(int window, int[] x, int[] y);
-public static final native int gdk_window_get_pointer(int window, int[] x, int[] y, int mask);
+public static final native int gdk_window_get_pointer(int window, int[] x, int[] y, int[] mask);
 public static final native void gdk_window_set_cursor(int window, int cursor);
 public static final native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
 public static final native void gdk_window_set_user_data(int window, int user_data);
@@ -672,7 +672,7 @@ public static final native void gtk_menu_insert(int menu, int child, int positio
 public static final native void gtk_menu_item_set_submenu(int menu_item, int submenu);
 public static final native void gtk_menu_item_remove_submenu(int menu_item);
 public static final native int gtk_notebook_new();
-public static final native void gtk_notebook_append_page(int notebook, int child, int tab_label);
+public static final native void gtk_notebook_insert_page(int notebook, int child, int tab_label, int position);
 public static final native int gtk_notebook_get_current_page(int notebook);
 public static final native void gtk_object_ref(int object);
 public static final native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
@@ -955,4 +955,7 @@ public static final native int gdk_drawable_get_visible_region (int drawable);
 
 public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
 public static final native void gdk_window_invalidate_region(int window, int region, boolean invalidate_children);
+public static final native void  gtk_notebook_set_scrollable(int notebook, boolean scrollable);
+
+
 }

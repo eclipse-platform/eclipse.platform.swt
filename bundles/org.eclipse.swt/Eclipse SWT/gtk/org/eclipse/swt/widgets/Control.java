@@ -85,44 +85,15 @@ int fontHandle () {
 	return handle;
 }
 
-/**
- * Connect the appropriate signal handlers.
- * 
- * At a minimum, we must connect
- * <ul>
- * <li>expose_event
- * <li>button_press_event / button_release_event
- * <li>motion_notify_event
- * <li>enter_notify_event / leave_notify_event
- * <li>key_press_event / key_release_event
- * <li>focus_in_event / focus_out_event
- * </ul>
- * 
- * The possible mask bits are:
- * <ul>
- * GDK_EXPOSURE_MASK         	|
- * GDK_POINTER_MOTION_MASK    	|
- * GDK_POINTER_MOTION_HINT_MASK	|
- * GDK_ENTER_NOTIFY_MASK        |
- * GDK_LEAVE_NOTIFY_MASK     	|
- * GDK_BUTTON_PRESS_MASK
- * GDK_BUTTON_RELEASE_MASK
- * GDK_KEY_PRESS_MASK
- * GDK_KEY_RELEASE_MASK
- * GDK_FOCUS_CHANGE_MASK
- * </ul>
- */
 void hookEvents () {
 	int eventHandle = eventHandle ();
 	int mask =
-		OS.GDK_EXPOSURE_MASK | 
-		OS.GDK_POINTER_MOTION_MASK | 
+		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
 		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (eventHandle, mask);
-
 	signal_connect (eventHandle, "button_press_event", SWT.MouseDown, 3);
 	signal_connect (eventHandle, "button_release_event", SWT.MouseUp, 3);
 	signal_connect (eventHandle, "key_press_event", SWT.KeyDown, 3);
@@ -133,7 +104,6 @@ void hookEvents () {
 	signal_connect_after (eventHandle, "key_press_event", -SWT.KeyDown, 3);
 	signal_connect_after (eventHandle, "key_release_event", -SWT.KeyUp, 3);
 	signal_connect_after (eventHandle, "motion_notify_event", -SWT.MouseMove, 3);
-	
 	signal_connect_after (eventHandle, "enter_notify_event", SWT.MouseEnter, 3);
 	signal_connect_after (eventHandle, "leave_notify_event", SWT.MouseExit, 3);
 	signal_connect_after (eventHandle, "focus_in_event", SWT.FocusIn, 3);
@@ -2234,6 +2204,7 @@ boolean traverseMnemonic (Event event) {
 public void update () {
 	checkWidget ();
 	//NOT DONE - should only dispatch paint events
+//	OS.gdk_window_process_updates (window, all);
 	OS.gdk_flush ();
 	while ((OS.gtk_events_pending()) != 0) {
 		OS.gtk_main_iteration ();
