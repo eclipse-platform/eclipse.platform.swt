@@ -267,8 +267,8 @@ public void test_setTextLjava_lang_String() {
 	menuItem.setText("ABCDEFG");
 	menuItem.setAccelerator(SWT.MOD1 + 'A');
 	assertTrue(menuItem.getText().startsWith("ABCDEFG"));
+	menuItem.setAccelerator(0);
 	menuItem.setText("AB&CDEFG");
-	String text = menuItem.getText();
 	assertTrue(menuItem.getText().equals("AB&CDEFG"));
 }
 
