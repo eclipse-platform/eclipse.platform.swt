@@ -123,6 +123,7 @@ private static int checkStyle (int style) {
 	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE;
 	style = style & mask;
 	style |= SWT.NO_FOCUS;
+	if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) style |= SWT.LEFT;
 	//TEMPORARY CODE
 	/*
 	 * The default background on carbon and some GTK themes is not a solid color 
