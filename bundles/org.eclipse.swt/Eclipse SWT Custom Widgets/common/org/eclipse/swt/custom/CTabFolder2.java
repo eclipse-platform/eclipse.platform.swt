@@ -2156,6 +2156,7 @@ void onResize() {
 		return;
 	}
 	if (updateItems()) redraw();
+	showSelection();
 	
 	Point size = getSize();
 	if (oldSize == null) {
