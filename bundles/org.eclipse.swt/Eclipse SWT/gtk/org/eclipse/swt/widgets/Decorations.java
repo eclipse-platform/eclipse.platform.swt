@@ -320,12 +320,12 @@ void releaseWidget () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
+	int buttonHandle= 0;
 	if (button != null) {
-		if (button.isDisposed()) return;
-		OS.gtk_window_set_default(topHandle(), button.handle);
-		return;
+		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		buttonHandle = button.handle;
 	}
-	else OS.gtk_window_set_default(topHandle(), 0);
+	OS.gtk_window_set_default(topHandle(), buttonHandle);
 }
 
 /**
