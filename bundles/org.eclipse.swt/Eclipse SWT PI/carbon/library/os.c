@@ -7846,6 +7846,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ReshapeCustomWindow)
 }
 #endif
 
+#ifndef NO_RestoreApplicationDockTileImage
+JNIEXPORT jint JNICALL OS_NATIVE(RestoreApplicationDockTileImage)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, RestoreApplicationDockTileImage_FUNC);
+	rc = (jint)RestoreApplicationDockTileImage();
+	OS_NATIVE_EXIT(env, that, RestoreApplicationDockTileImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_RetainEvent
 JNIEXPORT jint JNICALL OS_NATIVE(RetainEvent)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -7979,6 +7991,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendEventToEventTarget)
 	OS_NATIVE_ENTER(env, that, SendEventToEventTarget_FUNC);
 	rc = (jint)SendEventToEventTarget((EventRef)arg0, (EventTargetRef)arg1);
 	OS_NATIVE_EXIT(env, that, SendEventToEventTarget_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetApplicationDockTileImage
+JNIEXPORT jint JNICALL OS_NATIVE(SetApplicationDockTileImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, SetApplicationDockTileImage_FUNC);
+	rc = (jint)SetApplicationDockTileImage((CGImageRef)arg0);
+	OS_NATIVE_EXIT(env, that, SetApplicationDockTileImage_FUNC);
 	return rc;
 }
 #endif

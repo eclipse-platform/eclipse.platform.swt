@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 752;
-int OS_nativeFunctionCallCount[752];
+int OS_nativeFunctionCount = 754;
+int OS_nativeFunctionCallCount[754];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -586,6 +586,7 @@ char * OS_nativeFunctionNames[] = {
 	"RemoveTrackingHandler", 
 	"RepositionWindow", 
 	"ReshapeCustomWindow", 
+	"RestoreApplicationDockTileImage", 
 	"RetainEvent", 
 	"RetainMenu", 
 	"RetainWindow", 
@@ -597,6 +598,7 @@ char * OS_nativeFunctionNames[] = {
 	"SelectWindow", 
 	"SendBehind", 
 	"SendEventToEventTarget", 
+	"SetApplicationDockTileImage", 
 	"SetBevelButtonContentInfo", 
 	"SetClip", 
 	"SetControl32BitMaximum", 

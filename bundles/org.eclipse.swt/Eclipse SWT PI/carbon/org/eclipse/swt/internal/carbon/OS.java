@@ -1243,6 +1243,7 @@ public static final native int RemoveReceiveHandler(int receiveHandler,int theWi
 public static final native int RemoveTrackingHandler(int trackingHandler,int theWindow);
 public static final native int RepositionWindow(int window, int parentWindow, int method);
 public static final native int ReshapeCustomWindow(int window);
+public static final native int RestoreApplicationDockTileImage();
 public static final native int RetainEvent(int inEvent);
 public static final native int RetainMenu(int mHandle);
 public static final native int RetainWindow(int inWindow); 
@@ -1254,6 +1255,7 @@ public static final native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native void SelectWindow(int wHandle);
 public static final native void SendBehind(int window, int behindWindow);
 public static final native int SendEventToEventTarget(int theEvent, int theTarget);
+public static final native int SetApplicationDockTileImage(int inImage);
 public static final native int SetBevelButtonContentInfo(int inButton, ControlButtonContentInfo inContent);
 public static final native void SetClip(int rgnHandle);
 public static final native void SetControl32BitMaximum(int cHandle, int maximum);
