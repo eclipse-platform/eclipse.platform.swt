@@ -407,6 +407,7 @@ public static final native boolean gtk_clipboard_set_with_data(int clipboard, in
 public static final native int gtk_clipboard_wait_for_contents(int clipboard, int target);
 public static final native int gtk_clist_append(int clist, int[] text);
 public static final native void gtk_clist_clear(int clist);
+public static final native int gtk_clist_get_column_widget (int clist, int column);
 public static final native void gtk_clist_column_titles_hide(int clist);
 public static final native void gtk_clist_column_titles_passive(int clist);
 public static final native void gtk_clist_column_titles_show(int clist);

@@ -1564,6 +1564,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1freeze
 	gtk_clist_freeze((GtkCList *)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1get_1column_1widget
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1clist_1get_1column_1widget\n")
+
+	return (jint)gtk_clist_get_column_widget((GtkCList *)arg0, arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1get_1pixtext
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jbyteArray arg4, jintArray arg5, jintArray arg6)
 {
