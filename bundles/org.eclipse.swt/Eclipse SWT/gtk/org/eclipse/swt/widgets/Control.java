@@ -161,6 +161,30 @@ Control computeTabGroup () {
 	return parent.computeTabGroup ();
 }
 
+Control[] computeTabList() {
+	if (isTabGroup()) {
+		if (getVisible() && getEnabled()) {
+			return new Control[] {this};
+		}
+	}
+	return new Control[0];
+}
+
+Control computeTabRoot () {
+	Control[] tabList = parent._getTabList();
+	if (tabList != null) {
+		int index = 0;
+		while (index < tabList.length) {
+			if (tabList [index] == this) break;
+			index++;
+		}
+		if (index == tabList.length) {
+			if (isTabGroup ()) return this;
+		}
+	}
+	return parent.computeTabRoot ();
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	setInitialSize ();
@@ -1468,7 +1492,22 @@ public boolean isReparentable () {
 	checkWidget();
 	return false;
 }
-
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 1 || size.y == 1) {
+			return false;
+		}
+		control = control.parent;
+	}
+	return true;
+}
 boolean isTabGroup () {
 	int code = traversalCode (0, 0);
 	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
@@ -2026,6 +2065,15 @@ public boolean setParent (Composite parent) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 }
+
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return setFocus ();
+}
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
@@ -2208,7 +2256,31 @@ boolean traverseEscape () {
 }
 boolean traverseGroup (boolean next) {
 	// FIXME - Needs to be implemented
-	return true;
+	Control root = computeTabRoot();
+	Control group = computeTabGroup();
+	Control[] list = root.computeTabList();
+	int length = list.length;
+	int index = 0;
+	while (index < length) {
+		if (list [index] == group) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = ((index + offset + length) % length)) != start) {
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
+	}
+	if (group.isDisposed ()) return false;
+	return group.setTabGroupFocus ();
 }
 boolean traverseItem (boolean next) {
 	// FIXME - Needs to be implemented

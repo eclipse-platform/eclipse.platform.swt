@@ -149,6 +149,10 @@ Control computeTabGroup () {
 	return this;
 }
 
+Control computeTabRoot () {
+	return this;
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";

@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	int radioHandle;
 	Layout layout;
+	Control[] tabList;
 
 Composite () {
 	/* Do nothing */
@@ -93,6 +94,24 @@ Control [] _getChildren () {
 	return newChildren;
 }
 
+Control [] _getTabList () {
+	if (tabList == null) return tabList;
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) count++;
+	}
+	if (count == tabList.length) return tabList;
+	Control [] newList = new Control [count];
+	int index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) {
+			newList [index++] = tabList [i];
+		}
+	}
+	tabList = newList;
+	return tabList;
+}
+
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
@@ -115,6 +134,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	return new Point (trim.width, trim.height);
+}
+
+Control [] computeTabList () {
+	Control result [] = super.computeTabList ();
+	if (result.length == 0) return result;
+	Control [] list = tabList != null ? _getTabList () : _getChildren ();
+	for (int i=0; i<list.length; i++) {
+		Control child = list [i];
+		Control [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Control [] newResult = new Control [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	return result;
 }
 
 void createHandle (int index) {

@@ -186,6 +186,11 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+boolean isTabGroup() {
+	if ((state&CANVAS) != 0) return true;
+	return super.isTabGroup();
+}
+
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
