@@ -64,7 +64,7 @@ public abstract class Widget {
 	static final int DEFAULT_HEIGHT	= 64;
 
 	/* Check and initialize the Common Controls DLL */
-	static final int MAJOR = 4, MINOR = 71;
+	static final int MAJOR = 5, MINOR = 80;
 	static {
 		if (!OS.IsWinCE) {
 			if (OS.COMCTL32_VERSION < OS.VERSION (MAJOR, MINOR)) {
