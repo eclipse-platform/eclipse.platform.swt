@@ -1895,6 +1895,21 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetWindowAttr
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XGrabKeyboard
+ * Signature: (IIIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGrabKeyboard
+  (JNIEnv *env, jclass that, jint display, jint grabWindow, jint ownerEvents, jint PointerMode,
+        jint KeyboardMode, jint time)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XGrabKeyboard\n");
+#endif
+    return (jint) XGrabKeyboard((Display *)display, grabWindow, ownerEvents, PointerMode, KeyboardMode, time);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XGrabPointer
  * Signature: (IIIIIIIII)I
  */
@@ -2592,6 +2607,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUndefineCursor
 	fprintf(stderr, "XUndefineCursor\n");
 #endif
 	XUndefineCursor((Display *)display, window);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XUngrabKeyboard
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XUngrabKeyboard
+  (JNIEnv *env, jclass that, jint display, jint time)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XUngrabKeyboard\n");
+#endif
+    return (jint) XUngrabKeyboard((Display *)display, time);
 }
 
 /*
