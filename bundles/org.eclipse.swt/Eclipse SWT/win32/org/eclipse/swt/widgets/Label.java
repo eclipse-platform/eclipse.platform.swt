@@ -119,7 +119,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		int oldFont = OS.SelectObject (hDC, newFont);
 		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT;
+		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
 		if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
 			flags |= OS.DT_WORDBREAK;
 			rect.right = wHint;
