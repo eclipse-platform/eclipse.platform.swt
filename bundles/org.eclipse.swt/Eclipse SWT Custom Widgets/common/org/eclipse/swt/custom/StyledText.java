@@ -97,6 +97,7 @@ public class StyledText extends Canvas {
 	StyledTextContent logicalContent;	// native content (default or user specified)
 	StyledTextContent content;			// line wrapping content, same as logicalContent if word wrap is off
 	DisplayRenderer renderer;
+	Listener listener;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
 	LineCache lineCache;
@@ -5058,51 +5059,30 @@ void installListeners() {
 	ScrollBar verticalBar = getVerticalBar();
 	ScrollBar horizontalBar = getHorizontalBar();
 	
-	addListener(SWT.Dispose, new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event event) {
-			handleDispose();
-		}
-	});
-	addListener(SWT.KeyDown, new Listener() {
-		public void handleEvent(Event event) {
-			handleKeyDown(event);
-		}
-	});
-	addListener(SWT.MouseDown, new Listener() {
-		public void handleEvent(Event event) {
-			handleMouseDown(event);
-		}
-	});
-	addListener(SWT.MouseUp, new Listener() {
-		public void handleEvent(Event event) {
-			handleMouseUp(event);
-		}
-	});
-	addListener(SWT.MouseDoubleClick, new Listener() {
-		public void handleEvent(Event event) {
-			handleMouseDoubleClick(event);
-		}
-	});
-	addListener(SWT.MouseMove, new Listener() {
-		public void handleEvent(Event event) {
-			handleMouseMove(event);
-		}
-	});
-	addListener(SWT.Paint, new Listener() {
-		public void handleEvent(Event event) {
-			handlePaint(event);
-		}
-	});
-	addListener(SWT.Resize, new Listener() {
-		public void handleEvent(Event event) {
-			handleResize(event);
-		}
-	});
-	addListener(SWT.Traverse, new Listener() {
-		public void handleEvent(Event event) {
-			handleTraverse(event);
-		}
-	});
+			switch (event.type) {
+				case SWT.Dispose: handleDispose(event); break;
+				case SWT.KeyDown: handleKeyDown(event); break;
+				case SWT.MouseDown: handleMouseDown(event); break;
+				case SWT.MouseUp: handleMouseUp(event); break;
+				case SWT.MouseDoubleClick: handleMouseDoubleClick(event); break;
+				case SWT.MouseMove: handleMouseMove(event); break;
+				case SWT.Paint: handlePaint(event); break;
+				case SWT.Resize: handleResize(event); break;
+				case SWT.Traverse: handleTraverse(event); break;
+			}
+		}		
+	};
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.KeyDown, listener);
+	addListener(SWT.MouseDown, listener);
+	addListener(SWT.MouseUp, listener);
+	addListener(SWT.MouseDoubleClick, listener);
+	addListener(SWT.MouseMove, listener);
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Resize, listener);
+	addListener(SWT.Traverse, listener);
 	if (verticalBar != null) {
 		verticalBar.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -5214,49 +5194,49 @@ String getRtf(){
 /** 
  * Frees resources.
  */
-void handleDispose() {
-	getDisplay().asyncExec(new Runnable() {
-		public void run() {
-			clipboard.dispose();
-			ibeamCursor.dispose();
-			if (renderer != null) {
-				renderer.dispose();
-				renderer = null;
-			}
-			if (content != null) {
-				content.removeTextChangeListener(textChangeListener);
-				content = null;
-			}	
-			if (leftCaretBitmap != null) {
-				leftCaretBitmap.dispose();
-				leftCaretBitmap = null;
-			}
-			if (rightCaretBitmap != null) {
-				rightCaretBitmap.dispose();
-				rightCaretBitmap = null;
-			}
-			if (defaultLineStyler != null) {
-				defaultLineStyler.release();
-				defaultLineStyler = null;
-			}
-			if (isBidi()) {
-				StyledTextBidi.removeLanguageListener(StyledText.this);
-			}
-			selectionBackground = null;
-			selectionForeground = null;
-			logicalContent = null;
-			textChangeListener = null;
-			lineCache = null;
-			ibeamCursor = null;
-			selection = null;
-			doubleClickSelection = null;
-			keyActionMap = null;
-			background = null;
-			foreground = null;
-			clipboard = null;
-			caretPalette = null;
-		}
-	});
+void handleDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
+	clipboard.dispose();
+	ibeamCursor.dispose();
+	if (renderer != null) {
+		renderer.dispose();
+		renderer = null;
+	}
+	if (content != null) {
+		content.removeTextChangeListener(textChangeListener);
+		content = null;
+	}	
+	if (leftCaretBitmap != null) {
+		leftCaretBitmap.dispose();
+		leftCaretBitmap = null;
+	}
+	if (rightCaretBitmap != null) {
+		rightCaretBitmap.dispose();
+		rightCaretBitmap = null;
+	}
+	if (defaultLineStyler != null) {
+		defaultLineStyler.release();
+		defaultLineStyler = null;
+	}
+	if (isBidi()) {
+		StyledTextBidi.removeLanguageListener(StyledText.this);
+	}
+	selectionBackground = null;
+	selectionForeground = null;
+	logicalContent = null;
+	textChangeListener = null;
+	lineCache = null;
+	ibeamCursor = null;
+	selection = null;
+	doubleClickSelection = null;
+	keyActionMap = null;
+	background = null;
+	foreground = null;
+	clipboard = null;
+	caretPalette = null;
 }
 /** 
  * Scrolls the widget horizontally.
