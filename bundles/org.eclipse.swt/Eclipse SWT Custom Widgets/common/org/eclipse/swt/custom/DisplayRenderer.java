@@ -226,6 +226,10 @@ protected  int getStyledTextWidth(String text, int textStartOffset, StyleRange[]
 		if (styleSegmentStart + style.length < 0) {
 			continue;
 		}
+		if (textIndex > 0 && styleSegmentStart < textIndex) {
+			/* overlapping style line being measured, which is not valid, ignore style */
+			continue;
+		}
 		if (styleSegmentStart >= textLength) {
 			break;
 		}
