@@ -339,17 +339,17 @@ public boolean open () {
 	*/
 	int displayWidth = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 	int displayHeight = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-	int hwndTransparent = OS.CreateWindowEx (
-		OS.WS_EX_TRANSPARENT,
-		display.windowClass,
-		null,
-		OS.WS_POPUP | OS.WS_VISIBLE,
-		0,0,
-		displayWidth, displayHeight,
-		0,
-		0,
-		OS.GetModuleHandle (null),
-		null);
+//	int hwndTransparent = OS.CreateWindowEx (
+//		OS.WS_EX_TRANSPARENT,
+//		display.windowClass,
+//		null,
+//		OS.WS_POPUP | OS.WS_VISIBLE,
+//		0,0,
+//		displayWidth, displayHeight,
+//		0,
+//		0,
+//		OS.GetModuleHandle (null),
+//		null);
 	drawRectangles (rectangles);
 	Point cursorPos;
 	if ((style & SWT.MENU) != 0) {
@@ -467,7 +467,7 @@ public boolean open () {
 		OS.DispatchMessage (msg);
 	}
 	drawRectangles (rectangles);
-	OS.DestroyWindow (hwndTransparent);
+//	OS.DestroyWindow (hwndTransparent);
 	tracking = false;
 	return !cancelled;
 }
@@ -574,7 +574,8 @@ void setCursor () {
 				break;
 		}
 	} else {
-		newCursor = OS.LoadCursor (0, OS.IDC_ARROW);
+//		newCursor = OS.LoadCursor (0, OS.IDC_ARROW);
+		return;
 	}
 	OS.SetCursor (newCursor);
 	if (cursor != 0) {
