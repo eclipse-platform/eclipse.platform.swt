@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
-import org.eclipse.swt.internal.Converter; 
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
  
@@ -31,8 +29,10 @@ import org.eclipse.swt.internal.carbon.OS;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "TEXT";
-	private static final int TYPEID1 = OS.kScrapFlavorTypeText;
+	private static final String TEXT = "TEXT";
+	private static final String UTEXT = "utxt";
+	private static final int TEXTID = OS.kScrapFlavorTypeText;
+	private static final int UTEXTID = OS.kScrapFlavorTypeUnicode;
 
 private TextTransfer() {
 }
@@ -62,20 +62,31 @@ public void javaToNative (Object object, TransferData transferData){
 	String string = (String)object;
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
-	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-	if (ptr == 0) {
-		transferData.result = -1;
-		return;
+	switch (transferData.type) {
+		case TEXTID: {
+			int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+			if (ptr == 0) {
+				transferData.result = -1;
+				return;
+			}
+			CFRange range = new CFRange();
+			range.length = chars.length;
+			int encoding = OS.CFStringGetSystemEncoding();
+			int[] size = new int[1];
+			OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, null, 0, size);
+			byte[] buffer = new byte[size[0]];
+			OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, buffer, size [0], size);
+			OS.CFRelease(ptr);
+			super.javaToNative(buffer, transferData);
+			break;
+		}
+		case UTEXTID: {
+			byte[] buffer = new byte[chars.length * 2];
+			OS.memcpy(buffer, chars, buffer.length);
+			super.javaToNative(buffer, transferData);
+			break;
+		}
 	}
-	CFRange range = new CFRange();
-	range.length = chars.length;
-	int encoding = OS.CFStringGetSystemEncoding();
-	int[] size = new int[1];
-	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, null, 0, size);
-	byte[] buffer = new byte[size[0]];
-	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, buffer, size [0], size);
-	OS.CFRelease(ptr);
-	super.javaToNative(buffer, transferData);
 }
 
 /**
@@ -92,23 +103,31 @@ public Object nativeToJava(TransferData transferData){
 	// get byte array from super
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
-	// convert byte array to a string
-	int encoding = OS.CFStringGetSystemEncoding();
-	int ptr = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-	int length = OS.CFStringGetLength(ptr);
-	char[] chars = new char[length];
-	CFRange range = new CFRange();
-	range.length = length;
-	OS.CFStringGetCharacters(ptr, range, chars);
-	OS.CFRelease (ptr);
-	return new String (chars);
+	if (transferData.type == TEXTID) {
+		// convert byte array to a string
+		int encoding = OS.CFStringGetSystemEncoding();
+		int ptr = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+		int length = OS.CFStringGetLength(ptr);
+		char[] chars = new char[length];
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(ptr, range, chars);
+		OS.CFRelease (ptr);
+		return new String (chars);
+	}
+	if (transferData.type == UTEXTID) {
+		char[] chars = new char[(transferData.data.length + 1) / 2];
+		OS.memcpy(chars, transferData.data, transferData.data.length);
+		return new String(chars);
+	}
+	return null;
 }
 
 protected String[] getTypeNames() {
-	return new String[] {TYPENAME1};
+	return new String[] {UTEXT, TEXT};
 }
 
 protected int[] getTypeIds() {
-	return new int[] {TYPEID1};
+	return new int[] {UTEXTID, TEXTID};
 }
 }

@@ -415,6 +415,7 @@ public class OS {
 	public static final int kNavUserActionSaveAs = 3;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
+	public static final int kScrapFlavorTypeUnicode = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
@@ -1195,5 +1196,7 @@ public static final native void memcpy(Rect dest, int src, int n);
 public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memcpy(int dest, String src, int n);
 public static final native void memcpy(HFSFlavor dest, byte[] src, int size);
+public static final native void memcpy(char[] dest, byte[] src, int size);
+public static final native void memcpy(byte[] dest, char[] src, int size);
 public static final native void memset(int dest, int value, int size);
 }

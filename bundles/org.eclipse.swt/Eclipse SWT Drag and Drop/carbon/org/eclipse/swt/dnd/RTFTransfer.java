@@ -9,10 +9,10 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.dnd;
+ 
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CFRange;
 
- 
- import org.eclipse.swt.internal.Converter;
- 
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
  * for converting text in RTF format represented as a java <code>String</code> 
@@ -29,8 +29,9 @@ package org.eclipse.swt.dnd;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TYPENAME1 = "RTF";
-	private static final int TYPEID1 = ('R'<<24) + ('T'<<16) + ('F'<<8) + ' ';
+	private static final String TYPENAME1 = "RTF ";
+	
+	private static final int TYPEID1 = registerType(TYPENAME1);
 
 private RTFTransfer() {
 }
@@ -54,8 +55,26 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	if (object == null || !(object instanceof String)) {
+		transferData.result = -1;
+		return;
+	}
+	String string = (String)object;
+	char[] chars = new char[string.length()];
+	string.getChars (0, chars.length, chars, 0);
+	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	if (ptr == 0) {
+		transferData.result = -1;
+		return;
+	}
+	CFRange range = new CFRange();
+	range.length = chars.length;
+	int encoding = OS.CFStringGetSystemEncoding();
+	int[] size = new int[1];
+	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, null, 0, size);
+	byte[] buffer = new byte[size[0]];
+	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, buffer, size [0], size);
+	OS.CFRelease(ptr);
 	super.javaToNative(buffer, transferData);
 }
 
@@ -70,14 +89,18 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
 	// convert byte array to a string
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	String string = new String (unicode);
-	int end = string.indexOf('\0');
-	return (end == -1) ? string : string.substring(0, end);
+	int encoding = OS.CFStringGetSystemEncoding();
+	int ptr = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+	int length = OS.CFStringGetLength(ptr);
+	char[] chars = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(ptr, range, chars);
+	OS.CFRelease (ptr);
+	return new String (chars);
 }
 
 protected String[] getTypeNames() {

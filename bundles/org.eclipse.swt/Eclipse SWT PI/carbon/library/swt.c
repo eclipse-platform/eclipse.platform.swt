@@ -8099,6 +8099,40 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_ecli
 }
 #endif
 
+#ifndef NO_memcpy___3C_3BI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3C_3BI
+	(JNIEnv *env, jclass that, jcharArray arg0, jbyteArray arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("memcpy___3C_3BI\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
+#ifndef NO_memcpy___3B_3CI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3B_3CI
+	(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	jchar *lparg1=NULL;
+
+	DEBUG_CALL("memcpy___3B_3CI\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
 #ifndef NO_memset
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
