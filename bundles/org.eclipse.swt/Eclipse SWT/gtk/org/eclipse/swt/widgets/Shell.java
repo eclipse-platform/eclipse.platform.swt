@@ -417,6 +417,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
 	trim.width += trimWidth; trim.height += trimHeight;
+	if (menuBar != null) {
+		int menuBarHeight = OS.GTK_WIDGET_HEIGHT (menuBar.handle);
+		trim.y -= menuBarHeight;
+		trim.height += menuBarHeight;
+	}
 	return trim;
 }
 
