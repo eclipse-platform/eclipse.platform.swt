@@ -101,7 +101,7 @@ void displayError(String msg) {
 
 public static void main (String [] args) {
 	Display display = new Display();
-	final JavaViewer example = new JavaViewer ();
+	JavaViewer example = new JavaViewer ();
 	Shell shell = example.open (display);
 	while (!shell.isDisposed ())
 		if (!display.readAndDispatch ()) display.sleep ();
