@@ -632,64 +632,55 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		
 		/* Scale alpha data */
 		if (alpha.src_alpha_map_map != 0) {
-//			int[] palette = new int[256];
-//			for (int i = 0; i < palette.length; i++) {
-//				palette[i] = i;
-//			}
-//			int palettePtr = OS.malloc(palette.length * 4);
-//			OS.memmove(palettePtr, palette, palette.length * 4);
-//			/*
-//			* Feature on Photon - It is only possible to draw on images of
-//			* type Pg_IMAGE_PALETTE_BYTE and Pg_IMAGE_DIRECT_888.
-//			*/
-//			int alphaImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, OS.Pg_IMAGE_PALETTE_BYTE, palettePtr, palette.length, 0);
-//			if (alphaImage == 0) {
-//				Image.destroyImage(memImage);
-//				SWT.error(SWT.ERROR_NO_HANDLES);
-//			}
-//			mc = OS.PmMemCreateMC(alphaImage, scale, trans);
-//			if (mc == 0) {
-//				Image.destroyImage(alphaImage);
-//				Image.destroyImage(memImage);
-//				SWT.error(SWT.ERROR_NO_HANDLES);
-//			}
-//			OS.PmMemStart(mc);
-//			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
-//			OS.PgDrawImage(alpha.src_alpha_map_map, OS.Pg_IMAGE_PALETTE_BYTE, pos, dim, alpha.src_alpha_map_bpl, 0);
-//			OS.PgSetPalette(0, 0, (short)0, (short)-1, 0, 0);
-//			OS.PmMemFlush(mc, alphaImage);
-//			OS.PmMemStop(mc);
-//			OS.PmMemReleaseMC(mc);
-//			OS.free(palettePtr);
-//				
-//			/* Transfer the image to the scaled image alpha data*/
-//			PhImage_t phAlphaImage = new PhImage_t();
-//			OS.memmove(phAlphaImage, alphaImage, PhImage_t.sizeof);
-//			alpha.src_alpha_map_dim_w = (short)phAlphaImage.bpl;
-//			alpha.src_alpha_map_dim_h = (short)phAlphaImage.size_h;
-//			alpha.src_alpha_map_map = phAlphaImage.image;
-//
-//			/* Release the temporary image but not the image data */
-//			phAlphaImage.image = 0;
-//			phAlphaImage.bpl = 0;
-//			phAlphaImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
-//			OS.memmove(alphaImage, phAlphaImage, PhImage_t.sizeof);
-//			OS.PhReleaseImage(alphaImage);
-//			OS.free(alphaImage);
-			
-			// The code above can not be used because it generates an image with
-			// scanline padding.  It seems that Photon does not accept
-			// padding in src_alpha_map, even though there is a field to specify
-			// the number of bytes per line - src_alpha_map_map_bpl.
-			byte[] srcAlphaData = new byte[alpha.src_alpha_map_dim_w * alpha.src_alpha_map_dim_h];
-			OS.memmove(srcAlphaData, alpha.src_alpha_map_map, srcAlphaData.length);
-			byte[] destAlphaData = new byte[destWidth * destHeight];
-			ImageData.stretch8(srcAlphaData, alpha.src_alpha_map_dim_w, 0, 0, srcWidth, srcHeight, destAlphaData, destWidth, 0, 0, destWidth, destHeight, null, false, false);
-			int ptr = OS.malloc(destAlphaData.length);
-			OS.memmove(ptr, destAlphaData, destAlphaData.length);
-			alpha.src_alpha_map_dim_w = (short)destWidth;
-			alpha.src_alpha_map_dim_h = (short)destHeight;
-			alpha.src_alpha_map_map = ptr;
+			int[] palette = new int[256];
+			for (int i = 0; i < palette.length; i++) {
+				palette[i] = i;
+			}
+			int palettePtr = OS.malloc(palette.length * 4);
+			OS.memmove(palettePtr, palette, palette.length * 4);
+			/*
+			* Feature on Photon - It is only possible to draw on images of
+			* type Pg_IMAGE_PALETTE_BYTE and Pg_IMAGE_DIRECT_888.
+			*/
+			int alphaImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, OS.Pg_IMAGE_PALETTE_BYTE, palettePtr, palette.length, 0);
+			if (alphaImage == 0) {
+				OS.free(palettePtr);
+				OS.free(alphaPtr);
+				Image.destroyImage(memImage);
+				SWT.error(SWT.ERROR_NO_HANDLES);
+			}
+			mc = OS.PmMemCreateMC(alphaImage, scale, trans);
+			if (mc == 0) {
+				OS.free(palettePtr);
+				OS.free(alphaPtr);
+				Image.destroyImage(alphaImage);
+				Image.destroyImage(memImage);
+				SWT.error(SWT.ERROR_NO_HANDLES);
+			}
+			OS.PmMemStart(mc);
+			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
+			OS.PgDrawImage(alpha.src_alpha_map_map, OS.Pg_IMAGE_PALETTE_BYTE, pos, dim, alpha.src_alpha_map_bpl, 0);
+			OS.PgSetPalette(0, 0, (short)0, (short)-1, 0, 0);
+			OS.PmMemFlush(mc, alphaImage);
+			OS.PmMemStop(mc);
+			OS.PmMemReleaseMC(mc);
+			OS.free(palettePtr);
+				
+			/* Transfer the image to the scaled image alpha data*/
+			PhImage_t phAlphaImage = new PhImage_t();
+			OS.memmove(phAlphaImage, alphaImage, PhImage_t.sizeof);
+			alpha.src_alpha_map_bpl = (short)phAlphaImage.bpl;
+			alpha.src_alpha_map_dim_w = (short)phAlphaImage.bpl;
+			alpha.src_alpha_map_dim_h = (short)phAlphaImage.size_h;
+			alpha.src_alpha_map_map = phAlphaImage.image;
+
+			/* Release the temporary image but not the image data */
+			phAlphaImage.image = 0;
+			phAlphaImage.bpl = 0;
+			phAlphaImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+			OS.memmove(alphaImage, phAlphaImage, PhImage_t.sizeof);
+			OS.PhReleaseImage(alphaImage);
+			OS.free(alphaImage);
 		}
 
 		OS.memmove(alphaPtr, alpha, PgAlpha_t.sizeof);
