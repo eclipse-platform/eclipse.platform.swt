@@ -125,6 +125,10 @@ public FontData open () {
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
 	GtkFontSelectionDialog dialog = new GtkFontSelectionDialog ();
 	OS.memmove (dialog, handle, GtkFontSelectionDialog.sizeof);
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.shellHandle);
+	}
 	if (fontData != null) {
 		byte[] buffer = Converter.wcsToMbcs(null, fontData.getXlfd(), true);
 		OS.gtk_font_selection_set_font_name(dialog.fontsel, buffer);
