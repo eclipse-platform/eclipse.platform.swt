@@ -2420,6 +2420,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1icon)
 }
 #endif
 
+#ifndef NO_gdk_1window_1set_1icon_1list
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1icon_1list)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1set_1icon_1list\n")
+	gdk_window_set_icon_list((GdkWindow *)arg0, (GList *)arg1);
+	NATIVE_EXIT(env, that, "gdk_1window_1set_1icon_1list\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1set_1override_1redirect
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1override_1redirect)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

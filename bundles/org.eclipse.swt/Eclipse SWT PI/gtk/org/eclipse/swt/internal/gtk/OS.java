@@ -550,6 +550,7 @@ public static final synchronized native void gdk_window_set_back_pixmap(int wind
 public static final synchronized native void gdk_window_set_cursor(int window, int cursor);
 public static final synchronized native void gdk_window_set_decorations(int window, int decorations);
 public static final synchronized native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
+public static final synchronized native void gdk_window_set_icon_list(int window, int pixbufs);
 public static final synchronized native void gdk_window_set_override_redirect(int window, boolean override_redirect);
 public static final synchronized native void gdk_window_shape_combine_region (int window, int  shape_region, int offset_x,  int offset_y);
 public static final synchronized native void gdk_window_show(int window);
