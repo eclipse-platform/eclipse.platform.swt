@@ -584,9 +584,11 @@ void createHandle (int index) {
 	* Note that  XmNtraversalOn must be set to FALSE or the shell
 	* will not take focus when the user clicks on it.
 	*/
-	int [] argList3 = {OS.XmNtraversalOn, 0};
-	int textHandle = OS.XmCreateTextField (handle, null, argList3, argList3.length / 2);
-	if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.ON_TOP) == 0) {
+		int [] argList3 = {OS.XmNtraversalOn, 0};
+		int textHandle = OS.XmCreateTextField (handle, null, argList3, argList3.length / 2);
+		if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
 }
 void deregister () {
 	super.deregister ();
