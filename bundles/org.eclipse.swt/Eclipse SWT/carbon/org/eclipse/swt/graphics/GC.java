@@ -2394,13 +2394,17 @@ int regionToRects(int message, int rgn, int r, int newRgn) {
  */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CGContextConcatCTM(handle, data.inverseTransform);
-	OS.CGContextConcatCTM(handle, transform.handle);
-	System.arraycopy(transform.handle, 0, data.transform, 0, data.transform.length);
-	System.arraycopy(transform.handle, 0, data.inverseTransform, 0, data.inverseTransform.length);
-	OS.CGAffineTransformInvert(data.inverseTransform, data.inverseTransform);
+	if (transform != null) {
+		OS.CGContextConcatCTM(handle, transform.handle);
+		System.arraycopy(transform.handle, 0, data.transform, 0, data.transform.length);
+		System.arraycopy(transform.handle, 0, data.inverseTransform, 0, data.inverseTransform.length);
+		OS.CGAffineTransformInvert(data.inverseTransform, data.inverseTransform);
+	} else {
+		data.transform = new float[]{1, 0, 0, 1, 0, 0};
+		data.inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
+	}
 	//TODO - rounds off problems
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) {
