@@ -830,7 +830,7 @@ GdkColor getBackgroundColor () {
  */
 public TableColumn getColumn (int index) {
 	checkWidget();
-	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
+	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	return columns [index];
 }
 
