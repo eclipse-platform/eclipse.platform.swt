@@ -51,6 +51,7 @@ public class CBanner extends Composite {
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
+	static final int CURVE_TAIL = 200;
 	static final int LEFT_MIDDLE_GAP = 8;
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
@@ -208,10 +209,10 @@ public void layout (boolean changed) {
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
-		redraw(curveStart, 0, oldStart + CURVE_WIDTH - curveStart, size.y, false);
+		redraw(curveStart - CURVE_TAIL, 0, oldStart + CURVE_WIDTH - curveStart + CURVE_TAIL, size.y, false);
 	}
 	if (curveStart > oldStart) {
-		redraw(oldStart, 0, curveStart + CURVE_WIDTH - oldStart, size.y, false);
+		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL, size.y, false);
 	}
 	update();
 	if (leftRect != null) left.setBounds(leftRect);
@@ -256,7 +257,7 @@ private void onPaint(GC gc) {
 	line1[index] = 0;
 	line2[index++] = 1;
 	
-	int x1 = Math.max(0, curveStart - 200);
+	int x1 = Math.max(0, curveStart - CURVE_TAIL);
 	Color border2 = new Color(getDisplay(), BORDER2);
 	gc.setForeground(background);
 	gc.setBackground(border2);
