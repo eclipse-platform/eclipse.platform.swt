@@ -366,43 +366,43 @@ void closeWidget () {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int type;
-	if ((style&SWT.NO_TRIM) == 0) type = OS.GTK_WINDOW_TOPLEVEL;
-		else type = OS.GTK_WINDOW_POPUP;
+	int type = (style & SWT.NO_TRIM) == 0 ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
+	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	createScrolledHandle (shellHandle);
-	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
-	OS.gtk_window_set_modal (shellHandle, modal);	
+	/*
+	* High level GTK helpers, like gtk_window_set_decorated, simply
+	* use gdk_window_set_decorations() with specific values.
+	* Therefore we use that function manually.
+	*/
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	int decorations = 0;
-	/*
-	 * High level GTK helpers, like gtk_window_set_decorated, simply
-	 * use gdk_window_set_decorations() with specific values.
-	 * Therefore we use that function manually.
-	 */
-	if ((style & SWT.NO_TRIM) == 0) {
-		OS.gtk_window_set_title (shellHandle, new byte [1]);
-		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
-		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
-		if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
-		if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
-		if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
-		/*
-		 * Under some Window Managers (Sawmill), in order
-		 * to get any border at all from the window manager it is necessary
-		 * to set GDK_DECOR_BORDER.  The fix is to force these bits when any
-		 * kind of border is requested.
-		 */
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+	if ((style & SWT.ON_TOP) != 0) {
+		OS.gdk_window_set_override_redirect (window, true);
+	} else {
+		int decorations = 0;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
+			if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
+			if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
+			if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
+			if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
+			/*
+			* Feature in GTK.  Under some Window Managers (Sawmill), in order
+			* to get any border at all from the window manager it is necessary
+			* to set GDK_DECOR_BORDER.  The fix is to force these bits when any
+			* kind of border is requested.
+			*/
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+		}
 		OS.gdk_window_set_decorations (window, decorations);
 	}
-	else OS.gdk_window_set_override_redirect(window, true);
-	
+	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
+	OS.gtk_window_set_modal (shellHandle, modal);
 	accelGroup = OS.gtk_accel_group_new ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
