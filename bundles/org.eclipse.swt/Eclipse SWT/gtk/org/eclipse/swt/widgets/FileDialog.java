@@ -91,27 +91,49 @@ String computeResultChooserDialog () {
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
 		int /*long*/ current = list;
+		int writePos = 0;
 		String path = null;
 		for (int i = 0; i < listLength; i++) {
 			int /*long*/ name = OS.g_slist_data (current);
-			int length = OS.strlen (name);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, name, length);
-			path = new String (Converter.mbcsToWcs (null, buffer));
-			fileNames [i] = path.substring (path.lastIndexOf (SEPARATOR) + 1);
-			current = OS.g_slist_next (current);
+			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
 			OS.g_free (name);
+			if (utf8Ptr != 0) {
+				int /*long*/ [] items_written = new int /*long*/ [1];
+				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+				OS.g_free (utf8Ptr);
+				if (utf16Ptr != 0) {
+					int clength = (int)/*64*/items_written [0];
+					char [] chars = new char [clength];
+					OS.memmove (chars, utf16Ptr, clength * 2);
+					OS.g_free (utf16Ptr);
+					path = new String (chars);
+					fileNames [writePos++] = path.substring (path.lastIndexOf (SEPARATOR) + 1);
+				}
+			}
+			current = OS.g_slist_next (current);
+		}
+		if (writePos != listLength) {
+			String [] validFileNames = new String [writePos];
+			System.arraycopy (fileNames, 0, validFileNames, 0, writePos);
+			fileNames = validFileNames;
 		}
 		OS.g_slist_free (list);
 		fullPath = path;
 	} else {
 		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
 		if (path == 0) return null;
-		int length = OS.strlen (path);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, path, length);
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 		OS.g_free (path);
-		fullPath = new String (Converter.mbcsToWcs (null, buffer));
+		if (utf8Ptr == 0) return null;
+		int /*long*/ [] items_written = new int /*long*/ [1];
+		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		OS.g_free (utf8Ptr);
+		if (utf16Ptr == 0) return null;
+		int clength = (int)/*64*/items_written [0];
+		char [] chars = new char [clength];
+		OS.memmove (chars, utf16Ptr, clength * 2);
+		OS.g_free (utf16Ptr);
+		fullPath = new String (chars);
 		fileNames = new String [1];
 		fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
 	}
