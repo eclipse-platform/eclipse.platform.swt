@@ -531,6 +531,7 @@ void init(Device device, ImageData i) {
 					SWT.error(SWT.ERROR_NO_HANDLES);
 				}
 				OS.memmove(ptr, i.alphaData, i.alphaData.length);
+				alpha.src_alpha_map_bpl = (short)i.width;
 				alpha.src_alpha_map_dim_w = (short)i.width;
 				alpha.src_alpha_map_dim_h = (short)i.height;
 				alpha.src_alpha_map_map = ptr;

@@ -176,6 +176,11 @@ public class OS {
 	public static final int Pt_ARG_MODIFIER_KEYS                                    = ( 7 * 1000 + 4 );
 
 	public static final byte [] Pg_PAT_HALF = {(byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55};
+
+	public static final int Pt_ARG_BEVEL_CONTRAST                                    = ( 2 * 1000 + 20 );
+
+	public static final int Pt_NO_PARENT	                                    = 1;
+
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
@@ -768,7 +773,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Ph_EV_PTR_STEADY                                      = 2;
 //public static final int Ph_EV_PTR_TRANSIENT_ENTER                             = 8;
 //public static final int Ph_EV_PTR_TRANSIENT_LEAVE                             = 9;
-//public static final int Ph_EV_PTR_UNSTEADY                                    = 3;
+	public static final int Ph_EV_PTR_UNSTEADY                                    = 3;
 	public static final int Ph_EV_PTR_MOTION                                      = ( Ph_EV_PTR_MOTION_NOBUTTON | Ph_EV_PTR_MOTION_BUTTON );
 //public static final int Ph_EV_PTR_ALL                                         = ( Ph_EV_BUT_PRESS | Ph_EV_BUT_RELEASE | Ph_EV_PTR_MOTION | Ph_EV_BUT_REPEAT  );
 //public static final int Ph_EV_RAW                                             = 0x00008000;
@@ -1065,7 +1070,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Ph_WM_STATE_ISICONIFIED                               = 0x00000040;
 //public static final int Ph_WM_STATE_ISMASK                                    = 0x0000FFFF;
 	public static final int Ph_WM_STATE_ISMAX                                     = 0x00000002;
-//public static final int Ph_WM_STATE_ISMAXING                                  = 0x00004000;
+	public static final int Ph_WM_STATE_ISMAXING                                  = 0x00004000;
 //public static final int Ph_WM_STATE_ISNORMAL                                  = 0x00000000;
 //public static final int Ph_WM_STATE_ISPDM                                     = 0x00000020;
 //public static final int Ph_WM_STATE_ISREMOTE                                  = 0x00000400;
@@ -1444,7 +1449,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_GRID_VERTICAL                                  = ( 43 * 1000 + 1 );
 	public static final int Pt_ARG_GROUP_FLAGS                                    = ( 11 * 1000 + 0 );
 	public static final int Pt_ARG_GROUP_HORZ_ALIGN                               = ( 11 * 1000 + 1 );
-//public static final int Pt_ARG_GROUP_ORIENTATION                              = ( 11 * 1000 + 2 );
+	public static final int Pt_ARG_GROUP_ORIENTATION                              = ( 11 * 1000 + 2 );
 //public static final int Pt_ARG_GROUP_ROWS_COLS                                = ( 11 * 1000 + 5 );
 	public static final int Pt_ARG_GROUP_SPACING                                  = ( 11 * 1000 + 3 );
 //public static final int Pt_ARG_GROUP_SPACING_X                                = ( 11 * 1000 + 6 );
@@ -1513,7 +1518,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Pt_ARG_LABEL_TYPE                                     = ( 3 * 1000 + 3 );
 //public static final int Pt_ARG_LINE_CAP                                       = ( 25 * 1000 + 4 );
 //public static final int Pt_ARG_LINE_JOIN                                      = ( 25 * 1000 + 3 );
-//public static final int Pt_ARG_LINE_SPACING                                   = ( 3 * 1000 + 21 );
+	public static final int Pt_ARG_LINE_SPACING                                   = ( 3 * 1000 + 21 );
 //public static final int Pt_ARG_LINE_WIDTH                                     = ( 25 * 1000 + 2 );
 //public static final int Pt_ARG_LIST_BALLOON                                   = ( 23 * 1000 + 31 );
 //public static final int Pt_ARG_LIST_COLUMN_ATTR                               = ( 23 * 1000 + 28 );
@@ -1527,7 +1532,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_LIST_SPACING                                   = ( 23 * 1000 +  4 );
 	public static final int Pt_ARG_LIST_TOTAL_HEIGHT                              = ( 23 * 1000 + 16 );
 	public static final int Pt_ARG_MARGIN_BOTTOM                                  = ( 3 * 1000 + 4 );
-//public static final int Pt_ARG_MARGIN_HEIGHT                                  = ( 2 * 1000 + 4 );
+	public static final int Pt_ARG_MARGIN_HEIGHT                                  = ( 2 * 1000 + 4 );
 	public static final int Pt_ARG_MARGIN_LEFT                                    = ( 3 * 1000 + 5 );
 	public static final int Pt_ARG_MARGIN_RIGHT                                   = ( 3 * 1000 + 6 );
 	public static final int Pt_ARG_MARGIN_TOP                                     = ( 3 * 1000 + 7 );
@@ -1755,7 +1760,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_UPDOWN_TOP_BDR_COLOR                           = ( 52 * 1000 + 13 );
 //public static final int Pt_ARG_UPDOWN_TOP_BORDER_COLOR                        = ( 52 * 1000 + 13 );
 	public static final int Pt_ARG_USER_DATA                                      = ( 1 * 1000 + 14 );
-//public static final int Pt_ARG_VERTICAL_ALIGNMENT                             = ( 3 * 1000 + 15 );
+	public static final int Pt_ARG_VERTICAL_ALIGNMENT                             = ( 3 * 1000 + 15 );
 	public static final int Pt_ARG_VISIBLE_COUNT                                  = ( 23 * 1000 +  9 );
 //public static final int Pt_ARG_WIN_PARENT                                     = ( 18 * 1000 + 8 );
 //public static final int Pt_ARG_WINDOW_ACTIVE_COLOR                            = ( 18 * 1000 + 18 );
@@ -2074,9 +2079,9 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_GROUP_ASIS                                         = 2;
 	public static final int Pt_GROUP_EQUAL_SIZE                                   = 0x00000002;
 //public static final int Pt_GROUP_EQUAL_SIZE_HORIZONTAL                        = 0x00000100;
-//public static final int Pt_GROUP_EQUAL_SIZE_VERTICAL                          = 0x00000200;
+	public static final int Pt_GROUP_EQUAL_SIZE_VERTICAL                          = 0x00000200;
 //public static final int Pt_GROUP_EXCLUSIVE                                    = 0x00000001;
-//public static final int Pt_GROUP_HORIZONTAL                                   = 0;
+	public static final int Pt_GROUP_HORIZONTAL                                   = 0;
 //public static final int Pt_GROUP_HORZ_CENTER                                  = 0;
 //public static final int Pt_GROUP_HORZ_LEFT                                    = 1;
 //public static final int Pt_GROUP_HORZ_NONE                                    = -1;
@@ -2399,7 +2404,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_TIMER_INITIAL                                      = 1;
 //public static final int Pt_TIMER_REPEAT                                       = 2;
 	public static final int Pt_TOGGLE                                             = 0x00000008;
-//public static final int Pt_TOP                                                = 0;
+	public static final int Pt_TOP                                                = 0;
 	public static final int Pt_TOP_ANCHORED_BOTTOM                                = 0x00000040;
 //public static final int Pt_TOP_ANCHORED_RELATIVE                              = 0x00000004;
 	public static final int Pt_TOP_ANCHORED_TOP                                   = 0x00000400;
@@ -2534,6 +2539,7 @@ public static final int MAX_FONT_TAG                                            
 public static final native int PfQueryFontInfo (byte[] font, FontQueryInfo info);
 public static final native PhRect_t PfExtentWideText(PhRect_t extent, PhPoint_t pos, byte[] font, char[] str, int len);
 public static final native PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, int font, int str, int len);
+public static final native PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int len);
 public static final native int PfQueryFonts(int symbol, int flags, int list, int n);
 public static final native byte[] PfGenerateFontName(byte[] pkucDescription, int kuiFlags, int kuiSize, byte[] pucBuff);
 //public static final native int PfFindFont(byte[] pkucDescription, int kulFlags, int kulSize);
@@ -2542,6 +2548,8 @@ public static final native byte[] PfGenerateFontName(byte[] pkucDescription, int
 //public static final native int PfFontSize(int ptsID);
 //public static final native int PfFontFlags(int ptsID);
 //public static final native int PfConvertFontID(int ptsID);
+
+public static final native PhRect_t PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
 
 public static final native int PgCreateGC (int size);
 public static final native void PgDestroyGC (int GC);
@@ -2553,6 +2561,7 @@ public static final native int PgDrawILine (int x1, int y1, int x2, int y2);
 public static final native int PgDrawIRect (int ulx, int uly, int lrx, int lry, int flags);
 //public static final native int PgDrawText (char[] ptr, int len, short x, short y, int flags);
 public static final native int PgDrawText (byte[] ptr, int len, short x, short y, int flags);
+public static final native int PgDrawMultiTextArea (byte[] text, int len, PhRect_t canvas, int text_flags, int canvas_flags, int linespacing);
 public static final native int PgFlush ();
 public static final native int PgSetFillColor (int color);
 public static final native int PgSetStrokeColor (int color);
@@ -2706,7 +2715,6 @@ public static final native void PtListGotoPos (int widget, int pos);
 
 public static final native int PtTextModifyText (int widget, int start, int end, int insert_pos, byte [] text, int length);
 public static final native int PtTextModifyText (int widget, int start, int end, int insert_pos, int text, int length);
-public static final native int PhClipboardCopyString (short ig, byte [] string);
 public static final native int PtTextGetSelection (int widget, int [] start, int [] end);
 public static final native int PtTextSetSelection (int widget, int [] start, int [] end);
 
@@ -2802,10 +2810,8 @@ public static final native void PtWindowToBack (int widget);
 public static final native void PtWindowToFront (int widget);
 public static final native int PtFindDisjoint (int widget);
 
-//public static final native int PhClipboardCopyString (short ig, int string);
-public static final native int PhClipboardPasteString (short ig);
-
 public static final native int PtBlockAllWindows(int skip, short cursor, int cursor_color);
+public static final native int PtBlockWindow(int window, short cursor, int cursor_color);
 public static final native void PtUnblockWindows(int bl);
 public static final native int PtNextTopLevelWidget(int widget);
 public static final native int PtWindowGetState(int widget);
@@ -2870,7 +2876,7 @@ public static final native int PtToolbar ();
 //public static final native int PtColorPatch ();
 //public static final native int PtColorPalette ();
 
-//public static final native int PtGroup ();
+public static final native int PtGroup ();
 
 //public static final native int Pg_CM_RGB ();
 //public static final native int Pg_CM_HSB ();
@@ -2918,4 +2924,26 @@ public static final native void memmove (int dest, PhCursorDef_t src, int size);
 
 public static final native void PgSetFillTransPat (byte [] pat);
 
+public static final native int PtInflateBalloon (int win, int me, int position, byte [] string, byte [] font, int fill, int text_color);
+
+//public static final native void memmove (PgDisplaySettings_t dest, int src, int size);
+//public static final native void memmove (int dest, PgDisplaySettings_t src, int size);
+
+//public static final native void memmove (PgVideoModeInfo_t dest, int src, int size);
+//public static final native void memmove (int dest, PgVideoModeInfo_t src, int size);
+
+public static final native int PgGetVideoMode (PgDisplaySettings_t settings);
+public static final native int PgGetVideoModeInfo (short mode_number, PgVideoModeInfo_t mode_info);
+
+public static final native void memmove (PhClipHeader dest, int src, int size);
+public static final native void memmove (int dest, PhClipHeader src, int size);
+public static final native void memmove (byte[] dest, PhClipHeader src, int size);
+
+public static final native int PhClipboardCopyString (short ig, byte [] string);
+public static final native int PhClipboardPasteString (short ig);
+public static final native int PhClipboardCopy (short ig, int n, byte[] clip);
+public static final native int PhClipboardPasteStart (short ig);
+public static final native int PhClipboardPasteType (int cbdata, byte[] type);
+public static final native int PhClipboardPasteTypeN (int cbdata, int n);
+public static final native void PhClipboardPasteFinish (int cbdata);
 }

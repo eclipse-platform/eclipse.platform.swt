@@ -1,5 +1,8 @@
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.photon.OS;
+
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
@@ -8,12 +11,8 @@ package org.eclipse.swt.dnd;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "STRING\0";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "text/plain\0";
-	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "text/text\0";
-	private static final int TYPEID3 = registerType(TYPENAME3);
+	private static final String TYPENAME = "TEXT";
+	private static final int TYPEID = registerType(TYPENAME);
 
 private TextTransfer() {
 }
@@ -22,21 +21,21 @@ public static TextTransfer getInstance () {
 }
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-
-	String text = (String)object;
-	super.javaToNative(text.getBytes(), transferData);
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, false);
+	super.javaToNative(buffer, transferData);
 }
 public Object nativeToJava(TransferData transferData){
 	// get byte array from super
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
 	// convert byte array to a string
-	return new String(buffer);
+	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	return new String (unicode);
 }
 protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
+	return new String[]{TYPENAME};
 }
 protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2, TYPEID3};
+	return new int[]{TYPEID};
 }
 }

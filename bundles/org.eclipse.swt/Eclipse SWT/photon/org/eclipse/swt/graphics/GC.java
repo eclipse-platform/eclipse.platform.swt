@@ -288,6 +288,17 @@ public void dispose() {
 
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
+	if (width == 0 || height == 0 || endAngle == 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -313,21 +324,8 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 			endAngle = newStopAngle;			
 		}
 	}
-			
 	startAngle = (int) (startAngle * 65536 / 360);
 	endAngle   = (int) (endAngle * 65536 / 360);
-	
-	if (width < 0) {
-		x = x + width;
-		width = -width;
-	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	if (width == 0 || height == 0 || endAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
@@ -632,64 +630,55 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		
 		/* Scale alpha data */
 		if (alpha.src_alpha_map_map != 0) {
-//			int[] palette = new int[256];
-//			for (int i = 0; i < palette.length; i++) {
-//				palette[i] = i;
-//			}
-//			int palettePtr = OS.malloc(palette.length * 4);
-//			OS.memmove(palettePtr, palette, palette.length * 4);
-//			/*
-//			* Feature on Photon - It is only possible to draw on images of
-//			* type Pg_IMAGE_PALETTE_BYTE and Pg_IMAGE_DIRECT_888.
-//			*/
-//			int alphaImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, OS.Pg_IMAGE_PALETTE_BYTE, palettePtr, palette.length, 0);
-//			if (alphaImage == 0) {
-//				Image.destroyImage(memImage);
-//				SWT.error(SWT.ERROR_NO_HANDLES);
-//			}
-//			mc = OS.PmMemCreateMC(alphaImage, scale, trans);
-//			if (mc == 0) {
-//				Image.destroyImage(alphaImage);
-//				Image.destroyImage(memImage);
-//				SWT.error(SWT.ERROR_NO_HANDLES);
-//			}
-//			OS.PmMemStart(mc);
-//			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
-//			OS.PgDrawImage(alpha.src_alpha_map_map, OS.Pg_IMAGE_PALETTE_BYTE, pos, dim, alpha.src_alpha_map_bpl, 0);
-//			OS.PgSetPalette(0, 0, (short)0, (short)-1, 0, 0);
-//			OS.PmMemFlush(mc, alphaImage);
-//			OS.PmMemStop(mc);
-//			OS.PmMemReleaseMC(mc);
-//			OS.free(palettePtr);
-//				
-//			/* Transfer the image to the scaled image alpha data*/
-//			PhImage_t phAlphaImage = new PhImage_t();
-//			OS.memmove(phAlphaImage, alphaImage, PhImage_t.sizeof);
-//			alpha.src_alpha_map_dim_w = (short)phAlphaImage.bpl;
-//			alpha.src_alpha_map_dim_h = (short)phAlphaImage.size_h;
-//			alpha.src_alpha_map_map = phAlphaImage.image;
-//
-//			/* Release the temporary image but not the image data */
-//			phAlphaImage.image = 0;
-//			phAlphaImage.bpl = 0;
-//			phAlphaImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
-//			OS.memmove(alphaImage, phAlphaImage, PhImage_t.sizeof);
-//			OS.PhReleaseImage(alphaImage);
-//			OS.free(alphaImage);
-			
-			// The code above can not be used because it generates an image with
-			// scanline padding.  It seems that Photon does not accept
-			// padding in src_alpha_map, even though there is a field to specify
-			// the number of bytes per line - src_alpha_map_map_bpl.
-			byte[] srcAlphaData = new byte[alpha.src_alpha_map_dim_w * alpha.src_alpha_map_dim_h];
-			OS.memmove(srcAlphaData, alpha.src_alpha_map_map, srcAlphaData.length);
-			byte[] destAlphaData = new byte[destWidth * destHeight];
-			ImageData.stretch8(srcAlphaData, alpha.src_alpha_map_dim_w, 0, 0, srcWidth, srcHeight, destAlphaData, destWidth, 0, 0, destWidth, destHeight, null, false, false);
-			int ptr = OS.malloc(destAlphaData.length);
-			OS.memmove(ptr, destAlphaData, destAlphaData.length);
-			alpha.src_alpha_map_dim_w = (short)destWidth;
-			alpha.src_alpha_map_dim_h = (short)destHeight;
-			alpha.src_alpha_map_map = ptr;
+			int[] palette = new int[256];
+			for (int i = 0; i < palette.length; i++) {
+				palette[i] = i;
+			}
+			int palettePtr = OS.malloc(palette.length * 4);
+			OS.memmove(palettePtr, palette, palette.length * 4);
+			/*
+			* Feature on Photon - It is only possible to draw on images of
+			* type Pg_IMAGE_PALETTE_BYTE and Pg_IMAGE_DIRECT_888.
+			*/
+			int alphaImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, OS.Pg_IMAGE_PALETTE_BYTE, palettePtr, palette.length, 0);
+			if (alphaImage == 0) {
+				OS.free(palettePtr);
+				OS.free(alphaPtr);
+				Image.destroyImage(memImage);
+				SWT.error(SWT.ERROR_NO_HANDLES);
+			}
+			mc = OS.PmMemCreateMC(alphaImage, scale, trans);
+			if (mc == 0) {
+				OS.free(palettePtr);
+				OS.free(alphaPtr);
+				Image.destroyImage(alphaImage);
+				Image.destroyImage(memImage);
+				SWT.error(SWT.ERROR_NO_HANDLES);
+			}
+			OS.PmMemStart(mc);
+			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
+			OS.PgDrawImage(alpha.src_alpha_map_map, OS.Pg_IMAGE_PALETTE_BYTE, pos, dim, alpha.src_alpha_map_bpl, 0);
+			OS.PgSetPalette(0, 0, (short)0, (short)-1, 0, 0);
+			OS.PmMemFlush(mc, alphaImage);
+			OS.PmMemStop(mc);
+			OS.PmMemReleaseMC(mc);
+			OS.free(palettePtr);
+				
+			/* Transfer the image to the scaled image alpha data*/
+			PhImage_t phAlphaImage = new PhImage_t();
+			OS.memmove(phAlphaImage, alphaImage, PhImage_t.sizeof);
+			alpha.src_alpha_map_bpl = (short)phAlphaImage.bpl;
+			alpha.src_alpha_map_dim_w = (short)phAlphaImage.bpl;
+			alpha.src_alpha_map_dim_h = (short)phAlphaImage.size_h;
+			alpha.src_alpha_map_map = phAlphaImage.image;
+
+			/* Release the temporary image but not the image data */
+			phAlphaImage.image = 0;
+			phAlphaImage.bpl = 0;
+			phAlphaImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+			OS.memmove(alphaImage, phAlphaImage, PhImage_t.sizeof);
+			OS.PhReleaseImage(alphaImage);
+			OS.free(alphaImage);
 		}
 
 		OS.memmove(alphaPtr, alpha, PgAlpha_t.sizeof);
@@ -838,7 +827,37 @@ public void drawText (String string, int x, int y) {
 }
 
 public void drawText (String string, int x, int y, boolean isTransparent) {
-	drawString(string, x, y, isTransparent);;
+	/*
+	* Bug in Photon. For some reason on QNX 6.1, PgDrawMultiTextArea() does not
+	* work properly. TEMPORARY CODE for eclipse.
+	*/
+	if (true) {
+		drawString(string, x, y, isTransparent);
+		return;
+	}
+
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
+	if (!isTransparent) drawFlags |= OS.Pg_BACK_FILL;
+	string = replaceTabs(string, 8);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	PhRect_t rect = new PhRect_t();
+	rect.ul_x = (short)x;
+	rect.ul_y = (short)y;
+	rect.lr_x = (short)0xFFFF;
+	rect.lr_y = (short)0xFFFF;
+
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();	
+		setGCClipping();
+		OS.PgDrawMultiTextArea(buffer, buffer.length, rect, drawFlags, OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP, 0);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
 }
 
 public boolean equals (Object object) {
@@ -847,6 +866,17 @@ public boolean equals (Object object) {
 
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
+	if (width == 0 || height == 0 || endAngle == 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -871,22 +901,9 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 			startAngle = newStopAngle - Math.abs(endAngle);
 			endAngle = newStopAngle;			
 		}
-	}
-			
+	}			
 	startAngle = (int) (startAngle * 65536 / 360);
 	endAngle   = (int) (endAngle * 65536 / 360);
-	
-	if (width < 0) {
-		x = x + width;
-		width = -width;
-	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	if (width == 0 || height == 0 || endAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 	
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
@@ -912,9 +929,7 @@ public void fillOval (int x, int y, int width, int height) {
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
 	radii.x = (short)(x + width);
-	if (width != 2) radii.x--;
 	radii.y = (short)(y + height);
-	if (height != 2) radii.y--;
 
 	int flags = OS.PtEnter(0);
 	try {
@@ -1167,6 +1182,26 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+static String replaceTabs(String text, int spaces) {
+	int length = text.length();
+	int index = text.indexOf('\t', 0);
+	if (index == -1) return text;
+
+	int start = 0;
+	StringBuffer result = new StringBuffer();
+	StringBuffer spaceString = new StringBuffer();
+	while (spaces-- > 0) {
+		spaceString.append(' ');
+	}
+	while (index != -1 && index < length) {
+		result.append(text.substring(start, index));
+		result.append(spaceString);
+		index = text.indexOf('\t', start = index + 1);
+	}
+	if (index == -1) result.append(text.substring(start, length));
+	return result.toString();
+}
+
 public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1330,23 +1365,19 @@ int setGC() {
 void setGCClipping() {
 	int rid = data.rid;
 	int widget = data.widget;
-	int topWidget = data.topWidget;
 	if (rid == OS.Ph_DEV_RID) OS.PgSetRegion(rid);
 	else if (widget != 0) OS.PgSetRegion(OS.PtWidgetRid(widget));
 	else if (data.image != null) return;
 	
-	// NOTE: PgSetRegion resets the clipping rectangle to the full size of
-	// the region.
+	/* NOTE: PgSetRegion resets the clipping rectangle */
 	OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);	
 
 	if (widget == 0) return;
 	
-	int clip_tile = getClipping(widget, topWidget, true, true);
+	int clip_tile = getClipping(widget, data.topWidget, true, true);
 	int[] clip_rects_count = new int[1];
 	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
-	OS.PhFreeTiles(clip_tile);
-	
-	/* PgSetClipping sets the clipping to the full region when the count is zero */
+	OS.PhFreeTiles(clip_tile);	
 	if (clip_rects_count[0] == 0) {
 		clip_rects_count[0] = 1;
 		OS.free(clip_rects);
@@ -1359,9 +1390,12 @@ void setGCClipping() {
 int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
 	int child_tile = 0;
 	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
-			
+
+	PhRect_t rect = new PhRect_t ();
+	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
+	
 	/* Get the rectangle of all siblings in front of the widget */
-	if (clipSiblings) {
+	if (clipSiblings && OS.PtWidgetClass(topWidget) != OS.PtWindow()) {
 		int temp_widget = topWidget;
 		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
 			if (OS.PtWidgetIsRealized(temp_widget)) {
@@ -1369,6 +1403,17 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 				if (child_tile == 0) child_tile = tile;			
 				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
 				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
 			}
 		}
 		/* Translate the siblings rectangles to the widget's coordinates */
@@ -1385,6 +1430,17 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 				if (child_tile == 0) child_tile = tile;			
 				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
 				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
 			}
 			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
 		}
@@ -1440,7 +1496,35 @@ public Point stringExtent(String string) {
 }
 
 public Point textExtent(String string) {
-	return stringExtent(string);
+	/*
+	* Bug in Photon. For some reason on QNX 6.1, PgExtentMultiText() does not
+	* work properly. TEMPORARY CODE for eclipse.
+	*/
+	if (true) {
+		return stringExtent(string);
+	}
+	
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	PhRect_t rect = new PhRect_t();
+	string = replaceTabs(string, 8);
+	int size = string.length();
+	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();
+		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
+	
+	int width;
+	if (size == 0) width = 0;
+	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
+	int height = rect.lr_y - rect.ul_y + 1;
+	return new Point(width, height);
 }
 
 public String toString () {

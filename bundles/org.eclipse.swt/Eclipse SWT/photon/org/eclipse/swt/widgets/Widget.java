@@ -85,16 +85,14 @@ int copyPhImage(int image) {
 }
 
 public void addListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
 }
 
 public void addDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -102,6 +100,48 @@ public void addDisposeListener (DisposeListener listener) {
 
 void createHandle (int index) {
 	/* Do nothing */
+}
+
+int createToolTip (String string, int handle, byte [] font) {
+	if (string == null || string.length () == 0 || handle == 0) {
+		return 0;
+	}
+
+	int shellHandle = OS.PtFindDisjoint (handle);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	Display display = getDisplay ();
+	int fill = display.INFO_BACKGROUND;
+	int text_color = display.INFO_FOREGROUND;
+	int toolTipHandle = OS.PtInflateBalloon (shellHandle, handle, OS.Pt_BALLOON_RIGHT, buffer, font, fill, text_color);
+
+	/*
+	* Feature in Photon. The position of the inflated balloon
+	* is relative to the widget position and not to the cursor
+	* position. The fix is to re-position the balloon.
+	*/
+	int ig = OS.PhInputGroup (0);
+	PhCursorInfo_t info = new PhCursorInfo_t ();
+	OS.PhQueryCursor ((short)ig, info);
+	short [] absX = new short [1], absY = new short [1];
+	OS.PtGetAbsPosition (shellHandle, absX, absY);
+	int x = info.pos_x - absX [0] + 16;
+	int y = info.pos_y - absY [0] + 16;
+	PhArea_t shellArea = new PhArea_t ();
+	OS.PtWidgetArea (shellHandle, shellArea);
+	PhArea_t toolTipArea = new PhArea_t ();
+	OS.PtWidgetArea (toolTipHandle, toolTipArea);
+	x = Math.max (0, Math.min (x, shellArea.size_w - toolTipArea.size_w));
+	y = Math.max (0, Math.min (y, shellArea.size_h - toolTipArea.size_h));
+	PhPoint_t pt = new PhPoint_t ();
+	pt.x = (short) x;
+	pt.y = (short) y;
+	int ptr = OS.malloc (PhPoint_t.sizeof);
+	OS.memmove (ptr, pt, PhPoint_t.sizeof);
+	int [] args = {OS.Pt_ARG_POS, ptr, 0};
+	OS.PtSetResources (toolTipHandle, args.length / 3, args);
+	OS.free (ptr);
+
+	return toolTipHandle;
 }
 
 void createWidget (int index) {
@@ -113,6 +153,10 @@ void createWidget (int index) {
 void deregister () {
 	if (handle == 0) return;
 	WidgetTable.remove (handle);
+}
+
+void destroyToolTip (int toolTipHandle) {
+	if (toolTipHandle != 0) OS.PtDestroyWidget (toolTipHandle);
 }
 
 void destroyWidget () {
@@ -140,14 +184,12 @@ static void error (int code) {
 }
 
 public Object getData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return data;
 }
 
 public Object getData (String key) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -170,8 +212,7 @@ String getNameText () {
 }
 
 public int getStyle () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return style;
 }
 
@@ -195,8 +236,7 @@ boolean isValidSubclass () {
 }
 
 protected boolean isListening (int eventType) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return hooks (eventType);
 }
 
@@ -211,8 +251,7 @@ boolean isValidWidget () {
 }
 
 public void notifyListeners (int eventType, Event event) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -236,6 +275,10 @@ void postEvent (int eventType, Event event) {
 }
 
 int processActivate (int info) {
+	return OS.Pt_CONTINUE;
+}
+
+int processArm (int info) {
 	return OS.Pt_CONTINUE;
 }
 
@@ -266,7 +309,7 @@ int processKey (int info) {
 int processEvent (int widget, int data, int info) {
 	switch (data) {
 		case SWT.Activate:			return processActivate (info);
-//		case SWT.Arm:				return processArm (info);
+		case SWT.Arm:				return processArm (info);
 //		case SWT.Dispose:			return processDispose (info);
 		case SWT.DefaultSelection:	return processDefaultSelection (info);
 		case SWT.FocusIn:			return processFocusIn (info);
@@ -351,30 +394,27 @@ void releaseWidget () {
 }
 
 public void removeListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 protected void removeListener (int eventType, EventListener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 public void removeDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void replaceMnemonic (int mnemonic, int mods) {
+void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	Display display = getDisplay ();
 	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -386,13 +426,23 @@ void replaceMnemonic (int mnemonic, int mods) {
 			char [] accelText = Converter.mbcsToWcs (null, buffer);
 			if (accelText.length > 0) {
 				char key = Character.toLowerCase (accelText [0]);
-				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				if (normal) {
+					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				}
+				if (alt) {
+					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+				}
 			}
 		}
 	}
 	if (mnemonic == 0) return;
 	char key = Character.toLowerCase ((char)mnemonic);
-	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
+	if (normal) {
+		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+	}
+	if (alt) {
+		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+	}
 }
 
 void sendEvent (int eventType) {
@@ -411,14 +461,12 @@ void sendEvent (int eventType, Event event) {
 }
 
 public void setData (Object data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.data = data;
 }
 
 public void setData (String key, Object value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */
