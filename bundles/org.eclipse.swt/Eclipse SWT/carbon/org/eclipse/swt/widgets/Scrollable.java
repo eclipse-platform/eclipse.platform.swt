@@ -91,8 +91,7 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 		if (theControl [0] == handle) {
 			super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 		} else {
-			//TEMPORARY CODE
-//			layoutControl ();
+			layoutControl ();
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -145,18 +144,6 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
-}
-
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	//TEMPORARY CODE
-	layoutControl ();
-}
-
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	//TEMPORARY CODE
-	layoutControl ();
 }
 
 int topHandle () {
