@@ -111,6 +111,25 @@ public Object getContents(Transfer transfer) {
 	
 	return result;
 }
+/**
+ * Set the data onto the clipboard.  NOTE: On some platforms, the data is
+ * immediately flushed to the clipboard but on some platforms it is provided
+ * upon request.  As a result, if the application modifes the data Object it has set 
+ * on the clipboard, that modification may or may not be available when the 
+ * object is subsequently pasted.
+ * 
+ * @param data the data to be set in the clipboard
+ * @param dataTypes the corresponding transfer agent for data
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if data is null or datatypes is null 
+ *          or the length of data is not the same as the length of dataTypes</li>
+ * </ul>
+ *  @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_SET_CLIPBOARD - if the clipboard is locked or 
+ *         otherwise unavailable</li>
+ * </ul>
+ */
 public void setContents(Object[] data, Transfer[] dataTypes){
 	
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
