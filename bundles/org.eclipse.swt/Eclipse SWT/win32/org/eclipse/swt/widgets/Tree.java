@@ -323,6 +323,15 @@ public void deselectAll () {
 }
 
 void destroyItem (TreeItem item) {
+	/*
+	* Feature in Windows.  When an item is removed that is not
+	* visible in the tree because it belongs to a collapsed branch,
+	* Windows redraws the tree causing a flash for each item that
+	* is removed.  The fix is to detect whether the item is visible,
+	* force the widget to be fully painted, turn off redraw, remove
+	* the item and validate the damage caused by the removing of
+	* the item.
+	*/
 	int hItem = item.handle;
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
@@ -740,7 +749,8 @@ void releaseWidget () {
 public void removeAll () {
 	checkWidget ();
 	ignoreDeselect = ignoreSelect = true;
-	if (drawCount == 0) {
+	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	if (redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		/*
 		* This code is intentionally commented.
@@ -748,7 +758,7 @@ public void removeAll () {
 //		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
-	if (drawCount == 0) {
+	if (redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);	
 		/*
 		* This code is intentionally commented.
