@@ -14,9 +14,9 @@ package org.eclipse.swt.program;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.gnome.*;
 import org.eclipse.swt.internal.kde.*;
+import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -471,9 +471,7 @@ static boolean kde_init() {
 	* fault.  The fix is to avoid running KDE C++ code
 	* for those JVMs.
 	*/
-	String version = System.getProperty("java.version");
-	if ("1.4.0".equals(version)) return false;
-	if ("1.4.1_01".equals(version)) return false;
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 2)) return false;
 
 	try {
 		Library.loadLibrary("swt-kde");

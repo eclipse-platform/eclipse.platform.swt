@@ -110,7 +110,7 @@ static int getDesktop(Display display) {
 	*/
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] cdeName = Converter.wcsToMbcs(null, "_DT_SM_PREFERENCES", true);
-		int cde = OS.XInternAtom(xDisplay, cdeName, true);
+		int /*long*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
 		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
 			if (property[index] == OS.None) continue; /* do not match atoms that do not exist */
 			if (property[index] == cde && cde_init(display)) desktop = DESKTOP_CDE;
@@ -159,7 +159,7 @@ static String cde_getAttribute(String dataType, String attrName) {
 	byte[] dataTypeBuf = Converter.wcsToMbcs(null, dataType, true);
 	byte[] attrNameBuf = Converter.wcsToMbcs(null, attrName, true);
 	byte[] optNameBuf = null;
-	int attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
+	int /*long*/ attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
 	if (attrValue == 0) return null;
 	int length = OS.strlen(attrValue);
 	byte[] attrValueBuf = new byte[length];
@@ -172,11 +172,11 @@ static String cde_getAttribute(String dataType, String attrName) {
 static Hashtable cde_getDataTypeInfo() {
 	Hashtable dataTypeInfo = new Hashtable();
 	int index;
-	int dataTypeList = CDE.DtDtsDataTypeNames();
+	int /*long*/ dataTypeList = CDE.DtDtsDataTypeNames();
 	if (dataTypeList != 0) {
 		/* For each data type name in the list */
 		index = 0; 
-		int[] dataType = new int[1];
+		int /*long*/ [] dataType = new int /*long*/ [1];
 		OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
 		while (dataType[0] != 0) {
 			int length = OS.strlen(dataType[0]);
