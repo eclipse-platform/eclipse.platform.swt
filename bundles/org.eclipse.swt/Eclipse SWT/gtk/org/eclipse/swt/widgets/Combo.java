@@ -287,7 +287,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int listParent = OS.gtk_widget_get_parent (listHandle);
 	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
 	OS.gtk_widget_set_size_request (handle, width, height);
-	width = (requisition.width - entryRequesition.width) + listRequesition.width;
+	width = (requisition.width - entryRequesition.width) + listRequesition.width + 2;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	return new Point (width, height);
