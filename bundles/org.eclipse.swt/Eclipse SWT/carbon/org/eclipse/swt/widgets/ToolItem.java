@@ -94,7 +94,7 @@ Point computeSize () {
 			width = Math.max (stringWidth, imageWidth);
 			height = stringHeight + imageHeight;
 		}
-		int inset = (style & SWT.DROP_DOWN) != 0 ? 7 : 2;
+		int inset = (style & SWT.DROP_DOWN) != 0 ? 7 : 3;
 		width += space + inset * 2;
 		height += space + inset * 2;
 	}
