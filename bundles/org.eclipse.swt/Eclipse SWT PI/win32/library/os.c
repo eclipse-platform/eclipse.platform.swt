@@ -5996,14 +5996,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScriptCPtoX)
 
 #ifndef NO_ScriptCacheGetHeight
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptCacheGetHeight)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
 {
-	jlong *lparg2=NULL;
+	jint *lparg2=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "ScriptCacheGetHeight\n")
-	if (arg2) lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jint)ScriptCacheGetHeight((HDC)arg0, (SCRIPT_CACHE *)arg1, (long *)lparg2);
-	if (arg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "ScriptCacheGetHeight\n")
 	return rc;
 }

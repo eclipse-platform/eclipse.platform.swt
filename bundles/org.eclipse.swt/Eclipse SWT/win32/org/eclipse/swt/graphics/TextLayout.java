@@ -45,6 +45,7 @@ public class TextLayout {
 	int[] lineOffset, lineY, lineWidth;
 	
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
+	static final int GOFFSET_SIZEOF = 8;
 	
 	static class StyleItem {
 		TextStyle style;
@@ -69,11 +70,12 @@ public class TextLayout {
 	
 	void free() {
 		int hHeap = OS.GetProcessHeap();
-		if (psc != 0) {
-			OS.ScriptFreeCache (psc);
-			OS.HeapFree(hHeap, 0, psc);
-			psc = 0;
-		}
+		/* This code is intentionaly commented. */
+//		if (psc != 0) {
+//			OS.ScriptFreeCache (psc);
+//			OS.HeapFree(hHeap, 0, psc);
+//			psc = 0;
+//		}
 		if (glyphs != 0) {
 			OS.HeapFree(hHeap, 0, glyphs);
 			glyphs = 0;
@@ -152,7 +154,6 @@ void computeRuns (GC gc) {
 		if (font == null) font = device.getSystemFont();
 		OS.SelectObject(srcHdc, font.handle);
 		shape(srcHdc, run);
-		place(srcHdc, run);
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	int lineWidth = 0, lineStart = 0, lineCount = 1;
@@ -255,9 +256,7 @@ void computeRuns (GC gc) {
 					if (font == null) font = device.getSystemFont();
 					OS.SelectObject(srcHdc, font.handle);
 					shape (srcHdc, run);
-					place (srcHdc, run);
 					shape (srcHdc, newRun);
-					place (srcHdc, newRun);
 					StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
 					System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
 					System.arraycopy(allRuns, i + 1, newAllRuns, i + 2, allRuns.length - i - 1);
@@ -276,7 +275,7 @@ void computeRuns (GC gc) {
 			lineCount++;
 		}
 	}
-	OS.DeleteDC(srcHdc);
+	if (srcHdc != 0) OS.DeleteDC(srcHdc);
 	if (gc == null) device.internal_dispose_GC(hDC, null);
 	lineWidth = 0;
 	runs = new StyleItem[lineCount][];
@@ -1173,24 +1172,6 @@ StyleItem[] merge (int items, int itemCount) {
 }
 
 /* 
- *  Compute sizes for one run. Need to shape before calling this function 
- */
-void place (int hdc, StyleItem run) {
-	int glyphCount = run.glyphCount;
-	int[] abc = new int[3];
-	int hHeap = OS.GetProcessHeap();
-	int pGoffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, glyphCount * 16); //GOFFSET has 2 LONG
-	int piAdvances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, glyphCount * 4);
-	/*int hr = */OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, piAdvances, pGoffsets, abc);
-	long[] pHeight = new long [1];
-	OS.ScriptCacheGetHeight(hdc, run.psc, pHeight);
-	run.advances = piAdvances;
-	run.goffsets = pGoffsets;
-	run.width = abc[0] + abc[1] + abc[2];
-	run.height = (int)pHeight[0]&0xFFFF;
-}
-
-/* 
  *  Reorder the run 
  */
 StyleItem[] reorder (StyleItem[] runs) {
@@ -1362,21 +1343,32 @@ public void setWidth (int width) {
  * Generate glyphs for one Run.
  */
 void shape (int hdc, StyleItem run) {
+	int[] buffer = new int[1];
 	char[] chars = new char[run.length];
 	text.getChars(run.start, run.start + run.length, chars, 0);
-	int MAX_GLYPHS = chars.length * 2;
-	int[] pcGlyphs = new int[1];
+	int MAX_GLYPHS = (chars.length * 3 / 2) + 16;
 	int hHeap = OS.GetProcessHeap();
 	int pGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * 2);
 	int pClusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * 2);
 	int psva = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * SCRIPT_VISATTR_SIZEOF);
-	if (run.psc == 0) run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, 4);
-	/*int hr = */OS.ScriptShape(hdc, run.psc, chars, chars.length, MAX_GLYPHS, run.analysis, pGlyphs, pClusters, psva, pcGlyphs);
-//	if (hr == E_OUTOFMEMORY) //TODO handle it
-//	if (hr == USP_E_SCRIPT_NOT_IN_FONT) //TODO handle it		
+	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, 4);
+	OS.ScriptShape(hdc, run.psc, chars, chars.length, MAX_GLYPHS, run.analysis, pGlyphs, pClusters, psva, buffer);
+	//TODO
+//	if (hr == E_OUTOFMEMORY)
+//	if (hr == USP_E_SCRIPT_NOT_IN_FONT)
+	device.addScriptCache(run.psc);
 	run.glyphs = pGlyphs;
-	run.glyphCount = pcGlyphs[0];
+	run.glyphCount = buffer[0];
 	run.clusters = pClusters;
 	run.visAttrs = psva;
+	int[] abc = new int[3];
+	int pGoffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
+	int piAdvances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
+	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, piAdvances, pGoffsets, abc);
+	OS.ScriptCacheGetHeight(hdc, run.psc, buffer);
+	run.advances = piAdvances;
+	run.goffsets = pGoffsets;
+	run.width = abc[0] + abc[1] + abc[2];
+	run.height = buffer[0];
 }
 }
