@@ -50,6 +50,16 @@
       </program>
    </item>
    <item
+         name="%launchitem.DND.name"
+         description="%launchitem.DND.description"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
+         id="org.eclipse.swt.examples.dnd.standalonelauncher">
+      <program
+            pluginId="org.eclipse.swt.examples"
+            mainClass="org.eclipse.swt.examples.dnd.DNDExample">
+      </program>
+   </item>
+   <item
          name="%launchitem.FileViewer.name"
          description="%launchitem.FileViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"

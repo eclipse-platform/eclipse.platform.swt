@@ -57,8 +57,10 @@ public class DNDExample {
 	private static final int TEXT = 8;
 	
 public static void main(String[] args) {
+	Display display = new Display();
 	DNDExample example = new DNDExample();
-	example.open();
+	example.open(display);
+	display.dispose();
 }
 
 private void addDragTransfer(Transfer transfer){
@@ -979,8 +981,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 	}
 }
 
-private void open() {
-	Display display = new Display();
+public void open(Display display) {
 	Shell shell = new Shell(display);
 	shell.setText("Drag and Drop Example");
 	shell.setLayout(new FormLayout());
