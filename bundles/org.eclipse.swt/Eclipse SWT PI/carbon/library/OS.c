@@ -674,7 +674,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MenuEvent(JNIEnv 
 				jintArray eventData) {
 	EventRecord event;
 	copyEventData(env, &event, eventData);
-	return (jint) RC(MenuEvent(&event));
+	return (jint) MenuEvent(&event);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEvent(JNIEnv *env, jclass zz, jshort kind, jint message) {
