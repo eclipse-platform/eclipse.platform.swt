@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -22,6 +23,8 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Region
  */
 public class Test_org_eclipse_swt_graphics_Region extends SwtTestCase {
+	
+	Display display;
 
 public Test_org_eclipse_swt_graphics_Region(String name) {
 	super(name);
@@ -32,14 +35,16 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	display = new Display();
 }
 
 protected void tearDown() {
+	display.dispose();
 }
 
 public void test_Constructor(){
 	// test Region()
-	Region reg = new Region();
+	Region reg = new Region(display);
 	if (reg.isDisposed()) {
 		fail("Constructor for Region didn't initialize handle field");
 	}
@@ -47,7 +52,7 @@ public void test_Constructor(){
 }
 
 public void test_addLorg_eclipse_swt_graphics_Rectangle(){
-	Region reg = new Region();
+	Region reg = new Region(display);
 	// add a rectangle
 	reg.add(new Rectangle(0, 0, 100, 50));
 	// add a second rectangle
@@ -71,9 +76,9 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle(){
 }
 
 public void test_addLorg_eclipse_swt_graphics_Region(){
-	Region reg1 = new Region();
+	Region reg1 = new Region(display);
 	// make a second region and add it to the first one
-	Region reg2 = new Region();
+	Region reg2 = new Region(display);
 	reg2.add(new Rectangle(40, 50, 10, 20));
 	reg1.add(reg2);
 
@@ -85,7 +90,7 @@ public void test_addLorg_eclipse_swt_graphics_Region(){
 	}
 
 	try {
-		reg2 = new Region();
+		reg2 = new Region(display);
 		reg2.add(new Rectangle(1,1,100,200));
 		reg2.dispose();
 		reg1.add(reg2);
@@ -97,7 +102,7 @@ public void test_addLorg_eclipse_swt_graphics_Region(){
 	reg1.dispose();
 	
 	try {
-		reg2 = new Region();
+		reg2 = new Region(display);
 		reg2.add(new Rectangle(1,1,100,200));
 		reg1.add(reg2);
 		fail("no exception thrown for adding a Region to a Region which got disposed");
@@ -113,7 +118,7 @@ public void test_containsII(){
 	Point pointInRect2 = new Point(1049,1009);
 	Point pointNotInRect12 = new Point(49,110);
 	
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.dispose();
 	try {
 		boolean res = reg.contains(pointInRect1.x, pointInRect1.y);
@@ -122,7 +127,7 @@ public void test_containsII(){
 	catch (Exception e) {
 	}
 	
-	reg = new Region();
+	reg = new Region(display);
 	if (reg.contains(pointInRect1.x, pointInRect1.y)) {
 		reg.dispose();
 		fail("Empty region should not contain point");
@@ -152,7 +157,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point(){
 	Point pointInRect2 = new Point(1049,1009);
 	Point pointNotInRect12 = new Point(49,110);
 	
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.dispose();
 	try {
 		boolean res = reg.contains(pointInRect1);
@@ -161,7 +166,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point(){
 	catch (Exception e) {
 	}
 	
-	reg = new Region();
+	reg = new Region(display);
 	if (reg.contains(pointInRect1)) {
 		reg.dispose();
 		fail("Empty region should not contain point");
@@ -185,7 +190,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point(){
 }
 
 public void test_dispose(){
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.add(new Rectangle(1,1,50,100));
 	if (reg.isDisposed()) {
 		fail("Region should not be in the disposed state");
@@ -204,7 +209,7 @@ public void test_equalsLjava_lang_Object(){
 	Rectangle rect1 = new Rectangle(25, 100, 200, 780);
 	Rectangle rect2 = new Rectangle(30, 105, 205, 785);
 	
-	Region reg1 = new Region();
+	Region reg1 = new Region(display);
 	reg1.add(rect1);
 
 	Region reg2 = reg1;
@@ -215,7 +220,7 @@ public void test_equalsLjava_lang_Object(){
 		fail("references to the same instance of Region should be considered equal");
 	}
 	
-	reg2 = new Region();
+	reg2 = new Region(display);
 	reg2.add(rect1);
 	
 // Currently, Regions are only "equal" if they have the same handle.
@@ -228,7 +233,7 @@ public void test_equalsLjava_lang_Object(){
 //	}		
 	
 	reg2.dispose();
-	reg2 = new Region();
+	reg2 = new Region(display);
 	if (reg1.equals(reg2)) {
 		reg1.dispose();
 		reg2.dispose();
@@ -247,7 +252,7 @@ public void test_equalsLjava_lang_Object(){
 }
 
 public void test_getBounds(){
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.dispose();
 	
 	try {
@@ -262,7 +267,7 @@ public void test_getBounds(){
 	// the rectangle enclosing the two preceding rectangles
 	Rectangle rect12Bounds = new Rectangle(10,10,100,100);
 	
-	reg = new Region();
+	reg = new Region(display);
 	reg.add(rect1);
 	Rectangle rect1Bis = reg.getBounds();
 	if (rect1Bis.x != rect1.x || rect1Bis.y != rect1.y || 
@@ -283,8 +288,8 @@ public void test_getBounds(){
 }
 
 public void test_hashCode(){
-	Region reg1 = new Region();
-	Region reg2 = new Region();
+	Region reg1 = new Region(display);
+	Region reg2 = new Region(display);
 		
 	Rectangle rect1 = new Rectangle(25, 100, 200, 780);
 	Rectangle rect2 = new Rectangle(30, 105, 205, 785);
@@ -299,7 +304,7 @@ public void test_hashCode(){
 	}
 	reg2.dispose();	
 
-	reg2 = new Region();
+	reg2 = new Region(display);
 	reg2.add(rect1);
 
 
@@ -324,7 +329,7 @@ public void test_intersectsIIII(){
 	Rectangle rectNotInter12 = new Rectangle(40,50,5,15);
 	
 	
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.dispose();
 	try {
 		boolean res = reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
@@ -333,7 +338,7 @@ public void test_intersectsIIII(){
 	catch (Exception e) {
 	}
 	
-	reg = new Region();
+	reg = new Region(display);
 	if (reg.intersects(rect1.x, rect1.y, rect1.width, rect1.height)) {
 		reg.dispose();
 		fail("intersects can't return true on empty region");
@@ -378,7 +383,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
 	Rectangle rectNotInter12 = new Rectangle(40,50,5,15);
 	
 	
-	Region reg = new Region();
+	Region reg = new Region(display);
 	reg.dispose();
 	try {
 		boolean res = reg.intersects(rectInter1);
@@ -387,7 +392,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
 	catch (Exception e) {
 	}
 	
-	reg = new Region();
+	reg = new Region(display);
 	if (reg.intersects(rect1)) {
 		reg.dispose();
 		fail("intersects can't return true on empty region");
@@ -427,7 +432,7 @@ public void test_isDisposed(){
 }
 
 public void test_isEmpty(){
-	Region reg = new Region();
+	Region reg = new Region(display);
 	Rectangle emptyRect1 = new Rectangle(10,20,0,200);
 	Rectangle emptyRect2 = new Rectangle(10,20,10,0);
 	Rectangle rect = new Rectangle(10,20,50,100);
@@ -463,7 +468,7 @@ public void test_win32_newI(){
 }
 
 public void test_toString(){
-	Region reg = new Region();
+	Region reg = new Region(display);
 	
 	String s = reg.toString();
 	
