@@ -588,7 +588,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 	int memHdc = OS.CreateCompatibleDC(handle);
-	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcWidth, destHeight), 32);
+	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcHeight, destHeight), 32);
 	int oldMemBitmap = OS.SelectObject(memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP();
@@ -611,7 +611,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	if (hasAlphaChannel) {
 		final int apinc = imgWidth - srcWidth;
 		final int spinc = dibBM.bmWidthBytes - srcWidth * 4;
-		int ap = 0, sp = 3;
+		int ap = srcY * imgWidth + srcX, sp = 3;
 		byte[] alphaData = srcImage.alphaData;
 		for (int y = 0; y < srcHeight; ++y) {
 			for (int x = 0; x < srcWidth; ++x) {
