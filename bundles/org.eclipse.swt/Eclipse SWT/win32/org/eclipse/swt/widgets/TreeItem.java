@@ -634,7 +634,7 @@ public void setFont (Font font){
 	/*
 	* Bug in Windows.  When the font is changed for an item,
 	* the bounds for the item are not updated, causing the text
-	* to be clipped.  The fix is to re-set the text, causing
+	* to be clipped.  The fix is to reset the text, causing
 	* Windows to compute the new bounds using the new font.
 	*/
 	_setText (text);
