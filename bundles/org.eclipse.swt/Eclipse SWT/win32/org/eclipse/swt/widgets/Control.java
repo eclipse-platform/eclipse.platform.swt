@@ -2688,6 +2688,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
+		case OS.WM_QUERYENDSESSION:	result = WM_QUERYENDSESSION (wParam, lParam); break;
 		case OS.WM_QUERYNEWPALETTE:	result = WM_QUERYNEWPALETTE (wParam, lParam); break;
 		case OS.WM_QUERYOPEN:			result = WM_QUERYOPEN (wParam, lParam); break;
 		case OS.WM_RBUTTONDBLCLK:		result = WM_RBUTTONDBLCLK (wParam, lParam); break;
@@ -3632,6 +3633,10 @@ LRESULT WM_PALETTECHANGED (int wParam, int lParam) {
 }
 
 LRESULT WM_PASTE (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_QUERYENDSESSION (int wParam, int lParam) {
 	return null;
 }
 

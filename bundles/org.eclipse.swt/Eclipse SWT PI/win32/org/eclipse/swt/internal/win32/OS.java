@@ -1091,6 +1091,7 @@ public class OS {
 	public static final int WM_PAINT = 0xf;
 	public static final int WM_PALETTECHANGED = 0x311;
 	public static final int WM_PASTE = 0x302;
+	public static final int WM_QUERYENDSESSION = 0x11;
 	public static final int WM_QUERYNEWPALETTE = 0x30f;
 	public static final int WM_QUERYOPEN = 0x13;
 	public static final int WM_RBUTTONDBLCLK = 0x206;
@@ -2298,8 +2299,7 @@ public static final native int TranslateAcceleratorW (int hWnd, int hAccTable, M
 public static final native int TranslateAcceleratorA (int hWnd, int hAccTable, MSG lpMsg);
 public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
 public static final native boolean TranslateMessage (MSG lpmsg);
-public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);
-public static final native boolean UnhookWindowsHookEx(int hhk);
+public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);public static final native boolean UnhookWindowsHookEx(int hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int hInstance);
 public static final native boolean UnregisterClassA (byte [] lpClassName, int hInstance);
 public static final native boolean UpdateWindow (int hWnd);
@@ -2312,4 +2312,4 @@ public static final native int WideCharToMultiByte (int CodePage, int dwFlags, c
 public static final native int WindowFromDC (int lpPoint);
 public static final native int WindowFromPoint (POINT lpPoint);
 
-}
+public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);}
