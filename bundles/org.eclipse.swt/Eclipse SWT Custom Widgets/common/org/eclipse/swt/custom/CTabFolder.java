@@ -181,6 +181,9 @@ public class CTabFolder extends Composite {
 	// insertion marker
 	int insertionIndex = -2; // Index of insert marker.  Marker always shown after index.
 	                         // -2 means no insert marker
+
+	// keeps tab close buttons aligned
+	int rightAnchor = SWT.DEFAULT;
 	
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
@@ -625,11 +628,13 @@ void destroyItem (CTabItem item) {
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
+		rightAnchor = item.x + item.width;
 	} else if (selectedIndex > index) {
 		selectedIndex --;
 	}
 	
 	updateItems();
+	rightAnchor = SWT.DEFAULT;
 	redraw();
 }
 void drawBackground(GC gc, int[] shape, boolean selected) {
@@ -2609,6 +2614,10 @@ boolean setItemLocation() {
 			int oldX = item.x, oldY = item.y;
 			int tabWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 			int indent = Math.max(0, (tabWidth-item.width)/2);
+			if (rightAnchor != SWT.DEFAULT) {
+				int indentWithAnchor = rightAnchor - item.width;
+				indent = Math.max(indent, indentWithAnchor - borderLeft);
+			}
 			item.x = borderLeft + indent; 
 			item.y = y;
 			if (showClose || item.showClose) {
@@ -2879,9 +2888,11 @@ public void setSelection(int index) {
 		control = items[oldIndex].control;
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
-		}		
+		}
+		rightAnchor = items[oldIndex].x + items[oldIndex].width;
 	}
 	updateItems();
+	rightAnchor = SWT.DEFAULT;
 	redraw();
 }
 void setSelection(int index, boolean notify) {	
