@@ -902,7 +902,7 @@ void setCAUUIDFields(JNIEnv *env, jobject lpObject, CAUUID *lpStruct, PCAUUID_FI
 typedef struct CONTROLINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID dwFlags, /*filler,*/ cAccel, hAccel, cb;
+	jfieldID dwFlags, cAccel, hAccel, cb;
 } CONTROLINFO_FID_CACHE;
 typedef CONTROLINFO_FID_CACHE *PCONTROLINFO_FID_CACHE;
 
@@ -990,7 +990,7 @@ void setFORMATETCFields(JNIEnv *env, jobject lpObject, FORMATETC *lpStruct, PFOR
 typedef struct FUNCDESC1_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID wFuncFlags, elemdescFunc_paramdesc_wParamFlags, elemdescFunc_paramdesc_pparamdescex, elemdescFunc_tdesc_filler, elemdescFunc_tdesc_vt, elemdescFunc_tdesc_union, cScodes, oVft, cParamsOpt, cParams, callconv, invkind, funckind, lprgelemdescParam, lprgscode, memid;
+	jfieldID wFuncFlags, elemdescFunc_paramdesc_wParamFlags, elemdescFunc_paramdesc_pparamdescex, elemdescFunc_tdesc_vt, elemdescFunc_tdesc_union, cScodes, oVft, cParamsOpt, cParams, callconv, invkind, funckind, lprgelemdescParam, lprgscode, memid;
 } FUNCDESC1_FID_CACHE;
 typedef FUNCDESC1_FID_CACHE *PFUNCDESC1_FID_CACHE;
 
@@ -1002,7 +1002,7 @@ void setFUNCDESC1Fields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct, PFUNC
 typedef struct FUNCDESC2_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID wFuncFlags, elemdescFunc_idldesc_filler, elemdescFunc_idldesc_wIDLFlags, elemdescFunc_idldesc_dwReserved, elemdescFunc_tdesc_filler, elemdescFunc_tdesc_vt, elemdescFunc_tdesc_union, cScodes, oVft, cParamsOpt, cParams, callconv, invkind, funckind, lprgelemdescParam, lprgscode, memid;
+	jfieldID wFuncFlags, elemdescFunc_idldesc_wIDLFlags, elemdescFunc_idldesc_dwReserved, elemdescFunc_tdesc_vt, elemdescFunc_tdesc_union, cScodes, oVft, cParamsOpt, cParams, callconv, invkind, funckind, lprgelemdescParam, lprgscode, memid;
 } FUNCDESC2_FID_CACHE;
 typedef FUNCDESC2_FID_CACHE *PFUNCDESC2_FID_CACHE;
 
@@ -1106,7 +1106,7 @@ void setSTGMEDIUMFields(JNIEnv *env, jobject lpObject, STGMEDIUM *lpStruct, PSTG
 typedef struct TYPEATTR_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID idldescType_wIDLFlags, idldescType_dwReserved, filler, tdescAlias_vt, tdescAlias_unionField, wMinorVerNum, wMajorVerNum, wTypeFlags, cbAlignment, cbSizeVft, cImplTypes, cVars, cFuncs, typekind, cbSizeInstance, lpstrSchema, memidDestructor, memidConstructor, dwReserved, lcid, guid_b7, guid_b6, guid_b5, guid_b4, guid_b3, guid_b2, guid_b1, guid_b0, guid_data3, guid_data2, guid_data1;
+	jfieldID idldescType_wIDLFlags, idldescType_dwReserved, tdescAlias_vt, tdescAlias_unionField, wMinorVerNum, wMajorVerNum, wTypeFlags, cbAlignment, cbSizeVft, cImplTypes, cVars, cFuncs, typekind, cbSizeInstance, lpstrSchema, memidDestructor, memidConstructor, dwReserved, lcid, guid_b7, guid_b6, guid_b5, guid_b4, guid_b3, guid_b2, guid_b1, guid_b0, guid_data3, guid_data2, guid_data1;
 } TYPEATTR_FID_CACHE;
 typedef TYPEATTR_FID_CACHE *PTYPEATTR_FID_CACHE;
 
@@ -1118,7 +1118,7 @@ void setTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct, PTYPEA
 typedef struct VARDESC1_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID varkind, filler, wVarFlags, elemdescVar_paramdesc_filler, elemdescVar_paramdesc_wParamFlags, elemdescVar_paramdesc_pparamdescex, elemdescVar_tdesc_filler, elemdescVar_tdesc_vt, elemdescVar_tdesc_union, unionField, lpstrSchema, memid;
+	jfieldID varkind, wVarFlags, elemdescVar_paramdesc_wParamFlags, elemdescVar_paramdesc_pparamdescex, elemdescVar_tdesc_vt, elemdescVar_tdesc_union, unionField, lpstrSchema, memid;
 } VARDESC1_FID_CACHE;
 typedef VARDESC1_FID_CACHE *PVARDESC1_FID_CACHE;
 
@@ -1130,7 +1130,7 @@ void setVARDESC1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct, PVARDES
 typedef struct VARDESC2_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID varkind, filler, wVarFlags, elemdescFunc_idldesc_filler, elemdescFunc_idldesc_wIDLFlags, elemdescFunc_idldesc_dwReserved, elemdescVar_tdesc_filler, elemdescVar_tdesc_vt, elemdescVar_tdesc_union, unionField, lpstrSchema, memid;
+	jfieldID varkind, wVarFlags, elemdescFunc_idldesc_wIDLFlags, elemdescFunc_idldesc_dwReserved, elemdescVar_tdesc_vt, elemdescVar_tdesc_union, unionField, lpstrSchema, memid;
 } VARDESC2_FID_CACHE;
 typedef VARDESC2_FID_CACHE *PVARDESC2_FID_CACHE;
 
