@@ -223,7 +223,10 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
-	return parent.getFont ();
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FONT_COLUMN, ptr, -1);
+	if (ptr [0] == 0) return parent.getFont ();
+	return Font.gtk_new (display, ptr[0]);
 }
 
 /**
@@ -242,7 +245,13 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
-	return parent.getFont ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return getFont ();
+	int [] ptr = new int [1];
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 4, ptr, -1);
+	if (ptr [0] == 0) return getFont ();
+	return Font.gtk_new (display, ptr[0]);
 }
 
 /**
