@@ -1424,4 +1424,6 @@ public class OS {
 	// process manager
 	public static native int GetCurrentProcess(int[] psn);
 	public static native int SetFrontProcess(int[] psn);
+	
+	public static final int kCFAllocatorDefault = 0;
 }

@@ -55,7 +55,7 @@ public abstract class Widget {
 //	static final int RESIZEREDRAW	= 0x00000010;
 //	static final int WRAP			= 0x00000020;
 //	static final int DISABLED		= 0x00000040;
-//	static final int HIDDEN			= 0x00000080;
+	static final int HIDDEN			= 0x00000080;
 //	static final int FOREGROUND		= 0x00000100;
 //	static final int BACKGROUND		= 0x00000200;
 	static final int DISPOSED		= 0x00000400;

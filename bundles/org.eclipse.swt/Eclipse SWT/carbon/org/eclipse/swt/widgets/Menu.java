@@ -213,19 +213,19 @@ static int checkStyle (int style) {
 }
 
 void createHandle () {
+	state |= HIDDEN;
 	Display display= getDisplay();
 	int menuHandle[]= new int[1];
 	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.kNoErr)
 		handle= menuHandle[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.RetainMenu(handle);
-	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc,
-		new int[] {
-			OS.kEventClassMenu, OS.kEventMenuOpening,
-			OS.kEventClassMenu, OS.kEventMenuClosed
-		},
-		handle
-	);
+	int[] mask = new int[] {
+		OS.kEventClassMenu, OS.kEventMenuOpening,
+		OS.kEventClassMenu, OS.kEventMenuClosed
+	};
+	//OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc, mask, handle);
 }
 
 void createItem (MenuItem item, int index) {
@@ -541,7 +541,10 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	return true;
+	if ((style & SWT.BAR) != 0) {
+		return this == parent.menuShell ().menuBar;
+	}
+	return (state & HIDDEN) == 0;
 }
 
 /**
@@ -628,11 +631,13 @@ public boolean isVisible () {
 
 int processHide (Object callData) {
 	//sendEvent (SWT.Hide);
+	state |= HIDDEN;
 	postEvent (SWT.Hide);	// fix for #23947
 	return 0;
 }
 
 int processShow (Object callData) {
+	state &= ~HIDDEN;
 	sendEvent (SWT.Show);
 	return 0;
 }
@@ -683,7 +688,10 @@ void releaseWidget () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) {
+			item.releaseWidget ();
+			item.releaseHandle ();
+		}
 	}
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);

@@ -6,9 +6,6 @@ package org.eclipse.swt.widgets;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
-import java.io.StreamTokenizer;
-import java.util.StringTokenizer;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -34,7 +31,7 @@ import org.eclipse.swt.internal.carbon.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int id, accelerator;
-	private int cIconHandle;
+	int cIconHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -209,32 +206,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
-/* AW
-void fillAccel (ACCEL accel) {
-	accel.fVirt = 0;
-	accel.cmd = accel.key = 0;
-	if (accelerator == 0) return;
-	int key = accelerator & ~(SWT.ALT | SWT.CTRL | SWT.SHIFT);
-	int newKey = Display.untranslateKey (key);
-	if (newKey != 0) {
-		key = newKey;
-	} else {
-		if (key == 0x7F) {
-			key = OS.VK_DELETE;
-		} else {
-			short ch = (short) wcsToMbcs ((char) key);
-			key = OS.CharUpper (ch);
-		}
-	}
-	accel.key = (short) key;
-	accel.cmd = (short) id;
-	accel.fVirt = (byte) OS.FVIRTKEY;
-	if ((accelerator & SWT.ALT) != 0) accel.fVirt |= OS.FALT;
-	if ((accelerator & SWT.CTRL) != 0) accel.fVirt |= OS.FCONTROL;
-	if ((accelerator & SWT.SHIFT) != 0) accel.fVirt |= OS.FSHIFT;
-}
-*/
-
 /**
  * Return the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -258,6 +229,7 @@ public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -273,8 +245,9 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	return OS.IsMenuCommandEnabled(parent.handle, id);
+	return OS.IsMenuCommandEnabled (parent.handle, id);
 }
+
 /**
  * Returns the receiver's cascade menu if it has one or null
  * if it does not. Only <code>CASCADE</code> menu items can have
@@ -330,16 +303,38 @@ public Menu getParent () {
  */
 public boolean getSelection () {
 	checkWidget ();
-	
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	
-	char[] markchar= new char[1];
-	if (OS.GetMenuCommandMark(parent.handle, id, markchar) == OS.kNoErr)
-		return markchar[0] != 0;
-		
-	error (SWT.ERROR_CANNOT_GET_SELECTION);
-	return false;
+	char [] outMark = new char [1];
+	if (OS.GetMenuCommandMark (parent.handle, id, outMark) != OS.kNoErr) {
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	}
+	return outMark [0] != 0;
 }
+
+void handleMenuSelect () {
+	if ((style & SWT.CHECK) != 0) {
+		setSelection (!getSelection ());
+	} else {
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+				setSelection (!getSelection ());
+			} else {
+				selectRadio ();
+			}
+		}
+	}
+	Event event = new Event ();
+	/* AW
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
+	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
+	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	*/
+	postEvent (SWT.Selection, event);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -359,6 +354,42 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int keyGlyph (int key) {
+	switch (key) {
+		case SWT.BS: return OS.kMenuDeleteLeftGlyph;
+		case SWT.CR: return OS.kMenuReturnGlyph;
+		case SWT.DEL: return OS.kMenuDeleteRightGlyph;
+		case SWT.ESC: return OS.kMenuEscapeGlyph;
+		case SWT.LF: return OS.kMenuReturnGlyph;
+		case SWT.TAB: return OS.kMenuTabRightGlyph;
+		case ' ': return OS.kMenuBlankGlyph;
+//		case ' ': return OS.kMenuSpaceGlyph;
+		case SWT.ALT: return OS.kMenuOptionGlyph;
+		case SWT.SHIFT: return OS.kMenuShiftGlyph;
+		case SWT.CONTROL: return OS.kMenuControlISOGlyph;
+		case SWT.COMMAND: return OS.kMenuCommandGlyph;
+		case SWT.ARROW_UP: return OS.kMenuUpArrowGlyph;
+		case SWT.ARROW_DOWN: return OS.kMenuDownArrowGlyph;
+		case SWT.ARROW_LEFT: return OS.kMenuLeftArrowGlyph;
+		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
+		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
+		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
+		case SWT.F1: return OS.kMenuF1Glyph;
+		case SWT.F2: return OS.kMenuF2Glyph;
+		case SWT.F3: return OS.kMenuF3Glyph;
+		case SWT.F4: return OS.kMenuF4Glyph;
+		case SWT.F5: return OS.kMenuF5Glyph;
+		case SWT.F6: return OS.kMenuF6Glyph;
+		case SWT.F7: return OS.kMenuF7Glyph;
+		case SWT.F8: return OS.kMenuF8Glyph;
+		case SWT.F9: return OS.kMenuF9Glyph;
+		case SWT.F10: return OS.kMenuF10Glyph;
+		case SWT.F11: return OS.kMenuF11Glyph;
+		case SWT.F12: return OS.kMenuF12Glyph;
+	}
+	return OS.kMenuNullGlyph;
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	if (menu != null) menu.dispose ();
@@ -373,16 +404,16 @@ void releaseWidget () {
 	}
 	menu = null;
 	super.releaseWidget ();
-	if (accelerator != 0) {
-		parent.destroyAcceleratorTable ();
-	}
 	accelerator = 0;
+	if (this == parent.defaultItem) {
+		parent.defaultItem = null;
+	}
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
 	if (cIconHandle != 0) {
-		Image.disposeCIcon(cIconHandle);
-		cIconHandle= 0;
+		Image.disposeCIcon (cIconHandle);
+		cIconHandle = 0;
     }
 }
 
@@ -409,6 +440,7 @@ public void removeArmListener (ArmListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Arm, listener);
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.
@@ -432,6 +464,7 @@ public void removeHelpListener (HelpListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
@@ -457,6 +490,17 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void selectRadio () {
+	int index = 0;
+	MenuItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
+}
+
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -472,17 +516,38 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget ();
-	
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.kNoErr) {
+		return;
+	}
+	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
 	this.accelerator = accelerator;
-	parent.destroyAcceleratorTable ();
-		
-	int hMenu= parent.handle;
-	short[] index= new short[1];
-	OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
-	if (index[0] > 0)
-		setAccelerator(hMenu, index[0], accelerator);
-	else
-		error (SWT.ERROR_CANNOT_SET_TEXT);
+	boolean inSetVirtualKey = false;
+	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
+	if (accelerator != 0) {
+		inKey = accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT | SWT.COMMAND);
+		if (MacUtil.KEEP_MAC_SHORTCUTS) {
+			if ((accelerator & SWT.COMMAND) != 0)
+				if (inKey == 'H' || inKey == 'Q') return;
+		}
+		inGlyph = keyGlyph (inKey);
+		int virtualKey = Display.untranslateKey (inKey);
+		if (virtualKey != 0) {
+			inSetVirtualKey = true;
+			inKey = virtualKey;
+		} else {
+			inKey = Character.toUpperCase ((char)inKey);
+		}
+		inModifiers = (byte) OS.kMenuNoCommandModifier;
+		if ((accelerator & SWT.SHIFT) != 0) inModifiers |= OS.kMenuShiftModifier;
+		if ((accelerator & SWT.CONTROL) != 0) inModifiers |= OS.kMenuControlModifier;
+		if ((accelerator & SWT.COMMAND) != 0) inModifiers &= ~OS.kMenuNoCommandModifier;
+		if ((accelerator & SWT.ALT) != 0) inModifiers |= OS.kMenuOptionModifier;
+	}
+	OS.SetMenuItemModifiers (parent.handle, outIndex [0], (byte)inModifiers);
+	OS.SetMenuItemCommandKey (parent.handle, outIndex [0], inSetVirtualKey, (char)inKey);
+	OS.SetMenuItemKeyGlyph (parent.handle, outIndex [0], (short)inGlyph);
+	if (update) updateText ();
 }
 
 /**
@@ -500,11 +565,17 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	int hMenu = parent.handle;
-	if (enabled)
-		OS.EnableMenuCommand(hMenu, id);
-	else
-		OS.DisableMenuCommand(hMenu, id);
+	short [] outIndex = new short [1];
+	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
+	int outMenuRef [] = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
+	if (enabled) {
+		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
+		OS.EnableMenuCommand (parent.handle, id);
+	} else {
+		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
+		OS.DisableMenuCommand (parent.handle, id);
+	}
 }
 
 /**
@@ -524,19 +595,12 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	
-	if (MacUtil.USE_MENU_ICONS) {
-		if (cIconHandle != 0)
-			Image.disposeCIcon(cIconHandle);
-		cIconHandle= Image.carbon_createCIcon(image);
-		if (cIconHandle != 0) {
-			int hMenu = parent.handle;
-			short[] index= new short[1];
-			OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
-			if (index[0] >= 1) {
-				OS.SetMenuItemIconHandle(hMenu, index[0], (byte)4, cIconHandle);
-			} else
-				error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (cIconHandle != 0) Image.disposeCIcon (cIconHandle);
+	cIconHandle = Image.carbon_createCIcon (image);
+	if (cIconHandle != 0) {
+		short [] outIndex = new short[1];
+		if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) == OS.kNoErr) {
+			OS.SetMenuItemIconHandle (parent.handle, outIndex [0], (byte)4, cIconHandle);
 		}
 	}
 }
@@ -577,46 +641,36 @@ public void setMenu (Menu menu) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
 	}
-
+	
 	/* Assign the new menu */
-	Menu oldMenu = this.menu;
-	if (oldMenu == menu) return;
-	if (oldMenu != null) oldMenu.cascade = null;
-	this.menu = menu;
-
-	if (parent == null) {
-		System.out.println("MenuItem.setMenu: parent == null");
-		return;
+	if (this.menu == menu) return;
+	if (this.menu != null) this.menu.cascade = null;
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.kNoErr) {
+		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
-	
-	/* Assign the new menu in the OS */
-	int hMenu = parent.handle;
-	int newMenuHandle= 0;
-	if (menu != null) {
+	int inHierMenu = menu != null ? menu.handle : 0;
+	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], inHierMenu) != OS.kNoErr) {
+		error (SWT.ERROR_CANNOT_SET_MENU);
+	}
+	if ((this.menu = menu) != null) {
 		menu.cascade = this;
-		newMenuHandle= menu.handle;
-	}
-	
-	short[] index= new short[1];
-	OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
-	if (index[0] >= 1) {
-		if (OS.SetMenuItemHierarchicalMenu(hMenu, index[0], newMenuHandle) == OS.kNoErr) {
-			if (menu != null) {
-				// we set the menu's title to the item's title
-				int sHandle= 0;
-				try {
-					sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(getText()));
-					OS.SetMenuTitleWithCFString(menu.handle, sHandle);
-				} finally {
-					if (sHandle != 0)
-						OS.CFRelease(sHandle);
-				}
-			}
-		} else
+		int [] outString = new int [1];
+		if (OS.CopyMenuItemTextAsCFString (parent.handle, outIndex [0], outString) != OS.kNoErr) {
 			error (SWT.ERROR_CANNOT_SET_MENU);
+		}
+		OS.SetMenuTitleWithCFString (inHierMenu, outString [0]);
+		OS.CFRelease (outString [0]);
 	}
-	
-	parent.destroyAcceleratorTable ();
+}
+
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 /**
@@ -634,302 +688,45 @@ public void setMenu (Menu menu) {
  */
 public void setSelection (boolean selected) {
 	checkWidget ();
-
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-		
-	char markChar= 0;
-	if (selected)
-		markChar= ((style & SWT.RADIO) != 0) ? OS.diamondMark : OS.checkMark;
-		
-	if (OS.SetMenuCommandMark(parent.handle, id, markChar) != OS.kNoErr)
+	int inMark = selected ? ((style & SWT.RADIO) != 0) ? OS.diamondMark : OS.checkMark : 0;
+	if (OS.SetMenuCommandMark (parent.handle, id, (char) inMark) != OS.kNoErr) {
 		error (SWT.ERROR_CANNOT_SET_SELECTION);
+	}
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	
 	super.setText (string);
-		
-	int hMenu = parent.handle;
-	
-	short[] index= new short[1];
-	OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
-	if (index[0] >= 1) {
-		int sHandle= 0;
-		try {
-			sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(text));
-			OS.SetMenuItemTextWithCFString(hMenu, index[0], sHandle);
-		} finally {
-			OS.CFRelease(sHandle);
-		}
-		setAccelerator(hMenu, index[0], parseShortcut(string));
-	} else
+	updateText ();
+}
+
+void updateText () {
+	if ((style & SWT.SEPARATOR) != 0) return;
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.kNoErr) {
 		error (SWT.ERROR_CANNOT_SET_TEXT);
-}
-
-////////////////////////////////////////
-// Mac Stuff
-////////////////////////////////////////
-
-void handleMenuSelect () {
-
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		setSelection (!getSelection ());
 	}
-	// System.out.println("handleMenuSelect: " + getText() + "  " + getSelection());
-	
-	Event event = new Event ();
-	/* AW
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
-	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
-	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
-	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
-	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
-	*/
-	postEvent (SWT.Selection, event);
-}
-
-static String removeMnemonicsAndShortcut(String s) {
-	if (s.indexOf('&') >= 0 || s.indexOf('\t') >= 0) {
-		StringBuffer sb= new StringBuffer();
-		int l= s.length();
-		for (int i= 0; i < l; i++) {
-			char c= s.charAt(i);
-			if (c == '\t')
-				break;
-			if (c == '&') {
-				if (i+2 < l && s.charAt(i+2) == ' ') {
-					if (Character.isDigit(s.charAt(i+1)))
-						i+= 2;
-				}
-			} else {
-				sb.append(c);
-			}
-		}
-		s= sb.toString();
-	}
-	return s;
-}
-
-private static void setAccelerator(int menu, short index, int accelerator) {
-
-	if (accelerator == 0) {
-		OS.SetMenuItemCommandKey(menu, index, false, (char)0);
-		OS.SetMenuItemKeyGlyph(menu, index, OS.kMenuNullGlyph);
-		OS.SetMenuItemModifiers(menu, index, OS.kMenuNoModifiers);
-		return;
-	}
-	
-	int key= accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT);
-
-	if (MacUtil.KEEP_MAC_SHORTCUTS) {
-		if ((accelerator & SWT.CONTROL) != 0)
-			if (key == 'H' || key == 'Q')
-				return;
-	}
-	
-	int macKey= 0;
-	switch (key) {
-	case ' ':
-		macKey= 49;
-		break;
-	case SWT.CR:
-		macKey= 36;
-		break;
-	default:
-		macKey= Display.untranslateKey(key);
-		break;
-	}
-
-	// AW todo: use SetMenuItemData instead?
-
-	if (macKey == 0) {
-		char c= new String(new char[] { (char)(key & 0xff) } ).toUpperCase().charAt(0);
-		//System.out.println("  char: <" + c + ">");
-		OS.SetMenuItemCommandKey(menu, index, false, c);
-	} else {
-		//System.out.println("  virtual key: " + macKey);
-		char c= (char)macKey;
-		OS.SetMenuItemCommandKey(menu, index, true, c);
-		OS.SetMenuItemKeyGlyph(menu, index, keyGlyph(key));
-	}
-	
-	byte modifiers= 0;
-		
-	if ((accelerator & SWT.SHIFT) != 0)
-		modifiers |= OS.kMenuShiftModifier;
-
-	if ((accelerator & SWT.CONTROL) != 0) {
-		// we get the Command glyph for free so we don't have to do anything here
-	} else {
-		// but we have to remove it here...
-		modifiers |= OS.kMenuNoCommandModifier;
-	}
-	
-	if ((accelerator & SWT.ALT) != 0) {
-		modifiers |= OS.kMenuOptionModifier;
-		// force 'Alt' to have a 'Command' (by removing the NoCommand :-)
-		modifiers &= ~OS.kMenuNoCommandModifier;
-	}
-	
-	if (modifiers != 0)
-		OS.SetMenuItemModifiers(menu, index, modifiers);
-}
-
-private static int parseShortcut(String text) {
-	int accelerator= 0;
-	
-	int pos= text.indexOf('\t');
-	if (pos >= 0) {
-		text= text.substring(pos+1);
-		
-		/*
-		 * This parsing code is wrong because it works only for the english version of eclipse
-		 */
-		StringTokenizer st= new StringTokenizer(text, "+");
-		while (st.hasMoreTokens()) {
-			String t= st.nextToken().toUpperCase();
-			if ("SHIFT".equals(t))
-				accelerator |= SWT.SHIFT;
-			else if ("CTRL".equals(t))
-				accelerator |= SWT.CONTROL;
-			else if ("ALT".equals(t))
-				accelerator |= SWT.ALT;
-			else if ("F1".equals(t))
-				accelerator |= SWT.F1;
-			else if ("F2".equals(t))
-				accelerator |= SWT.F2;
-			else if ("F3".equals(t))
-				accelerator |= SWT.F3;
-			else if ("F4".equals(t))
-				accelerator |= SWT.F4;
-			else if ("F5".equals(t))
-				accelerator |= SWT.F5;
-			else if ("F6".equals(t))
-				accelerator |= SWT.F6;
-			else if ("F7".equals(t))
-				accelerator |= SWT.F7;
-			else if ("F8".equals(t))
-				accelerator |= SWT.F8;
-			else if ("F9".equals(t))
-				accelerator |= SWT.F9;
-			else if ("F10".equals(t))
-				accelerator |= SWT.F10;
-			else if ("F11".equals(t))
-				accelerator |= SWT.F11;
-			else if ("F12".equals(t))
-				accelerator |= SWT.F12;
-			else if ("DELETE".equals(t))
-				accelerator |= SWT.DEL;
-			else if ("ENTER".equals(t))
-				accelerator |= SWT.CR;
-			else if ("ARROW UP".equals(t) || "ARROW_UP".equals(t))
-				accelerator |= SWT.ARROW_UP;
-			else if ("ARROW DOWN".equals(t) || "ARROW_DOWN".equals(t))
-				accelerator |= SWT.ARROW_DOWN;
-			else if ("ARROW LEFT".equals(t) || "ARROW_LEFT".equals(t))
-				accelerator |= SWT.ARROW_LEFT;
-			else if ("ARROW RIGHT".equals(t) || "ARROW_RIGHT".equals(t))
-				accelerator |= SWT.ARROW_RIGHT;
-			else if ("SPACE".equals(t))
-				accelerator |= ' ';
-			else if ("TAB".equals(t))
-				accelerator |= '\t';
-			else {
-				if (t.length() > 1)
-					System.err.println("MenuItem.parseShortcut: unknown: <" + t + ">");
-				else {
-					accelerator |= t.charAt(0);
-					break;	// must be last
-				}
-			}
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if (accelerator != 0 && buffer [i] == '\t') break;
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
 		}
 	}
-	return accelerator;
+	//int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	int str = OS.CFStringCreateWithCharacters (new String(buffer, 0, j));
+	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetMenuItemTextWithCFString (parent.handle, outIndex [0], str);
+	int [] outHierMenu = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outHierMenu);
+	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
+	OS.CFRelease (str);
 }
-
-private static short keyGlyph(int key) {
-	switch (key) {
-	case ' ':
-		return OS.kMenuBlankGlyph;
-	case '\t':
-		return OS.kMenuTabRightGlyph;
-	case SWT.SHIFT:
-		return OS.kMenuShiftGlyph;
-	case SWT.CONTROL:
-		return OS.kMenuControlISOGlyph;
-		//return OS.kMenuControlGlyph;
-	case SWT.ALT:
-		return OS.kMenuOptionGlyph;
-	case SWT.ARROW_UP:
-		//return OS.kMenuUpArrowDashedGlyph;
-		return OS.kMenuUpArrowGlyph;
-	case SWT.ARROW_DOWN:
-		//return OS.kMenuDownwardArrowDashedGlyph;
-		return OS.kMenuDownArrowGlyph;
-	case SWT.ARROW_LEFT:
-		//return OS.kMenuLeftArrowDashedGlyph;
-		return OS.kMenuLeftArrowGlyph;
-	case SWT.ARROW_RIGHT:
-		//return OS.kMenuRightArrowDashedGlyph;
-		return OS.kMenuRightArrowGlyph;
-	case SWT.PAGE_UP:
-		return OS.kMenuPageUpGlyph;
-	case SWT.PAGE_DOWN:
-		return OS.kMenuPageDownGlyph;
-	case SWT.ESC:
-		return OS.kMenuEscapeGlyph;
-	case SWT.CR:
-		//return OS.kMenuEnterGlyph;
-		//return OS.kMenuNonmarkingReturnGlyph;
-		//return OS.kMenuReturnR2LGlyph;
-		//return OS.kMenuNonmarkingReturnGlyph;
-		return OS.kMenuReturnGlyph;
-	case SWT.BS:
-		return OS.kMenuDeleteLeftGlyph;
-	case SWT.DEL:
-		return OS.kMenuDeleteRightGlyph;
-	case SWT.F1:
-		return OS.kMenuF1Glyph;
-	case SWT.F2:
-		return OS.kMenuF2Glyph;
-	case SWT.F3:
-		return OS.kMenuF3Glyph;
-	case SWT.F4:
-		return OS.kMenuF4Glyph;
-	case SWT.F5:
-		return OS.kMenuF5Glyph;
-	case SWT.F6:
-		return OS.kMenuF6Glyph;
-	case SWT.F7:
-		return OS.kMenuF7Glyph;
-	case SWT.F8:
-		return OS.kMenuF8Glyph;
-	case SWT.F9:
-		return OS.kMenuF9Glyph;
-	case SWT.F10:
-		return OS.kMenuF10Glyph;
-	case SWT.F11:
-		return OS.kMenuF11Glyph;
-	case SWT.F12:
-		return OS.kMenuF12Glyph;
-	default:
-		/*
-		public static final short kMenuPencilGlyph = 15;
-		public static final short kMenuCommandGlyph = 17;
-		public static final short kMenuCheckmarkGlyph = 18;
-		public static final short kMenuDiamondGlyph = 19;
-		public static final short kMenuClearGlyph = 28;
-		public static final short kMenuCapsLockGlyph = 99;
-		public static final short kMenuHelpGlyph = 103;
-		public static final short kMenuContextualMenuGlyph = 109;
-		public static final short kMenuPowerGlyph = 110;
-		*/
-		return OS.kMenuNullGlyph;
-	}
-}
-
 }
