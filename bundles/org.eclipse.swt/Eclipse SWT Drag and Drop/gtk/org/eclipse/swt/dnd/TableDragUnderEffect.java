@@ -9,7 +9,6 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.gtk.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;

@@ -8,10 +8,7 @@ package org.eclipse.swt.program;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.graphics.*;
-
-import java.io.IOException;
 
 /**
  * Instances of this class represent programs and
