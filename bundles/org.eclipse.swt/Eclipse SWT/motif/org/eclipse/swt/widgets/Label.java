@@ -90,10 +90,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.XmNmarginTop, 0,     /* 1 */
 			OS.XmNmarginBottom, 0,  /* 3 */
 			OS.XmNmarginHeight, 0,  /* 5 */
+			OS.XmNmarginWidth, 0,  /* 7 */
 		};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		Display display = getDisplay ();
-		String string = display.wrapText (text, fontList, wHint);
+		String string = display.wrapText (text, fontList, wHint - 2 * argList4 [7]);
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
 		gc.dispose();
