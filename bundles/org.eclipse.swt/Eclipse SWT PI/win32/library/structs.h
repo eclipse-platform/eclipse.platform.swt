@@ -95,6 +95,7 @@
 
 #ifndef WIN32_PLATFORM_PSPC
 #define NO_SHACTIVATEINFO
+#define NO_SHRGINFO
 #define NO_SIPINFO
 #endif /* WIN32_PLATFORM_PSPC */
 
@@ -558,6 +559,14 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 #define getSHMENUBARINFOFields(a,b,c) NULL
 #define setSHMENUBARINFOFields(a,b,c)
 #endif /* NO_SHMENUBARINFO */
+
+#ifndef NO_SHRGINFO
+SHRGINFO *getSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct);
+void setSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct);
+#else
+#define getSHRGINFOFields(a,b,c) NULL
+#define setSHRGINFOFields(a,b,c)
+#endif /* NO_SHRGINFO */
 
 #ifndef NO_SIPINFO
 SIPINFO *getSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct);

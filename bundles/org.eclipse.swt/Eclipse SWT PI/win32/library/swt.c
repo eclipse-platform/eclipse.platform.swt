@@ -228,6 +228,7 @@
 
 #ifndef WIN32_PLATFORM_PSPC
 #define NO_SHHandleWMSettingChange
+#define NO_SHRecognizeGesture
 #define NO_SHSipPreference
 #define NO_SipGetInfo
 #endif /* WIN32_PLATFORM_PSPC */
@@ -5589,6 +5590,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SHHandleWMSettingChange)
 	return rc;
 }
 #endif /* NO_SHHandleWMSettingChange */
+
+#ifndef NO_SHRecognizeGesture
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHRecognizeGesture
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	SHRGINFO _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("SHRecognizeGesture\n")
+
+	if (arg0) lparg0 = getSHRGINFOFields(env, arg0, &_arg0);
+	rc = (jint)SHRecognizeGesture(lparg0);
+	if (arg0) setSHRGINFOFields(env, arg0, lparg0);
+	return rc;
+}
+#endif
 
 #ifndef NO_SHSendBackToFocusWindow
 JNIEXPORT void JNICALL OS_NATIVE(SHSendBackToFocusWindow)

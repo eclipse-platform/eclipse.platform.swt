@@ -3483,7 +3483,28 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		}
 	}
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);	
+	if (OS.IsPPC) {
+		if (menu != null && !menu.isDisposed ()) {
+			int x = (short) (lParam & 0xFFFF);
+			int y = (short) (lParam >> 16);
+			SHRGINFO shrg = new SHRGINFO ();
+			shrg.cbSize = SHRGINFO.sizeof;
+			shrg.hwndClient = handle;
+			shrg.ptDown_x = x;
+			shrg.ptDown_y = y; 
+			shrg.dwFlags = OS.SHRG_RETURNCMD;
+			/* 
+			* Feature in WinCE PPC.  WM_CONTEXTMENU is not supported on
+			* this platform.  The workaround is to activate the popup
+			* menu when the 'tap and hold' gesture is detected. 
+			*/
+			int type = OS.SHRecognizeGesture (shrg);
+			if (type == OS.GN_CONTEXTMENU) {
+				menu.setVisible (true);
+			}
+		}
+	}
 	if (mouseDown) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	}
@@ -3496,7 +3517,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			* and tracks its movement until the user releases the
 			* left mouse button, presses the ESC key, or moves the
 			* mouse outside the drag rectangle.  If the user moves
-			* the mouse outside of the drag rectangle, DragDetect
+			* the mouse outside of the drag rectangle, DragDetect()
 			* returns true and a drag and drop operation can be
 			* started.  When the left mouse button is released or
 			* the ESC key is pressed, these events are consumed by

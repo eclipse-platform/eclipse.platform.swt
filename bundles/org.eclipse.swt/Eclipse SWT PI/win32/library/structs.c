@@ -3091,6 +3091,49 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 }
 #endif /* NO_SHMENUBARINFO */
 
+#ifndef NO_SHRGINFO
+typedef struct SHRGINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwFlags, ptDown_y, ptDown_x, hwndClient, cbSize;
+} SHRGINFO_FID_CACHE;
+
+SHRGINFO_FID_CACHE SHRGINFOFc;
+
+void cacheSHRGINFOFids(JNIEnv *env, jobject lpObject)
+{
+	if (SHRGINFOFc.cached) return;
+	SHRGINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHRGINFOFc.dwFlags = (*env)->GetFieldID(env, SHRGINFOFc.clazz, "dwFlags", "I");
+	SHRGINFOFc.ptDown_y = (*env)->GetFieldID(env, SHRGINFOFc.clazz, "ptDown_y", "I");
+	SHRGINFOFc.ptDown_x = (*env)->GetFieldID(env, SHRGINFOFc.clazz, "ptDown_x", "I");
+	SHRGINFOFc.hwndClient = (*env)->GetFieldID(env, SHRGINFOFc.clazz, "hwndClient", "I");
+	SHRGINFOFc.cbSize = (*env)->GetFieldID(env, SHRGINFOFc.clazz, "cbSize", "I");
+	SHRGINFOFc.cached = 1;
+}
+
+SHRGINFO *getSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct)
+{
+	if (!SHRGINFOFc.cached) cacheSHRGINFOFids(env, lpObject);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, SHRGINFOFc.dwFlags);
+	lpStruct->ptDown.y = (*env)->GetIntField(env, lpObject, SHRGINFOFc.ptDown_y);
+	lpStruct->ptDown.x = (*env)->GetIntField(env, lpObject, SHRGINFOFc.ptDown_x);
+	lpStruct->hwndClient = (HWND)(*env)->GetIntField(env, lpObject, SHRGINFOFc.hwndClient);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, SHRGINFOFc.cbSize);
+	return lpStruct;
+}
+
+void setSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct)
+{
+	if (!SHRGINFOFc.cached) cacheSHRGINFOFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SHRGINFOFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, SHRGINFOFc.ptDown_y, (jint)lpStruct->ptDown.y);
+	(*env)->SetIntField(env, lpObject, SHRGINFOFc.ptDown_x, (jint)lpStruct->ptDown.x);
+	(*env)->SetIntField(env, lpObject, SHRGINFOFc.hwndClient, (jint)lpStruct->hwndClient);
+	(*env)->SetIntField(env, lpObject, SHRGINFOFc.cbSize, (jint)lpStruct->cbSize);
+}
+#endif /* NO_SHRGINFO */
+
 #ifndef NO_SIPINFO
 typedef struct SIPINFO_FID_CACHE {
 	int cached;
