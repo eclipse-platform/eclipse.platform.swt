@@ -112,6 +112,7 @@ public class OS {
 	public static final int Pg_INDEX_COLOR = 0x2000000;
 	public static final int Pg_PALSET_SOFT = 0x0;
 	public static final byte[] Pg_PAT_HALF = {(byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55};
+	public static final int Pg_ROUND_CAP = 0x01;
 	public static final int Pg_TEXT_LEFT = 0x1000;
 	public static final int Pg_TEXT_TOP = 0x4000;
 	public static final int Pg_TRANSPARENT = 0xffffffff;
@@ -579,6 +580,7 @@ public static final native int PgSetGC(int GC);
 public static final native int PgSetMultiClip(int num, int clip_list);
 public static final native int PgSetPalette(int palette, int palette_id, short first_color, short num_colors, int flags, int tag);
 public static final native void PgSetRegion(int rid);
+public static final native int PgSetStrokeCap(int cap);
 public static final native int PgSetStrokeColor(int color);
 public static final native void PgSetStrokeDash(byte[] DashList, int ListLen, int DashScale);
 public static final native int PgSetStrokeWidth(int width);

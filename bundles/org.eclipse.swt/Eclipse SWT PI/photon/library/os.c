@@ -725,6 +725,18 @@ JNIEXPORT void JNICALL OS_NATIVE(PgSetRegion)
 }
 #endif
 
+#ifndef NO_PgSetStrokeCap
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeCap)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetStrokeCap\n")
+	rc = (jint)PgSetStrokeCap(arg0);
+	NATIVE_EXIT(env, that, "PgSetStrokeCap\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_PgSetStrokeColor
 JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeColor)
 	(JNIEnv *env, jclass that, jint arg0)

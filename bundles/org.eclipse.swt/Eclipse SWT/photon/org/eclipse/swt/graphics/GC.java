@@ -2314,6 +2314,9 @@ int setGC() {
 		if ((dirtyBits & DIRTY_CLIPPING) != 0) {
 			OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
 		}
+		if ((dirtyBits & (DIRTY_LINESTYLE | DIRTY_LINEWIDTH)) != 0) {
+			OS.PgSetStrokeCap(OS.Pg_ROUND_CAP);
+		}
 		if ((dirtyBits & DIRTY_LINESTYLE) != 0) {
 			byte[] dashList = null;
 			switch (data.lineStyle) {
