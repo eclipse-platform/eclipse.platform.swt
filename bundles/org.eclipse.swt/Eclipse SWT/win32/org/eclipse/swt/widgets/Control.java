@@ -3510,7 +3510,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
 			if (type == OS.GN_CONTEXTMENU) {
-				menu.setVisible (true);
+				Event event = new Event ();
+				event.x = x;
+				event.y = y;
+				sendEvent (SWT.MenuDetect, event);
+				if (event.doit) menu.setVisible (true);
 			}
 		}
 	}
