@@ -357,9 +357,9 @@ public void test_deselectII() {
 public void test_getFocusIndex() {
 	String[] items = { "item0", "item1", "item2"};
 	list.setItems(items);
-	list.select(0);
+	list.setSelection(0);
 	assertEquals(0, list.getFocusIndex());
-	list.select(2);
+	list.setSelection(2);
 	assertEquals(2, list.getFocusIndex());
 }
 

@@ -3421,6 +3421,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionAnchor)
 }
 #endif
 
+#ifndef NO_GetDataBrowserSelectionFlags
+JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionFlags)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "GetDataBrowserSelectionFlags\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "GetDataBrowserSelectionFlags\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserTableViewColumnPosition
 JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserTableViewColumnPosition)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)

@@ -227,7 +227,7 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne : OS.kDataBrowserCmdTogglesSelection;
+	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	short [] height = new short [1];
 	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
@@ -404,10 +404,8 @@ int defaultThemeFont () {
 public void deselect (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) {
-		ignoreSelect = true;
-		int [] id = new int [] {index + 1};
-		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsRemove);
-		ignoreSelect = false;
+		int [] ids = new int [] {index + 1};
+		deselect (ids, ids.length);
 	}
 }
 
@@ -433,9 +431,7 @@ public void deselect (int start, int end) {
 	if (length <= 0) return;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsRemove);
-	ignoreSelect = false;
+	deselect (ids, length);
 }
 
 /**
@@ -462,8 +458,21 @@ public void deselect (int [] indices) {
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
+	deselect (ids, length);
+}
+
+void deselect (int [] ids, int count) {
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsRemove);
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
+	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsRemove);
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
 	ignoreSelect = false;
 }
 
@@ -477,9 +486,7 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget ();
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsRemove);
-	ignoreSelect = false;
+	deselect (null, 0);
 }
 
 void destroyItem (TableColumn column) {
@@ -1500,11 +1507,8 @@ public void select (int index) {
 	checkWidget();
 	checkItems (false);
 	if (0 <= index && index < itemCount) {
-		int [] id = new int [] {index + 1};
-		ignoreSelect = true;
-		int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
-		OS.SetDataBrowserSelectedItems (handle, id.length, id, operation);
-		ignoreSelect = false;
+		int [] ids = new int [] {index + 1};
+		select (ids, ids.length, false, false);
 	}
 }
 
@@ -1534,10 +1538,7 @@ public void select (int start, int end) {
 	if (length <= 0) return;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	ignoreSelect = true;
-	int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, operation);
-	ignoreSelect = false;
+	select (ids, length, false, false);
 }
 
 /**
@@ -1575,10 +1576,33 @@ public void select (int [] indices) {
 			}
 		}
 	}
-	ignoreSelect = true;
-	int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
+	select (ids, count, false, false);
+}
+
+void select (int [] ids, int count, boolean clear, boolean notify) {
+	if (!notify) ignoreSelect = true;
+	/*
+	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+	* two items are selected when SetDataBrowserSelectedItems() is called
+	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
+	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+	* restore kDataBrowserNeverEmptySelectionSet around each call to
+	* SetDataBrowserSelectedItems().
+	*/
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
+	int operation = OS.kDataBrowserItemsAssign;
+	if ((style & SWT.MULTI) != 0 && !clear) operation = OS.kDataBrowserItemsAdd;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, operation);
-	ignoreSelect = false;
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
+	if (!notify) ignoreSelect = false;
 }
 
 /**
@@ -1593,9 +1617,7 @@ public void selectAll () {
 	checkWidget ();
 	checkItems (false);
 	if ((style & SWT.SINGLE) != 0) return;
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
+	select (null, 0, false, false);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -1734,11 +1756,9 @@ public void setSelection (int index) {
 void setSelection (int index, boolean notify) {
 //	checkWidget();
 	if (0 <= index && index < itemCount) {
-		int [] id = new int [] {index + 1};
-		if (!notify) ignoreSelect = true;
-		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
-		if (!notify) ignoreSelect = false;
-		showIndex (id [0] - 1);
+		int [] ids = new int [] {index + 1};
+		select (ids, ids.length, true, notify);
+		showIndex (index);
 	}
 }
 
@@ -1771,9 +1791,7 @@ public void setSelection (int start, int end) {
 	if (length <= 0) return;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
+	select (ids, length, true, false);
 	showIndex (ids [0] - 1);
 }
 
@@ -1812,9 +1830,7 @@ public void setSelection (int [] indices) {
 			}
 		}
 	}
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
+	select (ids, count, true, false);
 	if (count > 0) showIndex (ids [0] - 1);
 }
 
@@ -1857,9 +1873,7 @@ public void setSelection (TableItem [] items) {
 			}
 		}
 	}
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
+	select (ids, count, true, false);
 	if (count > 0) showIndex (ids [0] - 1);
 }
 

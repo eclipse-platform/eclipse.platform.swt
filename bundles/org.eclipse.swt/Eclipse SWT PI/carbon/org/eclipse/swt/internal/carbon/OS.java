@@ -858,6 +858,7 @@ public static final native int GetDataBrowserTableViewRowHeight(int browser, sho
 public static final native int GetDataBrowserScrollBarInset(int browser, Rect insetRect);
 public static final native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
 public static final native int GetDataBrowserSelectionAnchor(int browser, int [] first, int [] last);
+public static final native int GetDataBrowserSelectionFlags(int browser, int [] selectionFlags);
 public static final native int GetDblTime();
 public static final native short GetDefFontSize();
 public static final native int GetDeviceList();

@@ -229,7 +229,7 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne : OS.kDataBrowserCmdTogglesSelection;
+	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
@@ -353,7 +353,16 @@ int defaultThemeFont () {
 public void deselectAll () {
 	checkWidget ();
 	ignoreSelect = true;
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
 	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsRemove);
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
 	ignoreSelect = false;
 }
 
@@ -1160,7 +1169,25 @@ public void setSelection (TreeItem [] items) {
 		showItem (items [i], false);
 	}
 	ignoreSelect = true;
+	/*
+	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+    * two items are selected when SetDataBrowserSelectedItems() is called
+    * with kDataBrowserItemsAssign to assign a new seletion despite the fact
+	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+	* restore kDataBrowserNeverEmptySelectionSet around each call to
+	* SetDataBrowserSelectedItems().
+	*/
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
 	OS.SetDataBrowserSelectedItems (handle, ids.length, ids, OS.kDataBrowserItemsAssign);
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
 	ignoreSelect = false;
 	if (items.length > 0) showItem (items [0], true);
 }
