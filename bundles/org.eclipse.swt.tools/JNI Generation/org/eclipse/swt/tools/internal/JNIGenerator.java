@@ -167,20 +167,30 @@ static String getTypeSignature4(Class clazz) {
 }
 
 static HashMap uniqueCache = new HashMap();
-static boolean isNativeUnique(Method method) {
+static Class uniqueClassCache;
+static Method[] uniqueMethodsCache;
+static synchronized boolean isNativeUnique(Method method) {
 	Object unique = uniqueCache.get(method);
 	if (unique != null) return ((Boolean)unique).booleanValue();
 	boolean result = true;
+	Method[] methods;
+	String name = method.getName();
 	Class clazz = method.getDeclaringClass();
-	Method[] methods = clazz.getDeclaredMethods();
+	if (uniqueClassCache == clazz) {
+		methods = uniqueMethodsCache;
+	} else {
+		uniqueClassCache = clazz;
+		uniqueMethodsCache = methods = clazz.getDeclaredMethods();
+	}
 	for (int i = 0; i < methods.length; i++) {
 		Method mth = methods[i];
-		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		if (method == mth || method.equals(mth)) continue;
-		if (method.getName().equals(mth.getName())) {
-			result = false;
-			break;
-		}
+		if ((mth.getModifiers() & Modifier.NATIVE) != 0 &&
+			method != mth && !method.equals(mth) &&
+			name.equals(mth.getName()))
+			{
+				result = false;
+				break;
+			}
 	}
 	uniqueCache.put(method, new Boolean(result));
 	return result;
