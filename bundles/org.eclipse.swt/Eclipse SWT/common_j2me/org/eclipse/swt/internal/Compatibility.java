@@ -38,6 +38,11 @@ import java.io.*;
  */
 public final class Compatibility {
 
+/**
+ * Returns the PI constant as a double.
+ */
+public static double PI = (double)3.141592653589793;
+	
 /** 
  * Sine table
  * <p>

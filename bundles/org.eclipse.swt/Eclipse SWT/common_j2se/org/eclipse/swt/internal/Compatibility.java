@@ -40,8 +40,12 @@ import org.eclipse.swt.SWT;
  */
 public final class Compatibility {
 
-static double pi = 3.1415926535;
-static double toRadians = pi / 180;
+/**
+ * Returns the PI constant as a double.
+ */
+public static double PI = Math.PI;
+
+static double toRadians = PI / 180;
 
 /**
  * Answers the length of the side adjacent to the given angle
