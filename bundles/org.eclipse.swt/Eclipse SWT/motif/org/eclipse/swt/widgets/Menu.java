@@ -708,6 +708,16 @@ public void setVisible (boolean visible) {
 				xDisplay, xWindow, unused, unused,
 				rootX, rootY,
 				unused, unused, unused) == 0) return;
+				
+			/* Bug in Motif: 
+			 * You *must* start outside the menu or it will not show you
+			 * highlighting until you move the cursor out of and back into
+			 * the menu. By offsetting the start location by a pixel, it
+			 * causes highlighting to work if you wait for the menu to
+			 * pop up before you start moving.
+			 */
+			rootX[0] += 1;
+
 			int [] argList = {OS.XmNx, rootX [0], OS.XmNy, rootY [0]};
 			OS.XtSetValues (handle, argList, argList.length / 2);
 		}
