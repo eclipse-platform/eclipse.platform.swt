@@ -679,16 +679,14 @@ private boolean setEventData(byte ops, byte op, int dragContext, short x, short 
 	//get current operation
 	int operation = osOpToOp(op);
 	if ((operation & operations) == 0) operation = DND.DROP_NONE;
-	if ((style & DND.DROP_DEFAULT) != 0) {
-		int xDisplay = getDisplay().xDisplay;
-		int xWindow = OS.XDefaultRootWindow (xDisplay);
-		int [] unused = new int [1];
-		int[] mask_return = new int[1];
-		OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
-		int mask = mask_return[0];
-		if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
-			operation = DND.DROP_DEFAULT;
-		}
+	int xDisplay = getDisplay().xDisplay;
+	int xWindow = OS.XDefaultRootWindow (xDisplay);
+	int [] unused = new int [1];
+	int[] mask_return = new int[1];
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
+	int mask = mask_return[0];
+	if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
+		operation = (style & DND.DROP_DEFAULT) != 0 ? DND.DROP_DEFAULT : DND.DROP_NONE;
 	}
 	
 	//Get allowed transfer types
