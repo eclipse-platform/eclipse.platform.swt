@@ -118,10 +118,10 @@ public class CTabFolder extends Composite {
 	
 	// borders
 	boolean showBorders = false;
-	private int BORDER_BOTTOM = 0;
-	private int BORDER_LEFT = 0;
-	private int BORDER_RIGHT = 0;
-	private int BORDER_TOP = 0;
+	private int borderBottom = 0;
+	private int borderLeft = 0;
+	private int borderRight = 0;
+	private int borderTop = 0;
 	private Color borderColor1;
 	private Color borderColor2;
 	private Color borderColor3;
@@ -336,13 +336,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	int tabHeight = getTabHeight();
-	int trimX = x - marginWidth - BORDER_LEFT;
-	int trimY = y - marginHeight - tabHeight - BORDER_TOP;
+	int trimX = x - marginWidth - borderLeft;
+	int trimY = y - marginHeight - tabHeight - borderTop;
 	if (onBottom) {
-		trimY = y - marginHeight - BORDER_TOP;
+		trimY = y - marginHeight - borderTop;
 	}
-	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT + 2*marginWidth;
-	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM + 2*marginHeight + tabHeight;
+	int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
+	int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight;
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 /**
@@ -551,12 +551,12 @@ private void drawBorder(GC gc) {
 	// draw a separator line
 	if (items.length > 0) {	
 		int tabHeight = getTabHeight();
-		int lineY = d.y + BORDER_TOP + tabHeight;
+		int lineY = d.y + borderTop + tabHeight;
 		if (onBottom) {
-			lineY = d.y + d.height - BORDER_BOTTOM - tabHeight - 1;
+			lineY = d.y + d.height - borderBottom - tabHeight - 1;
 		}
 		gc.setForeground(borderColor1);
-		gc.drawLine(d.x + BORDER_LEFT, lineY, d.x + d.width - BORDER_RIGHT, lineY);
+		gc.drawLine(d.x + borderLeft, lineY, d.x + d.width - borderRight, lineY);
 	}
 
 	gc.setForeground(getForeground());
@@ -565,8 +565,8 @@ public Rectangle getClientArea() {
 	Rectangle clientArea = super.getClientArea();
 	clientArea.x = xClient;
 	clientArea.y = yClient;
-	clientArea.width -= 2*marginWidth + BORDER_LEFT + BORDER_RIGHT;
-	clientArea.height -= 2*marginHeight + BORDER_TOP + BORDER_BOTTOM + getTabHeight() + 1;
+	clientArea.width -= 2*marginWidth + borderLeft + borderRight;
+	clientArea.height -= 2*marginHeight + borderTop + borderBottom + getTabHeight() + 1;
 	return clientArea;
 }
 /**
@@ -691,12 +691,12 @@ private void layoutButtons() {
 		initScrollBarImages();
 		Point size = scrollBar.getSize();
 		Rectangle area = super.getClientArea();
-		int x = area.x + area.width - size.x - BORDER_RIGHT;
+		int x = area.x + area.width - size.x - borderRight;
 		int y = 0;
 		if (!onBottom) {
-			y = area.y + BORDER_TOP;
+			y = area.y + borderTop;
 		} else {
-			y = area.y + area.height - BORDER_BOTTOM - size.y;
+			y = area.y + area.height - borderBottom - size.y;
 		}
 		scrollBar.setLocation(x, y);
 		scrollLeft.setEnabled(leftVisible);
@@ -719,7 +719,7 @@ private void layoutButtons() {
 			closeBar.setLocation(x, y);
 			if (scrollBar.isVisible()) {
 				Rectangle scrollRect = scrollBar.getBounds();
-				scrollRect.width += BORDER_RIGHT;
+				scrollRect.width += borderRight;
 				closeBar.setVisible(!scrollRect.contains(x, y));
 			} else {
 				closeBar.setVisible(true);
@@ -746,14 +746,14 @@ private void layoutItems() {
 			totalWidth += widths[i];
 		}
 		gc.dispose();
-		if (totalWidth < (area.width - BORDER_LEFT - BORDER_RIGHT) ) {
+		if (totalWidth < (area.width - borderLeft - borderRight) ) {
 			topTabIndex = 0;
 		} else {
 			
 			int oldAverageWidth = 0;
-			int averageWidth = (area.width - BORDER_LEFT - BORDER_RIGHT) / items.length;
+			int averageWidth = (area.width - borderLeft - borderRight) / items.length;
 			while (averageWidth > oldAverageWidth) {
-				int width = area.width - BORDER_LEFT - BORDER_RIGHT;
+				int width = area.width - borderLeft - borderRight;
 				int count = items.length;
 				for (int i = 0; i < items.length; i++) {
 					if (widths[i] < averageWidth) {
@@ -777,9 +777,9 @@ private void layoutItems() {
 			}
 		}
 		int x = area.x;
-		int y = area.y + BORDER_TOP;
+		int y = area.y + borderTop;
 		if (onBottom) {
-			y = Math.max(0, area.y + area.height - BORDER_BOTTOM - tabHeight);
+			y = Math.max(0, area.y + area.height - borderBottom - tabHeight);
 		}
 		for (int i = topTabIndex - 1; i>=0; i--) { 
 			// if the first visible tab is not the first tab
@@ -792,7 +792,7 @@ private void layoutItems() {
 			tab.y = y;
 		}
 		
-		x = area.x + BORDER_LEFT;
+		x = area.x + borderLeft;
 		for (int i=topTabIndex; i<items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem tab = items[i];
@@ -804,11 +804,11 @@ private void layoutItems() {
 		}
 	}
 	
-	xClient = area.x + BORDER_LEFT + marginWidth;
+	xClient = area.x + borderLeft + marginWidth;
 	if (onBottom) {
-		yClient = area.y + BORDER_TOP + marginHeight; 
+		yClient = area.y + borderTop + marginHeight; 
 	} else {
-		yClient = area.y + BORDER_TOP + tabHeight + 1 + marginHeight; 
+		yClient = area.y + borderTop + tabHeight + 1 + marginHeight; 
 		// +1 is for the line at the bottom of the tabs
 	}
 	
@@ -840,23 +840,23 @@ private void onPaint(Event event) {
 		
 		if (showBorders) {
 			gc.setForeground(borderColor1);
-			gc.drawRectangle(rect.x + BORDER_RIGHT, 
-			                 rect.y + BORDER_BOTTOM, 
-			                 rect.x + rect.width - BORDER_RIGHT - 1, 
-			                 rect.y + rect.height - BORDER_BOTTOM - 1);	
+			gc.drawRectangle(rect.x + borderRight, 
+			                 rect.y + borderBottom, 
+			                 rect.x + rect.width - borderRight - 1, 
+			                 rect.y + rect.height - borderBottom - 1);	
 			// fill in top and left edge with parent's background color
 			gc.setBackground(getParent().getBackground());
-			gc.fillRectangle(rect.x, rect.y, BORDER_RIGHT, rect.height);
-			gc.fillRectangle(rect.x, rect.y, rect.width, BORDER_BOTTOM);
+			gc.fillRectangle(rect.x, rect.y, borderRight, rect.height);
+			gc.fillRectangle(rect.x, rect.y, rect.width, borderBottom);
 
 		}
 		if (fixedTabHeight > 0) {
-			int y = rect.y + BORDER_BOTTOM + fixedTabHeight;
+			int y = rect.y + borderBottom + fixedTabHeight;
 			if (onBottom) {
 				y = rect.y + rect.height - fixedTabHeight - 1;
 			}
 			gc.setForeground(borderColor1);
-			gc.drawLine(rect.x + BORDER_RIGHT, y, rect.x + rect.width, y);
+			gc.drawLine(rect.x + borderRight, y, rect.x + rect.width, y);
 		}
 		gc.setForeground(getForeground());
 		gc.setBackground(getBackground());
@@ -866,10 +866,10 @@ private void onPaint(Event event) {
 	// redraw the Border
 	drawBorder(gc);
 	
-	rect.x += BORDER_LEFT;
-	rect.y += BORDER_TOP;
-	rect.width -= BORDER_LEFT + BORDER_RIGHT;
-	rect.height -= BORDER_TOP + BORDER_BOTTOM;
+	rect.x += borderLeft;
+	rect.y += borderTop;
+	rect.width -= borderLeft + borderRight;
+	rect.height -= borderTop + borderBottom;
 	gc.setClipping(rect);
 	
 	// Draw the unselected tabs first.
@@ -912,12 +912,12 @@ private void redrawTabArea(int index) {
 	if (index == -1) {
 		Rectangle area = super.getClientArea();
 		if (area.width == 0 || area.height == 0) return;
-		width = area.x + area.width - BORDER_LEFT - BORDER_RIGHT;
+		width = area.x + area.width - borderLeft - borderRight;
 		height = getTabHeight() + 1; // +1 causes top line between content and tabs to be redrawn
-		x = area.x + BORDER_LEFT;
-		y = area.y + BORDER_TOP; 
+		x = area.x + borderLeft;
+		y = area.y + borderTop; 
 		if (onBottom) {
-			y = Math.max(0, area.y + area.height - BORDER_BOTTOM - height);
+			y = Math.max(0, area.y + area.height - borderBottom - height);
 		}
 	} else {
 		CTabItem item = items[index];
@@ -1001,18 +1001,18 @@ private void onResize() {
 		} else {
 			int width = 0;
 			if (oldArea.width < area.width) {
-				width = area.width - oldArea.width + BORDER_RIGHT;
+				width = area.width - oldArea.width + borderRight;
 			} else if (oldArea.width > area.width) {
-				width = BORDER_RIGHT;			
+				width = borderRight;			
 			}
 			redraw(area.x + area.width - width, area.y, width, area.height, false);
 			
 			int height = 0;
 			if (oldArea.height < area.height) {
-				height = area.height - oldArea.height + BORDER_BOTTOM;		
+				height = area.height - oldArea.height + borderBottom;		
 			}
 			if (oldArea.height > area.height) {
-				height = BORDER_BOTTOM;		
+				height = borderBottom;		
 			}
 			redraw(area.x, area.y + area.height - height, area.width, height, false);	
 		
@@ -1160,13 +1160,13 @@ public void setBorderVisible(boolean show) {
 	showBorders = show;
 	if (showBorders) {
 		if ((getStyle() & SWT.FLAT) != 0) {
-			BORDER_BOTTOM = BORDER_TOP = BORDER_LEFT = BORDER_RIGHT = 1;
+			borderBottom = borderTop = borderLeft = borderRight = 1;
 		} else {
-			BORDER_LEFT = BORDER_TOP = 1;
-			BORDER_RIGHT = BORDER_BOTTOM = 3;
+			borderLeft = borderTop = 1;
+			borderRight = borderBottom = 3;
 		}
 	} else {
-		BORDER_BOTTOM = BORDER_TOP = BORDER_LEFT = BORDER_RIGHT = 0;
+		borderBottom = borderTop = borderLeft = borderRight = 0;
 	}
 	layoutItems();
 	redraw();
@@ -1246,7 +1246,7 @@ private void ensureVisible() {
 	// make sure selected item is visible
 	Rectangle area = super.getClientArea();
 	if (area.width == 0) return;
-	int areaWidth = area.x + area.width - BORDER_RIGHT;
+	int areaWidth = area.x + area.width - borderRight;
 	
 	CTabItem tabItem = items[selectedIndex];
 	if (selectedIndex < topTabIndex) {
@@ -1479,7 +1479,7 @@ private void onMouseMove(Event event) {
 			
 	if (scrollBar.isVisible()) {
 		Rectangle scrollArea = scrollBar.getBounds();
-		scrollArea.width += BORDER_RIGHT;
+		scrollArea.width += borderRight;
 		if (scrollArea.contains(x, y)) return;
 	}
 	
@@ -1546,7 +1546,7 @@ private boolean scroll_rightVisible() {
 		CTabItem tabItem = items[items.length-1];
 		int tabStopX = tabItem.x + tabItem.width;
 		Rectangle area = super.getClientArea();
-		if (tabStopX > area.x + area.width - BORDER_RIGHT) {
+		if (tabStopX > area.x + area.width - borderRight) {
 			return true;	// not all tabs fit in the client area
 		}
 	}
