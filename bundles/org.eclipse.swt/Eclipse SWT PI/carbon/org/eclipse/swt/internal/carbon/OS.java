@@ -158,6 +158,7 @@ public class OS extends OS2 {
 	public static final int kEventRawKeyDown = 1;
 	public static final int kEventRawKeyRepeat = 2;
 	public static final int kEventRawKeyUp = 3;
+	public static final int kEventRawKeyModifiersChanged = 4;
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 	public static final int kEventWindowActivated = 5;
 	public static final int kEventWindowBoundsChanged = 27;
@@ -179,6 +180,7 @@ public class OS extends OS2 {
 	public static final int kMenuContextualMenuGlyph = 109;
 	public static final int kMenuControlGlyph = 6;
 	public static final int kMenuControlISOGlyph = 138;
+	public static final int kMenuControlModifier = 4;
 	public static final int kMenuDeleteLeftGlyph = 23;
 	public static final int kMenuDeleteRightGlyph = 10;
 	public static final int kMenuDiamondGlyph = 19;
