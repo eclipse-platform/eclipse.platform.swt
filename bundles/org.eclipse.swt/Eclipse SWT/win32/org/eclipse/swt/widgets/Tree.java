@@ -1056,11 +1056,12 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* in WM_CHAR when the search for the item that
 	* matches the key stroke fails.  This is the
 	* standard tree behavior but is unexpected when
-	* the key that was typed was CR or SPACE.  The
-	* fix is to avoid calling the tree window proc
-	* in these cases.
+	* the key that was typed was ESC, CR or SPACE.
+	* The fix is to avoid calling the tree window
+	* proc in these cases.
 	*/
 	switch (wParam) {
+		case OS.VK_ESCAPE:
 		case OS.VK_RETURN:
 		case OS.VK_SPACE: return LRESULT.ZERO;
 	}
