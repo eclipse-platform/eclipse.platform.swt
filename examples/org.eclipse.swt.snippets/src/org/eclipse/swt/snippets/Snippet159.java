@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: modify the HTML title tag
+ * Browser example snippet: modify HTML title tag
  *
  * For a list of all SWT example snippets see
  * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
