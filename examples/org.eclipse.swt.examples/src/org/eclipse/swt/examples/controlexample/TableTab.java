@@ -87,29 +87,29 @@ class TableTab extends ScrollableTab {
 		itemBackgroundImage = new Image(display, imageSize, imageSize);
 
 		/* Add listeners to set the colors and font */
-		itemForegroundButton.setImage(itemForegroundImage); // sets the size of the button
+		itemForegroundButton.setImage(itemForegroundImage);
 		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Color oldColor = itemForegroundColor;
 				if (oldColor == null) oldColor = table1.getItem (0).getForeground ();
-				foregroundDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				foregroundDialog.setRGB(oldColor.getRGB());
 				RGB rgb = foregroundDialog.open();
 				if (rgb == null) return;
-				oldColor = itemForegroundColor; // save old foreground color to dispose when done
+				oldColor = itemForegroundColor;
 				itemForegroundColor = new Color (event.display, rgb);
 				setItemForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
 		});
-		itemBackgroundButton.setImage(itemBackgroundImage); // sets the size of the button
+		itemBackgroundButton.setImage(itemBackgroundImage);
 		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Color oldColor = itemBackgroundColor;
 				if (oldColor == null) oldColor = table1.getItem (0).getBackground ();
-				backgroundDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				backgroundDialog.setRGB(oldColor.getRGB());
 				RGB rgb = backgroundDialog.open();
 				if (rgb == null) return;
-				oldColor = itemBackgroundColor; // save old background color to dispose when done
+				oldColor = itemBackgroundColor;
 				itemBackgroundColor = new Color (event.display, rgb);
 				setItemBackground ();
 				if (oldColor != null) oldColor.dispose ();
@@ -278,7 +278,7 @@ class TableTab extends ScrollableTab {
 	 */
 	void setItemBackground () {
 		table1.getItem (0).setBackground (itemBackgroundColor);
-		// Set the background button's color to match the color just set.
+		/* Set the background button's color to match the color just set. */
 		Color color = itemBackgroundColor;
 		if (color == null) color = table1.getItem (0).getBackground ();
 		drawImage (itemForegroundImage, color);
@@ -290,7 +290,7 @@ class TableTab extends ScrollableTab {
 	 */
 	void setItemForeground () {
 		table1.getItem (0).setForeground (itemForegroundColor);
-		// Set the foreground button's color to match the color just set.
+		/* Set the foreground button's color to match the color just set. */
 		Color color = itemForegroundColor;
 		if (color == null) color = table1.getItem (0).getForeground ();
 		drawImage (itemBackgroundImage, color);

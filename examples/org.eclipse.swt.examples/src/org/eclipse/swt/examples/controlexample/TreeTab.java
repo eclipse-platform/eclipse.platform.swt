@@ -14,20 +14,95 @@ package org.eclipse.swt.examples.controlexample;
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 
 class TreeTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	Tree tree1, tree2;
-	Group treeGroup, imageTreeGroup;
+	TreeItem textNode1, imageNode1;
+	Group treeGroup, imageTreeGroup, treeItemGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button checkButton;
 
+	/* Controls and resources added to the "Colors" group */
+	Button itemForegroundButton, itemBackgroundButton;
+	Color itemForegroundColor, itemBackgroundColor;
+	Image itemForegroundImage, itemBackgroundImage;
+	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	TreeTab(ControlExample instance) {
 		super(instance);
+	}
+
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		super.createColorGroup();
+		
+		treeItemGroup = new Group (colorGroup, SWT.NONE);
+		treeItemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
+		GridData data = new GridData ();
+		data.horizontalSpan = 2;
+		treeItemGroup.setLayoutData (data);
+		treeItemGroup.setLayout (new GridLayout (2, false));
+		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Foreground_Color"));
+		itemForegroundButton = new Button (treeItemGroup, SWT.PUSH);
+		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Background_Color"));
+		itemBackgroundButton = new Button (treeItemGroup, SWT.PUSH);
+		
+		Shell shell = colorGroup.getShell ();
+		final ColorDialog foregroundDialog = new ColorDialog (shell);
+		final ColorDialog backgroundDialog = new ColorDialog (shell);
+
+		int imageSize = 12;
+		Display display = shell.getDisplay ();
+		itemForegroundImage = new Image(display, imageSize, imageSize);
+		itemBackgroundImage = new Image(display, imageSize, imageSize);
+
+		/* Add listeners to set the colors and font */
+		itemForegroundButton.setImage(itemForegroundImage);
+		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = itemForegroundColor;
+				if (oldColor == null) oldColor = textNode1.getForeground ();
+				foregroundDialog.setRGB(oldColor.getRGB());
+				RGB rgb = foregroundDialog.open();
+				if (rgb == null) return;
+				oldColor = itemForegroundColor;
+				itemForegroundColor = new Color (event.display, rgb);
+				setItemForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		itemBackgroundButton.setImage(itemBackgroundImage);
+		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = itemBackgroundColor;
+				if (oldColor == null) oldColor = textNode1.getBackground ();
+				backgroundDialog.setRGB(oldColor.getRGB());
+				RGB rgb = backgroundDialog.open();
+				if (rgb == null) return;
+				oldColor = itemBackgroundColor;
+				itemBackgroundColor = new Color (event.display, rgb);
+				setItemBackground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (itemBackgroundImage != null) itemBackgroundImage.dispose();
+				if (itemForegroundImage != null) itemForegroundImage.dispose();
+				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
+				if (itemForegroundColor != null) itemForegroundColor.dispose();
+				itemBackgroundColor = null;
+				itemForegroundColor = null;			
+			}
+		});
 	}
 
 	/**
@@ -62,15 +137,15 @@ class TreeTab extends ScrollableTab {
 	
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
-		TreeItem node1 = new TreeItem (tree1, SWT.NONE);
-		node1.setText (ControlExample.getResourceString("Node_1"));
+		textNode1 = new TreeItem (tree1, SWT.NONE);
+		textNode1.setText (ControlExample.getResourceString("Node_1"));
 		TreeItem node2 = new TreeItem (tree1, SWT.NONE);
 		node2.setText (ControlExample.getResourceString("Node_2"));
 		TreeItem node3 = new TreeItem (tree1, SWT.NONE);
 		node3.setText (ControlExample.getResourceString("Node_3"));
 		TreeItem node4 = new TreeItem (tree1, SWT.NONE);
 		node4.setText (ControlExample.getResourceString("Node_4"));
-		TreeItem node1_1 = new TreeItem (node1, SWT.NONE);
+		TreeItem node1_1 = new TreeItem (textNode1, SWT.NONE);
 		node1_1.setText (ControlExample.getResourceString("Node_1_1"));
 		TreeItem node2_1 = new TreeItem (node2, SWT.NONE);
 		node2_1.setText (ControlExample.getResourceString("Node_2_1"));
@@ -83,9 +158,9 @@ class TreeTab extends ScrollableTab {
 	
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
-		node1 = new TreeItem (tree2, SWT.NONE);
-		node1.setText (ControlExample.getResourceString("Node_1"));
-		node1.setImage (instance.images[ControlExample.ciClosedFolder]);
+		imageNode1 = new TreeItem (tree2, SWT.NONE);
+		imageNode1.setText (ControlExample.getResourceString("Node_1"));
+		imageNode1.setImage (instance.images[ControlExample.ciClosedFolder]);
 		node2 = new TreeItem (tree2, SWT.NONE);
 		node2.setText (ControlExample.getResourceString("Node_2"));
 		node2.setImage (instance.images[ControlExample.ciClosedFolder]);
@@ -95,7 +170,7 @@ class TreeTab extends ScrollableTab {
 		node4 = new TreeItem (tree2, SWT.NONE);
 		node4.setText (ControlExample.getResourceString("Node_4"));
 		node4.setImage (instance.images[ControlExample.ciClosedFolder]);
-		node1_1 = new TreeItem (node1, SWT.NONE);
+		node1_1 = new TreeItem (imageNode1, SWT.NONE);
 		node1_1.setText (ControlExample.getResourceString("Node_1_1"));
 		node1_1.setImage (instance.images[ControlExample.ciClosedFolder]);
 		node2_1 = new TreeItem (node2, SWT.NONE);
@@ -136,4 +211,59 @@ class TreeTab extends ScrollableTab {
 	String getTabText () {
 		return "Tree";
 	}
+
+	/**
+	 * Sets the foreground color, background color, and font
+	 * of the "Example" widgets to their default settings.
+	 * Also sets foreground and background color of the Node 1
+	 * TreeItems to default settings.
+	 */
+	void resetColorsAndFonts () {
+		super.resetColorsAndFonts ();
+		Color oldColor = itemForegroundColor;
+		itemForegroundColor = null;
+		setItemForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = itemBackgroundColor;
+		itemBackgroundColor = null;
+		setItemBackground ();
+		if (oldColor != null) oldColor.dispose();
+	}
+	
+	/**
+	 * Sets the state of the "Example" widgets.
+	 */
+	void setExampleWidgetState () {
+		super.setExampleWidgetState ();
+		setItemBackground ();
+		setItemForeground ();
+		checkButton.setSelection ((tree1.getStyle () & SWT.CHECK) != 0);
+	}
+	
+	/**
+	 * Sets the background color of the Node 1 TreeItems.
+	 */
+	void setItemBackground () {
+		textNode1.setBackground (itemBackgroundColor);
+		imageNode1.setBackground (itemBackgroundColor);
+		/* Set the background button's color to match the color just set. */
+		Color color = itemBackgroundColor;
+		if (color == null) color = textNode1.getBackground ();
+		drawImage (itemForegroundImage, color);
+		itemBackgroundButton.setImage (itemForegroundImage);
+	}
+	
+	/**
+	 * Sets the foreground color of Node 1 TreeItems.
+	 */
+	void setItemForeground () {
+		textNode1.setForeground (itemForegroundColor);
+		imageNode1.setForeground (itemForegroundColor);
+		/* Set the foreground button's color to match the color just set. */
+		Color color = itemForegroundColor;
+		if (color == null) color = textNode1.getForeground ();
+		drawImage (itemBackgroundImage, color);
+		itemForegroundButton.setImage (itemBackgroundImage);
+	}
+	
 }
