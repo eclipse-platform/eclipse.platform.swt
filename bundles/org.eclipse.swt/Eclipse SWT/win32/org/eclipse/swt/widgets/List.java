@@ -352,9 +352,9 @@ public void deselectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
-		return;
+	} else {
+		OS.SendMessage (handle, OS.LB_SETSEL, 0, -1);
 	}
-	OS.SendMessage (handle, OS.LB_SETSEL, 0, -1);
 }
 
 /**
@@ -1329,7 +1329,7 @@ void setScrollWidth (int newWidth, boolean grow) {
 public void setSelection(int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	deselectAll ();
 	select (indices, true);
 	if ((style & SWT.MULTI) != 0) {
 		if (indices.length != 0) {

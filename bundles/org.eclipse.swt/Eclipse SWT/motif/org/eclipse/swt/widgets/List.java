@@ -1325,7 +1325,7 @@ public void setItems (String [] items) {
  * @see List#select(int)
  */
 public void setSelection (int index) {
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	if ((style & SWT.MULTI) != 0) OS.XmListDeselectAllItems (handle);
 	select (index);
 	showSelection ();
 }
@@ -1345,7 +1345,7 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	if ((style & SWT.MULTI) != 0) OS.XmListDeselectAllItems (handle);
 	select (start, end);
 	showSelection ();
 }
@@ -1367,7 +1367,7 @@ public void setSelection (int start, int end) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	OS.XmListDeselectAllItems (handle);
 	select (indices);
 	showSelection ();
 }
