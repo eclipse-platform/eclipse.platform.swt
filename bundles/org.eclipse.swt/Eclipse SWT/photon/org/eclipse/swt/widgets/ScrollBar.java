@@ -64,6 +64,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_SLIDER_SIZE, 10, 0,
 		OS.Pt_ARG_BASIC_FLAGS, basicFlags, ~0,
 		OS.Pt_ARG_ORIENTATION, orientation, 0,
+		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtScrollbar (), parentHandle, args.length / 3, args);
