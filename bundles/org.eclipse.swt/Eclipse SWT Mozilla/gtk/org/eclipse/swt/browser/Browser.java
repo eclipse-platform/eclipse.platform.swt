@@ -696,7 +696,7 @@ static Browser findBrowser(int /*long*/ handle) {
 	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
 	* and not directly into the parent Composite handle.
 	*/
-	int parent = OS.gtk_widget_get_parent(handle);
+	int /*long*/ parent = OS.gtk_widget_get_parent(handle);
 	Display display = Display.getCurrent();
 	return (Browser)display.findWidget(parent); 
 }
