@@ -882,8 +882,7 @@ public boolean getHeaderVisible () {
 
 Point getImageSize () {
 	if (imageList != null) return imageList.getImageSize ();
-	int imageWidth = getItemHeight ();
-	return new Point (imageWidth, imageWidth);
+	return new Point (0, getItemHeight ());
 }
 
 /**
