@@ -11,6 +11,8 @@
 package org.eclipse.swt.layout;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * <code>GridData</code> is the layout data object associated with 
@@ -280,7 +282,8 @@ public final class GridData {
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
 	int cacheWidth = -1, cacheHeight = -1;
-	boolean flushCache = false;
+	int [][] cache = new int[2][4];
+	int cacheIndex = -1;
 
 /**
  * Constructs a new instance of GridData using
@@ -360,6 +363,31 @@ public GridData (int width, int height) {
 	super ();
 	this.widthHint = width;
 	this.heightHint = height;
+}
+
+Point computeSize (Control control, boolean flushCache) {
+	if (cacheWidth != -1 && cacheHeight != -1) {
+		return new Point (cacheWidth, cacheHeight);
+	}
+	for (int i = 0; i < cacheIndex + 1; i++) {
+		if (cache [i][0] == widthHint && cache [i][1] == heightHint) {
+			cacheWidth = cache [i][2];
+			cacheHeight = cache [i][3];
+			return new Point (cacheWidth, cacheHeight);
+		}
+	}
+	Point size =  control.computeSize (widthHint, heightHint, flushCache);
+	if (cacheIndex < cache.length - 1) cacheIndex++;
+	cache [cacheIndex][0] = widthHint;
+	cache [cacheIndex][1] = heightHint;
+	cacheWidth = cache [cacheIndex][2] = size.x;
+	cacheHeight = cache [cacheIndex][3] = size.y;
+	return size;
+}
+
+void flushCache () {
+	cacheWidth = cacheHeight = -1;
+	cacheIndex = -1;
 }
 
 String getName () {

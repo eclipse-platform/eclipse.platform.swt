@@ -11,8 +11,8 @@
 package org.eclipse.swt.layout;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class lay out the control children of a 
@@ -113,22 +113,10 @@ public GridLayout (int numColumns, boolean makeColumnsEqualWidth) {
 }
 
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
-	Point size =  layout (composite, false, 0, 0, 0, 0, flushCache);
+	Point size =  layout (composite, false, 0, 0, wHint, hHint, flushCache);
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	return size;
-}
-
-Point computeSize (Control control, boolean flushCache) {
-	GridData data = (GridData) control.getLayoutData ();
-	if (data.flushCache) {
-		data.cacheWidth = data.cacheHeight = -1;
-		data.flushCache = false;
-	}
-	if (!flushCache & data.cacheWidth != -1 && data.cacheHeight != -1) {
-		return new Point (data.cacheWidth, data.cacheHeight);
-	}
-	return control.computeSize (data.widthHint, data.heightHint, flushCache);
 }
 
 GridData getData (Control [][] grid, int row, int column, int rowCount, int columnCount, boolean first) {
@@ -160,9 +148,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		Control child = children [i];
 		GridData data = (GridData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new GridData ());
-		Point size = computeSize (child, flushCache);
-		data.cacheWidth = size.x;
-		data.cacheHeight = size.y;
+		if (flushCache) data.flushCache ();
+		data.computeSize (child, flushCache);
 	}
 	
 	/* Build the grid */
@@ -294,13 +281,13 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			minColumnWidth = Math.max (minColumnWidth, minWidths [i]);
 			columnWidth = Math.max (columnWidth, widths [i]);
 		}
-		columnWidth = move ? Math.max (minColumnWidth, availableWidth / columnCount) : columnWidth;
+		columnWidth = width == SWT.DEFAULT || expandCount == 0 ? columnWidth : Math.max (minColumnWidth, availableWidth / columnCount);
 		for (int i=0; i<columnCount; i++) {
-			expandColumn [i] = true;
+			expandColumn [i] = expandCount > 0;
 			widths [i] = columnWidth;
 		}
 	} else {
-		if (move && expandCount > 0) {
+		if (width != SWT.DEFAULT && expandCount > 0) {
 			int totalWidth = 0;
 			for (int i=0; i<columnCount; i++) {
 				totalWidth += widths [i];
@@ -368,7 +355,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 	
 	/* Wrapping */
-	if (move) {
+	GridData [] flush = null;
+	int flushLength = 0;
+	if (width != SWT.DEFAULT) {
 		for (int j=0; j<columnCount; j++) {
 			for (int i=0; i<rowCount; i++) {
 				GridData data = getData (grid, i, j, rowCount, columnCount, false);
@@ -376,28 +365,31 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					if (data.heightHint == SWT.DEFAULT) {
 						Control child = grid [i][j];
 						//TEMPORARY CODE
-						if ((child.getStyle () & SWT.WRAP) != 0) {
-							int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
-							int currentWidth = 0;
-							for (int k=0; k<hSpan; k++) {
-								currentWidth += widths [j-k];
+						int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
+						int currentWidth = 0;
+						for (int k=0; k<hSpan; k++) {
+							currentWidth += widths [j-k];
+						}
+						currentWidth += (hSpan - 1) * horizontalSpacing - data.horizontalIndent;
+						if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) ||
+							(data.cacheWidth > currentWidth)) { 
+							int trim = 0;
+							if (child instanceof Group) {
+								Group g = (Group)child;
+								trim = g.getSize ().x - g.getClientArea ().width;
+							} else if (child instanceof Scrollable) {
+								Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
+								trim = rect.width;
+							} else {
+								trim = child.getBorderWidth () * 2;
 							}
-							currentWidth += (hSpan - 1) * horizontalSpacing - data.horizontalIndent;
-							if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) ||
-								(data.cacheWidth > currentWidth)) { 
-								int trim = 0;
-								if (child instanceof Scrollable) {
-									Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
-									trim = rect.width;
-								} else {
-									trim = child.getBorderWidth () * 2;
-								}
-								currentWidth = Math.max (0, currentWidth - trim);
-								Point size = child.computeSize (currentWidth, data.heightHint, flushCache);
-								data.cacheWidth = size.x;
-								data.cacheHeight = size.y;
-								data.flushCache = true;
-							}
+							int oldWidthHint = data.widthHint;
+							data.widthHint = Math.max (0, currentWidth - trim);
+							data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
+							data.computeSize(child, false);
+							data.widthHint = oldWidthHint;
+							if (flush == null) flush = new GridData [children.length];
+							flush [flushLength++] = data;
 						}
 					}
 				}
@@ -480,7 +472,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			}
 		}
 	}
-	if (move && expandCount > 0) {
+	if (height != SWT.DEFAULT && expandCount > 0) {
 		int totalHeight = 0;
 		for (int i=0; i<rowCount; i++) {
 			totalHeight += heights [i];
@@ -608,6 +600,11 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		}
 	}
 	
+	// clean up cache
+	for (int i = 0; i < flushLength; i++) {
+		flush [i].cacheWidth = flush [i].cacheHeight = -1;
+	}
+		
 	int totalDefaultWidth = 0;
 	int totalDefaultHeight = 0;
 	for (int i=0; i<columnCount; i++) {
