@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Display;
  * @see ByteArrayTransfer
  */
 public abstract class Transfer {
+	
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.
@@ -44,10 +45,66 @@ abstract public TransferData[] getSupportedTypes();
  * agent
  */
 abstract public boolean isSupportedType(TransferData transferData);
+
+/**
+ * Returns the platform specfic names of the  data types that can be converted 
+ * using this transfer agent.
+ * 
+ * @return the platform specfic names of the data types that can be converted 
+ * using this transfer agent.
+ */
 abstract protected String[] getTypeNames();
+
+/**
+ * Returns the platform specfic ids of the  data types that can be converted using 
+ * this transfer agent.
+ * 
+ * @return the platform specfic ids of the data types that can be converted using 
+ * this transfer agent
+ */
 abstract protected int[] getTypeIds();
+
+/**
+ * Converts a java representation of data to a platform specific representation of 
+ * the data. 
+ *
+ * <p>On a successful conversion, the transferData.result field will be set as follows:
+ * <ul>
+ * <li>Windows: COM.S_OK
+ * <li>Motif: 1
+ * <li>GTK: 1
+ * <li>Photon: 1
+ * </ul></p>
+ * 
+ * <p>If this transfer agent is unable to perform the conversion, the transferData.result 
+ * field will be set to a failure value as follows:
+ * <ul>
+ * <li>Windows: COM.DV_E_TYMED or COM.E_FAIL
+ * <li>Motif: 0
+ * <li>GTK: 0
+ * <li>Photon: 0
+ * </ul></p>
+ *
+ * @param object a java representation of the data to be converted; the type of
+ * Object that is passed in is dependant on the <code>Transfer</code> subclass.
+ *
+ * @param transferData an empty TransferData object; this object will be 
+ * filled in on return with the platform specific representation of the data
+ */
 abstract protected void javaToNative (Object object, TransferData transferData);
+
+/**
+ * Converts a platform specific representation of data to a java representation.
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * converted
+ *
+ * @return a java representation of the converted data if the conversion was 
+ * successful; otherwise null.  The type of Object that is returned is dependant 
+ * on the <code>Transfer</code> subclass
+ */
 abstract protected Object nativeToJava(TransferData transferData);
+
 /**
  * Registers a name for a data type and returns the associated unique identifier.
  *

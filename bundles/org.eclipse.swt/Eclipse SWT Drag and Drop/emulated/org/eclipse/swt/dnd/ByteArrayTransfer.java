@@ -111,9 +111,11 @@ package org.eclipse.swt.dnd;
  * }
  */
 public abstract class ByteArrayTransfer extends Transfer {
+	
 public TransferData[] getSupportedTypes(){
 	return null;
 }
+
 public boolean isSupportedType(TransferData transferData){
 	return false;
 }

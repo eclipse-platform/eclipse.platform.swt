@@ -131,6 +131,18 @@ public boolean isSupportedType(TransferData transferData){
 	}
 	return false;
 }
+
+/**
+ * This implementation of <code>javaToNative</code> converts a java 
+ * <code>byte[]</code> to a platform specific representation.  For additional
+ * information see <code>Transfer#javaToNative</code>.
+ * 
+ * @see Transfer#javaToNative
+ * 
+ * @param object a java <code>byte[]</code> containing the data to be converted
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
+ */
 protected void javaToNative (Object object, TransferData transferData){
 	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) {
 		transferData.result = 0;
@@ -143,6 +155,19 @@ protected void javaToNative (Object object, TransferData transferData){
 	transferData.format = 8;
 	transferData.result = 1;
 }
+
+/**
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of a byte array to a java <code>byte[]</code>.   
+ * For additional information see <code>Transfer#nativeToJava</code>.
+ * 
+ * @see Transfer#nativeToJava
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>byte[]</code> containing the converted data if the 
+ * conversion was successful; otherwise null
+ */
 protected Object nativeToJava(TransferData transferData){
 	if ( !(isSupportedType(transferData) || transferData.pValue == 0)) return null;
 	int size = transferData.format * transferData.length / 8;
