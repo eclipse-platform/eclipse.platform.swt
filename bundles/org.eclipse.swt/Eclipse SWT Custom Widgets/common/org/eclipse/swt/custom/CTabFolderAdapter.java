@@ -13,8 +13,6 @@ package org.eclipse.swt.custom;
 /**
  * @deprecated see CTabFolderCloseAdapter
  */
-public class CTabFolderAdapter extends CTabFolderCloseAdapter {
-	/*
-	* Deprecated. Body implemented in CTabFolderCloseAdapter
-	*/
+public class CTabFolderAdapter implements CTabFolderListener {
+	public void itemClosed(CTabFolderEvent event){/* empty implementation*/}
 }
