@@ -356,7 +356,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	int width;
 	int newItemWidth = 0;
 		
-	if (getContentWidth() == 0 && getItemCount() > 0) {
+	if (wHint == SWT.DEFAULT && getContentWidth() == 0 && getItemCount() > 0) {
 		gc = new GC(this);
 		for (int i = 0; i < WidthCalculationCount; i++) {
 			item = root.getVisibleItem(i);
