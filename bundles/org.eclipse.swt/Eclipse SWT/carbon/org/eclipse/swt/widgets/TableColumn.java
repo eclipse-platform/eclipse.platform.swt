@@ -237,6 +237,8 @@ public Table getParent () {
  * 
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -323,7 +325,7 @@ void releaseWidget () {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -348,7 +350,7 @@ public void removeControlListener (ControlListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -433,6 +435,8 @@ public void setImage (Image image) {
  * 
  * @see Table#setColumnOrder(int[])
  * @see Table#getColumnOrder()
+ * @see TableColumn#getMoveable()
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -450,8 +454,10 @@ public void setMoveable (boolean moveable) {
 
 /**
  * Sets the resizable attribute.  A column that is
- * not resizable cannot be dragged by the user but
- * may be resized by the programmer.
+ * resizable can be resized by the user dragging the
+ * edge of the header.  A column that is not resizable 
+ * cannot be dragged by the user but may be resized 
+ * by the programmer.
  *
  * @param resizable the resize attribute
  *

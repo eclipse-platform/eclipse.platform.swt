@@ -191,8 +191,7 @@ public Cursor(Device device, int style) {
  *    <li>ERROR_NULL_ARGUMENT - if the source is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the mask is null and the source does not have a mask</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the source and the mask are not the same 
- *          size, or either is not of depth one, or if the hotspot is outside 
- *          the bounds of the image</li>
+ *          size, or if the hotspot is outside the bounds of the image</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>

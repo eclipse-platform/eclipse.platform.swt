@@ -12,6 +12,9 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public class Path {
 	
 	/**

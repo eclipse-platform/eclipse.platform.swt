@@ -298,7 +298,7 @@ public Rectangle getBounds () {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its parent at a column in the table.
+ * relative to its parent at a column in the tree.
  *
  * @param index the index that specifies the column
  * @return the receiver's bounding column rectangle
@@ -307,6 +307,7 @@ public Rectangle getBounds () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
  * @since 3.1
  */
 public Rectangle getBounds (int index) {
@@ -514,6 +515,8 @@ public Image getImage (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
@@ -629,10 +632,7 @@ public String getText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
- * </ul>
- *
+ * 
  * @since 3.1
  */
 public String getText (int index) {
@@ -681,7 +681,7 @@ void releaseWidget () {
  * if the argument is null.
  *
  * @param color the new color (or null)
- *
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
@@ -850,6 +850,8 @@ public void setFont (int index, Font font) {
  *
  * @param color the new color (or null)
  *
+ * @since 2.0
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
@@ -927,7 +929,7 @@ public void setGrayed (boolean grayed) {
 }
 
 /**
- * Sets the image for multiple columns in the Table. 
+ * Sets the image for multiple columns in the tree. 
  * 
  * @param images the array of new images
  *
@@ -939,7 +941,7 @@ public void setGrayed (boolean grayed) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public void setImage (Image [] images) {
@@ -963,7 +965,7 @@ public void setImage (Image [] images) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public void setImage (int index, Image image) {
@@ -1001,7 +1003,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the text for multiple columns in the table. 
+ * Sets the text for multiple columns in the tree. 
  * 
  * @param strings the array of new strings
  *
@@ -1012,7 +1014,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public void setText (String [] strings) {
@@ -1037,8 +1039,8 @@ public void setText (String [] strings) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @since3.1
+ * 
+ * @since 3.1
  */
 public void setText (int index, String string) {
 	checkWidget();

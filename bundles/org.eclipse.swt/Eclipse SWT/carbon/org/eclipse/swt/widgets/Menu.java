@@ -41,6 +41,13 @@ import org.eclipse.swt.graphics.*;
 public class Menu extends Widget {
 	/**
 	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	int handle;
 	short id;
@@ -791,7 +798,7 @@ void releaseWidget () {
  * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -815,7 +822,7 @@ public void removeHelpListener (HelpListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the menu events are generated for the control.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

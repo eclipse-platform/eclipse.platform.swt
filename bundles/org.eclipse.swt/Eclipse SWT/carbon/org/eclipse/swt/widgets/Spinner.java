@@ -23,7 +23,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are selectable user interface
- * objects that allow the user to enter and modify number
+ * objects that allow the user to enter and modify numeric
+ * values.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -34,6 +35,8 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.1
  */
 public class Spinner extends Composite {
 	int textHandle, buttonHandle;
@@ -388,9 +391,8 @@ public int getMinimum () {
 }
 
 /**
- * Returns the amount that the receiver's value will be
- * modified by when the page increment/decrement areas
- * are selected.
+ * Returns the amount that the receiver's position will be
+ * modified by when the page up/down keys are pressed.
  *
  * @return the page increment
  *
@@ -405,7 +407,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the single <em>selection</em> that is the receiver's position.
+ * Returns the <em>selection</em>, which is the receiver's position.
  *
  * @return the selection 
  *
@@ -592,7 +594,7 @@ public void removeModifyListener (ModifyListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -758,11 +760,10 @@ void setForeground (float [] color) {
 
 /**
  * Sets the amount that the receiver's value will be
- * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
- * one.
+ * modified by when the up/down arrows are pressed to
+ * the argument, which must be at least one.
  *
- * @param increment the new increment (must be greater than zero)
+ * @param value the new increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -822,12 +823,11 @@ public void setMinimum (int value) {
 }
 
 /**
- * Sets the amount that the receiver's value will be
- * modified by when the page increment/decrement areas
- * are selected to the argument, which must be at least
- * one.
+ * Sets the amount that the receiver's position will be
+ * modified by when the page up/down keys are pressed
+ * to the argument, which must be at least one.
  *
- * @param pageIncrement the page increment (must be greater than zero)
+ * @param value the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -841,9 +841,10 @@ public void setPageIncrement (int value) {
 }
 
 /**
- * Sets the single <em>selection</em> that is the receiver's
- * value to the argument which must be greater than or equal
- * to zero.
+ * Sets the <em>selection</em>, which is the receiver's
+ * position, to the argument. If the argument is not within
+ * the range specified by minimum and maximum, it will be
+ * adjusted to fall within this range.
  *
  * @param value the new selection (must be zero or greater)
  *

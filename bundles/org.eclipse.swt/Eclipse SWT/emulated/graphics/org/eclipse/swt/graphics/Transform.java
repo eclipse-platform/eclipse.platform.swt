@@ -12,9 +12,12 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public class Transform {
 	/**
-	 * the handle to the OS transform resource
+	 * the handle to the OS path resource
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;

@@ -648,6 +648,21 @@ public boolean getMinimized () {
 	return OS.IsWindowCollapsed (shellHandle);
 }
 
+/**
+ * Returns a point describing the minimum receiver's size. The
+ * x coordinate of the result is the minimum width of the receiver.
+ * The y coordinate of the result is the minimum height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public Point getMinimumSize () {
 	checkWidget();
 	Rect rect = new Rect ();
@@ -1140,8 +1155,8 @@ public void removeShellListener(ShellListener listener) {
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
  * (so that all other shells on that display, which are not 
- * the receiver's children will be drawn behind it) and forces 
- * the window manager to make the shell active.
+ * the receiver's children will be drawn behind it) and asks 
+ * the window manager to make the shell active 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1286,6 +1301,21 @@ public void setMinimized (boolean minimized) {
 	OS.CollapseWindow (shellHandle, minimized);
 }
 
+/**
+ * Sets the receiver's minimum size to the point specified by the arguments.
+ * If the new minimum size is larger than the current size of the receiver,
+ * the receiver is resized to the new minimum size.
+ *
+ * @param width the new minimum width for the receiver
+ * @param height the new minimum height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public void setMinimumSize (int width, int height) {
 	checkWidget();
 	int clientWidth = 0, clientHeight = 0;
@@ -1308,6 +1338,23 @@ public void setMinimumSize (int width, int height) {
 	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
 }
 
+/**
+ * Sets the receiver's minimum size to the point specified by the argument.
+ * If the new minimum size is larger than the current size of the receiver,
+ * the receiver is resized to the new minimum size.
+ *
+ * @param size the new minimum size for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public void setMinimumSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
