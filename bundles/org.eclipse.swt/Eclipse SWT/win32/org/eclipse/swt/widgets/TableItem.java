@@ -162,8 +162,8 @@ public Rectangle getBounds (int index) {
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
-	* one pixel.  The fix is to move the top of the rectangle up
-	* by one pixel.
+	* the grid width when the grid is visible.  The fix is to
+	* move the top of the rectangle up by the grid width.
 	*/
 	if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) >= (5 << 16 | 80)) {
 		rect.top -= gridWidth;
@@ -310,15 +310,14 @@ public Rectangle getImageBounds (int index) {
 	}
 	int width = rect.right - rect.left - gridWidth;
 	int height = rect.bottom - rect.top - gridWidth;
-	if (gridWidth == 0) --height;
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
-	* one pixel.  The fix is to move the top of the rectangle up
-	* by one pixel.
+	* the grid width when the grid is visible.  The fix is to
+	* move the top of the rectangle up by the grid width.
 	*/
 	if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) >= (5 << 16 | 80)) {
-		--rect.top;
+		rect.top -= gridWidth;
 	}
 	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
 }
