@@ -70,11 +70,16 @@ public final class Converter {
 			else CodePage = "iso8859_1";
 		}
 		
-		/* The buffers can hold up to 512 unicode characters */
+		/*
+		* The buffers can hold up to 512 unicode characters when converting
+		* from UCS-2 to any MBCS (including UTF-8). And they can hold
+		* at least 512 MBCS characters when converting from any MBCS to
+		* UCS-2.
+		*/
 		BufferSize = 512;
 		Ucs2Buffer = OS.XtMalloc (BufferSize * 2);
-		Utf8Buffer = OS.XtMalloc (BufferSize * 4);
-		MbcsBuffer = OS.XtMalloc (BufferSize * 4);
+		Utf8Buffer = OS.XtMalloc (BufferSize * 6);
+		MbcsBuffer = OS.XtMalloc (BufferSize * 6);
 	}
 
 /**
@@ -168,15 +173,15 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 				if (cd == -1) return EMPTY_CHAR_ARRAY;
 				boolean utf8 = cd == LastMbcsToUTF8;
 				int inByteCount = length;
-				int outByteCount = utf8 ? length * 4 : length * 2;
+				int outByteCount = utf8 ? length * 6 : length * 2;
 				int ptr1 = 0, ptr2 = 0, ptr3 = 0;
-				if (length <= BufferSize * 2) {
+				if (length <= BufferSize) {
 					ptr1 = MbcsBuffer;
 					ptr2 = Utf8Buffer;
 					ptr3 = Ucs2Buffer;
 				} else {
 					ptr1 = OS.XtMalloc (inByteCount);
-					if (utf8) ptr2 = OS.XtMalloc (length * 4);
+					if (utf8) ptr2 = OS.XtMalloc (length * 6);
 					ptr3 = OS.XtMalloc (length * 2);
 				}
 				int ptr = utf8 ? ptr2 : ptr3;
@@ -302,7 +307,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				if (cd == -1) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
 				boolean utf8 = cd == UCS2ToUTF8;
 				int inByteCount = length * 2;
-				int outByteCount = length * 4;
+				int outByteCount = length * 6;
 				int ptr1 = 0, ptr2 = 0, ptr3 = 0;
 				if (length <= BufferSize) {
 					ptr1 = Ucs2Buffer;
@@ -330,7 +335,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				if (utf8) {
 					cd = LastUTF8ToMbcs;
 					inByteCount = outByteCount;
-					outByteCount = length * 4;
+					outByteCount = length * 6;
 					inBuffer[0] = ptr2;
 					inBytesLeft[0] = inByteCount;
 					outBuffer[0] = ptr3;
