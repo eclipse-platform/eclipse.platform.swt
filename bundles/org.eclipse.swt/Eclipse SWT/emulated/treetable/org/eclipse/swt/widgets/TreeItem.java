@@ -982,7 +982,7 @@ public void setExpanded (boolean value) {
 		expanded = value;
 		if (availableIndex == -1) return;
 		parent.makeDescendentsAvailable (this);
-		parent.redrawFromItemDownwards (availableIndex);
+		parent.redrawFromItemDownwards (availableIndex + 1);
 	} else {
 		int oldAvailableLength = parent.availableItems.length;
 		TreeItem[] descendents = computeAvailableDescendents ();
@@ -1003,8 +1003,10 @@ public void setExpanded (boolean value) {
 			if (isDisposed ()) return;
 			parent.showItem (this);
 		}
-		parent.redrawItems (availableIndex, oldAvailableLength - 1, false);
+		parent.redrawItems (availableIndex + 1, oldAvailableLength - 1, false);
 	}
+	Rectangle bounds = getExpanderBounds ();
+	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
 public void setFont (Font value) {
 	checkWidget ();
