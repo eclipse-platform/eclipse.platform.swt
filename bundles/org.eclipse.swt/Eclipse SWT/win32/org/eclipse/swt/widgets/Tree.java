@@ -3037,10 +3037,12 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = itemRect.right - gridWidth;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						for (int i=phdn.iItem; i<count; i++) {
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, itemRect);
+						if (phdn.iItem < count - 1) {
+							for (int i=phdn.iItem; i<count; i++) {
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, itemRect);
+							}
+							rect.right = itemRect.right;
 						}
-						rect.right = itemRect.right;
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						//TODO - column flashes when resized
