@@ -59,7 +59,7 @@ public final class Font {
 	 */
 	int atsuiStyle;
 	
-	static final boolean USE_ATSUI = false;
+	static final boolean USE_ATSUI = true;
 	
 Font() {
 }
