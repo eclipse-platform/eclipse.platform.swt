@@ -150,14 +150,14 @@ void drawClose(GC gc) {
 	y += parent.onBottom ? -1 : 1;
 	
 	int index = parent.indexOf(this);
-	Color closeBorder = parent.single || index == parent.selectedIndex ? parent.getSelectionForeground() : parent.getForeground();
+	Color closeBorder = display.getSystemColor(CTabFolder.BUTTON_BORDER);
 	switch (closeImageState) {
 		case CTabFolder.NORMAL: {
 			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
 					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
 			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.setBackground(display.getSystemColor(CTabFolder.BUTTON_FILL));
 			gc.fillPolygon(shape);
 			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);

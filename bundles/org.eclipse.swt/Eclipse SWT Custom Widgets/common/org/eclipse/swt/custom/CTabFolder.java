@@ -156,8 +156,6 @@ public class CTabFolder extends Composite {
 	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
 	int topRightAlignment = SWT.RIGHT;
 	
-	boolean tipShowing;
-	
 	// borders and shapes
 	int borderLeft = 0;
 	int borderRight = 0;
@@ -180,6 +178,12 @@ public class CTabFolder extends Composite {
 	Point oldSize;
 	Font oldFont;
 	
+	// tooltip
+	int [] toolTipEvents = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.MouseDown, SWT.DragDetect};
+	Listener toolTipListener;
+	Shell toolTipShell;
+	Label toolTipLabel;
+
 	// insertion marker
 	int insertionIndex = -2; // Index of insert marker.  Marker always shown after index.
 	                         // -2 means no insert marker
@@ -204,6 +208,8 @@ public class CTabFolder extends Composite {
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
 	static final int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
 	static final int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
+	static final int BUTTON_BORDER = SWT.COLOR_WIDGET_DARK_SHADOW;
+	static final int BUTTON_FILL = SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW;
 	
 	static final int NONE = 0;
 	static final int NORMAL = 1;
@@ -306,6 +312,21 @@ public CTabFolder(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
+	
+	toolTipListener = new Listener() {
+		public void handleEvent(Event event) {
+			switch (event.type) {
+				case SWT.MouseHover:
+				case SWT.MouseMove:
+					if (updateToolTip(event.x, event.y)) break;
+					// FALL THROUGH
+				case SWT.MouseExit:
+				case SWT.MouseDown:
+					hideToolTip();
+					break;
+			}
+		}
+	};
 }
 static int checkStyle (int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
@@ -789,10 +810,11 @@ void drawBody(Event event) {
 void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
+	Display display = getDisplay();
 	FontData fd = getFont().getFontData()[0];
 	fd.setHeight(7);
-	Font f = new Font(getDisplay(), fd);
-	int fHeight = f.getFontData()[0].getHeight() * getDisplay().getDPI().y / 72;
+	Font f = new Font(display, fd);
+	int fHeight = f.getFontData()[0].getHeight() * display.getDPI().y / 72;
 	int indent = Math.max(2, (chevronRect.height - fHeight - 4) /2);
 	int x = chevronRect.x + 2;
 	int y = chevronRect.y + indent;
@@ -803,9 +825,9 @@ void drawChevron(GC gc) {
 		int lastIndex = getLastIndex();
 		count = Math.max(0, items.length - (lastIndex - firstIndex + 1));
 	}
+	Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
 	switch (chevronImageState) {
 		case NORMAL: {
-			Color chevronBorder = single ? getSelectionForeground() : getForeground();
 			gc.setForeground(chevronBorder);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
@@ -820,12 +842,10 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case HOT: {
-			Display display = getDisplay();
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.setBackground(display.getSystemColor(BUTTON_FILL));
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-			gc.setForeground(borderColor);
+			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
 			gc.drawLine(x+1,y,   x+3,y+2);
@@ -839,12 +859,10 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case SELECTED: {
-			Display display = getDisplay();
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.setBackground(display.getSystemColor(BUTTON_FILL));
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-			gc.setForeground(borderColor);
+			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
-			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.drawLine(x+1,y+1, x+3,y+3);
 			gc.drawLine(x+3,y+3, x+1,y+5);
 			gc.drawLine(x+2,y+1, x+4,y+3);
@@ -864,20 +882,20 @@ void drawMaximize(GC gc) {
 	if (maxRect.width == 0 || maxRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 7x9
-	Color maxBorder = single ? getSelectionForeground() : getForeground();
+	Color maxBorder = display.getSystemColor(BUTTON_BORDER);
 	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
 	int x = maxRect.x + indent - 1;
 	int y = maxRect.y + indent;
 	switch (maxImageState) {
 		case NORMAL: {
 			if (!maximized) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y, 7, 9);
 				gc.setForeground(maxBorder);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
 				gc.setForeground(maxBorder);
@@ -936,19 +954,19 @@ void drawMinimize(GC gc) {
 	if (minRect.width == 0 || minRect.height == 0) return;
 	Display display = getDisplay();
 	// 5x4 or 9x3
-	Color minBorder = single ? getSelectionForeground() : getForeground();
+	Color minBorder = display.getSystemColor(BUTTON_BORDER);
 	int indent = Math.max(1, (CTabFolder.BUTTON_SIZE-9)/2);
 	int x = minRect.x + indent - 1;
 	int y = minRect.y + indent;
 	switch (minImageState) {
 		case NORMAL: {
 			if (!minimized) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y, 9, 3);
 				gc.setForeground(minBorder);
 				gc.drawRectangle(x, y, 9, 3);
 			} else {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.setBackground(getDisplay().getSystemColor(BUTTON_FILL));
 				gc.fillRectangle(x, y+3, 5, 4);
 				gc.fillRectangle(x+2, y, 5, 4);
 				gc.setForeground(minBorder);
@@ -1732,7 +1750,6 @@ void onMouseDoubleClick(Event event) {
 	}
 }
 void onMouseHover(Event event) {
-	if (tipShowing) return;
 	showToolTip(event.x, event.y);
 }
 void onMouse(Event event) {
@@ -3295,44 +3312,33 @@ public void showSelection () {
 		showItem(getSelection());
 	}
 }
+
+void hideToolTip() {
+	if(toolTipShell == null) return;
+	for (int i = 0; i < toolTipEvents.length; i++) {
+		removeListener(toolTipEvents[i], toolTipListener);
+	}
+	toolTipShell.dispose();
+	toolTipShell = null;
+	toolTipLabel = null;
+}
 void showToolTip (int x, int y) {
-	final Shell tip = new Shell (getShell(), SWT.ON_TOP);
-	final Label label = new Label (tip, SWT.CENTER);
-	Display display = tip.getDisplay();
-	label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-	label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-	
-	if (!updateToolTip(x, y, label)) {
-		tip.dispose();
-		return;
-	}
-	
-	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.MouseDown, SWT.DragDetect};
-	final Listener[] listener = new Listener[1];
-	listener[0] = new Listener() {
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.MouseHover:
-				case SWT.MouseMove:
-					if (updateToolTip(event.x, event.y, label)) break;
-					// FALL THROUGH
-				case SWT.MouseExit:
-				case SWT.MouseDown:
-				case SWT.DragDetect:
-					for (int i = 0; i < events.length; i++) {
-						removeListener(events[i], listener[0]);
-					}
-					tip.dispose();
-					tipShowing = false;
-					break;
-			}
+	if (toolTipShell == null) {
+		toolTipShell = new Shell (getShell(), SWT.ON_TOP);
+		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
+		Display display = toolTipShell.getDisplay();
+		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+		toolTipLabel.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		for (int i = 0; i < toolTipEvents.length; i++) {
+			addListener(toolTipEvents[i], toolTipListener);
 		}
-	};
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener[0]);
 	}
-	tipShowing = true;
-	tip.setVisible(true);
+	if (updateToolTip(x, y)) {
+		toolTipShell.setVisible(true);
+	} else {
+		hideToolTip();
+	}
+	
 }
 boolean updateItems() {
 	boolean changed = false;
@@ -3343,6 +3349,11 @@ boolean updateItems() {
 		int top = firstIndex;
 		showItem(items[selectedIndex]);
 		if (top != firstIndex) changed = true;
+	}
+	if (changed && toolTipShell != null) {
+		Point pt = getDisplay().getCursorLocation();
+		pt = toControl(pt);
+		if (!updateToolTip(pt.x, pt.y)) hideToolTip();
 	}
 	return changed;
 }
@@ -3377,27 +3388,26 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	notifyListeners(SWT.Resize, new Event());
 	return true;
 }
-boolean updateToolTip (int x, int y, Label label) {
+boolean updateToolTip (int x, int y) {
 	CTabItem item = getItem(new Point (x, y));
 	if (item == null) return false;
 	String tooltip = item.getToolTipText();
 	if (tooltip == null) return false;
-	if (tooltip.equals(label.getText())) return true;
+	if (tooltip.equals(toolTipLabel.getText())) return true;
 	
-	Shell tip = label.getShell();
-	label.setText(tooltip);
-	Point labelSize = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	toolTipLabel.setText(tooltip);
+	Point labelSize = toolTipLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	labelSize.x += 2; labelSize.y += 2;
-	label.setSize(labelSize);
-	tip.pack();
+	toolTipLabel.setSize(labelSize);
+	toolTipShell.pack();
 	/*
 	 * On some platforms, there is a minimum size for a shell  
 	 * which may be greater than the label size.
 	 * To avoid having the background of the tip shell showing
 	 * around the label, force the label to fill the entire client area.
 	 */
-	Rectangle area = tip.getClientArea();
-	label.setSize(area.width, area.height);
+	Rectangle area = toolTipShell.getClientArea();
+	toolTipLabel.setSize(area.width, area.height);
 	/*
 	 * Position the tooltip and ensure that it is not located off
 	 * the screen.
@@ -3406,7 +3416,7 @@ boolean updateToolTip (int x, int y, Label label) {
 	// Assuming cursor is 21x21 because this is the size of
 	// the arrow cursor on Windows 
 	int cursorHeight = 21; 
-	Point size = tip.getSize();
+	Point size = toolTipShell.getSize();
 	Rectangle rect = getMonitor().getBounds();
 	Point pt = new Point(cursorLocation.x, cursorLocation.y + cursorHeight + 2);
 	pt.x = Math.max(pt.x, rect.x);
@@ -3414,7 +3424,7 @@ boolean updateToolTip (int x, int y, Label label) {
 	if (pt.y + size.y > rect.y + rect.height) {
 		pt.y = cursorLocation.y - 2 - size.y;
 	}
-	tip.setLocation(pt);
+	toolTipShell.setLocation(pt);
 	return true;
 }
 }
