@@ -3252,7 +3252,7 @@ void doVisualPrevious() {
 		// check if caret location is at the visual beginning of the line
 		if (columnX <= XINSET && horizontalScrollOffset == 0) { 
 			return;
-		}		
+		}
 		String lineText = content.getLine(line);
 		int lineLength = lineText.length();
 		GC gc = getGC();
@@ -3335,7 +3335,8 @@ void doVisualNext() {
 	if (isBidi()) {
 		GC gc = getGC();
 		StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
-		int lineEndPixel = bidi.getTextWidth() + leftMargin; 
+		// Fixes bug 39032
+		int lineEndPixel = Math.max(bidi.getTextWidth(), XINSET); 
 
 		// check if caret location is at the visual end of the line (can't use 
 		// caret location here since it's location is dependent on current keyboard
