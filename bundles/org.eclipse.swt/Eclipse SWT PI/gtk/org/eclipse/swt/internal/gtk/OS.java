@@ -252,8 +252,11 @@ public class OS {
 	public static final int PANGO_STYLE_OBLIQUE = 0x1;
 	public static final int PANGO_TAB_LEFT = 0;
 	public static final int PANGO_UNDERLINE_LOW = 3;
+	public static final int PANGO_UNDERLINE_SINGLE = 1;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
+	public static final int PANGO_WRAP_WORD = 0;
+	public static final int PANGO_WRAP_WORD_CHAR = 2;
 	public static final int XA_CARDINAL = 0x6;
 	
 	/** Signals */
@@ -415,6 +418,8 @@ public static final synchronized native boolean g_thread_supported();
 public static final synchronized native int g_utf16_to_utf8(char[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final synchronized native int g_utf8_to_utf16(byte[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final synchronized native int g_utf8_to_utf16(int str, int len, int[] items_read, int[] items_written, int[] error);
+public static final synchronized native int g_utf8_strlen(int str, int max);
+public static final synchronized native int g_utf8_strncpy(int dest, int src, int n);
 public static final synchronized native int gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
 public static final synchronized native int gdk_atom_name(int atom);
 public static final synchronized native void gdk_beep();
@@ -970,10 +975,15 @@ public static final native void memmove(byte[] dest, int src, int size);
 public static final native void memmove(char[] dest, int src, int size);
 public static final native void memmove(int[] dest, int src, int size);
 public static final native void memset(int buffer, char c, int num);
+public static final synchronized native int pango_attr_background_new (short red, short green, short blue);
+public static final synchronized native int pango_attr_font_desc_new(int desc);
+public static final synchronized native int pango_attr_foreground_new (short red, short green, short blue);
 public static final synchronized native void pango_attr_list_insert(int list, int attr);
 public static final synchronized native int pango_attr_list_new();
 public static final synchronized native void pango_attr_list_unref(int list);
+public static final synchronized native int pango_attr_strikethrough_new(boolean strikethrough);
 public static final synchronized native int pango_attr_underline_new(int underline);
+public static final synchronized native int pango_attr_weight_new(int weight);
 public static final synchronized native int pango_context_get_language(int context);
 public static final synchronized native int pango_context_get_metrics(int context, int desc, int language);
 public static final synchronized native void pango_context_list_families(int context, int[] families, int[] n_families);
@@ -999,7 +1009,11 @@ public static final synchronized native int pango_font_metrics_get_ascent(int me
 public static final synchronized native int pango_font_metrics_get_descent(int metrics);
 public static final synchronized native void pango_font_metrics_unref(int metrics);
 public static final synchronized native int pango_language_from_string(byte[] language);
+public static final synchronized native void pango_layout_context_changed (int layout);
+public static final synchronized native int pango_layout_get_attributes(int layout);
 public static final synchronized native void pango_layout_get_size(int layout, int[] width, int[] height);
+public static final synchronized native int pango_layout_get_text(int layout);
+public static final synchronized native int pango_layout_get_width(int layout);
 public static final synchronized native int pango_layout_new(int context);
 public static final synchronized native void pango_layout_set_attributes(int layout, int attrs);
 public static final synchronized native void pango_layout_set_font_description(int context, int descr);
@@ -1007,6 +1021,7 @@ public static final synchronized native void pango_layout_set_single_paragraph_m
 public static final synchronized native void pango_layout_set_tabs(int layout, int tabs);
 public static final synchronized native void pango_layout_set_text(int layout, byte[] text, int length);
 public static final synchronized native void pango_layout_set_width(int layout, int width);
+public static final synchronized native void pango_layout_set_wrap (int layout, int wrap);
 public static final synchronized native void pango_tab_array_free(int tab_array);
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
