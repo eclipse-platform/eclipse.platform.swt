@@ -46,8 +46,12 @@ public final class Converter {
 	static int BufferTimes2;
 	static int BufferTimes4;
 	
-	static {			
-		Unicode = getAsciiBytes("UCS-2");
+	static {
+		if (OS.IsHPUX) {
+			Unicode = getAsciiBytes("ucs2");
+		} else {
+			Unicode = getAsciiBytes("UCS-2");
+		}
 
 		int length, item = OS.nl_langinfo (OS.CODESET);
 		if (item != 0 && (length = OS.strlen (item)) > 0) {
