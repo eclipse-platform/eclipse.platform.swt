@@ -1213,6 +1213,193 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 }
 #endif
 
+#ifndef NO_PangoItem
+typedef struct PangoItem_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID offset, length, num_chars, analysis_shape_engine, analysis_lang_engine, analysis_font, analysis_level, analysis_language, analysis_extra_attrs;
+} PangoItem_FID_CACHE;
+
+PangoItem_FID_CACHE PangoItemFc;
+
+void cachePangoItemFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoItemFc.cached) return;
+	PangoItemFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoItemFc.offset = (*env)->GetFieldID(env, PangoItemFc.clazz, "offset", "I");
+	PangoItemFc.length = (*env)->GetFieldID(env, PangoItemFc.clazz, "length", "I");
+	PangoItemFc.num_chars = (*env)->GetFieldID(env, PangoItemFc.clazz, "num_chars", "I");
+	PangoItemFc.analysis_shape_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_shape_engine", "I");
+	PangoItemFc.analysis_lang_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_lang_engine", "I");
+	PangoItemFc.analysis_font = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_font", "I");
+	PangoItemFc.analysis_level = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_level", "B");
+	PangoItemFc.analysis_language = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_language", "I");
+	PangoItemFc.analysis_extra_attrs = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_extra_attrs", "I");
+	PangoItemFc.cached = 1;
+}
+
+PangoItem *getPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct)
+{
+	if (!PangoItemFc.cached) cachePangoItemFields(env, lpObject);
+	lpStruct->offset = (*env)->GetIntField(env, lpObject, PangoItemFc.offset);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, PangoItemFc.length);
+	lpStruct->num_chars = (*env)->GetIntField(env, lpObject, PangoItemFc.num_chars);
+	lpStruct->analysis.shape_engine = (PangoEngineShape *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_shape_engine);
+	lpStruct->analysis.lang_engine = (PangoEngineLang *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_lang_engine);
+	lpStruct->analysis.font = (PangoFont *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_font);
+	lpStruct->analysis.level = (*env)->GetByteField(env, lpObject, PangoItemFc.analysis_level);
+	lpStruct->analysis.language = (PangoLanguage *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_language);
+	lpStruct->analysis.extra_attrs = (GSList *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_extra_attrs);
+	return lpStruct;
+}
+
+void setPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct)
+{
+	if (!PangoItemFc.cached) cachePangoItemFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.offset, (jint)lpStruct->offset);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.length, (jint)lpStruct->length);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.num_chars, (jint)lpStruct->num_chars);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_shape_engine, (jint)lpStruct->analysis.shape_engine);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_lang_engine, (jint)lpStruct->analysis.lang_engine);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_font, (jint)lpStruct->analysis.font);
+	(*env)->SetByteField(env, lpObject, PangoItemFc.analysis_level, (jbyte)lpStruct->analysis.level);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_language, (jint)lpStruct->analysis.language);
+	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_extra_attrs, (jint)lpStruct->analysis.extra_attrs);
+}
+#endif
+
+#ifndef NO_PangoLayoutLine
+typedef struct PangoLayoutLine_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID layout, start_index, length, runs;
+} PangoLayoutLine_FID_CACHE;
+
+PangoLayoutLine_FID_CACHE PangoLayoutLineFc;
+
+void cachePangoLayoutLineFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoLayoutLineFc.cached) return;
+	PangoLayoutLineFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoLayoutLineFc.layout = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "layout", "I");
+	PangoLayoutLineFc.start_index = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "start_index", "I");
+	PangoLayoutLineFc.length = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "length", "I");
+	PangoLayoutLineFc.runs = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "runs", "I");
+	PangoLayoutLineFc.cached = 1;
+}
+
+PangoLayoutLine *getPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct)
+{
+	if (!PangoLayoutLineFc.cached) cachePangoLayoutLineFields(env, lpObject);
+	lpStruct->layout = (PangoLayout *)(*env)->GetIntField(env, lpObject, PangoLayoutLineFc.layout);
+	lpStruct->start_index = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.start_index);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.length);
+	lpStruct->runs = (GSList *)(*env)->GetIntField(env, lpObject, PangoLayoutLineFc.runs);
+	return lpStruct;
+}
+
+void setPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct)
+{
+	if (!PangoLayoutLineFc.cached) cachePangoLayoutLineFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.layout, (jint)lpStruct->layout);
+	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.start_index, (jint)lpStruct->start_index);
+	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.length, (jint)lpStruct->length);
+	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.runs, (jint)lpStruct->runs);
+}
+#endif
+
+#ifndef NO_PangoLayoutRun
+typedef struct PangoLayoutRun_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID item, glyphs;
+} PangoLayoutRun_FID_CACHE;
+
+PangoLayoutRun_FID_CACHE PangoLayoutRunFc;
+
+void cachePangoLayoutRunFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoLayoutRunFc.cached) return;
+	PangoLayoutRunFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoLayoutRunFc.item = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "item", "I");
+	PangoLayoutRunFc.glyphs = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "glyphs", "I");
+	PangoLayoutRunFc.cached = 1;
+}
+
+PangoLayoutRun *getPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct)
+{
+	if (!PangoLayoutRunFc.cached) cachePangoLayoutRunFields(env, lpObject);
+	lpStruct->item = (PangoItem *)(*env)->GetIntField(env, lpObject, PangoLayoutRunFc.item);
+	lpStruct->glyphs = (PangoGlyphString *)(*env)->GetIntField(env, lpObject, PangoLayoutRunFc.glyphs);
+	return lpStruct;
+}
+
+void setPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct)
+{
+	if (!PangoLayoutRunFc.cached) cachePangoLayoutRunFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PangoLayoutRunFc.item, (jint)lpStruct->item);
+	(*env)->SetIntField(env, lpObject, PangoLayoutRunFc.glyphs, (jint)lpStruct->glyphs);
+}
+#endif
+
+#ifndef NO_PangoLogAttr
+typedef struct PangoLogAttr_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID is_line_break, is_mandatory_break, is_char_break, is_white, is_cursor_position, is_word_start, is_word_end, is_sentence_boundary, is_sentence_start, is_sentence_end;
+} PangoLogAttr_FID_CACHE;
+
+PangoLogAttr_FID_CACHE PangoLogAttrFc;
+
+void cachePangoLogAttrFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoLogAttrFc.cached) return;
+	PangoLogAttrFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoLogAttrFc.is_line_break = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_line_break", "Z");
+	PangoLogAttrFc.is_mandatory_break = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_mandatory_break", "Z");
+	PangoLogAttrFc.is_char_break = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_char_break", "Z");
+	PangoLogAttrFc.is_white = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_white", "Z");
+	PangoLogAttrFc.is_cursor_position = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_cursor_position", "Z");
+	PangoLogAttrFc.is_word_start = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_word_start", "Z");
+	PangoLogAttrFc.is_word_end = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_word_end", "Z");
+	PangoLogAttrFc.is_sentence_boundary = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_sentence_boundary", "Z");
+	PangoLogAttrFc.is_sentence_start = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_sentence_start", "Z");
+	PangoLogAttrFc.is_sentence_end = (*env)->GetFieldID(env, PangoLogAttrFc.clazz, "is_sentence_end", "Z");
+	PangoLogAttrFc.cached = 1;
+}
+
+PangoLogAttr *getPangoLogAttrFields(JNIEnv *env, jobject lpObject, PangoLogAttr *lpStruct)
+{
+	if (!PangoLogAttrFc.cached) cachePangoLogAttrFields(env, lpObject);
+	lpStruct->is_line_break = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_line_break);
+	lpStruct->is_mandatory_break = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_mandatory_break);
+	lpStruct->is_char_break = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_char_break);
+	lpStruct->is_white = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_white);
+	lpStruct->is_cursor_position = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_cursor_position);
+	lpStruct->is_word_start = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_word_start);
+	lpStruct->is_word_end = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_word_end);
+	lpStruct->is_sentence_boundary = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_boundary);
+	lpStruct->is_sentence_start = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_start);
+	lpStruct->is_sentence_end = (*env)->GetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_end);
+	return lpStruct;
+}
+
+void setPangoLogAttrFields(JNIEnv *env, jobject lpObject, PangoLogAttr *lpStruct)
+{
+	if (!PangoLogAttrFc.cached) cachePangoLogAttrFields(env, lpObject);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_line_break, (jboolean)lpStruct->is_line_break);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_mandatory_break, (jboolean)lpStruct->is_mandatory_break);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_char_break, (jboolean)lpStruct->is_char_break);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_white, (jboolean)lpStruct->is_white);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_cursor_position, (jboolean)lpStruct->is_cursor_position);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_word_start, (jboolean)lpStruct->is_word_start);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_word_end, (jboolean)lpStruct->is_word_end);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_boundary, (jboolean)lpStruct->is_sentence_boundary);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_start, (jboolean)lpStruct->is_sentence_start);
+	(*env)->SetBooleanField(env, lpObject, PangoLogAttrFc.is_sentence_end, (jboolean)lpStruct->is_sentence_end);
+}
+#endif
+
 #ifndef NO_PangoRectangle
 typedef struct PangoRectangle_FID_CACHE {
 	int cached;

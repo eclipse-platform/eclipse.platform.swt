@@ -255,6 +255,46 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 #define PangoAttribute_sizeof() 0
 #endif
 
+#ifndef NO_PangoItem
+PangoItem *getPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct);
+void setPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct);
+#define PangoItem_sizeof() sizeof(PangoItem)
+#else
+#define getPangoItemFields(a,b,c) NULL
+#define setPangoItemFields(a,b,c)
+#define PangoItem_sizeof() 0
+#endif
+
+#ifndef NO_PangoLayoutLine
+PangoLayoutLine *getPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct);
+void setPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct);
+#define PangoLayoutLine_sizeof() sizeof(PangoLayoutLine)
+#else
+#define getPangoLayoutLineFields(a,b,c) NULL
+#define setPangoLayoutLineFields(a,b,c)
+#define PangoLayoutLine_sizeof() 0
+#endif
+
+#ifndef NO_PangoLayoutRun
+PangoLayoutRun *getPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct);
+void setPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct);
+#define PangoLayoutRun_sizeof() sizeof(PangoLayoutRun)
+#else
+#define getPangoLayoutRunFields(a,b,c) NULL
+#define setPangoLayoutRunFields(a,b,c)
+#define PangoLayoutRun_sizeof() 0
+#endif
+
+#ifndef NO_PangoLogAttr
+PangoLogAttr *getPangoLogAttrFields(JNIEnv *env, jobject lpObject, PangoLogAttr *lpStruct);
+void setPangoLogAttrFields(JNIEnv *env, jobject lpObject, PangoLogAttr *lpStruct);
+#define PangoLogAttr_sizeof() sizeof(PangoLogAttr)
+#else
+#define getPangoLogAttrFields(a,b,c) NULL
+#define setPangoLogAttrFields(a,b,c)
+#define PangoLogAttr_sizeof() 0
+#endif
+
 #ifndef NO_PangoRectangle
 PangoRectangle *getPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct);
 void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct);
