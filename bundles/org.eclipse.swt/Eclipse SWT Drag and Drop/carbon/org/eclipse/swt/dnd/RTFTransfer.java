@@ -7,6 +7,8 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+ import org.eclipse.swt.internal.Converter;
+ 
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
  * for converting text in RTF format represented as a java <code>String</code> 
@@ -23,15 +25,12 @@ package org.eclipse.swt.dnd;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TYPENAME1 = "text/rtf\0";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "TEXT/RTF\0";
-	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "application/rtf\0";
-	private static final int TYPEID3 = registerType(TYPENAME3);
+	private static final String TYPENAME1 = "RTF";
+	private static final int TYPEID1 = ('R'<<24) + ('T'<<16) + ('F'<<8) + ' ';
 
 private RTFTransfer() {
 }
+
 /**
  * Returns the singleton instance of the RTFTransfer class.
  *
@@ -40,6 +39,7 @@ private RTFTransfer() {
 public static RTFTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts RTF-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -50,7 +50,11 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
+	if (object == null || !(object instanceof String)) return;
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	super.javaToNative(buffer, transferData);
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of RTF text to a java <code>String</code>.
@@ -62,12 +66,21 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	return null;
+	// get byte array from super
+	byte[] buffer = (byte[])super.nativeToJava(transferData);
+	if (buffer == null) return null;
+	// convert byte array to a string
+	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	String string = new String (unicode);
+	int end = string.indexOf('\0');
+	return (end == -1) ? string : string.substring(0, end);
 }
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
+
+protected String[] getTypeNames() {
+	return new String[]{ TYPENAME1 };
 }
-protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2, TYPEID3};
+
+protected int[] getTypeIds() {
+	return new int[] { TYPEID1 };
 }
 }

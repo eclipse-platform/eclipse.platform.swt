@@ -112,12 +112,72 @@ package org.eclipse.swt.dnd;
  */
 public abstract class ByteArrayTransfer extends Transfer {
 	
-public TransferData[] getSupportedTypes(){
-	return null;
+public TransferData[] getSupportedTypes() {
+	int[] types= getTypeIds();
+	TransferData[] data= new TransferData[types.length];
+	for (int i= 0; i < types.length; i++) {
+		data[i]= new TransferData();
+		data[i].type= types[i];
+	}
+	return data;
 }
 
 public boolean isSupportedType(TransferData transferData){
+	if (transferData != null) {
+		int[] types= getTypeIds();
+		for (int i= 0; i < types.length; i++) {
+			if (transferData.type == types[i])
+				return true;
+		}
+	}
 	return false;
+}
+
+/**
+ * This implementation of <code>javaToNative</code> converts a java 
+ * <code>byte[]</code> to a platform specific representation.  For additional
+ * information see <code>Transfer#javaToNative</code>.
+ * 
+ * @see Transfer#javaToNative
+ * 
+ * @param object a java <code>byte[]</code> containing the data to be converted
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
+ */
+protected void javaToNative (Object object, TransferData transferData) {
+	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) {
+		transferData.result = 0;
+		return;
+	}
+	byte[] buffer= (byte[])object;
+	/*
+	transferData.pValue = OS.g_malloc(buffer.length);
+	OS.memmove(transferData.pValue, buffer, buffer.length);
+	*/
+	transferData.data= buffer;
+	transferData.length = buffer.length;
+	//transferData.format = 8;
+	transferData.result = 1;
+}
+
+/**
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of a byte array to a java <code>byte[]</code>.   
+ * For additional information see <code>Transfer#nativeToJava</code>.
+ * 
+ * @see Transfer#nativeToJava
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>byte[]</code> containing the converted data if the 
+ * conversion was successful; otherwise null
+ */
+protected Object nativeToJava(TransferData transferData) {
+	if ( !isSupportedType(transferData) ||  transferData.data == null ) return null;
+	int n= transferData.length;
+	byte[] buffer= new byte[n];
+	System.arraycopy(transferData.data, 0, buffer, 0, n);
+	return buffer;
 }
 
 }

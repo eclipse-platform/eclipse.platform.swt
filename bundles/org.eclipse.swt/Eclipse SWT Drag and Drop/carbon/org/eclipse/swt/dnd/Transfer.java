@@ -119,7 +119,8 @@ abstract protected Object nativeToJava(TransferData transferData);
  *
  * @return the unique identifier associated with htis data type
  */
-public static int registerType(String formatName){
-	return 0;
+public static int registerType(String formatName) {
+	System.out.println("Transfer.registerType: " + formatName);
+	return formatName.hashCode();
 }
 }

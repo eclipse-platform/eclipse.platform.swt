@@ -30,8 +30,11 @@ public class TransferData {
 	
 	// attributes specific to set/get
 	int length;
+	byte[] data;
+	/* AW
 	int format;
 	int pValue;
+	*/
 
 	/**
 	 * The result field contains the result of converting a java data type into a

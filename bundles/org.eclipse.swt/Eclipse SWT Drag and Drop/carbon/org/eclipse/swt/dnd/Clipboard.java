@@ -124,22 +124,49 @@ public Object getContents(Transfer transfer) {
 	
 	if (display.isDisposed())
 		return null;
-	
+		
+	if (transfer == null)
+		return null;
+		
 	int[] scrapHandle= new int[1];
 	OS.GetCurrentScrap(scrapHandle);
 	int scrap= scrapHandle[0];
+		
+	// Does Clipboard have data in required format?
+	int[] typeIds= transfer.getTypeIds();
+	for (int i= 0; i < typeIds.length; i++) {
+		int flavorType= typeIds[i];
+		int[] size= new int[1];
+		if (OS.GetScrapFlavorSize(scrap, flavorType, size) == OS.kNoErr) {
+			if (size[0] > 0) {
+				
+				TransferData tdata= new TransferData();
 	
+				tdata.type= flavorType;		
+				tdata.data= new byte[size[0]];
+				OS.GetScrapFlavorData(scrap, flavorType, size, tdata.data);
+				tdata.length= size[0];
+				
+				Object result= transfer.nativeToJava(tdata);
+				if (result != null)
+					return result;
+			}
+		}
+	}		
+		
+		
+	/*
 	int[] flavorCount= new int[1];
 	OS.GetScrapFlavorCount(scrap, flavorCount);
 	
-	//System.out.println("Clipboard.getContents:");
+	System.out.println("Clipboard.getContents:");
 	if (flavorCount[0] > 0) {
 		int[] info= new int[flavorCount[0] * 2];
 		OS.GetScrapFlavorInfoList(scrap, flavorCount, info);
 		for (int i= 0; i < flavorCount[0]; i++) {
 			int flavorType= info[i*2];
 			String type= MacUtil.toString(flavorType);
-			//System.out.println("  " + i + ": Clipboard.getContents: " + type);
+			System.out.println("  " + i + ": " + type);
 			if ("TEXT".equals(type) && transfer instanceof TextTransfer) {
 				int[] size= new int[1];
 				OS.GetScrapFlavorSize(scrap, flavorType, size);
@@ -151,7 +178,9 @@ public Object getContents(Transfer transfer) {
 			}
 		}
 	}
-	return null;
+	*/
+	
+	return null;	// No data available for this transfer
 }
 /**
  * Place data of the specified type on the system clipboard.  More than one type of
@@ -189,30 +218,36 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] transferAgents){
+public void setContents(Object[] data, Transfer[] dataTypes) {
 	
 	if (data == null) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (transferAgents == null || data.length != transferAgents.length) {
+	if (dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
-	if (display.isDisposed() )
+	if (display.isDisposed())
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	
-	/*
-	for (int i = 0; i < transferAgents.length; i++) {
-		System.out.println("Clipboard.setContents: " + transferAgents[i]);
+	System.out.println("Clipboard.setContents:");
+	for (int i = 0; i < dataTypes.length; i++) {
+		System.out.println("  " + i + ": " + dataTypes[i]);
 	}
-	*/
 	
 	OS.ClearCurrentScrap();
 	int[] scrapHandle= new int[1];
 	OS.GetCurrentScrap(scrapHandle);
 	int scrap= scrapHandle[0];
 	
+	/*
 	for (int i = 0; i < transferAgents.length; i++) {
+		if (transferAgents[i] instanceof RTFTransfer && data[i] instanceof String) {
+			String s= (String) data[i];
+			int flavorType= ('R'<<24) + ('T'<<16) + ('F'<<8) + ' ';
+			if (OS.PutScrapFlavor(scrap, flavorType, 0, s.getBytes()) == OS.kNoErr)
+				return;
+		}
 		if (transferAgents[i] instanceof TextTransfer && data[i] instanceof String) {
 			String s= (String) data[i];
 			int flavorType= ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
@@ -220,6 +255,34 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 				return;
 		}
 	}
+	*/
+	
+	int status= 1;
+	
+	// copy data directly over to System clipboard (not deferred)
+	for (int i= 0; i < dataTypes.length; i++) {
+		int[] ids= dataTypes[i].getTypeIds();
+		for (int j= 0; j < ids.length; j++) {
+			TransferData transferData= new TransferData();
+			/* Use the character encoding for the default locale */
+			transferData.type= ids[j];
+			dataTypes[i].javaToNative(data[i], transferData);
+			if (transferData.result == 1) {
+				/*
+				if (transferData.format == 8) {
+					byte[] buffer = new byte[transferData.length];
+					OS.memmove(buffer, transferData.pValue, transferData.length);
+					byte[] bName = Converter.wcsToMbcs(null, names[j], true);
+					status = OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null);
+				}
+				*/
+				status= OS.PutScrapFlavor(scrap, transferData.type, 0, transferData.data);
+			}
+		}
+	}
+	
+	if (status != OS.kNoErr)
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 }
 /**
  * Returns a platform specific list of the data types currently available on the 
@@ -233,6 +296,32 @@ public void setContents(Object[] data, Transfer[] transferAgents){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
+
+	if (display.isDisposed())
+		return null;
+	
+	int[] scrapHandle= new int[1];
+	OS.GetCurrentScrap(scrapHandle);
+	int scrap= scrapHandle[0];
+	
+	int[] flavorCount= new int[1];
+	OS.GetScrapFlavorCount(scrap, flavorCount);
+	
+	System.out.println("Clipboard.getAvailableTypeNames:");
+	if (flavorCount[0] > 0) {
+		int[] info= new int[flavorCount[0] * 2];
+		OS.GetScrapFlavorInfoList(scrap, flavorCount, info);
+		int n= flavorCount[0];
+		String[] result= new String[n];
+		for (int i= 0; i < n; i++) {
+			int flavorType= info[i*2];
+			String type= MacUtil.toString(flavorType);
+			System.out.println("  " + i + ": " + type);
+			result[i]= type;
+		}
+		return result;
+	}
+
 	return null;
 }
 }
