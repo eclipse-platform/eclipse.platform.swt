@@ -483,6 +483,7 @@ public void paste () {
 	checkWidget();
 	//NOT DONE - get clipboard text and verify or use undo?
 	OS.TXNPaste (txnObject);
+	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
@@ -622,6 +623,7 @@ public void setText (String string) {
 	setTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset, string);
 	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
 	OS.TXNShowSelection (txnObject, false);
+	sendEvent (SWT.Modify);
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
