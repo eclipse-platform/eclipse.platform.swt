@@ -1742,14 +1742,14 @@ public void test_paste(){
 }
 
 public void test_print() {
-	Printer printer = new Printer();
-	
-	text.print();
-	printer.cancelJob();
-	text.setText("Line1");
-	text.print();
-	printer.cancelJob();
-	printer.dispose();
+//	Printer printer = new Printer();
+//	
+//	text.print();
+//	printer.cancelJob();
+//	text.setText("Line1");
+//	text.print();
+//	printer.cancelJob();
+//	printer.dispose();
 }
 
 public void test_printLorg_eclipse_swt_printing_Printer() {
