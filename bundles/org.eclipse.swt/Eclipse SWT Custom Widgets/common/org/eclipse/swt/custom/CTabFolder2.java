@@ -252,10 +252,11 @@ public CTabFolder2(Composite parent, int style) {
 				case SWT.Paint:            onPaint(event);	break;
 				case SWT.Resize:           onResize();	break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
-				case SWT.MouseDown:        onMouseDown(event);	break;
+				case SWT.MouseDown:        onMouse(event);	break;
+				case SWT.MouseExit:        onMouse(event);	break;
 				case SWT.MouseHover:       onMouseHover(event); break;
-				case SWT.MouseMove:        onMouseMove(event); break;
-				case SWT.MouseUp:          onMouseUp(event); break;
+				case SWT.MouseMove:        onMouse(event); break;
+				case SWT.MouseUp:          onMouse(event); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
 				case SWT.Traverse:         onTraverse(event); break;
@@ -268,7 +269,8 @@ public CTabFolder2(Composite parent, int style) {
 		SWT.Paint,
 		SWT.Resize,  
 		SWT.MouseDoubleClick, 
-		SWT.MouseDown, 
+		SWT.MouseDown,
+		SWT.MouseExit,
 		SWT.MouseHover, 
 		SWT.MouseMove,
 		SWT.MouseUp,
@@ -1646,153 +1648,176 @@ void onMouseDoubleClick(Event event) {
 	e.item = getItem(new Point(event.x, event.y));
 	notifyListeners(SWT.DefaultSelection, e);
 }
-void onMouseDown(Event event) {
-	int x = event.x, y = event.y;
-	if (closeRect.contains(x, y)) {
-		closeImageState = SELECTED;
-		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
-		update();
-		return;
-	} 
-	if (expandRect.contains(x, y)) {
-		expandImageState = SELECTED;
-		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
-		update();
-		return;
-	}
-	if (chevronRect.contains(x, y)) {
-		chevronImageState = SELECTED;
-		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
-		update();
-		return;
-	}
-	for (int i=0; i<items.length; i++) {
-		if (items[i].getBounds().contains(x, y)) {
-			if (i == selectedIndex) {
-				showSelection();
-				return;
-			}
-			setSelection(i, true);
-			setFocus();
-			return;
-		}
-	}
-}
-void onMouseMove(Event event) {
-	int x = event.x, y = event.y;
-	boolean close = false, expand = false, chevron = false;
-	if (closeRect.contains(x, y)) {
-		close = true;
-		if (closeImageState != HOT) {
-			closeImageState = HOT;
-			redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
-		}
-	} 
-	if (expandRect.contains(x, y)) {
-		expand = true;
-		if (expandImageState != HOT) {
-			expandImageState = HOT;
-			redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
-		}
-	}
-	if (chevronRect.contains(x, y)) {
-		chevron = true;
-		if (chevronImageState != HOT) {
-			chevronImageState = HOT;
-			redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
-		}
-	}
-	if (closeImageState == HOT && !close) {
-		closeImageState = NORMAL;
-		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
-	}
-	if (expandImageState == HOT && !expand) {
-		expandImageState = NORMAL;
-		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
-	}
-	if (chevronImageState == HOT && !chevron) {
-		chevronImageState = NORMAL;
-		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
-	}
-}
 void onMouseHover(Event event) {
 	if (tipShowing) return;
 	showToolTip(event.x, event.y);
 }
-void onMouseUp(Event event) {
-	if (event.button != 1) return;
+void onMouse(Event event) {
 	int x = event.x, y = event.y;
-	if (closeRect.contains(x, y)) {
-		closeImageState = HOT;
-		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
-		if (selectedIndex == -1) return;
-		CTabItem2 item = items[selectedIndex];
-		CTabFolderEvent e = new CTabFolderEvent(this);
-		e.widget = this;
-		e.time = event.time;
-		e.item = item;
-		e.doit = true;
-		for (int i = 0; i < closeListeners.length; i++) {
-			closeListeners[i].itemClosed(e);
-		}
-		if (e.doit) item.dispose();
-		return;
-	}
-	if (chevronRect.contains(x, y)) {
-		chevronImageState = HOT;
-		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
-		Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
-		if (listListeners.length == 0) {
-			showList(rect, SWT.LEFT);
-		} else {
-			CTabFolderEvent e = new CTabFolderEvent(this);
-			e.widget = this;
-			e.time = event.time;
-			e.rect = rect;
-			
-			for (int i = 0; i < listListeners.length; i++) {
-				listListeners[i].showList(e);
+	switch (event.type) {
+		case SWT.MouseExit: {
+			if (closeImageState != NORMAL) {
+				closeImageState = NORMAL;
+				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
 			}
-		}
-		return;
-	}
-	if (expandRect.contains(x, y)) {
-		expandImageState = HOT;
-		CTabFolderEvent e = new CTabFolderEvent(this);
-		e.widget = this;
-		e.time = event.time;
-		e.doit = true;
-		for (int i = 0; i < expandListeners.length; i++) {
-			if (expanded) {
-				expandListeners[i].collapse(e);
-			} else {
-				expandListeners[i].expand(e);
+			if (expandImageState != NORMAL) {
+				expandImageState = NORMAL;
+				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 			}
+			if (chevronImageState != NORMAL) {
+				chevronImageState = NORMAL;
+				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+			}
+			break;
 		}
-		if (e.doit) {
-			expanded = !expanded;
+		case SWT.MouseDown: {
+			if (closeRect.contains(x, y)) {
+				if (event.button != 1) return;
+				closeImageState = SELECTED;
+				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+				update();
+				return;
+			} 
+			if (expandRect.contains(x, y)) {
+				if (event.button != 1) return;
+				expandImageState = SELECTED;
+				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+				update();
+				return;
+			}
+			if (chevronRect.contains(x, y)) {
+				if (event.button != 1) return;
+				chevronImageState = SELECTED;
+				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				update();
+				return;
+			}
+			for (int i=0; i<items.length; i++) {
+				if (items[i].getBounds().contains(x, y)) {
+					if (i == selectedIndex) {
+						showSelection();
+						return;
+					}
+					setSelection(i, true);
+					setFocus();
+					return;
+				}
+			}
+			break;
 		}
-		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
-		return;
-	}
-	if (single && items.length > 1) {
-		for (int i=0; i<items.length; i++) {
-			Rectangle bounds = items[i].getBounds();
-			if (bounds.contains(x, y)) {
-				Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+		case SWT.MouseMove: {
+			boolean close = false, expand = false, chevron = false;
+			if (closeRect.contains(x, y)) {
+				close = true;
+				if (closeImageState != HOT) {
+					closeImageState = HOT;
+					redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+				}
+			} 
+			if (expandRect.contains(x, y)) {
+				expand = true;
+				if (expandImageState != HOT) {
+					expandImageState = HOT;
+					redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+				}
+			}
+			if (chevronRect.contains(x, y)) {
+				chevron = true;
+				if (chevronImageState != HOT) {
+					chevronImageState = HOT;
+					redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				}
+			}
+			if (closeImageState == HOT && !close) {
+				closeImageState = NORMAL;
+				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+			}
+			if (expandImageState == HOT && !expand) {
+				expandImageState = NORMAL;
+				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+			}
+			if (chevronImageState == HOT && !chevron) {
+				chevronImageState = NORMAL;
+				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+			}
+			break;
+		}
+		case SWT.MouseUp: {
+			if (event.button != 1) return;
+			if (closeRect.contains(x, y)) {
+				closeImageState = HOT;
+				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+				if (selectedIndex == -1) return;
+				CTabItem2 item = items[selectedIndex];
+				CTabFolderEvent e = new CTabFolderEvent(this);
+				e.widget = this;
+				e.time = event.time;
+				e.item = item;
+				e.doit = true;
+				for (int i = 0; i < closeListeners.length; i++) {
+					closeListeners[i].itemClosed(e);
+				}
+				if (e.doit) item.dispose();
+				return;
+			}
+			if (chevronRect.contains(x, y)) {
+				chevronImageState = HOT;
+				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 				if (listListeners.length == 0) {
-					showList(rect, SWT.RIGHT);
+					showList(rect, SWT.LEFT);
 				} else {
 					CTabFolderEvent e = new CTabFolderEvent(this);
 					e.widget = this;
 					e.time = event.time;
 					e.rect = rect;
-					for (int j = 0; j < listListeners.length; j++) {
-						listListeners[j].showList(e);
+					
+					for (int i = 0; i < listListeners.length; i++) {
+						listListeners[i].showList(e);
 					}
 				}
 				return;
 			}
+			if (expandRect.contains(x, y)) {
+				expandImageState = HOT;
+				CTabFolderEvent e = new CTabFolderEvent(this);
+				e.widget = this;
+				e.time = event.time;
+				e.doit = true;
+				for (int i = 0; i < expandListeners.length; i++) {
+					if (expanded) {
+						expandListeners[i].collapse(e);
+					} else {
+						expandListeners[i].expand(e);
+					}
+				}
+				if (e.doit) {
+					expanded = !expanded;
+				}
+				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+				return;
+			}
+			if (single && items.length > 1) {
+				for (int i=0; i<items.length; i++) {
+					Rectangle bounds = items[i].getBounds();
+					if (bounds.contains(x, y)) {
+						Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+						if (listListeners.length == 0) {
+							showList(rect, SWT.RIGHT);
+						} else {
+							CTabFolderEvent e = new CTabFolderEvent(this);
+							e.widget = this;
+							e.time = event.time;
+							e.rect = rect;
+							for (int j = 0; j < listListeners.length; j++) {
+								listListeners[j].showList(e);
+							}
+						}
+						return;
+					}
+				}
+			}
+			break;
 		}
 	}
 }
