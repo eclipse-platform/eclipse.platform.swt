@@ -391,6 +391,34 @@ private int Release() {
 }
 
 /**
+ * Returns an array of the data types currently available on the system clipboard. Use
+ * with Transfer.isSupportedType.
+ *
+ * @return array of TransferData
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	checkWidget();
+	
+	FORMATETC[] types = _getAvailableTypes();
+	TransferData[] data = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		data[i] = new TransferData();
+		data[i].type = types[i].cfFormat;
+		data[i].formatetc = types[i];
+	}
+	return data;
+}
+
+/**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
  * 
@@ -440,34 +468,6 @@ public String[] getAvailableTypeNames() {
 		}
 	}
 	return names;
-}
-
-/**
- * Returns an array of the data types currently available on the system clipboard. Use
- * with Transfer.isSupportedType.
- *
- * @return array of TransferData
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Transfer#isSupportedType
- * 
- * @since 3.0
- */
-public TransferData[] getAvailableTypes() {
-	checkWidget();
-	
-	FORMATETC[] types = _getAvailableTypes();
-	TransferData[] data = new TransferData[types.length];
-	for (int i = 0; i < types.length; i++) {
-		data[i] = new TransferData();
-		data[i].type = types[i].cfFormat;
-		data[i].formatetc = types[i];
-	}
-	return data;
 }
 
 private FORMATETC[] _getAvailableTypes() {
