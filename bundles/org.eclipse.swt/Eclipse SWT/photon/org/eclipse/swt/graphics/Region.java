@@ -269,7 +269,7 @@ public void intersect (Region region) {
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (handle == 0 || handle == EMPTY_REGION) return;
 	int intersection = 0;
-	if (region.handle != EMPTY_REGION) OS.PhIntersectTilings(handle, region.handle, null);
+	if (region.handle != EMPTY_REGION) intersection = OS.PhIntersectTilings(handle, region.handle, null);
 	OS.PhFreeTiles(handle);
 	handle = intersection;
 	if (handle == 0) handle = EMPTY_REGION;

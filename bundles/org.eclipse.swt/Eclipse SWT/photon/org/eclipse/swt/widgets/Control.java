@@ -526,7 +526,7 @@ int drawProc (int widget, int damage) {
 			event.y = tile.rect_ul_y;
 			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
 			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-			Region region = Region.photon_new (tile.next);
+			Region region = Region.photon_new (display, tile.next);
 			GC gc = event.gc = new GC (this);
 			gc.setClipping (region);
 			sendEvent (SWT.Paint, event);
