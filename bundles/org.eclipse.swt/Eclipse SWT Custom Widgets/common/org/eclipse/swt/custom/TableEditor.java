@@ -111,7 +111,7 @@ public void dispose () {
 		tableColumn.removeListener(SWT.Resize, columnListener);
 		tableColumn.removeListener(SWT.Move, columnListener);
 	}
-
+	columnListener = null;
 	table = null;
 	item = null;
 	column = -1;
@@ -135,8 +135,17 @@ public TableItem getItem () {
 	return item;
 }
 public void setColumn(int column) {
+	
+	int columnCount = table.getColumnCount();
+	// Separately handle the case where the table has no TableColumns.
+	// In this situation, there is a single default column.
+	if (columnCount == 0) {
+		this.column = (column == 0) ? 0 : -1;
+		resize();
+		return;
+	}
 		
-	if (this.column > -1 && this.column < table.getColumnCount()){
+	if (this.column > -1 && this.column < columnCount){
 		TableColumn tableColumn = table.getColumn(this.column);
 		tableColumn.removeListener(SWT.Resize, columnListener);
 		tableColumn.removeListener(SWT.Move, columnListener);
@@ -174,7 +183,9 @@ public void setEditor (Control editor, TableItem item, int column) {
 void resize () {
 	if (table.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
-	if (column < 0 || column >= table.getItemCount()) return;
+	int columnCount = table.getColumnCount();
+	if (columnCount == 0 && column != 0) return;
+	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
 	super.resize();
 }
 }
