@@ -2425,6 +2425,7 @@ void postEvent (Event event) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running an inter-thread message</li>
  * </ul>
  *
  * @see #sleep
@@ -3034,6 +3035,7 @@ void setModalShell (Shell shell) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running an inter-thread message</li>
  * </ul>
  */
 public void setSynchronizer (Synchronizer synchronizer) {
