@@ -851,7 +851,7 @@ public class SWT {
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
 	 * 
-	 * @since 3.0
+	 * @since 2.1.2
 	 */
 	public static final int LEAD               = 1 << 14;
 	
@@ -873,7 +873,7 @@ public class SWT {
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
 	 * 
-	 * @since 3.0
+	 * @since 2.1.2
 	 */
 	public static final int TRAIL              = 1 << 17;
 		
