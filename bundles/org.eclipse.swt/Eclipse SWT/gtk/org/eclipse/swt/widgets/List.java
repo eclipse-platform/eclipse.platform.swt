@@ -628,7 +628,7 @@ int processMouseUp (int callData, int arg1, int int2) {
 		* Feature in GTK.  When a list item is reselected, GTK
 		* does not issue notification.  The fix is to detect
 		* that the mouse was released over a selected item when
-		* not selection signal was set and issue a fake selection
+		* no selection signal was set and issue a fake selection
 		* event.
 		*/
 		GdkEventButton gdkEvent = new GdkEventButton ();
