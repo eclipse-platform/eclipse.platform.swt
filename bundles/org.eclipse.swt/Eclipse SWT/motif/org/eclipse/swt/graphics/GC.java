@@ -277,13 +277,15 @@ public void drawImage(Image image, int x, int y) {
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
+
 /**
  * Copies a rectangular area from the source image into a (potentially
  * different sized) rectangular area in the receiver. If the source
  * and destination areas are of differing sizes, then the source
  * area will be stretched or shrunk to fit the destination area
- * as it is copied. The copy fails if any of the given coordinates
- * are negative or lie outside the bounds of their respective images.
+ * as it is copied. The copy fails if any part of the source rectangle
+ * lies outside the bounds of the source image, or if any of the width
+ * or height arguments are negative.
  *
  * @param image the source image
  * @param srcX the x coordinate in the source image to copy from
@@ -298,7 +300,8 @@ public void drawImage(Image image, int x, int y) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of their respective images</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
+ *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
