@@ -1,4 +1,8 @@
 package org.eclipse.swt.custom;
+/*
+ * (c) Copyright IBM Corp. 2001, 2002.
+ * All Rights Reserved
+ */
 
 import java.util.*;
 import org.eclipse.swt.*;
