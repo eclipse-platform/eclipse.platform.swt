@@ -190,7 +190,7 @@ Point adjustResizeCursor (int xDisplay, int xWindow) {
 	final int unused[] = new int[1];
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
-	OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX, newY);
+	OS.XWarpPointer (xDisplay, 0, xWindow, 0, 0, 0, 0, newX, newY);
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
