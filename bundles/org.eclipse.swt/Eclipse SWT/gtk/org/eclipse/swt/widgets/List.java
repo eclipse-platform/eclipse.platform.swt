@@ -400,7 +400,7 @@ public String getItem (int index) {
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
@@ -495,7 +495,7 @@ public int getItemHeight () {
 public String [] getItems () {
 	checkWidget();
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	String [] result = new String [count];
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	for (int index=0; index<count; index++) {

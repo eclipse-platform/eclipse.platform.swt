@@ -120,7 +120,7 @@ public TableItem (Table parent, int style) {
  */
 public Color getBackground () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -145,7 +145,7 @@ public Color getBackground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getBackground ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 3, ptr, -1);
 	if (ptr [0] == 0) return getBackground ();
@@ -216,7 +216,7 @@ public Rectangle getBounds (int index) {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.CHECKED_COLUMN, ptr, -1);
 	return ptr[0] != 0;
 }
@@ -235,7 +235,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FONT_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getFont ();
 	return Font.gtk_new (display, ptr[0]);
@@ -259,7 +259,7 @@ public Font getFont (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getFont ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 4, ptr, -1);
 	if (ptr [0] == 0) return getFont ();
@@ -281,7 +281,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -307,7 +307,7 @@ public Color getForeground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getForeground ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex =  parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 2, ptr, -1);
 	if (ptr [0] == 0) return getForeground ();
@@ -331,7 +331,7 @@ public Color getForeground (int index) {
 public boolean getGrayed () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.GRAYED_COLUMN, ptr, -1);
 	return ptr[0] != 0;
 }
@@ -360,7 +360,7 @@ public Image getImage (int index) {
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return null;
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex, ptr, -1);
 	if (ptr [0] == 0) return null;
@@ -502,7 +502,7 @@ public String getText (int index) {
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 1, ptr, -1);
 	if (ptr [0] == 0) return "";

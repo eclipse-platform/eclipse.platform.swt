@@ -156,26 +156,26 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 	}
 	if (modelIndex == -1) return 0;
 	boolean setData = setCellData (tree_model, iter);
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 1, ptr, -1); //text
 		if (ptr [0] != 0) {
 			OS.g_object_set(cell, OS.text, ptr[0], 0);
 			OS.g_free (ptr[0]);
 		}
-		ptr = new int [1];
+		ptr = new int /*long*/ [1];
 	}
 	if (customDraw) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 2, ptr, -1); //foreground-gdk
 		if (ptr [0] != 0) {
 			OS.g_object_set(cell, OS.foreground_gdk, ptr[0], 0);
 		}
-		ptr = new int [1];
+		ptr = new int /*long*/ [1];
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //background-gdk
 		if (ptr [0] != 0) {
 			OS.g_object_set(cell, OS.background_gdk, ptr[0], 0);
 		}
-		ptr = new int [1];
+		ptr = new int /*long*/ [1];
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 4, ptr, -1); //font-desc
 		if (ptr [0] != 0) {
 			OS.g_object_set(cell, OS.font_desc, ptr[0], 0);
@@ -206,11 +206,11 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 	}
 	if (modelIndex == -1) return 0;
 	boolean setData = setCellData (tree_model, iter);
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex, ptr, -1); //pixbuf
 		OS.g_object_set(cell, OS.pixbuf, ptr[0], 0);
-		ptr = new int [1];
+		ptr = new int /*long*/ [1];
 	}
 	if (customDraw) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
@@ -332,7 +332,7 @@ void createColumn (TableColumn column, int index) {
 			int /*long*/[] types = getColumnTypes (columnCount + 5);
 			int /*long*/ newModel = OS.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-			int [] ptr = new int [1];
+			int /*long*/ [] ptr = new int /*long*/ [1];
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
 				int /*long*/ oldItem = item.handle;
@@ -631,7 +631,7 @@ void destroyItem (TableColumn column) {
 		int /*long*/[] types = getColumnTypes (1);
 		int /*long*/ newModel = OS.gtk_list_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-		int [] ptr = new int [1];
+		int /*long*/ [] ptr = new int /*long*/ [1];
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
 			int /*long*/ oldItem = item.handle;

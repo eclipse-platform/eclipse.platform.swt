@@ -101,7 +101,7 @@ public int indexOf (Image image) {
 	return -1;
 }
 
-int indexOf (int pixbuf) {
+int indexOf (int /*long*/ pixbuf) {
 	if (pixbuf == 0) return -1;
 	for (int index=0; index<images.length; index++) {
 		if (pixbuf == pixbufs [index]) return index;

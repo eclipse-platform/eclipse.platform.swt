@@ -201,7 +201,7 @@ static TreeItem checkNull (TreeItem item) {
  */
 public Color getBackground () {
 	checkWidget ();
-	int[] ptr = new int[1];
+	int /*long*/[] ptr = new int /*long*/[1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -260,7 +260,7 @@ public Rectangle getBounds () {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
 	return ptr [0] != 0;
 }
@@ -299,7 +299,7 @@ public boolean getExpanded () {
  */
 public Font getFont () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FONT_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getFont ();
 	return Font.gtk_new (display, ptr[0]);
@@ -321,7 +321,7 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0]==0) return parent.getForeground();
 	GdkColor gdkColor = new GdkColor ();
@@ -345,7 +345,7 @@ public Color getForeground () {
 public boolean getGrayed() {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int [] ptr = new int [1];
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr, -1);
 	return ptr [0] != 0;
 }
