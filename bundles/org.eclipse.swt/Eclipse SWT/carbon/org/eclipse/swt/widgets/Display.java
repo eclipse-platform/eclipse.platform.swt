@@ -51,7 +51,6 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
-	boolean allowTimers;
 		
 	/* Current caret */
 	Caret currentCaret;
@@ -597,6 +596,11 @@ public Object getData () {
 	return data;
 }
 
+public int getDismissalAlignment () {
+	checkDevice ();
+	return SWT.RIGHT;
+}
+
 public int getDoubleClickTime () {
 	checkDevice ();
 	return OS.GetDblTime (); 
@@ -1030,12 +1034,9 @@ int mouseHoverProc (int id, int handle) {
 
 public boolean readAndDispatch () {
 	checkDevice ();
-	runTimers ();
 	runEnterExit ();
-	allowTimers = true;
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
-	allowTimers = false;
 	if (status == OS.noErr) {
 		int eventClass = OS.GetEventClass (outEvent [0]);
 		int eventKind = OS.GetEventKind (outEvent [0]);
@@ -1380,23 +1381,6 @@ boolean runPopups () {
 		result = true;
 	}
 	popups = null;
-	return result;
-}
-
-boolean runTimers () {
-	if (timerList == null || timerIds == null) return false;
-	boolean result = false;
-	for (int i=0; i<timerList.length; i++) {
-		if (timerIds [i] == -1) {
-			Runnable runnable = timerList [i];
-			timerList [i] = null;
-			timerIds [i] = 0;
-			if (runnable != null) {
-				runnable.run ();
-				result = true;
-			}
-		}
-	}
 	return result;
 }
 
