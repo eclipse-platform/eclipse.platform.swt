@@ -137,7 +137,7 @@ public FontData open () {
 		fontData = null;
 	}
 	
-	int fontPtr = OS.PtFontSelection (parentHandle, null, title, font, -1, OS.PHFONT_ALL_FONTS | OS.PFFONT_DONT_SHOW_LEGACY, null);
+	int fontPtr = OS.PtFontSelection (parentHandle, null, title, font, -1, OS.PHFONT_ALL_FONTS | OS.PHFONT_DONT_SHOW_LEGACY, null);
 
 	if (fontPtr != 0) {
 		int length = OS.strlen(fontPtr);
