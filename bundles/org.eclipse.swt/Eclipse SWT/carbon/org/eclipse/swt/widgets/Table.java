@@ -52,7 +52,7 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	GC paintGC;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
-	boolean ignoreRedraw, ignoreSelect, wasSelected;
+	boolean ignoreRedraw, ignoreSelect, wasSelected, itemHeight;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int EXTRA_WIDTH = 24;
@@ -791,6 +791,7 @@ void destroyItem (TableItem item) {
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (itemCount == 0) setTableEmpty ();
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -1628,6 +1629,7 @@ public void remove (int index) {
 	items [itemCount] = null;
 	if (item != null) item.releaseResources ();
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (itemCount == 0) setTableEmpty ();
 }
 
 /**
@@ -1731,8 +1733,7 @@ public void removeAll () {
 		TableItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
-	items = new TableItem [4];
-	itemCount = anchorFirst = anchorLast = 0;
+	setTableEmpty ();
 }
 
 /**
@@ -2006,6 +2007,17 @@ public void setItemCount (int count) {
 	setRedraw (true);
 }
 
+void setItemHeight (Image image) {
+	short [] height = new short [1];
+	if (OS.GetDataBrowserTableViewRowHeight (handle, height) == OS.noErr) {
+		Rectangle bounds = image.getBounds ();
+		if (height [0] < bounds.height) {
+			OS.SetDataBrowserTableViewRowHeight (handle, (short) bounds.height);
+			itemHeight = true;
+		}
+	}
+}
+
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -2233,6 +2245,16 @@ public void setSelection (TableItem [] items) {
 	if (count > 0) {
 		select (ids, count, true);
 		showIndex (ids [0] - 1);
+	}
+}
+
+void setTableEmpty () {
+	itemCount = anchorFirst = anchorLast = 0;
+	items = new TableItem [4];
+	if (itemHeight) {
+		/* Reset the item height to the font height */
+		setFontStyle (font);
+		itemHeight = false;
 	}
 }
 

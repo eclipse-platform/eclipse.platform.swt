@@ -753,6 +753,9 @@ public void setImage (int index, Image image) {
 	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
+	if (!parent.itemHeight && image != null) {
+		parent.setItemHeight (image);
+	}
 	if (index == 0)  {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;
