@@ -1270,7 +1270,7 @@ void init(Device device, ImageData i) {
 		ImageData.blit(ImageData.BLIT_SRC, 
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0,
-			img.data, img.depth, img.bytesPerLine, ImageData.MSB_FIRST, 0, 0, img.width, img.height, null, null, null, 
+			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null, 
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;
