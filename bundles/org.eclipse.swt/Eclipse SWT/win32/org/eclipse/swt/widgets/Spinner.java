@@ -663,9 +663,8 @@ void setForegroundPixel (int pixel) {
 
 /**
  * Sets the amount that the receiver's value will be
- * modified by when the up/down (or right/left) arrows
- * are pressed to the argument, which must be at least 
- * one.
+ * modified by when the up/down arrows are pressed to
+ * the argument, which must be at least one.
  *
  * @param increment the new increment (must be greater than zero)
  *
