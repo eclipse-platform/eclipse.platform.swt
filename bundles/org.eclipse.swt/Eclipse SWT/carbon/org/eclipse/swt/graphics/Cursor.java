@@ -313,8 +313,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 					m |= bit;
 				}
 			} else {
-				if (mask.getPixel(x, y) == 0) d |= bit;
-				else m |= bit;
+				if (mask.getPixel(x, y) != 0) m |= bit;
 			}
 		}
 		srcData[y] = d;
