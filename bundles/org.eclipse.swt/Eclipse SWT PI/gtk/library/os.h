@@ -18,8 +18,10 @@
 
 #define NDEBUG
 
+/*
 #define G_DISABLE_DEPRECATED
 #define GTK_DISABLE_DEPRECATED
+*/
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -44,7 +46,9 @@
 * Defined this prototype to avoid warnings, 
 * because it is a deprecated function in GTK.
 */
+#ifdef GTK_DISABLE_DEPRECATED
 void gtk_progress_bar_set_bar_style(void*, int);
+#endif
 
 #define NATIVE_ENTER(env,clazz,func)
 #define NATIVE_EXIT(env,clazz,func)
