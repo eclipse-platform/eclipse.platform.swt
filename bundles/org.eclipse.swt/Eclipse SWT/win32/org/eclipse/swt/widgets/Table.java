@@ -273,7 +273,7 @@ void createItem (TableColumn column, int index) {
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
-	if (customDraw && items != null) {
+	if (customDraw && items != null && count != 0) {
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0;  i < itemCount;  i++) {
 			if (items [i].cellBackground != null) {
