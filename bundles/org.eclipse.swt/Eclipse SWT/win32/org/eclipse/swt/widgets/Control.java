@@ -2240,8 +2240,8 @@ public void setVisible (boolean visible) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-//	boolean fixFocus = false;
-//	if (!visible) fixFocus = isFocusAncestor ();
+	boolean fixFocus = false;
+	if (!visible) fixFocus = isFocusAncestor ();
 	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
 	if (!visible) {
 		/*
@@ -2252,7 +2252,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
-//	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus ();
 }
 
 void sort (int [] items) {
