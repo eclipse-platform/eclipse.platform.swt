@@ -103,7 +103,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized;
+	boolean resized, drawing, reshape;
 	Control lastActive;
 	Region region;
 	Rect rgnRect;
@@ -707,11 +707,13 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
+		OS.kEventClassWindow, OS.kEventWindowDrawContent,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
-		OS.kEventClassWindow, OS.kEventWindowHidden,
-		OS.kEventClassWindow, OS.kEventWindowShown,
-		OS.kEventClassWindow, OS.kEventWindowHitTest,
 		OS.kEventClassWindow, OS.kEventWindowGetRegion,
+		OS.kEventClassWindow, OS.kEventWindowHidden,
+		OS.kEventClassWindow, OS.kEventWindowHitTest,
+		OS.kEventClassWindow, OS.kEventWindowShown,
+		OS.kEventClassWindow, OS.kEventWindowUpdate,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -822,6 +824,17 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {
+	drawing = true;
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	drawing = false;	
+	if (reshape) {
+		reshape = false;
+		OS.ReshapeCustomWindow (shellHandle);
+	}
+	return result;
+}
+
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -920,6 +933,11 @@ int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	return result;
 }
 
 void layoutControl (boolean events) {
@@ -1173,7 +1191,17 @@ public void setRegion (Region region) {
 		}
 	}
 	this.region = region;
-	OS.ReshapeCustomWindow (shellHandle);
+	/*
+	* Bug in the Macintosh.  Calling ReshapeCustomWindow() from a
+	* kEventWindowDrawContent handler originating from ShowWindow()
+	* will deadlock.  The fix is to detected this case and only call
+	* ReshapeCustomWindow() after the default handler is done.
+	*/
+	if (drawing) {
+		reshape = true;
+	} else {
+		OS.ReshapeCustomWindow (shellHandle);
+	}
 }
 
 public void setSize (int width, int height) {
