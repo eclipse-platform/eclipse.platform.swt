@@ -140,8 +140,6 @@ public class CTabFolder extends Composite {
 	                         
 	// tool tip
 	private Shell tip;
-	
-	private boolean inDoubleClick = false;
 
 /**
  * Construct a CTabFolder with the specified parent and style.
@@ -178,26 +176,6 @@ public CTabFolder(Composite parent, int style) {
 	inactiveCloseBar.setBackground(background);
 	inactiveCloseItem = new ToolItem(inactiveCloseBar, SWT.PUSH);
 
-	Listener listener = new Listener() {
-		public void handleEvent(Event event) {
-			handleEvents(event);
-		}
-	};
-	addListener(SWT.Dispose, listener);
-	addListener(SWT.MouseUp, listener);
-	addListener(SWT.MouseDoubleClick, listener);
-	addListener(SWT.MouseMove, listener);
-	addListener(SWT.MouseExit, listener);
-	addListener(SWT.Paint, listener);
-	addListener(SWT.Resize, listener);
-	scrollLeft.addListener(SWT.Selection, listener);
-	scrollRight.addListener(SWT.Selection, listener);
-	closeItem.addListener(SWT.Selection, listener);
-	inactiveCloseItem.addListener(SWT.Selection, listener);
-	inactiveCloseBar.addListener (SWT.MouseExit, listener);
-	
-	setBorderVisible((style & SWT.BORDER) != 0);
-	
 	// tool tip support
 	Display display = getDisplay();
 	tip = new Shell (getShell(), SWT.ON_TOP);
@@ -211,44 +189,34 @@ public CTabFolder(Composite parent, int style) {
 	label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 	tip.setBackground(label.getBackground());
 	
-	addMouseTrackListener (new MouseTrackAdapter () {
-		public void mouseExit(MouseEvent e) {
-			if (tip.isDisposed()) return;
-			if (tip.isVisible()) tip.setVisible(false);
-		}
-		public void mouseHover(MouseEvent e) {
-			if (tip.isDisposed()) return;
-			Point pt = new Point (e.x, e.y);
-			CTabItem item = getItem(pt);
-			if (item != null) {
-				String tooltip = item.getToolTipText();
-				if (tooltip != null) {
-					
-					Label label = (Label) (tip.getChildren() [0]);
-					label.setText(tooltip);
-					tip.pack();
-
-					pt.y += 16;
-					pt = toDisplay(pt);
-					/*
-					* Ensure that the tooltip is on the screen.
-					*/
-					Display display = tip.getDisplay();
-					Rectangle rect = display.getBounds();
-					Point size = tip.getSize();
-					pt.x = Math.max (0, Math.min (pt.x, rect.width - size.x));
-					pt.y = Math.max (0, Math.min (pt.y, rect.height - size.y));
-					tip.setLocation(pt);
-					
-					tip.setVisible(true);
-					return;
-				}
+	// Add all listeners
+	Listener listener = new Listener() {
+		public void handleEvent(Event event) {
+			switch (event.type) {
+				case SWT.Dispose:		onDispose(); break;
+				case SWT.Paint:			onPaint(event);	break;
+				case SWT.Resize:		onResize();	break;
+				case SWT.MouseDoubleClick:	onMouseDoubleClick(event);	break;
+				case SWT.MouseDown:		onMouseDown(event);	break;
+				case SWT.MouseExit:		onMouseExit(event);	break;
+				case SWT.MouseHover:	onMouseHover(event);	break;
+				case SWT.MouseMove:		onMouseMove(event);	break;
+				case SWT.Selection:		onSelection(event);	break;
 			}
-
-			tip.setVisible(false);
 		}
-	});
+	};
 	
+	int[] folderEvents = new int[]{SWT.Dispose, SWT.MouseDown, SWT.MouseDoubleClick, SWT.MouseMove, SWT.MouseExit, SWT.MouseHover, SWT.Paint, SWT.Resize};
+	for (int i = 0; i < folderEvents.length; i++) {
+		addListener(folderEvents[i], listener);
+	}
+	scrollLeft.addListener(SWT.Selection, listener);
+	scrollRight.addListener(SWT.Selection, listener);
+	closeItem.addListener(SWT.Selection, listener);
+	inactiveCloseItem.addListener(SWT.Selection, listener);
+	inactiveCloseBar.addListener (SWT.MouseExit, listener);
+	
+	setBorderVisible((style & SWT.BORDER) != 0);
 }
 private static int checkStyle (int style) {
 	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT;
@@ -643,62 +611,7 @@ public int getSelectionIndex() {
 	return selectedIndex;
 }
 
-private void handleEvents (Event event){
-	switch (event.type) {
-		case SWT.Dispose:
-			onDispose();
-			break;
-		case SWT.Paint:
-			onPaint(event);
-			break;
-		case SWT.Resize:
-			onResize();
-			break;
-		case SWT.MouseDoubleClick:
-			inDoubleClick = true;
-			break;
-		case SWT.MouseUp:
-			onMouseUp(event);
-			break;
-		case SWT.MouseExit:
-			if (event.widget == this) {
-				Rectangle inactiveBounds = inactiveCloseBar.getBounds();
-				if (inactiveBounds.contains(event.x, event.y)) return;
-				inactiveCloseBar.setVisible(false);
-				inactiveItem = null;
-			}
-			if (event.widget == inactiveCloseBar) {
-				if (inactiveItem != null) {
-					Rectangle itemBounds = inactiveItem.getBounds();
-					if (itemBounds.contains(event.x, event.y)) return;
-				}
-				inactiveCloseBar.setVisible(false);
-				inactiveItem = null;
-			}
-			break;
-		case SWT.MouseMove:
-			onMouseMove(event);
-			break;
-		case SWT.Selection:
-			if (event.widget == scrollLeft) {
-				scroll_scrollLeft();
-			}
-			if (event.widget == scrollRight) {
-				scroll_scrollRight();
-			}
-			if (event.widget == closeItem) {
-				closeNotify(getSelection(), event.time);
-			}
-			if (event.widget == inactiveCloseItem) {
-				closeNotify(inactiveItem, event.time);
-				inactiveCloseBar.setVisible(false);
-				inactiveItem = null;
-			}
-			break;
-		default:
-			break;
-	}
-}
+
 /**
  * Return the index of the specified tab or -1 if the tab is not 
  * in the receiver.
@@ -1069,6 +982,22 @@ private void onResize() {
 		}
 	}
 }
+private void onSelection(Event event) {
+	if (event.widget == scrollLeft) {
+		scroll_scrollLeft();
+	}
+	if (event.widget == scrollRight) {
+		scroll_scrollRight();
+	}
+	if (event.widget == closeItem) {
+		closeNotify(getSelection(), event.time);
+	}
+	if (event.widget == inactiveCloseItem) {
+		closeNotify(inactiveItem, event.time);
+		inactiveCloseBar.setVisible(false);
+		inactiveItem = null;
+	}
+}
 public void setBackground (Color color) {
 	super.setBackground(color);
 	color = getBackground();
@@ -1397,21 +1326,18 @@ private void initScrollBarImages() {
 	scrollBar.setSize(size);
 }
 
+private void onMouseDoubleClick(Event event) { 
+	Event e = new Event();
+	e.item = getItem(new Point(event.x, event.y));
+	notifyListeners(SWT.DefaultSelection, e);
+}
 /** 
  * A mouse button was pressed down. 
  * If one of the tab scroll buttons was hit, scroll in the appropriate 
  * direction.
  * If a tab was hit select the tab.
  */
-private void onMouseUp(Event event) { 
-	if (inDoubleClick) {
-		inDoubleClick = false;
-		Event e = new Event();
-		e.item = getItem(new Point(event.x, event.y));
-		notifyListeners(SWT.DefaultSelection, e);
-		return;
-	}
-	
+private void onMouseDown(Event event) { 
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(new Point(event.x, event.y))) {
 			setSelectionNotify(i);
@@ -1419,6 +1345,56 @@ private void onMouseUp(Event event) {
 		}
 	}
 }
+
+private void onMouseExit(Event event) {
+	if (event.widget == this) {
+		Rectangle inactiveBounds = inactiveCloseBar.getBounds();
+		if (inactiveBounds.contains(event.x, event.y)) return;
+		inactiveCloseBar.setVisible(false);
+		inactiveItem = null;
+		
+		if (!tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
+	}
+	if (event.widget == inactiveCloseBar) {
+		if (inactiveItem != null) {
+			Rectangle itemBounds = inactiveItem.getBounds();
+			if (itemBounds.contains(event.x, event.y)) return;
+		}
+		inactiveCloseBar.setVisible(false);
+		inactiveItem = null;
+	}
+}
+
+private void onMouseHover(Event event) {
+	if (tip.isDisposed()) return;
+	Point pt = new Point (event.x, event.y);
+	CTabItem item = getItem(pt);
+	if (item != null) {
+		String tooltip = item.getToolTipText();
+		if (tooltip != null) {			
+			Label label = (Label) (tip.getChildren() [0]);
+			label.setText(tooltip);
+			tip.pack();
+			pt.y += 16;
+			pt = toDisplay(pt);
+			/*
+			* Ensure that the tooltip is on the screen.
+			*/
+			Display display = tip.getDisplay();
+			Rectangle rect = display.getBounds();
+			Point size = tip.getSize();
+			pt.x = Math.max (0, Math.min (pt.x, rect.width - size.x));
+			pt.y = Math.max (0, Math.min (pt.y, rect.height - size.y));
+			tip.setLocation(pt);
+				
+			tip.setVisible(true);
+			return;
+		}
+	}
+
+	tip.setVisible(false);
+}
+
 private void onMouseMove(Event event) {
 	if (!showClose) return;
 	
