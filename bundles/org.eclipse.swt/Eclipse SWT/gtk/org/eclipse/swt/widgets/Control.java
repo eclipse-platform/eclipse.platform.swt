@@ -126,14 +126,15 @@ void hookEvents () {
 			OS.GDK_FOCUS_CHANGE_MASK;
 		OS.gtk_widget_add_events (eventHandle, mask);
 	}
-	signal_connect_after (eventHandle, "event", SWT.MouseDown, 3);
+	//TEMPORARY CODE
+	signal_connect_after (eventHandle, "event-after", SWT.MouseDown, 3);
 //	signal_connect_after (eventHandle, "button_press_event", SWT.MouseDown, 3);
 //	signal_connect_after (eventHandle, "button_release_event", SWT.MouseUp, 3);
+//	signal_connect_after (eventHandle, "key_press_event", SWT.KeyDown, 3);
+//	signal_connect_after (eventHandle, "key_release_event", SWT.KeyUp, 3);
 	signal_connect_after (eventHandle, "motion_notify_event", SWT.MouseMove, 3);
 	signal_connect_after (eventHandle, "enter_notify_event", SWT.MouseEnter, 3);
 	signal_connect_after (eventHandle, "leave_notify_event", SWT.MouseExit, 3);
-	signal_connect_after (eventHandle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (eventHandle, "key_release_event", SWT.KeyUp, 3);
 	signal_connect_after (eventHandle, "focus_in_event", SWT.FocusIn, 3);
 	signal_connect_after (eventHandle, "focus_out_event", SWT.FocusOut, 3);
 }

@@ -310,12 +310,12 @@ void hookEvents () {
 		if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
 			OS.gtk_widget_add_events (handle, mask);
 		}
-		signal_connect_after (handle, "event", SWT.MouseDown, 3);
-		signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
+		signal_connect_after (handle, "event-after", SWT.MouseDown, 3);
 //		signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
 //		signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-		signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-		signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+//		signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
+//		signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+		signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
 	}
 }
 
