@@ -53,7 +53,6 @@ class CLabelTab extends AlignableTab {
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
 		if (shadowNoneButton.getSelection ()) style |= SWT.SHADOW_NONE;
 		if (shadowOutButton.getSelection ()) style |= SWT.SHADOW_OUT;
-		if (shadowNoneButton.getSelection ()) style |= SWT.SHADOW_NONE;
 	
 		/* Create the example widgets */
 		label1 = new CLabel (textLabelGroup, style);
@@ -72,12 +71,12 @@ class CLabelTab extends AlignableTab {
 		super.createStyleGroup ();
 		
 		/* Create the extra widgets */
+		shadowNoneButton = new Button (styleGroup, SWT.RADIO);
+		shadowNoneButton.setText ("SWT.SHADOW_NONE");
 		shadowInButton = new Button (styleGroup, SWT.RADIO);
 		shadowInButton.setText ("SWT.SHADOW_IN");
 		shadowOutButton = new Button (styleGroup, SWT.RADIO);
 		shadowOutButton.setText ("SWT.SHADOW_OUT");
-		shadowNoneButton = new Button (styleGroup, SWT.RADIO);
-		shadowNoneButton.setText ("SWT.SHADOW_NONE");
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
