@@ -104,27 +104,27 @@ int processFocusOut (int info) {
 }
 
 int processPaint (int callData) {
-	boolean isVisible = caret != null && caret.isVisible ();
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	int result = super.processPaint (callData);
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 	return result;
 }
 
 public void redraw () {
 	checkWidget();
-	boolean isVisible = caret != null && caret.isVisible ();
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	super.redraw ();
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
-	boolean isVisible = caret != null && caret.isVisible ();
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	super.redraw (x, y, width, height, all);
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 }
 
 void releaseWidget () {
@@ -161,20 +161,20 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;
-	boolean isVisible = caret != null && caret.isVisible ();
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	GC gc = new GC (this);
 	gc.copyArea (x, y, width, height, destX, destY);
 	gc.dispose ();
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
-	boolean isVisible = (caret != null) && (caret.isVisible ());
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 	return changed;
 }
 

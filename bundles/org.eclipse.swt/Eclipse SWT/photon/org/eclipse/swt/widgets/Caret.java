@@ -27,10 +27,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Caret extends Widget {
 	Canvas parent;
-	Image image;
 	int x, y, width, height;
-	boolean moved, resized;
 	boolean isVisible, isShowing;
+	int blinkRate = 0;
+	Image image;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -67,12 +68,12 @@ public Caret (Canvas parent, int style) {
 	createWidget (0);
 }
 
-//boolean blinkCaret () {
-//	if (!isVisible) return true;
-//	if (!isShowing) return showCaret ();
-//	if (blinkRate == 0) return true;
-//	return hideCaret ();
-//}
+boolean blinkCaret () {
+	if (!isVisible) return true;
+	if (!isShowing) return showCaret ();
+	if (blinkRate == 0) return true;
+	return hideCaret ();
+}
 
 void createWidget (int index) {
 	super.createWidget (index);
@@ -240,8 +241,6 @@ public boolean getVisible () {
 }
 
 boolean hideCaret () {
-//	Display display = getDisplay ();
-//	if (display.currentCaret != this) return false;
 	if (!isShowing) return true;
 	isShowing = false;
 	return drawCaret ();
@@ -266,11 +265,17 @@ public boolean isVisible () {
 	return isVisible && parent.isVisible () && parent.hasFocus ();
 }
 
+boolean isFocusCaret () {
+//	Display display = getDisplay ();
+//	return this == display.currentCaret;
+	return parent.hasFocus ();
+}
+
 void killFocus () {
 //	Display display = getDisplay ();
 //	if (display.currentCaret != this) return;
-	if (isVisible) hideCaret ();
 //	display.setCurrentCaret (null);
+	if (isVisible) hideCaret ();
 }
 
 void releaseChild () {
@@ -282,7 +287,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 //	Display display = getDisplay ();
 //	if (display.currentCaret == this) {
-//		if (isVisible) hideCaret ();
+		hideCaret ();
 //		display.setCurrentCaret (null);
 //	}
 	parent = null;
@@ -307,26 +312,31 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	boolean samePosition, sameExtent, showing;
-	samePosition = (this.x == x) && (this.y == y);
-	sameExtent = (this.width == width) && (this.height == height);
-	if ((samePosition) && (sameExtent)) return;
-	if (showing = isShowing) hideCaret ();
+	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
+	boolean isFocus = isFocusCaret ();
+	if (isFocus) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
-	if (sameExtent) {
-			moved = true;
-			if (isVisible ()) {
-				moved = false;
-			}
-	} else {
-			resized = true;
-			if (isVisible ()) {
-				moved = false;
-				resized = false;
-			}
-	}
-	if (showing) showCaret ();
+	if (isFocus) showCaret ();
+}
+
+/**
+ * Sets the receiver's size and location to the rectangular
+ * area specified by the argument. The <code>x</code> and 
+ * <code>y</code> fields of the rectangle are relative to
+ * the receiver's parent (or its display if its parent is null).
+ *
+ * @param rect the new bounds for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setBounds (Rectangle rect) {
+	checkWidget();
+	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
@@ -378,9 +388,10 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (isShowing) hideCaret ();
+	boolean isFocus = isFocusCaret ();
+	if (isFocus) hideCaret ();
 	this.image = image;
-	if (isShowing) showCaret ();
+	if (isFocus) showCaret ();
 }
 
 /**
@@ -474,7 +485,9 @@ public void setSize (Point size) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;
-	if (isVisible = visible) {
+	isVisible = visible;
+	if (!isFocusCaret ()) return;
+	if (isVisible) {
 		showCaret ();
 	} else {
 		hideCaret ();
@@ -482,7 +495,6 @@ public void setVisible (boolean visible) {
 }
 
 boolean showCaret () {
-//	if (getDisplay ().currentCaret != this) return false;
 	if (isShowing) return true;
 	isShowing = true;
 	return drawCaret ();

@@ -873,8 +873,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		return changed;
 	}
 	
-	boolean caretVisible = caret != null && caret.isVisible ();
-	if (caretVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	
 	if (resize) {
 		/* Get the trimings */
@@ -937,7 +937,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		}
 	}
 	
-	if (caretVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 	
 	return move || resize;
 }
