@@ -58,7 +58,7 @@ class StyledTextBidi {
 	
 public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont) {
 	int length = text.length();
-	
+		
 	setGC(gc);
 	setTabWidth(tabWidth);
 	renderPositions = new int[length];
@@ -120,7 +120,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 	int endOffset = logicalStart + length;
 	int stopX;
-
+
 	if (endOffset > getTextLength()) {
 		return StyledText.xInset;
 	}
@@ -129,7 +129,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int x = xOffset + run.getRenderStartX();
-
+
 		drawGlyphs(visualStart, visualEnd - visualStart + 1, x, yOffset);				
 	}		
 	// between R2L and L2R direction segment?
@@ -168,7 +168,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object instanceof StyledTextBidi) test = (StyledTextBidi) object;
 	else return false;
-
+
 	int[] intArray1 = test.order;
 	int[] intArray2 = this.order;
 	if (intArray1.length != intArray2.length) return false;
@@ -203,7 +203,7 @@ public boolean equals(Object object) {
 }
 public void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
-
+
 	if (logicalStart + length > getTextLength()) {
 		return;
 	}
@@ -221,7 +221,7 @@ public int getCaretOffsetAtX(int x) {
 	int high = lineLength;
 	int offset;
 	int logicalHigh;
-
+
 	if (lineLength == 0) {
 		return 0;
 	}
@@ -320,6 +320,86 @@ public int getCaretPosition(int logicalOffset) {
 	}		
 	return caretX;
 }
+public int getCaretPosition(int logicalOffset, int direction) {
+	// moving to character at logicalOffset
+	if (getTextLength() == 0) {
+		return StyledText.xInset;
+	}
+	int caretX;
+	
+	// at or past end of line?
+	if (logicalOffset >= order.length) {
+		logicalOffset = Math.min(logicalOffset, order.length - 1);
+		int visualOffset = order[logicalOffset];
+		if (isRightToLeft(logicalOffset)) {
+			caretX = renderPositions[visualOffset];
+		}
+		else {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		}
+		setKeyboardLanguage(logicalOffset);
+		return caretX;
+	}
+
+	// at beginning of line?
+	if (logicalOffset == 0) {
+		int visualOffset = order[logicalOffset];
+		if (isRightToLeft(logicalOffset)) {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		}
+		else {
+			caretX = renderPositions[visualOffset];
+		}
+		setKeyboardLanguage(logicalOffset);
+		return caretX;
+	}	
+
+	if (direction == ST.COLUMN_NEXT) {
+		if (isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+			// moving between segments
+			if (isRightToLeft(logicalOffset - 1)) {
+				// moving from RtoL to LtoR
+				int visualOffset = order[logicalOffset-1];
+				caretX = renderPositions[visualOffset];
+			}
+			else {
+				// moving from LtoR to RtoL
+				int visualOffset = order[logicalOffset-1];
+				caretX = renderPositions[visualOffset] + dx[visualOffset];
+			}
+		setKeyboardLanguage(logicalOffset-1);
+		return caretX;
+		}
+	}
+	if (direction == ST.COLUMN_PREVIOUS) {
+		if (isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+			// moving between segments
+			if (isRightToLeft(logicalOffset - 1)) {
+				// moving from LtoR to RtoL
+				int visualOffset = order[logicalOffset];
+				caretX = renderPositions[visualOffset];
+			}
+			else {
+				// moving from RtoL to LtoR
+				int visualOffset = order[logicalOffset];
+				caretX = renderPositions[visualOffset] + dx[visualOffset];
+			}
+		setKeyboardLanguage(logicalOffset);
+		return caretX;
+		}
+	}
+
+	if (isRightToLeft(logicalOffset)) {
+		int visualOffset = order[logicalOffset];
+		caretX = renderPositions[visualOffset] + dx[visualOffset];
+	}
+	else {
+		caretX = renderPositions[order[logicalOffset]];
+	}
+	setKeyboardLanguage(logicalOffset);
+	return caretX;
+}
+
 Vector getDirectionRuns(int logicalStart, int length) {
 	Vector directionRuns = new Vector();
 	int logicalEnd = logicalStart + length - 1;

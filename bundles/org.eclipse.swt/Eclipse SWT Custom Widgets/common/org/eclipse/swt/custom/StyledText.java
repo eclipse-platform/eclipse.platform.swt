@@ -67,7 +67,7 @@ import java.util.*;
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
 	private final static String PlatformLineDelimiter = System.getProperty("line.separator");
-
+	
 	StyledTextContent content;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
@@ -576,7 +576,8 @@ public StyledText(Composite parent, int style) {
 	// use NO_BACKGROUND style when implemented by SWT.
 	// always need to draw background in drawLine when using NO_BACKGROUND!
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
-	Display display = getDisplay();
+	Display display = getDisplay();
+
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -598,7 +599,17 @@ public StyledText(Composite parent, int style) {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				createBidiCaret();
-				setBidiCaret();
+				Caret caret = getCaret();
+				// don't use setBidiCaret, will position the caret
+				// incorrectly
+				int caretX = caret.getLocation().x;
+				if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
+					caretX -= (getCaretWidth() - 1);
+				} else {
+					caretX += (getCaretWidth() - 1);
+				}
+				int line = content.getLineAtOffset(caretOffset);
+				caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
 			}
 		};
 		StyledTextBidi.addLanguageListener(this.handle, runnable);
@@ -1376,6 +1387,57 @@ void doBackspace() {
 		sendKeyEvent(event);
 	}
 }
+void doBidiCursorNext() {
+	if (selection.y - selection.x > 0) {
+		caretOffset = selection.y;
+		showCaret();
+	}
+	else {
+		doBidiSelectionCursorNext();
+	}
+}
+void doBidiCursorPrevious() {
+	if (selection.y - selection.x > 0) {
+		caretOffset = selection.x;
+		showCaret();
+	}
+	else {
+		doBidiSelectionCursorPrevious();
+	}
+}
+void doBidiSelectionCursorNext() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineOffset = content.getOffsetAtLine(line);	
+	int offsetInLine = caretOffset - lineOffset;
+	
+	if (offsetInLine < content.getLine(line).length()) {
+		caretOffset++;
+		showCursorBidiCaret(ST.COLUMN_NEXT);
+	}
+	else
+	if (line < content.getLineCount() - 1) {
+		line++;
+		caretOffset = content.getOffsetAtLine(line);
+		showCaret();
+	}
+}
+void doBidiSelectionCursorPrevious() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineOffset = content.getOffsetAtLine(line);	
+	int offsetInLine = caretOffset - lineOffset;
+	
+	if (offsetInLine > 0) {
+		caretOffset--;
+		showCursorBidiCaret(ST.COLUMN_PREVIOUS);
+	}
+	else
+	if (line > 0) {
+		line--;
+		lineOffset = content.getOffsetAtLine(line);
+		caretOffset = lineOffset + content.getLine(line).length();
+		showCaret();
+	}
+}
 /**
  * Moves the caret one character to the left.  Do not go to the previous line.
  * When in a bidi locale and at a R2L character the caret is moved to the 
@@ -1628,6 +1690,10 @@ void doContentStart() {
  * @see #doSelectionCursorLeft
  */
 void doCursorPrevious() {
+	if (isBidi()) {
+		doBidiCursorPrevious();
+		return;
+	}
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.x;
 		showCaret();
@@ -1645,6 +1711,10 @@ void doCursorPrevious() {
  * @see #doSelectionCursorRight
  */
 void doCursorNext() {
+	if (isBidi()) {
+		doBidiCursorNext();
+		return;
+	}
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.y;
 		showCaret();
@@ -3957,7 +4027,8 @@ public void print() {
 public Runnable print(Printer printer) {
 	checkWidget();
 	return new StyledTextPrinter(this, printer);
-}
+}
+
 /** 
  * Scrolls the widget horizontally.
  */
@@ -5052,16 +5123,15 @@ void setCaretLocation() {
 	}
 	else {	
 		Caret caret = getCaret();		
-
 		if (caret != null) {
 			int line = content.getLineAtOffset(caretOffset);
 			int lineStartOffset = content.getOffsetAtLine(line);
 			int caretX = getXAtOffset(content.getLine(line), line, caretOffset - lineStartOffset);
-
 			caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
 		}
 	}
-}/**
+}
+/**
  * Sets the caret offset.
  * <p>
  * <b>NOTE:</b> If offset is greater than the number of characters of text in the 
@@ -5882,10 +5952,8 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	verticalScrollOffset = pixelOffset;	
 	setCaret();
 }
-/**
- * Sets the caret location and scrolls the caret offset into view.
- */
-void showBidiCaret() {
+
+boolean showScrollCaret() {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineOffset = content.getOffsetAtLine(line);
 	int offsetInLine = caretOffset - lineOffset;
@@ -5918,6 +5986,44 @@ void showBidiCaret() {
 		setVerticalScrollOffset((line - getBottomIndex()) * verticalIncrement + verticalScrollOffset, true);
 		scrolled = true;
 	}
+	return scrolled;
+}
+/**
+ */
+void showCursorBidiCaret(int direction) {
+	boolean scrolled = showScrollCaret();
+	if (scrolled) return;
+	int line = content.getLineAtOffset(caretOffset);
+	int lineStartOffset = content.getOffsetAtLine(line);
+	int offsetInLine = caretOffset - lineStartOffset;
+	String lineText = content.getLine(line);
+	GC gc = new GC(this);
+	StyledTextEvent event = getLineStyleData(lineStartOffset, lineText);
+	StyledTextBidi bidi;
+	int[] boldStyles = null;
+	Caret caret;
+	
+	if (event != null) {
+		boldStyles = getBoldRanges(event.styles, lineStartOffset, lineText.length());
+	}
+	bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+	caret = getCaret();
+	if (caret != null) {
+		int caretX = bidi.getCaretPosition(offsetInLine, direction);
+		caretX = caretX - horizontalScrollOffset;
+		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
+			caretX -= (getCaretWidth() - 1);
+		}
+		createBidiCaret();
+		caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+	}
+	gc.dispose();
+}
+/**
+ * Sets the caret location and scrolls the caret offset into view.
+ */
+void showBidiCaret() {
+	boolean scrolled = showScrollCaret();
 	if (scrolled == false) {
 		setCaret();
 	}
