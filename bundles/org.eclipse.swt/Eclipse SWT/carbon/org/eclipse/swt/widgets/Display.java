@@ -3215,7 +3215,7 @@ public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
-	if (key.equals(ADD_WIDGET_KEY)) {
+	if (key.equals (ADD_WIDGET_KEY)) {
 		Object [] data = (Object [])value;
 		int handle = ((Integer)data [0]).intValue ();
 		Widget widget = (Widget)data [1];

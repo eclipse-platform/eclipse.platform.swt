@@ -110,6 +110,7 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
 	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent";
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
 
 	/* Widget Table */
 	int freeSlot;
@@ -2892,6 +2893,14 @@ public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 
+	if (key.equals (ADD_WIDGET_KEY)) {
+		Object [] data = (Object [])value;
+		int handle = ((Integer)data [0]).intValue ();
+		Widget widget = (Widget)data [1];
+		if (widget == null) removeWidget (handle);
+		else addWidget (handle, widget);
+	}
+	
 	if (key.equals (DISPATCH_EVENT_KEY)) {
 		if (value == null || value instanceof int []) {
 			dispatchEvents = (int []) value;

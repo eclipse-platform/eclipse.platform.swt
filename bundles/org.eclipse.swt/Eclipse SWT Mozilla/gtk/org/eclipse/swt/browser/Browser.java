@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.*;
  */
 public class Browser extends Composite {
 	int /*long*/ embedHandle;
+	int /*long*/ mozillaHandle;
 	nsIWebBrowser webBrowser;
 
 	/* Interfaces for this Mozilla embedding notification */
@@ -70,10 +71,14 @@ public class Browser extends Composite {
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
+	static Callback eventCallback;
+	static int /*long*/ eventProc;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
+	static final int EVENT = 1;
+	static final int KEY_PRESS_EVENT = 2;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -303,10 +308,45 @@ public Browser(Composite parent, int style) {
 	rc = webBrowser.SetParentURIContentListener(uriContentListener.getAddress());
 	if (rc != XPCOM.NS_OK) error(rc);
 
+	if (eventCallback == null) {
+		eventCallback = new Callback(Browser.class, "eventProc", 3);
+		eventProc = eventCallback.getAddress();
+		if (eventProc == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+
+	/*
+	* Feature in Mozilla.  GtkEvents such as key down, key pressed may be consumed
+	* by Mozilla and never be received by the parent embedder.  The workaround
+	* is to find the top Mozilla gtk widget that receives all the Mozilla GtkEvents,
+	* i.e. the first child of the parent embedder. Then hook event callbacks and
+	* forward the event to the parent embedder before Mozilla received and consumed
+	* them.
+	*/
+	int /*long*/ list = OS.gtk_container_get_children(embedHandle);
+	if (list != 0) {
+		mozillaHandle = OS.g_list_data(list);
+		OS.g_list_free(list);
+		
+		if (mozillaHandle != 0) {			
+			getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(mozillaHandle), this});
+
+			/* Note. Callback to get events before Mozilla receives and consumes them. */
+			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 1);
+			
+			/* 
+			* Note.  Callback to get the events not consumed by Mozilla - and to block 
+			* them so that they don't get propagated to the parent handle twice.  
+			* This hook is set after Mozilla and is therefore called after Mozilla's 
+			* handler because GTK dispatches the event in the order of registration.
+			*/
+			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, 2);
+		}
+	}
+	
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose: onDispose(); break;
+				case SWT.Dispose: onDispose(event.display); break;
 				case SWT.Resize: onResize(); break;
 				case SWT.FocusIn: Activate(); break;
 				case SWT.Deactivate: {
@@ -344,6 +384,45 @@ public Browser(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
+}
+
+static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
+	Widget widget = Display.getCurrent().findWidget(handle);
+	if (widget != null && widget instanceof Browser) {
+		return ((Browser)widget).gtk_event(handle, gdkEvent, pointer);
+	}
+	return 0;
+}
+
+int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	switch (event.type) {
+		case OS.GDK_KEY_PRESS: {
+			/* 
+			* Note.  Forward the event to the parent embedder before Mozilla receives it 
+			* and may or may not consume it.
+			*/
+			if (pointer == EVENT) OS.gtk_widget_event(this.handle, gdkEvent);
+			
+			/* 
+			* Note.  Stop the propagation of an event not consumed by Mozilla
+			* before it reaches the parent embedder.  We already received that
+			* event through the EVENT hook.
+			*/
+			if (pointer == KEY_PRESS_EVENT) return 1;
+			break;
+		}
+		case OS.GDK_KEY_RELEASE: {
+			/* 
+			* Note.  Forward the event to the parent embedder before Mozilla receives it 
+			* and consumes it.
+			*/
+			if (pointer == EVENT) OS.gtk_widget_event(this.handle, gdkEvent);			
+			break;
+		}
+	}
+	return 0;
 }
 
 /**	 
@@ -883,7 +962,9 @@ static String error(int code) {
 	throw new SWTError("XPCOM error "+code); //$NON-NLS-1$
 }
 
-void onDispose() {
+void onDispose(Display display) {
+	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(mozillaHandle), null});
+
 	int rc = webBrowser.RemoveWebBrowserListener(weakReference.getAddress(), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) error(rc);
 
