@@ -105,7 +105,7 @@ class SashTab extends Tab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("Sash");
+		return "Sash";
 	}
 	
 	/**

@@ -109,7 +109,8 @@ class FormLayoutTab extends Tab {
 		bottomEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
 			public void mouseDown(MouseEvent e) {
-				resetEditors ();
+				resetEditors();
+				index = table.getSelectionIndex ();
 				Point pt = new Point (e.x, e.y);
                 newItem = table.getItem (pt);
                 if (newItem == null) return;
@@ -120,7 +121,6 @@ class FormLayoutTab extends Tab {
 				}
 				table.showSelection ();
 				
-				int index = table.indexOf (newItem);
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
 				

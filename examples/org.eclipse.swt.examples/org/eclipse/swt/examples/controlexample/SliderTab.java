@@ -20,11 +20,36 @@ class SliderTab extends RangeTab {
 	/* Scale widgets added to the "Control" group */
 	Scale incrementScale, pageIncrementScale, thumbScale;
 	
+	/* Flag for setting slider background color */
+	boolean defaultColor = true;
+	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	SliderTab(ControlExample instance) {
 		super(instance);
+	}
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		/* Get default system colors for the control */
+		scale1 = new Scale (scaleGroup, SWT.NONE);
+		defaultBackgroundColor = scale1.getBackground ();
+		defaultForegroundColor = scale1.getForeground ();
+		scale1.dispose ();
+		
+		super.createColorGroup ();
+		backgroundButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				defaultColor = false;
+				setColors ();
+			}
+		});
+		
+		/* Set the state of the controls */
+		fontButton.setEnabled (false);
 	}
 
 	/**
@@ -47,13 +72,13 @@ class SliderTab extends RangeTab {
 		sliderGroup = new Group (exampleGroup, SWT.NULL);
 		sliderGroup.setLayout (new GridLayout ());
 		sliderGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		sliderGroup.setText (ControlExample.getResourceString("Slider"));
+		sliderGroup.setText ("Slider");
 	
 		/* Create a group for the scale */
 		scaleGroup = new Group (exampleGroup, SWT.NULL);
 		scaleGroup.setLayout (new GridLayout ());
 		scaleGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		scaleGroup.setText (ControlExample.getResourceString("Scale"));
+		scaleGroup.setText ("Scale");
 	
 	}
 	
@@ -80,6 +105,9 @@ class SliderTab extends RangeTab {
 		slider1.setIncrement(5);
 		slider1.setPageIncrement (10);
 		slider1.setThumb (10);
+		
+		/* Set the colors */
+		setColors ();
 	}
 	
 	/**
@@ -172,6 +200,16 @@ class SliderTab extends RangeTab {
 	 */
 	String getTabText () {
 		return ControlExample.getResourceString("Slider_and_Scale");
+	}
+	
+	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		if (!defaultColor) slider1.setBackground (backgroundColor);
+		slider1.setForeground (foregroundColor);
+		scale1.setBackground (backgroundColor);
+		scale1.setForeground (foregroundColor);
 	}
 	
 	/**

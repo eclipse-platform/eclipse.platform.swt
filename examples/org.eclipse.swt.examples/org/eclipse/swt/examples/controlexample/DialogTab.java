@@ -9,6 +9,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.printing.*;
 import org.eclipse.swt.events.*;
 
 class DialogTab extends Tab {
@@ -143,6 +144,15 @@ class DialogTab extends Tab {
 			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
+		
+		if (name.equals (instance.getResourceString("PrintDialog"))) {
+			PrintDialog dialog = new PrintDialog (shell, style);
+			dialog.setText(instance.getResourceString("Title"));
+			PrinterData result = dialog.open ();
+			textWidget.append (instance.getResourceString("PrintDialog") + Text.DELIMITER);
+			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			return;
+		}
 	
 		if (name.equals(instance.getResourceString("MessageBox"))) {
 			MessageBox dialog = new MessageBox (shell, style);
@@ -224,6 +234,7 @@ class DialogTab extends Tab {
 			instance.getResourceString("DirectoryDialog"),
 			instance.getResourceString("FileDialog"),
 			instance.getResourceString("FontDialog"),
+			instance.getResourceString("PrintDialog"),
 			instance.getResourceString("MessageBox"),
 		};
 		dialogCombo = new Combo (dialogStyleGroup, SWT.READ_ONLY);
@@ -359,7 +370,7 @@ class DialogTab extends Tab {
 		 */
 		resultGroup = new Group (exampleGroup, SWT.NULL);
 		resultGroup.setLayout (new GridLayout ());
-		resultGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		resultGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
 		resultGroup.setText (instance.getResourceString("Dialog_Result"));
 	}
 	
@@ -371,9 +382,7 @@ class DialogTab extends Tab {
 		 * Create a multi lined, scrolled text widget for output.
 		 */
 		textWidget = new Text(resultGroup, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		GridData gridData = new GridData ();
-		gridData.widthHint = 300;
-		gridData.heightHint = 400;
+		GridData gridData = new GridData (GridData.FILL_BOTH);
 		textWidget.setLayoutData (gridData);	
 	}
 	
@@ -426,6 +435,6 @@ class DialogTab extends Tab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return instance.getResourceString("Dialog");
+		return "Dialog";
 	}
 }

@@ -15,12 +15,28 @@ class TreeTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	Tree tree1, tree2;
 	Group treeGroup, imageTreeGroup;
+	
+	/* Style widgets added to the "Style" group */
+	Button checkButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	TreeTab(ControlExample instance) {
 		super(instance);
+	}
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		/* Get default system colors for the control */
+		tree1 = new Tree (treeGroup, SWT.NONE);
+		defaultBackgroundColor = tree1.getBackground();
+		defaultForegroundColor = tree1.getForeground();
+		tree1.dispose ();
+	
+		super.createColorGroup();
 	}
 
 	/**
@@ -33,7 +49,7 @@ class TreeTab extends ScrollableTab {
 		treeGroup = new Group (exampleGroup, SWT.NULL);
 		treeGroup.setLayout (new GridLayout ());
 		treeGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		treeGroup.setText (ControlExample.getResourceString("Tree"));
+		treeGroup.setText ("Tree");
 	
 		/* Create a group for the image tree */
 		imageTreeGroup = new Group (exampleGroup, SWT.NULL);
@@ -50,10 +66,12 @@ class TreeTab extends ScrollableTab {
 		int style = SWT.NONE;
 		if (singleButton.getSelection()) style |= SWT.SINGLE;
 		if (multiButton.getSelection()) style |= SWT.MULTI;
+		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 	
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
+		tree1.setFont (font);
 		TreeItem node1 = new TreeItem (tree1, SWT.NULL);
 		node1.setText (ControlExample.getResourceString("Node_1"));
 		TreeItem node2 = new TreeItem (tree1, SWT.NULL);
@@ -75,6 +93,7 @@ class TreeTab extends ScrollableTab {
 	
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
+		tree2.setFont (font);
 		node1 = new TreeItem (tree2, SWT.NULL);
 		node1.setText (ControlExample.getResourceString("Node_1"));
 		node1.setImage (instance.images[ControlExample.ciClosedFolder]);
@@ -102,6 +121,20 @@ class TreeTab extends ScrollableTab {
 		node2_2_1 = new TreeItem (node2_2, SWT.NULL);
 		node2_2_1.setText (ControlExample.getResourceString("Node_2_2_1"));
 		node2_2_1.setImage (instance.images[ControlExample.ciClosedFolder]);
+		
+		/* Set the colors */
+		setColors ();
+	}
+	
+	/**
+	 * Creates the "Style" group.
+	 */
+	void createStyleGroup() {
+		super.createStyleGroup();
+		
+		/* Create the extra widgets */
+		checkButton = new Button (styleGroup, SWT.CHECK);
+		checkButton.setText ("SWT.CHECK");
 	}
 	
 	/**
@@ -115,6 +148,16 @@ class TreeTab extends ScrollableTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("Tree");
+		return "Tree";
+	}
+	
+	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		tree1.setBackground (backgroundColor);
+		tree1.setForeground (foregroundColor);
+		tree2.setBackground (backgroundColor);
+		tree2.setForeground (foregroundColor);
 	}
 }

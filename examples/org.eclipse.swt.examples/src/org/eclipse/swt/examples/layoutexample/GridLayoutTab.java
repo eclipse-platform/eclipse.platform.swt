@@ -77,6 +77,8 @@ class GridLayoutTab extends Tab {
 		vGrabEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
 			public void mouseDown(MouseEvent e) {
+				resetEditors();
+				index = table.getSelectionIndex ();
 				Point pt = new Point (e.x, e.y);
                 newItem = table.getItem (pt);
                 if (newItem == null) return;

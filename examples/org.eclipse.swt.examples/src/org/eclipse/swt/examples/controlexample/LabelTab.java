@@ -17,15 +17,28 @@ class LabelTab extends AlignableTab {
 	Group textLabelGroup, imageLabelGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button separatorButton, horizontalButton, verticalButton, shadowInButton, shadowOutButton;
-
+	Button separatorButton, wrapButton, horizontalButton, verticalButton, shadowInButton, shadowOutButton;
+	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	LabelTab(ControlExample instance) {
 		super(instance);
 	}
-
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup() {
+		/* Get default system colors for the control */
+		label1 = new Label (textLabelGroup, SWT.NONE);
+		defaultBackgroundColor = label1.getBackground();
+		defaultForegroundColor = label1.getForeground();
+		label1.dispose();
+		
+		super.createColorGroup();
+	}
+	
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -57,6 +70,7 @@ class LabelTab extends AlignableTab {
 		/* Compute the widget style */
 		int style = SWT.NONE;
 		if (separatorButton.getSelection ()) style |= SWT.SEPARATOR;
+		if (wrapButton.getSelection ()) style |= SWT.WRAP;
 		if (horizontalButton.getSelection ()) style |= SWT.HORIZONTAL;
 		if (verticalButton.getSelection ()) style |= SWT.VERTICAL;
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
@@ -66,16 +80,26 @@ class LabelTab extends AlignableTab {
 		/* Create the example widgets */
 		label1 = new Label (textLabelGroup, style);
 		label1.setText(ControlExample.getResourceString("One"));
+		label1.setFont(font);
 		label2 = new Label (textLabelGroup, style);
 		label2.setText(ControlExample.getResourceString("Two"));
+		label2.setFont (font);
 		label3 = new Label (textLabelGroup, style);
-		label3.setText (ControlExample.getResourceString("Three"));
+		if (wrapButton.getSelection ()) {
+			label3.setText (ControlExample.getResourceString("Wrap_Text"));
+		} else {
+			label3.setText (ControlExample.getResourceString("Three"));
+		}
+		label3.setFont (font);
 		label4 = new Label (imageLabelGroup, style);
 		label4.setImage (instance.images[ControlExample.ciClosedFolder]);
 		label5 = new Label (imageLabelGroup, style);
 		label5.setImage (instance.images[ControlExample.ciOpenFolder]);
 		label6 = new Label(imageLabelGroup, style);
 		label6.setImage (instance.images[ControlExample.ciTarget]);
+		
+		/* Set the colors */
+		setColors ();
 	}
 	
 	/**
@@ -87,6 +111,8 @@ class LabelTab extends AlignableTab {
 		/* Create the extra widgets */
 		separatorButton = new Button (styleGroup, SWT.CHECK);
 		separatorButton.setText ("SWT.SEPARATOR");
+		wrapButton = new Button (styleGroup, SWT.CHECK);
+		wrapButton.setText ("SWT.WRAP");
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
 		horizontalButton.setText ("SWT.HORIZONTAL");
 		verticalButton = new Button (styleGroup, SWT.RADIO);
@@ -124,7 +150,22 @@ class LabelTab extends AlignableTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("Label");
+		return "Label";
+	}
+	
+	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		label1.setBackground (backgroundColor);
+		label1.setForeground (foregroundColor);
+		label2.setBackground (backgroundColor);
+		label2.setForeground (foregroundColor);
+		label3.setBackground (backgroundColor);
+		label3.setForeground (foregroundColor);
+		label4.setBackground (backgroundColor);
+		label5.setBackground (backgroundColor);
+		label6.setBackground (backgroundColor);
 	}
 	
 	/**
@@ -149,11 +190,13 @@ class LabelTab extends AlignableTab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		boolean isSeparator = (label1.getStyle () & SWT.SEPARATOR) != 0;
+		wrapButton.setSelection (!isSeparator && (label1.getStyle () & SWT.WRAP) != 0);
 		leftButton.setSelection (!isSeparator && (label1.getStyle () & SWT.LEFT) != 0);
 		centerButton.setSelection (!isSeparator && (label1.getStyle () & SWT.CENTER) != 0);
 		rightButton.setSelection (!isSeparator && (label1.getStyle () & SWT.RIGHT) != 0);
 		shadowInButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_IN) != 0);
 		shadowOutButton.setSelection (!shadowInButton.getSelection ());
+		wrapButton.setEnabled (!isSeparator);
 		leftButton.setEnabled (!isSeparator);
 		centerButton.setEnabled (!isSeparator);
 		rightButton.setEnabled (!isSeparator);
@@ -161,5 +204,6 @@ class LabelTab extends AlignableTab {
 		shadowOutButton.setEnabled (isSeparator);
 		horizontalButton.setEnabled (isSeparator);
 		verticalButton.setEnabled (isSeparator);
+		fontButton.setEnabled (!isSeparator);
 	}
 }

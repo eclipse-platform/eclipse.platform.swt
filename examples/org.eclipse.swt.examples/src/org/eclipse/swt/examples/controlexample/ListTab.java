@@ -33,6 +33,17 @@ class ListTab extends ScrollableTab {
 	ListTab(ControlExample instance) {
 		super(instance);
 	}
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		/* Get default system colors for the control */
+		defaultBackgroundColor = listGroup.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+		defaultForegroundColor = listGroup.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+		
+		super.createColorGroup();
+	}
 
 	/**
 	 * Creates the "Example" group.
@@ -44,7 +55,7 @@ class ListTab extends ScrollableTab {
 		listGroup = new Group (exampleGroup, SWT.NULL);
 		listGroup.setLayout (new GridLayout ());
 		listGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		listGroup.setText (ControlExample.getResourceString("List"));
+		listGroup.setText ("List");
 	}
 	
 	/**
@@ -63,6 +74,18 @@ class ListTab extends ScrollableTab {
 		/* Create the example widgets */
 		list1 = new List (listGroup, style);
 		list1.setItems (ListData1);
+		list1.setFont (font);
+		
+		/* Set the colors */
+		setColors ();
+	}
+	
+	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		list1.setBackground (backgroundColor);
+		list1.setForeground (foregroundColor);
 	}
 	
 	/**
@@ -76,6 +99,6 @@ class ListTab extends ScrollableTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("List");
+		return "List";
 	}
 }

@@ -25,6 +25,22 @@ class ProgressBarTab extends RangeTab {
 	ProgressBarTab(ControlExample instance) {
 		super(instance);
 	}
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		/* Get default system colors for the control */
+		progressBar1 = new ProgressBar (progressBarGroup, SWT.NONE);
+		defaultBackgroundColor = progressBar1.getBackground ();
+		defaultForegroundColor = progressBar1.getForeground ();
+		progressBar1.dispose ();
+		
+		super.createColorGroup ();
+		
+		/* Set the state of the controls */
+		fontButton.setEnabled (false);
+	}
 
 	/**
 	 * Creates the "Example" group.
@@ -36,7 +52,7 @@ class ProgressBarTab extends RangeTab {
 		progressBarGroup = new Group (exampleGroup, SWT.NULL);
 		progressBarGroup.setLayout (new GridLayout ());
 		progressBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		progressBarGroup.setText (ControlExample.getResourceString("ProgressBar"));
+		progressBarGroup.setText ("ProgressBar");
 	}
 	
 	/**
@@ -55,6 +71,9 @@ class ProgressBarTab extends RangeTab {
 		progressBar1 = new ProgressBar (progressBarGroup, style);
 		progressBar1.setMaximum (100);
 		progressBar1.setSelection (50);
+
+		/* Set the colors */
+		setColors ();
 	}
 	
 	/**
@@ -69,6 +88,14 @@ class ProgressBarTab extends RangeTab {
 	}
 	
 	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		progressBar1.setBackground (backgroundColor);
+		progressBar1.setForeground (foregroundColor);
+	}
+	
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
@@ -79,7 +106,7 @@ class ProgressBarTab extends RangeTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("ProgressBar");
+		return "ProgressBar";
 	}
 	
 	/**

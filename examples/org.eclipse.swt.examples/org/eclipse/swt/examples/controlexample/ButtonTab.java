@@ -25,13 +25,26 @@ class ButtonTab extends AlignableTab {
 	Button upButton, downButton;
 
 	/* Style widgets added to the "Style" group */
-	Button pushButton, checkButton, radioButton, toggleButton, arrowButton;
+	Button pushButton, checkButton, radioButton, toggleButton, arrowButton, flatButton;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	ButtonTab(ControlExample instance) {
 		super(instance);
+	}
+	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup() {
+		/* Get default system colors for the control */
+		button1 = new Button (textButtonGroup, SWT.PUSH);
+		defaultBackgroundColor = button1.getBackground();
+		defaultForegroundColor = button1.getForeground();
+		button1.dispose();
+		
+		super.createColorGroup();
 	}
 
 	/**
@@ -92,21 +105,28 @@ class ButtonTab extends AlignableTab {
 		if (radioButton.getSelection()) style |= SWT.RADIO;
 		if (toggleButton.getSelection()) style |= SWT.TOGGLE;
 		if (arrowButton.getSelection()) style |= SWT.ARROW;
+		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 	
 		/* Create the example widgets */
 		button1 = new Button(textButtonGroup, style);
 		button1.setText(ControlExample.getResourceString("One"));
+		button1.setFont(font);
 		button2 = new Button(textButtonGroup, style);
 		button2.setText(ControlExample.getResourceString("Two"));
+		button2.setFont(font);
 		button3 = new Button(textButtonGroup, style);
 		button3.setText(ControlExample.getResourceString("Three"));
+		button3.setFont(font);
 		button4 = new Button(imageButtonGroup, style);
 		button4.setImage(instance.images[ControlExample.ciClosedFolder]);
 		button5 = new Button(imageButtonGroup, style);
 		button5.setImage(instance.images[ControlExample.ciOpenFolder]);
 		button6 = new Button(imageButtonGroup, style);
 		button6.setImage(instance.images[ControlExample.ciTarget]);
+		
+		/* Set the colors */
+		setColors ();
 	}
 	
 	/**
@@ -126,6 +146,8 @@ class ButtonTab extends AlignableTab {
 		toggleButton.setText ("SWT.TOGGLE");
 		arrowButton = new Button (styleGroup, SWT.RADIO);
 		arrowButton.setText ("SWT.ARROW");
+		flatButton = new Button (styleGroup, SWT.CHECK);
+		flatButton.setText ("SWT.FLAT");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -141,7 +163,22 @@ class ButtonTab extends AlignableTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("Button");
+		return "Button";
+	}
+	
+	/**
+	 * Sets the background and foreground colors of the "Example" widgets.
+	 */
+	void setColors () {
+		button1.setBackground (backgroundColor);
+		button1.setForeground (foregroundColor);
+		button2.setBackground (backgroundColor);
+		button2.setForeground (foregroundColor);
+		button3.setBackground (backgroundColor);
+		button3.setForeground (foregroundColor);
+		button4.setBackground (backgroundColor);
+		button5.setBackground (backgroundColor);
+		button6.setBackground (backgroundColor);
 	}
 	
 	/**
@@ -183,6 +220,7 @@ class ButtonTab extends AlignableTab {
 		radioButton.setSelection ((button1.getStyle () & SWT.RADIO) != 0);
 		toggleButton.setSelection ((button1.getStyle () & SWT.TOGGLE) != 0);
 		arrowButton.setSelection ((button1.getStyle () & SWT.ARROW) != 0);
+		flatButton.setSelection ((button1.getStyle () & SWT.FLAT) != 0);
 		borderButton.setSelection ((button1.getStyle () & SWT.BORDER) != 0);
 	}
 }

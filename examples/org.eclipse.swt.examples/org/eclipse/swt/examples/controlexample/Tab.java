@@ -33,11 +33,11 @@ import java.util.ResourceBundle;
 abstract class Tab {	
 	/* Common control buttons */
 	Button borderButton, enabledButton, visibleButton;
-	Button preferredButton, tooSmallButton, smallButton, largeButton;
+	Button preferredButton, tooSmallButton, smallButton, largeButton, fillButton;
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
-	Group exampleGroup, controlGroup, displayGroup, sizeGroup, styleGroup;
+	Group exampleGroup, controlGroup, displayGroup, sizeGroup, styleGroup, colorGroup;
 
 	/* Controlling instance */
 	final ControlExample instance;
@@ -47,6 +47,14 @@ abstract class Tab {
 	static final int SMALL_SIZE		= 50;
 	static final int LARGE_SIZE		= 100;
 
+	/* Common controls for the "Colors" group */
+	Button backgroundButton, foregroundButton, fontButton;
+	Color defaultBackgroundColor, defaultForegroundColor, backgroundColor, foregroundColor;
+	RGB chosenBackgroundColor, chosenForegroundColor;
+	Image backgroundImage, foregroundImage;
+	Font font;
+	FontData chosenFont;
+	
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -78,6 +86,7 @@ abstract class Tab {
 		createStyleGroup ();
 		createDisplayGroup ();
 		createSizeGroup ();
+		createColorGroup ();
 	
 		/*
 		 * For each Button child in the style group, add a selection
@@ -105,6 +114,7 @@ abstract class Tab {
 				button.addSelectionListener (selectionListener);
 			}
 		}
+		fontButton.addSelectionListener (selectionListener);
 	}
 	
 	/**
@@ -114,6 +124,120 @@ abstract class Tab {
 	 * "Display" and "Size" groups.
 	 */
 	void createControlWidgets () {
+	}
+	
+	/**
+	 * Creates the "Color" group. This is typically
+	 * a child of the "Control" group. Subclasses override
+	 * this method to customize and set system colors.
+	 */
+	void createColorGroup () {
+		/* Create the group */
+		colorGroup = new Group(controlGroup, SWT.NULL);
+		colorGroup.setLayout (new GridLayout (2, false));
+		colorGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		colorGroup.setText (ControlExample.getResourceString ("Colors"));
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
+		backgroundButton = new Button (colorGroup, SWT.PUSH);
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
+		foregroundButton = new Button (colorGroup, SWT.PUSH);
+		fontButton = new Button (colorGroup, SWT.PUSH);
+		fontButton.setText(ControlExample.getResourceString("Font"));
+		
+		/* Create images to display current colors */
+		chosenBackgroundColor = defaultBackgroundColor.getRGB();
+		chosenForegroundColor = defaultForegroundColor.getRGB();
+		GC gc = new GC(fontButton.getShell());
+		final int fontHeight = gc.getFontMetrics().getHeight();
+		gc.dispose ();
+		backgroundImage = new Image(colorGroup.getDisplay(),fontHeight*2,fontHeight);
+		gc = new GC(backgroundImage);
+		gc.setBackground(defaultBackgroundColor);
+		gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
+		gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
+		gc.dispose();
+		foregroundImage = new Image(colorGroup.getDisplay(),fontHeight*2,fontHeight);
+		gc = new GC(foregroundImage);
+		gc.setBackground(defaultForegroundColor);
+		gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
+		gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
+		gc.dispose();
+		
+		/* Add listeners to set the colors and font */
+		backgroundButton.setImage(backgroundImage);
+		backgroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				ColorDialog colorDialog= new ColorDialog(backgroundButton.getShell());
+				colorDialog.setRGB(chosenBackgroundColor);
+				RGB newColor = colorDialog.open();
+				if (newColor != null) {
+					Color oldColor = null;
+					if (backgroundColor != null) oldColor = backgroundColor;
+					backgroundColor = new Color (backgroundButton.getDisplay(), newColor);
+					GC gc = new GC(backgroundImage);
+					gc.setBackground(backgroundColor);
+					gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
+					gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
+					gc.dispose();
+					backgroundButton.setImage(backgroundImage);
+					chosenBackgroundColor = newColor;
+					setColors ();
+					if (oldColor != null) oldColor.dispose ();
+				}
+			}
+		});
+		foregroundButton.setImage(foregroundImage);
+		foregroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				ColorDialog colorDialog= new ColorDialog(foregroundButton.getShell());
+				colorDialog.setRGB(chosenForegroundColor);
+				RGB newColor = colorDialog.open();
+				if (newColor != null) {
+					Color oldColor = null;
+					if (foregroundColor != null) oldColor = foregroundColor;
+					foregroundColor = new Color (foregroundButton.getDisplay(), newColor);
+					GC gc= new GC(foregroundImage);
+					gc.setBackground(foregroundColor);
+					gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
+					gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
+					gc.dispose();
+					foregroundButton.setImage(foregroundImage);
+					chosenForegroundColor = newColor;
+					setColors ();
+					if (oldColor != null) oldColor.dispose ();
+				}
+			}
+		});
+		fontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				FontDialog fontDialog = new FontDialog (fontButton.getShell());
+				if (chosenFont == null) {
+					fontDialog.setFontData ((fontButton.getFont().getFontData ())[0]);
+				} else {
+					fontDialog.setFontData(chosenFont);
+				}
+				FontData fontData = fontDialog.open ();
+				if (fontData != null) {
+					if (font != null) font.dispose ();
+					font = new Font (fontButton.getDisplay(), fontData);
+					chosenFont = fontData;
+				}
+			}
+		});
+		backgroundButton.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (backgroundImage != null) backgroundImage.dispose();
+				if (foregroundImage != null) foregroundImage.dispose();
+				if (backgroundColor != null) backgroundColor.dispose();
+				if (foregroundColor != null) foregroundColor.dispose();
+				if (font != null) font.dispose();
+				backgroundImage = null;
+				foregroundImage = null;
+				backgroundColor = null;
+				foregroundColor = null;
+				font = null;				
+			}
+		});
 	}
 	
 	/**
@@ -158,7 +282,7 @@ abstract class Tab {
 		exampleGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		exampleGroup.setLayout (gridLayout);
-		exampleGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		exampleGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
 	}
 	
 	/**
@@ -198,6 +322,8 @@ abstract class Tab {
 		smallButton.setText (SMALL_SIZE + " X " + SMALL_SIZE);
 		largeButton = new Button (sizeGroup, SWT.RADIO);
 		largeButton.setText (LARGE_SIZE + " X " + LARGE_SIZE);
+		fillButton = new Button (sizeGroup, SWT.RADIO);
+		fillButton.setText (ControlExample.getResourceString("Fill"));
 	
 		/* Add the listeners */
 		SelectionAdapter selectionListener = new SelectionAdapter () {
@@ -210,6 +336,7 @@ abstract class Tab {
 		tooSmallButton.addSelectionListener(selectionListener);
 		smallButton.addSelectionListener(selectionListener);
 		largeButton.addSelectionListener(selectionListener);
+		fillButton.addSelectionListener(selectionListener);
 	
 		/* Set the default state */
 		preferredButton.setSelection (true);
@@ -293,6 +420,13 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Sets the background and foreground colors of the 
+	 * "Example" widgets. Subclasses override this method.
+	 */
+	void setColors () {
+	}
+	
+	/**
 	 * Sets the enabled state of the "Example" widgets.
 	 */
 	void setExampleWidgetEnabled () {
@@ -314,9 +448,14 @@ abstract class Tab {
 		if (largeButton.getSelection()) size = LARGE_SIZE;
 		Control [] controls = getExampleWidgets ();
 		for (int i=0; i<controls.length; i++) {
-			GridData gridData = new GridData ();
-			gridData.widthHint = size;
-			gridData.heightHint = size;
+			GridData gridData; 
+			if (fillButton.getSelection()) {
+				gridData = new GridData (GridData.FILL_BOTH);
+			} else {
+				gridData = new GridData ();
+				gridData.widthHint = size;
+				gridData.heightHint = size;
+			}
 			controls [i].setLayoutData (gridData);
 		}
 		/*

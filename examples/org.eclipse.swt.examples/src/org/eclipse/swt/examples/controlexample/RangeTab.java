@@ -28,10 +28,6 @@ abstract class RangeTab extends Tab {
 	 * Creates the "Control" widget children.
 	 */
 	void createControlWidgets () {
-	
-		/* Leave an empty cell */
-		new Composite (controlGroup, SWT.NULL);
-		
 		/* Create controls specific to this example */
 		createMinimumGroup ();
 		createMaximumGroup ();
@@ -100,7 +96,6 @@ abstract class RangeTab extends Tab {
 		Group selectionGroup = new Group(controlGroup, SWT.NULL);
 		selectionGroup.setLayout(new GridLayout());
 		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
-		gridData.horizontalSpan = 2;
 		selectionGroup.setLayoutData(gridData);
 		selectionGroup.setText(ControlExample.getResourceString("Selection"));
 	
