@@ -3384,6 +3384,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot
 }
 #endif /* NO_HIViewGetRoot */
 
+#ifndef NO_HIViewGetSizeConstraints
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetSizeConstraints
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIViewGetSizeConstraints\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getCGRectFields(env, arg2, &_arg2);
+	rc = (jint)HIViewGetSizeConstraints((HIViewRef)arg0, (HISize *)lparg1, (HISize *)lparg2);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+	if (arg2) setCGRectFields(env, arg2, lparg2);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewGetSubviewHit
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetSubviewHit
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2, jintArray arg3)

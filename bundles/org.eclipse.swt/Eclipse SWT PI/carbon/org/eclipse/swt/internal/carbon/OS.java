@@ -644,6 +644,7 @@ public static final native int HIViewConvertPoint(CGPoint ioPoint, int inSourceV
 public static final native int HIViewFindByID(int inStartView, int inID, int[] outControl);
 public static final native int HIViewGetFrame(int inView, CGRect outRect);
 public static final native int HIViewGetRoot(int wHandle);
+public static final native int HIViewGetSizeConstraints(int inView, CGRect outMinSize, CGRect outMaxSize);
 public static final native int HIViewGetSubviewHit(int inView, CGPoint inPoint, boolean inDeep, int[] outView);
 public static final native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
 public static final native boolean HIViewIsVisible(int inView);
