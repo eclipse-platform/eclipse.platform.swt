@@ -574,6 +574,75 @@ public IUnknown getUnknown() {
 		OS.GlobalFree(newPtr);
 	}
 }
+/**
+ * Update the by reference value of this variant with a new boolean value.
+ * 
+ * @param val the new boolean value
+ * 
+ * @exception SWTError
+ * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_BOOL) object</ul>
+ *
+ * @since 2.1
+ */
+public void setByRef(boolean val) {
+	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_BOOL) == 0) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
+	}
+	COM.MoveMemory(byRefPtr, new short[]{val ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+}
+/**
+ * Update the by reference value of this variant with a new float value.
+ * 
+ * @param val the new float value
+ * 
+ * @exception SWTError
+ * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_R4) object</ul>
+ *
+ * @since 2.1
+ */
+public void setByRef(float val) {
+	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_R4) == 0) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
+	}
+	COM.MoveMemory(byRefPtr, new float[]{val}, 4);	
+}
+/**
+ * Update the by reference value of this variant with a new integer value.
+ * 
+ * @param val the new integer value
+ * 
+ * @exception SWTError
+ * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_I4) object</ul>
+ *
+ * @since 2.1
+ */
+public void setByRef(int val) {
+	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I4) == 0) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
+	}
+	COM.MoveMemory(byRefPtr, new int[]{val}, 4);
+}
+/**
+ * Update the by reference value of this variant with a new short value.
+ * 
+ * @param val the new short value
+ * 
+ * @exception SWTError
+ * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_I2) object</ul>
+ *
+ * @since 2.1
+ */
+public void setByRef(short val) {
+	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I2) == 0) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
+	}
+	COM.MoveMemory(byRefPtr, new short[]{val}, 2);
+}
+
 void setData(int pData){
 	if (pData == 0) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
 
