@@ -44,6 +44,14 @@ public class TabFolder extends Composite {
 	ImageList imageList;
 	static final int TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, "SWT_" + OS.WC_TABCONTROL, true);
+	
+	/*
+	 * These are the undocumented control id's for the children of
+	 * a tab control.  Since there are no constants for these values,
+	 * they may change with different versions of Windows.
+	 */
+	static final int ID_UPDOWN = 1;
+	
 	static {
 		/*
 		* Feature in Windows.  The tab control window class
@@ -698,6 +706,36 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+	LRESULT result = super.WM_PARENTNOTIFY (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  Windows does not explicitly set the orientation of
+	* the buddy control.  Instead, the orientation is inherited when WS_EX_LAYOUTRTL
+	* is specified for the tab folder.  This means that when both WS_EX_LAYOUTRTL
+	* and WS_EX_NOINHERITLAYOUT are specified for the tab folder, the buddy control
+	* will not be oriented correctly.  The fix is to explicitly set the orientation
+	* for the buddy control.
+	* 
+	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
+	*/
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR)	< (4 << 16 | 10)) return result;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int code = wParam & 0xFFFF;
+		switch (code) {
+			case OS.WM_CREATE: {
+				int id = (wParam >> 16), hwnd = lParam;
+				if (id == ID_UPDOWN) {
+					int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+					OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE,	bits | OS.WS_EX_LAYOUTRTL);
+				}
+				break;
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
