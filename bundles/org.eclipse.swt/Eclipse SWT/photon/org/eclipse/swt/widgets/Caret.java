@@ -185,10 +185,16 @@ void setFocus () {
 
 public void setFont (Font font) {
 	checkWidget();
+	if (font != null && font.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (isShowing) hideCaret ();
 	this.image = image;
 	if (isShowing) showCaret ();

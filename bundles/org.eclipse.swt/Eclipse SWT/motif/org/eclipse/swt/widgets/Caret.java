@@ -350,6 +350,9 @@ void setFocus () {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -357,6 +360,9 @@ void setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
+	if (font != null && font.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 /**
  * Sets the image that the receiver will use to paint the caret
@@ -365,6 +371,9 @@ public void setFont (Font font) {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -372,6 +381,9 @@ public void setFont (Font font) {
  */
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (isShowing) hideCaret ();
 	this.image = image;
 	if (isShowing) showCaret ();
