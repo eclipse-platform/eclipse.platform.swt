@@ -46,42 +46,42 @@ public class nsIWindowWatcher extends nsISupports {
 	}
 
 	public int RegisterNotification(int aObserver) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aObserver);
 	}
 
 	public int UnregisterNotification(int aObserver) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aObserver);
 	}
 
 	public int GetWindowEnumerator(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), _retval);
 	}
 
 	public int GetNewPrompter(int aParent, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aParent, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParent, _retval);
 	}
 
 	public int GetNewAuthPrompter(int aParent, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aParent, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParent, _retval);
 	}
 
 	public int SetWindowCreator(int creator) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), creator);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), creator);
 	}
 
 	public int GetChromeForWindow(int aWindow, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aWindow, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aWindow, _retval);
 	}
 
 	public int GetWindowByName(char[] aTargetName, int aCurrentWindow, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aTargetName, aCurrentWindow, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aTargetName, aCurrentWindow, _retval);
 	}
 
 	public int GetActiveWindow(int[] aActiveWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aActiveWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aActiveWindow);
 	}
 
 	public int SetActiveWindow(int aActiveWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aActiveWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aActiveWindow);
 	}
 }

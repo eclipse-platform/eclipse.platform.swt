@@ -42,34 +42,34 @@ public class nsIWebBrowserFocus extends nsISupports {
 	}
 
 	public int Activate() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
 	}
 
 	public int Deactivate() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
 	}
 
 	public int SetFocusAtFirstElement() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
 	public int SetFocusAtLastElement() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
 	public int GetFocusedWindow(int[] aFocusedWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aFocusedWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFocusedWindow);
 	}
 
 	public int SetFocusedWindow(int aFocusedWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aFocusedWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aFocusedWindow);
 	}
 
 	public int GetFocusedElement(int[] aFocusedElement) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aFocusedElement);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aFocusedElement);
 	}
 
 	public int SetFocusedElement(int aFocusedElement) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aFocusedElement);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aFocusedElement);
 	}
 }

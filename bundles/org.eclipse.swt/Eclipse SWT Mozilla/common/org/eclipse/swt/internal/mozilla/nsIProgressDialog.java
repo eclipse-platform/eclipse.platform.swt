@@ -42,22 +42,22 @@ public class nsIProgressDialog extends nsIDownload {
 	}
 
 	public int Open(int aParent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aParent);
+		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 1, getAddress(), aParent);
 	}
 
 	public int GetCancelDownloadOnClose(boolean[] aCancelDownloadOnClose) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aCancelDownloadOnClose);
+		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 2, getAddress(), aCancelDownloadOnClose);
 	}
 
 	public int SetCancelDownloadOnClose(boolean aCancelDownloadOnClose) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
+		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
 	}
 
 	public int GetDialog(int[] aDialog) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aDialog);
+		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 4, getAddress(), aDialog);
 	}
 
 	public int SetDialog(int[] aDialog) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aDialog);
+		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 5, getAddress(), aDialog);
 	}
 }

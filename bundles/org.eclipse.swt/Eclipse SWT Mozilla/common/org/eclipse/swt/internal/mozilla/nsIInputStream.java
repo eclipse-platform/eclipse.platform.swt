@@ -42,22 +42,22 @@ public class nsIInputStream extends nsISupports {
 	}
 
 	public int Close() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
 	}
 
 	public int Available(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 
 	public int Read(int aBuf, int aCount, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
 	}
 
 	public int ReadSegments(int aWriter, int aClosure, int aCount, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aWriter, aClosure, aCount, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWriter, aClosure, aCount, _retval);
 	}
 
 	public int IsNonBlocking(boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

@@ -42,18 +42,18 @@ public class nsIServiceManager extends nsISupports {
 	}
 
 	public int GetService(nsID aClass, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
 	}
 
 	public int GetServiceByContractID(byte[] aContractID, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
 	}
 
 	public int IsServiceInstantiated(nsID aClass, nsID aIID, boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aClass, aIID, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aIID, _retval);
 	}
 
 	public int IsServiceInstantiatedByContractID(byte[] aContractID, nsID aIID, boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aContractID, aIID, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContractID, aIID, _retval);
 	}
 }

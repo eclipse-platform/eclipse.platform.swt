@@ -42,30 +42,30 @@ public class nsIWebBrowser extends nsISupports {
 	}
 
 	public int AddWebBrowserListener(int aListener, nsID aIID) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aListener, aIID);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aListener, aIID);
 	}
 
 	public int RemoveWebBrowserListener(int aListener, nsID aIID) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aListener, aIID);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aListener, aIID);
 	}
 
 	public int GetContainerWindow(int[] aContainerWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aContainerWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContainerWindow);
 	}
 
 	public int SetContainerWindow(int aContainerWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aContainerWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContainerWindow);
 	}
 
 	public int GetParentURIContentListener(int[] aParentURIContentListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aParentURIContentListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParentURIContentListener);
 	}
 
 	public int SetParentURIContentListener(int aParentURIContentListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aParentURIContentListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParentURIContentListener);
 	}
 
 	public int GetContentDOMWindow(int[] aContentDOMWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aContentDOMWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aContentDOMWindow);
 	}
 }

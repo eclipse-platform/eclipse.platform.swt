@@ -48,15 +48,15 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final int STATUS_LINK = 3;
 
 	public int SetStatus(int statusType, char[] status) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), statusType, status);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), statusType, status);
 	}
 
 	public int GetWebBrowser(int[] aWebBrowser) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aWebBrowser);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebBrowser);
 	}
 
 	public int SetWebBrowser(int aWebBrowser) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aWebBrowser);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebBrowser);
 	}
 
 	public static final int CHROME_DEFAULT = 1;
@@ -108,30 +108,30 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final int CHROME_ALL = 4094;
 
 	public int GetChromeFlags(int[] chromeFlags) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), chromeFlags);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), chromeFlags);
 	}
 
 	public int SetChromeFlags(int chromeFlags) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), chromeFlags);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), chromeFlags);
 	}
 
 	public int DestroyBrowserWindow() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
 	}
 
 	public int SizeBrowserTo(int aCX, int aCY) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aCX, aCY);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aCX, aCY);
 	}
 
 	public int ShowAsModal() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 
 	public int IsWindowModal(boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 
 	public int ExitModalEventLoop(int aStatus) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aStatus);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aStatus);
 	}
 }

@@ -42,10 +42,10 @@ public class nsITooltipListener extends nsISupports {
 	}
 
 	public int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aXCoords, aYCoords, aTipText);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aXCoords, aYCoords, aTipText);
 	}
 
 	public int OnHideTooltip() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
 	}
 }

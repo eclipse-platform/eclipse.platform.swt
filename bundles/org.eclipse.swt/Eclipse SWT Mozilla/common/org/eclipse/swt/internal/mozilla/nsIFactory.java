@@ -42,10 +42,10 @@ public class nsIFactory extends nsISupports {
 	}
 
 	public int CreateInstance(int aOuter, nsID iid, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aOuter, iid, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aOuter, iid, result);
 	}
 
 	public int LockFactory(boolean lock) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), lock);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), lock);
 	}
 }

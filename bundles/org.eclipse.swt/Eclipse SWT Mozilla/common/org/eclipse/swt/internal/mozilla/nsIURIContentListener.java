@@ -42,7 +42,7 @@ public class nsIURIContentListener extends nsISupports {
 	}
 
 	public int OnStartURIOpen(int aURI, boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aURI, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aURI, _retval);
 	}
 
 	public int DoContent(byte[] aContentType, boolean aIsContentPreferred, int aRequest, int[] aContentHandler, boolean[] _retval) {
@@ -58,18 +58,18 @@ public class nsIURIContentListener extends nsISupports {
 	}
 
 	public int GetLoadCookie(int[] aLoadCookie) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aLoadCookie);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aLoadCookie);
 	}
 
 	public int SetLoadCookie(int aLoadCookie) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aLoadCookie);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aLoadCookie);
 	}
 
 	public int GetParentContentListener(int[] aParentContentListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aParentContentListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aParentContentListener);
 	}
 
 	public int SetParentContentListener(int aParentContentListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aParentContentListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aParentContentListener);
 	}
 }

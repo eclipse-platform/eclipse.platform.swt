@@ -42,10 +42,10 @@ public class nsIHelperAppLauncherDialog extends nsISupports {
 	}
 
 	public int Show(int aLauncher, int aContext, boolean aForced) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aLauncher, aContext, aForced);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLauncher, aContext, aForced);
 	}
 
 	public int PromptForSaveToFile(int aLauncher, int aWindowContext, int aDefaultFile, int aSuggestedFileExtension, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aLauncher, aWindowContext, aDefaultFile, aSuggestedFileExtension, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aLauncher, aWindowContext, aDefaultFile, aSuggestedFileExtension, _retval);
 	}
 }

@@ -42,42 +42,42 @@ public class nsIHelperAppLauncher extends nsISupports {
 	}
 
 	public int GetMIMEInfo(int[] aMIMEInfo) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aMIMEInfo);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aMIMEInfo);
 	}
 
 	public int GetSource(int[] aSource) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aSource);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSource);
 	}
 
 	public int GetSuggestedFileName(int[] aSuggestedFileName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
 	}
 
 	public int SaveToDisk(int aNewFileLocation, boolean aRememberThisPreference) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 
 	public int LaunchWithApplication(int aApplication, boolean aRememberThisPreference) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
 	}
 
 	public int Cancel() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
 	}
 
 	public int SetWebProgressListener(int aWebProgressListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aWebProgressListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aWebProgressListener);
 	}
 
 	public int CloseProgressWindow() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 
 	public int GetTargetFile(int[] aTargetFile) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aTargetFile);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aTargetFile);
 	}
 	
 	public int GetTimeDownloadStarted(int aTimeDownloadStarted) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aTimeDownloadStarted);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aTimeDownloadStarted);
 	}
 }

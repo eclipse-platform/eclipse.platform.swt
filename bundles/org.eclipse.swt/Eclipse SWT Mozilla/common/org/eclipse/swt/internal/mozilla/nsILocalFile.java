@@ -42,70 +42,70 @@ public class nsILocalFile extends nsIFile {
 	}
 
 	public int InitWithPath(int filePath) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), filePath);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 1, getAddress(), filePath);
 	}
 
 	public int InitWithNativePath(int filePath) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), filePath);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 2, getAddress(), filePath);
 	}
 
 	public int InitWithFile(int aFile) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aFile);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 3, getAddress(), aFile);
 	}
 
 	public int GetFollowLinks(boolean[] followLinks) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), followLinks);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 4, getAddress(), followLinks);
 	}
 
 	public int SetFollowLinks(boolean followLinks) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), followLinks);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 5, getAddress(), followLinks);
 	}
 
 	public int OpenNSPRFileDesc(int flags, int mode, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), flags, mode, _retval);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 6, getAddress(), flags, mode, _retval);
 	}
 
 	public int OpenANSIFileDesc(byte[] mode, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), mode, _retval);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 7, getAddress(), mode, _retval);
 	}
 
 	public int Load(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), _retval);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 8, getAddress(), _retval);
 	}
 
 	public int GetDiskSpaceAvailable(long[] aDiskSpaceAvailable) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aDiskSpaceAvailable);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 9, getAddress(), aDiskSpaceAvailable);
 	}
 
 	public int AppendRelativePath(int relativeFilePath) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), relativeFilePath);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 10, getAddress(), relativeFilePath);
 	}
 
 	public int AppendRelativeNativePath(int relativeFilePath) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), relativeFilePath);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 11, getAddress(), relativeFilePath);
 	}
 
 	public int GetPersistentDescriptor(int aPersistentDescriptor) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aPersistentDescriptor);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 12, getAddress(), aPersistentDescriptor);
 	}
 
 	public int SetPersistentDescriptor(int aPersistentDescriptor) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aPersistentDescriptor);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 13, getAddress(), aPersistentDescriptor);
 	}
 
 	public int Reveal() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress());
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 14, getAddress());
 	}
 
 	public int Launch() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress());
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 15, getAddress());
 	}
 
 	public int GetRelativeDescriptor(int fromFile, int _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16, getAddress(), fromFile, _retval);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 16, getAddress(), fromFile, _retval);
 	}
 
 	public int SetRelativeDescriptor(int fromFile, int relativeDesc) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17, getAddress(), fromFile, relativeDesc);
+		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 17, getAddress(), fromFile, relativeDesc);
 	}
 }

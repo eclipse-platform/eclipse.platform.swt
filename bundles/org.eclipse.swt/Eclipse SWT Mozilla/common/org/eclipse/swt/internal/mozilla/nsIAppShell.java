@@ -42,27 +42,27 @@ public class nsIAppShell extends nsISupports {
 	}
 
 	public int Create(int[] argc, int[] argv) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), argc, argv);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), argc, argv);
 	}
 
 	public int Run() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
 	}
 
 	public int Spinup() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
 	public int Spindown() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
 	public int ListenToEventQueue(int aQueue, boolean aListen) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
 	}
 
 	public int GetNativeEvent(int aRealEvent, int aEvent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
 	}
 
 	public int DispatchNativeEvent(boolean aRealEvent, int aEvent) {
@@ -70,6 +70,6 @@ public class nsIAppShell extends nsISupports {
 	}
 
 	public int Exit() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 }

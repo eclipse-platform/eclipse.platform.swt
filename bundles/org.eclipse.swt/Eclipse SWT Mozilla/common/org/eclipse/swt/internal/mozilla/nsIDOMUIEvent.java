@@ -42,11 +42,11 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 	}
 	
 	public int GetView(int[] aView) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aView);
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 1, getAddress(), aView);
 	}
 
 	public int GetDetail(int[] aDetail) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aDetail);
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
 	public int InitEvent(int typeArg, boolean canBubbleArg, boolean cancelableArg, int[] viewArg, int detailArg) {

@@ -42,6 +42,6 @@ public class nsISupportsWeakReference extends nsISupports {
     }
 
     public int GetWeakReference(int[] retVal) {
-        return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), retVal);
+        return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), retVal);
     }
 }

@@ -42,23 +42,23 @@ public class nsIWebNavigation extends nsISupports {
 	}
 
 	public int GetCanGoBack(boolean[] aCanGoBack) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aCanGoBack);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCanGoBack);
 	}
 
 	public int GetCanGoForward(boolean[] aCanGoForward) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aCanGoForward);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCanGoForward);
 	}
 
 	public int GoBack() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
 	public int GoForward() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
 	public int GotoIndex(int index) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), index);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), index);
 	}
 
 	public static final int LOAD_FLAGS_MASK = 65535;
@@ -80,11 +80,11 @@ public class nsIWebNavigation extends nsISupports {
 	public static final int LOAD_FLAGS_CHARSET_CHANGE = 1024;
 
 	public int LoadURI(char[] uri, int loadFlags, int referrer, int postData, int headers) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), uri, loadFlags, referrer, postData, headers);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), uri, loadFlags, referrer, postData, headers);
 	}
 
 	public int Reload(int reloadFlags) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), reloadFlags);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), reloadFlags);
 	}
 
 	public static final int STOP_NETWORK = 1;
@@ -94,26 +94,26 @@ public class nsIWebNavigation extends nsISupports {
 	public static final int STOP_ALL = 3;
 
 	public int Stop(int stopFlags) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), stopFlags);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), stopFlags);
 	}
 
 	public int GetDocument(int[] aDocument) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aDocument);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aDocument);
 	}
 
 	public int GetCurrentURI(int[] aCurrentURI) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aCurrentURI);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aCurrentURI);
 	}
 
 	public int GetReferringURI(int[] aReferringURI) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aReferringURI);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aReferringURI);
 	}
 
 	public int GetSessionHistory(int[] aSessionHistory) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aSessionHistory);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aSessionHistory);
 	}
 
 	public int SetSessionHistory(int aSessionHistory) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aSessionHistory);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aSessionHistory);
 	}
 }

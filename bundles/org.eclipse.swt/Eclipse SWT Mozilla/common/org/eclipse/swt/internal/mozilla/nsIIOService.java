@@ -42,35 +42,35 @@ public class nsIIOService extends nsISupports {
 	}
 
 	public int GetProtocolHandler(byte[] aScheme, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aScheme, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aScheme, _retval);
 	}
 
 	public int GetProtocolFlags(byte[] aScheme, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aScheme, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aScheme, _retval);
 	}
 
 	public int NewURI(int aSpec, byte[] aOriginCharset, int aBaseURI, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 
 	public int NewFileURI(int aFile, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aFile, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile, _retval);
 	}
 
 	public int NewChannelFromURI(int aURI, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aURI, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aURI, _retval);
 	}
 
 	public int NewChannel(int aSpec, byte[] aOriginCharset, int aBaseURI, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 
 	public int GetOffline(boolean[] aOffline) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aOffline);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aOffline);
 	}
 
 	public int SetOffline(boolean aOffline) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aOffline);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aOffline);
 	}
 
 	public int AllowPort(int aPort, byte[] aScheme, boolean[] _retval) {
@@ -78,6 +78,6 @@ public class nsIIOService extends nsISupports {
 	}
 
 	public int ExtractScheme(int urlString, int _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), urlString, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), urlString, _retval);
 	}
 }

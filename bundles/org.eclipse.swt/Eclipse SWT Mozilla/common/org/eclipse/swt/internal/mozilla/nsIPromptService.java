@@ -42,7 +42,7 @@ public class nsIPromptService extends nsISupports {
 	}
 
 	public int Alert(int parent, char[] dialogTitle, char[] text) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), parent, dialogTitle, text);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, dialogTitle, text);
 	}
 
 	public int AlertCheck(int parent, char[] dialogTitle, char[] text, char[] checkMsg, boolean[] checkValue) {

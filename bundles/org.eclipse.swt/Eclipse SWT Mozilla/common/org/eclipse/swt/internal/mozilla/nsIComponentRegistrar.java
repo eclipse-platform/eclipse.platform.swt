@@ -42,15 +42,15 @@ public class nsIComponentRegistrar extends nsISupports {
 	}
 
 	public int AutoRegister(int aSpec) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aSpec);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSpec);
 	}
 
 	public int AutoUnregister(int aSpec) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aSpec);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSpec);
 	}
 
 	public int RegisterFactory(nsID aClass, byte[] aClassName, byte[] aContractID, int aFactory) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aClass, aClassName, aContractID, aFactory);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aClassName, aContractID, aFactory);
 	}
 
 	public int UnregisterFactory(nsID aClass, int aFactory) {
@@ -74,15 +74,15 @@ public class nsIComponentRegistrar extends nsISupports {
 	}
 
 	public int EnumerateCIDs(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 
 	public int EnumerateContractIDs(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), _retval);
 	}
 
 	public int CIDToContractID(nsID aClass, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aClass, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aClass, _retval);
 	}
 
 	public int ContractIDToCID(byte[] aContractID, nsID[] _retval) {

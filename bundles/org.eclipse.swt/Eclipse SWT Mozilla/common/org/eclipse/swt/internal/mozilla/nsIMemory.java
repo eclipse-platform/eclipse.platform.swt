@@ -42,22 +42,22 @@ public class nsIMemory extends nsISupports {
 	}
 
 	public int Alloc(int size) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), size);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), size);
 	}
 
 	public int Realloc(int ptr, int newSize) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), ptr, newSize);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), ptr, newSize);
 	}
 
 	public void Free(int ptr) {
-		XPCOM.VtblCallNoRet(super.LAST_METHOD_ID + 3, getAddress(), ptr);
+		XPCOM.VtblCallNoRet(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
 	}
 
 	public int HeapMinimize(boolean immediate) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), immediate);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), immediate);
 	}
 
 	public int IsLowMemory(boolean[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

@@ -42,70 +42,70 @@ public class nsIDOMWindow extends nsISupports {
 	}
 
 	public int GetDocument(int[] aDocument) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aDocument);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDocument);
 	}
 
 	public int GetParent(int[] aParent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aParent);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aParent);
 	}
 
 	public int GetTop(int[] aTop) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aTop);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aTop);
 	}
 
 	public int GetScrollbars(int[] scrollbars) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), scrollbars);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), scrollbars);
 	}
 
 	public int GetFrames(int[] frames) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), frames);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), frames);
 	}
 
 	public int GetName(int aName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aName);
 	}
 
 	public int SetName(int aName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aName);
 	}
 
 	public int GetTextZoom(float[] aTextZoom) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aTextZoom);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aTextZoom);
 	}
 
 	public int SetTextZoom(float aTextZoom) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aTextZoom);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aTextZoom);
 	}
 
 	public int GetScrollX(int[] aScrollX) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aScrollX);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aScrollX);
 	}
 
 	public int GetScrollY(int[] aScrollY) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aScrollY);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aScrollY);
 	}
 
 	public int ScrollTo(int xScroll, int yScroll) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), xScroll, yScroll);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), xScroll, yScroll);
 	}
 
 	public int ScrollBy(int xScrollDif, int yScrollDif) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), xScrollDif, yScrollDif);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), xScrollDif, yScrollDif);
 	}
 
 	public int GetSelection(int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), _retval);
 	}
 
 	public int ScrollByLines(int numLines) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress(), numLines);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), numLines);
 	}
 
 	public int ScrollByPages(int numPages) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16, getAddress(), numPages);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), numPages);
 	}
 
 	public int SizeToContent() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress());
 	}
 }

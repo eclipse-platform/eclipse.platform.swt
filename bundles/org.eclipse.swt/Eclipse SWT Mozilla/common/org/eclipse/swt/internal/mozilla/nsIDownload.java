@@ -42,55 +42,55 @@ public class nsIDownload extends nsISupports {
 	}
 
 	public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, long startTime, int aPersist) {
-		//return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aPersist);
+		//return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aPersist);
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
 	public int GetSource(int[] aSource) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aSource);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSource);
 	}
 
 	public int GetTarget(int[] aTarget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aTarget);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aTarget);
 	}
 
 	public int GetPersist(int[] aPersist) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aPersist);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aPersist);
 	}
 
 	public int GetPercentComplete(int[] aPercentComplete) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aPercentComplete);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPercentComplete);
 	}
 
 	public int GetDisplayName(int[] aDisplayName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aDisplayName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aDisplayName);
 	}
 
 	public int SetDisplayName(int aDisplayName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aDisplayName);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aDisplayName);
 	}
 
 	public int GetStartTime(int[] aStartTime) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aStartTime);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aStartTime);
 	}
 
 	public int GetMIMEInfo(int[] aMIMEInfo) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aMIMEInfo);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aMIMEInfo);
 	}
 
 	public int GetListener(int[] aListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aListener);
 	}
 
 	public int SetListener(int aListener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aListener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aListener);
 	}
 
 	public int GetObserver(int[] aObserver) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aObserver);
 	}
 
 	public int SetObserver(int[] aObserver) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aObserver);
 	}
 }

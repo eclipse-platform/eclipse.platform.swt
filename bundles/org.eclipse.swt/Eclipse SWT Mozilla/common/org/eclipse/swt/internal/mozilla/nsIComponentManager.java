@@ -42,18 +42,18 @@ public class nsIComponentManager extends nsISupports {
 	}
 
 	public int GetClassObject(nsID aClass, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
 	}
 
 	public int GetClassObjectByContractID(byte[] aContractID, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
 	}
 
 	public int CreateInstance(nsID aClass, int aDelegate, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aClass, aDelegate, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aDelegate, aIID, result);
 	}
 
 	public int CreateInstanceByContractID(byte[] aContractID, int aDelegate, nsID aIID, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aContractID, aDelegate, aIID, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContractID, aDelegate, aIID, result);
 	}
 }

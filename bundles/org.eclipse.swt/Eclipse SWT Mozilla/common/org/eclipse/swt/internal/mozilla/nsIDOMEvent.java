@@ -48,42 +48,42 @@ public class nsIDOMEvent extends nsISupports {
 	public static final int BUBBLING_PHASE = 3;
 	
 	public int GetType(int aType) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aType);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType);
 	}
 
 	public int GetTarget(int[] aTarget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aTarget);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aTarget);
 	}
 
 	public int GetCurrentTarget(int[] aCurrentTarget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
 	}
 
 	public int GetEventPhase(short[] aEventPhase) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aEventPhase);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aEventPhase);
 	}
 
 	public int GetBubbles(boolean[] aBubbles) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aBubbles);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aBubbles);
 	}
 
 	public int GetCancelable(boolean[] aCancelable) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aCancelable);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
 	public int GetTimeStamp(int[] aTimeStamp) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
 	}
 
 	public int StopPropagation() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 
 	public int PreventDefault() {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
 	}
 
 	public int InitEvent(int eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
 	}
 }

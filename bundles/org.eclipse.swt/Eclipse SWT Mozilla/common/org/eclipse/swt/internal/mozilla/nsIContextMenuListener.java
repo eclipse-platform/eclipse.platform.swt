@@ -54,6 +54,6 @@ public class nsIContextMenuListener extends nsISupports {
 	public static final int CONTEXT_INPUT = 16;
 
 	public int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aContextFlags, aEvent, aNode);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aContextFlags, aEvent, aNode);
 	}
 }

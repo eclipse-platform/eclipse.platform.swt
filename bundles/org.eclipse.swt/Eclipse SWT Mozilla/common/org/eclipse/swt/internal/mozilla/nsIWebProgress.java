@@ -62,18 +62,18 @@ public class nsIWebProgress extends nsISupports {
 	public static final int NOTIFY_ALL = 255;
 
 	public int AddProgressListener(int listener, int aNotifyMask) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), listener, aNotifyMask);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), listener, aNotifyMask);
 	}
 
 	public int RemoveProgressListener(int listener) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), listener);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), listener);
 	}
 
 	public int GetDOMWindow(int[] aDOMWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aDOMWindow);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aDOMWindow);
 	}
 
 	public int GetIsLoadingDocument(boolean[] aIsLoadingDocument) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aIsLoadingDocument);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aIsLoadingDocument);
 	}
 }

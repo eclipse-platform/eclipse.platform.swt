@@ -42,6 +42,6 @@ public class nsIInterfaceRequestor extends nsISupports {
 	}
 
 	public int GetInterface(nsID uuid, int[] result) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), uuid, result);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uuid, result);
 	}
 }

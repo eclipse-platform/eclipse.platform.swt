@@ -42,6 +42,6 @@ public class nsIWindowCreator extends nsISupports {
 	}
 
 	public int CreateChromeWindow(int parent, int chromeFlags, int[] _retval) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, _retval);
 	}
 }
