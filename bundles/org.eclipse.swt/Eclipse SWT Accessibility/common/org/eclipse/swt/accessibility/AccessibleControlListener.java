@@ -53,7 +53,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
-	public void hitTest(AccessibleControlEvent e);
+	public void getChildAtPoint(AccessibleControlEvent e);
 
 	/**
 	 * Sent when an accessibility client requests the location
@@ -92,12 +92,12 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * Sent when an accessibility client requests the number of
 	 * children in the control.
 	 * <p>
-	 * Return the number of child items in the <code>count</code>
+	 * Return the number of child items in the <code>detail</code>
 	 * field of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>count [OUT] - the number of child items in this control</li>
+	 *    <li>detail [OUT] - the number of child items in this control</li>
 	 * </ul>
 	 */
 	public void getChildCount(AccessibleControlEvent e);
@@ -145,12 +145,12 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * <p>
 	 * Return a role constant (constant defined in ACC beginning with ROLE_)
 	 * that describes the role of the specified control or child in the
-	 * <code>code</code> field of the event object.
+	 * <code>detail</code> field of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
-	 *    <li>code [OUT] - a role constant describing the role of the control or child</li>
+	 *    <li>detail [OUT] - a role constant describing the role of the control or child</li>
 	 * </ul>
 	 */
 	public void getRole(AccessibleControlEvent e);
@@ -179,12 +179,12 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * <p>
 	 * Return a state constant (constant defined in ACC beginning with STATE_)
 	 * that describes the current state of the specified control or child in the
-	 * <code>code</code> field of the event object.
+	 * <code>detail</code> field of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
-	 *    <li>code [OUT] - a state constant describing the current state of the control or child</li>
+	 *    <li>detail [OUT] - a state constant describing the current state of the control or child</li>
 	 * </ul>
 	 */
 	public void getState(AccessibleControlEvent e);

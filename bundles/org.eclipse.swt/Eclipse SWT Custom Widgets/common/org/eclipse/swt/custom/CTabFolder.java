@@ -768,7 +768,7 @@ private void initAccessible() {
 	});
 	
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void hitTest(AccessibleControlEvent e) {
+		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			int childID = ACC.CHILDID_NONE;
 			for (int i = 0; i < items.length; i++) {
@@ -807,7 +807,7 @@ private void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
-			e.code = items.length;
+			e.detail = items.length;
 		}
 		
 		public void getDefaultAction(AccessibleControlEvent e) {
@@ -827,7 +827,7 @@ private void initAccessible() {
 			} else if (childID >= 0 && childID < items.length) {
 				role = ACC.ROLE_TABITEM;
 			}
-			e.code = role;
+			e.detail = role;
 		}
 		
 		public void getSelection(AccessibleControlEvent e) {
@@ -851,7 +851,7 @@ private void initAccessible() {
 					}
 				}
 			}
-			e.code = state;
+			e.detail = state;
 		}
 		
 		public void getChildren(AccessibleControlEvent e) {

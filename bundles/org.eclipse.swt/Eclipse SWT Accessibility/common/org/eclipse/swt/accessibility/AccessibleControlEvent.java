@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see AccessibleControlListener
+ * @see AccessibleControlAdapter
  * 
  * @since 2.0
  */
@@ -28,9 +29,9 @@ public class AccessibleControlEvent extends SWTEventObject {
 	public Accessible accessible;	// OUT
 	public int x, y;				// IN/OUT
 	public int width, height;		// OUT
-	public int code;				// IN/OUT
+	public int detail;			// IN/OUT
 	public String result;			// OUT
-	public Object children[];		// [OUT] - may need this for IEnumVARIANT
+	public Object children[];		// [OUT]
 	
 public AccessibleControlEvent(Object source) {
 	super(source);
@@ -43,7 +44,7 @@ public String toString () {
 		" y=" + y + 
 		" width=" + width + 
 		" height=" + height + 
-		" code=" + code + 
+		" detail=" + detail + 
 		" result=" + result + 
 		"}";
 }	

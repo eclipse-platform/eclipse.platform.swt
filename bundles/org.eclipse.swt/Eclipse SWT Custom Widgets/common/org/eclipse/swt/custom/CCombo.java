@@ -537,7 +537,7 @@ void initAccessible() {
 	});
 		
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void hitTest(AccessibleControlEvent e) {
+		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			if (getBounds().contains(testPoint)) {
 				e.childID = ACC.CHILDID_SELF;
@@ -554,15 +554,15 @@ void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
-			e.code = 0;
+			e.detail = 0;
 		}
 		
 		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_COMBOBOX;
+			e.detail = ACC.ROLE_COMBOBOX;
 		}
 		
 		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_NORMAL;
+			e.detail = ACC.STATE_NORMAL;
 		}
 
 		public void getValue(AccessibleEvent e) {

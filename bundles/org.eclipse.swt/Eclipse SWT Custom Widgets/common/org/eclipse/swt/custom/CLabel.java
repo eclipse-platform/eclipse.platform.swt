@@ -239,7 +239,7 @@ private void initAccessible() {
 	});
 		
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void hitTest(AccessibleControlEvent e) {
+		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point pt = toControl(new Point(e.x, e.y));
 			e.childID = (getBounds().contains(pt)) ? ACC.CHILDID_SELF : ACC.CHILDID_NONE;
 		}
@@ -254,15 +254,15 @@ private void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
-			e.code = 0;
+			e.detail = 0;
 		}
 		
 		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_LABEL;
+			e.detail = ACC.ROLE_LABEL;
 		}
 		
 		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_READONLY;
+			e.detail = ACC.STATE_READONLY;
 		}
 	});
 }

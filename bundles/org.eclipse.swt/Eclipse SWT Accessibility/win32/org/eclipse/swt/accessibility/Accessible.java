@@ -187,7 +187,7 @@ public class Accessible {
 		event.y = yTop;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.hitTest(event);
+			listener.getChildAtPoint(event);
 		}
 		int childID = event.childID;
 		if (childID == ACC.CHILDID_NONE) {
@@ -248,7 +248,7 @@ public class Accessible {
 			listener.getChildCount(event);
 		}
 
-		COM.MoveMemory(pcountChildren, new int[] { event.code }, 4);
+		COM.MoveMemory(pcountChildren, new int[] { event.detail }, 4);
 		return COM.S_OK;
 	}
 	
@@ -395,7 +395,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event);
 		}
-		int role = roleToOs(event.code);
+		int role = roleToOs(event.detail);
 		COM.MoveMemory(pvarRole, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarRole + 8, new int[] { role }, 4);
 		return COM.S_OK;
@@ -451,7 +451,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
 		}
-		int state = stateToOs(event.code);
+		int state = stateToOs(event.detail);
 		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
 		return COM.S_OK;
