@@ -560,6 +560,18 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
+public void notifyListeners (int eventType, Event event) {
+	org.eclipse.swt.graphics.Point coordinates = new org.eclipse.swt.graphics.Point(event.x, event.y);
+	coordinates = control.toControl(coordinates);
+	if (this.control instanceof Tree) {
+		event.item = ((Tree)control).getItem(coordinates);
+	}
+	if (this.control instanceof Table) {
+		event.item = ((Table)control).getItem(coordinates);
+	}
+	super.notifyListeners(eventType, event);
+}
+
 private void onDispose () {	
 	if (control == null)
 		return;
