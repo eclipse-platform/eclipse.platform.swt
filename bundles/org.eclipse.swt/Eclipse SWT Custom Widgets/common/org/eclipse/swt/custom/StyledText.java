@@ -848,11 +848,7 @@ public class StyledText extends Canvas {
 public StyledText(Composite parent, int style) {
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	Display display = getDisplay();
-	String codePage = System.getProperty("file.encoding").toUpperCase();
-	boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-	
-	// Running on Windows and with Hebrew or Arabic codepage?
-	isBidi = isWindows && ("CP1255".equals(codePage) || "CP1256".equals(codePage));
+	isBidi = StyledTextBidi.isBidiPlatform();
 
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);

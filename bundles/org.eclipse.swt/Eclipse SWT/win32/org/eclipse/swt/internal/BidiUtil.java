@@ -80,6 +80,20 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
 	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length, renderDx);
 }
 /*
+ * Checks the current keyboard language list to see if a bidi language is installed.
+ *
+ */
+public static boolean isBidiPlatform() {
+	int[] languages = getKeyboardLanguageList();
+	for (int i=0; i<languages.length; i++) {
+		int language = languages[i] & 0x000000FF;;
+		if ((language == LANG_ARABIC) || (language == LANG_HEBREW)) {
+			return true;
+		}
+	}
+	return false;
+}
+/*
  *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.
  *
  *	gc, text & flags are input parameters

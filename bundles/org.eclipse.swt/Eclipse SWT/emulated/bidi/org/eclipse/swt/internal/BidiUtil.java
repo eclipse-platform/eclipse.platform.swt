@@ -42,6 +42,13 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 }
 /*
+ * Bidi not supported on emulated platforms.
+ *
+ */
+public static boolean isBidiPlatform() {
+	return false;
+}
+/*
  * Not implemented.
  */
 public static int getFontBidiAttributes(GC gc) {

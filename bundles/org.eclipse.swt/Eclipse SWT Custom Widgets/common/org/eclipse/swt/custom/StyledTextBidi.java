@@ -752,6 +752,15 @@ int getTextWidth() {
 	return width;
 }
 /**
+ * Returns whether the current platform supports a bidi language.
+ * <p>
+ * 
+ * @return true=bidi is supported, false otherwise. 
+ */
+static boolean isBidiPlatform() {
+	return BidiUtil.isBidiPlatform();
+}
+/**
  * Returns whether the font set in the specified gc supports 
  * character shaping.
  * <p>
