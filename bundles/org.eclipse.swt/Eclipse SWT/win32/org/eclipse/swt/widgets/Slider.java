@@ -149,6 +149,19 @@ public void addSelectionListener (SelectionListener listener) {
 
 int callWindowProc (int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	/*
+	* Feature in Windows.  Windows runs a modal message
+	* loop when the user drags a scroll bar.  This means
+	* that mouse down events won't get delivered until
+	* after the loop finishes.  The fix is to run any
+	* deferred messages, including mouse down messages
+	* before calling the scroll bar window proc.
+	*/
+	switch (msg) {
+		case OS.WM_LBUTTONDOWN:
+		case OS.WM_LBUTTONDBLCLK: 
+			display.runDeferredEvents ();
+	}
 	return OS.CallWindowProc (ScrollBarProc, handle, msg, wParam, lParam);
 }
 
@@ -735,6 +748,14 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
 	if (OS.GetCapture () != hwndCapture) OS.SetCapture (hwndCapture);
+	
+	/*
+	* Feature in Windows.  Windows runs a modal message loop
+	* when the user drags a scroll bar that terminates when
+	* it sees an WM_LBUTTONUP.  Unfortunately the WM_LBUTTONUP
+	* is consumed.  The fix is to send a fake mouse up.
+	*/	
+	sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);	
 	return result;
 }
 
@@ -764,6 +785,14 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
 	if (OS.GetCapture () != hwndCapture) OS.SetCapture (hwndCapture);
+	
+	/*
+	* Feature in Windows.  Windows runs a modal message loop
+	* when the user drags a scroll bar that terminates when
+	* it sees an WM_LBUTTONUP.  Unfortunately the WM_LBUTTONUP
+	* is consumed.  The fix is to send a fake mouse up.
+	*/	
+	sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 	return result;
 }
 
@@ -820,10 +849,11 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
 	
 	/*
-	* Send the event because WM_HSCROLL and
-	* WM_VSCROLL are sent from a modal message
-	* loop in Windows that is active when the
-	* user is scrolling.
+	* Feature in Windows.  Windows runs a modal message
+	* loop when the user drags a scroll bar.  This means
+	* that selection event must be sent because WM_HSCROLL
+	* and WM_VSCROLL are sent from the modal message loop
+	* so that they are delivered during inside the loop.
 	*/
 	sendEvent (SWT.Selection, event);
 	// the widget could be destroyed at this point
