@@ -662,7 +662,10 @@ public Color getSystemColor (int id) {
 		default:
 			return super.getSystemColor (id);	
 	}
-	return new Color (this, (rgb.red >> 8) & 0xFF, (rgb.green >> 8) & 0xFF, (rgb.blue >> 8) & 0xFF);
+	float red = ((rgb.red >> 8) & 0xFF) / 255f;
+	float green = ((rgb.green >> 8) & 0xFF) / 255f;
+	float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
+	return Color.carbon_new (this, new float[]{red, green, blue, 1});
 }
 
 public Thread getThread () {
