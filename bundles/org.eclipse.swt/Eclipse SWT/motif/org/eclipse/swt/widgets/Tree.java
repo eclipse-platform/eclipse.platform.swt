@@ -1284,7 +1284,7 @@ void removingItem(SelectableItem item) {
 			newSelectionItem = parentItem;
 		}
 		if (newSelectionItem != null) {
-			selectNotify(newSelectionItem);
+			selectNotify(newSelectionItem, true);
 		}
 	}
 	super.removingItem(item);

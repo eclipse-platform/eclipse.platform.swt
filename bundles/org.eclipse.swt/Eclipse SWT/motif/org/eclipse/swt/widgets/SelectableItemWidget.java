@@ -1657,20 +1657,44 @@ void select(SelectableItem item) {
  * Select 'item' if it is not selected. Send a Selection event 
  * if the selection was changed.
  * @param item - item that should be selected
+ * @param asyncNotify 
+ *  true=send the selection event asynchronously
+ *  false=send the selection event immediately
  */
-void selectNotify(SelectableItem item) {
-	Event event;
-
+void selectNotify(final SelectableItem item, boolean asyncNotify) {
 	if (isRemovingAll() == false) {
 		if (item.isSelected() == false) {
 			select(item);
 			setLastSelection(item, true);
 			update();												// looks better when event notification takes long to return
 		}
-		event = new Event();
-		event.item = item;
-		notifyListeners(SWT.Selection, event);
+		if (asyncNotify == false) {
+			Event event = new Event();
+			event.item = item;
+			notifyListeners(SWT.Selection, event);
+		}
+		else {
+			getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					// Only send a selection event when the item has not been disposed.
+					// Fixes 1GE6XQA
+					if (item.isDisposed() == false) {
+						Event event = new Event();
+						event.item = item;
+						notifyListeners(SWT.Selection, event);
+					}
+				}
+			});
+		}
 	}
+}
+/**
+ * Select 'item' if it is not selected. Send a Selection event 
+ * if the selection was changed.
+ * @param item - item that should be selected
+ */
+void selectNotify(SelectableItem item) {
+	selectNotify(item, false);
 }
 /**
  * Select all items of the receiver starting at 'fromIndex' 
