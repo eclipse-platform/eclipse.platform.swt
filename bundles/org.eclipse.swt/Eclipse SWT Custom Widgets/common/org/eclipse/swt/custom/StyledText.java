@@ -3128,17 +3128,17 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 		if (event.styles == null) {
 			event.styles = new StyleRange[0];
 		}
-// code for 4846 		
-/*		else
+		else
 		if (isBidi()) {
 			GC gc = new GC(this);
 			if (StyledTextBidi.isLigated(gc)) {
-				// check for ligatures that are partially styled, if one is found
-				// automatically apply the style to the entire ligature
+				// Check for ligatures that are partially styled, if one is found
+				// automatically apply the style to the entire ligature.  Note that
+				// there is no need to deal with segments when checking for the ligatures.
+				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0, line.length()});
 				for (int i=0; i<event.styles.length; i++) {
 					StyleRange range = event.styles[i];
 					int relativeStart = range.start - lineOffset;
-					StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0});
 					int startLigature = bidi.getLigatureStartOffset(relativeStart);
 					if (startLigature != relativeStart) {
 						range.start = range.start - (relativeStart - startLigature);
@@ -3154,7 +3154,7 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 		    }
 		    gc.dispose();
 		}
-*/		return event;
+		return event;
 	}
 	return null;
 }
