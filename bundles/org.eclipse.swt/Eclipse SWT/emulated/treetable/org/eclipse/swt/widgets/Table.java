@@ -1237,7 +1237,11 @@ void handleEvents(Event event) {
 			}
 			break;
 		case SWT.MouseDoubleClick:
-			columnMouseDoubleClick(event);
+			if (event.widget == tableHeader) {
+				headerMouseDoubleClick(event);
+			} else {
+				columnMouseDoubleClick(event);
+			}
 			break;
 		case SWT.MouseUp:
 			mouseUp(event);
@@ -1275,6 +1279,13 @@ void headerMouseDown(Event event) {
 	else
 	if (column != null) {
 		column.notifyListeners(SWT.Selection, new Event());
+	}
+}
+void headerMouseDoubleClick(Event event) {
+	if (event.button != 1) return;
+	TableColumn column = getColumnAtX(event.x);
+	if (column != null) {
+		column.notifyListeners(SWT.DefaultSelection, new Event());
 	}
 }
 /**
@@ -1404,6 +1415,7 @@ void installListeners() {
 	super.installListeners();	
 	tableHeader.addListener(SWT.MouseMove, listener);
 	tableHeader.addListener(SWT.MouseDown, listener);
+	tableHeader.addListener(SWT.MouseDoubleClick, listener);
 	tableHeader.addListener(SWT.MouseUp, listener);
 	
 	addListener(SWT.MouseMove, listener);

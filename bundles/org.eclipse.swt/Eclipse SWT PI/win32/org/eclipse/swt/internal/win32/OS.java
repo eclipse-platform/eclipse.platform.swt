@@ -382,6 +382,9 @@ public class OS {
 	public static final int HDN_ITEMCHANGED = IsUnicode ? 0xfffffebf : 0xfffffed3;
 	public static final int HDN_ITEMCHANGEDW = 0xfffffebf;
 	public static final int HDN_ITEMCHANGEDA = 0xfffffed3;
+	public static final int HDN_ITEMDBLCLICKW = HDN_FIRST - 23;
+	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
+	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HINST_COMMCTRL = 0xffffffff;

@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
 public class TableColumn extends Item {
 	int boxHandle, labelHandle, imageHandle;
 	Table parent;
-	int modelIndex;
+	int modelIndex, lastButton, lastTime;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -258,7 +258,33 @@ public int getWidth () {
 }
 
 int gtk_clicked (int widget) {
-	postEvent (SWT.Selection);
+	/*
+	* There is no API to get a double click on a table column.  Normally, when
+	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
+	* but the table column sends the click signal on button release.  The fix is to
+	* test for doublc click by remembering the last click time and mouse button
+	* and testing for the double click interval.
+	*/
+	boolean doubleClick = false;
+	int eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_BUTTON_RELEASE: {
+				Display display = getDisplay ();
+				int clickTime = display.getDoubleClickTime ();
+				int eventTime = gdkEvent.time, eventButton = gdkEvent.button;
+				if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+					doubleClick = true;
+				}
+				lastTime = eventTime == 0 ? 1: eventTime;
+				lastButton = eventButton;
+			}
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
 	return 0;
 }
 

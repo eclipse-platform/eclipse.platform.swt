@@ -2330,6 +2330,16 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				}
 				break;
 			}
+			case OS.HDN_ITEMDBLCLICKW:      
+			case OS.HDN_ITEMDBLCLICKA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TableColumn column = columns [phdn.iItem];
+				if (column != null) {
+					column.postEvent (SWT.DefaultSelection);
+				}
+				break;
+			}
 		}
 	}
 	return super.WM_NOTIFY (wParam, lParam);
