@@ -72,7 +72,7 @@ public Composite (Composite parent, int style) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= HANDLE | CANVAS;
 	
 	topHandle = OS.gtk_event_box_new();
 	if (topHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -444,6 +444,18 @@ void releaseWidget () {
 void releaseHandle () {
 	super.releaseHandle ();
 	topHandle =  eventBoxHandle =  fixedHandle = radioHandle = 0;
+}
+
+int processMouseDown (int callData, int arg1, int int2) {
+	//NOT DONE - only grab when not already grabbing
+	if ((state & CANVAS) != 0) OS.gtk_grab_add (handle);
+	return super.processMouseDown (callData, arg1, int2);
+}
+
+int processMouseUp (int callData, int arg1, int int2) {
+	//NOT DONE - only release when last button goes up
+	if ((state & CANVAS) != 0) OS.gtk_grab_remove (handle);
+	return super.processMouseUp (callData, arg1, int2);
 }
 
 int processFocusIn(int int0, int int1, int int2) {

@@ -2434,8 +2434,8 @@ void getGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, G
 {
 	DECL_GLOB(pGlob)
 	getGtkWindowFields(env, lpObject, &lpGtkDialog->window, &PGLOB(GtkWindowFc));
-	lpGtkDialog->vbox =        (*env)->GetIntField(env, lpObject, lpGtkDialogFc->vbox);
-	lpGtkDialog->action_area = (*env)->GetIntField(env, lpObject, lpGtkDialogFc->action_area);
+	lpGtkDialog->vbox = (GtkWidget*) (*env)->GetIntField(env, lpObject, lpGtkDialogFc->vbox);
+	lpGtkDialog->action_area = (GtkWidget*) (*env)->GetIntField(env, lpObject, lpGtkDialogFc->action_area);
 }
 
 void setGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, GtkDialog_FID_CACHE *lpGtkDialogFc)

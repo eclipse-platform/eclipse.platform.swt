@@ -245,6 +245,8 @@ public static final native int g_log_set_handler(byte [] log_domain, int log_lev
 public static final native void g_log_remove_handler(byte [] log_domain, int handler_id);
 public static final native void g_log_default_handler(int log_domain, int log_levels, int message, int unused_data);
 public static final native int gtk_clist_row_is_visible(int clist, int row);
+public static final native void gtk_ctree_post_recursive_to_depth(int ctree, int node, int depth, int func, int data);
+public static final native void gtk_draw_check(int style, int window, int state_type, int shadow_type, int x, int y, int width, int height);
 
 public static final native void g_free(int mem);
 public static final native int g_get_home_dir();

@@ -47,21 +47,23 @@ public abstract class Widget {
 	Object [] values;
 	
 	/* Global state flags */
-//	static final int AUTOMATIC		= 0x00000001;
-//	static final int ACTIVE			= 0x00000002;
-//	static final int AUTOGRAB		= 0x00000004;
-//	static final int MULTIEXPOSE	= 0x00000008;
-//	static final int RESIZEREDRAW	= 0x00000010;
-//	static final int WRAP			= 0x00000020;
-//	static final int DISABLED		= 0x00000040;
-//	static final int HIDDEN			= 0x00000080;
-//	static final int FOREGROUND		= 0x00000100;
-//	static final int BACKGROUND		= 0x00000200;
-	static final int DISPOSED		= 0x00000400;
-	static final int HANDLE			= 0x00000800;
+//	static final int AUTOMATIC		= 1<<0;
+//	static final int ACTIVE			= 1<<1;
+//	static final int AUTOGRAB		= 1<<2;
+//	static final int MULTIEXPOSE	= 1<<3;
+//	static final int RESIZEREDRAW	= 1<<4;
+//	static final int WRAP			= 1<<5;
+//	static final int DISABLED		= 1<<6;
+//	static final int HIDDEN			= 1<<7;
+//	static final int FOREGROUND		= 1<<8;
+//	static final int BACKGROUND		= 1<<9;
+	static final int DISPOSED		= 1<<10;
+	static final int HANDLE			= 1<<11;
+	static final int CANVAS			= 1<<12;
 	
+	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
-	static final int DEFAULT_HEIGHT = 64;
+	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
 
 /**

@@ -108,6 +108,7 @@ public class Display extends Device {
 	Callback caretCallback;
 	int caretID, caretProc;
 		
+	/* Colors */
 	Color NORMAL_fg,   NORMAL_bg,   NORMAL_dark,   NORMAL_mid,   NORMAL_light,   NORMAL_text,   NORMAL_base;
 	Color ACTIVE_fg,   ACTIVE_bg,   ACTIVE_dark,   ACTIVE_mid,   ACTIVE_light,   ACTIVE_text,   ACTIVE_base;
 	Color PRELIGHT_fg, PRELIGHT_bg, PRELIGHT_dark, PRELIGHT_mid, PRELIGHT_light, PRELIGHT_text, PRELIGHT_base;
@@ -189,7 +190,7 @@ public class Display extends Device {
 
 	/* #define in gdkevents.h */
 	static final int DOUBLE_CLICK_TIME = 250;
-	
+
 	/* Display Data */
 	Object data;
 	String [] keys;

@@ -9,7 +9,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
-import java.util.Vector;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -28,11 +27,6 @@ import java.util.Vector;
 public class TreeItem extends Item {
 	Tree parent;
 	int index;
-
-/*
- *   ===  CONSTRUCTORS  ===
- */
-
 
 /**
  * Constructs a new instance of this class given its parent
@@ -104,9 +98,10 @@ public TreeItem (Tree parent, int style) {
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	this.parent=parent;
-	parent.createItem (this, 0, -1);
+	this.parent = parent;
+	parent.createItem (this, 0, index);
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
@@ -138,13 +133,9 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	super ( (checkNull(parentItem)).getParent(), style );
+	super (checkNull (parentItem).getParent(), style);
 	this.parent = parentItem.getParent ();
 	parent.createItem (this, parentItem.handle, -1);
-}
-private static TreeItem checkNull (TreeItem item) {
-	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return item;
 }
 
 /**
@@ -178,11 +169,16 @@ private static TreeItem checkNull (TreeItem item) {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public TreeItem (TreeItem parentItem, int style, int position) {
-	super (parentItem.getParent (), style);
-	if (position < 0) error (SWT.ERROR_ITEM_NOT_ADDED);
+public TreeItem (TreeItem parentItem, int style, int index) {
+	super (checkNull (parentItem).getParent (), style);
+	if (index < 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	this.parent = parentItem.getParent ();
-	parent.createItem (this, parentItem.handle, -1);
+	parent.createItem (this, parentItem.handle, index);
+}
+
+static TreeItem checkNull (TreeItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return item;
 }
 
 /**
@@ -197,7 +193,6 @@ public TreeItem (TreeItem parentItem, int style, int position) {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
 	int CELL_SPACING=1;
 	int ctree = parent.handle;
 	GtkCTree tree = new GtkCTree();
@@ -262,15 +257,19 @@ public Rectangle getBounds () {
  * </ul>
  */
 public boolean getChecked () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	return false;
+	int ctree = parent.handle;
+	int [] pixmap = new int [1];
+	OS.gtk_ctree_get_node_info (ctree, handle, null, null, pixmap, null, null, null, null, null);
+	return pixmap [0] == parent.check.pixmap;
 }
+
 public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.
@@ -285,9 +284,9 @@ public Display getDisplay () {
  */
 public boolean getExpanded () {
 	checkWidget();
-	int treeHandle = parent.handle;
+	int ctree = parent.handle;
 	boolean [] buffer = new boolean [1];
-	OS.gtk_ctree_get_node_info (treeHandle, handle, null, null, null, null, null, null, null, buffer);
+	OS.gtk_ctree_get_node_info (ctree, handle, null, null, null, null, null, null, null, buffer);
 	return buffer [0];
 }
 
@@ -305,8 +304,7 @@ public boolean getExpanded () {
  * </ul>
  */
 public boolean getGrayed() {
-
-	// NOT_IMPLEMENTED
+	checkWidget();
 	return false;
 }
 
@@ -322,15 +320,10 @@ public boolean getGrayed() {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int data = OS.g_list_nth_data (handle, 0);
-	GtkCTreeRow row = new GtkCTreeRow ();
-	OS.memmove (row, data, GtkCTreeRow.sizeof);
-	int glist = row.children;
-	if (glist == 0) return 0;
-	return OS.g_list_length (glist);
+	checkWidget();
+	return parent.getItemCount (handle);
 }
+
 /**
  * Returns an array of <code>TreeItem</code>s which are the
  * direct item children of the receiver.
@@ -349,32 +342,7 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget();
-	Vector items = _getItemsVector();
-	int s = items.size();
-	TreeItem[] answer = new TreeItem[s];
-	items.toArray(answer);
-	return answer;
-}
-private Vector _getItemsVector() {
-	Vector answer = new Vector();
-
-
-	int data = OS.g_list_nth_data (handle, 0);
-	GtkCTreeRow row = new GtkCTreeRow ();
-	OS.memmove (row, data, GtkCTreeRow.sizeof);
-	int glist = row.children;
-	if (glist == 0) return answer;
-	int ctree = parent.handle;
-	int count = OS.g_list_length (glist);
-
-	for (int i=0; i<count; i++) {
-		int node = OS.g_list_nth (glist, i);
-		int index = OS.gtk_ctree_node_get_row_data (ctree, node) - 1;
-		TreeItem item =  parent.items [index];
-		if (item._getParentItem() == this) answer.add(item);
-	}
-
-	return answer;
+	return parent.getItems (handle);
 }
 
 /**
@@ -391,6 +359,7 @@ public Tree getParent () {
 	checkWidget();
 	return parent;
 }
+
 /**
  * Returns the receiver's parent item, which must be a
  * <code>TreeItem</code> or null when the receiver is a
@@ -405,9 +374,6 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget();
-	return _getParentItem();
-}
-private TreeItem _getParentItem () {
 	int data = OS.g_list_nth_data (handle, 0);
 	GtkCTreeRow row = new GtkCTreeRow ();
 	OS.memmove (row, data, GtkCTreeRow.sizeof);
@@ -421,10 +387,12 @@ void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
+
 /**
  * Sets the checked state of the receiver.
  * <p>
@@ -437,9 +405,16 @@ void releaseWidget () {
  * </ul>
  */
 public void setChecked (boolean checked) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	int ctree = parent.handle;
+	byte [] spacing = new byte [1];
+	int [] pixmap = new int [1], mask = new int [1];
+	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
+	pixmap [0] = pixmap [0] == parent.check.pixmap ? parent.uncheck.pixmap : parent.check.pixmap;
+	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
 }
 
 /**
@@ -453,7 +428,8 @@ public void setChecked (boolean checked) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setGrayed(boolean grayed) {  // NOT_IMPLEMENTED
+public void setGrayed (boolean grayed) {
+	checkWidget();
 }
 
 /**
@@ -468,43 +444,43 @@ public void setGrayed(boolean grayed) {  // NOT_IMPLEMENTED
  * </ul>
  */
 public void setExpanded (boolean expanded) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int treeHandle = parent.handle;
+	checkWidget();
+	int ctree = parent.handle;
 	if (expanded) {
-		parent.ignoreExpand = true;
-		OS.gtk_ctree_expand (treeHandle, handle);
-		parent.ignoreExpand = false;
+		OS.gtk_signal_handler_block_by_data (ctree, SWT.Expand);
+		OS.gtk_ctree_expand (ctree, handle);
+		OS.gtk_signal_handler_unblock_by_data (ctree, SWT.Expand);
 	} else {
-		parent.ignoreCollapse = true;
-		OS.gtk_ctree_collapse (treeHandle, handle);
-		parent.ignoreCollapse = false;
+		OS.gtk_signal_handler_block_by_data (ctree, SWT.Collapse);
+		OS.gtk_ctree_collapse (ctree, handle);
+		OS.gtk_signal_handler_unblock_by_data (ctree, SWT.Collapse);
 	}
 }
+
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	super.setImage (image);
+	if ((parent.style & SWT.CHECK) != 0) return;
 	int pixmap = 0, mask = 0;
 	if (image != null) {
 		pixmap = image.pixmap;
 		mask = image.mask;
 	}
 	int ctree = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	byte [] spacing = new byte [1];
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, null, null, null, null, is_leaf, expanded);
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap, mask, pixmap, mask, is_leaf [0], expanded [0]);
 }
+
 /**
  * This label will be displayed to the right of the bitmap, 
  * or, if the receiver doesn't have a bitmap to the right of 
  * the horizontal hierarchy connector line.
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	int ctree = parent.handle;

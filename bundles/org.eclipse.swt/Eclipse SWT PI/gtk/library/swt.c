@@ -26,6 +26,36 @@
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	gtk_draw_check
+ * Signature:	
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1draw_1check
+  (JNIEnv *env, jclass that, jint style, jint window, jint state_type, jint shadow_type, jint x, jint y, jint width, jint height)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_ctree_post_recursive_to_depth");
+#endif
+
+	gtk_draw_check((GtkStyle*)style, (GdkWindow *) window, (GtkStateType)state_type, (GtkShadowType)shadow_type, (gint) x, (gint) y, (gint) width, (gint) height);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	gtk_ctree_post_recursive
+ * Signature:	
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1post_1recursive_1to_1depth
+  (JNIEnv *env, jclass that, jint ctree, jint node, jint depth, jint func, jint data)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_ctree_post_recursive_to_depth");
+#endif
+
+	gtk_ctree_post_recursive_to_depth((GtkCTree*)ctree, (GtkCTreeNode*)node, (jint)depth, (GtkCTreeFunc)func, (gpointer)data);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	gtk_clist_row_is_visible
  * Signature:	
  */
@@ -1101,8 +1131,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1new
 	fprintf(stderr, "gtk_dialog_new");
 #endif
 
-	GtkDialog* dialog = (GtkDialog*)gtk_dialog_new();
-	return (jint)dialog;
+	return (jint)gtk_dialog_new();
 }
 
 /*
