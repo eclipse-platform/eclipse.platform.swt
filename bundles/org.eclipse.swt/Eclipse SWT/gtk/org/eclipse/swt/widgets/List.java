@@ -675,6 +675,26 @@ int gtk_button_press_event (int widget, int event) {
 			}
 		}
 	}
+	
+	/*
+	* Feature in GTK.  When the user clicks in a single selection GtkTreeView
+	* and there are no selected items, the first item is selected automatically
+	* before the click is processed, causing two selection events.  The is fix
+	* is the set the cursor item to be same as the clicked item to stop the
+	* widget from automatically selecting the first item.
+	*/
+	if ((style & SWT.SINGLE) != 0 && getSelectionCount () == 0) {
+		int [] path = new int [1];
+		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+			if (path [0] != 0) {
+				int selection = OS.gtk_tree_view_get_selection (handle);
+				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+				OS.gtk_tree_view_set_cursor (handle, path [0], 0, false);
+				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+				OS.gtk_tree_path_free (path [0]);
+			}
+		}
+	}
 	return result;
 }
 
