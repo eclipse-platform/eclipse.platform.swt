@@ -1015,6 +1015,17 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	return super.WM_NOTIFY (wParam, lParam);
 }
 
+LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+		if ((wParam & 0xFFFF) == OS.WM_CREATE) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			resizeEmbeddedHandle (lParam, rect.right - rect.left, rect.bottom - rect.top);
+		}
+	}	
+	return super.WM_PARENTNOTIFY (wParam, lParam);
+}
+
 LRESULT WM_PAINT (int wParam, int lParam) {
 	if ((state & CANVAS) == 0) {
 		return super.WM_PAINT (wParam, lParam);
