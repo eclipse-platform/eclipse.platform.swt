@@ -75,6 +75,13 @@ public int getAlignment () {
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
 }
+int getContentWidth (GC gc) {
+	int contentWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
+	if (image != null) {
+		contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
+	}
+	return contentWidth;
+}
 int getIndex () {
 	TreeColumn[] columns = parent.getColumns ();
 	for (int i = 0; i < columns.length; i++) {
@@ -88,7 +95,10 @@ public Tree getParent () {
 }
 int getPreferredWidth () {
 	if (!parent.getHeaderVisible ()) return 0;
-	return 0;	// TODO
+	GC gc = new GC (parent);
+	int result = getContentWidth (gc);
+	gc.dispose ();
+	return result + 2 * parent.getHeaderPadding ();
 }
 public boolean getResizable () {
 	checkWidget ();
@@ -112,10 +122,7 @@ void paint (GC gc) {
 	int x = getX ();
 	int startX = x + padding;
 	if ((style & SWT.LEFT) == 0) {
-		int contentWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
-		if (image != null) {
-			contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
-		}
+		int contentWidth = getContentWidth (gc);
 		if ((style & SWT.RIGHT) != 0) {
 			startX = Math.max (startX, x + width - padding - contentWidth);	
 		} else {	/* SWT.CENTER */
