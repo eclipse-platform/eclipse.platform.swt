@@ -80,6 +80,23 @@ public void close() {
 	Cairo.cairo_close_path(handle);
 }
 
+public boolean contains(float x, float y, GC gc, boolean outline) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	//TODO - see Windows
+	boolean result = false;
+	int /*long*/ cairo = gc.data.cairo;
+	Cairo.cairo_add_path(cairo, handle);
+	if (outline) {
+		result = Cairo.cairo_in_stroke(cairo, x, y) != 0;		
+	} else {
+		result = Cairo.cairo_in_fill(cairo, x, y) != 0;
+	}
+	Cairo.cairo_new_path(cairo);
+	return result;
+}
+
 public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Cairo.cairo_curve_to(handle, cx1, cy1, cx2, cy2, x, y);

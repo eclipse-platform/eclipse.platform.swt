@@ -1690,6 +1690,14 @@ public void getClipping(Region region) {
 		OS.gdk_region_intersect(hRegion, data.damageRgn);
 	}
 }
+
+public int getFillRule() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int /*long*/ cairo = data.cairo;
+	if (cairo == 0) return SWT.FILL_EVEN_ODD;
+	return Cairo.cairo_current_fill_rule(cairo) == Cairo.CAIRO_FILL_RULE_WINDING ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
+}
+
 /** 
  * Returns the font currently being used by the receiver
  * to draw and measure text.
@@ -2233,6 +2241,25 @@ public void setFont(Font font) {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		setCairoFont(cairo, fontHandle);
+	}
+}
+
+public void setFillRule(int rule) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int cairo_mode = Cairo.CAIRO_FILL_RULE_EVEN_ODD;
+	switch (rule) {
+		case SWT.FILL_WINDING:
+			cairo_mode = Cairo.CAIRO_FILL_RULE_WINDING; break;
+		case SWT.FILL_EVEN_ODD:
+			cairo_mode = Cairo.CAIRO_FILL_RULE_EVEN_ODD; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	//TODO - need fill rule in X, GDK has no API
+	initCairo();
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		Cairo.cairo_set_fill_rule(cairo, cairo_mode);
 	}
 }
 

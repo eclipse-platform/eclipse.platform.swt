@@ -1972,6 +1972,12 @@ public void getClipping (Region region) {
 	}
 }
 
+public int getFillRule() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	//TODO - implement fill rule
+	return SWT.FILL_EVEN_ODD;
+}
+
 /** 
  * Returns the font currently being used by the receiver
  * to draw and measure text.
@@ -2338,6 +2344,18 @@ public void setClipping (Region region) {
 	data.clipRects = clipRects;
 	data.clipRectsCount = clipRectsCount;
 	dirtyBits |= DIRTY_CLIPPING;
+}
+
+public void setFillRule(int rule) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (rule) {
+		case SWT.FILL_WINDING:
+		case SWT.FILL_EVEN_ODD:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	//TODO - implement fill rule
 }
 
 /** 

@@ -2510,6 +2510,16 @@ public class SWT {
 	 * @since 3.1
 	 */
 	public static final int LINE_CUSTOM = 6;
+	
+	/**
+	 * Even odd rule for filling operations (value is 1).
+	 */
+	public static final int FILL_EVEN_ODD = 1;
+
+	/**
+	 * Winding rule for filling operations (value is 2).
+	 */
+	public static final int FILL_WINDING = 2;
 
 	/**
 	 * Image format constant indicating an unknown image type (value is -1).

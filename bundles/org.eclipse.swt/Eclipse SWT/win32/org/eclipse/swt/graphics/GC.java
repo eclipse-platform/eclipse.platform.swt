@@ -1982,6 +1982,8 @@ public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip(false, true);
+	int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+	Gdip.GraphicsPath_SetFillMode(path.handle, mode);
 	Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, path.handle);
 }
 
@@ -2009,7 +2011,8 @@ public void fillPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.gdipGraphics != 0) {
 		initGdip(false, true);
-		Gdip.Graphics_FillPolygon(data.gdipGraphics, data.gdipBrush, pointArray, pointArray.length / 2, Gdip.FillModeAlternate);
+		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+		Gdip.Graphics_FillPolygon(data.gdipGraphics, data.gdipBrush, pointArray, pointArray.length / 2, mode);
 		return;
 	}
 	int nullPen = OS.GetStockObject(OS.NULL_PEN);
@@ -2318,6 +2321,12 @@ int getCodePage () {
 	int cs = OS.GetTextCharset(handle);
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	return lpCs[1];
+}
+
+public int getFillRule() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.IsWinCE) return SWT.FILL_EVEN_ODD;
+	return OS.GetPolyFillMode(handle) == OS.WINDING ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
 }
 
 /** 
@@ -2849,6 +2858,8 @@ public void setClipping (Path path) {
 	initGdip(false, false);
 	setClipping(0);
 	if (path != null) {
+		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+		Gdip.GraphicsPath_SetFillMode(path.handle, mode);
 		Gdip.Graphics_SetClip(data.gdipGraphics, path.handle);
 	}
 }
@@ -2891,6 +2902,19 @@ public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(region != null ? region.handle : 0);
+}
+
+public void setFillRule(int rule) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.IsWinCE) return;
+	int mode = OS.ALTERNATE;
+	switch (rule) {
+		case SWT.FILL_WINDING: mode = OS.WINDING; break;
+		case SWT.FILL_EVEN_ODD: mode = OS.ALTERNATE; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	OS.SetPolyFillMode(handle, mode);
 }
 
 /** 

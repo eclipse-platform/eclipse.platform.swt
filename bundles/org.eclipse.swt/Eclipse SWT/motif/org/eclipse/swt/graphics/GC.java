@@ -2178,6 +2178,12 @@ public void getClipping(Region region) {
 String getCodePage () {
 	return data.font.codePage;
 }
+public int getFillRule() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(data.display, handle, OS.GCFillRule, values);
+	return values.fill_rule == OS.WindingRule ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
+}
 /** 
  * Returns the font currently being used by the receiver
  * to draw and measure text.
@@ -2889,6 +2895,23 @@ public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(region != null ? region.handle : 0);
+}
+public void setFillRule(int rule) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int mode = OS.EvenOddRule, cairo_mode = Cairo.CAIRO_FILL_RULE_EVEN_ODD;
+	switch (rule) {
+		case SWT.FILL_WINDING:
+			mode = OS.WindingRule; cairo_mode = Cairo.CAIRO_FILL_RULE_WINDING; break;
+		case SWT.FILL_EVEN_ODD:
+			mode = OS.EvenOddRule; cairo_mode = Cairo.CAIRO_FILL_RULE_EVEN_ODD; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	OS.XSetFillRule(data.display, handle, mode);
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		Cairo.cairo_set_fill_rule(cairo, cairo_mode);
+	}
 }
 /** 
  * Sets the font which will be used by the receiver

@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
@@ -144,6 +145,21 @@ public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx, cy, cx, cy, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+}
+
+public boolean contains(float x, float y, GC gc, boolean outline) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	//TODO - should use GC transformation
+	gc.initGdip(outline, false);
+	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+	Gdip.GraphicsPath_SetFillMode(handle, mode);
+	if (outline) {
+		return Gdip.GraphicsPath_IsOutlineVisible(handle, x, y, gc.data.gdipPen, gc.data.gdipGraphics);
+	} else {
+		return Gdip.GraphicsPath_IsVisible(handle, x, y, gc.data.gdipGraphics);
+	}
 }
 
 public String toString() {
