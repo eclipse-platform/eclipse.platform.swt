@@ -528,6 +528,7 @@ public class OS {
 	public static final int kThemeMetricMenuTextTrailingEdgeMargin = 67;
 	public static final int kThemeMetricMenuIconTrailingEdgeMargin = 69;
 	public static final int kThemeMetricNormalProgressBarThickness = 58;
+	public static final int kThemeMetricPushButtonHeight = 19;
 	public static final int kThemeMetricScrollBarWidth = 0;
 	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kThemeNotAllowedCursor = 18;
