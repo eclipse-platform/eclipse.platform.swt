@@ -2422,6 +2422,15 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_LEFT:
 		case OS.VK_DOWN:
 		case OS.VK_RIGHT: {
+			/*
+			* Note on WinCE SP.  There is no tab key on this platform.
+			* Focus may be modified by using the VK_UP and VK_DOWN
+			* keys but not with the VK_LEFT and VK_RIGHT keys.  The 
+			* workaround is to prevent VK_LEFT and VK_RIGHT from
+			* sending traversal events.			*/
+			if (OS.IsSP) {
+				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) return false;
+			}
 			lastVirtual = true;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTARROWS /*| OS.DLGC_WANTALLKEYS*/)) != 0) doit = false;
@@ -2442,7 +2451,7 @@ boolean translateTraversal (MSG msg) {
 			* The correct behavior is to give every key to a control
 			* that answers DLGC_WANTALLKEYS.
 			*/
-//			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+//			int code = OS.SendMessage (hwnd, OS., 0, 0);
 //			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
