@@ -9,7 +9,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "swt_os.h"
+#include "os.h"
 
 #ifndef NO_FontDetails
 FontDetails *getFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct);

@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_photon_OS_##func
 

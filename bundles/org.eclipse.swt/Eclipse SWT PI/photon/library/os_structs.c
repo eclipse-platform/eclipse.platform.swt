@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #ifndef NO_FontDetails
 typedef struct FontDetails_FID_CACHE {
