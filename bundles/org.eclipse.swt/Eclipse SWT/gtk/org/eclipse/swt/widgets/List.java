@@ -185,8 +185,10 @@ void createHandle (int index) {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	
-	OS.gtk_clist_set_row_height(handle, 0);
+	/* Force row_height to be computed */
+	OS.gtk_clist_set_row_height (handle, 0);
 	
+	/* Single or Multiple Selection */
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED :OS.GTK_SELECTION_BROWSE;
 	OS.gtk_clist_set_selection_mode (handle, mode);
 	
@@ -204,6 +206,7 @@ void hookEvents () {
 	super.hookEvents();
 	signal_connect (handle, "select_row", SWT.Selection, 5);
 	signal_connect (handle, "unselect_row", SWT.Selection, 5);
+	signal_connect (handle, "event_after", 0, 3);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -628,6 +631,49 @@ int paintWindow () {
 	return clist.clist_window;
 }
 
+int processEvent (int eventNumber, int int0, int int1, int int2) {
+	if (eventNumber == 0) {
+		switch (OS.GDK_EVENT_TYPE (int0)) {
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS: {
+				if ((style & SWT.MULTI) != 0) selected = true;
+				break;
+			}
+			case OS.GDK_BUTTON_RELEASE: {
+				if ((style & SWT.MULTI) != 0) {
+					/*
+					* Feature in GTK.  When an item is reselected, GTK
+					* does not issue notification.  The fix is to detect
+					* that the mouse was released over a selected item when
+					* no selection signal was set and issue a fake selection
+					* event.
+					*/
+					double[] px = new double [1], py = new double [1];
+					OS.gdk_event_get_coords (int0, px, py);
+					int x = (int) (px[0]), y = (int) (py[0]);
+					int [] row = new int [1], column = new int [1];
+					if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
+						GtkCList clist = new GtkCList (handle);
+						if (selected && clist.selection != 0) {
+							int list = clist.selection;
+							int length = OS.g_list_length (list);
+							for (int i=0; i<length; i++) {
+								if (row [0] == OS.g_list_nth_data (list, i)) {
+									postEvent (SWT.Selection);
+								}
+							}
+						}
+					}
+					selected = false;
+				}
+				break;
+			}
+		}
+		return 1;
+	}
+	return super. processEvent (eventNumber, int0, int1, int2);
+}
+
 int processKeyUp (int callData, int arg1, int int2) {
 	int result = super.processKeyUp (callData, arg1, int2);
 	/*
@@ -647,41 +693,6 @@ int processKeyUp (int callData, int arg1, int int2) {
 	return result;
 }
 
-int processMouseDown (int callData, int arg1, int int2) {
-	if ((style & SWT.MULTI) != 0) selected = true;
-	return super.processMouseDown (callData, arg1, int2);
-}
-
-int processMouseUp (int callData, int arg1, int int2) {
-	int result = super.processMouseUp (callData, arg1, int2);
-	if ((style & SWT.MULTI) != 0) {
-		/*
-		* Feature in GTK.  When an item is reselected, GTK
-		* does not issue notification.  The fix is to detect
-		* that the mouse was released over a selected item when
-		* no selection signal was set and issue a fake selection
-		* event.
-		*/
-		double[] px = new double [1], py = new double [1];
-		OS.gdk_event_get_coords(callData, px, py);
-		int x = (int) (px[0]), y = (int) (py[0]);
-		int [] row = new int [1], column = new int [1];
-		if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
-			GtkCList clist = new GtkCList (handle);
-			if (selected && clist.selection != 0) {
-				int list = clist.selection;
-				int length = OS.g_list_length (list);
-				for (int i=0; i<length; i++) {
-					if (row [0] == OS.g_list_nth_data (list, i)) {
-						postEvent (SWT.Selection);
-					}
-				}
-			}
-		}
-		selected = false;
-	}
-	return result;
-}
 
 int processSelection (int int0, int int1, int int2) {
 	GtkCList clist = new GtkCList (handle);

@@ -184,7 +184,8 @@ void createHandle (int index) {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 
-	OS.gtk_clist_set_row_height(handle, 0);
+	/* Force row_height to be computed */
+	OS.gtk_clist_set_row_height (handle, 0);
 	
 	/* Single or Multiple Selection */
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
@@ -695,6 +696,80 @@ int paintWindow () {
 	return clist.clist_window;
 }
 
+int processEvent (int eventNumber, int int0, int int1, int int2) {
+	if (eventNumber == 0) {
+		switch (OS.GDK_EVENT_TYPE (int0)) {
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS: {
+				if ((style & SWT.MULTI) != 0) selected = true;
+				if ((style & SWT.CHECK) != 0) {
+					double [] px = new double [1], py = new double [1];
+					OS.gdk_event_get_coords (int0, px, py);
+					GtkCList clist = new GtkCList (handle);
+					int x = (int) (px [0]);
+					int y = (int) (py [0]) - clist.column_title_area_height;
+					if (y > 0) {
+						int [] row = new int [1], column = new int [1];
+						if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {	
+							int nX = clist.hoffset + 4;
+							int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
+							int [] check_width = new int [1], check_height = new int [1];
+							OS.gdk_drawable_get_size (check, check_width, check_height);
+							if (nX <= x && x <= nX + check_width [0]) {
+								if (nY <= y && y <= nY + check_height [0]) {
+									TableItem item = items [row [0]];
+									byte [] spacing = new byte [1];
+									int [] pixmap = new int [1], mask = new int [1];
+									OS.gtk_clist_get_pixtext (handle, row [0], 0, null, spacing, pixmap, mask);
+									byte [] text = Converter.wcsToMbcs (null, item.getText (), true);
+									pixmap [0] = pixmap [0] == check ? uncheck : check;
+									OS.gtk_clist_set_pixtext (handle, row [0], 0, text, spacing [0], pixmap [0], mask [0]);
+									Event event = new Event ();
+									event.detail = SWT.CHECK;
+									event.item = item;
+									postEvent (SWT.Selection, event);
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			case OS.GDK_BUTTON_RELEASE: {
+				if ((style & SWT.MULTI) != 0) {
+					/*
+					* Feature in GTK.  When an item is reselected, GTK
+					* does not issue notification.  The fix is to detect
+					* that the mouse was released over a selected item when
+					* no selection signal was set and issue a fake selection
+					* event.
+					*/
+					double[] px = new double [1], py = new double [1];
+					OS.gdk_event_get_coords (int0, px, py);
+					int x = (int) (px[0]), y = (int) (py[0]);
+					int [] row = new int [1], column = new int [1];
+					if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
+						GtkCList clist = new GtkCList (handle);
+						if (selected && clist.selection != 0) {
+							int list = clist.selection;
+							int length = OS.g_list_length (list);
+							for (int i=0; i<length; i++) {
+								if (row [0] == OS.g_list_nth_data (list, i)) {
+									postEvent (SWT.Selection);
+								}
+							}
+						}
+					}
+					selected = false;
+				}
+				break;
+			}
+		}
+//		return 1;
+	}
+	return super. processEvent (eventNumber, int0, int1, int2);
+}
+
 int processKeyUp (int callData, int arg1, int int2) {
 	int result = super.processKeyUp (callData, arg1, int2);
 	/*
@@ -710,74 +785,6 @@ int processKeyUp (int callData, int arg1, int int2) {
 		case OS.GDK_Shift_R:
 			OS.gtk_widget_grab_focus (scrolledHandle);
 			OS.gtk_widget_grab_focus (handle);
-	}
-	return result;
-}
-
-int processMouseDown (int callData, int arg1, int int2) {
-	int result = super.processMouseDown (callData, arg1, int2);
-	if ((style & SWT.MULTI) != 0) selected = true;
-	if ((style & SWT.CHECK) != 0) {	
-		double [] px = new double [1], py = new double [1];
-		OS.gdk_event_get_coords (callData, px, py);
-		GtkCList clist = new GtkCList (handle);
-		int x = (int) (px [0]);
-		int y = (int) (py [0]) - clist.column_title_area_height;
-		if (y > 0) {
-			int [] row = new int [1], column = new int [1];
-			if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {	
-				int nX = clist.hoffset + 4;
-				int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
-				int [] check_width = new int [1], check_height = new int [1];
-				OS.gdk_drawable_get_size (check, check_width, check_height);
-				if (nX <= x && x <= nX + check_width [0]) {
-					if (nY <= y && y <= nY + check_height [0]) {
-						TableItem item = items [row [0]];
-						byte [] spacing = new byte [1];
-						int [] pixmap = new int [1], mask = new int [1];
-						OS.gtk_clist_get_pixtext (handle, row [0], 0, null, spacing, pixmap, mask);
-						byte [] text = Converter.wcsToMbcs (null, item.getText (), true);
-						pixmap [0] = pixmap [0] == check ? uncheck : check;
-						OS.gtk_clist_set_pixtext (handle, row [0], 0, text, spacing [0], pixmap [0], mask [0]);
-						Event event = new Event ();
-						event.detail = SWT.CHECK;
-						event.item = item;
-						postEvent (SWT.Selection, event);
-					}
-				}
-			}
-		}
-	}
-	return result;
-}
-
-int processMouseUp (int callData, int arg1, int int2) {
-	int result = super.processMouseUp (callData, arg1, int2);
-	if ((style & SWT.MULTI) != 0) {
-		/*
-		* Feature in GTK.  When an item is reselected, GTK
-		* does not issue notification.  The fix is to detect
-		* that the mouse was released over a selected item when
-		* no selection signal was set and issue a fake selection
-		* event.
-		*/
-		double[] px = new double [1], py = new double [1];
-		OS.gdk_event_get_coords(callData, px, py);
-		int x = (int) (px[0]), y = (int) (py[0]);
-		int [] row = new int [1], column = new int [1];
-		if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
-			GtkCList clist = new GtkCList (handle);
-			if (selected && clist.selection != 0) {
-				int list = clist.selection;
-				int length = OS.g_list_length (list);
-				for (int i=0; i<length; i++) {
-					if (row [0] == OS.g_list_nth_data (list, i)) {
-						postEvent (SWT.Selection);
-					}
-				}
-			}
-		}
-		selected = false;
 	}
 	return result;
 }
@@ -805,6 +812,7 @@ void hookEvents () {
 	super.hookEvents ();
 	signal_connect (handle, "select_row", SWT.Selection, 5);
 	signal_connect (handle, "unselect_row", SWT.Selection, 5);
+	signal_connect (handle, "event_after", 0, 3);
 }
 
 /**
