@@ -342,7 +342,7 @@ void removeControl (Control control) {
 	}
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

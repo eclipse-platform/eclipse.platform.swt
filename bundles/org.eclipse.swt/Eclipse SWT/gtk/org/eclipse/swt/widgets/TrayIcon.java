@@ -32,7 +32,7 @@ public TrayIcon (Display display) {
 	int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
 	int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
 	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-	int trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
+	int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
 	byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
 	int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
 	int /*long*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);

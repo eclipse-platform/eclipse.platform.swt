@@ -585,7 +585,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return changed;
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	TabItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

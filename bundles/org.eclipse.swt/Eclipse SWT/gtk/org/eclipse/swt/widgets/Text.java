@@ -1279,7 +1279,7 @@ public void setEditable (boolean editable) {
 	}
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	setTabStops (tabs);
 }

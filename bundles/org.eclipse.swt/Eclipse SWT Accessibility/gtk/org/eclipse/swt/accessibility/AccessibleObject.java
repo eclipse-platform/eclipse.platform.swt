@@ -19,7 +19,8 @@ import org.eclipse.swt.widgets.*;
 
 class AccessibleObject {
 	int /*long*/ handle;
-	int parentType, index = -1, id = ACC.CHILDID_SELF;
+	int /*long*/ parentType;
+	int index = -1, id = ACC.CHILDID_SELF;
 	Accessible accessible;
 	AccessibleObject parent;
 	Hashtable children = new Hashtable (9);
@@ -32,13 +33,13 @@ class AccessibleObject {
 	static int /*long*/ keybindingPtr = -1;
 	static int /*long*/ namePtr = -1;
 	static final Hashtable AccessibleObjects = new Hashtable (9);
-	static final int ATK_ACTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkAction", true));
-	static final int ATK_COMPONENT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
-	static final int ATK_SELECTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkSelection", true));		
-	static final int ATK_TEXT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkText", true));
+	static final int /*long*/ ATK_ACTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkAction", true));
+	static final int /*long*/ ATK_COMPONENT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
+	static final int /*long*/ ATK_SELECTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkSelection", true));		
+	static final int /*long*/ ATK_TEXT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkText", true));
 	static final boolean DEBUG = Display.DEBUG;
 
-	AccessibleObject (int type, int widget, Accessible accessible, int parentType, boolean isLightweight) {
+	AccessibleObject (int /*long*/ type, int /*long*/ widget, Accessible accessible, int /*long*/ parentType, boolean isLightweight) {
 		super ();
 		handle = ATK.g_object_new (type, 0);
 		this.parentType = parentType;
@@ -1373,8 +1374,8 @@ class AccessibleObject {
 			Vector idsToKeep = new Vector (children.size ());
 			if (event.children [0] instanceof Integer) {
 				//	an array of child id's (Integers) was answered
-				int childType = AccessibleFactory.getDefaultChildType ();
-				int parentType = AccessibleFactory.getDefaultParentType ();
+				int /*long*/ childType = AccessibleFactory.getDefaultChildType ();
+				int /*long*/ parentType = AccessibleFactory.getDefaultParentType ();
 				for (int i = 0; i < event.children.length; i++) {
 					AccessibleObject object = getChildByIndex (i);
 					if (object == null) {

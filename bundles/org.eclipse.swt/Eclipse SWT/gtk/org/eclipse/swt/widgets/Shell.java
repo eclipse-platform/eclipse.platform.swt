@@ -226,7 +226,7 @@ public Shell (Display display, int style) {
 	this (display, null, style, 0);
 }
 
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int /*long*/ handle) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -313,7 +313,7 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
-public static Shell gtk_new (Display display, int handle) {
+public static Shell gtk_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle);
 }
 
@@ -417,7 +417,7 @@ void bringToTop (boolean force) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-		int xid = OS.gdk_x11_drawable_get_xid (window);
+		int /*long*/ xid = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
 		OS.XSetInputFocus (xDisplay, xid, OS.RevertToParent, OS.gtk_get_current_event_time ());
 		OS.gdk_error_trap_pop ();

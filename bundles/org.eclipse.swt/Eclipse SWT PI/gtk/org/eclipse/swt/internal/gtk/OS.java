@@ -394,13 +394,13 @@ public static final int /*long*/ NoEventMask = 0;
 public static final int RevertToParent = 2;
 public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
-public static final synchronized native int XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
-public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int window, int screen, int valueMask, XWindowChanges values);
+public static final synchronized native int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
+public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int /*long*/ window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
-public static final synchronized native int XSetInputFocus(int /*long*/ display, int window, int revert, int time);
+public static final synchronized native int XSetInputFocus(int /*long*/ display, int /*long*/ window, int revert, int time);
 public static final synchronized native int /*long*/gdk_x11_atom_to_xatom(int /*long*/ atom);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
-public static final synchronized native int gdk_x11_drawable_get_xid(int /*long*/ drawable);
+public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 
 /** Native methods */
@@ -424,7 +424,7 @@ public static final synchronized native int /*long*/ G_TYPE_BOOLEAN();
 public static final synchronized native int /*long*/ G_TYPE_INT();
 public static final synchronized native int /*long*/ G_TYPE_STRING();
 public static final synchronized native int PANGO_PIXELS(int dimension);
-public static final synchronized native int PANGO_TYPE_FONT_DESCRIPTION();
+public static final synchronized native int /*long*/ PANGO_TYPE_FONT_DESCRIPTION();
 public static final synchronized native int /*long*/ g_filename_to_utf8(int /*long*/ opsysstring, int len, int[] bytes_read, int[] bytes_written, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_filename_to_uri(int /*long*/ filename, int /*long*/ hostname, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_filename_from_utf8(int /*long*/ opsysstring, int len,  int[] bytes_read, int[] bytes_written, int /*long*/[] error);
@@ -548,7 +548,7 @@ public static final synchronized native int gdk_pixbuf_get_rowstride(int /*long*
 public static final synchronized native int /*long*/ gdk_pixbuf_new(int colorspace, boolean has_alpha, int bits_per_sample, int width, int height);
 public static final synchronized native void gdk_pixbuf_render_to_drawable(int /*long*/ pixbuf, int /*long*/ drawable, int /*long*/ gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither);
 public static final synchronized native void gdk_pixbuf_render_to_drawable_alpha(int /*long*/ pixbuf, int /*long*/ drawable, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int alpha_mode, int alpha_threshold, int dither, int x_dither, int y_dither);
-public static final synchronized native void gdk_pixbuf_render_pixmap_and_mask(int /*long*/ pixbuf, int /*long*/[] pixmap_return, int[] mask_return, int alpha_threshold);
+public static final synchronized native void gdk_pixbuf_render_pixmap_and_mask(int /*long*/ pixbuf, int /*long*/[] pixmap_return, int /*long*/[] mask_return, int alpha_threshold);
 public static final synchronized native void gdk_pixbuf_scale(int /*long*/ src, int /*long*/ dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y, int interp_type);
 public static final synchronized native int /*long*/ gdk_pixbuf_scale_simple(int /*long*/ src, int dest_width, int dest_height, int interp_type);
 public static final synchronized native int /*long*/ gdk_pixmap_new(int /*long*/ window, int width, int height, int depth);

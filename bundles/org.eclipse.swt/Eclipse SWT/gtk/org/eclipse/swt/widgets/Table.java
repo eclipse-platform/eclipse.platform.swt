@@ -1799,12 +1799,12 @@ boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
 	return false;
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
-	TableColumn[] cloumns = getColumns ();
-	for (int i = 0; i < cloumns.length; i++) {
-		if (cloumns[i] != null) {
-			cloumns[i].setFontDescription (font);
+	TableColumn[] columns = getColumns ();
+	for (int i = 0; i < columns.length; i++) {
+		if (columns[i] != null) {
+			columns[i].setFontDescription (font);
 		}
 	}
 }
