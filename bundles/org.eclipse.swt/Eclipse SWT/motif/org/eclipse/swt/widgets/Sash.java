@@ -29,6 +29,10 @@ public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
 	int cursor;
+	
+	// constants
+	private final static int INCREMENT = 1;
+	private final static int PAGE_INCREMENT = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -144,6 +148,82 @@ void drawBand (int x, int y, int width, int height) {
 	OS.XFreePixmap (display, stipplePixmap);
 	OS.XFreeGC (display, gc);
 }
+int processFocusIn () {
+	int result = super.processFocusIn ();
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	lastX = argList [1];
+	lastY = argList [3];
+	return result;
+}
+
+int processFocusOut () {
+	int result = super.processFocusOut ();
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return result;
+}
+	
+int processKeyDown (int callData) {
+	super.processKeyDown (callData);
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
+	byte [] buffer = new byte [1];
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+	switch (keysym [0]) {
+		case OS.XK_Left:
+		case OS.XK_Right:
+		case OS.XK_Up:
+		case OS.XK_Down:
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			if ((xEvent.state & OS.ControlMask) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (keysym [0] == OS.XK_Up || keysym [0] == OS.XK_Down) break;
+				xChange = keysym [0] == OS.XK_Left ? -stepSize : stepSize;
+			} else {
+				if (keysym [0] == OS.XK_Left || keysym [0] == OS.XK_Right) break;
+				yChange = keysym [0] == OS.XK_Up ? -stepSize : stepSize;
+			}
+			
+			int [] argList1 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			int border = argList1 [9], x = ((short) argList1 [1]) - border, y = ((short) argList1 [3]) - border;
+			int width = argList1 [5] + (border * 2), height = argList1 [7] + (border * 2);
+			int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+			OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
+			int parentBorder = argList2 [5];
+			int parentWidth = argList2 [1] + (parentBorder * 2);
+			int parentHeight = argList2 [3] + (parentBorder * 2);
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange - parentBorder - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return 0;
+			/* The event must be sent because its doit flag is used. */
+			Event event = new Event ();
+			event.time = xEvent.time;
+			event.x = newX;  event.y = newY;
+			event.width = width;  event.height = height;
+			/*
+			 * It is possible (but unlikely) that client code could have disposed
+			 * the widget in the selection event.  If this happens end the processing
+			 * of this message by returning.
+			 */
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) break;
+			if (event.doit) {
+				lastX = event.x;  lastY = event.y;
+			}
+			break;
+	}
+	
+	return 0;
+}
+
 int processMouseDown (int callData) {
 	super.processMouseDown (callData);
 	XButtonEvent xEvent = new XButtonEvent ();
@@ -154,12 +234,19 @@ int processMouseDown (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int border = argList [9], width = argList [5] + (border * 2), height = argList [7] + (border * 2);
 	lastX = ((short) argList [1]) - border;  lastY = ((short) argList [3]) - border;
+	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = xEvent.time;
 	event.x = lastX;  event.y = lastY;
 	event.width = width;  event.height = height;
+	/*
+	 * It is possible (but unlikely) that client code could have disposed
+	 * the widget in the selection event.  If this happens end the processing
+	 * of this message by returning.
+	 */
 	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
 		OS.XmUpdateDisplay (handle);
@@ -189,12 +276,19 @@ int processMouseMove (int callData) {
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
+	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = xEvent.time;
 	event.x = newX;  event.y = newY;
 	event.width = width;  event.height = height;
+	/*
+	 * It is possible (but unlikely) that client code could have disposed
+	 * the widget in the selection event.  If this happens end the processing
+	 * of this message by returning.
+	 */
 	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return 0;
 	if (event.doit) {
 		lastX = event.x;  lastY = event.y;
 		OS.XmUpdateDisplay (handle);
@@ -213,12 +307,14 @@ int processMouseUp (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int border = argList [5];
 	int width = argList [1] + (border * 2), height = argList [3] + (border * 2);
+	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.time = xEvent.time;
 	event.x = lastX;  event.y = lastY;
 	event.width = width;  event.height = height;
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
+	/* widget could be disposed here */
 	return 0;
 }
 void propagateWidget (boolean enabled) {
@@ -275,5 +371,15 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+public boolean setFocus () {
+	int [] argList = new int [] {OS.XmNtraversalOn, 1};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	boolean result = super.setFocus ();
+	if (!result) {
+		argList [1] = 0;
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+	return result;
 }
 }
