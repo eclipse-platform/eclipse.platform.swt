@@ -14,3 +14,5 @@
 *******************************************************************************/
 
 /* Special sizeof's */
+#define AtkObjectFactory_sizeof() sizeof(AtkObjectFactory)
+
