@@ -472,7 +472,7 @@ public void setThumb (int value) {
 	int minimum = OS.GetControl32BitMinimum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
 	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
-	if (value > maximum - minimum) return;
+	value = Math.min (value, maximum - minimum);
 	OS.SetControl32BitMaximum (handle, maximum - value);
 	OS.SetControlViewSize (handle, value);
 }
@@ -503,9 +503,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
-	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
+	thumb = Math.min (thumb, maximum - minimum);
 	OS.SetControl32BitMinimum (handle, minimum);
 	OS.SetControl32BitMaximum (handle, maximum - thumb);
 	OS.SetControlViewSize (handle, thumb);
