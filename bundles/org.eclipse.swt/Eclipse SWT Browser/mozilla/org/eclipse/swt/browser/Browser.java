@@ -1467,7 +1467,6 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
-	buffer = XPCOM.nsCString_get(aSpec);
 	byte[] dest = new byte[length + 1];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
