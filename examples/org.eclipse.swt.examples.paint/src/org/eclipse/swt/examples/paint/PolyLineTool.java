@@ -39,7 +39,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.PolyLine.displayname");
+		return PaintPlugin.getResourceString("tool.PolyLine.label");
 	}
 
 	/*
