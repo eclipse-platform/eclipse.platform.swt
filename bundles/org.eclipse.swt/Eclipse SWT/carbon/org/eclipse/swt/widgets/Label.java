@@ -111,7 +111,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = r.width;
 			height = r.height;
 		} else {
-			width = DEFAULT_WIDTH;
 			int length = text.length (); 
 			if (length != 0) {
 				int [] ptr = new int [1];
