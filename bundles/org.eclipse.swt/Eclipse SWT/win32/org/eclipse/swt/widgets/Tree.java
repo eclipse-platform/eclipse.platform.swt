@@ -553,11 +553,11 @@ void createParent () {
 	OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
 	info.nPage = info.nMax + 1;
 	OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+	customDraw = true;
+	deregister ();
 	if ((oldStyle & OS.WS_VISIBLE) != 0) {
 		OS.ShowWindow (hwndParent, OS.SW_SHOW);
 	}
-	customDraw = true;
-	deregister ();
 	int hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) OS.SetFocus (hwndParent);
 	OS.SetParent (handle, hwndParent);
@@ -1712,7 +1712,10 @@ void setForegroundPixel (int pixel) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-	if (hwndHeader == 0) createParent ();
+	if (hwndHeader == 0) {
+		if (!show) return;
+		createParent ();
+	}
 	int bits = OS.GetWindowLong (hwndHeader, OS.GWL_STYLE);
 	if (show) {
 		if ((bits & OS.HDS_HIDDEN) == 0) return;
@@ -2929,7 +2932,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					HDITEM newItem = new HDITEM ();
 					OS.MoveMemory (newItem, phdn.pitem, HDITEM.sizeof);
 					if ((newItem.mask & OS.HDI_WIDTH) != 0) {
-						int inset = 2;
 						HDITEM oldItem = new HDITEM ();
 						oldItem.mask = OS.HDI_WIDTH;
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
@@ -2937,7 +2939,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						RECT rect = new RECT (), itemRect = new RECT ();
 						OS.GetClientRect (handle, rect);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
-						rect.left = itemRect.right - inset + 1;
+						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+						rect.left = itemRect.right - gridWidth;
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						//TODO - column flashes when resized
@@ -2973,6 +2976,16 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							}
 						}
 					}
+				}
+				break;
+			}
+			case OS.HDN_ITEMCLICKW:
+			case OS.HDN_ITEMCLICKA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TreeColumn column = columns [phdn.iItem];
+				if (column != null) {
+					column.postEvent (SWT.Selection);
 				}
 				break;
 			}

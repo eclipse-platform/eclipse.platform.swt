@@ -487,6 +487,8 @@ public class OS extends Platform {
 	public static final int HDN_ITEMCHANGEDA = 0xfffffed3;
 	public static final int HDN_ITEMCHANGINGW = HDN_FIRST - 20;
 	public static final int HDN_ITEMCHANGINGA = HDN_FIRST;
+	public static final int HDN_ITEMCLICKW = HDN_FIRST - 22;
+	public static final int HDN_ITEMCLICKA = HDN_FIRST - 2;
 	public static final int HDN_ITEMDBLCLICKW = HDN_FIRST - 23;
 	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
 	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
