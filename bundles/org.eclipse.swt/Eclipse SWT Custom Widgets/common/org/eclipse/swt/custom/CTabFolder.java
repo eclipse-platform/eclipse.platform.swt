@@ -1796,7 +1796,7 @@ private void onMouseDown(Event event) {
 			if (i == selectedIndex) return;
 			forceFocus();
 			setSelection(i, true);
-			setFocus();
+			if (isFocusControl()) setFocus();
 			return;
 		}
 	}
