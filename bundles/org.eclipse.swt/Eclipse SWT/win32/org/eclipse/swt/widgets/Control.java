@@ -3367,7 +3367,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		if ((mapKey & 0x8000) != 0) return null;
 	}
 	MSG msg = new MSG ();
-	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 	if (OS.PeekMessage (msg, handle, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
 		display.lastDead = true;
 		display.lastVirtual = mapKey == 0;
@@ -3929,10 +3929,11 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 						/*
 						* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
 						* issuing a mouse enter.  This causes mouse exit events to be processed
-						* before mouse enter events.
+						* before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
+						* event queue by TrackMouseEvent().
 						*/
 						MSG msg = new MSG ();
-						int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+						int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
 							OS.TranslateMessage (msg);
 							OS.DispatchMessage (msg);

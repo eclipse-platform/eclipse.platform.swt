@@ -2075,7 +2075,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			Control control = findControl (keyMsg.hwnd);
 			if (control != null) {
 				keyMsg.hwnd = control.handle;
-				int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+				int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 				do {
 					if (!(consumed |= filterMessage (keyMsg))) {
 						OS.TranslateMessage (keyMsg);

@@ -1556,7 +1556,7 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 	ignoreCharacter = true;
 	int result = callWindowProc (OS.WM_IME_CHAR, wParam, lParam);
 	MSG msg = new MSG ();
-	int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 	while (OS.PeekMessage (msg, handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
 		OS.TranslateMessage (msg);
 		OS.DispatchMessage (msg);
