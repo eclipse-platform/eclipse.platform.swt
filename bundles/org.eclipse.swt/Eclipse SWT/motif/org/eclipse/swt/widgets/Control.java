@@ -421,7 +421,9 @@ void createWidget (int index) {
 	* get composed characters. For example, accented characters
 	* on a German locale.
 	*/
-	OS.XmImRegister (handle, 0);
+	if (!hasIMSupport()) {
+		OS.XmImRegister (handle, 0);
+	}
 	
 	/*
 	* Feature in MOTIF.  When a widget is created before the
@@ -1385,7 +1387,9 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
-	OS.XmImUnregister (handle);
+	if (!hasIMSupport()) {
+		OS.XmImUnregister (handle);
+	}
 	parent = null;
 	layoutData = null;
 }
@@ -1966,7 +1970,9 @@ public void setFont (Font font) {
 	int fontHandle = fontHandle ();
 	int [] argList2 = {OS.XmNfontList, font.handle};
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
-	OS.XmImSetValues (handle, argList2, argList2.length / 2);
+	if (!hasIMSupport()) {
+		OS.XmImSetValues (handle, argList2, argList2.length / 2);
+	}
 
 	/* Restore the widget size */
 	OS.XtSetValues (handle, argList1, argList1.length / 2);
