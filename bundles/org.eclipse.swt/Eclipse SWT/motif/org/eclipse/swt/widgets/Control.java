@@ -2342,6 +2342,7 @@ void setZOrder (Control control, boolean above) {
  */
 public Point toControl (Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (point.x - root_x [0], point.y - root_y [0]);
@@ -2363,6 +2364,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) point.x, (short) point.y, root_x, root_y);
 	return new Point (root_x [0], root_y [0]);
