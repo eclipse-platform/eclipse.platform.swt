@@ -138,17 +138,32 @@ int addItem(TableTreeItem item, int index) {
 		return table.indexOf(items[index+1].tableItem);
 }
 
-/**	 
- * Adds the listener to receive selection events.
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's selection changes, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
  * <p>
+ * When <code>widgetSelected</code> is called, the item field of the event object is valid.
+ * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
+ * the event object detail field contains the value <code>SWT.CHECK</code>.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * The item field of the event object is valid for default selection, but the detail field is not used.
+ * </p>
  *
- * @param listener the selection listener
+ * @param listener the listener which should be notified
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when listener is null
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();

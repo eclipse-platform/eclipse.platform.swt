@@ -27,7 +27,7 @@ public class SelectionEvent extends TypedEvent {
 	
 	/**
 	 * extra detail information about the selection, depending on the widget
-	 * <p><b>Sash and Scrollable</b><ul>
+	 * <p><b>Sash</b><ul>
 	 * <li>{@link SWT#DRAG}</li>
 	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
 	 * <li>{@link SWT#DRAG}</li>
