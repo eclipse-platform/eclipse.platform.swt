@@ -457,26 +457,38 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	/*
-	* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
-	* for a single line TXN Object, it does not check for the return key
-	* or the default button.  The result is that a garbage character (the
-	* CR) is entered into the TXN Object.  The fix is to temporarily take
-	* focus away from the TXN Object, call the default handler to process
-	* the return key and reset the focus.
-	*/
+	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	if ((style & SWT.SINGLE) != 0) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 		switch (keyCode [0]) {
-			case 36: //CR KEY
+			case 36: { /* Return */
+				/*
+				* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
+				* for a single line TXN Object, it does not check for the return key
+				* or the default button.  The result is that a garbage character (the
+				* CR) is entered into the TXN Object.  The fix is to temporarily take
+				* focus away from the TXN Object, call the default handler to process
+				* the return key and reset the focus.
+				*/
 				OS.TXNFocus (txnObject, false);
-				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
 				OS.TXNFocus (txnObject, true);
-				return result;
+				postEvent (SWT.DefaultSelection);
+				break;
+			}
+			case 48: { /* Tab */
+				/*
+				* Feature in the Macintosh.  Tab characters are inserted into a single
+				* line TXN Object.  While this may be correct platform behavior, it is
+				* unexpected.  The fix is to avoid calling the default handler. 
+				*/
+				return OS.noErr;
+			}
 		}
 	}
-	return super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	return result;
 }
 
 public void paste () {
@@ -544,10 +556,7 @@ boolean sendKeyEvent (int type, Event event) {
 			}
 			break;
 		case SWT.CR:
-			if ((style & SWT.SINGLE) != 0) {
-				postEvent (SWT.DefaultSelection);
-				return true;
-			}
+			if ((style & SWT.SINGLE) != 0) return true;
 			oldText = DELIMITER;
 			break;
 		default:
