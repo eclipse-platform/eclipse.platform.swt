@@ -178,14 +178,9 @@ private static int checkStyle (int style) {
  * horizontal and vertical directions.
  * 
  * @return the Always Show Scrollbars flag value
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public boolean getAlwaysShowScrollBars() {
-	checkWidget();
+	//checkWidget();
 	return alwaysShowScroll;
 }
 
@@ -193,14 +188,9 @@ public boolean getAlwaysShowScrollBars() {
  * Get the content that is being scrolled.
  * 
  * @return the control displayed in the content area
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Control getContent() {
-	checkWidget();
+	//checkWidget();
 	return content;
 }
 

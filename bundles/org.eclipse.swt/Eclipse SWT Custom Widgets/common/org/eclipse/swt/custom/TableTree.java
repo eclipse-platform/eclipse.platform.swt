@@ -210,14 +210,9 @@ void expandItem (TableTreeItem item) {
  * Gets the number of items.
  * <p>
  * @return the number of items in the widget
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public int getItemCount () {
-	checkWidget();
+	//checkWidget();
 	return items.length;
 }
 
@@ -244,14 +239,9 @@ public int getItemHeight () {
  * Gets the items.
  * <p>
  * @return the items in the widget
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public TableTreeItem [] getItems () {
-	checkWidget();
+	//checkWidget();
 	TableTreeItem[] newItems = new TableTreeItem[items.length];
 	System.arraycopy(items, 0, newItems, 0, items.length);
 	return newItems;
@@ -304,14 +294,9 @@ public int getSelectionCount () {
  * Returns the underlying Table control.
  *
  * @return the underlying Table control
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Table getTable () {
-	checkWidget();
+	//checkWidget();
 	return table;
 }
 
@@ -381,14 +366,9 @@ Image getMinusImage() {
  *
  * @param item the search item
  * @return the index of the item or -1
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public int indexOf (TableTreeItem item) {
-	checkWidget();
+	//checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		if (item == items[i]) return i;
 	}

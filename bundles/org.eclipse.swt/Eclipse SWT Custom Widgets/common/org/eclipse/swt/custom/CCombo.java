@@ -837,18 +837,10 @@ public void setBackground (Color color) {
 	if (list != null) list.setBackground(color);
 	if (arrow != null) arrow.setBackground(color);
 }
-
-
-/**
-* Sets the focus.
-*/
 public boolean setFocus () {
 	checkWidget();
 	return text.setFocus ();
 }
-/**
-* Sets the widget font.
-*/
 public void setFont (Font font) {
 	super.setFont (font);
 	text.setFont (font);

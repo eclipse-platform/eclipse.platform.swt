@@ -144,28 +144,18 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
  * 
  * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public int getAlignment() {
-	checkWidget();
+	//checkWidget();
 	return align;
 }
 /**
  * Return the CLabel's image or <code>null</code>.
  * 
  * @return the image of the label or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Image getImage() {
-	checkWidget();
+	//checkWidget();
 	return image;
 }
 /**
@@ -201,14 +191,9 @@ public void setToolTipText (String string) {
  * Return the Label's text.
  * 
  * @return the text of the label or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public String getText() {
-	checkWidget();
+	//checkWidget();
 	return text;
 }
 public String getToolTipText () {

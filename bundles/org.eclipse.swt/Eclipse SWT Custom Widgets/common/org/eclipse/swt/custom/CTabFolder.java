@@ -636,15 +636,10 @@ public int getTabHeight(){
  * Return the tab that is located at the specified index.
  * 
  * @return the item at the specified index
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul> 
  */
 public CTabItem getItem (int index) {
-	checkWidget();
-	if (index  < 0 || index > items.length) 
+	//checkWidget();
+	if (index  < 0 || index >= items.length) 
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
@@ -653,14 +648,9 @@ public CTabItem getItem (int index) {
 * <p>
 *
 * @return the item at a point
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*	</ul>
 */
 public CTabItem getItem (Point pt) {
-	checkWidget();
+	//checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		Rectangle bounds = items[i].getBounds();
 		if (bounds.contains(pt)) return items[i];
@@ -671,28 +661,18 @@ public CTabItem getItem (Point pt) {
  * Return the number of tabs in the folder.
  * 
  * @return the number of tabs in the folder
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
  */
 public int getItemCount(){
-	checkWidget();
+	//checkWidget();
 	return items.length;
 }
 /**
  * Return the tab items.
  * 
  * @return the tab items
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
  */
 public CTabItem [] getItems() {
-	checkWidget();
+	//checkWidget();
 	CTabItem[] tabItems = new CTabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
@@ -702,14 +682,9 @@ public CTabItem [] getItems() {
  * is no selection.
  * 
  * @return the selected tab item
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
  */
 public CTabItem getSelection() {
-	checkWidget();
+	//checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
 }
@@ -718,14 +693,9 @@ public CTabItem getSelection() {
  * is no selection.
  * 
  * @return the index of the selected tab item or -1
- * 
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
  */
 public int getSelectionIndex() {
-	checkWidget();
+	//checkWidget();
 	return selectedIndex;
 }
 
@@ -737,13 +707,11 @@ public int getSelectionIndex() {
  * @return the index of the specified tab item or -1
  * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *      <li>ERROR_NULL_ARGUMENT when the item is null</li>
  *	</ul>
  */
 public int indexOf(CTabItem item) {
-	checkWidget();
+	//checkWidget();
 	if (item == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -1437,6 +1405,7 @@ char getMnemonic (String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_NULL_ARGUMENT - if argument is null</li>
  * </ul>
  */
 public void setSelection(CTabItem item) {

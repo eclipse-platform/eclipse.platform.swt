@@ -177,14 +177,9 @@ public Rectangle getClientArea() {
 * Returns the content area.
 * 
 * @return the control in the content area of the pane or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-* </ul>
 */
 public Control getContent() {
-	checkWidget();
+	//checkWidget();
 	return content;
 }
 /**
@@ -192,14 +187,9 @@ public Control getContent() {
 * Typically this is a toolbar.
 * 
 * @return the control in the top center of the pane or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-* </ul>
 */
 public Control getTopCenter() {
-	checkWidget();
+	//checkWidget();
 	return topCenter;
 }
 /**
@@ -207,14 +197,9 @@ public Control getTopCenter() {
 * Typically this is a label such as CLabel.
 * 
 * @return the control in the top left corner of the pane or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-* </ul>
 */
 public Control getTopLeft() {
-	checkWidget();
+	//checkWidget();
 	return topLeft;
 }
 /**
@@ -222,14 +207,9 @@ public Control getTopLeft() {
 * Typically this is a Close button or a composite with a Menu and Close button.
 * 
 * @return the control in the top right corner of the pane or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-* </ul>
 */
 public Control getTopRight() {
-	checkWidget();
+	//checkWidget();
 	return topRight;
 }
 public void layout (boolean changed) {

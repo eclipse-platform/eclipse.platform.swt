@@ -263,14 +263,9 @@ public Display getDisplay () {
  * <p>
  *
  * @return the expanded state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public boolean getExpanded () {
-	checkWidget();
+	//checkWidget();
 	return expanded;
 }
 
@@ -302,14 +297,9 @@ public Image getImage () {
  *
  * @param index the index of the image
  * @return the image at the specified index or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Image getImage (int index) {
-	checkWidget();
+	//checkWidget();
 	if (0 < index && index < images.length) return images[index];
 	return null;
 }
@@ -324,14 +314,9 @@ int getIndent() {
  * that are direct item children of the receiver.
  *
  * @return the number of items
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public int getItemCount () {
-	checkWidget();
+	//checkWidget();
 	return items.length;
 }
 
@@ -345,14 +330,9 @@ public int getItemCount () {
  * </p>
  *
  * @return the receiver's items
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public TableTreeItem[] getItems () {
-	checkWidget();
+	//checkWidget();
 	TableTreeItem[] newItems = new TableTreeItem[items.length];
 	System.arraycopy(items, 0, newItems, 0, items.length);
 	return newItems;
@@ -372,14 +352,9 @@ TableTreeItem getItem(TableItem tableItem) {
  * Returns the receiver's parent, which must be a <code>TableTree</code>.
  *
  * @return the receiver's parent
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public TableTree getParent () {
-	checkWidget();
+	//checkWidget();
 	return parent;
 }
 
@@ -389,14 +364,9 @@ public TableTree getParent () {
  * root.
  *
  * @return the receiver's parent item
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public TableTreeItem getParentItem () {
-	checkWidget();
+	//checkWidget();
 	return parentItem;
 }
 public String getText () {
@@ -415,14 +385,9 @@ public String getText () {
  *
  * @param index the index of the item
  * @return the item text at the specified index, which can be null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public String getText(int index) {
-	checkWidget();
+	//checkWidget();
 	if (0 <= index && index < texts.length) return texts[index];
 	return null;
 }
@@ -441,15 +406,10 @@ boolean getVisible () {
  *
  * @param item the search item
  * @return the index of the item or -1 if the item is not found
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  *
  */
 public int indexOf (TableTreeItem item) {
-	checkWidget();	
+	//checkWidget();	
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == item) return i;
 	}

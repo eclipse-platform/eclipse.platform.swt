@@ -116,7 +116,7 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
+	//checkWidget();
 	return new Rectangle(x, y, width, height);
 }
 /**
@@ -141,28 +141,18 @@ public Display getDisplay() {
  * Get the image displayed in the tab if the tab is disabled.
  * 
  * @return the disabled image or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Image getDisabledImage(){
-	checkWidget();
+	//checkWidget();
 	return disabledImage;
 }
 /**
  * Returns the receiver's parent, which must be a <code>CTabFolder</code>.
  *
  * @return the receiver's parent
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public CTabFolder getParent () {
-	checkWidget();
+	//checkWidget();
 	return parent;
 }
 /**

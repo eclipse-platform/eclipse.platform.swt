@@ -114,14 +114,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
  * 
  * @return SWT.HORIZONTAL or SWT.VERTICAL
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public int getOrientation() {
-	checkWidget();
+	//checkWidget();
 	return orientation;
 }
 /**
@@ -129,14 +124,9 @@ public int getOrientation() {
  * This value may be null.
  * 
  * @return the control that currently is maximized or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  */
 public Control getMaximizedControl(){
-	checkWidget();
+	//checkWidget();
 	return this.maxControl;
 }
 /**
