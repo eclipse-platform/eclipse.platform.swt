@@ -147,7 +147,7 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateFrame (formHandle, null, argList2, argList2.length / 2);
     */
-	handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)0, OS.kControlGroupBoxTextTitleProc);
+	handle= MacUtil.newControl(parentHandle, OS.kControlGroupBoxTextTitleProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	setFont(defaultFont());
     /* AW
