@@ -10,6 +10,9 @@
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  */
+
+#ifndef INC_structs_H
+#define INC_structs_H
  
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -77,4 +80,6 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct);
 
 GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
 void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
+
+#endif // INC_structs_H
 
