@@ -1431,7 +1431,7 @@ public void setSelection (String [] items) {
 	for (int i=0; i<length; i++) OS.XmStringFree (table [i]);
 	OS.XtFree (ptr);
 	OS.XmListUpdateSelectedList (handle);
-	if (length > 0) showSelection ();
+	showSelection ();
 }
 /**
  * Sets the zero-relative index of the item which is currently
