@@ -122,8 +122,8 @@ public final class PrinterData extends DeviceData {
 	 * Constructs an instance of this class that can be
 	 * used to print to the default printer.
 	 *
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+	 * @exception SWTError <ul>
+	 *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
 	 * </ul>
 	 */
 	public PrinterData() {

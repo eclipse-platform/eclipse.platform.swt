@@ -88,8 +88,8 @@ public static PrinterData[] getPrinterList() {
  * Returns a <code>PrinterData</code> object representing
  * the default printer.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NO_HANDLES - if there are no valid printers
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
  * </ul>
  *
  * @return the default printer data
