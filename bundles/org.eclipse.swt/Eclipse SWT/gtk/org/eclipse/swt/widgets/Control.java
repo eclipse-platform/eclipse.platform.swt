@@ -2186,22 +2186,32 @@ boolean sendHelpEvent (int helpType) {
 }
 
 char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
-	int index = 0, count = 0, stateMask = 0, time = 0;
-	if (keyEvent != null) {
-		stateMask = keyEvent.state;
-		time = keyEvent.time;
-	} else {
-		int [] state = new int [1];
-		if (OS.gtk_get_current_event_state (state)) {
-			stateMask = state [0];
+	int index = 0, count = 0;
+	if (keyEvent == null) {
+		int ptr = OS.gtk_get_current_event ();
+		if (ptr != 0) {
+			keyEvent = new GdkEventKey ();
+			OS.memmove (keyEvent, ptr, GdkEventKey.sizeof);
+			OS.gdk_event_free (ptr);
+			switch (keyEvent.type) {
+				case OS.GDK_KEY_PRESS:
+				case OS.GDK_KEY_RELEASE: break;
+				default: keyEvent = null; break;
+			}
 		}
-		time = OS.gtk_get_current_event_time ();
 	}
 	while (index < chars.length) {
 		Event event = new Event ();
+		if (keyEvent == null) {
+			int [] state = new int [1];
+			OS.gtk_get_current_event_state (state);
+			setInputState (event, state [0]);
+			event.time = OS.gtk_get_current_event_time();
+		} else {
+			setKeyState (event, keyEvent);
+			event.time = keyEvent.time;
+		}
 		event.character = chars [index];
-		setInputState (event, stateMask);
-		event.time = time;
 		sendEvent (type, event);
 	
 		/*

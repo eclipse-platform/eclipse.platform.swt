@@ -136,9 +136,10 @@ public class Event {
 	 * depending on the event, the key code of the key that was typed,
 	 * as defined by the key code constants in class <code>SWT</code>.
 	 * When the character field of the event is ambiguous, this field
-	 * contains the unicode value of the original character.  For example,
-	 * typing Ctrl+M or Return both result in the character '\r' but the
-	 * keyCode field will also contain '\r' when Return was typed.
+	 * contains the unaffected value of the original character.  For
+	 * example, typing Ctrl+M or Enter both result in the character '\r'
+	 * but the keyCode field will also contain '\r' when Enter was typed
+	 * and 'm' when Ctrl+M was typed.
 	 * 
 	 * @see org.eclipse.swt.SWT
 	 */
