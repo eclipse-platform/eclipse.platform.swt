@@ -114,12 +114,16 @@ public class Display extends Device {
 	Color COLOR_INFO_BACKGROUND;
 	
 	/* Initial Guesses for Shell Trimmings. */
-	int titleHeight = 20;
-	int borderTrimWidth = 4, borderTrimHeight = 4;
-	int resizeTrimWidth = 6, resizeTrimHeight = 6;
-	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
-	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
-	int titleTrimWidth = 0, titleTrimHeight = 23;
+	int leftBorderWidth = 2, rightBorderWidth = 2;
+	int topBorderHeight = 2, bottomBorderHeight = 2;
+	int leftResizeWidth = 3, rightResizeWidth = 3;
+	int topResizeHeight = 3, bottomResizeHeight = 3;
+	int leftTitleBorderWidth = 3, rightTitleBorderWidth = 2;
+	int topTitleBorderHeight = 26, bottomTitleBorderHeight = 2;
+	int leftTitleResizeWidth = 3, rightTitleResizeWidth = 3;
+	int topTitleResizeHeight = 26, bottomTitleResizeHeight = 3;
+	int leftTitleWidth = 0, rightTitleWidth = 0;
+	int topTitleHeight = 23, bottomTitleHeight = 0;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);

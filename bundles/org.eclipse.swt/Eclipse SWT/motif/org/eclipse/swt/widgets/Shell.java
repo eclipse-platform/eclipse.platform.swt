@@ -342,8 +342,9 @@ void adjustTrim () {
 	int [] trimBorder = new int [1];
 	int [] trimWidth = new int [1];
 	int [] trimHeight = new int [1];
+	int [] trimX = new int [1];
 	int [] trimY = new int [1];
-	OS.XGetGeometry (xDisplay, trimWindow, unused, unused, trimY, trimWidth, trimHeight, trimBorder, unused);
+	OS.XGetGeometry (xDisplay, trimWindow, unused, trimX, trimY, trimWidth, trimHeight, trimBorder, unused);
 
 	/* Query the border width of the direct child of the shell window */
 	int [] shellBorder = new int [1];
@@ -358,7 +359,8 @@ void adjustTrim () {
 	/* Calculate the trim */
 	int width = (trimWidth [0] + (trimBorder [0] * 2)) - (shellWidth [0] + (shellBorder [0] * 2));
 	int height = (trimHeight [0] + (trimBorder [0] * 2)) - (shellHeight [0] + (shellBorder [0] * 2));
-	int titleHeight = inner_y [0] - trimY [0];
+	int leftInset = inner_x [0] - trimX [0];
+	int topInset = inner_y [0] - trimY [0];
 	
 	/* Update the trim guesses to match the query */
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
@@ -368,29 +370,38 @@ void adjustTrim () {
 		hasBorder = (style & SWT.BORDER) != 0;
 	}
 	if (hasTitle) {
-		display.titleHeight = titleHeight;
 		if (hasResize)  {
-			display.titleResizeTrimWidth = width;
-			display.titleResizeTrimHeight = height;
+			display.leftTitleResizeWidth = leftInset;
+			display.rightTitleResizeWidth = width - leftInset;
+			display.topTitleResizeHeight = topInset;
+			display.bottomTitleResizeHeight = height - topInset;
 			return;
 		}
 		if (hasBorder) {
-			display.titleBorderTrimWidth = width;
-			display.titleBorderTrimHeight = height;
+			display.leftTitleBorderWidth = leftInset;
+			display.rightTitleBorderWidth = width - leftInset;
+			display.topTitleBorderHeight = topInset;
+			display.bottomTitleBorderHeight = height - topInset;
 			return;
 		}
-		display.titleTrimWidth = width;
-		display.titleTrimHeight = height;
+		display.leftTitleWidth = leftInset;
+		display.rightTitleWidth = width - leftInset;
+		display.topTitleHeight = topInset;
+		display.bottomTitleHeight = height - topInset;
 		return;
 	}
 	if (hasResize) {
-		display.resizeTrimWidth = width;
-		display.resizeTrimHeight = height;
+		display.leftResizeWidth = leftInset;
+		display.rightResizeWidth = width - leftInset;
+		display.topResizeHeight = topInset;
+		display.bottomResizeHeight = height - topInset;
 		return;
 	}
 	if (hasBorder) {
-		display.borderTrimWidth = width;
-		display.borderTrimHeight = height;
+		display.leftBorderWidth = leftInset;
+		display.rightBorderWidth = width - leftInset;
+		display.topBorderHeight = topInset;
+		display.bottomBorderHeight = height - topInset;
 		return;
 	}
 }
@@ -628,8 +639,8 @@ public Rectangle getBounds () {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	if (realized) {
-		root_x [0] -= trimWidth () / 2;
-		root_y [0] -= titleHeight ();
+		root_x [0] -= trimLeftInset ();
+		root_y [0] -= trimTopInset ();
 	}
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
@@ -669,8 +680,8 @@ public Point getLocation () {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	if (realized) {
-		root_x [0] -= trimWidth () / 2;
-		root_y [0] -= titleHeight ();
+		root_x [0] -= trimLeftInset ();
+		root_y [0] -= trimTopInset ();
 	}
 	return new Point (root_x [0], root_y [0]);
 }
@@ -955,8 +966,8 @@ void saveBounds () {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	if (realized) {
-		root_x [0] -= trimWidth () / 2;
-		root_y [0] -= titleHeight ();
+		root_x [0] -= trimLeftInset ();
+		root_y [0] -= trimTopInset ();
 	}
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
@@ -1195,9 +1206,19 @@ boolean traverseEscape () {
 	close ();
 	return true;
 }
-int titleHeight () {
-	int hasTitle = style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU);
-	if (hasTitle != 0) return display.titleHeight;
+int trimLeftInset () {
+	if ((style & SWT.NO_TRIM) != 0) return 0;
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+	hasResize = (style & SWT.RESIZE) != 0;
+	hasBorder = (style & SWT.BORDER) != 0;
+	if (hasTitle) {
+		if (hasResize) return display.leftTitleResizeWidth;
+		if (hasBorder) return display.leftTitleBorderWidth;
+		return display.leftTitleWidth;
+	}
+	if (hasResize) return display.leftResizeWidth;
+	if (hasBorder) return display.leftBorderWidth;
 	return 0;
 }
 int trimHeight () {
@@ -1207,12 +1228,35 @@ int trimHeight () {
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
 	if (hasTitle) {
-		if (hasResize) return display.titleResizeTrimHeight;
-		if (hasBorder) return display.titleBorderTrimHeight;
-		return display.titleTrimHeight;
+		if (hasResize) {
+			return display.topTitleResizeHeight + display.bottomTitleResizeHeight;
+		}
+		if (hasBorder) {
+			return display.topTitleBorderHeight + display.bottomTitleBorderHeight;
+		}
+		return display.topTitleHeight + display.bottomTitleHeight;
 	}
-	if (hasResize) return display.resizeTrimHeight;
-	if (hasBorder) return display.borderTrimHeight;
+	if (hasResize) {
+		return display.topResizeHeight + display.bottomResizeHeight;
+	}
+	if (hasBorder) {
+		return display.topBorderHeight + display.bottomBorderHeight;
+	}
+	return 0;
+}
+int trimTopInset () {
+	if ((style & SWT.NO_TRIM) != 0) return 0;
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+	hasResize = (style & SWT.RESIZE) != 0;
+	hasBorder = (style & SWT.BORDER) != 0;
+	if (hasTitle) {
+		if (hasResize) return display.topTitleResizeHeight;
+		if (hasBorder) return display.topTitleBorderHeight;
+		return display.topTitleHeight;
+	}
+	if (hasResize) return display.topResizeHeight;
+	if (hasBorder) return display.topBorderHeight;
 	return 0;
 }
 int trimWidth () {
@@ -1222,12 +1266,20 @@ int trimWidth () {
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
 	if (hasTitle) {
-		if (hasResize) return display.titleResizeTrimWidth;
-		if (hasBorder) return display.titleBorderTrimWidth;
-		return display.titleTrimWidth;
+		if (hasResize) {
+			return display.leftTitleResizeWidth + display.rightTitleResizeWidth;
+		}
+		if (hasBorder) {
+			return display.leftTitleBorderWidth + display.rightTitleBorderWidth;
+		}
+		return display.leftTitleWidth + display.rightTitleWidth;
 	}
-	if (hasResize) return display.resizeTrimWidth;
-	if (hasBorder) return display.borderTrimWidth;
+	if (hasResize) {
+		return display.leftResizeWidth + display.rightResizeWidth;
+	}
+	if (hasBorder) {
+		return display.leftBorderWidth + display.rightBorderWidth;
+	}
 	return 0;
 }
 }
