@@ -38,6 +38,14 @@ public class OS {
 	}
 	
 	/*
+	* Added for XmNpopupEnabled.
+	*/
+//	public static final int XmPOPUP_DISABLED = 0;
+//	public static final int XmPOPUP_KEYBBOARD = 1;
+//	public static final int XmPOPUP_AUTOMATIC = 2;
+//	public static final int XmPOPUP_AUTOMATIC_RECURSIVE = 3;
+	
+	/*
 	* Added for XmNnavigationType.
 	*/
 //	public static final int XmSTICKY_TAB_GROUP = 0x2;
@@ -758,6 +766,8 @@ public class OS {
 	public static final int XmNpageIncrement = malloc ("pageIncrement", 4);
 	public static final int XmNpageIncrementCallback = malloc ("pageIncrementCallback", 4);
 	public static final int XmNpattern = malloc ("pattern", 4);
+//	public static final int XmNpopupEnabled = malloc ("popupEnabled", 4);
+//	public static final int XmNpopupHandlerCallback = malloc ("popupHandlerCallback", 4);
 	public static final int XmNrenderTable = malloc ("renderTable", 4);
 	public static final int XmNscaleMultiple = malloc ("scaleMultiple", 4);
 	public static final int XmNselectedItemCount = malloc ("selectedItemCount", 4);
@@ -1377,4 +1387,8 @@ public static final synchronized native int XCreateFontSet (int display, byte []
 public static final synchronized native int XLocaleOfFontSet (int fontSet);
 
 public static final synchronized native void XtInsertEventHandler (int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
+//public static final synchronized native void XmAddToPostFromList (int menu, int post_from_list);
+//public static final synchronized native void XmRemoveFromPostFromList (int menu, int post_from_list);
+//public static final synchronized native void XmMenuPosition (int menu, int event);
+public static final synchronized native void _XmSetMenuTraversal (int menu, boolean traversal);
 }

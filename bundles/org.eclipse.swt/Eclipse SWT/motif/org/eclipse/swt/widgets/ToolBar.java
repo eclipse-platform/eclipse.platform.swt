@@ -125,10 +125,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	super.createHandle (index);
 	state &= ~CANVAS;
-	int [] argList = {
-		OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 void createItem (ToolItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);

@@ -8786,3 +8786,69 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtInsertEventHandl
 
 	XtInsertEventHandler ((Widget) w, (EventMask) event_mask, (Boolean) nonmaskable, (XtEventHandler) proc, (XtPointer) client_data, (XtListPosition) position);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmAddToPostFromList
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmAddToPostFromList
+  (JNIEnv *env, jclass that, jint menu, jint post_from_widget)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmAddToPostFromList\n");
+#endif
+
+	XmAddToPostFromList ((Widget) menu, (Widget) post_from_widget);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmRemoveFromPostFromList
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRemoveFromPostFromList
+  (JNIEnv *env, jclass that, jint menu, jint post_from_widget)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmRemoveFromPostFromList\n");
+#endif
+
+	XmRemoveFromPostFromList ((Widget) menu, (Widget) post_from_widget);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmMenuPosition
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmMenuPosition
+  (JNIEnv *env, jclass that, jint menu, jint event)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmMenuPosition\n");
+#endif
+
+	XmMenuPosition ((Widget) menu, (XButtonPressedEvent *) event);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    _XmSetMenuTraversal
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS__1XmSetMenuTraversal
+  (JNIEnv *env, jclass that, jint menu, jboolean traversal)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "_XmSetMenuTraversal\n");
+#endif
+
+	_XmSetMenuTraversal ((Widget) menu, traversal);
+}
