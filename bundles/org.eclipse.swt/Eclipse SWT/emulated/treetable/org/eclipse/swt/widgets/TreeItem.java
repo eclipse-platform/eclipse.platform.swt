@@ -25,7 +25,6 @@ public class TreeItem extends Item {
 	
 	static final int INDENT_HIERARCHY = 6;	/* the margin between an item's expander and its checkbox or content */
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
-	static final String ELLIPSIS = "...";
 
 public TreeItem (Tree parent, int style) {
 	this (parent, style, checkNull (parent).items.length);
@@ -262,10 +261,10 @@ void computeDisplayText (int columnIndex, GC gc) {
 	}
 	
 	/* Ellipsis will be needed, so subtract their width from the available text width */
-	int ellipsisWidth = gc.textExtent (ELLIPSIS).x;
+	int ellipsisWidth = gc.textExtent (Tree.ELLIPSIS).x;
 	availableWidth -= ellipsisWidth;
 	if (availableWidth <= 0) {
-		displayTexts [columnIndex] = ELLIPSIS;
+		displayTexts [columnIndex] = Tree.ELLIPSIS;
 		return;
 	}
 	
@@ -275,7 +274,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 
 	/* Initial guess is correct. */
 	if (availableWidth == textWidth) {
-		displayTexts [columnIndex] = text.substring (0, index) + ELLIPSIS;
+		displayTexts [columnIndex] = text.substring (0, index) + Tree.ELLIPSIS;
 		return;
 	}
 
@@ -284,13 +283,13 @@ void computeDisplayText (int columnIndex, GC gc) {
 		do {
 			index--;
 			if (index < 0) {
-				displayTexts [columnIndex] = ELLIPSIS;
+				displayTexts [columnIndex] = Tree.ELLIPSIS;
 				return;
 			}
 			text = text.substring (0, index);
 			textWidth = gc.textExtent (text).x;
 		} while (availableWidth < textWidth);
-		displayTexts [columnIndex] = text + ELLIPSIS;
+		displayTexts [columnIndex] = text + Tree.ELLIPSIS;
 		return;
 	}
 	
@@ -299,7 +298,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 		index++;
 		textWidth = gc.textExtent (text.substring (0, index)).x;
 	}
-	displayTexts [columnIndex] = text.substring (0, index - 1) + ELLIPSIS;
+	displayTexts [columnIndex] = text.substring (0, index - 1) + Tree.ELLIPSIS;
 }
 void computeDisplayTexts (GC gc) {
 	int columnCount = parent.columns.length;

@@ -36,11 +36,12 @@ public class Tree extends Composite {
 	static final int TOLLERANCE_COLUMNRESIZE = 2;
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
-	static final String ID_EXPANDED = "Tree.Expanded";
-	static final String ID_COLLAPSED = "Tree.Collapsed";
-	static final String ID_UNCHECKED = "Tree.Unchecked";
-	static final String ID_GRAYUNCHECKED = "Tree.GrayUnchecked";
-	static final String ID_CHECKMARK = "Tree.Checkmark";
+	static final String ELLIPSIS = "...";					//$NON-NLS-1$
+	static final String ID_EXPANDED = "Tree.Expanded";		//$NON-NLS-1$
+	static final String ID_COLLAPSED = "Tree.Collapsed";	//$NON-NLS-1$
+	static final String ID_UNCHECKED = "Tree.Unchecked";	//$NON-NLS-1$
+	static final String ID_GRAYUNCHECKED = "Tree.GrayUnchecked";	//$NON-NLS-1$
+	static final String ID_CHECKMARK = "Tree.Checkmark";	//$NON-NLS-1$
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
@@ -465,31 +466,31 @@ void handleEvents (Event event) {
 	switch (event.type) {
 		case SWT.Paint:
 			if (event.widget == header) {
-				headerDoPaint (event);
+				headerOnPaint (event);
 			} else {
 				onPaint (event);
 			}
 			break;
 		case SWT.MouseDown:
 			if (event.widget == header) {
-				headerDoMouseDown (event);
+				headerOnMouseDown (event);
 			} else {
 				onMouseDown (event);
 			}
 			break;
 		case SWT.MouseUp:
 			if (event.widget == header) {
-				headerDoMouseUp (event);
+				headerOnMouseUp (event);
 			} else {
 				onMouseUp (event);
 			}
 			break;
 		case SWT.MouseMove:
-			headerDoMouseMove (event); break;
+			headerOnMouseMove (event); break;
 		case SWT.MouseDoubleClick:
 			onMouseDoubleClick (event); break;
 		case SWT.MouseExit:
-			headerDoMouseExit (); break;
+			headerOnMouseExit (); break;
 		case SWT.Dispose:
 			onDispose (); break;		
 		case SWT.KeyDown:
@@ -521,7 +522,7 @@ void handleEvents (Event event) {
 			break;			
 	}
 }
-void headerDoMouseDown (Event event) {
+void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
 	for (int i = 0; i < columns.length; i++) {
 		TreeColumn column = columns [i]; 
@@ -542,11 +543,11 @@ void headerDoMouseDown (Event event) {
 		}
 	}
 }
-void headerDoMouseExit () {
+void headerOnMouseExit () {
 	if (resizeColumn != null) return;
 	setCursor (null);	/* ensure that a column resize cursor does not escape */
 }
-void headerDoMouseMove (Event event) {
+void headerOnMouseMove (Event event) {
 	if (resizeColumn == null) {
 		/* not currently resizing a column */
 		for (int i = 0; i < columns.length; i++) {
@@ -579,7 +580,7 @@ void headerDoMouseMove (Event event) {
 	gc.dispose ();
 	
 }
-void headerDoMouseUp (Event event) {
+void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
 	int newWidth = resizeColumnX - resizeColumn.getX ();
 	if (newWidth != resizeColumn.width) {
@@ -595,7 +596,7 @@ void headerDoMouseUp (Event event) {
 	resizeColumnX = -1;
 	resizeColumn = null;
 }
-void headerDoPaint (Event event) {
+void headerOnPaint (Event event) {
 	int numColumns = columns.length;
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
@@ -2058,9 +2059,12 @@ public void setFont (Font value) {
 	header.setFont (font);
 
 	/* 
-	 * Notify all items of the font change so that those items that
+	 * Notify all columns and items of the font change so that elements that
 	 * use the receiver's font can recompute their cached string widths.
 	 */
+	for (int i = 0; i < columns.length; i++) {
+		columns [i].updateFont (gc);
+	}
 	for (int i = 0; i < items.length; i++) {
 		items [i].updateFont (gc);
 	}
@@ -2242,14 +2246,15 @@ void updateColumnWidth (TreeColumn column, int width) {
 	horizontalOffset = hBar.getSelection ();
 	
 	/* 
-	 * Notify all items of column width change so that display labels can be
-	 * recomputed if needed.
+	 * Notify column and all items of column width change so that display labels
+	 * can be recomputed if needed.
 	 */
+	GC gc = new GC (this);
+	column.computeDisplayText (gc);
 	for (int i = 0; i < items.length; i++) {
-		GC gc = new GC (this);
 		items [i].updateColumnWidth (column, gc);
-		gc.dispose ();
 	}
+	gc.dispose ();
 
 	int x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);

@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.*;
  
 public class TreeColumn extends Item {
 	Tree parent;
+	String displayText;
 	int width;
 	boolean resizable = true;
 
@@ -52,6 +53,59 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+void computeDisplayText (GC gc) {
+	int availableWidth = width - 2 * parent.getHeaderPadding (); 
+	if (image != null) {
+		availableWidth -= image.getBounds ().width;
+		availableWidth -= Tree.MARGIN_IMAGE;
+	}
+	String text = this.text;
+	int textWidth = gc.textExtent (text).x;
+	if (textWidth <= availableWidth) {
+		displayText = text;
+		return;
+	}
+	
+	/* Ellipsis will be needed, so subtract their width from the available text width */
+	int ellipsisWidth = gc.textExtent (Tree.ELLIPSIS).x;
+	availableWidth -= ellipsisWidth;
+	if (availableWidth <= 0) {
+		displayText = Tree.ELLIPSIS;
+		return;
+	}
+	
+	/* Make initial guess. */
+	int index = availableWidth / gc.getFontMetrics ().getAverageCharWidth ();
+	textWidth = gc.textExtent (text.substring (0, index)).x;
+
+	/* Initial guess is correct. */
+	if (availableWidth == textWidth) {
+		displayText = text.substring (0, index) + Tree.ELLIPSIS;
+		return;
+	}
+
+	/* Initial guess is too high, so reduce until fit is found. */
+	if (availableWidth < textWidth) {
+		do {
+			index--;
+			if (index < 0) {
+				displayText = Tree.ELLIPSIS;
+				return;
+			}
+			text = text.substring (0, index);
+			textWidth = gc.textExtent (text).x;
+		} while (availableWidth < textWidth);
+		displayText = text + Tree.ELLIPSIS;
+		return;
+	}
+	
+	/* Initial guess is too low, so increase until overrun is found. */
+	while (textWidth < availableWidth) {
+		index++;
+		textWidth = gc.textExtent (text.substring (0, index)).x;
+	}
+	displayText = text.substring (0, index - 1) + Tree.ELLIPSIS;
+}
 public void dispose () {
 	if (isDisposed ()) return;
 	Rectangle parentBounds = parent.getClientArea ();
@@ -78,8 +132,9 @@ public int getAlignment () {
 /*
  * Returns the width of the header's content (image + text + margin widths)
  */
-int getContentWidth (GC gc) {
+int getContentWidth (GC gc, boolean useDisplayText) {
 	int contentWidth = 0;
+	String text = useDisplayText ? displayText : this.text;
 	if (text.length () > 0) {
 		contentWidth += gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
 	}
@@ -103,7 +158,7 @@ public Tree getParent () {
 int getPreferredWidth () {
 	if (!parent.getHeaderVisible ()) return 0;
 	GC gc = new GC (parent);
-	int result = getContentWidth (gc);
+	int result = getContentWidth (gc, false);
 	gc.dispose ();
 	return result + 2 * parent.getHeaderPadding ();
 }
@@ -129,7 +184,7 @@ void paint (GC gc) {
 	int x = getX ();
 	int startX = x + padding;
 	if ((style & SWT.LEFT) == 0) {
-		int contentWidth = getContentWidth (gc);
+		int contentWidth = getContentWidth (gc, true);
 		if ((style & SWT.RIGHT) != 0) {
 			startX = Math.max (startX, x + width - padding - contentWidth);	
 		} else {	/* SWT.CENTER */
@@ -155,11 +210,11 @@ void paint (GC gc) {
 			startX, (headerHeight - drawHeight) / 2,
 			imageBounds.width, drawHeight); 
 		startX += imageBounds.width;
-		if (text.length () > 0) startX += Tree.MARGIN_IMAGE; 
+		if (displayText.length () > 0) startX += Tree.MARGIN_IMAGE; 
 	}
-	if (text.length () > 0) {
+	if (displayText.length () > 0) {
 		int fontHeight = parent.fontHeight;
-		gc.drawText (text, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
+		gc.drawText (displayText, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
 	}
 }
 public void pack () {
@@ -204,6 +259,11 @@ public void setImage (Image value) {
 	if (value != null && value.equals (image)) return;	/* same value */
 	super.setImage (value);
 	
+	/* An image width change may affect the space available for the column's displayText. */
+	GC gc = new GC (parent);
+	computeDisplayText (gc);
+	gc.dispose ();
+	
 	/*
 	 * If this is the first image being put into the header then the header
 	 * height may be adjusted, in which case a full redraw is needed.
@@ -230,11 +290,17 @@ public void setText (String value) {
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (value.equals (text)) return;					/* same value */
 	super.setText (value);
+	GC gc = new GC (parent);
+	computeDisplayText (gc);
+	gc.dispose ();
 	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 }
 public void setWidth (int value) {
 	checkWidget ();
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
+}
+void updateFont (GC gc) {
+	computeDisplayText (gc);
 }
 }
