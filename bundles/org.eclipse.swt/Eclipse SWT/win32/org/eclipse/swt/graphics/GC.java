@@ -1604,7 +1604,15 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		return;
 	}
 	
-	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. Don't use on printers. */
+	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. */
+	/* 
+	* Bug in Windows: On Windows 2000 when the device is a printer,
+	* GradientFill swaps red and blue color components, causing the
+	* gradient to be printed in the wrong color. On Windows 98 when
+	* the device is a printer, GradientFill does not fill completely
+	* to the right edge of the rectangle. The fix is not to use
+	* GradientFill for printer devices.
+	*/
 	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final int hHeap = OS.GetProcessHeap();
 		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
