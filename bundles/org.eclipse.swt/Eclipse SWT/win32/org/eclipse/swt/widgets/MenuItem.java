@@ -1000,7 +1000,33 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 LRESULT wmMeasureChild (int wParam, int lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
+	int width = 0, height = 0;
 	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		width = rect.width;
+		height = rect.height;
+	} else {
+		/*
+		* Bug in Windows.  When a menu item has a check and a string
+		* that includes a label and accelerator text but does not have
+		* a bitmap, when the string is the longest string in the menu,
+		* the label and accelerator text overlap.  The fix is to use
+		* SetMenuItemInfo() to indicate that the item has a bitmap
+		* and then answer the width of the widest bitmap in the menu
+		* from WM_MEASURECHILD.
+		*/
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			MenuItem [] items = parent.getItems ();
+			for (int i=0; i<items.length; i++) {
+				MenuItem item = items [i];
+				if (item.image != null) {
+					Rectangle rect = item.image.getBounds ();
+					width = Math.max (width, rect.width); 
+				}
+			}
+		}
+	}
+	if (width != 0 || height != 0) {
 		/*
 		* Feature in Windows.  On Windows 98, it is necessary
 		* to add 4 pixels to the width of the image or the image
@@ -1009,11 +1035,10 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 		* accelerator text.  The fix is to add only 2 pixels in
 		* this case.
 		*/
-		Rectangle rect = image.getBounds ();
-		struct.itemWidth = rect.width + (OS.IsWin95 ? 4 : 2);
-		struct.itemHeight = rect.height + 4;
+		struct.itemWidth = width + (OS.IsWin95 ? 4 : 2);
+		struct.itemHeight = height + 4;
+		OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 	}
-	OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);	
 	return null;
 }
 
