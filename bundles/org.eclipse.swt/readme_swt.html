@@ -79,6 +79,24 @@ Similar but less serious issues exist on Windows such that occasionally an SWT e
 On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
 Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
 
+
+<h4>
+99.1.8 SWT Example (Standalone) - FileViewer</h4>
+
+On Motif, drag and drop in File Viewer may cause the X-Server to hang.  This is due to a thread synchronization issue in the example.
+This will be fixed in a future release of the FileViewer example.
+
+<h4>
+99.1.9 SWT Example (Standalone) - Hover Help</h4>
+
+On Motif, the tooltips may not appear correctly in all instances.  This will be fixed in a future release.
+
+<h4>
+99.1.10 SWT Example (Workbench View) - Paint</h4>
+
+When the polygon tool is selected and the fill mode is set to Outline or Solid, the filled region may be rendered at the wrong location 
+in the Canvas.  This will be fixed in a future release of the Paint example.
+
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
