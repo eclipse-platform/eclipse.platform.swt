@@ -1049,7 +1049,6 @@ synchronized void register () {
  * @see #destroy
  */
 protected void release () {
-	super.release ();
 
 	/* Release shells */
 	Shell [] shells = WidgetTable.shells ();
@@ -1074,6 +1073,8 @@ protected void release () {
 	synchronizer = null;
 
 	releaseDisplay ();
+
+	super.release ();
 }
 
 void releaseDisplay () {

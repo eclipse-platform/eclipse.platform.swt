@@ -1045,7 +1045,6 @@ synchronized void register () {
 	Displays = newDisplays;
 }
 protected void release () {
-	super.release ();
 	
 	/* Release shells */
 	Shell [] shells = WidgetTable.shells ();
@@ -1068,7 +1067,9 @@ protected void release () {
 	/* Release synchronizer */
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
-	releaseDisplay ();	
+	releaseDisplay ();
+
+	super.release ();
 }
 void releaseDisplay () {
 	/* Dispose the caret callback */

@@ -374,6 +374,13 @@ protected void release () {
 	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 	
+	/* Restore original warning and error handlers */
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
+	OS.XSetErrorHandler (xErrorProc);
+	OS.XtAppSetErrorHandler (xtContext, xtErrorProc);
+	OS.XSetIOErrorHandler (xIOErrorProc);
+
 	/* Release the warning and error callbacks */
 	xtWarningCallback.dispose (); xtWarningCallback = null;
 	xtWarningProc = 0;
