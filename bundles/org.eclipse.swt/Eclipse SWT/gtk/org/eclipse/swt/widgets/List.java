@@ -37,6 +37,8 @@ import org.eclipse.swt.events.*;
 public class List extends Scrollable {
 	int modelHandle;
 
+	static final int TEXT_COLUMN = 0;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -95,7 +97,7 @@ public void add (String string) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_list_store_append (modelHandle, iter);
-	OS.gtk_list_store_set (modelHandle, iter, 0, buffer, -1);
+	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -140,7 +142,7 @@ public void add (String string, int index) {
 	} else {
 		OS.gtk_list_store_insert (modelHandle, iter, index);
 	}
-	OS.gtk_list_store_set (modelHandle, iter, 0, buffer, -1);
+	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -201,7 +203,7 @@ void createHandle (int index) {
 	int columnHandle = OS.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", 0);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
@@ -1162,7 +1164,7 @@ public void setItem (int index, String string) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_list_store_set (modelHandle, iter, 0, buffer, -1);
+	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -1199,7 +1201,7 @@ public void setItems (String [] items) {
 		}
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		OS.gtk_list_store_append (modelHandle, iter);
-		OS.gtk_list_store_set (modelHandle, iter, 0, buffer, -1);
+		OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	}
 	OS.g_free (iter);
 }

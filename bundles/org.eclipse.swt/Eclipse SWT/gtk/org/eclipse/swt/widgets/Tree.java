@@ -45,6 +45,14 @@ public class Tree extends Composite {
 	TreeItem[] items;
 	ImageList imageList;
 	
+	static final int TEXT_COLUMN = 0;
+	static final int PIXBUF_COLUMN = 1;
+	static final int FOREGROUND_COLUMN = 2;
+	static final int BACKGROUND_COLUMN = 3;
+	static final int ID_COLUMN = 4;
+	static final int CHECKED_COLUMN = 5;
+	static final int GRAYED_COLUMN = 6;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -170,14 +178,18 @@ void createHandle (int index) {
 	* 3 - background
 	* 4 - id
 	* 5 - checked (if needed)
+	* 6 - grayed (if needed)
 	*/
-	int [] types = new int [(style & SWT.CHECK) !=0 ? 6 : 5];
-	types [0] = OS.G_TYPE_STRING ();
-	types [1] = OS.GDK_TYPE_PIXBUF ();
-	types [2] = OS.GDK_TYPE_COLOR ();
-	types [3] = OS.GDK_TYPE_COLOR ();
-	types [4] = OS.G_TYPE_INT ();
-	if ((style & SWT.CHECK) != 0) types [5] = OS.G_TYPE_BOOLEAN ();
+	int [] types = new int [(style & SWT.CHECK) !=0 ? 7 : 5];
+	types [TEXT_COLUMN] = OS.G_TYPE_STRING ();
+	types [PIXBUF_COLUMN] = OS.GDK_TYPE_PIXBUF ();
+	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	types [ID_COLUMN] = OS.G_TYPE_INT ();
+	if ((style & SWT.CHECK) != 0) {
+		types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN (); 
+		types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
+	} 
 	modelHandle = OS.gtk_tree_store_newv (types.length, types);
 	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_tree_view_new_with_model (modelHandle);
@@ -188,12 +200,19 @@ void createHandle (int index) {
 		checkRenderer = OS.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", 5);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", CHECKED_COLUMN);
+
+		/*
+		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
+		*/
+		if (OS.gtk_major_version () >= 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
+			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
+		}
 	}
 	int pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", 1);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", PIXBUF_COLUMN);
 	/*
 	* Feature on GTK.  When a tree view column contains only one activatable
 	* cell renderer such as a toggle renderer, mouse clicks anywhere in a cell
@@ -206,9 +225,9 @@ void createHandle (int index) {
 	int textRenderer = OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", 0);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", 2);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", 3);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
@@ -246,7 +265,7 @@ void createItem (TreeItem item, int iter, int index) {
 	} else {
 		OS.gtk_tree_store_insert (modelHandle, item.handle, iter, index);
 	}
-	OS.gtk_tree_store_set (modelHandle, item.handle, 4, id, -1);
+	OS.gtk_tree_store_set (modelHandle, item.handle, ID_COLUMN, id, -1);
 	items [id] = item;
 }
 
@@ -336,7 +355,7 @@ TreeItem getFocusItem () {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path [0]);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path [0]);
 	return items [index [0]];	
@@ -370,7 +389,7 @@ public TreeItem getItem (Point point) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path [0]);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	return items [index [0]];
 }
@@ -455,7 +474,7 @@ TreeItem [] getItems (int parent) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	boolean valid = OS.gtk_tree_model_iter_children (modelHandle, iter, parent);
 	while (valid) {
-		OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 		result [i++] = items [index [0]];
 		valid = OS.gtk_tree_model_iter_next (modelHandle, iter);
 	}
@@ -513,7 +532,7 @@ public TreeItem[] getSelection () {
 		TreeItem [] result;
 		if (hasSelection) {
 			int [] index = new int [1];
-			OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+			OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 			result = new TreeItem []{items [index [0]]};
 		} else {
 			result = new TreeItem [0];
@@ -563,7 +582,7 @@ public TreeItem getTopItem () {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path [0]);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path [0]);
 	return items [index [0]];
@@ -607,7 +626,7 @@ int gtk_row_activated (int tree, int path, int column) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	Event event = new Event ();
 	event.item = items [index [0]];
@@ -617,7 +636,7 @@ int gtk_row_activated (int tree, int path, int column) {
 
 int gtk_row_collapsed (int tree, int iter, int path) {
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	Event event = new Event ();
 	event.item = items [index [0]];
 	sendEvent (SWT.Collapse, event);	
@@ -626,7 +645,7 @@ int gtk_row_collapsed (int tree, int iter, int path) {
 
 int gtk_row_expanded (int tree, int iter, int path) {
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	Event event = new Event ();
 	event.item = items [index [0]];
 	sendEvent (SWT.Expand, event);
@@ -643,7 +662,7 @@ int gtk_toggled (int renderer, int pathStr) {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
 	TreeItem item = items [index [0]];
@@ -709,7 +728,7 @@ void register () {
 
 boolean releaseItem (TreeItem item, int [] index) {
 	if (item.isDisposed ()) return false;
-	OS.gtk_tree_model_get (modelHandle, item.handle, 4, index, -1);
+	OS.gtk_tree_model_get (modelHandle, item.handle, ID_COLUMN, index, -1);
 	items [index [0]] = null;
 	return true;
 }
@@ -1024,7 +1043,7 @@ public void showItem (TreeItem item) {
 int treeSelectionProc (int model, int path, int iter, int[] selection, int length) {
 	if (selection != null) {
 		int [] index = new int [1];
-		OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 		selection [length] = index [0];
 	}
 	return 0;

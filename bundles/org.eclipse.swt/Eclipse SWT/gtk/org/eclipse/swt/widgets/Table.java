@@ -47,6 +47,12 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
+	
+	static final int CHECKED_COLUMN = 0;
+	static final int GRAYED_COLUMN = 1;
+	static final int FOREGROUND_COLUMN = 2;
+	static final int BACKGROUND_COLUMN = 3;
+	static final int FIRST_COLUMN = BACKGROUND_COLUMN + 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -148,11 +154,12 @@ void createHandle (int index) {
 	/*
 	* Columns:
 	* 0 - check
-	* 1 - foreground
-	* 2 - background
-	* 3 - text
-	* 4 - pixbuf
-	* 5 - ...
+	* 1 - grayed
+	* 2 - foreground
+	* 3 - background
+	* 4 - text
+	* 5 - pixbuf
+	* 6 - ...
 	*/
 	int [] types = getColumnTypes (1);
 	modelHandle = OS.gtk_list_store_newv (types.length, types);
@@ -184,7 +191,7 @@ void createHandle (int index) {
 }
 
 void createColumn (TableColumn column, int index) {
-	int modelIndex = 3;
+	int modelIndex = FIRST_COLUMN;
 	if (columnCount != 0) {
 		int modelLength = OS.gtk_tree_model_get_n_columns (modelHandle);
 		boolean [] usedColumns = new boolean [modelLength];
@@ -226,9 +233,9 @@ void createColumn (TableColumn column, int index) {
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	if (index == 0 && columnCount > 0) {
 		TableColumn checkColumn = columns [0];
-		createRenderers (checkColumn.handle, checkColumn.modelIndex, false);
+		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.style);
 	}
-	createRenderers (columnHandle, modelIndex, index == 0);
+	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
@@ -238,16 +245,24 @@ void createColumn (TableColumn column, int index) {
 	}
 }
 
-void createRenderers (int columnHandle, int modelIndex, boolean check) {
+void createRenderers (int columnHandle, int modelIndex, boolean check, int columnStyle) {
 	OS.gtk_tree_view_column_clear (columnHandle);
 	if ((style & SWT.CHECK) != 0 && check) {
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", 0);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", CHECKED_COLUMN);
+		
+		/*
+		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
+		*/
+		if (OS.gtk_major_version () >= 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
+			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
+		}
 	}
 	int pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", modelIndex);
+	int textRenderer = OS.gtk_cell_renderer_text_new ();
+	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
+	
 	/*
 	* Feature on GTK.  When a tree view column contains only one activatable
 	* cell renderer such as a toggle renderer, mouse clicks anywhere in a cell
@@ -257,19 +272,38 @@ void createRenderers (int columnHandle, int modelIndex, boolean check) {
 	if ((style & SWT.CHECK) != 0 && check) {
 		OS.g_object_set (pixbufRenderer, OS.mode, OS.GTK_CELL_RENDERER_MODE_ACTIVATABLE);
 	}
-	int textRenderer = OS.gtk_cell_renderer_text_new ();
-	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
+
+	/* Set alignment */
+	if ((columnStyle & SWT.RIGHT) != 0) {
+		OS.g_object_set (textRenderer, OS.xalign, 1f);
+		OS.g_object_set (pixbufRenderer, OS.xalign, 1f);
+		OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, true);
+		OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, false);
+		OS.gtk_tree_view_column_set_alignment (columnHandle, 1f);
+	} else if ((columnStyle & SWT.CENTER) != 0) {
+		OS.g_object_set (pixbufRenderer, OS.xalign, 1f);
+		OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, true);
+		OS.gtk_tree_view_column_pack_end (columnHandle, textRenderer, true);
+		OS.gtk_tree_view_column_set_alignment (columnHandle, 0.5f);
+	} else {
+		OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
+		OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
+		OS.gtk_tree_view_column_set_alignment (columnHandle, 0f);
+	}
+
+	/* Add attributes */
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", modelIndex);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", modelIndex + 1);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", 1);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", 2);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
 }
 
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (columnCount == 0) {
 		column.handle = OS.gtk_tree_view_get_column (handle, 0);
-		column.modelIndex = 3;
+		column.modelIndex = FIRST_COLUMN;
+		createRenderers (column.handle, column.modelIndex, true, column.style);
 	} else {
 		createColumn (column, index);
 	}
@@ -453,14 +487,14 @@ void destroyItem (TableColumn column) {
 			int newItem = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_list_store_insert (newModel, newItem, i);
-			for (int j=0; j<3; j++) {
+			for (int j=0; j<FIRST_COLUMN; j++) {
 				OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 			}
 			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex, ptr, -1);
-			OS.gtk_list_store_set (newModel, newItem, 3, ptr [0], -1);
+			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN, ptr [0], -1);
 			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 1, ptr, -1);
-			OS.gtk_list_store_set (newModel, newItem, 3 + 1, ptr [0], -1);
+			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 1, ptr [0], -1);
 			OS.g_free ( (ptr [0]));
 			OS.gtk_list_store_remove (oldModel, oldItem);
 			OS.g_free (oldItem);
@@ -479,7 +513,7 @@ void destroyItem (TableColumn column) {
 		}
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
-			createRenderers (checkColumn.handle, checkColumn.modelIndex, true);
+			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
 		}
 	}
 	column.handle = 0;
@@ -560,10 +594,12 @@ public int getColumnCount () {
 }
 
 int[] getColumnTypes (int n) {
-	int[] types = new int [(n * 2) + 3];
-	types [0] = OS.G_TYPE_BOOLEAN ();
-	types [1] =  types [2] = OS.GDK_TYPE_COLOR ();
-	for (int i=3; i<types.length; i+=2) {
+	int[] types = new int [(n * 2) + FIRST_COLUMN];
+	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
+	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
+	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	for (int i=FIRST_COLUMN; i<types.length; i+=2) {
 		types [i] = OS.GDK_TYPE_PIXBUF ();
 		types [i + 1] = OS.G_TYPE_STRING ();
 	}

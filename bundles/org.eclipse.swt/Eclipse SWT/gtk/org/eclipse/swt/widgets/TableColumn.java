@@ -393,7 +393,11 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	//TODO - there is OS support
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	parent.createRenderers (handle, modelIndex, index == 0, style);
 }
 
 void setFontDescription (int font) {

@@ -31,7 +31,6 @@ import org.eclipse.swt.graphics.*;
  */
 public class TableItem extends Item {
 	Table parent;
-	boolean grayed;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -122,7 +121,7 @@ public TableItem (Table parent, int style) {
 public Color getBackground () {
 	checkWidget ();
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 2, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -171,7 +170,7 @@ public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 0, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.CHECKED_COLUMN, ptr, -1);
 	return ptr[0] != 0;
 }
 
@@ -191,7 +190,7 @@ public boolean getChecked () {
 public Color getForeground () {
 	checkWidget ();
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 1, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -213,8 +212,9 @@ public Color getForeground () {
 public boolean getGrayed () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	//NOT IMPLEMENTED
-	return grayed;
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.GRAYED_COLUMN, ptr, -1);
+	return ptr[0] != 0;
 }
 
 public Image getImage () {
@@ -240,7 +240,7 @@ public Image getImage (int index) {
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return null;
 	int [] ptr = new int [1];
-	int modelIndex = parent.columnCount == 0 ? 3 : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex, ptr, -1);
 	if (ptr [0] == 0) return null;
 	ImageList imageList = parent.imageList;
@@ -349,7 +349,7 @@ public String getText (int index) {
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
 	int [] ptr = new int [1];
-	int modelIndex = parent.columnCount == 0 ? 3 : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 1, ptr, -1);
 	if (ptr [0] == 0) return null;
 	int length = OS.strlen (ptr [0]);
@@ -395,7 +395,7 @@ public void setBackground (Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, 2, gdkColor, -1);
+	OS.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkColor, -1);
 }
 
 /**
@@ -411,7 +411,8 @@ public void setBackground (Color color) {
  */
 public void setChecked (boolean checked) {
 	checkWidget();
-	OS.gtk_list_store_set (parent.modelHandle, handle, 0, checked, -1);
+	if ((parent.style & SWT.CHECK) == 0) return;
+	OS.gtk_list_store_set (parent.modelHandle, handle, Table.CHECKED_COLUMN, checked, -1);
 }
 
 /**
@@ -438,7 +439,7 @@ public void setForeground (Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_list_store_set (parent.modelHandle, handle, 1, gdkColor, -1);
+	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkColor, -1);
 }
 
 /**
@@ -454,8 +455,8 @@ public void setForeground (Color color){
  */
 public void setGrayed (boolean grayed) {
 	checkWidget();
-	//NOT IMPLEMENTED
-	this.grayed = grayed;
+	if ((parent.style & SWT.CHECK) == 0) return;
+	OS.gtk_list_store_set (parent.modelHandle, handle, Table.GRAYED_COLUMN, grayed, -1);
 }
 
 /**
@@ -488,7 +489,7 @@ public void setImage (int index, Image image) {
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
-	int modelIndex = parent.columnCount == 0 ? 3 : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex, pixbuf, -1);
 }
 
@@ -556,7 +557,7 @@ public void setText (int index, String string) {
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
-	int modelIndex = parent.columnCount == 0 ? 3 : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 1, buffer, -1);
 }
 

@@ -32,7 +32,6 @@ import org.eclipse.swt.graphics.*;
  */
 public class TreeItem extends Item {
 	Tree parent;
-	boolean grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -203,7 +202,7 @@ static TreeItem checkNull (TreeItem item) {
 public Color getBackground () {
 	checkWidget ();
 	int[] ptr = new int[1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 3, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -250,7 +249,7 @@ public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 5, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
 	return ptr [0] != 0;
 }
 
@@ -290,7 +289,7 @@ public boolean getExpanded () {
 public Color getForeground () {
 	checkWidget ();
 	int [] ptr = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, 2, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0]==0) return parent.getForeground();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -312,8 +311,10 @@ public Color getForeground () {
  */
 public boolean getGrayed() {
 	checkWidget();
-	//NOT IMPLEMENTED
-	return grayed;
+	if ((parent.style & SWT.CHECK) == 0) return false;
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr, -1);
+	return ptr [0] != 0;
 }
 
 /**
@@ -391,7 +392,7 @@ public TreeItem getParentItem () {
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_get_iter (parent.modelHandle, iter, path);
 	int [] index = new int [1];
-	OS.gtk_tree_model_get (parent.modelHandle, iter, 4, index, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
 	return parent.items [index [0]];
@@ -433,7 +434,7 @@ public void setBackground (Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_tree_store_set (parent.modelHandle, handle, 3, gdkColor, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, gdkColor, -1);
 }
 
 /**
@@ -450,7 +451,7 @@ public void setBackground (Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	OS.gtk_tree_store_set (parent.modelHandle, handle, 5, checked, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.CHECKED_COLUMN, checked, -1);
 }
 
 /**
@@ -466,8 +467,8 @@ public void setChecked (boolean checked) {
  */
 public void setGrayed (boolean grayed) {
 	checkWidget();
-	//NOT IMPLEMENTED
-	this.grayed = grayed;
+	if ((parent.style & SWT.CHECK) == 0) return;
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, grayed, -1);
 }
 
 /**
@@ -522,7 +523,7 @@ public void setForeground (Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
-	OS.gtk_tree_store_set (parent.modelHandle, handle, 2, gdkColor, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, gdkColor, -1);
 }
 
 public void setImage (Image image) {
@@ -539,7 +540,7 @@ public void setImage (Image image) {
 		if (imageIndex == -1) imageIndex = imageList.add (image);
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
-	OS.gtk_tree_store_set (parent.modelHandle, handle, 1, pixbuf, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.PIXBUF_COLUMN, pixbuf, -1);
 }
 
 /**
@@ -552,7 +553,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_tree_store_set (parent.modelHandle, handle, 0, buffer, -1);
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.TEXT_COLUMN, buffer, -1);
 }
 
 }
