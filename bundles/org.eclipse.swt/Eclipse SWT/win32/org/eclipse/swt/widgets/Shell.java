@@ -495,6 +495,10 @@ int findBrush (int pixel) {
 	return hBrush;
 }
 
+int findCursor () {
+	return hCursor;
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -1114,7 +1118,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		}
 		/* Restore SIP state when window is activated */
 		if ((wParam & 0xFFFF) != 0) {
-			OS.SHSipPreference(handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
+			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
 		} 
 	}
 	/*

@@ -323,7 +323,7 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
-	if (!dragging || ((wParam & OS.MK_LBUTTON) == 0)) return result;
+	if (!dragging || (wParam & OS.MK_LBUTTON) == 0) return result;
 
 	/* Compute the banding rectangle */
 	POINT pt = new POINT ();
@@ -380,24 +380,18 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	int code = callWindowProc (OS.WM_SETCURSOR, wParam, lParam);
-	switch (code) {
-		case 0:
-			int hitTest = lParam & 0xFFFF;
-	 		if (hitTest == OS.HTCLIENT) {
-			 	int hCursor;
-			 	if ((style & SWT.HORIZONTAL) != 0) {
-					hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-			 	} else {
-					hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-			 	}
-				OS.SetCursor (hCursor);
-				return LRESULT.ONE;
-	 		}
-	 		return LRESULT.ZERO;
-		case 1: return LRESULT.ONE;
+	int hitTest = lParam & 0xFFFF;
+ 	if (hitTest == OS.HTCLIENT) {
+	 	int hCursor = 0;
+	 	if ((style & SWT.HORIZONTAL) != 0) {
+			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+	 	} else {
+			hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+	 	}
+		OS.SetCursor (hCursor);
+		return LRESULT.ONE;
 	}
-	return new LRESULT (code);
+	return result;
 }
 
 }

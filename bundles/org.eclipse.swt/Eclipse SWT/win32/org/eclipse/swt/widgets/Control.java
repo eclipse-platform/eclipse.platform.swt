@@ -520,6 +520,11 @@ int findBrush (int pixel) {
 	return parent.findBrush (pixel);
 }
 
+int findCursor () {
+	if (hCursor != 0) return hCursor;
+	return parent.findCursor ();
+}
+
 char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
@@ -3805,20 +3810,14 @@ LRESULT WM_RBUTTONUP (int wParam, int lParam) {
 
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	int hitTest = lParam & 0xFFFF;
-	switch (hitTest) {
-		case OS.HTERROR:
-		case OS.HTNOWHERE:
-		case OS.HTTRANSPARENT:
-			break;
-		default:
-			if (wParam == handle) {
-				if (hitTest != OS.HTCLIENT) break;
-			}
-			if (hCursor != 0) {
-				OS.SetCursor (hCursor);
-				return LRESULT.ONE;
-			}
-			break;
+ 	if (hitTest == OS.HTCLIENT) {
+		Control control = WidgetTable.get (wParam);
+		if (control == null) return null;
+		int hCursor = control.findCursor ();
+		if (hCursor != 0) {
+			OS.SetCursor (hCursor);
+			return LRESULT.ONE;
+		}
 	}
 	return null;
 }
