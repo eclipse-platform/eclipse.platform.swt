@@ -579,7 +579,19 @@ void createHandle (int index) {
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
 		OS.XmNtitle, ptr,
 	};
-	if ((style & SWT.ON_TOP) != 0) reparented = true;
+	
+	/* 
+	* Feature in Motif.  On some Window Managers, when a top level
+	* shell is created with no decorations, the Window Manager does
+	* not reparent the window regardless of the XmNoverrideRedirect
+	* resource.  The fix is to treat the window as if it has been
+	* reparented by the Window Manager despite the fact that this
+	* has not really happened.
+	*/
+	if (style == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0) {
+		reparented = true;
+	} 
+	
 	byte [] appClass = display.appClass;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
 		int xDisplay = display.xDisplay;
