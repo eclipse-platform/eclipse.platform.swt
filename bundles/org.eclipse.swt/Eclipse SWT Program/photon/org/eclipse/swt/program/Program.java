@@ -31,7 +31,7 @@ public final class Program {
 Program () {
 }
 
-/*
+/**
  * Finds the program that is associated with an extension.
  * The extension may or may not begin with a '.'.
  *
@@ -48,7 +48,7 @@ public static Program findProgram (String extension) {
 	return null;
 }
 
-/*
+/**
  * Answer all program extensions in the operating system.
  *
  * @return an array of extensions
@@ -57,7 +57,7 @@ public static String [] getExtensions () {
 	return new String[0];
 }
 
-/*
+/**
  * Answers all available programs in the operating system.
  *
  * @return an array of programs
@@ -86,7 +86,7 @@ public static Program [] getPrograms () {
 	return programs;
 }
 
-/*
+/**
  * Launches the executable associated with the file in
  * the operating system.  If the file is an executable,
  * then the executable is launched.
@@ -113,7 +113,7 @@ public static boolean launch (String fileName) {
 	}
 }
 
-/*
+/**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
  * programmer to ensure that the file
@@ -139,18 +139,18 @@ public boolean execute (String fileName) {
 	return true;
 }
 
-/*
+/**
  * Returns the receiver's image data.  This is the icon
  * that is associated with the reciever in the operating
  * system.
  *
- * @return the image data for the program
+ * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
 	return null;
 }
 
-/*
+/**
  * Returns the receiver's name.  This is as short and
  * descriptive a name as possible for the program.  If
  * the program has no descriptive name, this string may
@@ -160,6 +160,30 @@ public ImageData getImageData () {
  */
 public String getName () {
 	return name;
+}
+
+/**
+ * Returns true if the receiver and the argument represent
+ * the same program.
+ * 
+ * @return true if the programs are the same
+ */
+public boolean equals(Object other) {
+	if (other instanceof Program) {
+		final Program program = (Program) other;
+		return extension.equals(program.extension) && name.equals(program.name) &&
+			command.equals(program.command);
+	}
+	return false;
+}
+
+/**
+ * Returns a hash code suitable for this object.
+ * 
+ * @return a hash code
+ */
+public int hashCode() {
+	return extension.hashCode() ^ name.hashCode() ^ command.hashCode();
 }
 
 public String toString () {

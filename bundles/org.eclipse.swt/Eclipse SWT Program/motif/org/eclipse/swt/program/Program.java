@@ -659,7 +659,7 @@ private static boolean launch( Display display, String fileName ) {
 	}
 }
 
-/*
+/**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
  * programmer to ensure that the file contains valid data for 
@@ -737,12 +737,12 @@ public boolean execute (String fileName) {
 	return false;
 }
 
-/*
+/**
  * Returns the receiver's image data.  This is the icon
  * that is associated with the reciever in the operating
  * system.
  *
- * @return the image data for the program
+ * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
 	String iconPath = null;
@@ -803,7 +803,7 @@ public ImageData getImageData () {
 	}
 }
 
-/*
+/**
  * Returns the receiver's name.  This is as short and
  * descriptive a name as possible for the program.  If
  * the program has no descriptive name, this string may
@@ -813,6 +813,30 @@ public ImageData getImageData () {
  */
 public String getName () {
 	return name;
+}
+
+/**
+ * Returns true if the receiver and the argument represent
+ * the same program.
+ * 
+ * @return true if the programs are the same
+ */
+public boolean equals(Object other) {
+	if (other instanceof Program) {
+		final Program program = (Program) other;
+		return display == program.display && extension.equals(program.extension) &&
+			name.equals(program.name) && command.equals(program.command);
+	}
+	return false;
+}
+
+/**
+ * Returns a hash code suitable for this object.
+ * 
+ * @return a hash code
+ */
+public int hashCode() {
+	return extension.hashCode() ^ name.hashCode() ^ command.hashCode() ^ display.hashCode();
 }
 
 public String toString () {
