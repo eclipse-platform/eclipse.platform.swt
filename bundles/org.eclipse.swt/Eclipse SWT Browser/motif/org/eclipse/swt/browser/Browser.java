@@ -129,13 +129,13 @@ public Browser(Composite parent, int style) {
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, e);
 		}
 		
 		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]");
 		}
 
 		int[] retVal = new int[1];
@@ -165,7 +165,7 @@ public Browser(Composite parent, int style) {
 			if (LocProvider != null) LocProvider.Release();
 			LocProvider = null;
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]");
 		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
@@ -1989,19 +1989,24 @@ int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
 	XPCOM.memmove(dest, aTipText, length * 2);
 	String text = new String(dest);
 	if (tip != null && !tip.isDisposed()) tip.dispose();
-	Shell parent = getShell();
 	Display display = getDisplay();
-	/* Assuming cursor is 21x21 because this is the size of
-	 * the arrow cursor on Windows
-	 */ 
-	int cursorHeight = 21; 
-	Point point = display.map(this, null, aXCoords, aYCoords + cursorHeight);
+	Shell parent = getShell();
 	tip = new Shell(parent, SWT.ON_TOP);
 	tip.setLayout(new FillLayout());
 	Label label = new Label(tip, SWT.CENTER);
 	label.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 	label.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 	label.setText(text);
+	/*
+	* Bug in Mozilla embedded API.  Tooltip coordinates are wrong for 
+	* elements inside an inline frame (IFrame tag).  The workaround is 
+	* to position the tooltip based on the mouse cursor location.
+	*/
+	Point point = display.getCursorLocation();
+	/* Assuming cursor is 21x21 because this is the size of
+	 * the arrow cursor on Windows
+	 */ 
+	point.y += 21;
 	tip.setLocation(point);
 	tip.pack();
 	tip.setVisible(true);
