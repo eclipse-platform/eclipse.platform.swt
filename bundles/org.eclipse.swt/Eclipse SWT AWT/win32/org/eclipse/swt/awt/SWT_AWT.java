@@ -163,7 +163,7 @@ public static Frame new_Frame (final Composite parent) {
 	* TEMPORARY CODE
 	* 
 	* For some reason, the graphics configuration of the embedded
-	* frame is not initialized properly. This will cause a walkback
+	* frame is not initialized properly. This causes an exception
 	* when the depth of the screen is changed.
 	*/
 	EventQueue.invokeLater(new Runnable () {
