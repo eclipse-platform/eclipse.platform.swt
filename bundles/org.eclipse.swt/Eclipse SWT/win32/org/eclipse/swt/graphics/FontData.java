@@ -255,10 +255,12 @@ public FontData(String string) {
  * @param style a bit or combination of NORMAL, BOLD, ITALIC
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - when the font name is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>
  */
 public FontData(String name, int height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	data = new LOGFONT();
 	setName(name);
 	setHeight(height);
@@ -510,10 +512,14 @@ public void setLocale(Locale locale) {
  * </p>
  *
  * @param name the name of the font data (must not be null)
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - when the font name is null</li>
+ * </ul>
  *
  * @see #getName
  */
 public void setName(String name) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	char [] chars = new char [32];
 	name.getChars (0, name.length(), chars, 0);
 	data.lfFaceName0 = chars[0];

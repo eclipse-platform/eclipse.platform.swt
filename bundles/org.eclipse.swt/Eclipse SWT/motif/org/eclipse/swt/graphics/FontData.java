@@ -213,19 +213,19 @@ public FontData(String string) {
  * @param style a bit or combination of NORMAL, BOLD, ITALIC
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - when the font name is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>
  */
 public FontData (String name, int height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (name != null) {
-		int dash = name.indexOf('-');
-		if (dash != -1) {
-			foundry = name.substring(0, dash);
-			fontFamily = name.substring(dash + 1);
-		} else {
-			fontFamily = name;
-		}
+	int dash = name.indexOf('-');
+	if (dash != -1) {
+		foundry = name.substring(0, dash);
+		fontFamily = name.substring(dash + 1);
+	} else {
+		fontFamily = name;
 	}
 	points = height * 10;
 	if ((style & SWT.BOLD) != 0)
@@ -372,14 +372,14 @@ public void setHeight(int height) {
  * </p>
  *
  * @param name the name of the font data
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - when the font name is null</li>
+ * </ul>
  *
  * @see #getName
  */
 public void setName(String name) {
-	if (name == null) {
-		foundry = fontFamily = null;
-		return;
-	}
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int dash = name.indexOf('-');
 	if (dash != -1) {
 		foundry = name.substring(0, dash);

@@ -169,6 +169,7 @@ public void setHeight(int height) {
 }
 
 public void setName(String name) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.name = name;
 }
 
