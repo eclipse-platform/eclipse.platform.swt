@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.mozilla.*;
 
 class AppFileLocProvider {
@@ -24,7 +23,7 @@ class AppFileLocProvider {
 public AppFileLocProvider() {
 	mozillaPath = GRE.mozillaPath;
 	grePath = GRE.grePath;
-	if (mozillaPath == null) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));	
+	if (mozillaPath == null) Browser.error(XPCOM.NS_ERROR_FAILURE);	
 	createCOMInterfaces();
 }
 
