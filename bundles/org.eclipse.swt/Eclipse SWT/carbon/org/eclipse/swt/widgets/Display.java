@@ -1805,6 +1805,7 @@ static String convertToLf(String text) {
 			int kind= OS.GetEventKind(inEvent);
 			switch (kind) {
 			case OS.kEventControlDraw:
+				System.out.println("Display.kEventControlDraw");
 			
 				int[] gccontext= new int[1];
 				OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, gccontext);
@@ -1827,9 +1828,6 @@ static String convertToLf(String text) {
 	}
 			
 	private int handleUserPaneHitTest(int cHandle, int where) {
-		Widget w= WidgetTable.get(cHandle);
-		if (w instanceof Text || w instanceof Combo)
-			return 112;
 		return 111;
 	}
 			
@@ -1967,22 +1965,6 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 	
-	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
-		int eventClass= OS.GetEventClass(eRefHandle);
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		switch (eventClass) {
-			
-		case OS.kEventClassMouse:
-			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
-		
-		default:
-			System.out.println("handleMouseCallback: unexpected event class: " + MacUtil.toString(eventClass));
-			break;
-		}
-		return OS.eventNotHandledErr;
-	}
-	
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		
 		int eventClass= OS.GetEventClass(eRefHandle);
@@ -1991,7 +1973,7 @@ static String convertToLf(String text) {
 		switch (eventClass) {
 			
 		case OS.kEventClassMouse:
-			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
+			return handleMouseCallback(nextHandler, eRefHandle, whichWindow);
 			
 		case OS.kEventClassWindow:
 			switch (eventKind) {
@@ -2063,7 +2045,6 @@ static String convertToLf(String text) {
 		switch (eventClass) {
 			
 		case OS.kEventClassAppleEvent:
-		
 			// check for 'quit' events
 			int[] aeclass= new int[1];
 			if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventClass, OS.typeType, null, aeclass.length*4, null, aeclass) == OS.noErr) {
@@ -2082,17 +2063,14 @@ static String convertToLf(String text) {
 			break;
 			
 		case OS.kEventClassCommand:
-		
 			if (eventKind == OS.kEventProcessCommand) {
 				int[] rc= new int[4];
 				OS.GetEventHICommand(eRefHandle, rc);
-				
 				if (rc[1] == OS.kAEQuitApplication) {
 					close();
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.noErr;
 				}
-				
 				// try to map the MenuRef to a SWT Menu
 				Widget w= findWidget (rc[2]);
 				if (w instanceof Menu) {
@@ -2101,8 +2079,6 @@ static String convertToLf(String text) {
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.noErr;
 				}
-				
-				
 				OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 				// we do not return noErr here so that the default handler
 				// takes care of special menus like the Combo menu.
@@ -2112,18 +2088,20 @@ static String convertToLf(String text) {
 		case OS.kEventClassMouse:
 			switch (eventKind) {
 				
-			case OS.kEventMouseDown:
+			case OS.kEventMouseDown:	// clicks in menu bar
 			
 				fTrackedControl= 0;
 				
 				hideToolTip();
-	
+				
 				MacEvent mEvent= new MacEvent(eRefHandle);
 				org.eclipse.swt.internal.carbon.Point where= mEvent.getWhere();
 				int[] w= new int[1];
 				short part= OS.FindWindow(where, w);
 				if (part == OS.inMenuBar) {
-					OS.MenuSelect(mEvent.getWindowWhere(w[0]));
+					org.eclipse.swt.internal.carbon.Point loc= mEvent.getWhere();
+					OS.QDGlobalToLocalPoint(OS.GetWindowPort(w[0]), loc);
+					OS.MenuSelect(loc);
 					return OS.noErr;
 				}
 				break;
@@ -2131,7 +2109,7 @@ static String convertToLf(String text) {
 			case OS.kEventMouseDragged:
 			case OS.kEventMouseUp:
 			case OS.kEventMouseMoved:
-				return handleMouseEvent(nextHandler, eRefHandle, eventKind, 0);
+				return handleMouseCallback(nextHandler, eRefHandle, 0);
 			}
 			break;
 						
@@ -2146,10 +2124,19 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 		
-	private int handleMouseEvent(int nextHandler, int eRefHandle, int eventKind, int whichWindow) {
+	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		
-		if (eventKind == OS.kEventMouseDown)
+		int eventClass= OS.GetEventClass(eRefHandle);
+		if (eventClass != OS.kEventClassMouse) {
+			System.out.println("handleMouseCallback: unexpected event class: " + MacUtil.toString(eventClass));
+			return OS.eventNotHandledErr;
+		}
+				
+		int eventKind= OS.GetEventKind(eRefHandle);
+
+		if (eventKind == OS.kEventMouseDown) {
 			fTrackedControl= 0;
+		}
 		
 		MacEvent me= new MacEvent(eRefHandle);
 		org.eclipse.swt.internal.carbon.Point where= me.getWhere();
@@ -2188,40 +2175,77 @@ static String convertToLf(String text) {
 			
 		MacEvent.trackStateMask(eRefHandle, eventKind);
 				
+		// determine control under mouse
+		short[] cpart= new short[1];		
+		int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, cpart);				
+		Widget widget= WidgetTable.get(whichControl);
+		
+		MacMouseEvent mme= new MacMouseEvent(me);
+		
 		switch (eventKind) {
 		
-		case OS.kEventMouseWheelMoved:
-			int cntrl= MacUtil.findControlUnderMouse(whichWindow, me, null);
-			Widget ww= findWidget(cntrl);
-			if (ww instanceof Composite) {
-				Composite s= (Composite) ww;
-				ScrollBar sb= s.getVerticalBar();
-				if (sb != null)
-					return sb.processWheel(eRefHandle);
+		case OS.kEventMouseDown:			
+			
+			Shell shell= null;
+			Widget w= findWidget(whichWindow);
+			if (w instanceof Shell)
+				shell= (Shell) w;
+				
+			// first click in window -> activation
+			if (!OS.IsWindowActive(whichWindow)) {
+				if (shell != null && (shell.getStyle() & SWT.ON_TOP) == 0) {
+					// let the default handler activate the window
+					break;
+				}
+			}
+			
+			// whatever we do, we hide the tooltip
+			hideToolTip();
+
+			// focus handling
+			if (shell != null && (shell.getStyle() & SWT.ON_TOP) == 0)
+				setMacFocusHandle(whichWindow, whichControl);
+									
+			if (whichControl != 0) {
+			
+				// deal with the context menu
+				if (widget instanceof Control) {
+					Menu cm= ((Control)widget).getMenu();	// is a context menu installed?
+					if (cm != null && me.isShowContextualMenuClick()) {
+						try {
+							fInContextMenu= true;
+							// AW: not ready for primetime
+							// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
+							org.eclipse.swt.internal.carbon.Point pos= me.getWhere();
+							OS.PopUpMenuSelect(cm.handle, pos.v, pos.h, (short)1);
+						} finally {
+							fInContextMenu= false;
+						}
+						return OS.noErr;
+					}
+				}
+				
+				if (cpart[0] == 111) { 	// a user pane
+					if (!(widget instanceof Text)) 
+						fTrackedControl= whichControl;	// starts mouse tracking
+					windowProc(whichControl, SWT.MouseDown, mme);
+					return OS.noErr;
+				} else {
+					windowProc(whichControl, SWT.MouseDown, mme);
+				}
 			}
 			break;
 		
-		case OS.kEventMouseDown:
-					
-			if (!OS.IsWindowActive(whichWindow)) {
-				// let the default handler activate the window
-				break;
-			}
-		
-			hideToolTip ();
-							
-			return handleContentClick(me, whichWindow);
-		
 		case OS.kEventMouseDragged:
 			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseMove, new MacMouseEvent(me));
+				windowProc(fTrackedControl, SWT.MouseMove, mme);
 				return OS.noErr;
 			}
 			break;
 
 		case OS.kEventMouseUp:
 			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseUp, new MacMouseEvent(me));
+				windowProc(fTrackedControl, SWT.MouseUp, mme);
 				fTrackedControl= 0;
 				return OS.noErr;
 			}	
@@ -2230,21 +2254,18 @@ static String convertToLf(String text) {
 		case OS.kEventMouseMoved:
 		
 			fTrackedControl= 0;			
-			
-			int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, null);
-		
+					
 			if (fCurrentControl != whichControl) {
 			
 				if (fCurrentControl != 0) {
 					fLastHoverHandle= 0;
-					windowProc(fCurrentControl, SWT.MouseExit, new MacMouseEvent(me));
+					windowProc(fCurrentControl, SWT.MouseExit, mme);
 				}
 				
 				fCurrentControl= whichControl;
 				
-				Widget w= findWidget(fCurrentControl);
-				if (w instanceof Control) {
-					Control c= (Control) w;
+				if (widget instanceof Control) {
+					Control c= (Control) widget;
 					if (c.cursor != null)
 						c.cursor.install(this);	
 					else
@@ -2252,17 +2273,26 @@ static String convertToLf(String text) {
 				} else
 					setCursor(0);
 				
-				windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
+				windowProc(fCurrentControl, SWT.MouseMove, mme);
 				
 				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseEnter, new MacMouseEvent(me));
+					windowProc(fCurrentControl, SWT.MouseEnter, mme);
 				}
-				return OS.noErr;			
+				return OS.noErr;
+				
 			} else {
 				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
+					windowProc(fCurrentControl, SWT.MouseMove, mme);
 					return OS.noErr;
 				}
+			}
+			break;
+			
+		case OS.kEventMouseWheelMoved:
+			if (widget instanceof Composite) {
+				ScrollBar sb= ((Composite) widget).getVerticalBar();
+				if (sb != null)
+					return sb.processWheel(eRefHandle);
 			}
 			break;
 		}
@@ -2304,55 +2334,6 @@ static String convertToLf(String text) {
 		}
 	}
 		
-	private int handleContentClick(MacEvent me, int whichWindow) {
-
-		short[] cpart= new short[1];		
-		int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, cpart);				
-
-		setMacFocusHandle(whichWindow, whichControl);
-								
-		if (whichControl != 0) {
-		
-			// deal with the context menu
-			Widget wc= WidgetTable.get(whichControl);
-			if (wc instanceof Control) {
-				Menu cm= ((Control)wc).getMenu();	// is a context menu installed?
-				if (cm != null && me.isShowContextualMenuClick()) {
-					try {
-						fInContextMenu= true;
-						// AW: not ready for primetime
-						// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
-						org.eclipse.swt.internal.carbon.Point pos= me.getWhere();
-						OS.PopUpMenuSelect(cm.handle, pos.v, pos.h, (short)1);
-					} finally {
-						fInContextMenu= false;
-					}
-					return OS.noErr;
-				}
-			}
-					
-			switch (cpart[0]) {
-//			case 0:
-//				break;
-
-			case 111:	// User pane
-				fTrackedControl= whichControl;	// starts mouse tracking
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				break;
-
-			case 112:	// User pane
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				break;
-				
-			default:
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				//OS.HIViewClick(whichControl, me.getEventRef());
-				return OS.eventNotHandledErr;
-			}
-		}
-		return OS.noErr;
-	}
-		
 	private void sendUserEvent(int kind) {
 		int[] event= new int[1];
 		OS.CreateEvent(0, SWT_USER_EVENT, kind, 0.0, OS.kEventAttributeUserEvent, event);
@@ -2392,10 +2373,4 @@ static String convertToLf(String text) {
 			error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return proc;
 	}
-	
-	private int hiobProc (int inHandlerCallRef, int inEvent, int inUserData) {
-		System.out.println("hiobProc: " + inUserData);
-		return 0;
-	}
-
 }
