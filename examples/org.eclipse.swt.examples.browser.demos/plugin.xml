@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples.browser.demos"
    name="BrowserDemo Plug-in"
-   version="1.0.0"
+   version="3.1.0"
    provider-name="SWT"
    class="org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin">
 
@@ -28,7 +28,7 @@
             allowMultiple="false"
             class="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView"
             icon="icons/sample.gif"
-            category="org.eclipse.swt.examples.browser.demos.BrowserDemo"
+            category="org.eclipse.swt.examples.category"
             name="Browser Demo"
             id="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
       </view>
