@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KApplication_1new
 	sigaction( SIGSEGV, NULL, &prev );
 	
 	// Initialize KDE, which installs its own signal handler.
-	KApplication* app = new KApplication(myArgc, myArgv, qcString);
+	KApplication* app = new KApplication(myArgc, myArgv, qcString, 0, 0);
 	
 	// Replace the Java VM signal handler.
 	sigaction( SIGSEGV, &prev, NULL );
