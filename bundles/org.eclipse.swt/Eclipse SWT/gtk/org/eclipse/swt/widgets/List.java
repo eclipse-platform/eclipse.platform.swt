@@ -652,7 +652,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
 				if ((style & SWT.MULTI) != 0) selected = true;
-				processMouseDown (int0, int1, int2);
+				super.processMouseDown (int0, int1, int2);
 				break;
 			}
 			case OS.GDK_BUTTON_RELEASE: {
@@ -681,7 +681,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					}
 					selected = false;
 				}
-				processMouseUp (int0, int1, int2);
+				super.processMouseUp (int0, int1, int2);
 				break;
 			}
 		}
