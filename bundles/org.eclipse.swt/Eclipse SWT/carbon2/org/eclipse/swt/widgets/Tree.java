@@ -681,10 +681,13 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	* from a zero size to a size that can show the selection.
 	*/
 	//TODO - optimize
-	Rectangle bounds = null;
-	if (resize && control == handle) bounds = getBounds ();
+	TreeItem item = null;
+	if (resize && control == handle) {
+		Rectangle rect = getClientArea ();
+		if (rect.height < getItemHeight ()) item = getTopItem ();
+	}
 	int result = super.setBounds (control, x, y, width, height, move, resize, events);
-	if (bounds != null && bounds.isEmpty ()) showSelection ();
+	if (item != null) showItem (item, true);
 	return result;
 }
 
