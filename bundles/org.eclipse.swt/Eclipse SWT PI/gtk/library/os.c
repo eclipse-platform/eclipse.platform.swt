@@ -4522,6 +4522,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1raise)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1remove_1filter
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1remove_1filter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1remove_1filter_FUNC);
+	gdk_window_remove_filter((GdkWindow *)arg0, (GdkFilterFunc)arg1, (gpointer)arg2);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1remove_1filter_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1resize
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1resize)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

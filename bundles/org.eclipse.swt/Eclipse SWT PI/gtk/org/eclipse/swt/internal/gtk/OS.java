@@ -802,6 +802,15 @@ public static final void gdk_window_add_filter(int /*long*/ window, int /*long*/
 		lock.unlock();
 	}
 }
+public static final native void _gdk_window_remove_filter(int /*long*/ window, int /*long*/ function, int /*long*/ data);
+public static final void gdk_window_remove_filter(int /*long*/ window, int /*long*/ function, int /*long*/ data) {
+	lock.lock();
+	try {
+		_gdk_window_remove_filter(window, function, data);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void memmove(int /*long*/ dest, XButtonEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XCrossingEvent src, int /*long*/ size);
