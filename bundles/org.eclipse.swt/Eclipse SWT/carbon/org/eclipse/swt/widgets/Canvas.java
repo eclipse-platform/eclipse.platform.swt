@@ -198,4 +198,10 @@ public void setCaret (Caret caret) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	if (caret != null) caret.setFont (font);
+	super.setFont (font);
+}
+
 }
