@@ -677,15 +677,18 @@ void redraw () {
 	RECT rect = new RECT ();
 	rect.left = handle;
 	/*
-	* When there are no columns, redraw only the text.
-	* Otherwise, redraw the entire line.  This is an
-	* optimization that reduces flashing.
+	* When there are no columns and the tree is not
+	* full selection, redraw only the text.  This is
+	* an optimization to reduce flashing.
 	*/
-	int count = 0, hwndHeader = parent.hwndHeader;
-	if (hwndHeader != 0) {
-		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	boolean full = (parent.style & SWT.FULL_SELECTION) != 0;
+	if (!full) {
+		int hwndHeader = parent.hwndHeader;
+		if (hwndHeader != 0) {
+			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
+		}
 	}
-	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, count != 0 ? 0 : 1, rect) != 0) {
+	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
@@ -907,7 +910,6 @@ public void setFont (Font font){
 	tvItem.hItem = handle;
 	tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	redraw ();
 }
 
 
@@ -950,7 +952,22 @@ public void setFont (int index, Font font) {
 	}
 	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
-	redraw (index, true, true);
+	/*
+	* Bug in Windows.  When the font is changed for an item,
+	* the bounds for the item are not updated, causing the text
+	* to be clipped.  The fix is to reset the text, causing
+	* Windows to compute the new bounds using the new font.
+	*/
+	if (index == 0) {
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+		tvItem.hItem = handle;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	} else {
+		redraw (index, false, true);
+	}
 }
 
 /**
@@ -1027,7 +1044,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, true, true);
+	redraw (index, false, true);
 }
 
 /**
