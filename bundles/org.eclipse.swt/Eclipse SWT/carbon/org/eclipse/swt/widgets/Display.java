@@ -813,7 +813,6 @@ void createDisplay (DeviceData data) {
 	*/
 	int [] psn = new int [2];
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		if (APP_NAME != null) {
 			byte[] buffer = new byte[APP_NAME.length () + 1];
 			for (int i = 0; i < buffer.length - 1; i++) {
@@ -821,6 +820,7 @@ void createDisplay (DeviceData data) {
 			}
 			OS.CPSSetProcessName (psn, buffer);
 		}
+		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		OS.SetFrontProcess (psn);
 	}
 	/*
