@@ -271,7 +271,7 @@ public void pack () {
 	if (index == -1) return;
 	int hwnd = parent.handle;
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + 10;
+	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (image != null) {
 		int margin = 0;
 		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {

@@ -48,6 +48,9 @@ public class Table extends Composite {
 	int lastIndexOf, lastWidth;
 	boolean customDraw, dragStarted, fixScrollWidth, mouseDown;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw;
+	static final int INSET = 4;
+	static final int GRID_WIDTH = 1;
+	static final int HEADER_MARGIN = 10;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -1161,7 +1164,7 @@ int getForegroundPixel () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return 1;
+	return GRID_WIDTH;
 }
 
 /**
@@ -2437,7 +2440,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		if (hStateList != 0) {
 			int [] cx = new int [1], cy = new int [1];
 			OS.ImageList_GetIconSize (hStateList, cx, cy);
-			newWidth += cx [0] + 4;
+			newWidth += cx [0] + INSET;
 		}
 		int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (hImageList != 0) {
@@ -2457,7 +2460,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			newWidth++;
 		}
-		newWidth += 8;
+		newWidth += INSET * 2;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
 			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
