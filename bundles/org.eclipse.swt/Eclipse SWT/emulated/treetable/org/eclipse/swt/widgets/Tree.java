@@ -991,15 +991,13 @@ void mouseDoubleClick(Event event) {
 	TreeItem hitItem = getRoot().getVisibleItem(hitItemIndex + getTopIndex());
 	Event newEvent;
 	
-	if (hitItem == null || itemAction(hitItem, event.x, event.y) != ActionSelect) {
+	if (hitItem == null || getIgnoreDoubleClick() || itemAction(hitItem, event.x, event.y) != ActionSelect) {
 		return;
 	}
 	if (isListening(SWT.DefaultSelection) == true) {
-		if (!getIgnoreDoubleClick()) {
-			newEvent = new Event();
-			newEvent.item = hitItem;
-			postEvent(SWT.DefaultSelection, newEvent);
-		}
+		newEvent = new Event();
+		newEvent.item = hitItem;
+		postEvent(SWT.DefaultSelection, newEvent);
 	}
 	else
 	if (hitItem.isLeaf() == false) {		// item with children was hit. Default behavior is expand/collapse item
