@@ -42,7 +42,7 @@ public class Link extends Control {
 	int [] mnemonics;
 	int focusIndex;
 	int font;
-	
+	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final int LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
@@ -54,7 +54,6 @@ public class Link extends Control {
 			LinkProc = 0;
 		}
 	}
-	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	
 /**
  * Constructs a new instance of this class given its parent
