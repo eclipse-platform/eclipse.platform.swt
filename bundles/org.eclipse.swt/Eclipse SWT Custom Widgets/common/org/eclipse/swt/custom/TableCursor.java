@@ -400,11 +400,10 @@ void paint(Event event) {
 	if (text != "") { //$NON-NLS-1$
 		Rectangle bounds = row.getBounds(columnIndex);
 		Point extent = gc.stringExtent(text);
-		TableColumn[] columns = table.getColumns();
 		// Temporary code - need a better way to determine table trim
 		String platform = SWT.getPlatform();
 		if ("win32".equals(platform)) { //$NON-NLS-1$
-			if (table.getColumns().length == 0 || columnIndex == 0) {
+			if (table.getColumnCount() == 0 || columnIndex == 0) {
 				x += 2; 
 			} else {
 				int alignmnent = column.getAlignment();
@@ -421,7 +420,7 @@ void paint(Event event) {
 				}
 			}
 		}  else {
-			if (table.getColumns().length == 0) {
+			if (table.getColumnCount() == 0) {
 				x += 5; 
 			} else {
 				int alignmnent = column.getAlignment();
