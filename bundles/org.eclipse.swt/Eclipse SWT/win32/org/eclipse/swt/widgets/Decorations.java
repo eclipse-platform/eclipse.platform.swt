@@ -963,11 +963,14 @@ public void setMenuBar (Menu menu) {
 public void setMinimized (boolean minimized) {
 	checkWidget ();
 	if (OS.IsWinCE) return;
-	swFlags = OS.SW_RESTORE;
-	if (minimized) swFlags = OS.SW_SHOWMINNOACTIVE;
+	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
 	if (!OS.IsWindowVisible (handle)) return;
 	if (minimized == OS.IsIconic (handle)) return;
-	OS.ShowWindow (handle, swFlags);
+	int flags = swFlags;
+	if (flags == OS.SW_SHOWMINNOACTIVE && handle == OS.GetActiveWindow ()) {
+		flags = OS.SW_MINIMIZE;
+	}
+	OS.ShowWindow (handle, flags);
 	OS.UpdateWindow (handle);
 }
 
