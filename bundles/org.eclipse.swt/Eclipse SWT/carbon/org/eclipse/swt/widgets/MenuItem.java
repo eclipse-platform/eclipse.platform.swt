@@ -31,6 +31,10 @@ import org.eclipse.swt.internal.carbon.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int id, accelerator;
+	
+	// AW
+	private int fCIconHandle;
+	// AW
 
 /**
  * Constructs a new instance of this class given its parent
@@ -376,6 +380,12 @@ void releaseWidget () {
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
+	if (fCIconHandle != 0) {
+		
+		Image.DisposeCIcon(fCIconHandle);
+		fCIconHandle= 0;
+    }
+
 }
 
 /**
@@ -516,22 +526,21 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	/* AW
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
-		return;
+	
+	if (MacUtil.USE_MENU_ICONS) {
+		if (fCIconHandle != 0)
+			Image.DisposeCIcon(fCIconHandle);
+		fCIconHandle= Image.carbon_createCIcon(image);
+		if (fCIconHandle != 0) {
+			int hMenu = parent.handle;
+			short[] index= new short[1];
+			OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
+			if (index[0] >= 1) {
+				OS.SetMenuItemIconHandle(hMenu, index[0], (byte)4, fCIconHandle);
+			} else
+				error (SWT.ERROR_CANNOT_SET_TEXT);
+		}
 	}
-	int hMenu = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_BITMAP;
-	if (image != null) info.hbmpItem = OS.HBMMENU_CALLBACK;
-	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	*/
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (!success) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
 
 /**
@@ -660,7 +669,6 @@ public void setText (String string) {
 		setAccelerator(hMenu, index[0], accelerator);
 	} else
 		error (SWT.ERROR_CANNOT_SET_TEXT);
-		
 }
 
 ////////////////////////////////////////
