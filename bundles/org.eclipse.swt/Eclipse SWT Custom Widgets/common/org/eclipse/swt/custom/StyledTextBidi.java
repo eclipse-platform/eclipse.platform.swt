@@ -1,5 +1,5 @@
 package org.eclipse.swt.custom;
-
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
-
+
 /*
  */
 class StyledTextBidi {
@@ -20,7 +20,8 @@ class StyledTextBidi {
 	int[] dx;
 	byte[] classBuffer;
 	byte[] glyphBuffer;
-	class DirectionRun {
+
+	class DirectionRun {
 		int logicalStart;
 		int logicalEnd;
 		
@@ -159,7 +160,8 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 void drawGlyphs(int visualStart, int length, int x, int y) {
 	byte[] renderBuffer = new byte[length * 2];
 	int[] renderDx = new int[length];
-	if (length == 0) {
+
+	if (length == 0) {
 		return;
 	}	
 	System.arraycopy(glyphBuffer, visualStart * 2, renderBuffer, 0, length * 2);
@@ -251,21 +253,20 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 		offset = order[0];
 		if (isRightToLeft(offset)) {
 			if (visualLeft) {
-				offset = order[0] + 1;
+				offset = getLigatureOffset(offset);
+				offset = offset + 1;
 				direction = ST.COLUMN_NEXT;
 			}
 			else {
-				offset = order[0];
 				direction = ST.COLUMN_PREVIOUS;
 			}
 		}
 		else {
 			if (visualLeft) {
-				offset = order[0];
 				direction = ST.COLUMN_PREVIOUS;
 			}
 			else {
-				offset = order[0] + 1;
+				offset = offset + 1;
 				direction = ST.COLUMN_NEXT;
 			}
 		}			
@@ -277,6 +278,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	if (visualIndex == renderPositions.length - 1) {
 		if (isRightToLeft(offset)) {
 			if (visualLeft) {
+				offset = getLigatureOffset(offset);
 				offset = offset + 1;
 				direction = ST.COLUMN_NEXT;
 			}
@@ -300,6 +302,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 
 	if (isRightToLeft(offset)) {
 		if (visualLeft) {
+			offset = getLigatureOffset(offset);
 			offset = offset + 1;
 			direction = ST.COLUMN_NEXT;
 		}
@@ -353,7 +356,8 @@ public int getCaretPosition(int logicalOffset) {
 	// at R2L character or beginning of line?
 	if (isRightToLeft(logicalOffset) || logicalOffset == 0) {
 		int visualOffset = order[logicalOffset];
-
+
+
 		if (isRightToLeft(logicalOffset)) {
 			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
@@ -417,7 +421,8 @@ public int getCaretPosition(int logicalOffset, int direction) {
 		return caretX;
 		}
 	}
-	if (direction == ST.COLUMN_PREVIOUS) {
+
+	if (direction == ST.COLUMN_PREVIOUS) {
 		if (isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
 			// moving between segments
 			if (isRightToLeft(logicalOffset - 1)) {
@@ -483,6 +488,16 @@ public static int getKeyboardLanguageDirection() {
 	}
 	return SWT.LEFT;
 }
+int getLigatureOffset(int offset) {
+	// should call BidiText to see if font has ligatures...
+	int newOffset = offset;
+	int i = offset + 1;
+	while (i<order.length && (order[i] == order[offset])) {
+		newOffset = i;
+		i++;
+	}
+	return newOffset;
+}
 int getLogicalOffset(int visualOffset) {
 	int logicalOffset = 0;
 	
@@ -495,7 +510,8 @@ public int getOffsetAtX(int x) {
 	int lineLength = getTextLength();
 	int low = -1;
 	int high = lineLength;
-	if (lineLength == 0) {
+
+	if (lineLength == 0) {
 		return 0;
 	}
 	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
@@ -504,7 +520,8 @@ public int getOffsetAtX(int x) {
 	while (high - low > 1) {
 		int offset = (high + low) / 2;
 		int visualX = renderPositions[offset];
-
+
+
 		if (x <= visualX + dx[offset]) {
 			high = offset;			
 		}
@@ -572,7 +589,7 @@ void prepareBoldText(String textline, int logicalStart, int length) {
 	int byteCount = length;
 	int flags = 0;
 	String text = textline.substring(logicalStart, logicalStart + length);
-
+
 	// figure out what is before and after the substring
 	// so that the proper character shaping will occur
 	if (logicalStart != 0  
@@ -608,7 +625,7 @@ void prepareBoldText(String textline, int logicalStart, int length) {
 }
 public void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
-
+
 	if (logicalStart + length > getTextLength()) {
 		return;
 	}
@@ -617,7 +634,7 @@ public void redrawRange(Control parent, int logicalStart, int length, int xOffse
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int startX = run.getRenderStartX();
-
+
 		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
 	}				
 }
