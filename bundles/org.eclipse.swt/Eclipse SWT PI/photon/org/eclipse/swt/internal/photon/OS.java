@@ -60,7 +60,7 @@ public class OS {
 		QNX_MICRO = value;
 	}
 
-	/** Constants Natives */
+	/** Constants */
 	public static final int MAX_DESC_LENGTH = 0x20;
 	public static final int MAX_FONT_TAG = 0x50;
 	public static final int NAME_MAX = 0xff;
