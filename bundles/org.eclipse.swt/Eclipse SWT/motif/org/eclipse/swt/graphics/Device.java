@@ -35,7 +35,7 @@ public abstract class Device implements Drawable {
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
-	public boolean tracking = DEBUG;
+	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
 
