@@ -164,22 +164,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) bits |= hHint << 16;
 	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, bits);
 	int width = result & 0xFFFF, height = result >> 16;
+	
+	/*
+	* Feature in Windows.  The height returned by LVM_APPROXIMATEVIEWRECT
+	* includes the trim plus the height of the items plus one extra row.
+	* The fix is to subtract the height of one row from the result height.
+	*/
+	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+	height -= (oneItem >> 16) - (empty >> 16);
+	
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
 	width += border * 2;  height += border * 2;
-	/*
-	* Feature in Windows.  For some reason, LVM_APPROXIMATEVIEWRECT
-	* does not include the space for the vertical scroll bar but does
-	* take into account the horizontal scroll bar when calculating the
-	* space needed to show the items.  The fix is to add in this space.
-	*/
 	if ((style & SWT.V_SCROLL) != 0) {
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 	}
-	if (((style & SWT.H_SCROLL) != 0) && (hHint != SWT.DEFAULT)) {
+	if ((style & SWT.H_SCROLL) != 0) {
 		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	}
 	return new Point (width, height);
