@@ -560,13 +560,13 @@ public void setPreferredSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	int newWidth = Math.max (width, MINIMUM_WIDTH);
+	int newWidth = Math.max (width, internalGetMinimumWidth());
 	itemBounds.width = requestedWidth = newWidth;
 	if (!ideal) preferredWidth = newWidth;
 	itemBounds.height = height;
 	if (control != null) {
 		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
-		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
+		if ((style & SWT.DROP_DOWN) != 0 && newWidth < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
 		int controlHeight = height - (2 * MARGIN_HEIGHT);
