@@ -29,35 +29,35 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIHelperAppLauncher extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 10;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 9;
 
-	public static final String NS_IHELPERAPPLAUNCHER_IID_STRING =
+	public static final String NS_IHELPERAPPLAUNCHER_IID_STR =
 		"9503d0fe-4c9d-11d4-98d0-001083010e9b";
 
 	public static final nsID NS_IHELPERAPPLAUNCHER_IID =
-		new nsID(NS_IHELPERAPPLAUNCHER_IID_STRING);
+		new nsID(NS_IHELPERAPPLAUNCHER_IID_STR);
 
-	public nsIHelperAppLauncher(int address) {
+	public nsIHelperAppLauncher(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetMIMEInfo(int[] aMIMEInfo) {
+	public int GetMIMEInfo(int /*long*/[] aMIMEInfo) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aMIMEInfo);
 	}
 
-	public int GetSource(int[] aSource) {
+	public int GetSource(int /*long*/[] aSource) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSource);
 	}
 
-	public int GetSuggestedFileName(int[] aSuggestedFileName) {
+	public int GetSuggestedFileName(int /*long*/[] aSuggestedFileName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
 	}
 
-	public int SaveToDisk(int aNewFileLocation, boolean aRememberThisPreference) {
+	public int SaveToDisk(int /*long*/ aNewFileLocation, boolean aRememberThisPreference) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 
-	public int LaunchWithApplication(int aApplication, boolean aRememberThisPreference) {
+	public int LaunchWithApplication(int /*long*/ aApplication, boolean aRememberThisPreference) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
 	}
 
@@ -65,7 +65,7 @@ public class nsIHelperAppLauncher extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
 	}
 
-	public int SetWebProgressListener(int aWebProgressListener) {
+	public int SetWebProgressListener(int /*long*/ aWebProgressListener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aWebProgressListener);
 	}
 
@@ -73,11 +73,7 @@ public class nsIHelperAppLauncher extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 
-	public int GetTargetFile(int[] aTargetFile) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aTargetFile);
-	}
-	
-	public int GetTimeDownloadStarted(int aTimeDownloadStarted) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aTimeDownloadStarted);
+	public int GetDownloadInfo(int /*long*/[] aSourceUrl, long[] aTimeDownloadStarted, int /*long*/[] _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aSourceUrl, aTimeDownloadStarted, _retval);
 	}
 }

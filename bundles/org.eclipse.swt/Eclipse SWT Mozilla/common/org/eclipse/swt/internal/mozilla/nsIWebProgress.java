@@ -31,13 +31,13 @@ public class nsIWebProgress extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
 
-	public static final String NS_IWEBPROGRESS_IID_STRING =
-		"570F39D0-EFD0-11d3-B093-00A024FFC08C";
+	public static final String NS_IWEBPROGRESS_IID_STR =
+		"570f39d0-efd0-11d3-b093-00a024ffc08c";
 
 	public static final nsID NS_IWEBPROGRESS_IID =
-		new nsID(NS_IWEBPROGRESS_IID_STRING);
+		new nsID(NS_IWEBPROGRESS_IID_STR);
 
-	public nsIWebProgress(int address) {
+	public nsIWebProgress(int /*long*/ address) {
 		super(address);
 	}
 
@@ -61,15 +61,15 @@ public class nsIWebProgress extends nsISupports {
 
 	public static final int NOTIFY_ALL = 255;
 
-	public int AddProgressListener(int listener, int aNotifyMask) {
+	public int AddProgressListener(int /*long*/ listener, int aNotifyMask) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), listener, aNotifyMask);
 	}
 
-	public int RemoveProgressListener(int listener) {
+	public int RemoveProgressListener(int /*long*/ listener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), listener);
 	}
 
-	public int GetDOMWindow(int[] aDOMWindow) {
+	public int GetDOMWindow(int /*long*/[] aDOMWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aDOMWindow);
 	}
 

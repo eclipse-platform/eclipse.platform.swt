@@ -31,17 +31,17 @@ public class nsIWindowCreator extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_IWINDOWCREATOR_IID_STRING =
-		"30465632-A777-44cc-90F9-8145475EF999";
+	public static final String NS_IWINDOWCREATOR_IID_STR =
+		"30465632-a777-44cc-90f9-8145475ef999";
 
 	public static final nsID NS_IWINDOWCREATOR_IID =
-		new nsID(NS_IWINDOWCREATOR_IID_STRING);
+		new nsID(NS_IWINDOWCREATOR_IID_STR);
 
-	public nsIWindowCreator(int address) {
+	public nsIWindowCreator(int /*long*/ address) {
 		super(address);
 	}
 
-	public int CreateChromeWindow(int parent, int chromeFlags, int[] _retval) {
+	public int CreateChromeWindow(int /*long*/ parent, int chromeFlags, int /*long*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, _retval);
 	}
 }

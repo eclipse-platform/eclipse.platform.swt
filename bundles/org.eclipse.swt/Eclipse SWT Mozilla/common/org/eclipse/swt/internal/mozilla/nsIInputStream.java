@@ -31,13 +31,13 @@ public class nsIInputStream extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
 
-	public static final String NS_IINPUTSTREAM_IID_STRING =
+	public static final String NS_IINPUTSTREAM_IID_STR =
 		"fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a";
 
 	public static final nsID NS_IINPUTSTREAM_IID =
-		new nsID(NS_IINPUTSTREAM_IID_STRING);
+		new nsID(NS_IINPUTSTREAM_IID_STR);
 
-	public nsIInputStream(int address) {
+	public nsIInputStream(int /*long*/ address) {
 		super(address);
 	}
 
@@ -49,11 +49,11 @@ public class nsIInputStream extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 
-	public int Read(int aBuf, int aCount, int[] _retval) {
+	public int Read(byte[] aBuf, int aCount, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
 	}
 
-	public int ReadSegments(int aWriter, int aClosure, int aCount, int[] _retval) {
+	public int ReadSegments(int /*long*/ aWriter, int /*long*/ aClosure, int aCount, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWriter, aClosure, aCount, _retval);
 	}
 

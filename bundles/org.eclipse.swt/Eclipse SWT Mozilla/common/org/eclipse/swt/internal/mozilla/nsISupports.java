@@ -27,27 +27,27 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsISupports  {
+public class nsISupports {
 
 	static final int LAST_METHOD_ID = 2;
 
-	public static final String NS_ISUPPORTS_IID_STRING =
+	public static final String NS_ISUPPORTS_IID_STR =
 		"00000000-0000-0000-c000-000000000046";
 
 	public static final nsID NS_ISUPPORTS_IID =
-		new nsID(NS_ISUPPORTS_IID_STRING);
+		new nsID(NS_ISUPPORTS_IID_STR);
 
-	private int address;
+	int /*long*/ address;
 
-	public nsISupports(int address) {
+	public nsISupports(int /*long*/ address) {
 		this.address = address;
 	}
 
-	public int getAddress() {
+	public int /*long*/ getAddress() {
 		return this.address;
 	}
 
-	public int QueryInterface(nsID uuid, int[] result) {
+	public int QueryInterface(nsID uuid, int /*long*/[] result) {
 		return XPCOM.VtblCall(0, getAddress(), uuid, result);
 	}
 

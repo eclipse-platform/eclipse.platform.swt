@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2004 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -31,31 +31,31 @@ public class nsIDOMEvent extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 10;
 
-	public static final String NS_IDOMLOCATION_IID_STRING =
+	public static final String NS_IDOMEVENT_IID_STR =
 		"a66b7b80-ff46-bd97-0080-5f8ae38add32";
 
-	public static final nsID NS_IDOMLOCATION_IID =
-		new nsID(NS_IDOMLOCATION_IID_STRING);
+	public static final nsID NS_IDOMEVENT_IID =
+		new nsID(NS_IDOMEVENT_IID_STR);
 
-	public nsIDOMEvent(int address) {
+	public nsIDOMEvent(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int CAPTURING_PHASE = 1;
-	
+
 	public static final int AT_TARGET = 2;
-	
+
 	public static final int BUBBLING_PHASE = 3;
-	
-	public int GetType(int aType) {
+
+	public int GetType(int /*long*/ aType) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType);
 	}
 
-	public int GetTarget(int[] aTarget) {
+	public int GetTarget(int /*long*/[] aTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aTarget);
 	}
 
-	public int GetCurrentTarget(int[] aCurrentTarget) {
+	public int GetCurrentTarget(int /*long*/[] aCurrentTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
 	}
 
@@ -71,7 +71,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
-	public int GetTimeStamp(int[] aTimeStamp) {
+	public int GetTimeStamp(int /*long*/ aTimeStamp) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
 	}
 
@@ -83,7 +83,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
 	}
 
-	public int InitEvent(int eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+	public int InitEvent(int /*long*/ eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
 	}
 }

@@ -31,13 +31,13 @@ public class nsIWebProgressListener extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
 
-	public static final String NS_IWEBPROGRESSLISTENER_IID_STRING =
-		"570F39D1-EFD0-11d3-B093-00A024FFC08C";
+	public static final String NS_IWEBPROGRESSLISTENER_IID_STR =
+		"570f39d1-efd0-11d3-b093-00a024ffc08c";
 
 	public static final nsID NS_IWEBPROGRESSLISTENER_IID =
-		new nsID(NS_IWEBPROGRESSLISTENER_IID_STRING);
+		new nsID(NS_IWEBPROGRESSLISTENER_IID_STR);
 
-	public nsIWebProgressListener(int address) {
+	public nsIWebProgressListener(int /*long*/ address) {
 		super(address);
 	}
 
@@ -71,23 +71,23 @@ public class nsIWebProgressListener extends nsISupports {
 
 	public static final int STATE_SECURE_LOW = 131072;
 
-	public int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
+	public int OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aWebProgress, aRequest, aStateFlags, aStatus);
 	}
 
-	public int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
+	public int OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
 	}
 
-	public int OnLocationChange(int aWebProgress, int aRequest, int location) {
+	public int OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ location) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebProgress, aRequest, location);
 	}
 
-	public int OnStatusChange(int aWebProgress, int aRequest, int aStatus, char[] aMessage) {
+	public int OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int aStatus, char[] aMessage) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWebProgress, aRequest, aStatus, aMessage);
 	}
 
-	public int OnSecurityChange(int aWebProgress, int aRequest, int state) {
+	public int OnSecurityChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int state) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aWebProgress, aRequest, state);
 	}
 }

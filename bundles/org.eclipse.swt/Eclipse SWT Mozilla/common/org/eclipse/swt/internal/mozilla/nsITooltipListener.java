@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2004 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -31,17 +31,17 @@ public class nsITooltipListener extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_ITOOLTIPLISTENER_IID_STRING =
+	public static final String NS_ITOOLTIPLISTENER_IID_STR =
 		"44b78386-1dd2-11b2-9ad2-e4eee2ca1916";
 
 	public static final nsID NS_ITOOLTIPLISTENER_IID =
-		new nsID(NS_ITOOLTIPLISTENER_IID_STRING);
+		new nsID(NS_ITOOLTIPLISTENER_IID_STR);
 
-	public nsITooltipListener(int address) {
+	public nsITooltipListener(int /*long*/ address) {
 		super(address);
 	}
 
-	public int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
+	public int OnShowTooltip(int aXCoords, int aYCoords, char[] aTipText) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aXCoords, aYCoords, aTipText);
 	}
 

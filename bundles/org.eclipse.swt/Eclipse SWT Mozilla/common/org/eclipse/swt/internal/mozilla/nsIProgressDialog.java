@@ -31,17 +31,17 @@ public class nsIProgressDialog extends nsIDownload {
 
 	static final int LAST_METHOD_ID = nsIDownload.LAST_METHOD_ID + 5;
 
-	public static final String NS_IPROGRESSDIALOG_IID_STRING =
+	public static final String NS_IPROGRESSDIALOG_IID_STR =
 		"88a478b3-af65-440a-94dc-ed9b154d2990";
 
 	public static final nsID NS_IPROGRESSDIALOG_IID =
-		new nsID(NS_IPROGRESSDIALOG_IID_STRING);
+		new nsID(NS_IPROGRESSDIALOG_IID_STR);
 
-	public nsIProgressDialog(int address) {
+	public nsIProgressDialog(int /*long*/ address) {
 		super(address);
 	}
 
-	public int Open(int aParent) {
+	public int Open(int /*long*/ aParent) {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 1, getAddress(), aParent);
 	}
 
@@ -53,11 +53,11 @@ public class nsIProgressDialog extends nsIDownload {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
 	}
 
-	public int GetDialog(int[] aDialog) {
+	public int GetDialog(int /*long*/[] aDialog) {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 4, getAddress(), aDialog);
 	}
 
-	public int SetDialog(int[] aDialog) {
+	public int SetDialog(int /*long*/ aDialog) {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 5, getAddress(), aDialog);
 	}
 }

@@ -31,13 +31,13 @@ public class nsIWebBrowserChromeFocus extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_IWEBBROWSERCHROMEFOCUS_IID_STRING =
+	public static final String NS_IWEBBROWSERCHROMEFOCUS_IID_STR =
 		"d2206418-1dd1-11b2-8e55-acddcd2bcfb8";
 
 	public static final nsID NS_IWEBBROWSERCHROMEFOCUS_IID =
-		new nsID(NS_IWEBBROWSERCHROMEFOCUS_IID_STRING);
+		new nsID(NS_IWEBBROWSERCHROMEFOCUS_IID_STR);
 
-	public nsIWebBrowserChromeFocus(int address) {
+	public nsIWebBrowserChromeFocus(int /*long*/ address) {
 		super(address);
 	}
 

@@ -50,7 +50,7 @@ public class Browser extends Composite {
 	XPCOMObject tooltipListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
-	int request;
+	int /*long*/ request;
 	Point location;
 	Point size;
 	boolean addressBar, menuBar, statusBar, toolBar;
@@ -107,7 +107,7 @@ public class Browser extends Composite {
 public Browser(Composite parent, int style) { 
 	super(parent,style);
 	
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	if (!mozilla) {
 		String mozillaPath = null;;
 		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
@@ -139,7 +139,7 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES, e);
 		}
 		
-		int[] retVal = new int[1];
+		int /*long*/[] retVal = new int /*long*/[1];
 		nsEmbedString path = new nsEmbedString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
 		path.dispose();
@@ -165,7 +165,7 @@ public Browser(Composite parent, int style) {
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		AppShell = new nsIAppShell(result[0]);
-		rc = AppShell.Create(null, null);
+		rc = AppShell.Create(0, null);
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) error(rc);
@@ -547,7 +547,7 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean back() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -570,108 +570,108 @@ protected void checkSubclass() {
 void createCOMInterfaces() {
 	// Create each of the interfaces that this object implements
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	weakReference = new XPCOMObject(new int[]{2, 0, 0, 2}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return QueryReferent(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return QueryReferent(args[0], args[1]);}
 	};
 
 	webProgressListener = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnStateChange(args[0], args[1], args[2],args[3]);}
-		public int method4(int[] args) {return OnProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
-		public int method5(int[] args) {return OnLocationChange(args[0], args[1], args[2]);}
-		public int method6(int[] args) {return OnStatusChange(args[0], args[1], args[2],args[3]);}
-		public int method7(int[] args) {return OnSecurityChange(args[0], args[1], args[2]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnStateChange(args[0], args[1], args[2],args[3]);}
+		public int /*long*/ method4(int /*long*/[] args) {return OnProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
+		public int /*long*/ method5(int /*long*/[] args) {return OnLocationChange(args[0], args[1], args[2]);}
+		public int /*long*/ method6(int /*long*/[] args) {return OnStatusChange(args[0], args[1], args[2],args[3]);}
+		public int /*long*/ method7(int /*long*/[] args) {return OnSecurityChange(args[0], args[1], args[2]);}
 	};
 	
 	webBrowserChrome = new XPCOMObject(new int[]{2, 0, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return SetStatus(args[0], args[1]);}
-		public int method4(int[] args) {return GetWebBrowser(args[0]);}
-		public int method5(int[] args) {return SetWebBrowser(args[0]);}
-		public int method6(int[] args) {return GetChromeFlags(args[0]);}
-		public int method7(int[] args) {return SetChromeFlags(args[0]);}
-		public int method8(int[] args) {return DestroyBrowserWindow();}
-		public int method9(int[] args) {return SizeBrowserTo(args[0], args[1]);}
-		public int method10(int[] args) {return ShowAsModal();}
-		public int method11(int[] args) {return IsWindowModal(args[0]);}
-		public int method12(int[] args) {return ExitModalEventLoop(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return SetStatus(args[0], args[1]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetWebBrowser(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return SetWebBrowser(args[0]);}
+		public int /*long*/ method6(int /*long*/[] args) {return GetChromeFlags(args[0]);}
+		public int /*long*/ method7(int /*long*/[] args) {return SetChromeFlags(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return DestroyBrowserWindow();}
+		public int /*long*/ method9(int /*long*/[] args) {return SizeBrowserTo(args[0], args[1]);}
+		public int /*long*/ method10(int /*long*/[] args) {return ShowAsModal();}
+		public int /*long*/ method11(int /*long*/[] args) {return IsWindowModal(args[0]);}
+		public int /*long*/ method12(int /*long*/[] args) {return ExitModalEventLoop(args[0]);}
 	};
 	
 	webBrowserChromeFocus = new XPCOMObject(new int[]{2, 0, 0, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return FocusNextElement();}
-		public int method4(int[] args) {return FocusPrevElement();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return FocusNextElement();}
+		public int /*long*/ method4(int /*long*/[] args) {return FocusPrevElement();}
 	};
 		
 	embeddingSiteWindow = new XPCOMObject(new int[]{2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return SetDimensions(args[0], args[1], args[2], args[3], args[4]);}
-		public int method4(int[] args) {return GetDimensions(args[0], args[1], args[2], args[3], args[4]);}
-		public int method5(int[] args) {return SetFocus();}
-		public int method6(int[] args) {return GetVisibility(args[0]);}
-		public int method7(int[] args) {return SetVisibility(args[0]);}
-		public int method8(int[] args) {return GetTitle(args[0]);}
-		public int method9(int[] args) {return SetTitle(args[0]);}
-		public int method10(int[] args) {return GetSiteWindow(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return SetDimensions(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetDimensions(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method5(int /*long*/[] args) {return SetFocus();}
+		public int /*long*/ method6(int /*long*/[] args) {return GetVisibility(args[0]);}
+		public int /*long*/ method7(int /*long*/[] args) {return SetVisibility(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return GetTitle(args[0]);}
+		public int /*long*/ method9(int /*long*/[] args) {return SetTitle(args[0]);}
+		public int /*long*/ method10(int /*long*/[] args) {return GetSiteWindow(args[0]);}
 	};
 	
 	interfaceRequestor = new XPCOMObject(new int[]{2, 0, 0, 2}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return GetInterface(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return GetInterface(args[0], args[1]);}
 	};
 		
 	supportsWeakReference = new XPCOMObject(new int[]{2, 0, 0, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return GetWeakReference(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return GetWeakReference(args[0]);}
 	};
 	
 	contextMenuListener = new XPCOMObject(new int[]{2, 0, 0, 3}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnShowContextMenu(args[0],args[1],args[2]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnShowContextMenu(args[0],args[1],args[2]);}
 	};
 	
 	uriContentListener = new XPCOMObject(new int[]{2, 0, 0, 2, 5, 3, 4, 1, 1, 1, 1}) {
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnStartURIOpen(args[0], args[1]);}
-		public int method4(int[] args) {return DoContent(args[0], args[1], args[2], args[3], args[4]);}
-		public int method5(int[] args) {return IsPreferred(args[0], args[1], args[2]);}
-		public int method6(int[] args) {return CanHandleContent(args[0], args[1], args[2], args[3]);}
-		public int method7(int[] args) {return GetLoadCookie(args[0]);}
-		public int method8(int[] args) {return SetLoadCookie(args[0]);}
-		public int method9(int[] args) {return GetParentContentListener(args[0]);}
-		public int method10(int[] args) {return SetParentContentListener(args[0]);}		
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnStartURIOpen(args[0], args[1]);}
+		public int /*long*/ method4(int /*long*/[] args) {return DoContent(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method5(int /*long*/[] args) {return IsPreferred(args[0], args[1], args[2]);}
+		public int /*long*/ method6(int /*long*/[] args) {return CanHandleContent(args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method7(int /*long*/[] args) {return GetLoadCookie(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return SetLoadCookie(args[0]);}
+		public int /*long*/ method9(int /*long*/[] args) {return GetParentContentListener(args[0]);}
+		public int /*long*/ method10(int /*long*/[] args) {return SetParentContentListener(args[0]);}		
 	};
 	
 	tooltipListener = new XPCOMObject(new int[]{2, 0, 0, 3, 0}) {
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnShowTooltip(args[0], args[1], args[2]);}
-		public int method4(int[] args) {return OnHideTooltip();}		
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnShowTooltip(args[0], args[1], args[2]);}
+		public int /*long*/ method4(int /*long*/[] args) {return OnHideTooltip();}		
 	};
 }
 
@@ -726,7 +726,7 @@ public boolean execute(String script) {
 	checkWidget();
 	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	String url = "javascript:"+script+";void(0);";//$NON-NLS-1$ //$NON-NLS-2$
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -766,7 +766,7 @@ static Browser findBrowser(int /*long*/ handle) {
  */
 public boolean forward() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -794,13 +794,13 @@ public boolean forward() {
  */
 public String getUrl() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
-	int[] aCurrentURI = new int[1];
+	int /*long*/[] aCurrentURI = new int /*long*/[1];
 	rc = webNavigation.GetCurrentURI(aCurrentURI);
 	if (rc != XPCOM.NS_OK) error(rc);
 	/*
@@ -813,11 +813,11 @@ public String getUrl() {
 	byte[] dest = null;
 	if (aCurrentURI[0] != 0) {
 		nsIURI uri = new nsIURI(aCurrentURI[0]);
-		int aSpec = XPCOM.nsEmbedCString_new();
+		int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 		rc = uri.GetSpec(aSpec);
 		if (rc != XPCOM.NS_OK) error(rc);
 		int length = XPCOM.nsEmbedCString_Length(aSpec);
-		int buffer = XPCOM.nsEmbedCString_get(aSpec);
+		int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 		dest = new byte[length];
 		XPCOM.memmove(dest, buffer, length);
 		XPCOM.nsEmbedCString_delete(aSpec);
@@ -841,7 +841,7 @@ public String getUrl() {
  */
 public boolean isBackEnabled() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -869,7 +869,7 @@ public boolean isBackEnabled() {
  */
 public boolean isForwardEnabled() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -893,7 +893,7 @@ void onDispose() {
 	rc = webBrowser.SetParentURIContentListener(0);
 	if (rc != XPCOM.NS_OK) error(rc);
 	
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -934,7 +934,7 @@ void onDispose() {
 }
 
 void Activate() {
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -946,7 +946,7 @@ void Activate() {
 }
 	
 void Deactivate() {
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -958,7 +958,7 @@ void Deactivate() {
 }
 
 void SetFocusAtFirstElement() {
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -971,7 +971,7 @@ void SetFocusAtFirstElement() {
 
 void onResize() {
 	Rectangle rect = getClientArea();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -995,7 +995,7 @@ void onResize() {
  */
 public void refresh() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1333,7 +1333,7 @@ public boolean setText(String html) {
 	InputStream inputStream = new InputStream(data);
 	inputStream.AddRef();
 
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1366,7 +1366,7 @@ public boolean setText(String html) {
 	* is about:blank.  The fix is to specify the file protocol.
 	*/
 	byte[] aString = "file:".getBytes(); //$NON-NLS-1$
-	int aSpec = XPCOM.nsEmbedCString_new(aString, aString.length);
+	int /*long*/ aSpec = XPCOM.nsEmbedCString_new(aString, aString.length);
 	rc = ioService.NewURI(aSpec, null, 0, result);
 	XPCOM.nsEmbedCString_delete(aSpec);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1383,12 +1383,12 @@ public boolean setText(String html) {
 	byte[] buffer = "text/plain".getBytes(); //$NON-NLS-1$
 	byte[] contentTypeBuffer = new byte[buffer.length + 1];
 	System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
-	int aContentType = XPCOM.nsEmbedCString_new(contentTypeBuffer, contentTypeBuffer.length);
+	int /*long*/ aContentType = XPCOM.nsEmbedCString_new(contentTypeBuffer, contentTypeBuffer.length);
 
 	buffer = "UTF-8".getBytes(); //$NON-NLS-1$
 	byte[] contentCharsetBuffer = new byte[buffer.length + 1];
 	System.arraycopy(buffer, 0, contentCharsetBuffer, 0, buffer.length);
-	int aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
+	int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
 
 	/*
 	* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
@@ -1430,7 +1430,7 @@ public boolean setText(String html) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1456,7 +1456,7 @@ public boolean setUrl(String url) {
  */
 public void stop() {
 	checkWidget();
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1469,77 +1469,77 @@ public void stop() {
 
 /* nsISupports */
 
-int QueryInterface(int riid, int ppvObject) {
+int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supports.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIWeakReference.NS_IWEAKREFERENCE_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {weakReference.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {weakReference.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {webProgressListener.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {webProgressListener.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIWebBrowserChrome.NS_IWEBBROWSERCHROME_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {webBrowserChrome.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {webBrowserChrome.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIWebBrowserChromeFocus.NS_IWEBBROWSERCHROMEFOCUS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {webBrowserChromeFocus.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {webBrowserChromeFocus.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {embeddingSiteWindow.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {embeddingSiteWindow.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {interfaceRequestor.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {interfaceRequestor.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsISupportsWeakReference.NS_ISUPPORTSWEAKREFERENCE_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supportsWeakReference.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supportsWeakReference.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIContextMenuListener.NS_ICONTEXTMENULISTENER_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {contextMenuListener.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {contextMenuListener.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIURIContentListener.NS_IURICONTENTLISTENER_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {uriContentListener.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {uriContentListener.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsITooltipListener.NS_ITOOLTIPLISTENER_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {tooltipListener.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {tooltipListener.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	XPCOM.memmove(ppvObject, new int[] {0}, 4);
+	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
 
-int AddRef() {
+int /*long*/ AddRef() {
 	refCount++;
 	return refCount;
 }
 
-int Release() {
+int /*long*/ Release() {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces();
 	return refCount;
@@ -1547,36 +1547,36 @@ int Release() {
 
 /* nsIWeakReference */	
 	
-int QueryReferent(int riid, int ppvObject) {
+int /*long*/ QueryReferent(int /*long*/ riid, int /*long*/ ppvObject) {
 	return QueryInterface(riid,ppvObject);
 }
 
 /* nsIInterfaceRequestor */
 
-int GetInterface(int riid,int ppvObject) {
+int /*long*/ GetInterface(int /*long*/ riid,int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	if (guid.Equals(nsIDOMWindow.NS_IDOMWINDOW_IID)) {
-		int[] aContentDOMWindow = new int[1];
+		int /*long*/[] aContentDOMWindow = new int /*long*/[1];
 		int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-		XPCOM.memmove(ppvObject, aContentDOMWindow, 4);
+		XPCOM.memmove(ppvObject, aContentDOMWindow, OS.PTR_SIZEOF);
 		return rc;
 	}
 	return QueryInterface(riid,ppvObject);
 }
 
-int GetWeakReference(int ppvObject) {
-	XPCOM.memmove(ppvObject, new int[] {weakReference.getAddress()}, 4);
+int /*long*/ GetWeakReference(int /*long*/ ppvObject) {
+	XPCOM.memmove(ppvObject, new int /*long*/[] {weakReference.getAddress()}, OS.PTR_SIZEOF);
 	AddRef();
 	return XPCOM.NS_OK;
 }
 
 /* nsIWebProgressListener */
 
-int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
+int /*long*/ OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStateFlags, int /*long*/ aStatus) {
 	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
 	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
 		if (request == 0) request = aRequest;
@@ -1611,32 +1611,32 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 	return XPCOM.NS_OK;
 }	
 
-int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
+int /*long*/ OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
 	if (progressListeners.length == 0) return XPCOM.NS_OK;
 	
-	int total = aMaxTotalProgress;
+	int /*long*/ total = aMaxTotalProgress;
 	if (total <= 0) total = Integer.MAX_VALUE;
 	ProgressEvent event = new ProgressEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	event.current = aCurTotalProgress;
-	event.total = aMaxTotalProgress;
+	event.current = (int)/*64*/aCurTotalProgress;
+	event.total = (int)/*64*/aMaxTotalProgress;
 	for (int i = 0; i < progressListeners.length; i++)
 		progressListeners[i].changed(event);			
 	return XPCOM.NS_OK;
 }		
 
-int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
+int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
 	
 	nsIWebProgress webProgress = new nsIWebProgress(aWebProgress);
-	int[] aDOMWindow = new int[1];
+	int /*long*/[] aDOMWindow = new int /*long*/[1];
 	int rc = webProgress.GetDOMWindow(aDOMWindow);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (aDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIDOMWindow domWindow = new nsIDOMWindow(aDOMWindow[0]);
-	int[] aTop = new int[1];
+	int /*long*/[] aTop = new int /*long*/[1];
 	rc = domWindow.GetTop(aTop);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (aTop[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1646,10 +1646,10 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	topWindow.Release();
 	
 	nsIURI location = new nsIURI(aLocation);
-	int aSpec = XPCOM.nsEmbedCString_new();
+	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
-	int buffer = XPCOM.nsEmbedCString_get(aSpec);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsEmbedCString_delete(aSpec);
@@ -1664,7 +1664,7 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	return XPCOM.NS_OK;
 }
   
-int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
+int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
 	
 	StatusTextEvent event = new StatusTextEvent(this);
@@ -1680,13 +1680,13 @@ int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	return XPCOM.NS_OK;
 }		
 
-int OnSecurityChange(int aWebProgress, int aRequest, int state) {
+int /*long*/ OnSecurityChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ state) {
 	return XPCOM.NS_OK;
 }
 
 /* nsIWebBrowserChrome */
 
-int SetStatus(int statusType, int status) {
+int /*long*/ SetStatus(int /*long*/ statusType, int /*long*/ status) {
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
@@ -1701,35 +1701,36 @@ int SetStatus(int statusType, int status) {
 	return XPCOM.NS_OK;
 }		
 
-int GetWebBrowser(int aWebBrowser) {
-	int[] ret = new int[1];	
+int /*long*/ GetWebBrowser(int /*long*/ aWebBrowser) {
+	int /*long*/[] ret = new int /*long*/[1];	
 	if (webBrowser != null) {
 		webBrowser.AddRef();
 		ret[0] = webBrowser.getAddress();	
 	}
-	XPCOM.memmove(aWebBrowser, ret, 4);
+	XPCOM.memmove(aWebBrowser, ret, OS.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 
-int SetWebBrowser(int aWebBrowser) {
+int /*long*/ SetWebBrowser(int /*long*/ aWebBrowser) {
 	if (webBrowser != null) webBrowser.Release();
 	webBrowser = aWebBrowser != 0 ? new nsIWebBrowser(aWebBrowser) : null;  				
 	return XPCOM.NS_OK;
 }
    
-int GetChromeFlags(int aChromeFlags) {
+int /*long*/ GetChromeFlags(int /*long*/ aChromeFlags) {
 	int[] ret = new int[1];
 	ret[0] = chromeFlags;
+	/* aChromeFlags is a pointer to a type of size 4 */
 	XPCOM.memmove(aChromeFlags, ret, 4);
 	return XPCOM.NS_OK;
 }
 
-int SetChromeFlags(int aChromeFlags) {
-	chromeFlags = aChromeFlags;
+int /*long*/ SetChromeFlags(int /*long*/ aChromeFlags) {
+	chromeFlags = (int)/*64*/aChromeFlags;
 	return XPCOM.NS_OK;
 }
    
-int DestroyBrowserWindow() {
+int /*long*/ DestroyBrowserWindow() {
 	WindowEvent newEvent = new WindowEvent(this);
 	newEvent.display = getDisplay();
 	newEvent.widget = this;
@@ -1745,38 +1746,39 @@ int DestroyBrowserWindow() {
 	return XPCOM.NS_OK;
 }
    	
-int SizeBrowserTo(int aCX, int aCY) {
-	size = new Point(aCX, aCY);
+int /*long*/ SizeBrowserTo(int /*long*/ aCX, int /*long*/ aCY) {
+	size = new Point((int)/*64*/aCX, (int)/*64*/aCY);
 	return XPCOM.NS_OK;
 }
 
-int ShowAsModal() {
+int /*long*/ ShowAsModal() {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
    
-int IsWindowModal(int retval) {
+int /*long*/ IsWindowModal(int /*long*/ retval) {
 	// no modal loop
+	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {0}, 4);
 	return XPCOM.NS_OK;
 }
    
-int ExitModalEventLoop(int aStatus) {
+int /*long*/ ExitModalEventLoop(int /*long*/ aStatus) {
 	return XPCOM.NS_OK;
 }
 
 /* nsIEmbeddingSiteWindow */ 
    
-int SetDimensions(int flags, int x, int y, int cx, int cy) {
-	if (flags == nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) location = new Point(x, y);
+int /*long*/ SetDimensions(int /*long*/ flags, int /*long*/ x, int /*long*/ y, int /*long*/ cx, int /*long*/ cy) {
+	if (flags == nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) location = new Point((int)/*64*/x, (int)/*64*/y);
 	return XPCOM.NS_OK;   	
 }	
 
-int GetDimensions(int flags, int x, int y, int cx, int cy) {
+int /*long*/ GetDimensions(int /*long*/ flags, int /*long*/ x, int /*long*/ y, int /*long*/ cx, int /*long*/ cy) {
 	return XPCOM.NS_OK;     	
 }	
 
-int SetFocus() {
-	int[] result = new int[1];
+int /*long*/ SetFocus() {
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
@@ -1794,11 +1796,11 @@ int SetFocus() {
 	return XPCOM.NS_OK;     	
 }	
 
-int GetVisibility(int aVisibility) {
+int /*long*/ GetVisibility(int /*long*/ aVisibility) {
 	return XPCOM.NS_OK;     	
 }
    
-int SetVisibility(int aVisibility) {
+int /*long*/ SetVisibility(int /*long*/ aVisibility) {
 	WindowEvent event = new WindowEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
@@ -1829,11 +1831,11 @@ int SetVisibility(int aVisibility) {
 	return XPCOM.NS_OK;     	
 }
 
-int GetTitle(int aTitle) {
+int /*long*/ GetTitle(int /*long*/ aTitle) {
 	return XPCOM.NS_OK;     	
 }
  
-int SetTitle(int aTitle) {
+int /*long*/ SetTitle(int /*long*/ aTitle) {
 	if (titleListeners.length == 0) return XPCOM.NS_OK;
 	TitleEvent event = new TitleEvent(this);
 	event.display = getDisplay();
@@ -1847,7 +1849,7 @@ int SetTitle(int aTitle) {
 	return XPCOM.NS_OK;     	
 }
 
-int GetSiteWindow(int aSiteWindow) {
+int /*long*/ GetSiteWindow(int /*long*/ aSiteWindow) {
 	/*
 	* Note.  The handle is expected to be an HWND on Windows and
 	* a GtkWidget* on GTK.  This callback is invoked on Windows
@@ -1855,17 +1857,13 @@ int GetSiteWindow(int aSiteWindow) {
 	* dialog comes up. If no handle is returned, the print dialog
 	* does not come up on this platform.  
 	*/
-	/*
-	* Note. The following code compiles without warning on a 
-	* 64 bit platform but won't run. 
-	*/
-	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/embedHandle}, 4);
+	XPCOM.memmove(aSiteWindow, new int /*long*/[] {embedHandle}, OS.PTR_SIZEOF);
 	return XPCOM.NS_OK;     	
 }  
  
 /* nsIWebBrowserChromeFocus */
 
-int FocusNextElement() {
+int /*long*/ FocusNextElement() {
 	/*
 	* Bug in Mozilla embedding API.  Mozilla takes back the focus after sending
 	* this event.  This prevents tabbing out of Mozilla. This behaviour can be reproduced
@@ -1880,7 +1878,7 @@ int FocusNextElement() {
 	return XPCOM.NS_OK;  
 }
 
-int FocusPrevElement() {
+int /*long*/ FocusPrevElement() {
 	/*
 	* Bug in Mozilla embedding API.  Mozilla takes back the focus after sending
 	* this event.  This prevents tabbing out of Mozilla. This behaviour can be reproduced
@@ -1897,9 +1895,9 @@ int FocusPrevElement() {
 
 /* nsIContextMenuListener */
 
-int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
+int /*long*/ OnShowContextMenu(int /*long*/ aContextFlags, int /*long*/ aEvent, int /*long*/ aNode) {
 	nsIDOMEvent domEvent = new nsIDOMEvent(aEvent);
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = domEvent.QueryInterface(nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
@@ -1929,14 +1927,14 @@ int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
 
 /* nsIURIContentListener */
 
-int OnStartURIOpen(int aURI, int retval) {
+int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
 	
 	nsIURI location = new nsIURI(aURI);
-	int aSpec = XPCOM.nsEmbedCString_new();
+	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
-	int buffer = XPCOM.nsEmbedCString_get(aSpec);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 	buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
@@ -1953,42 +1951,44 @@ int OnStartURIOpen(int aURI, int retval) {
 			locationListeners[i].changing(event);
 		doit = event.doit;
 	}
+	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
 	return XPCOM.NS_OK;
 }
 
-int DoContent(int aContentType, int aIsContentPreferred, int aRequest, int aContentHandler, int retval) {
+int /*long*/ DoContent(int /*long*/ aContentType, int /*long*/ aIsContentPreferred, int /*long*/ aRequest, int /*long*/ aContentHandler, int /*long*/ retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int IsPreferred(int aContentType, int aDesiredContentType, int retval) {
+int /*long*/ IsPreferred(int /*long*/ aContentType, int /*long*/ aDesiredContentType, int /*long*/ retval) {
+	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {1}, 4);
 	return XPCOM.NS_OK;
 }
 
-int CanHandleContent(int aContentType, int aIsContentPreferred, int aDesiredContentType, int retval) {
+int /*long*/ CanHandleContent(int /*long*/ aContentType, int /*long*/ aIsContentPreferred, int /*long*/ aDesiredContentType, int /*long*/ retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetLoadCookie(int aLoadCookie) {
+int /*long*/ GetLoadCookie(int /*long*/ aLoadCookie) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int SetLoadCookie(int aLoadCookie) {
+int /*long*/ SetLoadCookie(int /*long*/ aLoadCookie) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetParentContentListener(int aParentContentListener) {
+int /*long*/ GetParentContentListener(int /*long*/ aParentContentListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 	
-int SetParentContentListener(int aParentContentListener) {
+int /*long*/ SetParentContentListener(int /*long*/ aParentContentListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsITooltipListener */
 
-int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
+int /*long*/ OnShowTooltip(int /*long*/ aXCoords, int /*long*/ aYCoords, int /*long*/ aTipText) {
 	int length = XPCOM.strlen_PRUnichar(aTipText);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aTipText, length * 2);
@@ -2018,7 +2018,7 @@ int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
 	return XPCOM.NS_OK;
 }
 
-int OnHideTooltip() {
+int /*long*/ OnHideTooltip() {
 	if (tip != null && !tip.isDisposed()) tip.dispose();
 	tip = null;
 	return XPCOM.NS_OK;

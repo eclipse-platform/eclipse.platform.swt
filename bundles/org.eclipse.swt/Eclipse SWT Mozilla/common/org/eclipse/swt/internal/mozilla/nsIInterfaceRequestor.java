@@ -31,17 +31,17 @@ public class nsIInterfaceRequestor extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_IINTERFACEREQUESTOR_IID_STRING =
-		"033A1470-8B2A-11d3-AF88-00A024FFC08C";
+	public static final String NS_IINTERFACEREQUESTOR_IID_STR =
+		"033a1470-8b2a-11d3-af88-00a024ffc08c";
 
 	public static final nsID NS_IINTERFACEREQUESTOR_IID =
-		new nsID(NS_IINTERFACEREQUESTOR_IID_STRING);
+		new nsID(NS_IINTERFACEREQUESTOR_IID_STR);
 
-	public nsIInterfaceRequestor(int address) {
+	public nsIInterfaceRequestor(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetInterface(nsID uuid, int[] result) {
+	public int GetInterface(nsID uuid, int /*long*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uuid, result);
 	}
 }

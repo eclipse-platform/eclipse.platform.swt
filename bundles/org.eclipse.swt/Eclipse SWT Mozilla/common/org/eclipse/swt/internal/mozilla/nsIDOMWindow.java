@@ -31,41 +31,41 @@ public class nsIDOMWindow extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 17;
 
-	public static final String NS_IDOMWINDOW_IID_STRING =
+	public static final String NS_IDOMWINDOW_IID_STR =
 		"a6cf906b-15b3-11d2-932e-00805f8add32";
 
 	public static final nsID NS_IDOMWINDOW_IID =
-		new nsID(NS_IDOMWINDOW_IID_STRING);
+		new nsID(NS_IDOMWINDOW_IID_STR);
 
-	public nsIDOMWindow(int address) {
+	public nsIDOMWindow(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetDocument(int[] aDocument) {
+	public int GetDocument(int /*long*/[] aDocument) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDocument);
 	}
 
-	public int GetParent(int[] aParent) {
+	public int GetParent(int /*long*/[] aParent) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aParent);
 	}
 
-	public int GetTop(int[] aTop) {
+	public int GetTop(int /*long*/[] aTop) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aTop);
 	}
 
-	public int GetScrollbars(int[] scrollbars) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), scrollbars);
+	public int GetScrollbars(int /*long*/[] aScrollbars) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aScrollbars);
 	}
 
-	public int GetFrames(int[] frames) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), frames);
+	public int GetFrames(int /*long*/[] aFrames) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFrames);
 	}
 
-	public int GetName(int aName) {
+	public int GetName(int /*long*/ aName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aName);
 	}
 
-	public int SetName(int aName) {
+	public int SetName(int /*long*/ aName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aName);
 	}
 
@@ -93,7 +93,7 @@ public class nsIDOMWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), xScrollDif, yScrollDif);
 	}
 
-	public int GetSelection(int[] _retval) {
+	public int GetSelection(int /*long*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), _retval);
 	}
 

@@ -31,13 +31,13 @@ public class nsIContextMenuListener extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_ICONTEXTMENULISTENER_IID_STRING =
+	public static final String NS_ICONTEXTMENULISTENER_IID_STR =
 		"3478b6b0-3875-11d4-94ef-0020183bf181";
 
 	public static final nsID NS_ICONTEXTMENULISTENER_IID =
-		new nsID(NS_ICONTEXTMENULISTENER_IID_STRING);
+		new nsID(NS_ICONTEXTMENULISTENER_IID_STR);
 
-	public nsIContextMenuListener(int address) {
+	public nsIContextMenuListener(int /*long*/ address) {
 		super(address);
 	}
 
@@ -53,7 +53,7 @@ public class nsIContextMenuListener extends nsISupports {
 
 	public static final int CONTEXT_INPUT = 16;
 
-	public int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
+	public int OnShowContextMenu(int aContextFlags, int /*long*/ aEvent, int /*long*/ aNode) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aContextFlags, aEvent, aNode);
 	}
 }

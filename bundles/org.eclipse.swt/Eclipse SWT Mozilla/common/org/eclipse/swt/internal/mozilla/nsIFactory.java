@@ -31,17 +31,17 @@ public class nsIFactory extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_IFACTORY_IID_STRING =
+	public static final String NS_IFACTORY_IID_STR =
 		"00000001-0000-0000-c000-000000000046";
 
 	public static final nsID NS_IFACTORY_IID =
-		new nsID(NS_IFACTORY_IID_STRING);
+		new nsID(NS_IFACTORY_IID_STR);
 
-	public nsIFactory(int address) {
+	public nsIFactory(int /*long*/ address) {
 		super(address);
 	}
 
-	public int CreateInstance(int aOuter, nsID iid, int[] result) {
+	public int CreateInstance(int /*long*/ aOuter, nsID iid, int /*long*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aOuter, iid, result);
 	}
 

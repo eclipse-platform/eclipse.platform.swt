@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2004 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -31,17 +31,17 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 
 	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + 3;
 
-	public static final String NS_IDOMUIEVENT_IID_STRING =
+	public static final String NS_IDOMUIEVENT_IID_STR =
 		"a6cf90c3-15b3-11d2-932e-00805f8add32";
 
 	public static final nsID NS_IDOMUIEVENT_IID =
-		new nsID(NS_IDOMUIEVENT_IID_STRING);
+		new nsID(NS_IDOMUIEVENT_IID_STR);
 
-	public nsIDOMUIEvent(int address) {
+	public nsIDOMUIEvent(int /*long*/ address) {
 		super(address);
 	}
-	
-	public int GetView(int[] aView) {
+
+	public int GetView(int /*long*/[] aView) {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 1, getAddress(), aView);
 	}
 
@@ -49,7 +49,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
-	public int InitEvent(int typeArg, boolean canBubbleArg, boolean cancelableArg, int[] viewArg, int detailArg) {
-		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int InitUIEvent(int /*long*/ typeArg, boolean canBubbleArg, boolean cancelableArg, int /*long*/ viewArg, int detailArg) {
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 	}
 }

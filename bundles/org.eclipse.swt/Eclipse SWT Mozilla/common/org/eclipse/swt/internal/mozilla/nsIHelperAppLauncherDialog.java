@@ -29,23 +29,27 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIHelperAppLauncherDialog extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
 
-	public static final String NS_IHELPERAPPLAUNCHERDIALOG_IID_STRING =
+	public static final String NS_IHELPERAPPLAUNCHERDIALOG_IID_STR =
 		"d7ebddf0-4c84-11d4-807a-00600811a9c3";
 
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID =
-		new nsID(NS_IHELPERAPPLAUNCHERDIALOG_IID_STRING);
+		new nsID(NS_IHELPERAPPLAUNCHERDIALOG_IID_STR);
 
-	public nsIHelperAppLauncherDialog(int address) {
+	public nsIHelperAppLauncherDialog(int /*long*/ address) {
 		super(address);
 	}
 
-	public int Show(int aLauncher, int aContext, boolean aForced) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLauncher, aContext, aForced);
+	public int Show(int /*long*/ aLauncher, int /*long*/ aContext) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLauncher, aContext);
 	}
 
-	public int PromptForSaveToFile(int aLauncher, int aWindowContext, int aDefaultFile, int aSuggestedFileExtension, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aLauncher, aWindowContext, aDefaultFile, aSuggestedFileExtension, _retval);
+	public int PromptForSaveToFile(int /*long*/ aWindowContext, char[] aDefaultFile, char[] aSuggestedFileExtension, int /*long*/[] _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWindowContext, aDefaultFile, aSuggestedFileExtension, _retval);
+	}
+
+	public int ShowProgressDialog(int /*long*/ aLauncher, int /*long*/ aContext) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aLauncher, aContext);
 	}
 }

@@ -31,17 +31,17 @@ public class nsIBaseWindow extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 24;
 
-	public static final String NS_IBASEWINDOW_IID_STRING =
-		"046BC8A0-8015-11d3-AF70-00A024FFC08C";
+	public static final String NS_IBASEWINDOW_IID_STR =
+		"046bc8a0-8015-11d3-af70-00a024ffc08c";
 
 	public static final nsID NS_IBASEWINDOW_IID =
-		new nsID(NS_IBASEWINDOW_IID_STRING);
+		new nsID(NS_IBASEWINDOW_IID_STR);
 
-	public nsIBaseWindow(int address) {
+	public nsIBaseWindow(int /*long*/ address) {
 		super(address);
 	}
 
-	public int InitWindow(int parentNativeWindow, int parentWidget, int x, int y, int cx, int cy) {
+	public int InitWindow(int /*long*/ parentNativeWindow, int /*long*/ parentWidget, int x, int y, int cx, int cy) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parentNativeWindow, parentWidget, x, y, cx, cy);
 	}
 
@@ -81,19 +81,19 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), force);
 	}
 
-	public int GetParentWidget(int[] aParentWidget) {
+	public int GetParentWidget(int /*long*/[] aParentWidget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aParentWidget);
 	}
 
-	public int SetParentWidget(int aParentWidget) {
+	public int SetParentWidget(int /*long*/ aParentWidget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aParentWidget);
 	}
 
-	public int GetParentNativeWindow(int[] aParentNativeWindow) {
+	public int GetParentNativeWindow(int /*long*/[] aParentNativeWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aParentNativeWindow);
 	}
 
-	public int SetParentNativeWindow(int aParentNativeWindow) {
+	public int SetParentNativeWindow(int /*long*/ aParentNativeWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aParentNativeWindow);
 	}
 
@@ -121,7 +121,7 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aBlurSuppression);
 	}
 
-	public int GetMainWidget(int[] aMainWidget) {
+	public int GetMainWidget(int /*long*/[] aMainWidget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), aMainWidget);
 	}
 
@@ -129,7 +129,7 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress());
 	}
 
-	public int GetTitle(int[] aTitle) {
+	public int GetTitle(int /*long*/[] aTitle) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), aTitle);
 	}
 

@@ -31,41 +31,41 @@ public class nsIWebBrowser extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 7;
 
-	public static final String NS_IWEBBROWSER_IID_STRING =
-		"69E5DF00-7B8B-11d3-AF61-00A024FFC08C";
+	public static final String NS_IWEBBROWSER_IID_STR =
+		"69e5df00-7b8b-11d3-af61-00a024ffc08c";
 
 	public static final nsID NS_IWEBBROWSER_IID =
-		new nsID(NS_IWEBBROWSER_IID_STRING);
+		new nsID(NS_IWEBBROWSER_IID_STR);
 
-	public nsIWebBrowser(int address) {
+	public nsIWebBrowser(int /*long*/ address) {
 		super(address);
 	}
 
-	public int AddWebBrowserListener(int aListener, nsID aIID) {
+	public int AddWebBrowserListener(int /*long*/ aListener, nsID aIID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aListener, aIID);
 	}
 
-	public int RemoveWebBrowserListener(int aListener, nsID aIID) {
+	public int RemoveWebBrowserListener(int /*long*/ aListener, nsID aIID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aListener, aIID);
 	}
 
-	public int GetContainerWindow(int[] aContainerWindow) {
+	public int GetContainerWindow(int /*long*/[] aContainerWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContainerWindow);
 	}
 
-	public int SetContainerWindow(int aContainerWindow) {
+	public int SetContainerWindow(int /*long*/ aContainerWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContainerWindow);
 	}
 
-	public int GetParentURIContentListener(int[] aParentURIContentListener) {
+	public int GetParentURIContentListener(int /*long*/[] aParentURIContentListener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParentURIContentListener);
 	}
 
-	public int SetParentURIContentListener(int aParentURIContentListener) {
+	public int SetParentURIContentListener(int /*long*/ aParentURIContentListener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParentURIContentListener);
 	}
 
-	public int GetContentDOMWindow(int[] aContentDOMWindow) {
+	public int GetContentDOMWindow(int /*long*/[] aContentDOMWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aContentDOMWindow);
 	}
 }

@@ -31,21 +31,21 @@ public class nsIServiceManager extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
 
-	public static final String NS_ISERVICEMANAGER_IID_STRING =
+	public static final String NS_ISERVICEMANAGER_IID_STR =
 		"8bb35ed9-e332-462d-9155-4a002ab5c958";
 
 	public static final nsID NS_ISERVICEMANAGER_IID =
-		new nsID(NS_ISERVICEMANAGER_IID_STRING);
+		new nsID(NS_ISERVICEMANAGER_IID_STR);
 
-	public nsIServiceManager(int address) {
+	public nsIServiceManager(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetService(nsID aClass, nsID aIID, int[] result) {
+	public int GetService(nsID aClass, nsID aIID, int /*long*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
 	}
 
-	public int GetServiceByContractID(byte[] aContractID, nsID aIID, int[] result) {
+	public int GetServiceByContractID(byte[] aContractID, nsID aIID, int /*long*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
 	}
 

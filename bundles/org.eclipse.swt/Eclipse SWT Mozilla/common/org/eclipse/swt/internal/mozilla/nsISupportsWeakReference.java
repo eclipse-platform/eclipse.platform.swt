@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsISupportsWeakReference extends nsISupports {
 
-    static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-    public static final String NS_ISUPPORTSWEAKREFERENCE_IID_STRING =
-        "9188bc86-f92e-11d2-81ef-0060083a0bcf";
+	public static final String NS_ISUPPORTSWEAKREFERENCE_IID_STR =
+		"9188bc86-f92e-11d2-81ef-0060083a0bcf";
 
-    public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID =
-        new nsID(NS_ISUPPORTSWEAKREFERENCE_IID_STRING);
+	public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID =
+		new nsID(NS_ISUPPORTSWEAKREFERENCE_IID_STR);
 
-    public nsISupportsWeakReference(int address) {
-        super(address);
-    }
+	public nsISupportsWeakReference(int /*long*/ address) {
+		super(address);
+	}
 
-    public int GetWeakReference(int[] retVal) {
-        return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), retVal);
-    }
+	public int GetWeakReference(int /*long*/[] _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), _retval);
+	}
 }

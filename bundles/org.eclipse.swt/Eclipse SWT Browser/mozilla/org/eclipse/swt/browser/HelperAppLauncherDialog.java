@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.mozilla.*;
+import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.widgets.*;
 
 class HelperAppLauncherDialog {
@@ -31,17 +32,17 @@ int AddRef() {
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return queryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	helperAppLauncherDialog = new XPCOMObject(new int[]{2, 0, 0, 3, 5}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return Show(args[0], args[1], args[2]);}
-		public int method4(int[] args) {return PromptForSaveToFile(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method0(int /*long*/[] args) {return queryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Show(args[0], args[1], args[2]);}
+		public int /*long*/ method4(int /*long*/[] args) {return PromptForSaveToFile(args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }
 
@@ -56,27 +57,27 @@ void disposeCOMInterfaces() {
 	}
 }
 
-int getAddress() {
+int /*long*/ getAddress() {
 	return helperAppLauncherDialog.getAddress();
 }
 
-int queryInterface(int riid, int ppvObject) {
+int /*long*/ queryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supports.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIHelperAppLauncherDialog.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {helperAppLauncherDialog.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {helperAppLauncherDialog.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove(ppvObject, new int[] {0}, 4);
+	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
@@ -95,14 +96,14 @@ int Release() {
 
 /* nsIHelperAppLauncherDialog */
 
-public int Show(int aLauncher, int aContext, int aForced) {
+public int /*long*/ Show(int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aForced) {
 	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher(aLauncher);
 	return helperAppLauncher.SaveToDisk(0, false);
 }
 
-public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4) {
+public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
 	nsIHelperAppLauncher helperAppLauncher = null;
-	int aDefaultFile, aSuggestedFileExtension, _retval;
+	int /*long*/ aDefaultFile, aSuggestedFileExtension, _retval;
 	/*
 	* Feature in Mozilla.  The nsIHelperAppLauncherDialog interface is not frozen 
 	* despite being the only way to download files when embedding Mozilla.  Starting 
@@ -114,7 +115,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	* type of the first argument. 
 	*/
 	nsISupports support = new nsISupports(arg0);
-	int[] result = new int[1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = support.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc != XPCOM.NS_OK || result[0] != arg0) { 
 		aDefaultFile = arg1;
@@ -158,7 +159,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	if (rc != XPCOM.NS_OK) Browser.error(rc);
 	if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove(_retval, result, 4);	
+	XPCOM.memmove(_retval, result, OS.PTR_SIZEOF);	
 	return XPCOM.NS_OK;
 }
 

@@ -31,13 +31,13 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 8;
 
-	public static final String NS_IEMBEDDINGSITEWINDOW_IID_STRING =
-		"3E5432CD-9568-4bd1-8CBE-D50ABA110743";
+	public static final String NS_IEMBEDDINGSITEWINDOW_IID_STR =
+		"3e5432cd-9568-4bd1-8cbe-d50aba110743";
 
 	public static final nsID NS_IEMBEDDINGSITEWINDOW_IID =
-		new nsID(NS_IEMBEDDINGSITEWINDOW_IID_STRING);
+		new nsID(NS_IEMBEDDINGSITEWINDOW_IID_STR);
 
-	public nsIEmbeddingSiteWindow(int address) {
+	public nsIEmbeddingSiteWindow(int /*long*/ address) {
 		super(address);
 	}
 
@@ -67,7 +67,7 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aVisibility);
 	}
 
-	public int GetTitle(int[] aTitle) {
+	public int GetTitle(int /*long*/[] aTitle) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aTitle);
 	}
 
@@ -75,7 +75,7 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTitle);
 	}
 
-	public int GetSiteWindow(int[] aSiteWindow) {
+	public int GetSiteWindow(int /*long*/[] aSiteWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aSiteWindow);
 	}
 }

@@ -31,13 +31,13 @@ public class nsIWebBrowserChrome extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 10;
 
-	public static final String NS_IWEBBROWSERCHROME_IID_STRING =
-		"BA434C60-9D52-11d3-AFB0-00A024FFC08C";
+	public static final String NS_IWEBBROWSERCHROME_IID_STR =
+		"ba434c60-9d52-11d3-afb0-00a024ffc08c";
 
 	public static final nsID NS_IWEBBROWSERCHROME_IID =
-		new nsID(NS_IWEBBROWSERCHROME_IID_STRING);
+		new nsID(NS_IWEBBROWSERCHROME_IID_STR);
 
-	public nsIWebBrowserChrome(int address) {
+	public nsIWebBrowserChrome(int /*long*/ address) {
 		super(address);
 	}
 
@@ -51,11 +51,11 @@ public class nsIWebBrowserChrome extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), statusType, status);
 	}
 
-	public int GetWebBrowser(int[] aWebBrowser) {
+	public int GetWebBrowser(int /*long*/[] aWebBrowser) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebBrowser);
 	}
 
-	public int SetWebBrowser(int aWebBrowser) {
+	public int SetWebBrowser(int /*long*/ aWebBrowser) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebBrowser);
 	}
 
@@ -103,16 +103,16 @@ public class nsIWebBrowserChrome extends nsISupports {
 
 	public static final int CHROME_OPENAS_DIALOG = 1073741824;
 
-	public static final int CHROME_OPENAS_CHROME = -2147483648;
+//	public static final int CHROME_OPENAS_CHROME = 2147483648;
 
 	public static final int CHROME_ALL = 4094;
 
-	public int GetChromeFlags(int[] chromeFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), chromeFlags);
+	public int GetChromeFlags(int[] aChromeFlags) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aChromeFlags);
 	}
 
-	public int SetChromeFlags(int chromeFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), chromeFlags);
+	public int SetChromeFlags(int aChromeFlags) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aChromeFlags);
 	}
 
 	public int DestroyBrowserWindow() {

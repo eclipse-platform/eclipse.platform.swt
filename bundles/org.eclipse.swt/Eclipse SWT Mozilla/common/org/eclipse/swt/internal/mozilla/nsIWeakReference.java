@@ -31,17 +31,17 @@ public class nsIWeakReference extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_IWEAKREFERENCE_IID_STRING =
+	public static final String NS_IWEAKREFERENCE_IID_STR =
 		"9188bc85-f92e-11d2-81ef-0060083a0bcf";
 
 	public static final nsID NS_IWEAKREFERENCE_IID =
-		new nsID(NS_IWEAKREFERENCE_IID_STRING);
+		new nsID(NS_IWEAKREFERENCE_IID_STR);
 
-	public nsIWeakReference(int address) {
+	public nsIWeakReference(int /*long*/ address) {
 		super(address);
 	}
 
-	public int QueryReferent(nsID uuid, int[] result) {
+	public int QueryReferent(nsID uuid, int /*long*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uuid, result);
 	}
 }

@@ -31,13 +31,13 @@ public class nsIMemory extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 5;
 
-	public static final String NS_IMEMORY_IID_STRING =
+	public static final String NS_IMEMORY_IID_STR =
 		"59e7e77a-38e4-11d4-8cf5-0060b0fc14a3";
 
 	public static final nsID NS_IMEMORY_IID =
-		new nsID(NS_IMEMORY_IID_STRING);
+		new nsID(NS_IMEMORY_IID_STR);
 
-	public nsIMemory(int address) {
+	public nsIMemory(int /*long*/ address) {
 		super(address);
 	}
 
@@ -45,12 +45,12 @@ public class nsIMemory extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), size);
 	}
 
-	public int Realloc(int ptr, int newSize) {
+	public int Realloc(int /*long*/ ptr, int newSize) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), ptr, newSize);
 	}
 
-	public void Free(int ptr) {
-		XPCOM.VtblCallNoRet(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
+	public int Free(int /*long*/ ptr) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
 	}
 
 	public int HeapMinimize(boolean immediate) {

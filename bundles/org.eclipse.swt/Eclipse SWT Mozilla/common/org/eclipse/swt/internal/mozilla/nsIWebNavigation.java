@@ -31,13 +31,13 @@ public class nsIWebNavigation extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 13;
 
-	public static final String NS_IWEBNAVIGATION_IID_STRING =
-		"F5D9E7B0-D930-11d3-B057-00A024FFC08C";
+	public static final String NS_IWEBNAVIGATION_IID_STR =
+		"f5d9e7b0-d930-11d3-b057-00a024ffc08c";
 
 	public static final nsID NS_IWEBNAVIGATION_IID =
-		new nsID(NS_IWEBNAVIGATION_IID_STRING);
+		new nsID(NS_IWEBNAVIGATION_IID_STR);
 
-	public nsIWebNavigation(int address) {
+	public nsIWebNavigation(int /*long*/ address) {
 		super(address);
 	}
 
@@ -79,7 +79,7 @@ public class nsIWebNavigation extends nsISupports {
 
 	public static final int LOAD_FLAGS_CHARSET_CHANGE = 1024;
 
-	public int LoadURI(char[] uri, int loadFlags, int referrer, int postData, int headers) {
+	public int LoadURI(char[] uri, int loadFlags, int /*long*/ referrer, int /*long*/ postData, int /*long*/ headers) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), uri, loadFlags, referrer, postData, headers);
 	}
 
@@ -97,23 +97,23 @@ public class nsIWebNavigation extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), stopFlags);
 	}
 
-	public int GetDocument(int[] aDocument) {
+	public int GetDocument(int /*long*/[] aDocument) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aDocument);
 	}
 
-	public int GetCurrentURI(int[] aCurrentURI) {
+	public int GetCurrentURI(int /*long*/[] aCurrentURI) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aCurrentURI);
 	}
 
-	public int GetReferringURI(int[] aReferringURI) {
+	public int GetReferringURI(int /*long*/[] aReferringURI) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aReferringURI);
 	}
 
-	public int GetSessionHistory(int[] aSessionHistory) {
+	public int GetSessionHistory(int /*long*/[] aSessionHistory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aSessionHistory);
 	}
 
-	public int SetSessionHistory(int aSessionHistory) {
+	public int SetSessionHistory(int /*long*/ aSessionHistory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aSessionHistory);
 	}
 }
