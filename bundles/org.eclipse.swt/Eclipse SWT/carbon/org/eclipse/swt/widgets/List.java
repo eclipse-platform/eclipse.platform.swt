@@ -583,11 +583,10 @@ public void setTopIndex (int index) {
 }
 
 void showIndex (int index) {
-	OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
     int [] top = new int [1], left = new int [1];
     OS.GetDataBrowserScrollPosition (handle, top, left);
     OS.SetDataBrowserScrollPosition (handle, top [0], 0);
-
 }
 
 public void showSelection () {
