@@ -286,7 +286,7 @@ void drawBackground (int control, float [] background) {
 		OS.RGBForeColor (toRGBColor (background));
 		OS.PaintRect (rect);
 	} else {
-		OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) (short) 0, true);
+		OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
 		OS.EraseRect (rect);
 	}
 }
