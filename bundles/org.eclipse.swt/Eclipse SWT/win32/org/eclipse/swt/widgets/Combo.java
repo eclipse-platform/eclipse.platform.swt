@@ -1858,7 +1858,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH
 		case SWT.ESC: 
-			if (OS.SendMessage (hwnd, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
 				return LRESULT.ZERO;
 			}
 	}
