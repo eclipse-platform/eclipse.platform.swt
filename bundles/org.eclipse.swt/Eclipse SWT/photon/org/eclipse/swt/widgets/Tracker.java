@@ -10,12 +10,54 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
+/**
+ *  Instances of this class implement rubber banding rectangles.
+ *  
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Move</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public class Tracker extends Widget {
 	Composite parent;
 	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0];
 	
+/**
+ * Constructs a new instance of this class given the display
+ * to create it on and a style value describing its behavior
+ * and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p><p>
+ * Note: Currently, null can be passed in for the display argument.
+ * This has the effect of creating the tracker on the currently active
+ * display if there is one. If there is no current display, the 
+ * tracker is created on a "default" display. <b>Passing in null as
+ * the display argument is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param display the display to create the tracker on
+ * @param style the style of control to construct
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
@@ -26,17 +68,72 @@ public Tracker (Display display, int style) {
 	this.display = display;
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Tracker (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	this.display = parent.getDisplay ();
 }
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is moved or resized, by sending
+ * it one of the messages defined in the <code>ControlListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #removeControlListener
+ */
 public void addControlListener(ControlListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Move,typedListener);
 }
+/**
+ * Stop displaying the tracker rectangles.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void close () {
 	checkWidget();
 	tracking = false;
@@ -83,14 +180,42 @@ public Display getDisplay () {
 	return display;
 }
 
+/**
+ * Returns the bounds of the Rectangles being drawn.
+ *
+ * @return the bounds of the Rectangles being drawn
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle [] getRectangles () {
 	checkWidget();
 	return rectangles;
 }
+/**
+ * Returns <code>true</code> if the rectangles are drawn with a stippled line, <code>false</code> otherwise.
+ *
+ * @return the stippled effect of the rectangles
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getStippled () {
 	checkWidget();
 	return stippled;
 }
+/**
+ * Start displaying the Tracker rectangles.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean open () {
 	checkWidget();
 	int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
@@ -193,6 +318,23 @@ void releaseWidget () {
 	display = null;
 	rectangles = null;
 }
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is moved or resized.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #addControlListener
+ */
 public void removeControlListener (ControlListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -201,11 +343,31 @@ public void removeControlListener (ControlListener listener) {
 }
 public void setCursor (Cursor value) {
 }
+/**
+ * Specify the rectangles that should be drawn.
+ *
+ * @param rectangles the bounds of the rectangles to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.rectangles = rectangles;
 }
+/**
+ * Change the appearance of the line used to draw the rectangles.
+ *
+ * @param stippled <code>true</code> if rectangle should appear stippled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setStippled (boolean stippled) {
 	checkWidget();
 	this.stippled = stippled;

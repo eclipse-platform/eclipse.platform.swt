@@ -11,6 +11,19 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
+/**
+ * Instances of this class are selectable user interface
+ * objects that allow the user to enter and modify text.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>MULTI, SINGLE, READ_ONLY, WRAP</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>DefaultSelection, Modify, Verify</dd>
+ * </dl>
+ * </p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ */
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
@@ -30,6 +43,34 @@ public class Text extends Scrollable {
 		DELIMITER = "\n";
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -72,6 +113,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	return new Point(width, height);
 }
+/**
+ * Clears the selection.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void clearSelection () {
 	checkWidget();
 	int [] position = {0};
@@ -122,6 +171,25 @@ void createWidget (int index) {
 	setTabStops (tabs = 8);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is modified, by sending
+ * it one of the messages defined in the <code>ModifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ModifyListener
+ * @see #removeModifyListener
+ */
 public void addModifyListener (ModifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -129,6 +197,30 @@ public void addModifyListener (ModifyListener listener) {
 	addListener (SWT.Modify, typedListener);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * <code>widgetSelected</code> is not called for texts.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -137,6 +229,25 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ */
 public void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -144,6 +255,23 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
+/**
+ * Appends a string.
+ * <p>
+ * The new text is appended to the text at
+ * the end of the widget.
+ * </p>
+ *
+ * @param string the string to be appended
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void append (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -151,6 +279,17 @@ public void append (String string) {
 	OS.PtTextModifyText (handle, 0, 0, -1, buffer, buffer.length);
 }
 
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void copy () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
@@ -164,6 +303,21 @@ public void copy () {
 	OS.PhClipboardCopyString((short)ig, buffer);
 }
 
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void cut () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
@@ -194,18 +348,60 @@ void deregister () {
 	WidgetTable.remove (child);
 }
 
+/**
+ * Gets the line number of the caret.
+ * <p>
+ * The line number of the caret is returned.
+ * </p>
+ *
+ * @return the line number
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getCaretLineNumber () {
 	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return 0;
 }
 
+/**
+ * Gets the location the caret.
+ * <p>
+ * The location of the caret is returned.
+ * </p>
+ *
+ * @return a point, the location of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getCaretLocation () {
 	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return null;
 }
 
+/**
+ * Gets the position of the caret.
+ * <p>
+ * The character position of the caret is returned.
+ * </p>
+ *
+ * @return the position of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getCaretPosition () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
@@ -213,6 +409,16 @@ public int getCaretPosition () {
 	return args [1];
 }
 
+/**
+ * Gets the number of characters.
+ *
+ * @return number of characters in the widget
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getCharCount () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
@@ -221,17 +427,51 @@ public int getCharCount () {
 	return OS.strlen (args [1]);
 }
 
+/**
+ * Gets the double click enabled flag.
+ * <p>
+ * The double click flag enables or disables the
+ * default action of the text widget when the user
+ * double clicks.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getDoubleClickEnabled () {
 	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return false;
 }
 
+/**
+ * Gets the echo character.
+ * <p>
+ * The echo character is the character that is
+ * displayed when the user enters text or the
+ * text is changed by the programmer.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public char getEchoChar () {
 	checkWidget();
 	return echoCharacter;
 }
 
+/**
+ * Gets the editable state.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEditable () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_TEXT_FLAGS, 0, 0};
@@ -239,6 +479,16 @@ public boolean getEditable () {
 	return (args [1] & OS.Pt_EDITABLE) != 0;
 }
 
+/**
+ * Gets the number of lines.
+ *
+ * @return the number of lines in the widget
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getLineCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
@@ -247,11 +497,31 @@ public int getLineCount () {
 	return args [1];
 }
 
+/**
+ * Gets the line delimiter.
+ *
+ * @return a string that is the line delimiter
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getLineDelimiter () {
 	checkWidget();
 	return "\n";
 }
 
+/**
+ * Gets the height of a line.
+ *
+ * @return the height of a row of text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getLineHeight () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
@@ -285,6 +555,21 @@ String getNameText () {
 	return getText (0, Math.min(getCharCount () - 1, 10));
 }
 
+/**
+ * Gets the position of the selected text.
+ * <p>
+ * Indexing is zero based.  The range of
+ * a selection is from 0..N where N is
+ * the number of characters in the widget.
+ * </p>
+ * 
+ * @return the start and end of the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getSelection () {
 	checkWidget();
 	if (textVerify != null) {
@@ -300,12 +585,32 @@ public Point getSelection () {
 	return new Point (start [0], end [0]);
 }
 
+/**
+ * Gets the number of selected characters.
+ *
+ * @return the number of selected characters.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getSelectionCount () {
 	checkWidget();
 	Point selection = getSelection ();
 	return selection.y - selection.x;
 }
 
+/**
+ * Gets the selected text.
+ *
+ * @return the selected text
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getSelectionText () {
 	checkWidget();
 	/*
@@ -317,6 +622,21 @@ public String getSelectionText () {
 	return getText ().substring (selection.x, selection.y);
 }
 
+/**
+ * Gets the number of tabs.
+ * <p>
+ * Tab stop spacing is specified in terms of the
+ * space (' ') character.  The width of a single
+ * tab stop is the pixel width of the spaces.
+ * </p>
+ *
+ * @return the number of tab characters
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getTabs () {
 	checkWidget();
 	return tabs;
@@ -334,6 +654,23 @@ int getTabWidth (int tabs) {
 	return width * tabs;
 }
 
+/**
+ * Gets a range of text.
+ * <p>
+ * Indexing is zero based.  The range of
+ * a selection is from 0..N-1 where N is
+ * the number of characters in the widget.
+ * </p>
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ * @return the range of text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText (int start, int end) {
 	checkWidget();
 	/*
@@ -345,6 +682,19 @@ public String getText (int start, int end) {
 	return getText ().substring (start, end + 1);
 }
 
+/**
+ * Gets the widget text.
+ * <p>
+ * The text for a text widget is the characters in the widget.
+ * </p>
+ *
+ * @return the widget text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText () {
 	checkWidget();
 	if (echoCharacter != '\0') return hiddenText;
@@ -358,6 +708,20 @@ public String getText () {
 	return new String (unicode);
 }
 
+/**
+ * Returns the maximum number of characters that the receiver is capable of holding. 
+ * <p>
+ * If this has not been changed by <code>setTextLimit()</code>,
+ * it will be the constant <code>Text.LIMIT</code>.
+ * </p>
+ * 
+ * @return the text limit
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getTextLimit () {
 	checkWidget();
 	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, 0, 0};
@@ -365,6 +729,20 @@ public int getTextLimit () {
 	return args [1];
 }
 
+/**
+ * Returns the zero-relative index of the line which is currently
+ * at the top of the receiver.
+ * <p>
+ * This index can change when lines are scrolled or new lines are added or removed.
+ * </p>
+ *
+ * @return the index of the top line
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getTopIndex () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
@@ -373,6 +751,26 @@ public int getTopIndex () {
 	return args [1] - 1;
 }
 
+/**
+ * Gets the top pixel.
+ * <p>
+ * The top pixel is the pixel position of the line
+ * that is currently at the top of the widget.  On
+ * some platforms, a text widget can be scrolled by
+ * pixels instead of lines so that a partial line
+ * is displayed at the top of the widget.
+ * </p><p>
+ * The top pixel changes when the widget is scrolled.
+ * The top pixel does not include the widget trimming.
+ * </p>
+ *
+ * @return the pixel position of the top line
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getTopPixel () {
 	checkWidget();
 	//NOT DONE - NOT NEEDED
@@ -386,6 +784,19 @@ void hookEvents () {
 	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, SWT.Modify);
 }
 
+/**
+ * Inserts a string.
+ * <p>
+ * The old selection is replaced with the new text.
+ * </p>
+ *
+ * @param string the string
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void insert (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -400,6 +811,18 @@ public void insert (String string) {
 	OS.PtTextModifyText (handle, start [0], end [0], start [0], buffer, buffer.length);
 }
 
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void paste () {
 	checkWidget();
 	int ig = OS.PhInputGroup (0);
@@ -532,6 +955,23 @@ void releaseWidget () {
 	textVerify = null;
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ModifyListener
+ * @see #addModifyListener
+ */
 public void removeModifyListener (ModifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -539,6 +979,23 @@ public void removeModifyListener (ModifyListener listener) {
 	eventTable.unhook (SWT.Modify, listener);	
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -547,6 +1004,23 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ */
 public void removeVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -554,11 +1028,34 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+/**
+ * Selects all the text in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void selectAll () {
 	checkWidget();
 	OS.PtTextSetSelection (handle, new int [0], new int [] {-1});
 }
 
+/**
+ * Sets the echo character.
+ * <p>
+ * The echo character is the character that is
+ * displayed when the user enters text or the
+ * text is changed by the programmer.
+ * </p>
+ *
+ * @param echo the new echo character
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEchoChar (char echo) {
 	checkWidget();
 	if (echoCharacter == echo) return;
@@ -578,11 +1075,36 @@ public void setEchoChar (char echo) {
 	ignoreChange = oldValue;
 }
 
+/**
+ * Sets the double click enabled flag.
+ * <p>
+ * The double click flag enables or disables the
+ * default action of the text widget when the user
+ * double clicks.
+ * </p>
+ * 
+ * @param doubleClick the new double click flag
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
 	//NOT DONE - NOT NEEDED
 }
 
+/**
+ * Sets the editable state.
+ *
+ * @param editable the new editable state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEditable (boolean editable) {
 	checkWidget();
 	style &= ~SWT.READ_ONLY;
@@ -596,6 +1118,32 @@ public void setFont (Font font) {
 	setTabStops (tabs);
 }
 
+/**
+ * Sets the selection.
+ * <p>
+ * Indexing is zero based.  The range of
+ * a selection is from 0..N where N is
+ * the number of characters in the widget.
+ * </p><p>
+ * Text selections are specified in terms of
+ * caret positions.  In a text widget that
+ * contains N characters, there are N+1 caret
+ * positions, ranging from 0..N.  This differs
+ * from other functions that address character
+ * position such as getText () that use the
+ * regular array indexing rules.
+ * </p>
+ *
+ * @param start new caret position
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (int position) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_CURSOR_POSITION, position, 0};
@@ -613,12 +1161,65 @@ public void setSelection (int position) {
 	}
 }
 
+/**
+ * Sets the selection.
+ * <p>
+ * Indexing is zero based.  The range of
+ * a selection is from 0..N where N is
+ * the number of characters in the widget.
+ * </p><p>
+ * Text selections are specified in terms of
+ * caret positions.  In a text widget that
+ * contains N characters, there are N+1 caret
+ * positions, ranging from 0..N.  This differs
+ * from other functions that address character
+ * position such as getText () that use the
+ * usual array indexing rules.
+ * </p>
+ *
+ * @param selection the point
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (Point selection) {
 	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
 
+/**
+ * Sets the selection.
+ * <p>
+ * Indexing is zero based.  The range of
+ * a selection is from 0..N where N is
+ * the number of characters in the widget.
+ * </p><p>
+ * Text selections are specified in terms of
+ * caret positions.  In a text widget that
+ * contains N characters, there are N+1 caret
+ * positions, ranging from 0..N.  This differs
+ * from other functions that address character
+ * position such as getText () that use the
+ * usual array indexing rules.
+ * </p>
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (int start, int end) {
 	checkWidget();
 	OS.PtTextSetSelection (handle, new int [] {start}, new int [] {end});
@@ -635,6 +1236,22 @@ public void setSelection (int start, int end) {
 	}
 }
 
+ /**
+ * Sets the number of tabs.
+ * <p>
+ * Tab stop spacing is specified in terms of the
+ * space (' ') character.  The width of a single
+ * tab stop is the pixel width of the spaces.
+ * </p>
+ *
+ * @param tabs the number of tabs
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+*/
 public void setTabs (int tabs) {
 	checkWidget();
 	if (tabs < 0) return;
@@ -651,6 +1268,19 @@ void setTabStops (int tabs) {
 	OS.free (ptr);
 }
 
+/**
+ * Sets the contents of the receiver to the given string.
+ *
+ * @param text the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -662,6 +1292,20 @@ public void setText (String string) {
 	OS.free (ptr);
 }
 
+/**
+ * Sets the maximum number of characters that the receiver
+ * is capable of holding to be the argument.
+ *
+ * @param limit new text limit
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the limit is zero</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
@@ -669,6 +1313,18 @@ public void setTextLimit (int limit) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the zero-relative index of the line which is currently
+ * at the top of the receiver. This index can change when lines
+ * are scrolled or new lines are added and removed.
+ *
+ * @param index the index of the top item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
@@ -676,6 +1332,22 @@ public void setTopIndex (int index) {
 	OS.PtSetResources(handle, args.length / 3, args);
 }
 
+/**
+ * Shows the selection.
+ * <p>
+ * If the selection is already showing
+ * in the receiver, this method simply returns.  Otherwise,
+ * lines are scrolled until the selection is visible.
+ * </p>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void showSelection () {
 	checkWidget();
 	//NOT DONE - NOT NEEDED

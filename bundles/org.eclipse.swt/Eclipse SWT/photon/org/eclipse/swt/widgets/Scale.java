@@ -10,13 +10,75 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
+/**
+ * Instances of the receiver represent a selectable user
+ * interface object that present a range of continuous
+ * numeric values.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd> HORIZONTAL, VERTICAL</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 public class Scale extends Control {
 
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Scale (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's value changes, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -64,6 +126,18 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
+/**
+ * Returns the amount that the receiver's value will be
+ * modified by when the up/down (or right/left) arrows
+ * are pressed.
+ *
+ * @return the increment
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getIncrement () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_INCREMENT, 0, 0};
@@ -71,6 +145,16 @@ public int getIncrement () {
 	return args [1];
 }
 
+/**
+ * Returns the maximum value which the receiver will allow.
+ *
+ * @return the maximum
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getMaximum () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_MAXIMUM, 0, 0};
@@ -78,6 +162,16 @@ public int getMaximum () {
 	return args [1];
 }
 
+/**
+ * Returns the minimum value which the receiver will allow.
+ *
+ * @return the minimum
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getMinimum () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_MINIMUM, 0, 0};
@@ -85,6 +179,18 @@ public int getMinimum () {
 	return args [1];
 }
 
+/**
+ * Returns the amount that the receiver's value will be
+ * modified by when the page increment/decrement areas
+ * are selected.
+ *
+ * @return the page increment
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getPageIncrement () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, 0, 0};
@@ -92,6 +198,16 @@ public int getPageIncrement () {
 	return args [1];
 }
 
+/**
+ * Returns the single <em>selection</em> that is the receiver's position.
+ *
+ * @return the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getSelection () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_SCROLL_POSITION, 0, 0};
@@ -115,6 +231,23 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's value changes.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -123,30 +256,92 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+/**
+ * Sets the amount that the receiver's value will be
+ * modified by when the up/down (or right/left) arrows
+ * are pressed to the argument, which must be at least 
+ * one.
+ *
+ * @param value the new increment (must be greater than zero)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setIncrement (int value) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_INCREMENT, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the maximum value which the receiver will allow
+ * to be the argument which must be greater than or
+ * equal to zero.
+ *
+ * @param value the new maximum (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMaximum (int value) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_MAXIMUM, value - 1, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the minimum value which the receiver will allow
+ * to be the argument which must be greater than or
+ * equal to zero.
+ *
+ * @param value the new minimum (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMinimum (int value) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the amount that the receiver's value will be
+ * modified by when the page increment/decrement areas
+ * are selected to the argument, which must be at least
+ * one.
+ *
+ * @return the page increment (must be greater than zero)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setPageIncrement (int value) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the single <em>selection</em> that is the receiver's
+ * value to the argument which must be greater than or equal
+ * to zero.
+ *
+ * @param value the new selection (must be zero or greater)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (int value) {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_SCROLL_POSITION, value, 0};

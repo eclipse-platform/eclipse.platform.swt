@@ -10,6 +10,75 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * Instances of this class are responsible for managing the
+ * connection between SWT and the underlying operating
+ * system. Their most important function is to implement
+ * the SWT event loop in terms of the platform event model.
+ * They also provide various methods for accessing information
+ * about the operating system, and have overall control over
+ * the operating system resources which SWT allocates.
+ * <p>
+ * Applications which are built with SWT will <em>almost always</em>
+ * require only a single display. In particular, some platforms
+ * which SWT supports will not allow more than one <em>active</em>
+ * display. In other words, some platforms do not support
+ * creating a new display if one already exists that has not been
+ * sent the <code>dispose()</code> message.
+ * <p>
+ * In SWT, the thread which creates a <code>Display</code>
+ * instance is distinguished as the <em>user-interface thread</em>
+ * for that display.
+ * </p>
+ * The user-interface thread for a particular display has the
+ * following special attributes:
+ * <ul>
+ * <li>
+ * The event loop for that display must be run from the thread.
+ * </li>
+ * <li>
+ * Some SWT API methods (notably, most of the public methods in
+ * <code>Widget</code> and its subclasses), may only be called
+ * from the thread. (To support multi-threaded user-interface
+ * applications, class <code>Display</code> provides inter-thread
+ * communication methods which allow threads other than the 
+ * user-interface thread to request that it perform operations
+ * on their behalf.)
+ * </li>
+ * <li>
+ * The thread is not allowed to construct other 
+ * <code>Display</code>s until that display has been disposed.
+ * (Note that, this is in addition to the restriction mentioned
+ * above concerning platform support for multiple displays. Thus,
+ * the only way to have multiple simultaneously active displays,
+ * even on platforms which support it, is to have multiple threads.)
+ * </li>
+ * </ul>
+ * Enforcing these attributes allows SWT to be implemented directly
+ * on the underlying operating system's event model. This has 
+ * numerous benefits including smaller footprint, better use of 
+ * resources, safer memory management, clearer program logic,
+ * better performance, and fewer overall operating system threads
+ * required. The down side however, is that care must be taken
+ * (only) when constructing multi-threaded applications to use the
+ * inter-thread communication mechanisms which this class provides
+ * when required.
+ * </p><p>
+ * All SWT API methods which may only be called from the user-interface
+ * thread are distinguished in their documentation by indicating that
+ * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
+ * SWT exception.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ * 
+ * @see #syncExec
+ * @see #asyncExec
+ * @see #wake
+ * @see #readAndDispatch
+ * @see #sleep
+ * @see #dispose
+ */
 public class Display extends Device {
 
 	/**** TEMPORARY CODE FOR MOTIF TABLE ***/
@@ -191,6 +260,25 @@ static void setDevice (Device device) {
 	CurrentDevice = device;
 }
 			
+/**
+ * Constructs a new instance of this class.
+ * <p>
+ * Note: The resulting display is marked as the <em>current</em>
+ * display. If this is the first display which has been 
+ * constructed since the application started, it is also
+ * marked as the <em>default</em> display.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see #getCurrent
+ * @see #getDefault
+ * @see Widget#checkSubclass
+ * @see Shell
+ */
 public Display () {
 	this (null);
 }
@@ -199,11 +287,26 @@ public Display (DeviceData data) {
 	super (data);
 }
 
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread at the next 
+ * reasonable opportunity. The caller of this method continues 
+ * to run in parallel, and is not notified when the
+ * runnable has completed.
+ *
+ * @param runnable code to run on the user-interface thread.
+ *
+ * @see #syncExec
+ */
 public void asyncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.asyncExec (runnable);
 }
 
+/**
+ * Causes the system hardware to emit a short sound
+ * (if it supports this capability).
+ */
 public void beep () {
 	checkDevice ();
 	OS.PtBeep ();
@@ -282,6 +385,13 @@ void destroyDisplay () {
 	// NEED to destroy app_context ???
 }
 
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread just before the
+ * receiver is disposed.
+ *
+ * @param runnable code to run at dispose time.
+ */
 public void disposeExec (Runnable runnable) {
 	checkDevice ();
 	if (disposeList == null) disposeList = new Runnable [4];
@@ -307,6 +417,14 @@ void error (int code) {
 	SWT.error(code);
 }
 
+/**
+ * Returns the display which the given thread is the
+ * user-interface thread for, or null if the given thread
+ * is not a user-interface thread for any display.
+ *
+ * @param thread the user-interface thread
+ * @return the display for the given thread
+ */
 public static synchronized Display findDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		Display display = Displays [i];
@@ -317,11 +435,35 @@ public static synchronized Display findDisplay (Thread thread) {
 	return null;
 }
 
+/**
+ * Given the operating system handle for a widget, returns
+ * the instance of the <code>Widget</code> subclass which
+ * represents it in the currently running application, if
+ * such exists, or null if no matching widget can be found.
+ *
+ * @param handle the handle for the widget
+ * @return the SWT widget that the handle represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return WidgetTable.get (handle);
 }
 
+/**
+ * Returns the currently active <code>Shell</code>, or null
+ * if no shell belonging to the currently running application
+ * is active.
+ *
+ * @return the active shell or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Shell getActiveShell () {
 	checkDevice ();
 	int handle = 0;
@@ -335,6 +477,17 @@ public Shell getActiveShell () {
 	return null;
 }
 
+/**
+ * Returns the control which the on-screen pointer is currently
+ * over top of, or null if it is not currently over one of the
+ * controls built by the currently running application.
+ *
+ * @return the control under the cursor
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getCursorControl () {
 	checkDevice ();
 	int ig = OS.PhInputGroup (0);
@@ -370,6 +523,16 @@ public Control getCursorControl () {
 	return null;
 }
 
+/**
+ * Returns the location of the on-screen pointer relative
+ * to the top left corner of the screen.
+ *
+ * @return the cursor location
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getCursorLocation () {
 	checkDevice ();
 	int ig = OS.PhInputGroup (0);
@@ -378,6 +541,13 @@ public Point getCursorLocation () {
 	return new Point (info.pos_x, info.pos_y);
 }
 
+/**
+ * Returns the display which the currently running thread is
+ * the user-interface thread for, or null if the currently
+ * running thread is not a user-interface thread for any display.
+ *
+ * @return the current display
+ */
 public static synchronized Display getCurrent () {
 	Thread current = Thread.currentThread ();
 	for (int i=0; i<Displays.length; i++) {
@@ -387,21 +557,58 @@ public static synchronized Display getCurrent () {
 	return null;
 }
 
+/**
+ * Returns the default display. One is created (making the
+ * thread that invokes this method its user-interface thread)
+ * if it did not already exist.
+ *
+ * @return the default display
+ */
 public static synchronized Display getDefault () {
 	if (Default == null) Default = new Display ();
 	return Default;
 }
 
+/**
+ * On platforms which support it, sets the application name
+ * to be the argument. On Motif, for example, this can be used
+ * to set the name used for resource lookup.
+ *
+ * @param name the new app name
+ */
 public static void setAppName (String name) {
 	/* Do nothing */
 }
 
+/**
+ * Returns the longest duration, in milliseconds, between
+ * two mouse button clicks that will be considered a
+ * <em>double click</em> by the underlying operating system.
+ *
+ * @return the double click time
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getDoubleClickTime () {
 	checkDevice ();
 	//NOT DONE
 	return 250;
 }
 
+/**
+ * Returns the control which currently has keyboard focus,
+ * or null if keyboard events are not currently going to
+ * any of the controls built by the currently running
+ * application.
+ *
+ * @return the control under the cursor
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getFocusControl () {
 	checkDevice ();
 	int handle = 0;
@@ -419,10 +626,31 @@ public Control getFocusControl () {
 	return null;
 }
 
+/**
+ * Returns the maximum allowed depth of icons on this display.
+ * On some platforms, this may be different than the actual
+ * depth of the display.
+ *
+ * @return the maximum icon depth
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getIconDepth () {
 	return getDepth ();
 }
 
+/**
+ * Returns an array containing all shells which have not been
+ * disposed and have the receiver as their display.
+ *
+ * @return the receiver's shells
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Shell [] getShells () {
 	checkDevice ();
 	/*
@@ -451,6 +679,24 @@ public Shell [] getShells () {
 	return result;
 }
 
+/**
+ * Returns the matching standard color for the given
+ * constant, which should be one of the color constants
+ * specified in class <code>SWT</code>. Any value other
+ * than one of the SWT color constants which is passed
+ * in will result in the color black. This color should
+ * not be free'd because it was allocated by the system,
+ * not the application.
+ *
+ * @param id the color constant
+ * @return the matching color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ */
 public Color getSystemColor (int id) {
 	checkDevice ();
 	int color = 0x000000;
@@ -480,16 +726,52 @@ public Color getSystemColor (int id) {
 	return Color.photon_new (this, color);
 }
 
+/**
+ * Returns a reasonable font for applications to use.
+ * On some platforms, this will match the "default font"
+ * or "system font" if such can be found.  This font
+ * should not be free'd because it was allocated by the
+ * system, not the application.
+ * <p>
+ * Typically, applications which want the default look
+ * should simply not set the font on the widgets they
+ * create. Widgets are always created with the correct
+ * default font for the class of user-interface component
+ * they represent.
+ * </p>
+ *
+ * @return a font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Font getSystemFont () {
 	checkDevice ();
 	return Font.photon_new (this, TEXT_FONT);
 }
 
+/**
+ * Returns the thread that has invoked <code>syncExec</code>
+ * or null if no such runnable is currently being invoked by
+ * the user-interface thread.
+ * <p>
+ * Note: If a runnable invoked by asyncExec is currently
+ * running, this method will return null.
+ * </p>
+ *
+ * @return the receiver's sync-interface thread
+ */
 public Thread getSyncThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return synchronizer.syncThread;
 }
 
+/**
+ * Returns the user-interface thread for the receiver.
+ *
+ * @return the receiver's user-interface thread
+ */
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
@@ -699,6 +981,21 @@ int inputProc (int data, int rcvid, int message, int size) {
 	return OS.Pt_CONTINUE;
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Display</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param data the platform specific GC data 
+ * @return the platform specific GC handle
+ *
+ * @private
+ */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int phGC = OS.PgCreateGC(0); // NOTE: PgCreateGC ignores the parameter
@@ -709,6 +1006,21 @@ public int internal_new_GC (GCData data) {
 	return phGC;
 }
 
+/**	 
+ * Invokes platform specific functionality to dispose a GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Display</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the platform specific GC handle
+ * @param data the platform specific GC data 
+ *
+ * @private
+ */
 public void internal_dispose_GC (int phGC, GCData data) {
 	OS.PgDestroyGC(phGC);
 }
@@ -717,6 +1029,30 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
+/**
+ * Returns the application defined property of the receiver
+ * with the specified name, or null if it has not been set.
+ * <p>
+ * Applications may have associated arbitrary objects with the
+ * receiver in this fashion. If the objects stored in the
+ * properties need to be notified when the display is disposed
+ * of, it is the application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param key the name of the property
+ * @return the value of the property or null if it has not been set
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -727,6 +1063,28 @@ public Object getData (String key) {
 	return null;
 }
 
+/**
+ * Returns the application defined, display specific data
+ * associated with the receiver, or null if it has not been
+ * set. The <em>display specific data</em> is a single,
+ * unnamed field that is stored with every display. 
+ * <p>
+ * Applications may put arbitrary objects in this field. If
+ * the object stored in the display specific data needs to
+ * be notified when the display is disposed of, it is the
+ * application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @return the display specific data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public Object getData () {
 	checkDevice ();
 	return data;
@@ -760,6 +1118,28 @@ void postEvent (Event event) {
 	if (embedded) wake ();
 }
 
+/**
+ * Reads an event from the operating system's event queue,
+ * dispatches it appropriately, and returns <code>true</code>
+ * if there is potentially more work to do, or <code>false</code>
+ * if the caller can sleep until another event is placed on
+ * the event queue.
+ * <p>
+ * In addition to checking the system event queue, this method also
+ * checks if any inter-thread messages (created by <code>syncExec()</code>
+ * or <code>asyncExec()</code>) are waiting to be processed, and if
+ * so handles them before returning.
+ * </p>
+ *
+ * @return <code>false</code> if the caller can sleep upon return from this method
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #sleep
+ * @see #wake
+ */
 public boolean readAndDispatch () {
 	checkDevice ();
 	idle = false;
@@ -898,6 +1278,30 @@ boolean runDeferredEvents () {
 	return true;
 }
 
+/**
+ * Sets the application defined property of the receiver
+ * with the specified name to the given argument.
+ * <p>
+ * Applications may have associated arbitrary objects with the
+ * receiver in this fashion. If the objects stored in the
+ * properties need to be notified when the display is disposed
+ * of, it is the application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param key the name of the property
+ * @param value the new value for the property
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -946,11 +1350,46 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
+/**
+ * Sets the application defined, display specific data
+ * associated with the receiver, to the argument.
+ * The <em>display specific data</em> is a single,
+ * unnamed field that is stored with every display. 
+ * <p>
+ * Applications may put arbitrary objects in this field. If
+ * the object stored in the display specific data needs to
+ * be notified when the display is disposed of, it is the
+ * application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param data the new display specific data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ * </ul>
+ *
+ * @see #getData
+ * @see #disposeExec
+ */
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
 }
 
+/**
+ * Sets the synchronizer used by the display to be
+ * the argument, which can not be null.
+ *
+ * @param synchronizer the new synchronizer for the display (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the synchronizer is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -960,6 +1399,19 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	this.synchronizer = synchronizer;
 }
 
+/**
+ * Causes the user-interface thread to <em>sleep</em> (that is,
+ * to be put in a state where it does not consume CPU cycles)
+ * until an event is received or it is otherwise awakened.
+ *
+ * @return <code>true</code> if an event requiring dispatching was placed on the queue.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #wake
+ */
 public boolean sleep () {
 	checkDevice ();
 	OS.PtAppProcessEvent (app_context);
@@ -967,6 +1419,20 @@ public boolean sleep () {
 	return true;
 }
 
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread at the next 
+ * reasonable opportunity. The thread which calls this method
+ * is suspended until the runnable completes.
+ *
+ * @param runnable code to run on the user-interface thread.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ * </ul>
+ *
+ * @see #asyncExec
+ */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
@@ -981,6 +1447,20 @@ int textWidth (String string, byte[] font) {
 	return rect.lr_x - rect.ul_x + 1;
 }
 
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread after the specified
+ * number of milliseconds have elapsed.
+ *
+ * @param milliseconds the delay before running the runnable
+ * @param runnable code to run on the user-interface thread
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #asyncExec
+ */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
@@ -1045,6 +1525,13 @@ public void update() {
 	}
 }
 
+/**
+ * If the receiver's user-interface thread was <code>sleep</code>'ing, 
+ * causes it to be awakened and start running again. Note that this
+ * method may be called from any thread.
+ *
+ * @see #sleep
+ */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 //	int flags = OS.PtEnter (0);	

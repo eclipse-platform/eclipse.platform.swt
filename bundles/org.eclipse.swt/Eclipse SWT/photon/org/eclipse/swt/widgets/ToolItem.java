@@ -11,6 +11,19 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
+/**
+ * Instances of this class represent a selectable user interface object
+ * that represents a button in a tool bar.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * </p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ */
 public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
@@ -19,16 +32,102 @@ public class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	int button, arrow;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>ToolBar</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ToolItem (ToolBar parent, int style) {
 	this(parent, style, parent.getItemCount ());
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>ToolBar</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called when the mouse is over the arrow portion of a drop-down tool,
+ * the event object detail field contains the value <code>SWT.ARROW</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -145,6 +244,17 @@ void deregister () {
 	}
 }
 
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
@@ -152,11 +262,36 @@ public Rectangle getBounds () {
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
 
+/**
+ * Returns the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ *
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	checkWidget();
 	return control;
 }
 
+/**
+ * Returns the receiver's disabled image if it has one, or null
+ * if it does not.
+ * <p>
+ * The disabled image is displayed when the receiver is disabled.
+ * </p>
+ *
+ * @return the receiver's disabled image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getDisabledImage () {
 	checkWidget();
 	return disabledImage;
@@ -168,6 +303,21 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
@@ -175,16 +325,56 @@ public boolean getEnabled () {
 	return (args [1] & OS.Pt_BLOCKED) == 0;
 }
 
+/**
+ * Returns the receiver's hot image if it has one, or null
+ * if it does not.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
+ *
+ * @return the receiver's hot image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getHotImage () {
 	checkWidget();
 	return hotImage;
 }
 
+/**
+ * Returns the receiver's parent, which must be a <code>ToolBar</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ToolBar getParent () {
 	checkWidget();
 	return parent;
 }
 
+/**
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ * </p>
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
@@ -193,11 +383,31 @@ public boolean getSelection () {
 	return (args [1] & OS.Pt_SET) != 0;
 }
 
+/**
+ * Returns the receiver's tool tip text, or null if it has not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getToolTipText () {
 	checkWidget();
 	return toolTipText;
 }
 
+/**
+ * Gets the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getWidth () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0};
@@ -216,6 +426,21 @@ void hookEvents () {
 	}
 }
 
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
@@ -305,6 +530,23 @@ void releaseWidget () {
 	toolTipText = null;
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -313,6 +555,21 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+/**
+ * Sets the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ *
+ * @param control the new control
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	checkWidget();
 	if (control != null) {
@@ -331,6 +588,23 @@ public void setControl (Control control) {
 	}
 }
 
+/**
+ * Sets the receiver's disabled image to the argument, which may be
+ * null indicating that no disabled image should be displayed.
+ * <p>
+ * The disbled image is displayed when the receiver is disabled.
+ * </p>
+ *
+ * @param image the disabled image to display on the receiver (may be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDisabledImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -338,6 +612,22 @@ public void setDisabledImage (Image image) {
 	disabledImage = image;
 }
 
+/**
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise.
+ * <p>
+ * A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ * </p>
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	int [] args = {
@@ -347,6 +637,23 @@ public void setEnabled (boolean enabled) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the receiver's hot image to the argument, which may be
+ * null indicating that no hot image should be displayed.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
+ *
+ * @param image the hot image to display on the receiver (may be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setHotImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -396,6 +703,21 @@ public void setImage (Image image) {
 	}
 }
 
+/**
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ * </p>
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
@@ -438,11 +760,32 @@ public void setText (String string) {
 	}
 }
 
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
 }
 
+/**
+ * Sets the width of the receiver.
+ *
+ * @param width the new width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
