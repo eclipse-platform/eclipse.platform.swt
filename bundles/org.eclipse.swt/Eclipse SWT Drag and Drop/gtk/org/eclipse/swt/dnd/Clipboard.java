@@ -187,20 +187,10 @@ public Object getContents(Transfer transfer) {
 	int /*long*/ selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
-		// try the primary selection first
-		selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
+		selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
 		if( selection_data != 0) break;
 	}
-	if (selection_data == 0) {
-		// try the clipboard selection second
-		for (int i = 0; i < typeIds.length; i++) {
-			selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
-			if( selection_data != 0) break;
-		}
-	}
-	if (selection_data == 0) {
-		return null; // No data available for this transfer
-	}
+	if (selection_data == 0) return null;
 	
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
@@ -302,7 +292,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  */
 public TransferData[] getAvailableTypes() {
 	checkWidget();
-	int[] types = _getAvailableTypes();
+	int[] types = getAvailableClipboardTypes();
 	TransferData[] result = new TransferData[types.length];
 	for (int i = 0; i < types.length; i++) {
 		result[i] = new TransferData();
@@ -329,20 +319,31 @@ public TransferData[] getAvailableTypes() {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
-	int[] types = _getAvailableTypes();
-	String[] result = new String[types.length];
+	int[] types1 = getAvailableClipboardTypes();
+	int[] types2 = getAvailablePrimaryTypes();
+	String[] result = new String[types1.length + types2.length];
 	int count = 0;
-	for (int i = 0; i < types.length; i++) {
-		int /*long*/ pName = OS.gdk_atom_name(types[i]);
+	for (int i = 0; i < types1.length; i++) {
+		int /*long*/ pName = OS.gdk_atom_name(types1[i]);
 		if (pName == 0) {
 			continue;
 		}
 		byte[] buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
-		result[count++] = new String (Converter.mbcsToWcs (null, buffer));
+		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (null, buffer));
 	}
-	if (count < types.length){
+	for (int i = 0; i < types2.length; i++) {
+		int /*long*/ pName = OS.gdk_atom_name(types2[i]);
+		if (pName == 0) {
+			continue;
+		}
+		byte[] buffer = new byte [OS.strlen(pName)];
+		OS.memmove (buffer, pName, buffer.length);
+		OS.g_free (pName);
+		result[count++] = "GTKPRIMARYCLIPBOARD "+new String (Converter.mbcsToWcs (null, buffer));
+	}
+	if (count < result.length){
 		String[] temp = new String[count];
 		System.arraycopy(result, 0, temp, 0, count);
 		result = temp;
@@ -350,34 +351,34 @@ public String[] getAvailableTypeNames() {
 	return result;
 }
 
-private  int[] _getAvailableTypes() {
+private  int[] getAvailablePrimaryTypes() {
 	int[] types = new int[0];
-	// first try the primary clipboard
 	int /*long*/ selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
 			GtkSelectionData gtkSelectionData = new GtkSelectionData();
 			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-			if (gtkSelectionData.length == 0) return types;
-			types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
-			OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+			if (gtkSelectionData.length != 0) {
+				types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
+				OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);
 		}
 	}
-	// next try the selection clipboard
-	selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
+	return types;
+}
+private int[] getAvailableClipboardTypes () {
+	int[] types = new int[0];
+	int /*long*/ selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
 			GtkSelectionData gtkSelectionData = new GtkSelectionData();
 			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-			if (gtkSelectionData.length == 0) return types;
-			int[] temp = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
-			OS.memmove(temp, gtkSelectionData.data, gtkSelectionData.length);
-			int[] newTypes = new int[types.length + temp.length];
-			System.arraycopy(types, 0, newTypes, 0, types.length);
-			System.arraycopy(temp, 0, newTypes, types.length, temp.length);
-			types = newTypes;
+			if (gtkSelectionData.length != 0) {
+				types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
+				OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);
 		}
