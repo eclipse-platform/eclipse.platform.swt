@@ -32,7 +32,7 @@ class DialogTab extends Tab {
 	Button iconErrorButton, iconInformationButton, iconQuestionButton;
 	Button iconWarningButton, iconWorkingButton;
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
-	Button saveButton, openButton;
+	Button saveButton, openButton, multiButton;
 
 	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc"};
 	static String [] FilterNames		= {ControlExample.getResourceString("FilterName_0"),
@@ -108,6 +108,7 @@ class DialogTab extends Tab {
 		if (systemModalButton.getEnabled () && systemModalButton.getSelection ()) style |= SWT.SYSTEM_MODAL;
 		if (saveButton.getEnabled () && saveButton.getSelection ()) style |= SWT.SAVE;
 		if (openButton.getEnabled () && openButton.getSelection ()) style |= SWT.OPEN;
+		if (multiButton.getEnabled () && multiButton.getSelection ()) style |= SWT.MULTI;
 	
 		/* Open the appropriate dialog type */
 		String name = dialogCombo.getText ();
@@ -318,10 +319,12 @@ class DialogTab extends Tab {
 		fileDialogStyleGroup.setText (ControlExample.getResourceString("File_Dialog_Styles"));
 	
 		/* Create the file dialog style buttons */
-		saveButton = new Button (fileDialogStyleGroup, SWT.RADIO);
-		saveButton.setText ("SWT.SAVE");
 		openButton = new Button(fileDialogStyleGroup, SWT.RADIO);
 		openButton.setText("SWT.OPEN");
+		saveButton = new Button (fileDialogStyleGroup, SWT.RADIO);
+		saveButton.setText ("SWT.SAVE");
+		multiButton = new Button(fileDialogStyleGroup, SWT.CHECK);
+		multiButton.setText("SWT.MULTI");
 	
 		/* Create the orientation group */
 		if (RTL_SUPPORT_ENABLE) {
@@ -368,6 +371,7 @@ class DialogTab extends Tab {
 		saveButton.setEnabled (false);
 		openButton.setEnabled (false);
 		openButton.setSelection (true);
+		multiButton.setEnabled (false);
 		iconInformationButton.setSelection (true);
 		modelessButton.setSelection (true);
 	}
@@ -431,6 +435,7 @@ class DialogTab extends Tab {
 		iconWorkingButton.setEnabled  (isMessageBox);
 		saveButton.setEnabled (isFileDialog);
 		openButton.setEnabled (isFileDialog);
+		multiButton.setEnabled (isFileDialog);
 	
 		/* Unselect the buttons */
 		if (!isMessageBox) {
