@@ -2795,7 +2795,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	// a different line? If not the autoscroll selection 
 	// could be incorrectly reset. Fixes 1GKM3XS
 	if (y >= 0 && y < getClientArea().height && 
-		(x >= 0 && x < getClientArea().width || 
+		(x >= 0 && x < getClientArea().width || wordWrap ||	
 		newCaretLine != content.getLineAtOffset(caretOffset))) {
 		if (newCaretOffset != caretOffset || advancing != oldAdvancing) {
 			caretOffset = newCaretOffset;
