@@ -4074,6 +4074,18 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_ME
 }
 #endif
 
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	MSG _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I\n")
+	if (arg1) lparg1 = getMSGFields(env, arg1, &_arg1);
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I\n")
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

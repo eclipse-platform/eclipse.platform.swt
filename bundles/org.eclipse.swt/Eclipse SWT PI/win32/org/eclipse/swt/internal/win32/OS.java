@@ -2317,6 +2317,7 @@ public static final native void MoveMemory (int Destination, GRADIENT_RECT Sourc
 public static final native void MoveMemory (int Destination, LOGFONTW Source, int Length);
 public static final native void MoveMemory (int Destination, LOGFONTA Source, int Length);
 public static final native void MoveMemory (int Destination, MEASUREITEMSTRUCT Source, int Length);
+public static final native void MoveMemory (int Destination, MSG Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOA Source, int Length);
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
