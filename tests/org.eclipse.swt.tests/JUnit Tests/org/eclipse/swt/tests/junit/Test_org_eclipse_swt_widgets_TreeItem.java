@@ -107,9 +107,8 @@ public void test_getBoundsI() {
 	assertTrue(":b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
  	bounds = treeItem.getBounds(1);
 	assertTrue(":c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	//tree2.setWidths(new int[] {30});
 	TreeColumn column = new TreeColumn(tree2, SWT.NONE, 0);
-	column.setWidth(30);
+	column.setWidth(100);
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":d:", bounds.x > boundsX && bounds.width > 0);
  	bounds = treeItem2.getBounds(-1);
@@ -141,7 +140,7 @@ public void test_getBoundsI() {
 	assertTrue(":c:", bounds.x >= 0 && bounds.height >= 0);
  
 	column = new TreeColumn(tree2, SWT.NULL);
-	column.setWidth(30);
+	column.setWidth(100);
 	new TreeColumn(tree2, SWT.NULL);	
 	treeItem2.setImage(1, image);
 	bounds = treeItem2.getBounds(0);
@@ -204,8 +203,8 @@ public void test_getImageBoundsI() {
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(-1));
 	
 	// TODO - should this width be 0 or a value?
-	//bounds = treeItem.getImageBounds(0);
-	//assertTrue(":b:", bounds.width == 0);
+	bounds = treeItem.getImageBounds(0);
+	assertTrue(":b:", bounds.width == 0);
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(1));
 	
