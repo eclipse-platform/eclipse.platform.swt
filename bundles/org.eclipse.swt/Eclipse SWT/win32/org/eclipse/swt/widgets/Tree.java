@@ -941,8 +941,8 @@ public void setSelection (TreeItem [] items) {
 		int hNewItem = 0;
 		TreeItem item = items [0];
 		if (item != null) {
-			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			hNewItem = item.handle;
+			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			hAnchor = hNewItem = item.handle;
 		}
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
