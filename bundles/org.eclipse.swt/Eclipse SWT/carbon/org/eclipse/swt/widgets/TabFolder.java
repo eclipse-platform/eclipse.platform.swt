@@ -221,6 +221,7 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	Rect outData = new Rect();
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, outData, null);
+	toControl (handle, outData);
 	return new Rectangle (outData.left, outData.top, outData.right - outData.left, outData.bottom - outData.top);
 }
 
@@ -349,6 +350,20 @@ public int indexOf (TabItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int index = OS.GetControl32BitValue (handle) - 1;
+	if (index != -1) {
+		TabItem item = items [index];
+		Control control = item.control;
+		if (control != null && !control.isDisposed ()) {
+			control.setBounds (getClientArea ());
+		}
+	}
+	return result;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
