@@ -1220,6 +1220,27 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 void setFocusIndex (int index) {
 	OS.XmListSetKbdItemPos (handle, index + 1);
 }
+public void setFont (Font font) {
+	checkWidget ();
+	
+	/*
+	* Bug in Motif. Setting the font in a list widget that does
+	* not have any items causes a GP on UTF-8 locale.
+	* The fix is to add an item, change the font, then
+	* remove the added item at the end. 
+	*/
+	int [] argList1 = {OS.XmNitems, 0, OS.XmNitemCount, 0,};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	boolean fixString = OS.IsDBLocale && argList1 [3] == 0;
+	if (fixString) {
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), "string", true);
+		int xmString = OS.XmStringCreateLocalized (buffer);
+		OS.XmListAddItemUnselected (handle, xmString, -1);
+		OS.XmStringFree (xmString);
+	}
+	super.setFont (font);
+	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);
+}
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
