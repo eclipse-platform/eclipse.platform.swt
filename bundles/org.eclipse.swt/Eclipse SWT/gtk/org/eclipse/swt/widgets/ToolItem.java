@@ -821,6 +821,11 @@ public void setWidth (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	OS.gtk_widget_set_size_request (handle, width, -1);
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_resize_children (parentHandle);
 	resizeControl ();
 }
 
