@@ -27,14 +27,19 @@ class AccessibleFactory {
 	static AccessibleType childType;
 	static final String CHILD_TYPE = "SWTChild";
 	static final String DEFAULT_PARENTTYPE = "GtkAccessible";
-	static final String FACTORY_TYPE = "SWTFactory";
 	static final String FACTORY_PARENTTYPE = "AtkObjectFactory";
-	static final String SWT_TYPE_PREFIX = "SWT";
+	static final byte[] SWT_TYPE_PREFIX = "SWT".getBytes ();
+	static final byte[] FACTORY_TYPE = "SWTFactory".getBytes ();
 
 	private AccessibleFactory (int widgetType) {
 		super ();
 		int widgetTypeName = ATK.g_type_name (widgetType);
-		byte[] factoryName = concat (FACTORY_TYPE, widgetTypeName);
+		int widgetTypeNameLength = OS.strlen (widgetTypeName) + 1;
+		byte[] buffer = new byte [widgetTypeNameLength];
+		OS.memmove (buffer, widgetTypeName, widgetTypeNameLength);
+		byte[] factoryName = new byte [FACTORY_TYPE.length + widgetTypeNameLength];
+		System.arraycopy (FACTORY_TYPE, 0, factoryName, 0, FACTORY_TYPE.length);
+		System.arraycopy (buffer, 0, factoryName, FACTORY_TYPE.length, widgetTypeNameLength);
 		if (ATK.g_type_from_name (factoryName) == 0) {
 			// register the factory
 			int registry = ATK.atk_get_default_registry ();
@@ -45,7 +50,9 @@ class AccessibleFactory {
 				parentType = ATK.g_type_from_name (Converter.wcsToMbcs (null, DEFAULT_PARENTTYPE, true));
 			}
 			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactory);
-			byte[] newTypeName = concat (SWT_TYPE_PREFIX, widgetTypeName);
+			byte[] newTypeName = new byte [SWT_TYPE_PREFIX.length + widgetTypeNameLength];
+			System.arraycopy (SWT_TYPE_PREFIX, 0, newTypeName, 0, SWT_TYPE_PREFIX.length);
+			System.arraycopy (buffer, 0, newTypeName, SWT_TYPE_PREFIX.length, widgetTypeNameLength);
 			accessibleType = new AccessibleType (newTypeName, parentType);
 		}
 	}
@@ -59,16 +66,6 @@ class AccessibleFactory {
 		return accessibleType.createObject (accessible, widget);
 	}
 	
-	byte[] concat (String str1, int str2ptr) {
-		int str2length = OS.strlen (str2ptr) + 1;
-		byte[] buffer = new byte [str2length];
-		OS.memmove (buffer, str2ptr, str2length);
-		byte[] newName = new byte [str1.length () + str2length];
-		System.arraycopy (str1.getBytes (), 0, newName, 0, str1.length ());
-		System.arraycopy (buffer, 0, newName, str1.length (), str2length);
-		return newName;
-	}
-
 	int createFactory (byte[] name) {
 		int parent = ATK.g_type_from_name (Converter.wcsToMbcs (null, FACTORY_PARENTTYPE, true));
 		gTypeInfoCB_base_init  = new Callback (this, "gTypeInfo_base_init", 1);

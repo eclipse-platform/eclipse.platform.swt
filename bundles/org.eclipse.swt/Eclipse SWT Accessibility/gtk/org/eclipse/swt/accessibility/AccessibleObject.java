@@ -549,6 +549,9 @@ public class AccessibleObject {
 	}
 
 	int atkText_get_character_count () {
+		// TODO next line is workaround for disposed widget exception;
+		// should not be needed  
+		if (accessible.control.isDisposed()) return 0;
 		String text = getText ();
 		if (text != null) return text.length ();
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
