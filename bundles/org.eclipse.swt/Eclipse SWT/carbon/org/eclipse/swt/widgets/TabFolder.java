@@ -158,18 +158,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	Rect oldBounds = new Rect ();
+	OS.GetControlBounds (handle, oldBounds);
 	Rect bounds = new Rect ();
-	OS.GetControlBounds (handle, bounds);
+	bounds.right = bounds.bottom = 100;
+	OS.SetControlBounds (handle, bounds);
 	Rect client = new Rect ();
-	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null);
-	x -= Math.max (3, client.left - bounds.left);
-	if ((style & SWT.BOTTOM) != 0) {
-		y -= client.top - bounds.top;
-	} else {
-		y -= Math.max (34, client.top - bounds.top);
-	}
-	width += Math.max (6, (bounds.right - bounds.left) - (client.right - client.left));
-	height += Math.max (37, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	OS.GetTabContentRect (handle, client);
+	OS.SetControlBounds (handle, oldBounds);
+	x -= client.left - bounds.left;
+	y -= client.top - bounds.top;
+	width += (bounds.right - bounds.left) - (client.right - client.left);
+	height += (bounds.bottom - bounds.top) - (client.bottom - client.top);
 	Rect inset = getInset ();
 	x -= inset.left;
 	y -= inset.top;
