@@ -382,22 +382,22 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	return FontMetrics.gtk_new(ascent, descent, averageCharWidth, 0, height);
 }
 
-public Point getLineOffsets(int lineIndex) {
-	checkLayout ();
+public int[] getLineOffsets() {
+	checkLayout();
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
-	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	PangoLayoutLine line = new PangoLayoutLine();
-	OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
+	int[] offsets = new int [lineCount + 1];
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int start = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + line.start_index), end;
-	if (lineIndex < lineCount - 1) {
-		OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex + 1), PangoLayoutLine.sizeof);
-		end = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + line.start_index) - 1; 
-	} else {
-		end = text.length() - 1; 
-	}
-	return new Point(start, Math.max(start, end));
+	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int i = 0;
+	do {
+		int bytePos = OS.pango_layout_iter_get_index(iter);
+		int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+		offsets[i++] = untranslateOffset(pos);
+	} while (OS.pango_layout_iter_next_line(iter));					
+	offsets[lineCount] = text.length();						 
+	return offsets;
 }
 
 public Point getLocation(int offset, boolean trailing) {
@@ -813,7 +813,7 @@ int untranslateOffset(int offset) {
 		do {
 			int bytePos = OS.pango_layout_iter_get_index(iter);
 			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
-			if (pos > offset) break;
+			if (pos >= offset) break;
 			count++;
 		} while (OS.pango_layout_iter_next_line(iter));
 		OS.pango_layout_iter_free (iter);
