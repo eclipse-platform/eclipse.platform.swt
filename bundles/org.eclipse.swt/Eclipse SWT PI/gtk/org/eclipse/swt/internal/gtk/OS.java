@@ -219,6 +219,7 @@ public class OS {
 	public static final int GTK_DIR_TAB_FORWARD = 0;
 	public static final int GTK_DIR_TAB_BACKWARD = 1;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
+	public static final int GTK_ICON_SIZE_DIALOG = 6;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;

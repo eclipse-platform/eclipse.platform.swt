@@ -763,7 +763,7 @@ int /*long*/[] createImage (String name) {
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
 	int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
 		OS.gtk_icon_factory_lookup_default (buffer), style,
-		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, -1, 0, 0);
+		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, OS.GTK_ICON_SIZE_DIALOG, 0, 0);
 	if (pixbuf == 0) return null;
 	int /*long*/[] pixmap_return = new int /*long*/[1];
 	int /*long*/[] mask_return = new int /*long*/[1];
