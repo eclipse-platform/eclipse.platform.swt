@@ -207,8 +207,10 @@ public void layout(boolean changed) {
 		System.arraycopy(sashes, 0, newSashes, 0, sashes.length);
 		int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
 		if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
+		Color background = getBackground();
 		for (int i = sashes.length; i < newSashes.length; i++) {
 			newSashes[i] = new Sash(this, sashStyle);
+			newSashes[i].setBackground(background);
 			newSashes[i].addListener(SWT.Selection, sashListener);
 		}
 		sashes = newSashes;
@@ -368,12 +370,26 @@ public void setOrientation(int orientation) {
 	
 	int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
 	if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
+	Color background = getBackground();
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
 		sashes[i] = new Sash(this, sashStyle);
+		sashes[i].setBackground(background);
 		sashes[i].addListener(SWT.Selection, sashListener);
 	}
 	layout();
+}
+public void setBackground (Color color) {
+	super.setBackground(color);
+	for (int i = 0; i < sashes.length; i++) {
+		sashes[i].setBackground(color);
+	}
+}
+public void setForeground (Color color) {
+	super.setForeground(color);
+	for (int i = 0; i < sashes.length; i++) {
+		sashes[i].setForeground(color);
+	}
 }
 public void setLayout (Layout layout) {
 	checkWidget();
