@@ -39,8 +39,8 @@ public class Snippet10 {
 				Transform tr = new Transform(display);
 				tr.translate(50, 120);
 				tr.rotate(-30);
-				gc.setAlpha(100);
 				gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width / 2, rect.height / 2);
+				gc.setAlpha(100);
 				gc.setTransform(tr);
 				Path path = new Path(display);
 				path.addString("SWT", 0, 0, font);
