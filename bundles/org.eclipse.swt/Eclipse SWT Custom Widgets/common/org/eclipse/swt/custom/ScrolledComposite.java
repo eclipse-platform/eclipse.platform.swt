@@ -291,7 +291,83 @@ private void resize() {
 	layout();
 	inResize = false;
 }
-
+/**
+ * Return the point in the content that currenly appears in the top left 
+ * corner of the scrolled composite.
+ * 
+ * @return the point in the content that currenly appears in the top left 
+ * corner of the scrolled composite.  If no content has been set, this returns
+ * (0, 0).
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public Point getScrollOrigin() {
+	checkWidget();
+	if (content == null) return new Point(0, 0);
+	Point location = content.getLocation();
+	return new Point(-location.x, -location.y);
+}
+/**
+ * Scrolls the content so that the specified point in the content is in the top 
+ * left corner.  If no content has been set, nothing will occur.  
+ * 
+ * Negative values will be ignored.  Values greater than the maximum scroll 
+ * distance will result in scrolling to the end of the scrollbar.
+ *
+ * @param origin  
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - value of origin is outside of content
+ * </ul>
+ * @since 2.0
+ */
+public void setScrollOrigin(Point origin) {
+	setScrollOrigin(origin.x, origin.y);
+}
+/**
+ * Scrolls the content so that the specified point in the content is in the top 
+ * left corner.  If no content has been set, nothing will occur.  
+ * 
+ * Negative values will be ignored.  Values greater than the maximum scroll 
+ * distance will result in scrolling to the end of the scrollbar.
+ *
+ * @param x
+ * 
+ * @param y  
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public void setScrollOrigin(int x, int y) {
+	checkWidget();
+	if (content == null) return;
+	ScrollBar hBar = getHorizontalBar ();
+	if (hBar != null) {
+		hBar.setSelection(x);
+		x = -hBar.getSelection ();
+	} else {
+		x = 0;
+	}
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) {
+		vBar.setSelection(y);
+		y = -vBar.getSelection ();
+	} else {
+		y = 0;
+	}
+	content.setLocation(x, y);
+}
 /**
  * Set the Always Show Scrollbars flag.  True if the scrollbars are 
  * always shown even if they are not required.  False if the scrollbars are only 
