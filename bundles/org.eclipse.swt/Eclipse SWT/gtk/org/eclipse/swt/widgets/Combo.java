@@ -1091,7 +1091,6 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	blockSignal (listHandle, SWT.Selection);
 	OS.gtk_entry_set_text (entryHandle, buffer);
