@@ -438,6 +438,7 @@ void hookEvents () {
 			OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
 			OS.g_signal_connect (handle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
 			OS.g_signal_connect (handle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+			OS.g_signal_connect (handle, OS.event_after, windowProc3, EVENT_AFTER);
 		
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
