@@ -130,17 +130,35 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (data.image != null) return;
 	boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
 	if (disjoint) {
-		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
+		GdkRectangle rect = new GdkRectangle ();
+		rect.x = srcX;
+		rect.y = srcY;
+		rect.width = width;
+		rect.height = height;
+		OS.gdk_window_invalidate_rect (drawable, rect, false);
+//		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
 	} else {
 		if (deltaX != 0) {
 			int newX = destX - deltaX;
 			if (deltaX < 0) newX = destX + width;
-			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
+			GdkRectangle rect = new GdkRectangle ();
+			rect.x = newX;
+			rect.y = srcY;
+			rect.width = Math.abs(deltaX);
+			rect.height = height;
+			OS.gdk_window_invalidate_rect (drawable, rect, false);
+//			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
 		}
 		if (deltaY != 0) {
 			int newY = destY - deltaY;
 			if (deltaY < 0) newY = destY + height;
-			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
+			GdkRectangle rect = new GdkRectangle ();
+			rect.x = srcX;
+			rect.y = newY;
+			rect.width = width;
+			rect.height = Math.abs(deltaY);
+			OS.gdk_window_invalidate_rect (drawable, rect, false);
+//			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
 		}
 	}
 }

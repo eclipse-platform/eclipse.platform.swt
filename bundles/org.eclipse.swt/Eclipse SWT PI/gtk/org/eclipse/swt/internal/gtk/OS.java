@@ -504,8 +504,8 @@ public static final native void gdk_string_extents(int font, byte[] string, int[
 public static final native int gdk_string_height(int font, byte[] string);
 public static final native int gdk_string_width(int font, byte[] string);
 public static final native void gdk_window_copy_area(int window, int gc, int x, int y, int source_window, int source_x, int source_y, int width, int height);
-public static final native void gdk_window_clear_area(int window, int x, int y, int width, int height);
-public static final native void gdk_window_clear_area_e(int window, int x, int y, int width, int height);
+//public static final native void gdk_window_clear_area(int window, int x, int y, int width, int height);
+//public static final native void gdk_window_clear_area_e(int window, int x, int y, int width, int height);
 public static final native void gdk_window_resize(int window, int width, int height);
 public static final native void gdk_window_move  (int window, int x, int y);
 public static final native int gdk_window_at_pointer(int[] win_x, int[] win_y);
@@ -939,4 +939,7 @@ public static final native void gtk_clist_set_row_height(int clist, int height);
 public static final native boolean gdk_event_focus_get_in(int event);
 public static final native void gdk_window_set_back_pixmap(int window, int pixmap, boolean parent_relative);
 public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
+
+public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
+
 }

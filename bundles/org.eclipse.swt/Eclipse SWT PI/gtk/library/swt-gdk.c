@@ -1227,9 +1227,24 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1focu
   return (jboolean) (((GdkEventFocus*)event) -> in);
 }
 
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1back_1pixmap
   (JNIEnv *env, jclass that, jint window, jint pixmap, jboolean parent_relative)
 {
 	gdk_window_set_back_pixmap((GdkWindow*)window, (GdkPixmap*)pixmap, (gboolean)parent_relative);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalidate_1rect
+  (JNIEnv *env, jclass that, jint window, jobject rectangle, jboolean invalidate_children)
+{
+	DECL_GLOB(pGlob)
+	GdkRectangle rectangle_struct, *rectangle1 = NULL;
+	if (rectangle) {
+		rectangle1 = &rectangle_struct;
+		cacheGdkRectangleFids(env, rectangle, &PGLOB(GdkRectangleFc));
+		getGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
+	gdk_window_invalidate_rect((GdkWindow*)window, (GdkRectangle*)rectangle1, (gboolean) invalidate_children);
+	if (rectangle) {
+		setGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
 }

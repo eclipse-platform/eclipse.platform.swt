@@ -26,6 +26,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
 
 public class Text extends Scrollable {
@@ -42,7 +43,7 @@ public class Text extends Scrollable {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
 	}
-		
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -73,6 +74,15 @@ public class Text extends Scrollable {
  */
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+static int checkStyle (int style) {
+	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		return style | SWT.MULTI;
+	}
+	return style | SWT.SINGLE;
 }
 
 void createHandle (int index) {
@@ -277,8 +287,6 @@ public void cut () {
 	OS.gtk_editable_cut_clipboard(handle);
 }
 
-boolean enterActivatesDefault() { return (style & SWT.SINGLE) != 0; }
-
 /**
  * Gets the line number of the caret.
  * <p>
@@ -458,8 +466,16 @@ public int getLineHeight () {
 	OS.memmove(gdkfont, fontHandle, GdkFont.sizeof);
 	return gdkfont.ascent + gdkfont.descent;*/
 	return 10;
-	
 }
+
+int getLineNumberInString( String string,char delimiter) {
+	int count=0;
+	for (int i=0; i<string.length (); i++) {
+		if (string.charAt (i) == delimiter) count++;
+	}
+	return count;			
+}
+
 /**
  * Gets the position of the selected text.
  * <p>
@@ -1195,20 +1211,4 @@ String verifyText (String string, int start, int end) {
 	return event.text;
 }
 
-int getLineNumberInString( String string,char delimiter) {
-	int count=0;
-	for (int i=0; i<string.length (); i++) {
-		if (string.charAt (i) == delimiter) count++;
-	}
-	return count;			
-}
-
-static int checkStyle (int style) {
-	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
-	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		return style | SWT.MULTI;
-	}
-	return style | SWT.SINGLE;
-}
 }
