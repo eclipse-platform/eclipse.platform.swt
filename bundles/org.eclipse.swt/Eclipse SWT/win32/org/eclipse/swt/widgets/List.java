@@ -62,7 +62,8 @@ public class List extends Scrollable {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

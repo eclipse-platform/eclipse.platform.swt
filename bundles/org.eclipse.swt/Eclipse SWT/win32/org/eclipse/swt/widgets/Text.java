@@ -75,7 +75,10 @@ public class Text extends Scrollable {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

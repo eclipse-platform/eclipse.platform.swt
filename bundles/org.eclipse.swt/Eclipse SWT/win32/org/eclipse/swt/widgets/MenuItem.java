@@ -59,10 +59,10 @@ public class MenuItem extends Item {
  * </ul>
  *
  * @see SWT#CHECK
- * @see CASCADE
- * @see PUSH
- * @see RADIO
- * @see SEPARATOR
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -100,10 +100,10 @@ public MenuItem (Menu parent, int style) {
  * </ul>
  *
  * @see SWT#CHECK
- * @see CASCADE
- * @see PUSH
- * @see RADIO
- * @see SEPARATOR
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

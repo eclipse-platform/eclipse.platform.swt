@@ -57,7 +57,8 @@ Scrollable () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#H_SCROLL
+ * @see SWT#V_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

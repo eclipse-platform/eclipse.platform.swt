@@ -66,7 +66,15 @@ public class Label extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SEPARATOR
+ * @see SWT#HORIZONTAL
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#VERTICAL
+ * @see SWT#CENTER
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

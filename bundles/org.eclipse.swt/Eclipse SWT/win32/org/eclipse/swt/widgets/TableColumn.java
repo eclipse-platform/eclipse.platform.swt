@@ -55,7 +55,9 @@ public class TableColumn extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -93,7 +95,9 @@ public TableColumn (Table parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

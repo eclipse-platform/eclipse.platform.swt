@@ -105,7 +105,9 @@ public class Combo extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#DROP_DOWN
+ * @see SWT#READ_ONLY
+ * @see SWT#SIMPLE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

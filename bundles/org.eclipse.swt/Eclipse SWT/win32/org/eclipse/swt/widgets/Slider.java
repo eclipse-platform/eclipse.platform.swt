@@ -93,7 +93,8 @@ public class Slider extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

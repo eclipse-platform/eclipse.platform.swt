@@ -61,7 +61,11 @@ public class ToolItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -98,7 +102,11 @@ public ToolItem (ToolBar parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

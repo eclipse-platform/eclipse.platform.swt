@@ -129,7 +129,15 @@ Decorations () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

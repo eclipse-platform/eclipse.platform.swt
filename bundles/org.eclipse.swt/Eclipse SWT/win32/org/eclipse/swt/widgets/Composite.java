@@ -60,11 +60,12 @@ Composite () {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
- * @see Widget#checkSubclass
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_FOCUS
+ * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#NO_REDRAW_RESIZE
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {

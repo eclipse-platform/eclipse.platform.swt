@@ -63,7 +63,10 @@ public class Tracker extends Widget {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#UP
+ * @see SWT#DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -101,6 +104,11 @@ public Tracker (Composite parent, int style) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#UP
+ * @see SWT#DOWN
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();

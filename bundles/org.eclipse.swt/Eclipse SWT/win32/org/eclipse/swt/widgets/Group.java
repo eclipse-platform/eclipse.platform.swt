@@ -64,7 +64,11 @@ public class Group extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SHADOW_ETCHED_IN
+ * @see SWT#SHADOW_ETCHED_OUT
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#SHADOW_NONE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

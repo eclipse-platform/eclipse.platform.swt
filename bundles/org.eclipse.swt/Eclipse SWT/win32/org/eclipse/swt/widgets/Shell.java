@@ -134,6 +134,20 @@ public Shell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (int style) {
 	this ((Display) null, style);
@@ -190,6 +204,20 @@ public Shell (Display display) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
 	this (display, null, style, 0);
@@ -263,6 +291,20 @@ public Shell (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#BORDER
+ * @see SWT#CLOSE
+ * @see SWT#MIN
+ * @see SWT#MAX
+ * @see SWT#RESIZE
+ * @see SWT#TITLE
+ * @see SWT#NO_TRIM
+ * @see SWT#SHELL_TRIM
+ * @see SWT#DIALOG_TRIM
+ * @see SWT#MODELESS
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
 	this (parent != null ? parent.getDisplay () : null, parent, style, 0);

@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
  * numeric values.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd> HORIZONTAL, VERTICAL</dd>
+ * <dd>HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
@@ -62,7 +62,8 @@ public class Scale extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
