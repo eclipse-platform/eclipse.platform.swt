@@ -908,7 +908,7 @@ void doPaint (Event event) {
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
-		if (startColumn != -1) {	/* the click fell within a column's bounds */
+		if (startColumn != -1) {	/* the clip begins within a column's bounds */
 			endColumn = computeColumnIntersect (clipping.x + clipping.width, startColumn);
 			if (endColumn == -1) endColumn = numColumns - 1;
 		}
@@ -1846,7 +1846,23 @@ public void setTopItem (TreeItem item) {
 }
 public void showColumn (TreeColumn column) {
 	checkWidget ();
-	// TODO
+	int x = column.getX ();
+	int rightX = x + column.getWidth ();
+	Rectangle bounds = getClientArea ();
+	int boundsRight = bounds.x + bounds.width;
+	if (bounds.x <= x && rightX <= boundsRight) return;	 /* column is fully visible */
+
+	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
+	for (int i = 0; i < column.getIndex (); i++) {
+		absX += columns [i].width;
+	}
+	if (x < bounds.x) { 	/* column is to left of viewport */
+		horizontalOffset = absX;
+	} else {
+		horizontalOffset = boundsRight - absX;
+	}
+	getHorizontalBar ().setSelection (horizontalOffset);
+	redraw ();
 }
 public void showItem (TreeItem item) {
 	checkWidget ();

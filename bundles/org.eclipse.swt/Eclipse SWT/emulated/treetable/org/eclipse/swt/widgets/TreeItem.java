@@ -595,7 +595,7 @@ Rectangle getHitBounds () {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
 		TreeColumn column = parent.getColumn (0);
-		width = column.getWidth () - contentX;
+		width = column.getX () + column.getWidth () - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.getItemHeight ());
 }
@@ -674,7 +674,7 @@ public TreeItem getParentItem () {
 }
 int getPreferredWidth (int columnIndex) {
 	int result = getTextX (columnIndex) + getTextPaintWidth (columnIndex);
-	if (columnIndex > 0) result -= parent.getColumn (columnIndex).getX ();
+	result -= parent.getColumn (columnIndex).getX ();
 	return result;
 }
 public String getText () {
@@ -789,7 +789,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 	/* draw the background color if this item has a custom color set */
 	Color background = getBackground (columnIndex);
-	if (background != parent.getBackground ()) {
+	if (!background.equals (parent.getBackground ())) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (background);
 		if (columnIndex == 0) {
