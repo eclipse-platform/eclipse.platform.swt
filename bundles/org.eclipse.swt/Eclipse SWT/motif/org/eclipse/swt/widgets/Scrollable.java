@@ -316,8 +316,9 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	} else {
 		OS.XtUnmanageChild (barHandle);
 	}
-	if (formHandle != 0) {
-		int margin = visible ? 3 : 0;
+	if (formHandle != 0) {	
+		boolean showBorder = (style & SWT.BORDER) != 0;
+		int margin = showBorder || visible ? 3 : 0;
 		if ((bar.style & SWT.V_SCROLL) != 0) {
 			int [] argList2 = new int [] {OS.XmNmarginWidth, margin};
 			OS.XtSetValues (formHandle, argList2, argList2.length/2);
