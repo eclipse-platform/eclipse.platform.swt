@@ -399,14 +399,12 @@ public int getLevel(int offset) {
 	return level;
 }
 
-public Point getLineOffsets(int lineIndex) {
+public int[] getLineOffsets() {
 	checkLayout ();
 	computeRuns();
-	int lineCount = breaks.length;
-	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
-	int end = breaks[lineIndex] - 1;
-	return new Point(start, Math.max(start, end));
+	int[] offsets = new int[breaks.length + 1];
+	System.arraycopy(breaks, 0, offsets, 1, breaks.length);
+	return offsets;
 }
 
 public int getLineIndex(int offset) {
