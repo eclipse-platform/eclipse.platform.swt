@@ -112,7 +112,7 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+	if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		createScrolledHandle (parent.handle);
 	} else {
 		createHandle (parent.handle);
@@ -146,6 +146,23 @@ void draw (int control) {
 	if ((state & CANVAS) == 0) return;
 	if (control == scrolledHandle) {
 		drawBackground (control, background);
+		Rect rect = new Rect ();
+		OS.GetControlBounds (scrolledHandle, rect);
+		Rect inset = inset ();
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
+		boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
+		boolean drawBorder = hasBorder ();
+		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		if (hasFocus ()) {
+			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+			if (drawFocus) OS.DrawThemeFocusRect (rect, true);
+		} else {
+			if (drawFocus) OS.DrawThemeFocusRect (rect, false);
+			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+		}
 	} else {
 		if ((style & SWT.NO_BACKGROUND) != 0) return;
 		drawBackground (control, background);
@@ -215,7 +232,16 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	return ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) ? OS.noErr : result;
+	if (((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ())) {
+		if (scrolledHandle != 0) {
+			Rect rect = new Rect ();
+			OS.GetControlBounds (scrolledHandle, rect);
+			int window = OS.GetControlOwner (scrolledHandle);
+			OS.InvalWindowRect (window, rect);
+		}
+		return OS.noErr;
+	}
+	return result;
 }
 
 boolean hooksKeys () {

@@ -277,6 +277,10 @@ public boolean getVisible () {
     return OS.IsWindowVisible (shellHandle);
 }
 
+boolean hasBorder () {
+	return false;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int mouseProc = display.mouseProc;

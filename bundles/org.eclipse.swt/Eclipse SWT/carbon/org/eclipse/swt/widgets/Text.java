@@ -115,10 +115,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	height += rect.top + rect.bottom;
 	int [] size = new int [1];
 	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
-	//if (horizontalBar != null) height += size [0];
-	if ((style & SWT.H_SCROLL) != 0) height += size [0];
-	//if (verticalBar != null) width += size [0];
-	if ((style & SWT.V_SCROLL) != 0) width += size [0];
+	if (horizontalBar != null) height += size [0];
+	if (verticalBar != null) width += size [0];
 	Rect inset = inset ();
 	x -= inset.left;
 	y -= inset.top;
@@ -185,8 +183,7 @@ void createHandle () {
 }
 
 ScrollBar createScrollBar (int type) {
-	//NOT DONE
-	return null;
+	return createStandardBar (style);
 }
 
 public void cut () {
@@ -216,7 +213,7 @@ void draw (int control) {
 	rect.top += inset.top;
 	rect.right -= inset.right;
 	rect.bottom -= inset.bottom;
-	if ((style & SWT.BORDER) != 0) {
+	if (hasBorder ()) {
 		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
 		if (hasFocus ()) {
 			OS.DrawThemeEditTextFrame (rect, state);
@@ -375,7 +372,7 @@ Rect inset () {
 	rect.top += outMetric [0];
 	rect.right += outMetric [0];
 	rect.bottom += outMetric [0];
-	if ((style & SWT.BORDER) != 0) {
+	if (hasBorder ()) {
 		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
 		rect.left += outMetric [0];
 		rect.top += outMetric [0];
