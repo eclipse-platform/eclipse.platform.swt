@@ -33,7 +33,7 @@ public class Caret extends Widget {
 	Canvas parent;
 	int x, y, width, height;
 	boolean isVisible, isShowing;
-	int blinkRate = 500;
+	int blinkRate;
 	Image image;
 	Font font;
 
@@ -80,6 +80,7 @@ boolean blinkCaret () {
 
 void createWidget (int index) {
 	super.createWidget (index);
+	blinkRate = display.getCaretBlinkTime ();
 	isVisible = true;
 	if (parent.getCaret () == null) {
 		parent.setCaret (this);

@@ -1610,6 +1610,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1malloc)
 }
 #endif
 
+#ifndef NO_g_1object_1get
+JNIEXPORT void JNICALL OS_NATIVE(g_1object_1get)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, g_1object_1get_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, arg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, g_1object_1get_FUNC);
+}
+#endif
+
 #ifndef NO_g_1object_1get_1qdata
 JNIEXPORT jint JNICALL OS_NATIVE(g_1object_1get_1qdata)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -6598,6 +6614,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1set_1locale)
 	OS_NATIVE_ENTER(env, that, gtk_1set_1locale_FUNC);
 	rc = (jint)gtk_set_locale();
 	OS_NATIVE_EXIT(env, that, gtk_1set_1locale_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1settings_1get_1default
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1settings_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1settings_1get_1default_FUNC);
+	rc = (jint)gtk_settings_get_default();
+	OS_NATIVE_EXIT(env, that, gtk_1settings_1get_1default_FUNC);
 	return rc;
 }
 #endif

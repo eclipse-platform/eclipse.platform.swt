@@ -340,9 +340,6 @@ public class Display extends Device {
 		}
 		OS_LOCK = lock;
 	}
-	
-	/* #define in gdkevents.h */
-	static final int DOUBLE_CLICK_TIME = 250;
 
 	/* GTK Version */
 	static final int MAJOR = 2;
@@ -1012,6 +1009,21 @@ public static synchronized Display getCurrent () {
 	return null;
 }
 
+int getCaretBlinkTime () {
+//	checkDevice ();
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	if (settings == 0) return 500;
+	int [] buffer = new int [1];
+	OS.g_object_get (settings, OS.gtk_cursor_blink_time, buffer, 0);
+	if (buffer [0] == 0) return 500;
+	/*
+	* By experimentation, GTK application don't use the whole
+	* blink cycle time.  Instead, they divide up the time, using
+	* an effective blink rate of about 1/2 the total time.
+	*/
+	return buffer [0] / 2;
+}
+
 /**
  * Returns the control which the on-screen pointer is currently
  * over top of, or null if it is not currently over one of the
@@ -1237,7 +1249,10 @@ public int getDismissalAlignment () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-	return DOUBLE_CLICK_TIME;
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	int [] buffer = new int [1];
+	OS.g_object_get (settings, OS.gtk_double_click_time, buffer, 0);
+	return buffer [0];
 }
 
 /**
@@ -1339,6 +1354,7 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
+//	checkDevice ();
 	return OS.gtk_get_current_event_time ();
 }
 

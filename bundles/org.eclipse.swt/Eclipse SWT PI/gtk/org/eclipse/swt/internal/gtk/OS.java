@@ -361,6 +361,8 @@ public class OS {
 	public static final byte[] focus_line_width = signal("focus_line_width");
 	public static final byte[] font_desc = signal("font-desc");
 	public static final byte[] foreground_gdk = signal("foreground-gdk");
+	public static final byte[] gtk_cursor_blink_time = signal("gtk-cursor-blink-time");
+	public static final byte[] gtk_double_click_time = signal("gtk-double-click-time");
 	public static final byte[] horizontal_separator = signal("horizontal_separator");
 	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
@@ -553,6 +555,7 @@ public static final synchronized native void g_log_default_handler(int /*long*/ 
 public static final synchronized native void g_log_remove_handler(byte[] log_domain, int handler_id);
 public static final synchronized native int g_log_set_handler(byte[] log_domain, int log_levels, int /*long*/ log_func, int /*long*/ user_data);
 public static final synchronized native int /*long*/ g_malloc(int /*long*/ size);
+public static final synchronized native void g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int terminator);
 public static final synchronized native int /*long*/ g_object_get_qdata(int /*long*/ object, int quark);
 public static final synchronized native int /*long*/ g_object_new (int /*long*/ type, int /*long*/ first_property_name);
 public static final synchronized native int /*long*/ g_object_ref(int /*long*/ object);
@@ -938,6 +941,7 @@ public static final synchronized native int /*long*/ gtk_scrolled_window_new(int
 public static final synchronized native void gtk_scrolled_window_set_placement(int /*long*/ scrolled_window, int placement);
 public static final synchronized native void gtk_scrolled_window_set_policy(int /*long*/ scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
 public static final synchronized native void gtk_scrolled_window_set_shadow_type(int /*long*/ scrolled_window, int type);
+public static final synchronized native int /*long*/ gtk_settings_get_default();
 public static final synchronized native void gtk_selection_data_free(int /*long*/ selection_data);
 public static final synchronized native void gtk_selection_data_set(int /*long*/ selection_data, int /*long*/ type, int format, int /*long*/ data, int length);
 public static final synchronized native int /*long*/ gtk_separator_menu_item_new();
