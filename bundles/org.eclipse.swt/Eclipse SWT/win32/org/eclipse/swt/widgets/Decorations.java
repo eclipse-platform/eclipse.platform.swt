@@ -672,9 +672,14 @@ void remove (MenuItem item) {
 boolean restoreFocus () {
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
 	if (savedFocus != null && savedFocus.forceFocus ()) return true;
-	if (defaultButton != null && !defaultButton.isDisposed ()) {
-		if (defaultButton.setFocus ()) return true;
-	}
+	/*
+	* This code is intentionally commented.  When no widget
+	* has been given focus, some platforms give focus to the
+	* default button.  This is unwanted on Windows.
+	*/
+//	if (defaultButton != null && !defaultButton.isDisposed ()) {
+//		if (defaultButton.setFocus ()) return true;
+//	}
 	return false;
 }
 
