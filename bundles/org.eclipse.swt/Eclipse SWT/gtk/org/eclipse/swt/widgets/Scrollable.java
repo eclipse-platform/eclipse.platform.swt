@@ -101,7 +101,6 @@ int clientHandle () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int border = 0;
-	if (handle != 0) border += OS.gtk_container_get_border_width (handle);
 	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
 	if (scrolledHandle != 0) border += OS.gtk_container_get_border_width (scrolledHandle);
 	int trimX = x - border, trimY = y - border;
@@ -152,7 +151,6 @@ void deregister () {
 public int getBorderWidth () {
 	checkWidget();
 	int border = 0;
-	if (handle != 0) border += OS.gtk_container_get_border_width (handle);
 	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
 	if (scrolledHandle != 0) {
 		border += OS.gtk_container_get_border_width (scrolledHandle);
