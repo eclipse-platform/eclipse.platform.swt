@@ -36,10 +36,11 @@ abstract class StyledTextRenderer {
  * @param leftMargin margin to the left of the text
  */
 StyledTextRenderer(Device device, Font regularFont, boolean isBidi, int leftMargin) {
-	FontData fontData = regularFont.getFontData()[0];
-
-	fontData.setStyle(fontData.getStyle() | SWT.BOLD);
-	boldFont = new Font(device, fontData);
+	FontData[] fontDatas = regularFont.getFontData();
+	for (int i = 0; i < fontDatas.length; i++) {
+		fontDatas[i].setStyle(fontDatas[i].getStyle() | SWT.BOLD);
+	}
+	boldFont = new Font(device, fontDatas);
 	this.device = device;
 	this.regularFont = regularFont;	
 	this.isBidi = isBidi;
