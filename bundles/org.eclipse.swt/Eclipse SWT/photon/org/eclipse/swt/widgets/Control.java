@@ -1094,29 +1094,18 @@ int processPaint (int damage) {
 }
 
 int processFocusIn (int info) {
+	Shell shell = getShell ();
 	sendEvent (SWT.FocusIn);
 	if (isDisposed ()) return OS.Pt_CONTINUE;
 
-	int index = 0;
-	Shell shell = getShell ();
-	Control [] focusIn = getPath ();
-	Control lastFocus = shell.lastFocus;
-	if (lastFocus != null) {
-		if (!lastFocus.isDisposed ()) {
-			Control [] focusOut = lastFocus.getPath ();
-			int length = Math.min (focusIn.length, focusOut.length);
-			while (index < length) {
-				if (focusIn [index] != focusOut [index]) break;
-				index++;
-			}
-			for (int i=focusOut.length-1; i>=index; --i) {
-				focusOut [i].sendEvent (SWT.Deactivate);
-			}
-		}
-		shell.lastFocus = null;
-	}
-	for (int i=focusIn.length-1; i>=index; --i) {
-		focusIn [i].sendEvent (SWT.Activate);
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
 	}
 
 	/*
@@ -1127,19 +1116,22 @@ int processFocusIn (int info) {
 }
 
 int processFocusOut (int info) {
+	Shell shell = getShell ();
 	sendEvent (SWT.FocusOut);
 	if (isDisposed ()) return OS.Pt_CONTINUE;
 
-	Shell shell = getShell ();
-	shell.lastFocus = this;
-	Display display = getDisplay ();
-	Control focusControl = display.getFocusControl ();
-	if (focusControl == null || shell != focusControl.getShell ()) {
-		Control [] focusOut = getPath ();
-		for (int i=focusOut.length-1; i>=0; --i) {
-			focusOut [i].sendEvent (SWT.Deactivate);
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (!shell.isDisposed ()) {
+		Display display = shell.getDisplay ();
+		Control control = display.getFocusControl ();
+		if (control == null || shell != control.getShell () ) {
+			shell.setActiveControl (null);
 		}
-		shell.lastFocus = null;
 	}
 
 	/*
@@ -1338,6 +1330,18 @@ int processMouse (int info) {
 		clickEvent.button = event.button;
 		clickEvent.stateMask = event.stateMask;
 		postEvent (SWT.MouseDoubleClick, clickEvent);
+	}
+	if (event.type == SWT.MouseDown) {
+		/*
+		* It is possible that the shell may be
+		* disposed at this point.  If this happens
+		* don't send the activate and deactivate
+		* events.
+		*/
+		Shell shell = getShell ();
+		if (!shell.isDisposed ()) {
+			shell.setActiveControl (this);
+		}
 	}
 	return OS.Pt_CONTINUE;
 }
