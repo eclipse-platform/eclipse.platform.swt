@@ -823,6 +823,8 @@ public ImageData getImageData() {
     /* AW
 	OS.memmove(srcData, xSrcImage.data, length);
     */
+	OS.copyPixmpaData(srcData, pixmap, length);
+	
 	switch (xSrcImage.depth) {
 		case 1:
 			palette = new PaletteData(new RGB[] {
@@ -901,7 +903,7 @@ public ImageData getImageData() {
 			palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 			*/
 			// AW assumes Mac
-			palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+			palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 			break;
 		default:
 			System.out.println("unsupported depth: " + xSrcImage.depth);
