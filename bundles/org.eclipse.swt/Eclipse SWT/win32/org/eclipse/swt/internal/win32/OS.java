@@ -68,6 +68,25 @@ public class OS {
 //	public static final byte WBF_CLASS = 0x0F;
 //	public static final byte WBF_ISWHITE = 0x10;
 
+/*** BEGIN SetWindowsHook ***/
+//	public static final int WH_MSGFILTER        = -1;
+//	public static final int WH_JOURNALRECORD    = 0;
+//	public static final int WH_JOURNALPLAYBACK  = 1;
+//	public static final int WH_KEYBOARD         = 2;
+	public static final int WH_GETMESSAGE       = 3;
+//	public static final int WH_CALLWNDPROC      = 4;
+//	public static final int WH_CBT              = 5;
+//	public static final int WH_SYSMSGFILTER     = 6;
+//	public static final int WH_MOUSE            = 7;
+//	public static final int WH_HARDWARE         = 8;
+//	public static final int WH_DEBUG            = 9;
+//	public static final int WH_SHELL            = 10;
+//	public static final int WH_FOREGROUNDIDLE   = 11;
+//	public static final int WH_CALLWNDPROCRET   = 12;
+//	public static final int WH_KEYBOARD_LL      = 13;
+//	public static final int WH_MOUSE_LL         = 14;
+/*** END SetWindowsHook ***/
+
 /*** BEGIN SHGetFileInfo ***/
 //	public static final int FILE_ATTRIBUTE_READONLY             = 0x00000001;
 //	public static final int FILE_ATTRIBUTE_HIDDEN               = 0x00000002;  
@@ -3499,7 +3518,7 @@ public class OS {
 //	public static final int WM_ACTIVATEAPP = 0x1C;
 //	public static final int WM_AFXFIRST = 0x360;
 //	public static final int WM_AFXLAST = 0x37F;
-//	public static final int WM_APP = 0x8000;
+	public static final int WM_APP = 0x8000;
 //	public static final int WM_ASKCBFORMATNAME = 0x30C;
 //	public static final int WM_CANCELJOURNAL = 0x4B;
 	public static final int WM_CANCELMODE = 0x1F;
@@ -3846,6 +3865,7 @@ public static final native int BeginPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native boolean BitBlt (int hdcDest,int nXDest,int nYDest,int nWidth,int nHeight,int hdcSrc,int nXSrc,int nYSrc,int dwRop);
 public static final native boolean BringWindowToTop (int hWnd);
 public static final native int Call (int address, DLLVERSIONINFO arg0);
+public static final native int CallNextHookEx(int hhk, int nCode, int wParam, int lParam);
 public static final native int CallWindowProc (int lpPrevWndFunc, int hWnd, int Msg, int wParam, int lParam);
 public static final native short CharLower (short ch);
 public static final native short CharUpper (short ch);
@@ -4250,28 +4270,33 @@ public static final native void MoveMemory (
 );
 public static final native void MoveMemory (
   NMLISTVIEW Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
+  int Source,				// address of block to move
+  int Length				// size, in bytes, of block to move
 );
 public static final native void MoveMemory (
   NMTOOLBAR Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
+  int Source,				// address of block to move
+  int Length				// size, in bytes, of block to move
 );
 public static final native void MoveMemory (
-  NMTTDISPINFO Destination,  // address of move destination
-  int Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
+  NMTTDISPINFO Destination,	// address of move destination
+  int Source,				// address of block to move
+  int Length				// size, in bytes, of block to move
 );
 public static final native void MoveMemory (
   TVITEM Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
+  int Source,			// address of block to move
+  int Length			// size, in bytes, of block to move
 );
 public static final native void MoveMemory (
-  WINDOWPOS Destination,  // address of move destination
-  int Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
+  WINDOWPOS Destination,	// address of move destination
+  int Source,				// address of block to move
+  int Length				// size, in bytes, of block to move
+);
+public static final native void MoveMemory (
+  MSG Destination,	// address of move destination
+  int Source,		// address of block to move
+  int Length		// size, in bytes, of block to move
 );
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
@@ -4372,6 +4397,7 @@ public static final native int SetWindowLong (int hWnd, int nIndex, int dwNewLon
 public static final native boolean SetWindowPlacement (int hWnd, WINDOWPLACEMENT lpwndpl);
 public static final native boolean SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 public static final native boolean SetWindowText (int hWnd, byte [] lpString);
+public static final native int SetWindowsHookEx(int idHook, int lpfn,  int hMod,  int dwThreadId);
 public static final native int SHBrowseForFolder (BROWSEINFO lpbi);
 public static final native int ShellExecute (int hwnd, byte [] lpOperation, byte [] lpFile, byte [] lpParameters, byte [] lpDirectory, int nShowCmd);
 public static final native int SHGetMalloc (int [] ppMalloc);
@@ -4424,6 +4450,7 @@ public static final native int TranslateAccelerator (
   	MSG lpMsg        // address of structure with message
 );
 public static final native boolean TranslateMessage (MSG lpmsg);
+public static final native boolean UnhookWindowsHookEx(int hhk);
 public static final native boolean UnregisterClass (byte [] lpClassName, int hInstance);
 public static final native boolean UpdateWindow (int hWnd);
 public static final native boolean ValidateRect (int hWnd, RECT lpRect);

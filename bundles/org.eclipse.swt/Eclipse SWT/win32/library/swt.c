@@ -7896,3 +7896,71 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetStretchBltMode
 
     return (jint) SetStretchBltMode((HDC)hdc, iStretchMode);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    SetWindowsHookEx
+ * Signature: (IIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowsHookEx
+  (JNIEnv *env, jclass that, jint idHook, jint lpfn, jint hMod,  jint dwThreadId)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "SetWindowsHookEx\n");
+#endif
+    return (jint) SetWindowsHookEx(idHook, (HOOKPROC)lpfn, (HINSTANCE)hMod, dwThreadId);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    UnhookWindowsHookEx
+ * Signature: (I)I
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnhookWindowsHookEx
+  (JNIEnv *env, jclass that, jint hhk)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "UnhookWindowsHookEx\n");
+#endif
+
+    return (jboolean) UnhookWindowsHookEx((HHOOK)hhk);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    CallNextHookEx
+ * Signature: (IIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallNextHookEx
+  (JNIEnv *env, jclass that, jint hhk, jint nCode,  jint wParam,  jint lParam)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "CallNextHookEx\n");
+#endif
+
+    return (jint) CallNextHookEx((HHOOK)hhk, nCode, (WPARAM)wParam, (LPARAM)lParam);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    MoveMemory
+ * Signature: (Lorg/eclipse/swt/internal/win32/MSG;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II
+  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
+{
+	DECL_GLOB(pGlob)
+    MSG msg, *lpDestination1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II\n");
+#endif
+
+       MoveMemory((PVOID)&msg, (CONST VOID *)Source, Length);
+
+    if (Destination) {
+        lpDestination1 = &msg;
+        cacheMsgFids(env, Destination, &PGLOB(MsgFc));
+        setMsgFields(env, Destination, lpDestination1, &PGLOB(MsgFc));
+    }
+}
