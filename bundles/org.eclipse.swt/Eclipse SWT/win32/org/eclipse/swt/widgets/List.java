@@ -659,6 +659,7 @@ public int indexOf (String string) {
  * returns -1.
  *
  * @param string the search item
+ * @param start the zero-relative index at which to start the search
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>

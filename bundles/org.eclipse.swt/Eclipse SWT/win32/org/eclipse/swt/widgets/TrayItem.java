@@ -266,7 +266,7 @@ public void setImage (Image image) {
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
  *
- * @param string the new tool tip text (or null)
+ * @param value the new tool tip text (or null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

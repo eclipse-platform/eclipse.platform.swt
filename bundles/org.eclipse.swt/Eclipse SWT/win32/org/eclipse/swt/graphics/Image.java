@@ -1747,7 +1747,7 @@ public int internal_new_GC (GCData data) {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int hDC, GCData data) {
@@ -1860,7 +1860,7 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param handle the OS handle for the image
- * @param hPalette the OS handle for the palette, or 0
+ * @return a new image object containing the specified device, type and handle
  */
 public static Image win32_new(Device device, int type, int handle) {
 	if (device == null) device = Device.getDevice();

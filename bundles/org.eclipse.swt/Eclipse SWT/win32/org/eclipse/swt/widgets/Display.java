@@ -89,7 +89,7 @@ import org.eclipse.swt.graphics.*;
  * @see #wake
  * @see #readAndDispatch
  * @see #sleep
- * @see #dispose
+ * @see Device#dispose
  */
 
 public class Display extends Device {
@@ -573,7 +573,7 @@ int controlKey (int key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  * 
  * @since 2.0
  */
@@ -1823,7 +1823,7 @@ protected void init () {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int hDC, GCData data) {
@@ -1902,8 +1902,8 @@ public Point map (Control from, Control to, Point point) {
  * 
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
- * @param int x coordinates to be mapped
- * @param int y coordinates to be mapped
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
  * @return point with mapped coordinates
  * 
  * @exception IllegalArgumentException <ul>
@@ -1993,10 +1993,10 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  * 
  * @param from the source <code>Control</code> or <code>null</code>
  * @param to the destination <code>Control</code> or <code>null</code>
- * @param int x coordinates to be mapped
- * @param int y coordinates to be mapped
- * @param int width coordinates to be mapped
- * @param int heigth coordinates to be mapped
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
+ * @param width coordinates to be mapped
+ * @param height coordinates to be mapped
  * @return rectangle with mapped coordinates
  * 
  * @exception IllegalArgumentException <ul>

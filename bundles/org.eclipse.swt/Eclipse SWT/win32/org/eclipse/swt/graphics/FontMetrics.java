@@ -164,7 +164,8 @@ public int hashCode() {
  * application code.
  * </p>
  *
- * @param tm the <code>TEXTMETRIC</code> containing information about a font
+ * @param handle the <code>TEXTMETRIC</code> containing information about a font
+ * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
  */
 public static FontMetrics win32_new(TEXTMETRIC handle) {
 	FontMetrics fontMetrics = new FontMetrics();

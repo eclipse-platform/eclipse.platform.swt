@@ -116,7 +116,7 @@ public int getScope() {
  * <dd>Print the current selection</dd>
  * </dl>
  *
- * @param int the scope setting when the dialog is opened
+ * @param scope the scope setting when the dialog is opened
  */
 public void setScope(int scope) {
 	this.scope = scope;
@@ -144,7 +144,7 @@ public int getStartPage() {
  * <code>PAGE_RANGE</code>.
  * </p>
  * 
- * @param int the startPage setting when the dialog is opened
+ * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
 	this.startPage = startPage;
@@ -172,7 +172,7 @@ public int getEndPage() {
  * <code>PAGE_RANGE</code>.
  * </p>
  * 
- * @param int the end page setting when the dialog is opened
+ * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
 	this.endPage = endPage;
@@ -192,7 +192,7 @@ public boolean getPrintToFile() {
  * Sets the 'Print to file' setting that the user will see
  * when the dialog is opened.
  *
- * @param boolean the 'Print to file' setting when the dialog is opened
+ * @param printToFile the 'Print to file' setting when the dialog is opened
  */
 public void setPrintToFile(boolean printToFile) {
 	this.printToFile = printToFile;

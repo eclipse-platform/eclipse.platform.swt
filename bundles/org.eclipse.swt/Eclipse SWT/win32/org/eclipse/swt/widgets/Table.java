@@ -1098,6 +1098,8 @@ int getForegroundPixel () {
 /**
  * Returns the width in pixels of a grid line.
  *
+ * @return the width of a grid line in pixels
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2184,7 +2186,7 @@ public void setHeaderVisible (boolean show) {
 /**
  * Sets the number of items contained in the receiver.
  *
- * @param show the new visibility state
+ * @param count the number of items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

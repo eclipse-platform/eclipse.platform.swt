@@ -395,7 +395,7 @@ public boolean isEmpty () {
  * Subtracts the given polygon from the collection of rectangles
  * the receiver maintains to describe its area.
  *
- * param pointArray points that describe the polygon to merge with the receiver
+ * @param pointArray points that describe the polygon to merge with the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
@@ -475,7 +475,9 @@ public void subtract (Region region) {
  * application code.
  * </p>
  *
+ * @param device the device on which to allocate the region
  * @param handle the handle for the region
+ * @return a new region object containing the specified device and handle
  */
 public static Region win32_new(Device device, int handle) {
 	return new Region(device, handle);

@@ -623,6 +623,8 @@ public String toString() {
  * </p>
  *
  * @param data the <code>LOGFONT</code> for the font data
+ * @param height the height of the font data
+ * @return a new font data object containing the specified <code>LOGFONT</code> and height
  */
 public static FontData win32_new(LOGFONT data, int height) {
 	return new FontData(data, height);

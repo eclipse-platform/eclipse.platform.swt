@@ -770,7 +770,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
  * disposed, the receiver's default button will be set to
  * null. 
  *
- * @param the new default button
+ * @param button the new default button
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
@@ -961,7 +961,7 @@ public void setImages (Image [] images) {
  * always. This should be avoided if possible.
  * </p>
  *
- * @param the new maximized state
+ * @param maximized the new maximized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1096,7 +1096,7 @@ public void setMenuBar (Menu menu) {
  * always. This should be avoided if possible.
  * </p>
  *
- * @param the new maximized state
+ * @param minimized the new maximized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

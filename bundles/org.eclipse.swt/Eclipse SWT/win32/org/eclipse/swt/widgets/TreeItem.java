@@ -679,7 +679,7 @@ public void setForeground (Color color) {
  * Sets the grayed state of the receiver.
  * <p>
  *
- * @param checked the new grayed state
+ * @param grayed the new grayed state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

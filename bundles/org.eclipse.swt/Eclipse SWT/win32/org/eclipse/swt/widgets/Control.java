@@ -1068,7 +1068,7 @@ public int internal_new_GC (GCData data) {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int hDC, GCData data) {
@@ -1265,7 +1265,7 @@ boolean mnemonicMatch (char key) {
  * the top of the drawing order will not be covered by other
  * controls even if they occupy intersecting areas.
  *
- * @param the sibling control (or null)
+ * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -1308,7 +1308,7 @@ public void moveAbove (Control control) {
  * the bottom of the drawing order will be covered by all other
  * controls which occupy intersecting areas.
  *
- * @param the sibling control (or null)
+ * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -1366,6 +1366,8 @@ public void pack () {
  * manager caches can be retained. 
  * </p>
  *
+ * @param changed whether or not the receiver's contents have changed
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2293,7 +2295,6 @@ public void setSize (int width, int height) {
  * </p>
  *
  * @param size the new size for the receiver
- * @param height the new height for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>

@@ -659,7 +659,7 @@ public abstract int internal_new_GC (GCData data);
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public abstract void internal_dispose_GC (int hDC, GCData data);

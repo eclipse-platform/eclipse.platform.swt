@@ -505,7 +505,7 @@ public void setMinimum (int value) {
  * are selected to the argument, which must be at least
  * one.
  *
- * @return the page increment (must be greater than zero)
+ * @param value the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

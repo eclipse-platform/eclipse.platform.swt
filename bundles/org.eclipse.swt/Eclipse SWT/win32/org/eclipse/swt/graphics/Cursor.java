@@ -308,7 +308,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * </p>
  *
  * @param device the device on which to allocate the cursor
- * @param image the color data for the cursor
+ * @param source the image data for the cursor
  * @param hotspotX the x coordinate of the cursor's hotspot
  * @param hotspotY the y coordinate of the cursor's hotspot
  *
@@ -459,6 +459,7 @@ public String toString () {
  *
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
+ * @return a new cursor object containing the specified device and handle
  */
 public static Cursor win32_new(Device device, int handle) {
 	if (device == null) device = Device.getDevice();

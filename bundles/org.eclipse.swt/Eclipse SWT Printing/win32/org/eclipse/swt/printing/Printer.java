@@ -163,7 +163,7 @@ static DeviceData checkNull (PrinterData data) {
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  */
 public Printer() {
 	this(null);
@@ -185,7 +185,7 @@ public Printer() {
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  */
 public Printer(PrinterData data) {
 	super(checkNull(data));
@@ -253,7 +253,7 @@ public int internal_new_GC(GCData data) {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC(int hDC, GCData data) {
@@ -270,6 +270,7 @@ public void internal_dispose_GC(int hDC, GCData data) {
  * will result in undefined behavior.
  * </p>
  * 
+ * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
  * @exception SWTException <ul>
@@ -455,6 +456,10 @@ public Rectangle getClientArea() {
  * is usually used by passing in the client area (the 'printable
  * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
  * 
+ * @param x the desired x coordinate of the client area
+ * @param y the desired y coordinate of the client area
+ * @param width the desired width of the client area
+ * @param height the desired height of the client area
  * @return the required bounds to produce the given client area
  *
  * @exception SWTException <ul>

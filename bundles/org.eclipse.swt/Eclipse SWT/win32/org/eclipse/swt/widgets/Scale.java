@@ -297,7 +297,7 @@ void setBackgroundPixel (int pixel) {
  * are pressed to the argument, which must be at least 
  * one.
  *
- * @param value the new increment (must be greater than zero)
+ * @param increment the new increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -361,7 +361,7 @@ public void setMinimum (int value) {
  * are selected to the argument, which must be at least
  * one.
  *
- * @return the page increment (must be greater than zero)
+ * @param pageIncrement the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

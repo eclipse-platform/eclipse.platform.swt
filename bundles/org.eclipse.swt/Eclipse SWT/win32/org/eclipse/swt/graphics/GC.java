@@ -135,6 +135,7 @@ static int checkStyle(int style) {
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
  *
+ * @param image the image to copy into
  * @param x the x coordinate in the receiver of the area to be copied
  * @param y the y coordinate in the receiver of the area to be copied
  *
@@ -1740,7 +1741,7 @@ public void fillRectangle (int x, int y, int width, int height) {
  * Fills the interior of the specified rectangle, using the receiver's
  * background color. 
  *
- * @param rectangle the rectangle to be filled
+ * @param rect the rectangle to be filled
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
@@ -2259,7 +2260,7 @@ public void setClipping (Rectangle rect) {
  * by drawing operations to the region specified
  * by the argument.
  *
- * @param rect the clipping region.
+ * @param region the clipping region.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>

@@ -67,6 +67,7 @@ public MessageBox (Shell parent) {
  * Style bits are also inherited from superclasses.
  *
  * @param parent a shell which will be the parent of the new instance
+ * @param style the style of dialog to construct
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>

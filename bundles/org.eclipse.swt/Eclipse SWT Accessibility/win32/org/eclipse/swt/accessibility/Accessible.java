@@ -392,8 +392,8 @@ public class Accessible {
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
 	 * 
-	 * @see ACC#NOTIFY_TEXT_INSERT
-	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * @see ACC#TEXT_INSERT
+	 * @see ACC#TEXT_DELETE
 	 * 
 	 * @since 3.0
 	 */

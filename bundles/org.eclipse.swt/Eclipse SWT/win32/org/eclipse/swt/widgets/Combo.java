@@ -757,6 +757,7 @@ public int indexOf (String string) {
  * returns -1.
  *
  * @param string the search item
+ * @param start the zero-relative index at which to begin the search
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
@@ -1285,7 +1286,7 @@ public void setOrientation (int orientation) {
  * start of the selection and whose y coordinate is the end
  * of the selection. 
  *
- * @param a point representing the new selection start and end
+ * @param selection a point representing the new selection start and end
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -1313,7 +1314,7 @@ public void setSelection (Point selection) {
  * display incorrectly.
  * </p>
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
