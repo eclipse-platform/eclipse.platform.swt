@@ -207,17 +207,10 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				
-				try {
-					notifyListeners(DND.DragOver, event);
-				} catch (Throwable e) {
-					event.dataType = null;
-					event.detail  = DND.DROP_NONE;
-				}
-				
-				effect.show(event.feedback, event.x, event.y);
-				
 				selectedDataType = null;
+				selectedOperation = DND.DROP_NONE;
+				notifyListeners(DND.DragOver, event);
+				effect.show(event.feedback, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -226,8 +219,6 @@ public DropTarget(Control control, int style) {
 						}
 					}
 				}
-
-				selectedOperation = DND.DROP_NONE;
 				if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
 					selectedOperation = event.detail;
 				}
@@ -361,16 +352,11 @@ private void drag_data_received ( int /*long*/ widget, int /*long*/ context, int
 	event.detail = selectedOperation;
 	event.dataType = transferData;
 	event.data = object;
-	try {
-		notifyListeners(DND.Drop, event);
-		selectedOperation = DND.DROP_NONE;
-		if ((allowedOperations & event.detail) == event.detail) {
-			selectedOperation = event.detail;
-		}
-	} catch (Throwable e) {
-		selectedOperation = DND.DROP_NONE;
+	selectedOperation = DND.DROP_NONE;
+	notifyListeners(DND.Drop, event);
+	if ((allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
 	}
-	
 	//notify source of action taken
 	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time); 			
 	return;	
@@ -390,14 +376,9 @@ private boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int 
 	
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
-	try {
-		notifyListeners(DND.DropAccept,event);
-	} catch (Throwable err) {
-		event.detail = DND.DROP_NONE;
-		event.dataType = null;
-	}
-
 	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
+	notifyListeners(DND.DropAccept,event);
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
@@ -406,17 +387,13 @@ private boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int 
 			}
 		}
 	}
-	
-	selectedOperation = DND.DROP_NONE;
 	if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
 		selectedOperation = event.detail;
 	}
-	
 	if (selectedOperation == DND.DROP_NONE) {
 		// this was not a successful drop
 		return false;
 	}
-
 	// ask drag source for dropped data
 	OS.gtk_drag_get_data(widget, context, selectedDataType.type, time);
 	return true;
@@ -433,9 +410,7 @@ private void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	event.widget = this;
 	event.time = time;
 	event.detail = DND.DROP_NONE;
-	try {
-		notifyListeners(DND.DragLeave, event);
-	} catch (Throwable e) {}
+	notifyListeners(DND.DragLeave, event);
 }
 
 private boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
@@ -469,21 +444,13 @@ private boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, 
 			event.dataType = selectedDataType;
 		}
 	}
-	
 	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-						
-	try {
-		notifyListeners(event.type, event);	
-	} catch (Throwable e) {
-		OS.gdk_drag_status(context, 0, time);
-		return false;
-	}
-
+	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
+	notifyListeners(event.type, event);	
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
-	
-	selectedDataType = null;
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
@@ -492,12 +459,9 @@ private boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, 
 			}
 		}
 	}
-
-	selectedOperation = DND.DROP_NONE;
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}
-	
 	effect.show(event.feedback, event.x, event.y);
 
 	switch (selectedOperation) {

@@ -266,15 +266,12 @@ protected void checkSubclass () {
 }
 
 private void drag(Event dragEvent) {
+	moveData = false;	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
 	event.time = dragEvent.time;
 	event.doit = true;
-	try {
-		notifyListeners(DND.DragStart, event);
-	} catch (Throwable e) {
-		event.doit = false;
-	}
+	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	if (targetList == 0) return;
 	
@@ -314,11 +311,7 @@ void dragEnd(int /*long*/ widget, int /*long*/ context){
 	//event.time = ???
 	event.doit = operation != 0;
 	event.detail = operation; 
-	
-	try {
-		notifyListeners(DND.DragEnd, event);
-	} catch (Throwable e) {}
-
+	notifyListeners(DND.DragEnd, event);
 	moveData = false;	
 }	
 
@@ -338,11 +331,7 @@ void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selecti
 	event.widget = this;
 	event.time = time; 
 	event.dataType = transferData; 
-	try {
-		notifyListeners(DND.DragSetData, event);
-	} catch (Throwable e) {
-		return;
-	}
+	notifyListeners(DND.DragSetData, event);
 	if (event.data == null) return;
 		
 	Transfer transfer = null;
