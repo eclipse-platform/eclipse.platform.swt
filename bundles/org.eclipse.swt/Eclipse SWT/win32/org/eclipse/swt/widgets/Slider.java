@@ -743,7 +743,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) OS.SetCapture (hwndCapture);
+	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) {
+		OS.SetCapture (hwndCapture);
+	}
 	
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
@@ -780,7 +782,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) OS.SetCapture (hwndCapture);
+	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) {
+		OS.SetCapture (hwndCapture);
+	}
 	
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
