@@ -40,8 +40,11 @@ public final class GCData {
 	public int fontDescent;
 	public int layout;
 	public int atsuiStyle;
+	public int tabs;
 	
 	public String string;
+	public int stringLength;
+	public int drawFlags;
 	public int stringPtr;
 	
 	public int window;	

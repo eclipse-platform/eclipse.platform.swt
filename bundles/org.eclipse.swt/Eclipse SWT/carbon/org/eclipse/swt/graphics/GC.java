@@ -244,7 +244,7 @@ void createLayout () {
 	int[] buffer = new int[1];
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.layout = buffer[0];	
+	data.layout = buffer[0];
 	int ptr1 = OS.NewPtr(4);
 	buffer[0] = handle;
 	OS.memcpy(ptr1, buffer, 4);	
@@ -257,6 +257,18 @@ void createLayout () {
 	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
 	OS.DisposePtr(ptr1);
 	OS.DisposePtr(ptr2);
+}
+
+void createTabs () {
+	int tabCount = 32;
+	ATSUTab tabs = new ATSUTab();
+	int tabWidth = getCharWidth(' ') * 8;
+	int ptr = OS.NewPtr(ATSUTab.sizeof * tabCount);
+	for (int i=0, offset=ptr; i<tabCount; i++, offset += ATSUTab.sizeof) {
+		tabs.tabPosition += OS.Long2Fix(tabWidth);
+		OS.memcpy(offset, tabs, ATSUTab.sizeof);
+	}
+	data.tabs = ptr;
 }
 
 /**
@@ -282,11 +294,13 @@ public void dispose() {
 	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
 	int stringPtr = data.stringPtr;
 	if (stringPtr != 0) OS.DisposePtr(stringPtr);
+	int tabs = data.tabs;
+	if (tabs != 0) OS.DisposePtr(tabs);
 	
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = 0;
+	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = 0;
 	drawable = null;
 	data.image = null;
 	data = null;
@@ -799,36 +813,7 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString(String string, int x, int y, boolean isTransparent) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (data.updateClip) setCGClipping();
-	int length = string.length();
-	if (length == 0) return;
-	OS.CGContextSaveGState(handle);
-	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextSetFillColor(handle, data.foreground);
-	if (Font.USE_ATSUI) {
-		if (data.layout == 0) createLayout ();
-		if (string != data.string) {
-			if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-			Font font = data.font;
-			int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
-			int ptr = OS.NewPtr(length * 2);
-			OS.memcpy(ptr, string, length * 2);
-			OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
-			OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
-			data.string = string;
-			data.stringPtr = ptr;
-			OS.ATSUSetTransientFontMatching(data.layout, true);
-		}
-		OS.ATSUDrawText(data.layout, 0, length, OS.X2Fix(x), OS.X2Fix(-(y + data.fontAscent)));
-	} else {
-		OS.CGContextSetTextDrawingMode(handle, OS.kCGTextFill);
-		byte[] buffer = string.getBytes();
-		OS.CGContextShowTextAtPoint(handle, x, -(y + data.fontAscent), buffer, buffer.length);
-	}
-	OS.CGContextRestoreGState(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	drawText(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
 }
 
 /** 
@@ -916,8 +901,49 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE
-	drawString(string, x, y);
+	if (data.updateClip) setCGClipping();
+	int length = string.length();
+	if (length == 0) return;
+	OS.CGContextSaveGState(handle);
+	OS.CGContextScaleCTM(handle, 1, -1);
+	if (data.layout == 0) createLayout ();
+	int layout = data.layout;
+	length = setString(string, flags);
+	if ((flags & SWT.DRAW_DELIMITER) != 0) {
+		int[] breakCount = new int[1];
+		OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
+		int[] breaks = new int[breakCount[0] + 1];
+		OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
+		breaks[breakCount[0]] = length;
+		for (int i=0, start=0; i<breaks.length; i++) {
+			int lineBreak = breaks[i];
+			drawText(layout, x, y, start, lineBreak - start, flags);
+			y += data.fontAscent + data.fontDescent;
+			start = lineBreak;
+		}
+	} else {
+		drawText(layout, x, y, 0, length, flags);
+	}
+	OS.CGContextRestoreGState(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+}
+
+void drawText(int layout, int x, int y, int start, int length, int flags) {
+	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+		ATSTrapezoid trapezoid = new ATSTrapezoid();
+		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+		int width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+		CGRect rect = new CGRect();
+		rect.x = x;
+		rect.y = -(y + height);
+		rect.width = width;
+		rect.height = height;
+		OS.CGContextSetFillColor(handle, data.background);
+		OS.CGContextFillRect(handle, rect);
+	}
+	OS.CGContextSetFillColor(handle, data.foreground);
+	OS.ATSUDrawText(layout, start, length, OS.Long2Fix(x), OS.Long2Fix(-(y + data.fontAscent)));	
 }
 
 /**
@@ -1714,30 +1740,19 @@ public void setFont(Font font) {
 }
 
 void setGCFont() {
+	int tabs = data.tabs;
+	if (tabs != 0) OS.DisposePtr(tabs);
+	data.tabs = 0;	
 	Font font = data.font;
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	data.fontAscent = info.ascent;
 	data.fontDescent = info.descent;
-	if (Font.USE_ATSUI) {
-		if (font.atsuiStyle == 0) {
-			if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
-			data.atsuiStyle = font.createStyle();
-		}
-		data.string = null;
-	} else {
-		int atsFontRef = OS.FMGetATSFontRefFromFont(font.handle);
-		int [] ptr = new int[1];
-		OS.ATSFontGetPostScriptName(atsFontRef, 0, ptr);
-		int length = OS.CFStringGetLength(ptr[0]);
-		char[] buffer = new char[length];
-		CFRange range = new CFRange();
-		range.length = length;
-		OS.CFStringGetCharacters(ptr[0], range, buffer);
-		OS.CFRelease(ptr[0]);
-		String name = new String(buffer);
-		OS.CGContextSelectFont(handle, name.getBytes(), font.size, OS.kCGEncodingMacRoman);
+	if (font.atsuiStyle == 0) {
+		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
+		data.atsuiStyle = font.createStyle();
 	}
+	data.string = null;
 }
 
 /**
@@ -1836,6 +1851,64 @@ public void setXORMode(boolean xor) {
 	data.xorMode = xor;
 }
 
+int setString(String string, int flags) {
+	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags & ~SWT.DRAW_TRANSPARENT)) {
+		return data.stringLength;
+	}
+	if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
+	data.stringPtr = 0;
+	int layout = data.layout;
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	int breaks[] = null;
+	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
+		int i=0, j=0;
+		while (i < chars.length) {
+			char c = chars [j++] = chars [i++];
+			if (c == '&' && (flags & SWT.DRAW_MNEMONIC) != 0) {
+				if (i == chars.length) {continue;}
+				if (chars [i] == '&') {i++; continue;}
+				j--;
+			} else if (c == '\n' && (flags & SWT.DRAW_DELIMITER) != 0) {
+				j--;
+				if (breaks == null) {
+					breaks = new int[1];
+				} else {
+					int[] newBreaks = new int[breaks.length + 1];
+					System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
+					breaks = newBreaks;
+				}
+				breaks[breaks.length - 1] = j;
+			}			
+		}
+		length = j;
+	}
+	if ((flags & SWT.DRAW_TAB) != 0) {
+		if (data.tabs == 0) createTabs ();
+		OS.ATSUSetTabArray(layout, data.tabs, 32);
+	} else {
+		OS.ATSUSetTabArray(layout, 0, 0);
+	}
+	int ptr = OS.NewPtr(length * 2);
+	OS.memcpy(ptr, chars, length * 2);
+	OS.ATSUSetTextPointerLocation(layout, ptr, 0, length, length);
+	if ((flags & SWT.DRAW_DELIMITER) != 0 && breaks != null) {
+		for (int i=0; i<breaks.length; i++) {
+			OS.ATSUSetSoftLineBreak(layout, breaks[i]);
+		}
+	}
+	Font font = data.font;
+	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
+	OS.ATSUSetRunStyle(layout, atsuiStyle, 0, length);
+	OS.ATSUSetTransientFontMatching(layout, true);
+	data.string = string;
+	data.stringLength = length;
+	data.drawFlags = flags;
+	data.stringPtr = ptr;
+	return length;
+}
+
 /**
  * Returns the extent of the given string. No tab
  * expansion or carriage return processing will be performed.
@@ -1856,37 +1929,7 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int length = string.length();
-	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
-	if (Font.USE_ATSUI) {
-		if (data.layout == 0) createLayout ();
-		if (string != data.string) {
-			if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-			Font font = data.font;
-			int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
-			int ptr = OS.NewPtr(length * 2);
-			OS.memcpy(ptr, string, length * 2);
-			OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
-			OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
-			data.string = string;
-			data.stringPtr = ptr;
-			OS.ATSUSetTransientFontMatching(data.layout, true);
-		}	
-		ATSTrapezoid trapezoid = new ATSTrapezoid();
-		OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-		int width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
-		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-		return new Point(width, height);
-	} else {
-		OS.CGContextSetTextDrawingMode(handle, OS.kCGTextInvisible);
-		byte[] buffer = string.getBytes();
-		OS.CGContextShowTextAtPoint(handle, 0, 0, buffer, buffer.length);
-		CGPoint pt = new CGPoint();
-		OS.CGContextGetTextPosition(handle, pt);
-		return new Point((int)pt.x, data.fontAscent + data.fontDescent);
-	}
+	return textExtent(string, 0);
 }
 
 /**
@@ -1946,8 +1989,34 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE
-	return stringExtent(string);
+	int length = string.length();
+	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
+	if (data.layout == 0) createLayout ();
+	int layout = data.layout;
+	length = setString(string, flags);
+	int width, height;
+	ATSTrapezoid trapezoid = new ATSTrapezoid();
+	if ((flags & SWT.DRAW_DELIMITER) != 0) {
+		width = 0;
+		height = 0;
+		int[] breakCount = new int[1];
+		OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
+		int[] breaks = new int[breakCount[0] + 1];
+		OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
+		breaks[breakCount[0]] = length;
+		for (int i=0, start=0; i<breaks.length; i++) {
+			int lineBreak = breaks[i];
+			OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineBreak - start, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+			width = Math.max(width, OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x));
+			height += OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+			start = lineBreak;
+		}
+	} else {
+		OS.ATSUGetGlyphBounds(layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+		width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+		height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+	}
+	return new Point(width, height);
 }
 
 /**

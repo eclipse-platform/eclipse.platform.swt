@@ -63,8 +63,6 @@ public final class Font {
 	 */
 	int atsuiStyle;
 	
-	static final boolean USE_ATSUI = true;
-	
 Font() {
 }
 
@@ -322,9 +320,7 @@ void init(Device device, String name, int height, int style) {
 	}
 	if (font[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	this.handle = font[0];
-	if (USE_ATSUI) {
-		this.atsuiStyle = createStyle();
-	}
+	this.atsuiStyle = createStyle();
 }
 
 /**
