@@ -799,7 +799,7 @@ public class SWT {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int EMBEDDED = 1 << 1;
+	public static final int EMBEDDED = 1 << 24;
 
 	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
@@ -892,7 +892,7 @@ public class SWT {
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
 	 */
-	public static final int CENTER             = 1 << 24;
+	public static final int CENTER = 1 << 24;
 
 	/**
 	 * Style constant for horizontal alignment or orientation behavior (value is 1&lt;&lt;8).
