@@ -117,8 +117,6 @@ void createHandle () {
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
-	//NOT DONE
-	if ((style & SWT.H_SCROLL) == 0) OS.AutoSizeDataBrowserListViewColumns (handle);
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = COLUMN_ID;
@@ -128,8 +126,6 @@ void createHandle () {
 	column.headerBtnDesc_maximumWidth= 0x7FFF;
 	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, 0);
-	//NOT DONE
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)800);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -332,6 +328,13 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 		}
 	}
 	return OS.noErr;
+}
+
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+	Rectangle rect = getClientArea ();
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
+	return result;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {

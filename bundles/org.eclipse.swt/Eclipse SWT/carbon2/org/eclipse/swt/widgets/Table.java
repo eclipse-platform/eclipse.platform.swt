@@ -9,8 +9,9 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -19,6 +20,7 @@ import org.eclipse.swt.events.*;
 public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
+	GC paintGC;
 	int itemCount, columnCount, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreSelect;
 	static final int CHECK_COLUMN_ID = 1024;
@@ -56,13 +58,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
+		//TODO - add CHECK column
 		GC gc = new GC (this);
 		for (int i=0; i<itemCount; i++) {
-			//NOT DONE - take into account the icon
-//			Rectangle rect = items [i].getBounds ();
-//			width = Math.max (width, rect.width);
-			Point extent = gc.stringExtent (items [i].text);
-			width = Math.max (width, extent.x);
+			TableItem item = items [i];
+			Image image = item.getImage ();
+			String text = item.getText ();
+			int itemWidth = 0;
+			if (image != null) itemWidth = image.getBounds ().width + 2;
+			if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
+			width = Math.max (width, itemWidth);
 		}
 		gc.dispose ();
 	} else {
@@ -107,8 +112,6 @@ void createHandle () {
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		OS.SetDataBrowserTableViewHiliteStyle (handle, OS.kDataBrowserTableViewFillHilite);
 	}
-	//NOT DONE
-	if ((style & SWT.H_SCROLL) == 0) OS.AutoSizeDataBrowserListViewColumns (handle);
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
@@ -116,23 +119,20 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
-		//NOT DONE
-		checkColumn.headerBtnDesc_minimumWidth = 40;
-		checkColumn.headerBtnDesc_maximumWidth = 40;
+		//TODO - CHECK column size
+		checkColumn.headerBtnDesc_minimumWidth = 25;
+		checkColumn.headerBtnDesc_maximumWidth = 25;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = COLUMN_ID;
-	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
+	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	//NOT DONE
 	column.headerBtnDesc_maximumWidth = 0x7FFF;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
-	//NOT DONE
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)800);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -156,14 +156,11 @@ void createItem (TableColumn column, int index) {
 		DataBrowserListViewColumnDesc desc = new DataBrowserListViewColumnDesc ();
 		desc.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 		desc.propertyDesc_propertyID = column.id;
-		desc.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
+		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 		desc.propertyDesc_propertyFlags = OS.kDataBrowserDefaultPropertyFlags;
-		//NOT DONE
-//		desc.headerBtnDesc_minimumWidth = 80;
 		desc.headerBtnDesc_maximumWidth = 0x7FFF;
 		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, desc, position);
-		//NOT DONE
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column.id, (short)0);
 	} 
 	if (columnCount == columns.length) {
@@ -173,7 +170,7 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	//NOT DONE - OPTIMIZE
+	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		for (int j=columnCount-1; j>index; --j) {
@@ -227,7 +224,7 @@ public void deselect (int index) {
 
 public void deselect (int start, int end) {
 	checkWidget();
-	//NOT DONE - check range
+	//TODO - check range
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -240,7 +237,7 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE - check range
+	//TODO - check range
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -262,7 +259,7 @@ void destroyItem (TableColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
-	//NOT DONE - OPTIMIZE
+	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		for (int j=index; j<columnCount-1; j++) {
@@ -275,7 +272,7 @@ void destroyItem (TableColumn column) {
 		}
 	}
 	if (columnCount == 1) {
-		//NOT DONE - reassign COLUMN_ID when last column deleted
+		//TODO - reassign COLUMN_ID when last column deleted
 	} else {
 		if (OS.RemoveDataBrowserTableViewColumn (handle, column.id) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -300,12 +297,102 @@ void destroyItem (TableItem item) {
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
+int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
+	int index = id - 1;
+	if (!(0 <= index && index < itemCount)) return OS.noErr;
+	int columnIndex = 0;
+	if (columnCount > 0) {
+		for (columnIndex=0; columnIndex<columnCount; columnIndex++) {
+			if (columns [columnIndex].id == property) break;
+		}
+		if (columnIndex == columnCount) return OS.noErr;
+	}
+	TableItem item = items [index];
+	Rect rect = new Rect ();
+	OS.memcpy (rect, theRect, Rect.sizeof);
+	int x = rect.left;
+	int y = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
+	Rect controlRect = new Rect ();
+	OS.GetControlBounds (handle, controlRect);
+	x -= controlRect.left;
+	y -= controlRect.top;
+	GC gc = paintGC;
+	if (gc == null) {
+		GCData data = new GCData ();
+		int [] port = new int [1];
+		OS.GetPort (port);
+		data.port = port [0];
+		gc = GC.carbon_new (this, data);
+	}
+	int clip = OS.NewRgn ();
+	OS.GetClip (clip);
+	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
+	gc.setClipping (Region.carbon_new (clip));
+	Rect itemRect = new Rect();
+	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
+	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
+	Display display = getDisplay ();
+	if (selected && (style & SWT.FULL_SELECTION) != 0) {
+		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+		gc.fillRectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+	} else {
+		gc.setBackground (item.background != null ? item.background : display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+		gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+	}
+	int rectRgn = OS.NewRgn ();
+	OS.RectRgn (rectRgn, rect);
+	OS.OffsetRgn (rectRgn, (short)-controlRect.left, (short)-controlRect.top);
+	OS.SectRgn (rectRgn, clip, clip);
+	OS.DisposeRgn (rectRgn);
+	gc.setClipping (Region.carbon_new (clip));
+	OS.DisposeRgn (clip);
+	Image image = item.getImage (columnIndex);
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y + (height - bounds.height) / 2, bounds.width, bounds.height);
+		x += bounds.width + 2;
+	}
+	String text = item.getText (columnIndex);
+	Point extent = gc.stringExtent (text);
+	if (selected) {
+		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+		if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+			gc.fillRectangle (x - 1, y, extent.x + 2, height);
+		}
+	} else {
+		Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+		gc.setForeground (foreground);
+	}
+	gc.drawString (text, x, y + (height - extent.y) / 2);
+	if (gc != paintGC) gc.dispose ();
+	return OS.noErr;
+}
+
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	GC currentGC = paintGC;
+	if (currentGC == null) {
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
+		paintGC = GC.carbon_new (this, data);
+	} 
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	if (currentGC == null) {
+		paintGC.dispose ();
+		paintGC = null;
+	}
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	return new Rectangle (inset.left, inset.top, rect.right - rect.left + inset.right, rect.bottom - rect.top + inset.bottom);
+	return new Rectangle (inset.left, inset.top, rect.right - rect.left - inset.right, rect.bottom - rect.top - inset.bottom);
 }
 
 public TableColumn getColumn (int index) {
@@ -358,7 +445,7 @@ public TableItem getItem (Point point) {
 	OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
-	//NOT DONE - OPTIMIZE
+	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			if (OS.PtInRect (pt, rect)) return items [i];
@@ -458,6 +545,10 @@ public int getTopIndex () {
     return top [0] / getItemHeight ();
 }
 
+int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
+	return 1;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();
@@ -467,6 +558,13 @@ void hookEvents () {
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
+	custom.version = OS.kDataBrowserLatestCustomCallbacks;
+	OS.InitDataBrowserCustomCallbacks (custom);
+	custom.v1_drawItemCallback = display.drawItemProc;
+	custom.v1_hitTestCallback = display.hitTestProc;
+	custom.v1_trackingCallback = display.trackingProc;
+	OS.SetDataBrowserCustomCallbacks (handle, custom);
 }
 
 public int indexOf (TableColumn column) {
@@ -513,20 +611,20 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 			break;
 		}
 	}
-	if (property >= COLUMN_ID) {
-		int column = 0;
-		while (column < columnCount) {
-			if (columns [column].id == property) break;
-			column++;
-		}
-		String text = item.getText (column);
-		char [] buffer = new char [text.length ()];
-		text.getChars (0, buffer.length, buffer, 0);
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetDataBrowserItemDataText (itemData, ptr);
-		OS.CFRelease (ptr);
-	}
+//	if (property >= COLUMN_ID) {
+//		int column = 0;
+//		while (column < columnCount) {
+//			if (columns [column].id == property) break;
+//			column++;
+//		}
+//		String text = item.getText (column);
+//		char [] buffer = new char [text.length ()];
+//		text.getChars (0, buffer.length, buffer, 0);
+//		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+//		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+//		OS.SetDataBrowserItemDataText (itemData, ptr);
+//		OS.CFRelease (ptr);
+//	}
 	return OS.noErr;
 }
 
@@ -578,6 +676,15 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+	if (columnCount <= 1) {
+		Rectangle rect = getClientArea ();
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
+	}
+	return result;
+}
+
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -625,7 +732,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 			return OS.noErr;
 		}
 	}
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
@@ -653,7 +760,7 @@ int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
 			return OS.noErr;
 		}
 	}
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 void releaseWidget () {
@@ -714,7 +821,7 @@ public void removeAll () {
 		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TableItem [4];
-	itemCount = columnCount = idCount = anchorFirst = anchorLast = 0;
+	itemCount = idCount = anchorFirst = anchorLast = 0;
 }
 
 public void removeSelectionListener(SelectionListener listener) {
@@ -738,7 +845,7 @@ public void select (int index) {
 
 public void select (int start, int end) {
 	checkWidget();
-	//NOT DONE - check range
+	//TODO - check range
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -752,7 +859,7 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE - check range
+	//TODO - check range
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -782,7 +889,7 @@ public void setLinesVisible (boolean show) {
 
 public void setSelection (int index) {
 	checkWidget();
-	if (0 < index && index < itemCount) {
+	if (0 <= index && index < itemCount) {
 		int [] id = new int [] {index + 1};
 		ignoreSelect = true;
 		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
@@ -850,7 +957,7 @@ public void setTopIndex (int index) {
 
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {
-		//NOT DONE - doesn't work for SWT.CHECK
+		//TODO - doesn't work for SWT.CHECK
 		int id = columnCount == 0 ? COLUMN_ID : columns [0].id;
 		short [] width = new short [1];
 		OS.GetDataBrowserTableViewNamedColumnWidth (handle, id, width);
@@ -875,6 +982,10 @@ public void showSelection () {
 	checkWidget();
 	int index = getSelectionIndex ();
 	if (index >= 0) showIndex (index);
+}
+
+int trackingProc (int browser, int id, int property, int theRect, int startPt, int modifiers) {
+	return 1;
 }
 
 }

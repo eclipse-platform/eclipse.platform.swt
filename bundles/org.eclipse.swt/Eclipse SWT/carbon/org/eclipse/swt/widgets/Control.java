@@ -659,11 +659,11 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
+	int [] clickCount = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
+	sendMouseEvent (SWT.MouseDown, theEvent);
+	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
 	if ((state & GRAB) != 0) {
-		int [] clickCount = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-		sendMouseEvent (SWT.MouseDown, theEvent);
-		if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
 		Display display = getDisplay ();
 		display.grabControl = this;
 	}

@@ -8,7 +8,7 @@ package org.eclipse.swt.widgets;
  */
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.internal.carbon.Rect;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -42,9 +42,22 @@ public Color getBackground () {
 }
 
 public Rectangle getBounds (int index) {
-	checkWidget();
-	//NOT DONE
-	return new Rectangle (0, 0, 0, 0);
+	checkWidget ();
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);;
+	Rect rect = new Rect();
+	int itemIndex = parent.indexOf (this);
+	int id = itemIndex + 1;
+	int columnId = index == 0 ? Table.COLUMN_ID : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect.left, y = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	OS.GetControlBounds (parent.handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	return new Rectangle (x, y, width, height);
 }
 
 public boolean getChecked () {
@@ -81,8 +94,26 @@ public Image getImage (int index) {
 
 public Rectangle getImageBounds (int index) {
 	checkWidget();
-	//NOT DONE
-	return new Rectangle (0, 0, 0, 0);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
+	int itemIndex = parent.indexOf (this);
+	int id = itemIndex + 1;
+	int columnId = index == 0 ? Table.COLUMN_ID : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect.left, y = rect.top;
+	int width = 0;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		width += bounds.width + 2;
+	}
+	int height = rect.bottom - rect.top;
+	OS.GetControlBounds (parent.handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	System.out.println(new Rectangle (x, y, width, height));
+	return new Rectangle (x, y, width, height);
 }
 
 public int getImageIndent () {
@@ -98,8 +129,6 @@ public Table getParent () {
 public String getText (int index) {
 	checkWidget();
 	if (index == 0) return super.getText ();
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) error (SWT.ERROR_CANNOT_GET_TEXT);
 	if (strings != null) {
 		if (0 <= index && index < strings.length) {
 			String string = strings [index];
@@ -107,6 +136,12 @@ public String getText (int index) {
 		}
 	}
 	return "";
+}
+
+void redraw () {
+	int itemIndex = parent.indexOf (this);
+	int [] id = new int [] {itemIndex + 1};
+	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
 void releaseChild () {
@@ -126,17 +161,14 @@ public void setBackground (Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color;
-//	redraw ();
+	redraw ();
 }
 
 public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
 	this.checked = checked;
-	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	redraw ();
 }
 
 public void setForeground (Color color) {
@@ -145,14 +177,14 @@ public void setForeground (Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color;
-//	redraw ();
+	redraw ();
 }
 
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	this.grayed = grayed;
-//	redraw ();
+	redraw ();
 }
 
 public void setImage (Image [] images) {
@@ -173,7 +205,18 @@ public void setImage (int index, Image image) {
 	if (index == 0) {
 		super.setImage (image);
 	}
-	//NOT DONE
+	int columnCount = parent.columnCount;
+	if (0 <= index && index < columnCount) {
+		if (images == null) images = new Image [columnCount];
+		if (images.length != columnCount) {
+			Image [] newImages = new Image [columnCount];
+			System.arraycopy (images, 0, newImages, 0, images.length);
+			images = newImages;
+		}
+		if (0 <= index && index < images.length) images [index] = image;
+	}	
+	int [] id = new int [] {itemIndex + 1};
+	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
 public void setImage (Image image) {
@@ -206,7 +249,7 @@ public void setText (int index, String string) {
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (strings == null) strings = new String [columnCount];
-		if (strings.length < columnCount) {
+		if (strings.length != columnCount) {
 			String [] newStrings = new String [columnCount];
 			System.arraycopy (strings, 0, newStrings, 0, strings.length);
 			strings = newStrings;

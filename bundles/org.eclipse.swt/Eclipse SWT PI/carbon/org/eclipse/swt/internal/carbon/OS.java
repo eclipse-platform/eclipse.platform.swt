@@ -175,6 +175,8 @@ public class OS {
 	public static final int kDataBrowserNoItem = 0;
 	public static final int kDataBrowserOrderIncreasing = 1;
 	public static final int kDataBrowserPropertyEnclosingPart = 0;
+	public static final int kDataBrowserPropertyContentPart =  ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
+	public static final int kDataBrowserPropertyDisclosurePart =  ('d'<<24) + ('i'<<16) + ('s'<<8) + 'c';
 	public static final int kDataBrowserPropertyIsMutable = 1 << 0;
 	public static final int kDataBrowserRevealOnly = 0;
 	public static final int kDataBrowserRevealAndCenterInView = 1 << 0;

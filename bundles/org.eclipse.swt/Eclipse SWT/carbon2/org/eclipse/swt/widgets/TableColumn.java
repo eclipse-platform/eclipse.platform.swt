@@ -6,8 +6,7 @@ package org.eclipse.swt.widgets;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
-import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+
 import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
 import org.eclipse.swt.internal.carbon.OS;
 
@@ -19,6 +18,7 @@ public class TableColumn extends Item {
 	Table parent;
 	int id;
 	boolean resizable;
+	static final int EXTRA_WIDTH = 20;
 
 public TableColumn (Table parent, int style) {
 	super (parent, checkStyle (style));
@@ -90,13 +90,26 @@ public int getWidth () {
 	checkWidget ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return width [0];
+	return Math.max (0, width [0] - EXTRA_WIDTH);
 }
 
 public void pack () {
 	checkWidget ();
-	//NOT DONE
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short)60);
+	GC gc = new GC (parent);
+	int width = 0;
+	int index = parent.indexOf (this);
+	for (int i=0; i<parent.itemCount; i++) {
+		TableItem item = parent.items [i];
+		Image image = item.getImage (index);
+		String text = item.getText (index);
+		int itemWidth = 0;
+		if (image != null) itemWidth = image.getBounds ().width + 2;
+		if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
+		width = Math.max (width, itemWidth);
+	}
+	gc.dispose ();
+	width += EXTRA_WIDTH;
+	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 }
 
 void releaseChild () {
@@ -147,12 +160,23 @@ public void setImage (Image image) {
 public void setResizable (boolean resizable) {
 	checkWidget ();
 	this.resizable = resizable;
+	updateHeader ();
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	updateHeader ();
+}
+
+public void setWidth (int width) {
+	checkWidget ();
+	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) (width + EXTRA_WIDTH));
+	updateHeader ();
+}
+
+void updateHeader () {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
@@ -167,17 +191,17 @@ public void setText (String string) {
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
-	//NOT DONE - for some reason this call GP's
-//	OS.GetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
-	desc.maximumWidth = 0x7FFF;
+	if (resizable) {
+		desc.minimumWidth = 0;
+		desc.maximumWidth = 0x7FFF;
+	} else {
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
+		desc.minimumWidth = desc.maximumWidth = width [0];
+	}
 	desc.titleString = str;
 	OS.SetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
 	OS.CFRelease (str);
-}
-
-public void setWidth (int width) {
-	checkWidget ();
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short)width);
 }
 
 }

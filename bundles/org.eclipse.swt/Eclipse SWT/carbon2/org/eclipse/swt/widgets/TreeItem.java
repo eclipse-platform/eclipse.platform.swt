@@ -65,7 +65,7 @@ public Color getBackground () {
 public Rectangle getBounds () {
 	checkWidget ();
 	Rect rect = new Rect();
-	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	int x = rect.left, y = rect.top;

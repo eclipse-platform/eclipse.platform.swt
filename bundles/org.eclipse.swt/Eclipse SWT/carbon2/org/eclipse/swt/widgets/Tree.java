@@ -63,11 +63,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
+		//TODO - add CHECK column
 		TreeItem [] items = getItems ();
 		GC gc = new GC (this);
 		for (int i=0; i<items.length; i++) {
-			Rectangle rect = items [i].getBounds ();
-			width = Math.max (width, rect.width);
+			TreeItem item = items [i];
+			Image image = item.getImage ();
+			String text = item.getText ();
+			int itemWidth = 0;
+			if (image != null) itemWidth = image.getBounds ().width + 2;
+			if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
+			width = Math.max (width, itemWidth);
 		}
 		gc.dispose ();
 		width = width * 2;
@@ -107,8 +113,6 @@ void createHandle () {
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
-	//NOT DONE
-	if ((style & SWT.H_SCROLL) == 0) OS.AutoSizeDataBrowserListViewColumns (handle);
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
@@ -116,24 +120,21 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
-		//NOT DONE
-		checkColumn.headerBtnDesc_minimumWidth = 40;
-		checkColumn.headerBtnDesc_maximumWidth = 40;
+		//TODO - check column size
+		checkColumn.headerBtnDesc_minimumWidth = 25;
+		checkColumn.headerBtnDesc_maximumWidth = 25;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = COLUMN_ID;
-//	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	//NOT DONE
 	column.headerBtnDesc_maximumWidth = 0x7FFF;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)800);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -239,48 +240,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int index = id - 1;
 	if (!(0 <= index && index < items.length)) return OS.noErr;
 	TreeItem item = items [index];
-
-//	if (false) {
-//		int [] port = new int [1], gdh = new int [1];
-//		OS.GetGWorld (port, gdh);
-//		byte [] buffer = item.text.getBytes();
-//		Rect rect = new Rect ();
-//		OS.memcpy (rect, theRect, Rect.sizeof);
-//		Display display = getDisplay ();
-//		Color foreground = null, background = null;
-//		if ((itemState & OS.kDataBrowserItemIsSelected) != 0)  {
-//			foreground = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
-//			background = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
-//		} else {
-//			foreground = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
-//			background = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
-//		}
-//		int red = (short) (background.handle [0] * 255);
-//		int green = (short) (background.handle [1] * 255);
-//		int blue = (short) (background.handle [2] * 255);
-//		RGBColor color = new RGBColor ();
-//		color.red = (short) (red << 8 | red);
-//		color.green = (short) (green << 8 | green);
-//		color.blue = (short) (blue << 8 | blue);
-//		OS.RGBForeColor (color);
-//		OS.PaintRect (rect);
-//		red = (short) (foreground.handle [0] * 255);
-//		green = (short) (foreground.handle [1] * 255);
-//		blue = (short) (foreground.handle [2] * 255);
-//		color.red = (short) (red << 8 | red);
-//		color.green = (short) (green << 8 | green);
-//		color.blue = (short) (blue << 8 | blue);
-//		OS.RGBForeColor (color);
-//		OS.MoveTo (rect.left, (short)(rect.top + 13));
-//		OS.DrawText (buffer, (short) 0, (short) buffer.length);
-//		OS.SetGWorld (port [0], gdh [0]);
-////		System.out.println("x=" + rect.left + " y=" + rect.top + " width=" + (rect.right - rect.left) + " height=" + (rect.bottom - rect.top));
-//		return OS.noErr;
-//	} 
-
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
-//	System.out.println("x=" + rect.left + " y=" + rect.top + " width=" + (rect.right - rect.left) + " height=" + (rect.bottom - rect.top));
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
@@ -289,33 +250,56 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.GetControlBounds (handle, controlRect);
 	x -= controlRect.left;
 	y -= controlRect.top;
-	GC gc = paintGC == null ? new GC (this) :  paintGC;
+	GC gc = paintGC;
+	if (gc == null) {
+		GCData data = new GCData ();
+		int [] port = new int [1];
+		OS.GetPort (port);
+		data.port = port [0];
+		gc = GC.carbon_new (this, data);
+	}
 	int clip = OS.NewRgn ();
 	OS.GetClip (clip);
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
 	gc.setClipping (Region.carbon_new (clip));
 	OS.DisposeRgn (clip);
 	Display display = getDisplay ();
-	Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 	Color background = item.background != null ? item.background : display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
-	gc.setForeground (foreground);
 	gc.setBackground (background);
 	gc.fillRectangle (x, y, width, height);
 	Image image = item.image;
 	if (image != null) {
 		Rectangle bounds = image.getBounds ();
-		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y, bounds.width, height);
+		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y + (height - bounds.height) / 2, bounds.width, bounds.height);
 		x += bounds.width + 2;
 	}
 	Point extent = gc.stringExtent (item.text);
 	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		gc.fillRectangle (x, y, extent.x, height);
+		gc.fillRectangle (x - 1, y, extent.x + 2, height);
+	} else {
+		Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+		gc.setForeground (foreground);
 	}
-	gc.drawString (item.text, x, y + (Math.max (0, (height - extent.y) / 2)));
-	if (paintGC == null) gc.dispose ();
+	gc.drawString (item.text, x, y + (height - extent.y) / 2);
+	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
+}
+
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	GC currentGC = paintGC;
+	if (currentGC == null) {
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
+		paintGC = GC.carbon_new (this, data);
+	} 
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	if (currentGC == null) {
+		paintGC.dispose ();
+		paintGC = null;
+	}
 }
 
 public Rectangle getClientArea () {
@@ -323,7 +307,7 @@ public Rectangle getClientArea () {
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	return new Rectangle (inset.left, inset.top, rect.right - rect.left + inset.right, rect.bottom - rect.top + inset.bottom);
+	return new Rectangle (inset.left, inset.top, rect.right - rect.left - inset.right, rect.bottom - rect.top - inset.bottom);
 }
 
 public TreeItem getItem (Point point) {
@@ -333,7 +317,7 @@ public TreeItem getItem (Point point) {
 	OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
-	//OPTIMIZE
+	//TODO - optimize
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
@@ -424,7 +408,7 @@ public int getSelectionCount () {
 
 public TreeItem getTopItem () {
 	checkWidget();
-	//OPTIMIZE
+	//TODO - optimize
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	int offset = 0;
@@ -446,9 +430,6 @@ public TreeItem getTopItem () {
 }
 
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
-//	int index = id - 1;
-//	if (!(0 <= index && index < items.length)) return 0;
-//	TreeItem item = items [index];
 	return 1;
 }
 
@@ -596,14 +577,10 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	GC currentGC = paintGC;
-	if (currentGC == null) paintGC = new GC (this);
-	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (currentGC == null) {
-		paintGC.dispose ();
-		paintGC = null;
-	}
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+	Rectangle rect = getClientArea ();
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
 	return result;
 }
 
@@ -747,7 +724,7 @@ void showItem (TreeItem item, boolean scroll) {
 //		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
 //	}
 	if (scroll) {
-		//OPTIMIZE
+		//TODO - optimize
 		Rectangle treeRect = getClientArea ();
 		Rectangle itemRect = item.getBounds ();
 		if (treeRect.contains (itemRect.x, itemRect.y)) return;
@@ -764,15 +741,12 @@ void showItem (TreeItem item, boolean scroll) {
 
 public void showSelection () {
 	checkWidget ();
-	//OPTIMIZE
+	//TODO - optimize
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);
 }
 
 int trackingProc (int browser, int id, int property, int theRect, int startPt, int modifiers) {
-//	int index = id - 1;
-//	if (!(0 <= index && index < items.length)) return 0;
-//	TreeItem item = items [index];
 	return 1;
 }
 
