@@ -404,7 +404,7 @@ public Rectangle getImageBounds (int index) {
 	/*
 	* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
 	* value even when the subitem does not contain an image.  The
-	* fix is to detect this case set the width to zero.
+	* fix is to detect this case and set the width to zero.
 	*/
 	if (index != 0) {
 		LVITEM lvItem = new LVITEM ();
