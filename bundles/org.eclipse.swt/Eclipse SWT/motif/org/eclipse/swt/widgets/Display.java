@@ -1918,6 +1918,7 @@ public void update () {
  */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (thread == Thread.currentThread ()) return;
 	/* Write a single byte to the wake up pipe */
 	while (OS.write (write_fd, wake_buffer, 1) != 1);
 }
