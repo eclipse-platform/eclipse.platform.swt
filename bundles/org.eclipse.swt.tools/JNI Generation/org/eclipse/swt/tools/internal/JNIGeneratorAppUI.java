@@ -183,33 +183,59 @@ public void open () {
 			updateMembers();
 			updateParameters();
 		}
-	};
+	};	
+	createMainClassPanel(panel, updateMainClassListener);
+	createOutputDirPanel(panel, updateMainClassListener);
+	createClassesPanel(panel);
+	createMembersPanel(panel);
+	createParametersPanel(panel);
+	createActionButtons(shell);
+
+	Point preferredSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	shell.setSize(shell.getSize().x, preferredSize.y);
+	((GridData)classesLt.getLayoutData()).heightHint = -1;
+	((GridData)membersLt.getLayoutData()).heightHint = -1;
+	((GridData)paramsLt.getLayoutData()).heightHint = -1;
 	
+	updateMainClass();
+	updateClasses();
+	updateMembers();
+	updateParameters();
+}
+
+void createMainClassPanel(Composite panel, Listener updateListener) {
 	Label mainClassLb = new Label(panel, SWT.NONE);
 	mainClassLb.setText("Main Class:");
-	
+
+	GridData data;
 	mainClassCb = new Combo(panel, SWT.DROP_DOWN);
 	String mainClass = app.getMainClass();
 	mainClassCb.setText(mainClass == null ? "" : mainClass);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	mainClassCb.setLayoutData(data);
-	mainClassCb.addListener(SWT.Selection, updateMainClassListener);
-	mainClassCb.addListener(SWT.DefaultSelection, updateMainClassListener);
-	
+	mainClassCb.addListener(SWT.Selection, updateListener);
+	mainClassCb.addListener(SWT.DefaultSelection, updateListener);
+}
+
+void createOutputDirPanel(Composite panel, Listener updateListener) {
 	Label outputDirLb = new Label(panel, SWT.NONE);
 	outputDirLb.setText("Output Dir:");
 	
+	GridData data;
 	outputDirCb = new Combo(panel, SWT.DROP_DOWN);
 	String outputDir = app.getOutputDir();
 	outputDirCb.setText(outputDir == null ? "" : outputDir);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	outputDirCb.setLayoutData(data);
-	outputDirCb.addListener(SWT.Selection, updateMainClassListener);
-	outputDirCb.addListener(SWT.DefaultSelection, updateMainClassListener);
+	outputDirCb.addListener(SWT.Selection, updateListener);
+	outputDirCb.addListener(SWT.DefaultSelection, updateListener);
+}
 
+void createClassesPanel(Composite panel) {
 	Label classesLb = new Label(panel, SWT.NONE);
 	classesLb.setText("Classes:");
 
+	GridData data;
 	classesLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 	data = new GridData(GridData.FILL_BOTH);
 	data.heightHint = classesLt.getItemHeight() * 6;
@@ -228,12 +254,17 @@ public void open () {
 	TableColumn column;
 	column = new TableColumn(classesLt, SWT.NONE, CLASS_NAME_COLUMN);
 	column.setText("Class");
+	/*
 	column = new TableColumn(classesLt, SWT.NONE, CLASS_EXCLUDE_COLUMN);
 	column.setText("Exclude");
-	
+	*/
+}
+
+void createMembersPanel(Composite panel) {
 	Label membersLb = new Label(panel, SWT.NONE);
 	membersLb.setText("Members:");
-	
+
+	GridData data;
 	membersLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 	data = new GridData(GridData.FILL_BOTH);
 	data.heightHint = membersLt.getItemHeight() * 6;
@@ -252,7 +283,7 @@ public void open () {
 	memberTextEditor.grabHorizontal = true;
 	memberEditorTx = new Text(membersLt, SWT.SINGLE);
 	memberTextEditor.setEditor(memberEditorTx);
-	memberEditorTx.addListener(SWT.FocusOut, new Listener() {
+	Listener memberTextListener = new Listener() {
 		public void handleEvent(Event e) {
 			memberEditorTx.setVisible(false);
 			TableItem item = memberTextEditor.getItem();
@@ -295,12 +326,14 @@ public void open () {
 				membersLt.getColumn(column).pack();
 			}
 		}
-	});
+	};
+	memberEditorTx.addListener(SWT.DefaultSelection, memberTextListener);
+	memberEditorTx.addListener(SWT.FocusOut, memberTextListener);
 	
 	memberListEditor = new TableEditor(membersLt);
 	memberEditorLt = new List(membersLt, SWT.MULTI | SWT.BORDER);
 	memberListEditor.setEditor(memberEditorLt);
-	memberEditorLt.addListener(SWT.FocusOut, new Listener() {
+	Listener memberListListener = new Listener() {
 		public void handleEvent(Event e) {
 			memberEditorLt.setVisible(false);
 			TableItem item = memberListEditor.getItem();
@@ -322,8 +355,10 @@ public void open () {
 				membersLt.getColumn(column).pack();
 			}
 		}
-	});
-
+	};
+	memberEditorLt.addListener(SWT.DefaultSelection, memberListListener);
+	memberEditorLt.addListener(SWT.FocusOut, memberListListener);
+	
 	membersLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
 			if (e.button != 1) return;
@@ -398,10 +433,13 @@ public void open () {
 			}
 		}
 	});
+}
 
+void createParametersPanel(Composite panel) {
 	Label paramsLb = new Label(panel, SWT.NONE);
 	paramsLb.setText("Parameters:");
 	
+	GridData data;
 	paramsLt = new Table(panel, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 	data = new GridData(GridData.FILL_BOTH);
 	int itemHeight = paramsLt.getItemHeight();
@@ -415,6 +453,7 @@ public void open () {
 		}
 	});
 
+	TableColumn column;
 	column = new TableColumn(paramsLt, SWT.NONE, PARAM_INDEX_COLUMN);
 	column = new TableColumn(paramsLt, SWT.NONE, PARAM_TYPE_COLUMN);
 	column.setText("Type");
@@ -427,7 +466,7 @@ public void open () {
 	paramTextEditor.grabHorizontal = true;
 	paramEditorTx = new Text(paramsLt, SWT.SINGLE);
 	paramTextEditor.setEditor(paramEditorTx);
-	paramEditorTx.addListener(SWT.FocusOut, new Listener() {
+	Listener paramTextListener = new Listener() {
 		public void handleEvent(Event e) {
 			paramEditorTx.setVisible(false);
 			TableItem item = paramTextEditor.getItem();
@@ -443,7 +482,9 @@ public void open () {
 				paramsLt.getColumn(column).pack();
 			}
 		}
-	});
+	};
+	paramEditorTx.addListener(SWT.DefaultSelection, paramTextListener);
+	paramEditorTx.addListener(SWT.FocusOut, paramTextListener); 
 	
 	paramListEditor = new TableEditor(paramsLt);
 	paramEditorLt = new List(paramsLt, SWT.MULTI | SWT.BORDER);
@@ -452,7 +493,7 @@ public void open () {
 	paramListEditor.minimumWidth = size.x;
 	paramListEditor.minimumHeight = size.y;
 	paramListEditor.setEditor(paramEditorLt);
-	paramEditorLt.addListener(SWT.FocusOut, new Listener() {
+	Listener paramListListener = new Listener() {
 		public void handleEvent(Event e) {
 			paramEditorLt.setVisible(false);
 			TableItem item = paramListEditor.getItem();
@@ -468,7 +509,9 @@ public void open () {
 				paramsLt.getColumn(column).pack();
 			}
 		}
-	});
+	};
+	paramEditorLt.addListener(SWT.DefaultSelection, paramListListener);
+	paramEditorLt.addListener(SWT.FocusOut, paramListListener);
 
 	paramsLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
@@ -506,24 +549,28 @@ public void open () {
 			}
 		}
 	});
-	
-	Button action;
-		
-	Composite actionsPanel = new Composite(shell, SWT.NONE);
+}
 
-	data = new GridData(GridData.FILL_VERTICAL);
+Button createActionButton(Composite parent, String text, Listener listener) {
+	Button action = new Button(parent, SWT.PUSH);
+	action.setText(text);
+	GridData data = new GridData(GridData.FILL_HORIZONTAL);
+	action.setLayoutData(data);
+	action.addListener(SWT.Selection, listener);
+	return action;
+}
+
+void createActionButtons(Composite parent) {		
+	Composite actionsPanel = new Composite(parent, SWT.NONE);
+
+	GridData data = new GridData(GridData.FILL_VERTICAL);
 	actionsPanel.setLayoutData(data);
 		
 	GridLayout actionsLayout = new GridLayout();
 	actionsLayout.numColumns = 1;
 	actionsPanel.setLayout(actionsLayout);
 	
-	
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate All");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate All", new Listener() {
 		public void handleEvent(Event e) {
 			if (!updateOutputDir()) return;
 			Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
@@ -542,76 +589,36 @@ public void open () {
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	separator.setLayoutData(data);
 	
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Structs Header");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate Structs Header", new Listener() {
 		public void handleEvent(Event e) {
 			generateStructsHeader();
 		}
 	});
-	
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Structs");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate Structs", new Listener() {
 		public void handleEvent(Event e) {
 			generateStructs();
 		}
 	});
-
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Natives");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate Natives", new Listener() {
 		public void handleEvent(Event e) {
 			generateNatives();
 		}
 	});
-
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Constants");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate Constants", new Listener() {
 		public void handleEvent(Event e) {
 			generateConstants();
 		}
-	});
-	
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Sizeof");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	});	
+	createActionButton(actionsPanel, "Generate Sizeof", new Listener() {
 		public void handleEvent(Event e) {
 			generateSizeof();
 		}
 	});
-
-	action = new Button(actionsPanel, SWT.PUSH);
-	action.setText("Generate Meta Data");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	action.setLayoutData(data);
-	action.addListener(SWT.Selection, new Listener() {
+	createActionButton(actionsPanel, "Generate Meta Data", new Listener() {
 		public void handleEvent(Event e) {
 			generateMetaData();
 		}
 	});
-	
-	Point preferredSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	shell.setSize(shell.getSize().x, preferredSize.y);
-	((GridData)classesLt.getLayoutData()).heightHint = -1;
-	((GridData)membersLt.getLayoutData()).heightHint = -1;
-	((GridData)paramsLt.getLayoutData()).heightHint = -1;
-	
-	updateMainClass();
-	updateClasses();
-	updateMembers();
-	updateParameters();
 }
 
 public void run() {
@@ -715,8 +722,10 @@ void updateMembers() {
 		column.setText("Method");
 		column = new TableColumn(membersLt, SWT.NONE, METHOD_FLAGS_COLUMN);
 		column.setText("Flags");
+		/*
 		column = new TableColumn(membersLt, SWT.NONE, METHOD_EXCLUDE_COLUMN);
 		column.setText("Exclude");
+		*/
 		JNIGenerator.sort(methods);
 		for (int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
@@ -727,7 +736,9 @@ void updateMembers() {
 			item.setText(METHOD_NAME_COLUMN, getMethodString(method));
 			item.setChecked(methodData.isGenerate());
 			item.setText(METHOD_FLAGS_COLUMN, getFlagsString(methodData.getFlags()));
+			/*
 			item.setText(METHOD_EXCLUDE_COLUMN, methodData.getExclude());
+			*/
 		}
 	} else {
 		TableColumn column;
@@ -739,8 +750,10 @@ void updateMembers() {
 		column.setText("Accessor");
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_FLAGS_COLUMN);
 		column.setText("Flags");
+		/*
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_EXCLUDE_COLUMN);
 		column.setText("Exclude");
+		*/
 		Field[] fields = clazz.getDeclaredFields();	
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
@@ -756,7 +769,9 @@ void updateMembers() {
 			item.setText(FIELD_CAST_COLUMN, fieldData.getCast());
 			item.setText(FIELD_ACCESSOR_COLUMN, fieldData.getAccessor());
 			item.setText(FIELD_FLAGS_COLUMN, getFlagsString(fieldData.getFlags()));
+			/*
 			item.setText(FIELD_EXCLUDE_COLUMN, fieldData.getExclude());
+			*/
 		}
 	}
 	columns = membersLt.getColumns();
