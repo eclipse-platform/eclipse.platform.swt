@@ -230,6 +230,9 @@ public boolean open () {
 	MSG msg = new MSG ();
 	drawRectangles ();
 	int oldPos = OS.GetMessagePos ();
+	// Tracker behaves like a Dialog with its own OS event loop.
+	// The application is not given the opportunity to respond 
+	// to the events that occur while tracking.
 	while (tracking && !cancelled) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.GetMessage (msg, 0, 0, 0);
