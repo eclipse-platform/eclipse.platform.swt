@@ -331,7 +331,7 @@ public int getItemCount () {
  * not affect the receiver. 
  * </p>
  *
- * @return the current visual order of the reciever's items
+ * @return the current visual order of the receiver's items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -363,7 +363,7 @@ public int [] getItemOrder () {
 }
 
 /**
- * Returns an array of <code>CoolItems</code>s in the order
+ * Returns an array of <code>CoolItem</code>s in the order
  * in which they are currently being displayed.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -435,7 +435,7 @@ int getLastIndexOfRow (int index) {
 }
 
 /**
- * Returns whether or not the reciever is 'locked'. When a coolbar
+ * Returns whether or not the receiver is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @return true if the coolbar is locked, false otherwise
@@ -700,7 +700,7 @@ void setItemSizes (Point [] sizes) {
 }
 
 /**
- * Sets whether or not the reciever is 'locked'. When a coolbar
+ * Sets whether or not the receiver is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @param locked lock the coolbar if true, otherwise unlock the coolbar
