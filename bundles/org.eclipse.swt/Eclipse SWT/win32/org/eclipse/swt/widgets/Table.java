@@ -2821,7 +2821,9 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	int columnCount = Math.max (1, getColumnCount ());
 	Rectangle clientArea = getClientArea ();
 	int i = getTopIndex ();
-	while (i < itemCount) {
+	int bottomIndex = i + OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+	bottomIndex = Math.min (itemCount, bottomIndex);
+	while (i < bottomIndex) {
 		int j = 0;
 		while (j < columnCount) {
 			if (j != 0 || (!isSelected (i) && i != getFocusIndex ())) {
@@ -2837,7 +2839,6 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 			}
 			j++;
 		}
-		if (j < columnCount) break;
 		i++;
 	}
 	gc.setClipping (region);
