@@ -607,6 +607,7 @@ public static final native int ATSUSetFontFeatures(int iStyle, int iFeatureCount
 public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
 public static final native int ATSUSetRunStyle(int iTextLayout, int iStyle, int iRunStart, int iRunLength);
 public static final native int ATSUSetTextPointerLocation(int iTextLayout, int iText, int iTextOffset, int iTextLength, int iTextTotalLength);
+public static final native int ATSUSetTransientFontMatching(int iTextLayout, boolean iTransientFontMatching);
 public static final native int ATSUTextInserted(int iTextLayout, int iInsertionLocation, int iInsertionLength);
 public static final native int ATSUTextDeleted(int iTextLayout, int iInsertionLocation, int iInsertionLength);
 public static final native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
