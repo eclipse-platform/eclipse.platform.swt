@@ -11,7 +11,7 @@ public class TrayIcon extends Widget {
 	boolean visible;
 
 public TrayIcon (Display display) {
-//	checkSubclass();
+	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
