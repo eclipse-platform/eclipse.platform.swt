@@ -393,14 +393,12 @@ void closeWidget () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
-	if (region == null) {
-		Rect rect = new Rect ();
-		OS.GetWindowStructureWidths (shellHandle, rect);
-		trim.x -= rect.left;
-		trim.y -= rect.top;
-		trim.width += rect.left + rect.right;
-		trim.height += rect.top + rect.bottom;
-	}
+	Rect rect = new Rect ();
+	OS.GetWindowStructureWidths (shellHandle, rect);
+	trim.x -= rect.left;
+	trim.y -= rect.top;
+	trim.width += rect.left + rect.right;
+	trim.height += rect.top + rect.bottom;
 	return trim;
 }
 
@@ -494,12 +492,19 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	* Bug in the Macintosh. In kEventWindowGetRegion, 
 	* Carbon assumes the origin of the Region is (0, 0)
 	* and ignores the actual origin.  This causes the 
-	* window to be shifted.  The fix is to modify the origin.
+	* window to be shifted for a non zero origin.  Also,
+	* the size of the window is the size of the region
+	* which may be less then the size specified in
+	* setSize or setBounds.
+	* The fix is to include (0, 0) and the bottom 
+	* right corner of the size in the region and to
+	* make these points transparent.
 	*/
 	if (region == null) return;
-	Rect r = new Rect ();
-	OS.GetRegionBounds (region.handle, r);
-	if (r.left == 0 && r.top == 0) return;
+	boolean origin = region.contains (0, 0);
+	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
+	if (origin && limit) return;
+	
 	int[] context = new int [1];
 	int port = OS.GetWindowPort (shellHandle);
 	Rect portRect = new Rect ();
@@ -510,7 +515,14 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	CGRect cgRect = new CGRect ();
 	cgRect.width = 1;
 	cgRect.height = 1;
-	OS.CGContextClearRect (context [0], cgRect);
+	if (!origin) {
+		OS.CGContextClearRect (context [0], cgRect);
+	}
+	if (!limit) {
+		cgRect.x = rgnRect.right - 1;
+		cgRect.y = rgnRect.bottom - 1;
+		OS.CGContextClearRect (context [0], cgRect);
+	}
 	OS.CGContextSynchronize (context [0]);
 	OS.QDEndCGContext (port, context);
 }
@@ -798,7 +810,8 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
 		* the control that has focus gets two kEventControlSetFocus
 		* events indicating that focus was lost.  The fix is to ignore
-		* both of these and send the focus lost event explicitly.		*/
+		* both of these and send the focus lost event explicitly.
+		*/
 		display.ignoreFocus = true;
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
@@ -835,13 +848,25 @@ int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 			* Bug in the Macintosh. In kEventWindowGetRegion, 
 			* Carbon assumes the origin of the Region is (0, 0)
 			* and ignores the actual origin.  This causes the 
-			* window to be shifted.  The fix is to modify the origin.
+			* window to be shifted for a non zero origin.  Also,
+			* the size of the window is the size of the region
+			* which may be less then the size specified in
+			* setSize or setBounds.
+			* The fix is to include (0, 0) and the bottom 
+			* right corner of the size in the region and to
+			* make these points transparent.
 			*/
-			// TODO - find a better fix
-			Rect r = new Rect ();
-			OS.GetRegionBounds (hRegion, r);
-			if (r.left != 0 || r.top != 0) {
+			if (!region.contains (0, 0)) {
+				Rect r = new Rect ();
 				OS.SetRect (r, (short)0, (short)0, (short)1, (short)1);
+				int rectRgn = OS.NewRgn ();
+				OS.RectRgn (rectRgn, r);
+				OS.UnionRgn (rectRgn, hRegion, hRegion);
+				OS.DisposeRgn (rectRgn);
+			}
+			if (!region.contains (rgnRect.right - 1, rgnRect.bottom - 1)) {
+				Rect r = new Rect ();
+				OS.SetRect (r, (short) (rgnRect.right - 1), (short) (rgnRect.bottom - 1), rgnRect.right, rgnRect.bottom);
 				int rectRgn = OS.NewRgn ();
 				OS.RectRgn (rectRgn, r);
 				OS.UnionRgn (rectRgn, hRegion, hRegion);
@@ -1141,9 +1166,11 @@ public void setRegion (Region region) {
 	if (region == null) {
 		rgnRect = null;
 	} else {
-		if (rgnRect == null) rgnRect = new Rect ();
-		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rgnRect);
-		OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));	
+		if (rgnRect == null) {
+			rgnRect = new Rect ();
+			OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rgnRect);
+			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));	
+		}
 	}
 	this.region = region;
 	OS.ReshapeCustomWindow (shellHandle);
