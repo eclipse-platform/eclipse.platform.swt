@@ -271,7 +271,7 @@ SWT_PTR callback(int index, ...)
 	JNIEnv *env = NULL;
 	jobject javaObject;
 	jboolean isStatic, isArrayBased;
-	int result = 0;
+	int result = 0, detach = 0;
 	va_list vl;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -281,10 +281,12 @@ SWT_PTR callback(int index, ...)
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_2);
-	} else
+	}
 #endif
-	{
+	
+	if (env == NULL) {
 		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+		if (IS_JNI_1_2) detach = 1;
 	}
 	
 	if (env == NULL) {
@@ -340,6 +342,10 @@ SWT_PTR callback(int index, ...)
 	* in the JDK and IBM Hursley VM.
 	*/
 	(*env)->DeleteLocalRef(env, javaObject);
+	
+	if (detach) {
+		(*jvm)->DetachCurrentThread(jvm);
+	}
 
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "* callback exiting %d\n", --counter);
