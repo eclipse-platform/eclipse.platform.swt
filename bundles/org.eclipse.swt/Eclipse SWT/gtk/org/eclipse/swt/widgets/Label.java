@@ -83,6 +83,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
+	// FIXME
+	// If the wHint is set, and the label has a border, then
+	// the GtkLabel will believe it has more width at its disposal
+	// than it actually does (by a few pixels).
+	// It is possible (but unlikely) that this will cause it to
+	// answer a smaller height.
 	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
 	OS.gtk_widget_set_size_request (frameHandle, -1, -1);
