@@ -36,15 +36,15 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_internal_SWTEventListener() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_internal_SWTEventListener not written");
+	// do not test internal public methods (non-API)
 }
 
 public void test_getEventListener() {
-	warnUnimpl("Test test_getEventListener not written");
+	// do not test internal public methods (non-API)
 }
 
 public void test_handleEventLorg_eclipse_swt_widgets_Event() {
-	warnUnimpl("Test test_handleEventLorg_eclipse_swt_widgets_Event not written");
+	// do not test internal public methods (non-API)
 }
 
 public static Test suite() {
