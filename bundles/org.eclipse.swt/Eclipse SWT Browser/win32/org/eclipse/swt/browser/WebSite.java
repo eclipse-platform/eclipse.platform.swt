@@ -162,7 +162,7 @@ int GetExternal(int ppDispatch) {
 }
 
 int GetHostInfo(int pInfo) {
-	OS.MoveMemory(pInfo + 4, new int[] {Browser.DOCHOSTUIFLAG_THEME}, 4);
+	OS.MoveMemory(pInfo + 4, new int[] {Browser.DOCHOSTUIFLAG_THEME | Browser.DOCHOSTUIFLAG_NO3DBORDER}, 4);
 	return COM.S_OK;
 }
 

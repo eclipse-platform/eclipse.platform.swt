@@ -103,6 +103,8 @@ public class Browser extends Composite {
 	static final int DLCTL_NO_CLIENTPULL = 0x20000000;
 	static final int DLCTL_SILENT = 0x40000000;
 	static final int DOCHOSTUIFLAG_THEME = 0x00040000;
+	static final int DOCHOSTUIFLAG_NO3DBORDER  = 0x0000004;
+	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String URL_CAB = ".cab"; //$NON-NLS-1$
