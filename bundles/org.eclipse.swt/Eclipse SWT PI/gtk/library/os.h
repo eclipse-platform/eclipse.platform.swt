@@ -48,4 +48,6 @@ void gtk_progress_bar_set_bar_style(void*, int);
 #define NATIVE_ENTER(env,clazz,func)
 #define NATIVE_EXIT(env,clazz,func)
 
+#include "os_custom.h"
+
 #endif /* INC_os_H */

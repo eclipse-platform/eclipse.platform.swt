@@ -568,10 +568,10 @@ void moveAbove (int /*long*/ child, int /*long*/ sibling) {
 		children = OS.g_list_append (children, childData);
 	} else {
 		temp = OS.g_list_next (siblingLink);
-		OS.g_list_next (childLink, temp);
-		OS.g_list_previous (temp, childLink);
-		OS.g_list_previous (childLink, siblingLink);
-		OS.g_list_next (siblingLink, childLink);
+		OS.g_list_set_next (childLink, temp);
+		OS.g_list_set_previous (temp, childLink);
+		OS.g_list_set_previous (childLink, siblingLink);
+		OS.g_list_set_next (siblingLink, childLink);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);
@@ -605,10 +605,10 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 		children = OS.g_list_prepend (children, childData);
 	} else {
 		temp = OS.g_list_previous (siblingLink);
-		OS.g_list_previous (childLink, temp);
-		OS.g_list_next (temp, childLink);
-		OS.g_list_next (childLink, siblingLink);
-		OS.g_list_previous (siblingLink, childLink);
+		OS.g_list_set_previous (childLink, temp);
+		OS.g_list_set_next (temp, childLink);
+		OS.g_list_set_next (childLink, siblingLink);
+		OS.g_list_set_previous (siblingLink, childLink);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);

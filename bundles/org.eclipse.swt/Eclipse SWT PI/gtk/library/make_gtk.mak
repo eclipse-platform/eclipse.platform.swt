@@ -86,7 +86,7 @@ LIBS = -shared -fpic -fPIC
 #  Target Rules
 #
 
-all: make_swt make_awt make_atk make_gnome make_mozilla
+all: make_swt #make_awt make_atk make_gnome make_mozilla
 
 #
 # SWT libs
@@ -102,7 +102,7 @@ callback.o: callback.c callback.h
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	$(LD) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
 
-os.o: os.c os.h swt.h
+os.o: os.c os.h swt.h os_custom.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os.c
 os_structs.o: os_structs.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_structs.c 
