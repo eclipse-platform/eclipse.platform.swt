@@ -247,6 +247,18 @@ public boolean getGrayed () {
 	return (result != 0) && ((lvItem.state >> 12) > 2);
 }
 
+/**
+ * Returns the image stored at the given column index in the receiver,
+ * or null if the image has not been set or if the column does not exist.
+ *
+ * @param index the column index
+ * @return the image stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getImage (int index) {
 	checkWidget();
 	if (index == 0) return super.getImage ();
@@ -347,6 +359,21 @@ public Table getParent () {
 	return parent;
 }
 
+/**
+ * Returns the text stored at the given column index in the receiver,
+ * or empty string if the text has not been set.
+ *
+ * @param index the column index
+ * @return the text stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
+ * </ul>
+ */
 public String getText (int index) {
 	checkWidget();
 	if (index == 0) return super.getText ();
