@@ -9600,6 +9600,33 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
 }
 #endif
 
+#ifndef NO_memmove__I_3JI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3JI)
+	(JNIEnv *env, jclass that, jint arg0, jlongArray arg1, jint arg2)
+{
+	jlong *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__I_3JI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL);
+	}
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, memmove__I_3JI_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)

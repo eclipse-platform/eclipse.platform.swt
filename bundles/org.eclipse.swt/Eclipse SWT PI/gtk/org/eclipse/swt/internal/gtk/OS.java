@@ -1215,6 +1215,7 @@ public static final native void memmove(PangoLayoutLine dest, int /*long*/ src, 
 public static final native void memmove(PangoLayoutRun dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoLogAttr dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, int[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, long[] src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
 public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
