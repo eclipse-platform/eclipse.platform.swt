@@ -1767,11 +1767,11 @@ void onEnd (int stateMask) {
 }
 void onFocusIn () {
 	if (itemsCount == 0) return;
-    if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
-        for (int i = 0; i < selectedItems.length; i++) {
-            redrawItem (selectedItems [i].index, true);
-        }
-    }
+	if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
+		for (int i = 0; i < selectedItems.length; i++) {
+			redrawItem (selectedItems [i].index, true);
+		}
+	}
 	if (focusItem != null) {
 		redrawItem (focusItem.index, true);
 		return;
@@ -1795,11 +1795,11 @@ void onFocusOut () {
 	if (focusItem != null) {
 		redrawItem (focusItem.index, true);
 	}
-    if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
-        for (int i = 0; i < selectedItems.length; i++) {
-            redrawItem (selectedItems [i].index, true);
-        }
-    }
+	if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
+		for (int i = 0; i < selectedItems.length; i++) {
+			redrawItem (selectedItems [i].index, true);
+		}
+	}
 }
 void onHome (int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
@@ -3321,13 +3321,13 @@ void sort (int [] items) {
 	for (int gap=length/2; gap>0; gap/=2) {
 		for (int i=gap; i<length; i++) {
 			for (int j=i-gap; j>=0; j-=gap) {
-		   		if (items [j] <= items [j + gap]) {
+				if (items [j] <= items [j + gap]) {
 					int swap = items [j];
 					items [j] = items [j + gap];
 					items [j + gap] = swap;
-		   		}
-	    	}
-	    }
+				}
+			}
+		}
 	}
 }
 void updateColumnWidth (TableColumn column, int width) {

@@ -414,11 +414,11 @@ TreeItem[] computeAvailableDescendents () {
 void computeDisplayText (int columnIndex, GC gc) {
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) {
-        String text = getText (0);
-        textWidths [columnIndex] = gc.stringExtent (text).x;
-        return;
-    }
-	
+		String text = getText (0);
+		textWidths [columnIndex] = gc.stringExtent (text).x;
+		return;
+	}
+
 	TreeColumn column = parent.columns [columnIndex];
 	int availableWidth;
 	if (columnIndex == 0) {
@@ -806,13 +806,13 @@ Rectangle getExpanderBounds () {
 Rectangle getFocusBounds () {
 	int x = getTextX (0);
 	TreeColumn[] columns = parent.columns;
-    if (columns.length > 0) {
-        /* ensure that the focus x does not start beyond the right bound of column 0 */
-        int rightX = columns [0].getX () + columns [0].width;
-        x = Math.min (x, rightX - 1);
-    }
-    
-    int width;
+	if (columns.length > 0) {
+		/* ensure that the focus x does not start beyond the right bound of column 0 */
+		int rightX = columns [0].getX () + columns [0].width;
+		x = Math.min (x, rightX - 1);
+	}
+
+	int width;
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {

@@ -249,11 +249,11 @@ void clear () {
 }
 void computeDisplayText (int columnIndex, GC gc) {
 	int columnCount = parent.columns.length;
-    if (columnCount == 0) {
-        String text = getText (0);
-        textWidths [columnIndex] = gc.stringExtent (text).x;
-        return;
-    }
+	if (columnCount == 0) {
+		String text = getText (0);
+		textWidths [columnIndex] = gc.stringExtent (text).x;
+		return;
+	}
 
 	TableColumn column = parent.columns [columnIndex];
 	int availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;
@@ -547,7 +547,7 @@ String getDisplayText (int columnIndex) {
  */
 Rectangle getFocusBounds () {
 	int x = 0;
-    TableColumn[] columns = parent.columns;
+	TableColumn[] columns = parent.columns;
 	int[] columnOrder = parent.getColumnOrder ();
 	if ((parent.style & SWT.FULL_SELECTION) != 0) {
 		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
@@ -560,11 +560,11 @@ Rectangle getFocusBounds () {
 		x = getTextX (0);
 	}
 
-    if (columns.length > 0) {
-        /* ensure that the focus x does not start beyond the right bound of column 0 */
-        int rightX = columns [0].getX () + columns [0].width;
-        x = Math.min (x, rightX - 1);
-    }
+	if (columns.length > 0) {
+		/* ensure that the focus x does not start beyond the right bound of column 0 */
+		int rightX = columns [0].getX () + columns [0].width;
+		x = Math.min (x, rightX - 1);
+	}
 
 	int width;
 	if (columns.length == 0) {
