@@ -53,12 +53,31 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 		} 
 		catch (IllegalArgumentException e) {
 		}
-	}
+	};
+	mItem = new MenuItem(menu, SWT.CHECK);
+	assertTrue(mItem.getStyle()==SWT.CHECK);
+	mItem.dispose();
+	mItem = new MenuItem(menu, SWT.CASCADE);
+	assertTrue(mItem.getStyle()==SWT.CASCADE);
+	mItem.dispose();
+	mItem = new MenuItem(menu, SWT.PUSH);
+	assertTrue(mItem.getStyle()==SWT.PUSH);
+	mItem.dispose();
+	mItem = new MenuItem(menu, SWT.SEPARATOR);
+	assertTrue(mItem.getStyle()==SWT.SEPARATOR);
+	mItem.dispose();
+	mItem = new MenuItem(menu, SWT.RADIO);
+	assertTrue(mItem.getStyle()==SWT.RADIO);
+	mItem.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL, 0); //create a menu item at index 0
 	assertNotNull(mItem);
+	assertTrue(menu.getItem(0).equals(mItem));
+	mItem = new MenuItem(menu, SWT.NULL, 1);
+	assertNotNull(mItem);
+	assertTrue(menu.getItem(1).equals(mItem));
 }
 
 public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
