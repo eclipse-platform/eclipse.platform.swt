@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -90,31 +89,10 @@ boolean drawCaret () {
 		nHeight = rect.height;
 	}
 	if (nWidth <= 0) nWidth = 2;
-	
-	int clipRgn= OS.NewRgn();
-	MacUtil.getVisibleRegion(parent.handle, clipRgn, true);
-
-	Rect bounds= new Rect();
-	MacUtil.getControlBounds(parent.handle, bounds);
-	int left = x+bounds.left;
-	int top = y+bounds.top;
-	OS.SetRect(bounds, (short)left, (short)top, (short)(left+nWidth), (short)(top+nHeight));
-	
-	int caretRgn= OS.NewRgn();
-	OS.RectRgn(caretRgn, bounds);
-	OS.SectRgn(caretRgn, clipRgn, caretRgn);
-	
-	if (!OS.EmptyRgn(caretRgn)) {
-		int[] port= new int[1];
-		OS.GetPort(port);
-		OS.SetPortWindowPort(OS.GetControlOwner(handle));	
-		OS.InvertRgn(caretRgn);
-		OS.SetPort(port[0]);
-	}
-	
-	OS.DisposeRgn(clipRgn);
-	OS.DisposeRgn(caretRgn);
-
+	GC gc= new GC(parent);
+	gc.setXORMode(true);
+	gc.fillRectangle(x, y, nWidth, nHeight);
+	gc.dispose();
 	return true;
 }
 /**
