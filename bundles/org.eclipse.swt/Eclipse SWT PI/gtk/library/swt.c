@@ -6061,3 +6061,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1get
 
 	return (jint)gtk_tree_path_get_depth((GtkTreePath*)arg0);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1clear
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1store_1clear\n")
+
+	gtk_tree_store_clear((GtkTreeStore*)arg0);
+}

@@ -902,6 +902,7 @@ public static final native void    gtk_tree_store_append(int store, int iter, in
 public static final native void    gtk_tree_store_insert(int store, int iter, int parent, int position);
 public static final native int     gtk_tree_store_newv(int numColumns, int[] types);
 public static final native void    gtk_tree_store_remove(int store, int iter); // GTK bug 94717
+public static final native void    gtk_tree_store_clear(int store);
 public static final native int     gtk_tree_view_column_new();
 public static final native void    gtk_tree_view_column_set_title(int tree_column, byte[] title);
 public static final native boolean gtk_tree_view_column_get_resizable(int column);
