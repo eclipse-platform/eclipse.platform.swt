@@ -21,16 +21,7 @@
 /* --------------- callback globals ----------------- */
 
 static JavaVM *jvm = NULL;
-static jfieldID objectID = NULL;
-static jfieldID addressID = NULL;
-static jfieldID methodID = NULL;
-static jfieldID signatureID = NULL;
-static jfieldID isStaticID = NULL;
-static jfieldID isArrayBasedID = NULL;
-static jfieldID argCountID = NULL;
-static jfieldID errorResultID = NULL;
 static CALLBACK_DATA callbackData[MAX_CALLBACKS];
-static int callbackIDsCached = 0;
 static int callbackEnabled = 1;
 static int callbackEntryCount = 0;
 static int initialized = 0;
@@ -161,86 +152,54 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_PTR_1sizeof
 }
 
 JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
-  (JNIEnv *env, jclass that, jobject callback)
+  (JNIEnv *env, jclass that, jobject callback, jobject object, jstring method, jstring signature, jint argCount, jboolean isStatic, jboolean isArrayBased, SWT_PTR errorResult)
 {
 	int i;
-	jclass javaClass;
-   	jobject object, javaMethod, javaSignature;
-   	jboolean isStatic, isArrayBased;
-	jint argCount;
-	SWT_PTR errorResult;
-	jmethodID mid;
-	const char *methodString, *sigString;
-	
+	jmethodID mid = NULL;
+	jclass javaClass = that;
+	const char *methodString = NULL, *sigString = NULL;
 	if (jvm == NULL) (*env)->GetJavaVM(env, &jvm);
-
-	/*
-	* The methodID and fieldID are computed once and will be valid
-	* unless the class is unloaded.
-	*/
-    javaClass = that;
-    if (!callbackIDsCached) {
-        objectID = (*env)->GetFieldID(env, javaClass, "object", "Ljava/lang/Object;");
-        addressID = (*env)->GetFieldID(env, javaClass, "address", SWT_PTR_SIGNATURE);
-        methodID = (*env)->GetFieldID(env, javaClass, "method", "Ljava/lang/String;");
-        signatureID = (*env)->GetFieldID(env, javaClass, "signature", "Ljava/lang/String;");
-        isStaticID = (*env)->GetFieldID(env, javaClass, "isStatic", "Z");
-        isArrayBasedID = (*env)->GetFieldID(env, javaClass, "isArrayBased", "Z");
-        argCountID = (*env)->GetFieldID(env, javaClass, "argCount", "I");
-        errorResultID = (*env)->GetFieldID(env, javaClass, "errorResult", SWT_PTR_SIGNATURE);
-        callbackIDsCached = 1;
-    }
-    object = (*env)->GetObjectField(env, callback, objectID);
-    javaMethod = (*env)->GetObjectField(env, callback, methodID);
-    javaSignature = (*env)->GetObjectField(env, callback, signatureID);
-    isStatic = (*env)->GetBooleanField(env, callback, isStaticID);
-    isArrayBased = (*env)->GetBooleanField(env, callback, isArrayBasedID);
-    argCount = (*env)->GetIntField(env, callback, argCountID);
-    errorResult = (*env)->GetSWT_PTRField(env, callback, errorResultID);
-    methodString = (const char *) (*env)->GetStringUTFChars(env, javaMethod, NULL);
-    sigString = (const char *) (*env)->GetStringUTFChars(env, javaSignature, NULL);
-    if (isStatic) {
-        mid = (*env)->GetStaticMethodID(env, object, methodString, sigString);
-    } else {
-        javaClass = (*env)->GetObjectClass(env, object);    
-        mid = (*env)->GetMethodID(env, javaClass, methodString, sigString);
-    }
-    (*env)->ReleaseStringUTFChars(env, javaMethod, methodString);
-    (*env)->ReleaseStringUTFChars(env, javaSignature, sigString);
-    if (initialized==0) {
-        memset((void *)&callbackData, 0, sizeof(callbackData));
-        initialized = 1;
-    }
+	if (!initialized) {
+		memset(&callbackData, 0, sizeof(callbackData));
+		initialized = 1;
+	}
+	if (method) methodString = (const char *) (*env)->GetStringUTFChars(env, method, NULL);
+	if (signature) sigString = (const char *) (*env)->GetStringUTFChars(env, signature, NULL);
+	if (object && methodString && sigString) {
+		if (isStatic) {
+			mid = (*env)->GetStaticMethodID(env, object, methodString, sigString);
+		} else {
+			javaClass = (*env)->GetObjectClass(env, object);    
+			mid = (*env)->GetMethodID(env, javaClass, methodString, sigString);
+		}
+	}
+	if (method && methodString) (*env)->ReleaseStringUTFChars(env, method, methodString);
+	if (signature && sigString) (*env)->ReleaseStringUTFChars(env, signature, sigString);
+    if (mid == 0) goto fail;
     for (i=0; i<MAX_CALLBACKS; i++) {
         if (!callbackData[i].callback) {
-            callbackData[i].callback = (*env)->NewGlobalRef(env, callback);
-            callbackData[i].methodID = mid;
-            callbackData[i].object = (*env)->NewGlobalRef(env, object);
+            if ((callbackData[i].callback = (*env)->NewGlobalRef(env, callback)) == NULL) goto fail;
+            if ((callbackData[i].object = (*env)->NewGlobalRef(env, object)) == NULL) goto fail;
             callbackData[i].isStatic = isStatic;
             callbackData[i].isArrayBased = isArrayBased;
             callbackData[i].argCount = argCount;
             callbackData[i].errorResult = errorResult;
+            callbackData[i].methodID = mid;
             return (SWT_PTR) fnx_array[argCount][i];
         }
     }
-    fprintf(stderr, "bind fail, no free callback slot ******* \n");
-    return 0; /* this means there was no free callback slot */
+fail:
+    return 0;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
   (JNIEnv *env, jclass that, jobject callback)
 {
-	int i, argCount;
-	SWT_PTR address;
-	if (!callbackIDsCached) return;
-
-    address = (*env)->GetSWT_PTRField(env, callback, addressID);
-    argCount = (*env)->GetIntField(env, callback, argCountID);
-    
-    for (i=0; i<MAX_CALLBACKS; i++) {        
-        if ((SWT_PTR)fnx_array[argCount][i] == address) {
-            (*env)->DeleteGlobalRef(env, callbackData[i].callback);
-            (*env)->DeleteGlobalRef(env, callbackData[i].object);
+	int i;
+    for (i=0; i<MAX_CALLBACKS; i++) {
+        if (callbackData[i].callback != NULL && (*env)->IsSameObject(env, callback, callbackData[i].callback)) {
+            if (callbackData[i].callback != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].callback);
+            if (callbackData[i].object != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].object);
             memset(&callbackData[i], 0, sizeof(CALLBACK_DATA));
         }
     }
@@ -319,21 +278,25 @@ SWT_PTR callback(int index, ...)
 	if (isArrayBased) {
 		int i;
 		SWT_PTRArray argsArray = (*env)->NewSWT_PTRArray(env, argCount);
-		SWT_PTR *elements = (*env)->GetSWT_PTRArrayElements(env, argsArray, NULL);
-		for (i=0; i<argCount; i++) {
-			elements[i] = va_arg(vl, SWT_PTR); 
+		if (argsArray != NULL) {
+			SWT_PTR *elements = (*env)->GetSWT_PTRArrayElements(env, argsArray, NULL);
+			if (elements != NULL) {
+				for (i=0; i<argCount; i++) {
+					elements[i] = va_arg(vl, SWT_PTR); 
+				}
+				(*env)->ReleaseSWT_PTRArrayElements(env, argsArray, elements, 0);
+				if (isStatic) {
+					result = (*env)->CallStaticSWT_PTRMethod(env, object, mid, argsArray);
+				} else {
+					result = (*env)->CallSWT_PTRMethod(env, object, mid, argsArray);
+				}
+			}
+			/*
+			* This function may be called many times before returning to Java,
+			* explicitly delete local references to avoid GP's in certain VMs.
+			*/
+			(*env)->DeleteLocalRef(env, argsArray);
 		}
-		(*env)->ReleaseSWT_PTRArrayElements(env, argsArray, elements, 0);
-		if (isStatic) {
-			result = (*env)->CallStaticSWT_PTRMethod(env, object, mid, argsArray);
-		} else {
-			result = (*env)->CallSWT_PTRMethod(env, object, mid, argsArray);
-		}
-		/*
-		* This function may be called many times before returning to Java,
-		* explicitly delete local references to avoid GP's in certain VMs.
-		*/
-		(*env)->DeleteLocalRef(env, argsArray);
 	} else {
 		if (isStatic) {
 			result = (*env)->CallStaticSWT_PTRMethodV(env, object, mid, vl);

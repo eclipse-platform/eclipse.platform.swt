@@ -120,7 +120,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	}
 	
 	/* Bind the address */
-	address = bind (this);
+	address = bind (this, object, method, signature, argCount, isStatic, isArrayBased, errorResult);
 }
 
 static final native int PTR_sizeof ();
@@ -131,8 +131,15 @@ static final native int PTR_sizeof ();
  * constructor for the argument.
  *
  * @param callback the callback to bind
+ * @param object the callback's object
+ * @param method the callback's method
+ * @param signature the callback's method signature
+ * @param argCount the callback's method argument count
+ * @param isStatic whether the callback's method is static
+ * @param isArrayBased whether the callback's method is array based
+ * @param errorResult the callback's error result
  */
-static native synchronized int /*long*/ bind (Callback callback);
+static native synchronized int /*long*/ bind (Callback callback, Object object, String method, String signature, int argCount, boolean isStatic, boolean isArrayBased, int /*long*/ errorResult);
 
 /**
  * Releases the native level resources associated with the callback,
