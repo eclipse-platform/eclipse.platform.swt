@@ -198,6 +198,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 				OS.UnionRect(srcRect, destRect, rect);
 				OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
 				OS.SetClip(oldClip);
+				OS.DisposeRgn(oldClip);
 				OS.SetPort(currentPort[0]);
 			} else {
 				int portBitMap = OS.GetPortBitMapForCopyBits (port);
