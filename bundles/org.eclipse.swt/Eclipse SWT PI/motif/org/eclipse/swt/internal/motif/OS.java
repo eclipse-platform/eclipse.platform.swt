@@ -394,10 +394,11 @@ public class OS {
 	public static final int XC_xterm = 152;
 	public static final int XK_Alt_L = 0xFFE9;
 	public static final int XK_Alt_R = 0xFFEA;
+	public static final int XK_BackSpace = 0xFF08;
 	public static final int XK_Cancel = 0xFF69;
 	public static final int XK_Control_L = 0xFFE3;
 	public static final int XK_Control_R = 0xFFE4;
-//	public static final int XK_Delete = 0xFFFF;
+	public static final int XK_Delete = 0xFFFF;
 	public static final int XK_Down = 0xFF54;
 	public static final int XK_End = 0xFF57;
 	public static final int XK_Escape = 0xFF1B;
@@ -433,6 +434,7 @@ public class OS {
 //	public static final int XK_KP_Multiply = 0xFFAA;
 //	public static final int XK_KP_Subtract = 0xFFAD;
 	public static final int XK_Left = 0xFF51;
+	public static final int XK_Linefeed = 0xFF0A;
 	public static final int XK_Page_Down = 0xFF56;
 	public static final int XK_Page_Up = 0xFF55;
 	public static final int XK_Right = 0xFF53;
