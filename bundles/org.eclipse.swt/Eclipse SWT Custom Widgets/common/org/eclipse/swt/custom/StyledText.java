@@ -1198,9 +1198,12 @@ public class StyledText extends Canvas {
 	public void calculate(int startLine, int lineCount) {
 		GC gc = null;
 		int caretWidth = 0;
-		int stopLine = startLine + lineCount;
+		int endLine = startLine + lineCount;
 			
-		for (int i = startLine; i < stopLine; i++) {
+		if (startLine < 0 || endLine > lineWidth.length) {
+			return;
+		}
+		for (int i = startLine; i < endLine; i++) {
 			if (lineWidth[i] == -1) {
 				String line = content.getLine(i);
 				int lineOffset = content.getOffsetAtLine(i);
@@ -1910,10 +1913,8 @@ public void append(String string) {
  * Calculates the width of the widest visible line.
  */
 void calculateContentWidth() {
-	if (lineHeight != 0) {
-	    lineCache = getLineCache(content);
-		lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
-	}
+    lineCache = getLineCache(content);
+	lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
 }
 /**
  * Calculates the scroll bars
