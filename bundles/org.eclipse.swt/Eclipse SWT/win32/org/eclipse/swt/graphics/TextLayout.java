@@ -226,7 +226,7 @@ void computeRuns (GC gc) {
 				}
 			}
 		} 
-		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth) {
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab) {
 			int start = 0;
 			int[] piDx = new int[run.length];
 			OS.ScriptGetLogicalWidths(run.analysis, run.length, run.glyphCount, run.advances, run.clusters, run.visAttrs, piDx);
@@ -249,13 +249,13 @@ void computeRuns (GC gc) {
 				*  after a letter with an accent. This cause a break line to be set in the middle of a word.
 				*  The fix is to detect the case and ignore fSoftBreak forcing the algorithm keep searching.
 				*/
-				if (start == 0 && i != lineStart) {
+				if (start == 0 && i != lineStart && !run.tab) {
 					if (logAttr.fSoftBreak && !logAttr.fWhiteSpace) {
 						OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 						int langID = properties.langid;
 						StyleItem pRun = allRuns[i - 1];
 						OS.MoveMemory(properties, scripts[pRun.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-						if (properties.langid == langID) {
+						if (properties.langid == langID || langID == OS.LANG_NEUTRAL || properties.langid == OS.LANG_NEUTRAL) {
 							breakRun(pRun);
 							OS.MoveMemory(logAttr, pRun.psla + ((pRun.length - 1) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
 							if (!logAttr.fWhiteSpace) start = -1;
@@ -266,7 +266,7 @@ void computeRuns (GC gc) {
 				run = allRuns[--i];
 				start = run.length - 1;
 			}
-			if (start == 0 && i != lineStart) {
+			if (start == 0 && i != lineStart && !run.tab) {
 				run = allRuns[--i];
 			} else 	if (start <= 0 && i == lineStart) {
 				i = firstIndice;
@@ -932,7 +932,7 @@ public int getNextOffset (int offset, int movement) {
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
-			previousWhitespace = logAttr.fWhiteSpace;
+			previousWhitespace = run.tab ? true : logAttr.fWhiteSpace;
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			lastLangID = properties.langid;
 			break;
@@ -950,6 +950,7 @@ public int getNextOffset (int offset, int movement) {
 	for (; i < allRuns.length && offset < length; i++) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
+			if (run.tab) return untranslateOffset(offset);
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(offset);
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
@@ -1129,7 +1130,7 @@ public int getPreviousOffset (int offset, int movement) {
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
-			previousWhitespace = logAttr.fWhiteSpace;
+			previousWhitespace = run.tab ? true : logAttr.fWhiteSpace;
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			lastLangID = properties.langid;
 			break;
@@ -1158,6 +1159,7 @@ public int getPreviousOffset (int offset, int movement) {
 						if (properties.fNeedsWordBreaking) {
 							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
+							if (run.tab) logAttr.fWhiteSpace = true;
 							if (logAttr.fWhiteSpace && !previousWhitespace) return untranslateOffset(offset + 1);
 						}
 					}
@@ -1173,6 +1175,7 @@ public int getPreviousOffset (int offset, int movement) {
 					}
 				}
 			}
+			if (run.tab) return untranslateOffset(run.start);
 		}
 	}
 	return 0;
