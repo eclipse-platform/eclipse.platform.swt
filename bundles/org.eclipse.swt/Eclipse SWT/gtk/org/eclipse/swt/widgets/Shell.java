@@ -189,8 +189,10 @@ Shell (Display display, Shell parent, int style) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-	this.display = display;
 	this.style = checkStyle (style);
+	this.parent = parent;
+	this.display = display;
+	this.handle = handle;
 	createWidget (0);
 }
 /**
@@ -317,6 +319,8 @@ void createHandle (int index) {
 	state |= HANDLE;
 	shellHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (parent!=null) OS.gtk_window_set_transient_for(shellHandle, ((Shell)parent).shellHandle);
+	
 	vboxHandle = OS.gtk_vbox_new(false,0);
 	if (vboxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	eventBoxHandle = OS.gtk_event_box_new ();
@@ -370,6 +374,12 @@ void register () {
 }
 
 private void _setStyle() {
+	boolean modal = (
+	   ((style&SWT.PRIMARY_MODAL)     != 0) ||
+	   ((style&SWT.APPLICATION_MODAL) != 0) ||
+	   ((style&SWT.SYSTEM_MODAL)      != 0));
+	OS.gtk_window_set_modal(shellHandle, modal);
+	
 	int decorations = 0;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
@@ -549,15 +559,6 @@ public Shell [] getShells () {
 		}
 	}
 	return result;
-}
-
-boolean isModal () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	GtkWindow window = new GtkWindow ();
-//	OS.memmove (window, handle, GtkWindow.sizeof);
-//	return window.modal != 0;
-	return false;
 }
 
 public void layout (boolean changed) {
