@@ -4,7 +4,7 @@
 # All Rights Reserved.
 
 maj_ver=2
-min_ver=8
+min_ver=9
 revision=0
 
 #assumes IVE_HOME is set in the environment
