@@ -147,7 +147,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
-			int /*long*/ [] buffer = new int /*long*/ [1];
+			int [] buffer = new int [1];
 			GtkBorder border = new GtkBorder ();
 			OS.gtk_widget_style_get (handle, OS.default_border, buffer, 0);
 			if (buffer[0] != 0) {
