@@ -4417,11 +4417,6 @@ void setCaretLocation() {
 	int lineX = getXAtOffset(content.getLine(line), line, caretOffset - lineStartOffset);
 	int lineHeight = getLineHeight();
 	
-	// workaround for 1G3AKJO exposed by Leapfrog 
-	// causes flashing but works
-	if (caret.isVisible() == false) {
-		setRedraw(true);
-	}
 	caret.setLocation(lineX, line * lineHeight - verticalScrollOffset);
 }
 /**
