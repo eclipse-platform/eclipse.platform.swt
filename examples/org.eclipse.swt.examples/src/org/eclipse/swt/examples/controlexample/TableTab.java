@@ -227,10 +227,7 @@ class TableTab extends ScrollableTab {
 					break;
 			}
 		}
-		for (int i = 0; i < columnTitles.length; i++) {
-			TableColumn tableColumn = table1.getColumn(i);
-			tableColumn.pack();
-		}
+		packColumns();
 	}
 	
 	/**
