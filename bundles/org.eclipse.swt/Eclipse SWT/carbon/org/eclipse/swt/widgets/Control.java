@@ -1130,7 +1130,7 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-			redrawWidget (topHandle ());
+			redrawWidget (handle, true);
 		}
 	} else {
 		drawCount++;

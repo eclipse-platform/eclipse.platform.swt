@@ -648,15 +648,22 @@ void postEvent (int eventType, Event event) {
 }
 
 void redrawWidget (int control) {
+	redrawWidget (control, false);
+}
+
+void redrawWidget (int control, boolean children) {
 	if (getDrawCount () > 0) return;
 	if (!OS.IsControlVisible (control)) return;
-	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
 	int window = OS.GetControlOwner (control);
-	int visibleRgn = getVisibleRegion (control);
-	OS.InvalWindowRgn (window, visibleRgn);
-	OS.DisposeRgn (visibleRgn);
-//	OS.InvalWindowRect (window, rect);
+	if (children) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		OS.InvalWindowRect (window, rect);
+	} else {
+		int visibleRgn = getVisibleRegion (control);
+		OS.InvalWindowRgn (window, visibleRgn);
+		OS.DisposeRgn (visibleRgn);
+	}
 }
 
 void register () {
