@@ -149,10 +149,17 @@ public int open () {
 	if ((style & SWT.ICON_WARNING) != 0) iconBits = OS.MB_ICONWARNING;
 	if ((style & SWT.ICON_WORKING) != 0) iconBits = OS.MB_ICONINFORMATION;
 
+	/* Only MB_APPLMODAL is supported on WinCE */
 	int modalBits = 0;
-	if ((style & SWT.PRIMARY_MODAL) != 0) modalBits = OS.MB_APPLMODAL;
-	if ((style & SWT.APPLICATION_MODAL) != 0) modalBits = OS.IsWinCE ? OS.MB_APPLMODAL : OS.MB_TASKMODAL;
-	if ((style & SWT.SYSTEM_MODAL) != 0) modalBits = OS.IsWinCE ? OS.MB_APPLMODAL : OS.MB_SYSTEMMODAL;
+	if (OS.IsWinCE) {
+		if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+			modalBits = OS.MB_APPLMODAL;
+		}
+	} else {
+		if ((style & SWT.PRIMARY_MODAL) != 0) modalBits = OS.MB_APPLMODAL;
+		if ((style & SWT.APPLICATION_MODAL) != 0) modalBits = OS.MB_TASKMODAL;
+		if ((style & SWT.SYSTEM_MODAL) != 0) modalBits = OS.MB_SYSTEMMODAL;
+	}
 
 	int bits = buttonBits | iconBits | modalBits;
 	
