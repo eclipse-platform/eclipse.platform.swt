@@ -391,6 +391,7 @@ public class OS {
 	public static final int XK_F9 = 0xFFC6;
 	public static final int XK_Home = 0xFF50;
 	public static final int XK_Insert = 0xFF63;
+	public static final int XK_ISO_Left_Tab = 0xFE20;
 //	public static final int XK_KP_0 = 0xFFB0;
 //	public static final int XK_KP_1 = 0xFFB1;
 //	public static final int XK_KP_2 = 0xFFB2;
