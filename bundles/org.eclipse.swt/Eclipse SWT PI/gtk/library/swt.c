@@ -2957,6 +2957,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1shell_1in
 	gtk_menu_shell_insert((GtkMenuShell *)arg0, (GtkWidget *)arg1, (gint)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1shell_1select_1item
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1menu_1shell_1select_1item\n")
+
+	gtk_menu_shell_select_item((GtkMenuShell *)arg0, (GtkWidget *)arg1);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1message_1dialog_1new
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
 {
