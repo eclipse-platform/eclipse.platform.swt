@@ -1188,14 +1188,38 @@ public ImageData getImageData() {
 			PaletteData palette = null;
 			if (isDib) {
 				if (depth <= 8) {
-					byte[] colors = new byte[numColors * 4];
-					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-					OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
 					RGB[] rgbs = new RGB[numColors];
-					int colorIndex = 0;
-					for (int i = 0; i < rgbs.length; i++) {
-						rgbs[i] = new RGB(colors[colorIndex + 2] & 0xFF, colors[colorIndex + 1] & 0xFF, colors[colorIndex] & 0xFF);
-						colorIndex += 4;
+					if (OS.IsWinCE) {
+						/* 
+						* Feature on WinCE.  GetDIBColorTable is not supported.
+						* The workaround is to set a pixel to the desired
+						* palette index and use getPixel to get the corresponding
+						* RGB value.
+						*/
+						int red = 0, green = 0, blue = 0;
+						byte[] pBits = new byte[1];
+						OS.MoveMemory(pBits, bm.bmBits, 1);
+						byte oldValue = pBits[0];			
+						int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
+						for (int i = 0; i < numColors; i++) {
+							pBits[0] = (byte)((i << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
+							OS.MoveMemory(bm.bmBits, pBits, 1);
+							int color = OS.GetPixel(hBitmapDC, 0, 0);
+							blue = (color & 0xFF0000) >> 16;
+							green = (color & 0xFF00) >> 8;
+							red = color & 0xFF;
+							rgbs[i] = new RGB(red, green, blue);
+						}
+		       			pBits[0] = oldValue;
+			       		OS.MoveMemory(bm.bmBits, pBits, 1);				
+					} else {
+						byte[] colors = new byte[numColors * 4];
+						OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
+						int colorIndex = 0;
+						for (int i = 0; i < rgbs.length; i++) {
+							rgbs[i] = new RGB(colors[colorIndex + 2] & 0xFF, colors[colorIndex + 1] & 0xFF, colors[colorIndex] & 0xFF);
+							colorIndex += 4;
+						}
 					}
 					palette = new PaletteData(rgbs);
 				} else if (depth == 16) {
