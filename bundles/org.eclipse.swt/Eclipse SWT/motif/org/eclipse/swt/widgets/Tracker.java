@@ -674,11 +674,11 @@ public boolean open () {
 					}
 				}
 				break;
+			case OS.ButtonPress:
+			case OS.KeyRelease:
 			case OS.EnterNotify:
 			case OS.LeaveNotify:
-				/*
-				 * Do not dispatch these
-				 */
+				/* Do not dispatch these */
 				break;
 			default:
 				OS.XtDispatchEvent (xEvent);

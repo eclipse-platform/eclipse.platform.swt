@@ -362,8 +362,7 @@ public boolean open () {
 		if (parent != null && parent.isDisposed ()) break;
 		int /*long*/ eventPtr;
 		while (true) {
-			eventPtr = display.removeGdkEvent ();
-			if (eventPtr == 0) eventPtr = OS.gdk_event_get ();
+			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
 			} else {
@@ -612,7 +611,16 @@ public boolean open () {
 					}
 				}
 				break;
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS:
+			case OS.GDK_3BUTTON_PRESS:
+			case OS.GDK_KEY_RELEASE:
+			case OS.GDK_ENTER_NOTIFY:
+			case OS.GDK_LEAVE_NOTIFY:
+				/* Do not dispatch these */
+				break;
 			default:
+				OS.gtk_main_do_event (eventPtr);
 		}
 		OS.gdk_event_free (eventPtr);
 	}
