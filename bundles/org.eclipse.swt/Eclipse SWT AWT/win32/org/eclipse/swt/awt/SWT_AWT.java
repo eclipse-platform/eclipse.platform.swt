@@ -35,6 +35,11 @@ import java.awt.event.FocusEvent;
 public class SWT_AWT {
 
 static boolean loaded;
+static final boolean JDK1_3;
+
+static {
+	JDK1_3 = "1.3".equals(System.getProperty("java.specification.version"));
+}
 
 static native final int getAWTHandle (Canvas canvas);
 
@@ -77,29 +82,41 @@ public static Frame new_Frame (final Composite parent) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	final Frame frame = (Frame) value;
-	/* Needed to fix focus for lightweights in JDK 1.3.1 */
-	if ("1.3".equals(System.getProperty("java.specification.version"))) {
-		parent.addListener (SWT.Activate, new Listener () {
-			public void handleEvent (Event e) {
-				EventQueue.invokeLater(new Runnable () {
-					public void run () {
+	
+	/*
+	* Generate the appropriate events to activate and deactivate
+	* the embedded frame. This is needed in order to make keyboard
+	* focus work properly for lightweights.
+	*/
+	parent.addListener (SWT.Activate, new Listener () {
+		public void handleEvent (Event e) {
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					if (JDK1_3) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+					} else {
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
 					}
-				});
-			}
-		});
-		parent.addListener (SWT.Deactivate, new Listener () {
-			public void handleEvent (Event e) {
-				EventQueue.invokeLater(new Runnable () {
-					public void run () {
+				}
+			});
+		}
+	});
+	parent.addListener (SWT.Deactivate, new Listener () {
+		public void handleEvent (Event e) {
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					if (JDK1_3) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+					} else {
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 					}
-				});
-			}
-		});
-	}
+				}
+			});
+		}
+	});
+
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
@@ -112,7 +129,11 @@ public static Frame new_Frame (final Composite parent) {
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
-			frame.dispose ();
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.dispose ();
+				}
+			});
 		}
 	});
 	return frame;
