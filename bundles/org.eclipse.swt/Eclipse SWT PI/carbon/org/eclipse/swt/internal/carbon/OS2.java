@@ -76,48 +76,28 @@ public static void RGBForeColor(short red, short green, short blue) {
 	OS.RGBForeColor(color);
 }
 
-////////////////
+//////////////////////////////////////////
+//  added by AW while merging HIView stuff
 
-	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
-	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
-	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
-	public static final int typeQDRgnHandle= ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
-	public static final int kNavCBNewLocation = 5;
-	public static final int kNavSupportPackages = 0x00001000;
-	public static final int kNavAllowOpenPackages = 0x00002000;
-	public static final int kNavAllowInvisibleFiles = 0x00000100;
+public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
+public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+public static final int typeQDRgnHandle= ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
+public static final int kNavCBNewLocation = 5;
+public static final int kNavSupportPackages = 0x00001000;
+public static final int kNavAllowOpenPackages = 0x00002000;
+public static final int kNavAllowInvisibleFiles = 0x00000100;
 
-	public static native int HIViewSetBoundsOrigin(int inView, float x, float y);
-	public static native int HIViewGetPartHit(int inView, float[] where, short[] outPart);
-	public static native int HIViewGetSubviewHit(int inView, float[] inPoint, boolean inDeep, int[] outView);
+public static native void CGContextBeginPath(int inContext);
+public static native void CGContextAddArc(int inContext, float x, float y, float radius,
+				float startAngle, float endAngle, int clockwise);
+public static native void CGContextClosePath(int inContext);
+public static native void CGContextStrokePath(int inContext);
 
-	public static native void CGContextBeginPath(int inContext);
-	public static native void CGContextAddArc(int inContext, float x, float y, float radius,
-					float startAngle, float endAngle, int clockwise);
-	public static native void CGContextClosePath(int inContext);
-	public static native void CGContextStrokePath(int inContext);
-	public static native void CGContextFillPath(int inContext);
+public static native void CGContextFillPath(int inContext);
 
-/*
-	public static native int QDBeginCGContext(int inPort, int[] outContext);
-	public static native int QDEndCGContext(int inPort, int[] inoutContext);
-	public static native int SyncCGContextOriginWithPort(int inContext, int port);
-	
-	public static native void CGContextSaveGState(int inContext);
-	public static native void CGContextRestoreGState(int inContext);
-	
-	public static native void CGContextStrokeRect(int inContext, float x, float y, float w, float h);
-	public static native void CGContextFillRect(int inContext, float x, float y, float w, float h);
-	
-	public static native void CGContextScaleCTM(int inContext, float sx, float sy);
-	public static native void CGContextTranslateCTM(int inContext, float tx, float ty);
-	
-	public static native void CGContextClipToRect(int inContext, float x, float y, float w, float h);
-	public static native int ClipCGContextToRegion(int inContext, short[] portRect, int rgnHandle);
+public static native int HIViewSetBoundsOrigin(int inView, float x, float y);
+public static native int HIViewGetPartHit(int inView, float[] where, short[] outPart);
+public static native int HIViewGetSubviewHit(int inView, float[] inPoint, boolean inDeep, int[] outView);
 
-	public static native void CGContextMoveToPoint(int inContext, float x, float y);
-	
-	public static native void CGContextShowGlyphsAtPoint(int inContext, float x, float y, char[] glyphs);
-	public static native void CGContextShowTextAtPoint(int inContext, float x, float y, byte[] chars);
-*/
 }
