@@ -1781,6 +1781,29 @@ int gtk_leave_notify_event (int widget, int event) {
 	return 0;
 }
 
+int gtk_mnemonic_activate (int widget, int arg1) {
+	int result = 0;
+	int eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
+		if (keyEvent.type == OS.GDK_KEY_PRESS) {
+			Event event = new Event ();
+			event.detail = SWT.TRAVERSE_MNEMONIC;
+			setKeyState (event, keyEvent);
+			sendEvent(SWT.Traverse, event);
+			if (!event.doit) {
+				Shell shell = _getShell ();
+				int focusWidget = OS.gtk_window_get_focus (shell.shellHandle);
+				OS.gtk_widget_event (focusWidget, eventPtr);
+			}
+			result = event.doit ? 0 : 1;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	return result;
+}
+
 int gtk_motion_notify_event (int widget, int event) {
 	if (hooks (SWT.DragDetect)) {
 		if (!display.dragging) {

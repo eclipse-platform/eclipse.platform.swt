@@ -269,6 +269,8 @@ public String getText () {
 }
 
 int gtk_mnemonic_activate (int widget, int arg1) {
+	int result = super.gtk_mnemonic_activate (widget, arg1);
+	if (result == 1) return 1;
 	Composite control = this.parent;
 	while (control != null) {
 		Control [] children = control._getChildren ();

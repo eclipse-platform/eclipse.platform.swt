@@ -390,8 +390,9 @@ int gtk_key_press_event (int widget, int event) {
 }
 
 int gtk_mnemonic_activate (int widget, int arg1) {
-	setFocus();
-	return 0;
+	int result = super.gtk_mnemonic_activate (widget, arg1);
+	if (result == 0) setFocus ();
+	return result;
 }
 
 void hookEvents () {

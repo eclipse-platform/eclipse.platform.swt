@@ -815,6 +815,7 @@ public static final synchronized native void gtk_widget_add_events(int widget, i
 public static final synchronized native int gtk_widget_create_pango_layout(int widget, byte[] text);
 public static final synchronized native int gtk_widget_create_pango_layout(int widget, int text);
 public static final synchronized native void gtk_widget_destroy(int widget);
+public static final synchronized native boolean gtk_widget_event(int widget, int event);
 public static final synchronized native int gtk_widget_get_default_direction();
 public static final synchronized native int gtk_widget_get_default_style();
 public static final synchronized native int gtk_widget_get_direction(int widget);

@@ -5933,6 +5933,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1destroy)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1event
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1widget_1event)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1widget_1event\n")
+	rc = (jboolean)gtk_widget_event((GtkWidget *)arg0, (GdkEvent *)arg1);
+	NATIVE_EXIT(env, that, "gtk_1widget_1event\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1default_1direction
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1get_1default_1direction)
 	(JNIEnv *env, jclass that)
