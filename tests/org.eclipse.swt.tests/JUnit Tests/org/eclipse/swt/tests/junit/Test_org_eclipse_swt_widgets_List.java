@@ -1459,11 +1459,8 @@ public void test_selectII() {
 	selectII_helper(items, 2, 4, new int[] { 2, 3, 4 });
 	selectII_helper(items, 0, 3, new int[] { 0, 1, 2, 3 });
 	selectII_helper(items, 1, 1, new int[] { 1 });
-
-	if (fCheckSWTPolicy == true) {
-		selectII_helper(items, -1, 30, new int[] { 0, 1, 2, 3, 4 });
-		selectII_helper(items, -1, 3, new int[] { 0, 1, 2, 3 });
-	}
+	selectII_helper(items, -1, 30, new int[] { 0, 1, 2, 3, 4 });
+	selectII_helper(items, -1, 3, new int[] { 0, 1, 2, 3 });
 
 	list.select(0);
 	assertEquals(list.getSelectionIndices(), new int[] { 0 });
@@ -1490,6 +1487,15 @@ public void test_selectII() {
 
 	
 	setSingleList();
+	list.select(0, 0);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
+	list.select(0, 1);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
+	list.select(-1, 0);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
 	list.setItems(items);
 	list.select(0);
 	assertEquals(list.getSelectionIndices(), new int[] { 0 });
