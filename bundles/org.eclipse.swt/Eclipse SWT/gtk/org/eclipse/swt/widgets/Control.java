@@ -2644,7 +2644,13 @@ public void setVisible (boolean visible) {
 	int /*long*/ topHandle = topHandle();
 	if ((OS.GTK_WIDGET_VISIBLE (topHandle) == visible)) return;
 	if (visible) {
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the show
+		* event.  If this happens, just return.
+		*/
 		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
 		OS.gtk_widget_show (topHandle);
 	} else {
 		/*
