@@ -76,7 +76,10 @@ public class DND {
 	public static final int FEEDBACK_NONE = 0;
 	public static final int FEEDBACK_SELECT = 1;
 	public static final int FEEDBACK_INSERT_BEFORE = 2;
-	public static final int FEEDBACK_INSERT_AFTER = 3;
+	public static final int FEEDBACK_INSERT_AFTER = 4;
+	public static final int FEEDBACK_SCROLL = 8;
+	public static final int FEEDBACK_EXPAND = 16;
+	
 
 	/**
 	 * Error code for SWTError - drag source can not be initialized
