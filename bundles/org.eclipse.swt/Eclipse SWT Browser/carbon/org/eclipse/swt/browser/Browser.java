@@ -921,10 +921,17 @@ public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
-	int length = url.length();
-	char[] buffer = new char[length];
-	url.getChars(0, length, buffer, 0);
-	int sHandle = OS.CFStringCreateWithCharacters(0, buffer, length);
+	StringBuffer buffer = new StringBuffer();
+	for (int i = 0; i < url.length(); i++) {
+		char c = url.charAt(i);
+		if (c == ' ') buffer.append("%20");
+		else buffer.append(c);
+	}
+	
+	int length = buffer.length();
+	char[] chars = new char[length];
+	buffer.getChars(0, length, chars, 0);
+	int sHandle = OS.CFStringCreateWithCharacters(0, chars, length);
 
 	/*
 	* Note.  URLWithString uses autorelease.  The resulting URL
