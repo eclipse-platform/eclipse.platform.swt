@@ -1356,7 +1356,7 @@ void runGrabs () {
 				int chord = OS.GetCurrentEventButtonState ();
 				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
 				//TEMPORARY CODE
-				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update ();
+				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
 			}
 		}
 	} finally {
