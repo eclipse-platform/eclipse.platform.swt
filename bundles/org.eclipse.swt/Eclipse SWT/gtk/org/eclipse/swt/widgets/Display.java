@@ -2523,6 +2523,10 @@ void releaseDisplay () {
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
 	COLOR_INFO_BACKGROUND = null;
 	
+	max_priority = timeout = null;
+	if (fds != 0) OS.g_free (fds);
+	fds = 0;
+
 	/* Dispose the event callback */
 	OS.gdk_event_handler_set (0, 0, 0);
 	eventCallback.dispose ();  eventCallback = null;
