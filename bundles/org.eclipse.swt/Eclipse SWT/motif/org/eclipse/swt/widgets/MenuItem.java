@@ -366,7 +366,7 @@ public boolean getSelection () {
 }
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int windowProc = parent.getShell ().getDisplay ().windowProc;
+	int windowProc = getDisplay ().windowProc;
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
 	if ((style & SWT.CASCADE) != 0) {
 		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Arm);
