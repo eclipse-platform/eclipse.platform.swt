@@ -733,8 +733,19 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	frameInfo.cb = OLEINPLACEFRAMEINFO.sizeof;
 	frameInfo.fMDIApp = 0;
 	frameInfo.hwndFrame = frame.handle;
-	//frameInfo.cAccelEntries = ??;
-	//frameInfo.hAccel = ??;
+	Menu menubar = frame.getMenubar();
+	if (menubar != null && !menubar.isDisposed()) {
+		Shell shell = menubar.getShell();
+		int hwnd = shell.handle;
+		int cAccel = OS.SendMessage (hwnd, OS.WM_APP, 0, 0);
+		if (cAccel != 0) {
+			int hAccel = OS.SendMessage (hwnd, OS.WM_APP+1, 0, 0);
+			if (hAccel != 0) {
+				frameInfo.cAccelEntries = cAccel;
+				frameInfo.haccel = hAccel;
+			}
+		}
+	}
 	COM.MoveMemory(lpFrameInfo, frameInfo, OLEINPLACEFRAMEINFO.sizeof);
 	
 	return COM.S_OK;
