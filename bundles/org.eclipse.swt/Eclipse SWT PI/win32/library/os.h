@@ -58,6 +58,7 @@
 #define NO_CHOOSEFONT
 #define NO_COMBOBOXINFO
 #define NO_DOCINFO
+#define NO_EXTLOGPEN
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
 #define NO_GUITHREADINFO
@@ -170,6 +171,7 @@
 #define NO_EnumSystemLocalesA
 #define NO_ExpandEnvironmentStringsW
 #define NO_ExpandEnvironmentStringsA
+#define NO_ExtCreatePen
 #define NO_ExtTextOutA
 #define NO_ExtractIconExA
 #define NO_FindWindowA
@@ -209,6 +211,8 @@
 #define NO_GetModuleHandleA
 #define NO_GetMonitorInfoA
 #define NO_GetMonitorInfoW
+#define NO_GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2
+#define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2

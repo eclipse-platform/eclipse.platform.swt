@@ -1703,6 +1703,25 @@ failTag:
 }
 #endif
 
+#ifndef NO_ExtCreatePen
+JNIEXPORT jint JNICALL OS_NATIVE(ExtCreatePen)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jintArray arg4)
+{
+	LOGBRUSH _arg2, *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ExtCreatePen_FUNC);
+	if (arg2) if ((lparg2 = getLOGBRUSHFields(env, arg2, &_arg2)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	rc = (jint)ExtCreatePen(arg0, arg1, (CONST LOGBRUSH *)lparg2, arg3, (CONST DWORD *)lparg4);
+failTag:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg2 && lparg2) setLOGBRUSHFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, ExtCreatePen_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ExtTextOutA
 JNIEXPORT jboolean JNICALL OS_NATIVE(ExtTextOutA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jbyteArray arg5, jint arg6, jintArray arg7)
@@ -3118,6 +3137,22 @@ failTag:
 }
 #endif
 
+#ifndef NO_GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2
+JNIEXPORT jint JNICALL OS_NATIVE(GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	EXTLOGPEN _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC);
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto failTag;
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+failTag:
+	if (arg2 && lparg2) setEXTLOGPENFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2
 JNIEXPORT jint JNICALL OS_NATIVE(GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -3194,6 +3229,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetObjectW__IILorg_eclipse_swt_internal_win32_D
 failTag:
 	if (arg2 && lparg2) setDIBSECTIONFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2
+JNIEXPORT jint JNICALL OS_NATIVE(GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	EXTLOGPEN _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC);
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto failTag;
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
+failTag:
+	if (arg2 && lparg2) setEXTLOGPENFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC);
 	return rc;
 }
 #endif

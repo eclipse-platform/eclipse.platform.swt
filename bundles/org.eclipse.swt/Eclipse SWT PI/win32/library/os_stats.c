@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 586;
-int OS_nativeFunctionCallCount[586];
+int OS_nativeFunctionCount = 589;
+int OS_nativeFunctionCallCount[589];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -129,6 +129,7 @@ char * OS_nativeFunctionNames[] = {
 	"EqualRgn", 
 	"ExpandEnvironmentStringsA", 
 	"ExpandEnvironmentStringsW", 
+	"ExtCreatePen", 
 	"ExtTextOutA", 
 	"ExtTextOutW", 
 	"ExtractIconExA", 
@@ -209,11 +210,13 @@ char * OS_nativeFunctionNames[] = {
 	"GetNearestPaletteIndex", 
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2", 
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2", 
+	"GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2", 
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2", 
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2", 
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2", 
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2", 
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2", 
+	"GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2", 
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2", 
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONTW_2", 
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2", 
