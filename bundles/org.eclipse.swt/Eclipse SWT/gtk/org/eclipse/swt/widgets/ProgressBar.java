@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.gtk.*;
  * </p>
  */
 public class ProgressBar extends Control {
-	int timerId, min = 0, max = 100, value = 0;
+	int timerId, minimum = 0, maximum = 100, selection = 0;
 	static final int DELAY = 100;
 
 /**
@@ -101,7 +101,7 @@ void createHandle (int index) {
  */
 public int getMaximum () {
 	checkWidget ();
-	return max;
+	return maximum;
 }
 
 /**
@@ -116,7 +116,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return min;
+	return minimum;
 }
 
 /**
@@ -131,7 +131,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget ();
-	return value;
+	return selection;
 }
 
 void releaseWidget () {
@@ -152,12 +152,12 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMaximum (int maximum) {
+public void setMaximum (int value) {
 	checkWidget ();
-	if (maximum <= min) return;
-	max = maximum;
-	if (value > maximum) value = maximum;
-	updateBar (value, min, max);
+	if (value <= minimum) return;
+	maximum = value;
+	selection = Math.min (selection, maximum);
+	updateBar (selection, minimum, maximum);
 }
 
 /**
@@ -172,12 +172,12 @@ public void setMaximum (int maximum) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMinimum (int minimum) {
+public void setMinimum (int value) {
 	checkWidget ();
-	if (minimum < 0 || minimum >= max) return;
-	if (value < minimum) value = minimum;
-	min = minimum;
-	updateBar (value, min, max);
+	if (value < 0 || value >= maximum) return;
+	minimum = value;
+	selection = Math.max (selection, minimum);
+	updateBar (selection, minimum, maximum);
 }
 
 /**
@@ -192,12 +192,10 @@ public void setMinimum (int minimum) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSelection (int x) {
+public void setSelection (int value) {
 	checkWidget ();
-	if (x < min) x = min;
-	if (x > max) x = max;
-	value = x;
-	updateBar (value, min, max);
+	selection = Math.max (minimum, Math.min (maximum, value));
+	updateBar (selection, minimum, maximum);
 }
 
 int timerProc (int widget) {

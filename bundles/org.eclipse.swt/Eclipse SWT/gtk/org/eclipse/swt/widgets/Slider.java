@@ -377,11 +377,11 @@ public void setMaximum (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	if (value <= adjustment.lower) return;
 	adjustment.upper = (double) value;
+	adjustment.value = Math.min (adjustment.value, value - adjustment.page_size);
 	OS.memmove (hAdjustment, adjustment);
 	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (value < getSelection() + getThumb()) setSelection (value - getThumb());
 }
 
 /**
@@ -404,11 +404,11 @@ public void setMinimum (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	if (value >= adjustment.upper) return;
 	adjustment.lower = (double) value;
+	adjustment.value = Math.max (adjustment.value, value);
 	OS.memmove (hAdjustment, adjustment);
 	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (value > getSelection()) setSelection (value);
 }
 
 /**
