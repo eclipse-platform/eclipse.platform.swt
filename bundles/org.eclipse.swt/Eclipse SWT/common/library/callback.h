@@ -44,7 +44,12 @@ int callback(int index, ...);
 #define RETURN_CAST
 #endif
 
+#ifdef REDUCED_CALLBACKS
+#define MAX_CALLBACKS 16
+#else
 #define MAX_CALLBACKS 128
+#endif /* REDUCED_CALLBACKS */
+
 #define MAX_ARGS 12
 
 typedef struct SWT_CALLBACKINFO {
