@@ -37,9 +37,15 @@ public abstract class Device implements Drawable {
 	
 	/* System Font */
 	MacFont systemFont;
+	/* AW
 	String characterSetName;
 	String characterSetRegistry;
+	*/
 
+	// AW
+	int fScreenDepth;
+	// AW
+	
 	/* Warning and Error Handlers */
 	boolean warnings = true;
 		
@@ -426,8 +432,22 @@ public boolean getWarnings () {
 
 protected void init () {
 
-	OS.SetFractEnable(false);
-			
+	// AW
+	int gdh= OS.GetMainDevice();
+	if (gdh != 0) {
+		for (int i= 32; i > 0; i--) {
+			if (OS.HasDepth(gdh, (short)i, (short)0, (short)1) == i) {
+				fScreenDepth= i;
+				//System.out.println("screendepth: " + fScreenDepth);
+				break;
+			}
+		}
+	}
+	if (fScreenDepth == 0)
+		fScreenDepth= 32;	// a guess
+
+	// AW
+	
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
