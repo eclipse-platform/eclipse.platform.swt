@@ -113,6 +113,21 @@ public MenuItem (Menu parent, int style, int index) {
 	createWidget (index);
 }
 
+void addAccelerator () {
+	if (accelerator == 0) return;
+	int keyMods = 0;
+	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
+	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
+	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
+	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
+	Display display = getDisplay ();
+	int keyCode = display.untranslateKey (key);
+	if (keyCode != 0) key = keyCode;
+	else key = Character.toLowerCase ((char)key);
+	Shell shell = parent.getShell ();
+	OS.PtAddHotkeyHandler(shell.shellHandle, key, keyMods, (short)0, handle, display.hotkeyProc);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -503,7 +518,6 @@ public void removeHelpListener (HelpListener listener) {
 
 void removeAccelerator () {
 	if (accelerator == 0) return;
-
 	int keyMods = 0;
 	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
 	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
@@ -558,21 +572,8 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	removeAccelerator ();
-
 	this.accelerator = accelerator;		
-	if (accelerator == 0) return;
-
-	int keyMods = 0;
-	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
-	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
-	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
-	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
-	Display display = getDisplay ();
-	int keyCode = display.untranslateKey (key);
-	if (keyCode != 0) key = keyCode;
-	else key = Character.toLowerCase ((char)key);
-	Shell shell = parent.getShell ();
-	OS.PtAddHotkeyHandler(shell.shellHandle, key, keyMods, (short)0, handle, display.hotkeyProc);
+	addAccelerator ();
 }
 
 /**
