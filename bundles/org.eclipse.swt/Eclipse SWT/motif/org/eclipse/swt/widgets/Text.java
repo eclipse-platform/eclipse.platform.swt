@@ -780,13 +780,14 @@ public String getText (int start, int end) {
 		if (hiddenText.length () <= end) error (SWT.ERROR_INVALID_RANGE);
 		return hiddenText.substring (start, end);
 	}
+	int textLength = OS.XmTextGetLastPosition (handle);
+	if (textLength <= end) error (SWT.ERROR_INVALID_RANGE);
 	int ptr = OS.XmTextGetString (handle);
 	if (ptr == 0) return "";
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
 	OS.XtFree (ptr);
-	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
 	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 /**
