@@ -36,7 +36,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserIte
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserListViewColumn
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	DataBrowserListViewColumnDesc _arg1, *lparg1=NULL;
+	DataBrowserListViewColumnDesc _arg1={0}, *lparg1=NULL;
 	jint rc;
 
 	DEBUG_CALL("AddDataBrowserListViewColumn\n")
