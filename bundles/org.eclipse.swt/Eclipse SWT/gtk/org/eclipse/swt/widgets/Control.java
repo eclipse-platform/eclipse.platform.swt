@@ -1728,9 +1728,7 @@ public void redraw () {
 	int topHandle = topHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (topHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
-	redraw (0, 0, width, height, true);
-//	int window = paintWindow ();
-//	OS.gdk_window_invalidate_rect (window, null, false);
+	redrawWidget (0, 0, width, height, true);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -1757,6 +1755,10 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
+	redrawWidget (x, y, width, height, all);
+}
+
+void redrawWidget (int x, int y, int width, int height, boolean all) {
 	//?? TRANSLATE COORDINATES
 	int window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();

@@ -489,7 +489,7 @@ public void setAccelerator (int accelerator) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int accel_group = parent.getShell ().accelGroup;
-	if (accelerator != 0) removeAccelerator (accel_group);
+	if (this.accelerator != 0) removeAccelerator (accel_group);
 	this.accelerator = accelerator;
 	if (accelerator != 0) addAccelerator (accel_group);
 }

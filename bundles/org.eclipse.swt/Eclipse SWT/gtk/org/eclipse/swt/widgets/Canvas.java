@@ -108,6 +108,13 @@ int processPaint (int callData, int int1, int int2) {
 	return result;
 }
 
+void redrawWidget (int x, int y, int width, int height, boolean all) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	super.redrawWidget (x, y, width, height, all);
+	if (isFocus) caret.setFocus ();
+}
+
 void releaseWidget () {
 	if (caret != null) {
 		caret.releaseWidget ();
