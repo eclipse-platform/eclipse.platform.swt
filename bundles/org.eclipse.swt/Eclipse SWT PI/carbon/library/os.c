@@ -1726,6 +1726,39 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGWarpMouseCursorPosition)
 }
 #endif
 
+#ifndef NO_CPSEnableForegroundOperation
+JNIEXPORT jint JNICALL OS_NATIVE(CPSEnableForegroundOperation)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CPSEnableForegroundOperation_FUNC);
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)CPSEnableForegroundOperation(lparg0, arg1, arg2, arg3, arg4);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, CPSEnableForegroundOperation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CPSSetProcessName
+JNIEXPORT jint JNICALL OS_NATIVE(CPSSetProcessName)
+	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1)
+{
+	jint *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CPSSetProcessName_FUNC);
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)CPSSetProcessName(lparg0, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, CPSSetProcessName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CallNextEventHandler
 JNIEXPORT jint JNICALL OS_NATIVE(CallNextEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -4877,6 +4910,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetPortVisibleRegion)
 	OS_NATIVE_ENTER(env, that, GetPortVisibleRegion_FUNC);
 	rc = (jint)GetPortVisibleRegion((CGrafPtr)arg0, (RgnHandle)arg1);
 	OS_NATIVE_EXIT(env, that, GetPortVisibleRegion_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetPreviousWindow
+JNIEXPORT jint JNICALL OS_NATIVE(GetPreviousWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetPreviousWindow_FUNC);
+	rc = (jint)GetPreviousWindow((WindowRef)arg0);
+	OS_NATIVE_EXIT(env, that, GetPreviousWindow_FUNC);
 	return rc;
 }
 #endif

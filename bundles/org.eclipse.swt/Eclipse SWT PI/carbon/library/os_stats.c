@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 749;
-int OS_nativeFunctionCallCount[749];
+int OS_nativeFunctionCount = 752;
+int OS_nativeFunctionCallCount[752];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -148,6 +148,8 @@ char * OS_nativeFunctionNames[] = {
 	"CGPostKeyboardEvent", 
 	"CGPostMouseEvent", 
 	"CGWarpMouseCursorPosition", 
+	"CPSEnableForegroundOperation", 
+	"CPSSetProcessName", 
 	"CallNextEventHandler", 
 	"CharWidth", 
 	"ClearCurrentScrap", 
@@ -366,6 +368,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetPortBounds", 
 	"GetPortClipRegion", 
 	"GetPortVisibleRegion", 
+	"GetPreviousWindow", 
 	"GetPtrSize", 
 	"GetRegionBounds", 
 	"GetRootControl", 
