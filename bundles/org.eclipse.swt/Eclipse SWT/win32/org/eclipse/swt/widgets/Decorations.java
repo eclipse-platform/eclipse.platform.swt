@@ -191,11 +191,33 @@ static int checkStyle (int style) {
 		}
 	}
 	/*
-	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
-	* are set, we must also set WS_SYSMENU or the buttons
-	* will not appear.
+	* If either WS_MINIMIZEBOX or WS_MAXIMIZEBOX are set,
+	* we must also set WS_SYSMENU or the buttons will not
+	* appear.
 	*/
 	if ((style & (SWT.MIN | SWT.MAX)) != 0) style |= SWT.CLOSE;
+	
+	/*
+	* Both WS_SYSMENU and WS_CAPTION must be set in order
+	* to for the system menu to appear.
+	*/
+	if ((style & SWT.CLOSE) != 0) style |= SWT.TITLE;
+	
+	/*
+	* Bug in Windows.  The WS_CAPTION style must be
+	* set when the window is resizable or it does not
+	* draw properly.
+	*/
+	/*
+	* This code is intentionally commented.  It seems
+	* that this problem originally in Windows 3.11,
+	* has been fixed in later versions.  Because the
+	* exact nature of the drawing problem is unknown,
+	* keep the commented code around in case it comes
+	* back.
+	*/
+//	if ((style & SWT.RESIZE) != 0) style |= SWT.TITLE;
+	
 	return style;
 }
 
@@ -522,6 +544,13 @@ public String getText () {
 	TCHAR buffer = new TCHAR (0, length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
 	return buffer.toString (0, length);
+}
+
+boolean isTabGroup () {
+	/*
+	*
+	*/
+	return true;
 }
 
 Decorations menuShell () {
@@ -1094,6 +1123,9 @@ boolean traverseItem (boolean next) {
 
 int widgetExtStyle () {
 	int bits = 0;
+	if (OS.IsWinCE) {
+		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
+	}
 	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
 	if ((style & SWT.RESIZE) != 0) return bits;
 	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_DLGMODALFRAME;
@@ -1101,10 +1133,13 @@ int widgetExtStyle () {
 }
 
 int widgetStyle () {
-
-	/* Set WS_POPUP and clear WS_VISIBLE */
+	/* 
+	* Set WS_POPUP and clear WS_VISIBLE and WS_TABSTOP.
+	* NOTE: WS_TABSTOP is the same as WS_MAXIMIZEBOX so
+	* it cannot be used to do tabbing with decorations.
+	*/
 	int bits = super.widgetStyle () | OS.WS_POPUP;
-	bits &= ~OS.WS_VISIBLE;
+	bits &= ~(OS.WS_VISIBLE | OS.WS_TABSTOP);
 	
 	/* Set the title bits and no-trim bits */
 	bits &= ~OS.WS_BORDER;
@@ -1115,25 +1150,16 @@ int widgetStyle () {
 	if ((style & SWT.MIN) != 0) bits |= OS.WS_MINIMIZEBOX;
 	if ((style & SWT.MAX) != 0) bits |= OS.WS_MAXIMIZEBOX;
 	
-	/*
-	* Bug in Windows.  The WS_CAPTION style must be
-	* set when the window is resizable or it does not
-	* draw properly.
-	*/
+	/* Set the resize, dialog border or border bits */
 	if ((style & SWT.RESIZE) != 0) {
-		bits |= OS.WS_CAPTION | OS.WS_THICKFRAME;	
+		bits |= OS.WS_THICKFRAME;	
 	} else {
 		if ((style & SWT.BORDER) == 0) bits |= OS.WS_BORDER;
 	}
 
-	/*
-	* Feature in Windows.  Both WS_SYSMENU and WS_CAPTION
-	* must be set in order to get a system menu.
-	*/
+	/* Set the system menu and close box bits */
 	if (!OS.IsWinCE) {
-		if ((style & SWT.CLOSE) != 0) {
-			bits |= OS.WS_SYSMENU | OS.WS_CAPTION;
-		}
+		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_SYSMENU;
 	}
 	
 	return bits;

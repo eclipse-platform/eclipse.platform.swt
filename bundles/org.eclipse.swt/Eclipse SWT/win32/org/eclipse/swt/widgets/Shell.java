@@ -358,22 +358,13 @@ void createHandle () {
 	
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-		bits &= ~OS.WS_OVERLAPPED;
-		/*
-		* Note:  On WinCE PPC, enforce WS_CAPTION if SWT.TITLE 
-		* is set.
-		*/
-		if (OS.IsWinCE) {
-			if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
-		} else {	
-			bits |= OS.WS_POPUP;
-			if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
-		}
+		bits &= ~(OS.WS_OVERLAPPED | OS.WS_CAPTION);
+		bits |= OS.WS_POPUP;
+		if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		
 		if (OS.IsWinCE) setMaximized (true);
 	}
 	if (OS.IsDBLocale) {
@@ -913,29 +904,38 @@ void updateModal () {
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle ();
 	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
-	if (OS.IsWinCE) {
-		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
-	}
 	return bits;
 }
 
 int widgetStyle () {
 	int bits = super.widgetStyle () & ~OS.WS_POPUP;
-	if (OS.IsWinCE) bits &= ~OS.WS_TABSTOP;
 	if (handle != 0) return bits | OS.WS_CHILD;
 	bits &= ~OS.WS_CHILD;
 	/*
-	* Feature on WinCE:  calling createWindowEx with the style OVERLAPPED
-	* and the field hwndParent causes the window to become a child of hwndParent
-	* (not owned by).  The workaround is to set the style WS_POPUP for shells
-	* with a parent.
-	* Feature on WinCE PPC 2000:  extended style WS_EX_CAPTIONOKBTN cannot be
-	* set with style WS_CAPTION.  The workaround is to set the style WS_POPUP
-	* even for shells with no parent.
-	* The WS_POPUP style in combination with CW_USEDEFAULT causes the window 
-	* to be of size 0 and will need to be resized.
+	* Feature in WinCE.  Calling CreateWindowEx () with WS_OVERLAPPED
+	* and a parent window causes the new window to become a WS_CHILD of
+	* the parent instead of a dialog child.  The fix is to use WS_POPUP
+	* instead.  
+	* 
+	* NOTE: WS_POPUP causes CreateWindowEx () to ignore CW_USEDEFAULT
+	* and causes the default window location and size to be zero.
 	*/
-	return bits | (OS.IsWinCE ? OS.WS_POPUP : OS.WS_OVERLAPPED | OS.WS_CAPTION);
+	if (OS.IsWinCE) return bits | OS.WS_POPUP;
+	
+	/*
+	* Use WS_OVERLAPPED for all windows, either dialog or top level
+	* so that CreateWindowEx () will respect CW_USEDEFAULT and set
+	* the default window location and size.
+	* 
+	* NOTE:  When a WS_OVERLAPPED window is created, Windows gives
+	* the new window WS_CAPTION style bits.  These two constants are
+	* as follows:
+	* 
+	* 	WS_OVERLAPPED = 0
+	* 	WS_CAPTION = WS_BORDER | WS_DLGFRAME
+	* 
+	*/
+	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
