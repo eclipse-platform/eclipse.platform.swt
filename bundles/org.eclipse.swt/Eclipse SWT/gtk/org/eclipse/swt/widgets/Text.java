@@ -893,6 +893,7 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, position);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
+			OS.memmove (int2, position, 4);
 			return 0;
 		}
 	} else {
