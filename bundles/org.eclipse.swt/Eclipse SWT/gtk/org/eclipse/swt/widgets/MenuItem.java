@@ -345,6 +345,7 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.select, windowProc2, SWT.Arm);
 }
 
 /**
@@ -362,6 +363,11 @@ void hookEvents () {
  */
 public boolean isEnabled () {
 	return getEnabled ();
+}
+
+int processArm (int int0, int int1, int int2) {
+	postEvent (SWT.Arm);
+	return 0;
 }
 
 int processSelection (int int0, int int1, int int2) {

@@ -3638,6 +3638,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1style_1
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1unrealize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1unrealize\n")
+
+	gtk_widget_unrealize((GtkWidget *)arg0);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1activate_1default
 	(JNIEnv *env, jclass that, jint arg0)
 {

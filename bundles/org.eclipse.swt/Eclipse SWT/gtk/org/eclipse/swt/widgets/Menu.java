@@ -362,6 +362,14 @@ int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
 	return 0;
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	OS.gtk_signal_connect (handle, OS.show, windowProc2, SWT.Show);
+	OS.gtk_signal_connect (handle, OS.hide, windowProc2, SWT.Hide);
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -427,6 +435,17 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
+}
+
+int processHide (int int0, int int1, int int2) {
+	sendEvent (SWT.Hide);
+	return 0;
+}
+
+int processShow (int int0, int int1, int int2) {
+	if ((style & SWT.BAR) == 0) parent.createAccelGroup ();
+	sendEvent (SWT.Show);
+	return 0;
 }
 
 void releaseChild () {
@@ -587,12 +606,10 @@ public void setVisible (boolean visible) {
 			GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
 			address = GtkMenuPositionFunc.getAddress ();
 		}
-		sendEvent(SWT.Show);
 		OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, OS.gtk_get_current_event_time());
 		if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
 	} else {
 		OS.gtk_menu_popdown (handle);
-		sendEvent(SWT.Hide);
 	}
 }
 }

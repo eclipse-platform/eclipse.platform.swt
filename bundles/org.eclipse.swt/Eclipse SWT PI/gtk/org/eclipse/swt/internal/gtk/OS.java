@@ -212,6 +212,7 @@ public class OS {
 	public static final byte[] expose_event = signal("expose_event");
 	public static final byte[] focus_in_event = signal("focus_in_event");
 	public static final byte[] focus_out_event = signal("focus_out_event");
+	public static final byte[] hide = signal("hide");
 	public static final byte[] insert_text = signal("insert_text");
 	public static final byte[] key_press_event = signal("key_press_event");
 	public static final byte[] key_release_event = signal("key_release_event");
@@ -219,8 +220,10 @@ public class OS {
 	public static final byte[] map_event = signal("map_event");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] popup_menu = signal("popup_menu");
+	public static final byte[] select = signal("select");
 	public static final byte[] select_child = signal("select_child");
 	public static final byte[] select_row = signal("select_row");
+	public static final byte[] show = signal("show");
 	public static final byte[] size_allocate = signal("size_allocate");
 	public static final byte[] switch_page = signal("switch_page");
 	public static final byte[] tree_collapse = signal("tree_collapse");
@@ -636,6 +639,7 @@ public static final native void gtk_widget_show_now(int widget);
 public static final native void gtk_widget_size_allocate(int widget, GtkAllocation allocation);
 public static final native void gtk_widget_size_request(int widget, GtkRequisition requisition);
 public static final native void gtk_widget_style_get(int widget, byte[] property_name, int[] value, int null_terminator);
+public static final native void gtk_widget_unrealize(int widget);
 public static final native boolean gtk_window_activate_default(int window);
 public static final native void gtk_window_add_accel_group(int window, int accel_group);
 public static final native void gtk_window_deiconify(int handle);
