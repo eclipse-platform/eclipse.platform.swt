@@ -723,6 +723,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetKeyboardFocus(
 	return rc;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AdvanceKeyboardFocus(JNIEnv *env, jclass zz, jint wHandle) {
+	return RC(AdvanceKeyboardFocus((WindowRef) wHandle));
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetKeyboardFocus(JNIEnv *env, jclass zz,
 			jint wHandle, jint cHandle, jshort part) {
 	return (jint) RC(SetKeyboardFocus((WindowRef) wHandle, (ControlRef) cHandle, part));
@@ -937,6 +941,13 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort(JNIEnv *e
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort(JNIEnv *env, jclass zz, jint wHandle) {
 	SetPortWindowPort((WindowRef) wHandle);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortBounds(JNIEnv *env, jclass zz,
+		jint port, jshortArray bounds) {
+	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
+	GetPortBounds((CGrafPtr) port, (Rect*) sa);
+	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRect(JNIEnv *env, jclass zz, jshortArray bounds) {
@@ -1285,6 +1296,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetClip(JNIEnv *e
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetClip(JNIEnv *env, jclass zz, jint rgnHandle) {
 	SetClip((RgnHandle)rgnHandle);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortClipRegion(JNIEnv *env, jclass zz,
+		jint port, jint rgnHandle) {
+	GetPortClipRegion((CGrafPtr)port, (RgnHandle)rgnHandle);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetOrigin(JNIEnv *env, jclass zz, jshort h, jshort v) {
@@ -1702,15 +1718,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BeginUpdate(JNIEn
 	BeginUpdate((WindowRef)wHandle);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GlobalToLocal(JNIEnv *env, jclass zz, jshortArray point) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGlobalToLocalPoint(JNIEnv *env, jclass zz,
+			jint port, jshortArray point) {
     jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	GlobalToLocal((Point*)sa);
+	QDGlobalToLocalPoint((CGrafPtr)port, (Point*)sa);
 	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_LocalToGlobal(JNIEnv *env, jclass zz, jshortArray point) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDLocalToGlobalPoint(JNIEnv *env, jclass zz,
+			jint port, jshortArray point) {
     jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	LocalToGlobal((Point*)sa);
+	QDLocalToGlobalPoint((CGrafPtr)port, (Point*)sa);
 	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
 }
 
@@ -2247,7 +2265,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setControlToolTip
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl(JNIEnv *env, jclass zz,
 			jint wHandle, jboolean visible, jshort initialValue, jshort minValue, jshort maxValue, jshort procID) {
-	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
+	jint h= (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
+	//HIObjectPrintDebugInfo((HIObjectRef)h);
+	return h;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl(JNIEnv *env, jclass zz, jint cHandle) {
@@ -2278,9 +2298,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl
 	return status;
 }
 
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmbedControl(JNIEnv *env, jclass zz, jint cHandle, jint parentHandle) {
 	return (jint) RC(EmbedControl((ControlRef) cHandle, (ControlRef) parentHandle));
 }
+*/
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlOwner(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jint) GetControlOwner((ControlRef) cHandle);
@@ -2312,6 +2334,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeControl(JNIEn
 	SizeControl((ControlRef) cHandle, w, h);
 }
 
+/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowControl(JNIEnv *env, jclass zz, jint cHandle) {
 	ShowControl((ControlRef) cHandle);
 }
@@ -2319,15 +2342,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowControl(JNIEn
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HideControl(JNIEnv *env, jclass zz, jint cHandle) {
 	HideControl((ControlRef) cHandle);
 }
+*/
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlVisible(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jboolean) IsControlVisible((ControlRef) cHandle);
 }
 
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlVisibility(JNIEnv *env, jclass zz, jint cHandle,
                 jboolean isVisible, jboolean doDraw) {
 	return (jint) RC(SetControlVisibility((ControlRef)cHandle, isVisible, doDraw));
 }
+*/
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlActive(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jboolean) IsControlActive((ControlRef) cHandle);
@@ -3070,6 +3096,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTXNWordWrap(JN
 }
 */
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTXNMargins(JNIEnv *env, jclass zz,
+				jint txHandle, jshort margin) {
+    TXNControlTag controlTag[1];
+    TXNControlData controlData[1];
+    TXNMargins m;
+    m.topMargin= margin;
+    m.leftMargin= margin;
+    m.bottomMargin= margin;
+    m.rightMargin= margin;    
+    controlTag[0]= kTXNMarginsTag;
+	controlData[0].marginsPtr= &m; 
+	TXNSetTXNObjectControls((TXNObject)txHandle, false, 1, controlTag, controlData);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTXNObjectControls(JNIEnv *env, jclass zz,
 			jint txHandle, jboolean clearAll, jint controlCount, jintArray controlTags, jintArray controlData) {
 	jint *sa= (*env)->GetIntArrayElements(env, controlTags, 0);
@@ -3163,6 +3203,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorInf
 
 //---- Misc ------------------------------------------
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_Init(JNIEnv *env, jclass zz) {
+	// workaround for Register problem
+	Rect bounds= {};
+	ControlRef ctl;
+	CreatePushButtonControl(NULL, &bounds, NULL, &ctl);
+	DisposeControl(ctl);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv *env, jclass zz) {
 	InitCursor();
 }
@@ -3255,3 +3303,326 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);	
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Jaguar
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//// HIObject
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectRegisterSubclass(JNIEnv *env, jclass zz,
+			jint inClassID,
+			jint inBaseClassID,
+			jint inOptions,
+			jint inConstructProc,
+			jintArray inEventList,
+			jint inConstructData,
+			jintArray outClassRef) {
+				
+	jint *sa= (*env)->GetIntArrayElements(env, inEventList, 0);
+	jsize length= (*env)->GetArrayLength(env, inEventList);
+	
+	jint *sb= (*env)->GetIntArrayElements(env, outClassRef, 0);
+	jint status;
+		
+	status= RC(HIObjectRegisterSubclass(
+	 		(CFStringRef) inClassID,
+	 		(CFStringRef) inBaseClassID,
+			(OptionBits) inOptions,
+	 		(EventHandlerUPP) inConstructProc,
+	 		(UInt32) (length/2),
+	 		(const EventTypeSpec*) sa,
+	 		NULL, // (void*) inConstructData,
+	 		(HIObjectClassRef*) sb));
+				
+	(*env)->ReleaseIntArrayElements(env, inEventList, sa, 0);
+	(*env)->ReleaseIntArrayElements(env, outClassRef, sb, 0);
+
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCreate(JNIEnv *env, jclass zz,
+			jint inClassID, jint inConstructData, jintArray outObject) {
+	jint *sa= (*env)->GetIntArrayElements(env, outObject, 0);
+	jint status= RC(HIObjectCreate((CFStringRef)inClassID, (EventRef) inConstructData, (HIObjectRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, outObject, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCopyClassID(JNIEnv *env, jclass zz,
+			jint inObject) {
+	return(jint) HIObjectCopyClassID((HIObjectRef)inObject);
+}
+
+
+//// HIView
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewAddSubview(JNIEnv *env, jclass zz,
+			jint inParent, jint inNewChild) {
+	return RC(HIViewAddSubview((HIViewRef)inParent, (HIViewRef) inNewChild));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewRemoveFromSuperview(JNIEnv *env, jclass zz,
+			jint inView) {
+	return RC(HIViewRemoveFromSuperview((HIViewRef) inView));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetDrawingEnabled(JNIEnv *env, jclass zz,
+			jint inView, jboolean inEnabled) {
+	return RC(HIViewSetDrawingEnabled((HIViewRef)inView, (Boolean) inEnabled));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSimulateClick(JNIEnv *env, jclass zz,
+			jint inView, jshort inPartToClick, jint inModifiers, jshortArray outPartClicked) {
+	jshort *sa= (*env)->GetShortArrayElements(env, outPartClicked, 0);
+	jint status= RC(HIViewSimulateClick((HIViewRef)inView, (HIViewPartCode)inPartToClick, (UInt32)inModifiers, (ControlPartCode*) sa));
+	(*env)->ReleaseShortArrayElements(env, outPartClicked, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetZOrder(JNIEnv *env, jclass zz,
+			jint inView, jint inOp, jint inOther) {
+	return RC(HIViewSetZOrder((HIViewRef)inView, (HIViewZOrderOp) inOp, (HIViewRef)inOther));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetFrame(JNIEnv *env, jclass zz,
+			jint inView, jint x, jint y, jint width, jint height) {
+	HIRect r;
+	r.origin.x= x;
+	r.origin.y= y;
+	r.size.width= width;
+	r.size.height= height;
+	return RC(HIViewSetFrame((HIViewRef)inView, (const HIRect*) &r));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFrame(JNIEnv *env, jclass zz,
+			jint inView, jfloatArray outHIRect) {
+	HIRect r;
+	jint status= RC(HIViewGetFrame((HIViewRef)inView, (HIRect*) &r));
+	jfloat *sa= (*env)->GetFloatArrayElements(env, outHIRect, 0);
+	sa[0]= r.origin.x;
+	sa[1]= r.origin.y;
+	sa[2]= r.size.width;
+	sa[3]= r.size.height;
+	(*env)->ReleaseFloatArrayElements(env, outHIRect, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewClick(JNIEnv *env, jclass zz,
+			jint inView, jint inEvent) {
+	return RC(HIViewClick((HIViewRef)inView, (EventRef) inEvent));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewConvertPoint(JNIEnv *env, jclass zz,
+			jfloatArray ioPoint, jint inSourceView, jint inDestView) {
+	jfloat *sa= (*env)->GetFloatArrayElements(env, ioPoint, 0);
+	HIPoint pt;
+	pt.x= sa[0];
+	pt.y= sa[1];
+	jint status= RC(HIViewConvertPoint((HIPoint*)&pt, (HIViewRef)inSourceView, (HIViewRef) inDestView));
+	sa[0]= pt.x;
+	sa[1]= pt.y;
+	(*env)->ReleaseFloatArrayElements(env, ioPoint, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot(JNIEnv *env, jclass zz,
+			jint inWindow) {
+	return (jint) HIViewGetRoot((WindowRef) inWindow);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplayInRegion(JNIEnv *env, jclass zz,
+			jint inView, jint inRgn, jboolean inNeedsDisplay) {
+	return RC(HIViewSetNeedsDisplayInRegion((HIViewRef) inView, (RgnHandle) inRgn, (Boolean) inNeedsDisplay));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplay(JNIEnv *env, jclass zz,
+			jint inView, jboolean inNeedsDisplay) {
+	return RC(HIViewSetNeedsDisplay((HIViewRef) inView, (Boolean) inNeedsDisplay));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetVisible(JNIEnv *env, jclass zz,
+			jint inView, jboolean inVisible) {
+	return RC(HIViewSetVisible((HIViewRef) inView, (Boolean) inVisible));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewChangeAttributes(JNIEnv *env, jclass zz,
+			jint inView, jint inAttrsToSet, jint inAttrsToClear) {
+	return RC(HIViewChangeAttributes((HIViewRef) inView, (OptionBits) inAttrsToSet, (OptionBits) inAttrsToClear));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewFindByID(JNIEnv *env, jclass zz,
+			jint inStartView, jint inID, jintArray outControl) {
+	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
+	jint status= RC(HIViewFindByID((HIViewRef) inStartView, (HIViewID) kHIViewWindowContentID, (HIViewRef*) sa));
+	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
+	return status;
+}
+
+///////
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCreate(JNIEnv *env, jclass zz,
+			jintArray outComboBox, jint attributes) {
+	HIRect r= {};
+	jint *sa= (*env)->GetIntArrayElements(env, outComboBox, 0);
+	jint status= RC(HIComboBoxCreate(&r, NULL, NULL, NULL, (OptionBits)attributes, (HIViewRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, outComboBox, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxGetItemCount(JNIEnv *env, jclass zz,
+			jint inComboBox) {
+	return (jint) HIComboBoxGetItemCount((HIViewRef)inComboBox);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxAppendTextItem(JNIEnv *env, jclass zz,
+			jint inView, jint inText) {
+	return RC(HIComboBoxAppendTextItem((HIViewRef)inView, (CFStringRef) inText, (CFIndex*) NULL));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxInsertTextItemAtIndex(JNIEnv *env, jclass zz,
+			jint inView, jint inIndex, jint inText) {
+	return RC(HIComboBoxInsertTextItemAtIndex((HIViewRef)inView, (CFIndex) inIndex, (CFStringRef) inText));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxRemoveItemAtIndex(JNIEnv *env, jclass zz,
+			jint inView, jint inIndex) {
+	return RC(HIComboBoxRemoveItemAtIndex((HIViewRef)inView, (CFIndex) inIndex));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCopyTextItemAtIndex(JNIEnv *env, jclass zz,
+			jint inView, jint inIndex, jintArray outString) {
+	jint *sa= (*env)->GetIntArrayElements(env, outString, 0);
+	jint status= RC(HIComboBoxCopyTextItemAtIndex((HIViewRef)inView, (CFIndex) inIndex, (CFStringRef*) sa));
+	(*env)->ReleaseIntArrayElements(env, outString, sa, 0);
+	return status;
+}
+
+// core graphics
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDBeginCGContext(JNIEnv *env, jclass zz,
+			jint inPort, jintArray outContext) {
+	jint *sa= (*env)->GetIntArrayElements(env, outContext, 0);
+	jint status= RC(QDBeginCGContext((CGrafPtr)inPort, (CGContextRef*) sa));
+	(*env)->ReleaseIntArrayElements(env, outContext, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDEndCGContext(JNIEnv *env, jclass zz,
+			jint inPort, jintArray inoutContext) {
+	jint *sa= (*env)->GetIntArrayElements(env, inoutContext, 0);
+	jint status= RC(QDEndCGContext((CGrafPtr)inPort, (CGContextRef*) sa));
+	(*env)->ReleaseIntArrayElements(env, inoutContext, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SyncCGContextOriginWithPort(JNIEnv *env, jclass zz,
+			jint inContext, jint port) {
+	return RC(SyncCGContextOriginWithPort((CGContextRef)inContext, (CGrafPtr) port));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSaveGState(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextSaveGState((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextRestoreGState(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextRestoreGState((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokeRect(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
+	CGRect r;
+	r.origin.x= x;
+	r.origin.y= y;
+	r.size.width= width;
+	r.size.height= height;
+	CGContextStrokeRect((CGContextRef)inContext, r);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillRect(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
+	CGRect r;
+	r.origin.x= x;
+	r.origin.y= y;
+	r.size.width= width;
+	r.size.height= height;
+	CGContextFillRect((CGContextRef)inContext, r);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextScaleCTM(JNIEnv *env, jclass zz,
+			jint inContext, jfloat sx, jfloat sy) {
+	CGContextScaleCTM((CGContextRef)inContext, sx, sy);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslateCTM(JNIEnv *env, jclass zz,
+			jint inContext, jfloat tx, jfloat ty) {
+	CGContextTranslateCTM((CGContextRef)inContext, tx, ty);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClipToRect(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
+	CGRect r;
+	r.origin.x= x;
+	r.origin.y= y;
+	r.size.width= width;
+	r.size.height= height;
+	CGContextClipToRect((CGContextRef)inContext, r);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClipCGContextToRegion(JNIEnv *env, jclass zz,
+			jint inContext, jshortArray portRect, jint rgnHandle) {
+	jshort *sa= (*env)->GetShortArrayElements(env, portRect, 0);
+	jint status= RC(ClipCGContextToRegion((CGContextRef)inContext, (const Rect*) sa, (RgnHandle) rgnHandle));
+	(*env)->ReleaseShortArrayElements(env, portRect, sa, 0);
+	return status;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextBeginPath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextBeginPath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextMoveToPoint(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y) {
+	CGContextMoveToPoint((CGContextRef)inContext, x, y);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddArc(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jfloat radius, jfloat startAngle, jfloat endAngle, jint clockwise) {
+	CGContextAddArc((CGContextRef)inContext, x, y, radius, startAngle, endAngle, clockwise);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClosePath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextClosePath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokePath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextStrokePath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillPath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextFillPath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowGlyphsAtPoint(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jcharArray glyphs) {
+	jshort *sa= (*env)->GetShortArrayElements(env, glyphs, 0);
+	size_t count= (*env)->GetArrayLength(env, glyphs);
+	CGContextShowGlyphsAtPoint((CGContextRef)inContext, x, y, (const CGGlyph*) sa, count);
+	(*env)->ReleaseShortArrayElements(env, glyphs, sa, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowTextAtPoint(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jbyteArray cstring) {
+	jbyte *sa= (*env)->GetByteArrayElements(env, cstring, 0);
+	size_t count= (*env)->GetArrayLength(env, cstring);
+	CGContextShowTextAtPoint((CGContextRef)inContext, x, y, (const char*) sa, count);
+	(*env)->ReleaseByteArrayElements(env, cstring, sa, 0);
+}
+
+

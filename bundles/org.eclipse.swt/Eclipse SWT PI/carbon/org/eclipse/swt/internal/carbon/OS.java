@@ -148,6 +148,7 @@ public class OS {
 	public static native int PostEvent(short eventNum, int eventMsg);
 	public static native int GetKeyboardFocus(int wHandle, int[] cHandle);
 	public static native int SetKeyboardFocus(int wHandle, int cHandle, short inPart);
+	public static native int AdvanceKeyboardFocus(int wHandle);
 	public static native boolean IsShowContextualMenuClick(int[] eventData);
 	public static native int ContextualMenuSelect(int mHandle, short[] location, short[] menuId, short[] index);
 
@@ -190,15 +191,29 @@ public class OS {
 	public static final int typeMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint= ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	public static final int typeType= ('t'<<24) + ('y'<<16) + ('p'<<8) + 'e';
+	public static final int typeSInt32= ('l'<<24) + ('o'<<16) + ('n'<<8) + 'g';
 	
+	
+	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
+	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
+
+	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
+	
+	// Generic toolbox parameters and types
+	public static final int kEventParamWindowRef 	= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int kEventParamAEEventID= ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
 	public static final int kEventParamAEEventClass= ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
-	
-	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
-	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+
+	// Mouse Event
+	public static final int kEventParamWindowMouseLocation= ('w'<<24) + ('m'<<16) + ('o'<<8) + 'u';	/* typeHIPoint*/
 	public static final int kEventParamMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseLocation= ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
 	public static final int kEventParamMouseChord= ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
+	public static final int kEventParamMouseWheelDelta= ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
+
+	// Window event parameters and types
+	
 
 	public static final int kEventParamTextInputSendText= ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
 
@@ -215,7 +230,9 @@ public class OS {
 	public static final int kEventMouseUp		= 2;
 	public static final int kEventMouseMoved	= 5;
 	public static final int kEventMouseDragged	= 6;
-	public static final int kEventMouseWheelMoved	= 10;
+	public static final int kEventMouseEntered	= 8;
+	public static final int kEventMouseExited	= 9;
+	public static final int kEventMouseWheelMoved= 10;
 	
 	public static final int kEventRawKeyDown	= 1;    // A key was pressed
 	public static final int kEventRawKeyRepeat	= 2;	// Sent periodically as a key is held down by the user
@@ -238,9 +255,6 @@ public class OS {
 	public static final int kEventMenuBeginTracking = 1;
 	public static final int kEventMenuEndTracking = 2;
 		
-	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
-	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
-
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 	
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
@@ -359,13 +373,15 @@ public class OS {
 	public static native int GetQDGlobalsScreenBits(int bitmap);
 
 	public static native int GetPort();
+	public static native void SetPort(int pHandle);
 	public static native int GetWindowFromPort(int pHandle);
-	public static native void SetPort(int portHandle);
+	public static native void GetPortBounds(int pHandle, short[] rect);
 	public static native void NormalizeThemeDrawingState();
 	public static native void RGBForeColor(short red, short green, short blue);
 	public static native void RGBBackColor(short red, short green, short blue);
-	public static native void GlobalToLocal(short[] point);
-	public static native void LocalToGlobal(short[] point);
+	public static native void QDGlobalToLocalPoint(int port, short[] point);
+	public static native void QDLocalToGlobalPoint(int port, short[] point);
+
 	public static native void ScrollRect(short[] rect, short dh, short dv, int updateRgn);
 	public static native int GetPortVisibleRegion(int portHandle, int rgnHandle);
 	public static native void SetPortVisibleRegion(int portHandle, int rgnHandle);
@@ -379,7 +395,8 @@ public class OS {
 	public static native void ClipRect(short[] clipRect);
 	public static native void GetClip(int rgnHandle);
 	public static native void SetClip(int rgnHandle);	
-	public static native void SetOrigin(short h, short v);	
+	public static native void SetOrigin(short h, short v);
+	public static native void GetPortClipRegion(int port, int clipRgn);
 	
 	// Text
 	public static native void TextFont(short fontID);
@@ -543,7 +560,8 @@ public class OS {
 	/* This window receives mouse events even for areas of the window
 	 * that are transparent (have an alpha channel component of zero).
 	 * Available for windows of kOverlayWindowClass on Mac OS X.*/
-	public static final int kWindowOpaqueForEventsAttribute = (1 << 18);	
+	public static final int kWindowOpaqueForEventsAttribute = (1 << 18);
+	public static final int kWindowCompositingAttribute   = (1 << 19);
 	/* This window has no shadow.
 	 * Available for all windows on Mac OS X.
 	 * This attribute is automatically given to windows of kOverlayWindowClass. */
@@ -880,7 +898,7 @@ public class OS {
 		
 	public static native int GetRootControl(int windowHandle, int[] cHandle);
 	public static native int CreateRootControl(int windowHandle, int[] cHandle);
-	public static native int EmbedControl(int cHandle, int parentControlHandle);
+	//public static native int EmbedControl(int cHandle, int parentControlHandle);
 	public static native int CountSubControls(int cHandle, short[] count);
 	public static native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
 	public static native int GetSuperControl(int cHandle, int[] parentHandle);
@@ -891,8 +909,8 @@ public class OS {
 	public static native short HandleControlClick(int cHandle, short[] where, int modifiers, int actionUPP);
 	public static native void MoveControl(int cHandle, short x, short y);
 	public static native void SizeControl(int cHandle, short w, short h);
-	public static native void ShowControl(int cHandle);
-	public static native void HideControl(int cHandle);
+	//public static native void ShowControl(int cHandle);
+	//public static native void HideControl(int cHandle);
 	public static native boolean IsValidControlHandle(int cHandle);
 	public static native void SetControlReference(int cHandle, int data);
 	public static native int GetControlReference(int cHandle);
@@ -903,7 +921,7 @@ public class OS {
 	public static native void SetControlBounds(int cHandle, short[] bounds);
 	public static native int CreateUserPaneControl(int windowHandle, short[] bounds, int features, int[] cHandle);
 	public static native boolean IsControlVisible(int cHandle);
-	public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
+	//public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
 	public static native boolean IsControlActive(int cHandle);
 	public static native int EnableControl(int cHandle);
 	public static native int DisableControl(int cHandle);
@@ -1112,6 +1130,7 @@ public class OS {
 	public static final int kTXNAlwaysWrapAtViewEdgeMask  = 1 << 11;
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
 	public static final int kTXNSingleLineOnlyMask        = 1 << 14;
+	public static final int kTXNMonostyledTextMask		 = 1 << 17;
 
 	public static final int kTXNTextEditStyleFrameType    = 1;
 	
@@ -1124,7 +1143,8 @@ public class OS {
 	public static final int kTXNWordWrapStateTag          = ('w'<<24) + ('w'<<16) + ('r'<<8) + 's';
 	public static final int kTXNTabSettingsTag            = ('t'<<24) + ('a'<<16) + ('b'<<8) + 's';
 	public static final int kTXNDoFontSubstitution        = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
-	
+	public static final int kTXNVisibilityTag			 = ('v'<<24) + ('i'<<16) + ('s'<<8) + 'b';
+
 	/* kTXNWordWrapStateTag */
 	public static final boolean kTXNAutoWrap                  = false;
 	public static final boolean kTXNNoAutoWrap                = true;
@@ -1170,6 +1190,7 @@ public class OS {
 	public static native void TXNForceUpdate(int txHandle);
 	public static native int TXNSetTXNObjectControls(int txHandle, boolean clearAll, int controlCount, int[] controlTags, int[] controlData);
 	//public static native int TXNSetBackground(int txHandle, TXNBackground *iBackgroundInfo);
+	public static native void setTXNMargins(int txHandle, short margin);
 
 	// TabFolder
 	public static final int kControlTabInfoTag= ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';	/* ControlTabInfoRec*/
@@ -1293,16 +1314,106 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Misc
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//public static native void ExitToShell();
  	public static native short HiWord(int doubleWord);
 	public static native short LoWord(int doubleWord);
-	//public static native void installQuitHandler(Object target, String method);
 	public static native void SysBeep(short duration);
 	public static native int GetDblTime();
 	public static native int GetCaretTime();
 	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
 	
 	public static native int GetIconRef(short vRefNum, int creator, int iconType, int[] iconRef);
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// Jaguar
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// HIObject
+		public static final int kEventClassHIObject= ('h'<<24) + ('i'<<16) + ('o'<<8) + 'b';
+		
+		public static final int kEventHIObjectConstruct= 1;
+		public static final int kEventHIObjectInitialize= 2;
+		public static final int kEventHIObjectDestruct= 3;
+		//public static final int kEventHIObjectIsEqual= 4;
+		//public static final int kEventHIObjectPrintDebugInfo= 5;
+ 
+	public static native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions,
+			int inConstructProc, int[] inEventList, int inConstructData, int[] outClassRef);
+	public static native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
+	public static native int HIObjectCopyClassID(int inObject);
+
+	// HIView
+		public static final int kEventControlDraw= 4;
+		public static final int kEventControlAddedSubControl= 152;
+		public static final int kEventControlRemovingSubControl= 153;
+	public static native int HIViewAddSubview(int parent, int child);
+	public static native int HIViewRemoveFromSuperview(int inView);
+	public static native int HIViewGetFrame(int inView, float[] outRect);
+	public static native int HIViewSetFrame(int inView, int x, int y, int width, int height);
+	public static native int HIViewSetDrawingEnabled(int inView, boolean isEnabled);
+	public static native int HIViewSimulateClick(int inView, short inPartToClick, int modifiers,
+										short[] outPartClicked);
+	public static native int HIViewSetZOrder(int inView, int inOp, int inOther);
+		public static final int kHIViewZOrderAbove= 1;
+		public static final int kHIViewZOrderBelow= 2;
+		
+	public static native int HIViewClick(int inView, int inEvent);
+	public static native int HIViewConvertPoint(float[] ioPoint, int inSourceView, int inDestView);
+	public static native int HIViewGetRoot(int wHandle);
+	public static native int HIViewSetNeedsDisplay(int inView, boolean inNeedsDisplay);
+	public static native int HIViewSetNeedsDisplayInRegion(int inView, int inRgn, boolean inNeedsDisplay);
+	public static native int HIViewSetVisible(int inView, boolean inVisible);
+	public static native int HIViewChangeAttributes(int inView, int inAttrsToSet, int inAttrsToClear);
+	public static native int HIViewFindByID(int inStartView, int inID, int[] outControl);
+
+	// HIComboBox
+  		public static final short kHIComboBoxEditTextPart=  5;
+  		public static final short kHIComboBoxDisclosurePart=  28;
+
+	public static native int HIComboBoxCreate(int[] outComboBox, int attributes);
+		public static final int kHIComboBoxNoAttributes = 0;
+		public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);
+		public static final int kHIComboBoxAutoDisclosureAttribute = (1 << 1);
+		public static final int kHIComboBoxAutoSortAttribute  = (1 << 2);
+		public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
+		public static final int kHIComboBoxStandardAttributes = (kHIComboBoxAutoCompletionAttribute | kHIComboBoxAutoDisclosureAttribute | kHIComboBoxAutoSizeListAttribute);
+
+	public static native int HIComboBoxGetItemCount(int inComboBox);
+	public static native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
+	public static native int HIComboBoxAppendTextItem(int inComboBox, int inText);
+	public static native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
+
+	public static native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);
+
+	public static native void Init();
+	
+	// core graphics
+	
+	public static native int QDBeginCGContext(int inPort, int[] outContext);
+	public static native int QDEndCGContext(int inPort, int[] inoutContext);
+	public static native int SyncCGContextOriginWithPort(int inContext, int port);
+	
+	public static native void CGContextSaveGState(int inContext);
+	public static native void CGContextRestoreGState(int inContext);
+	
+	public static native void CGContextStrokeRect(int inContext, float x, float y, float w, float h);
+	public static native void CGContextFillRect(int inContext, float x, float y, float w, float h);
+	
+	public static native void CGContextScaleCTM(int inContext, float sx, float sy);
+	public static native void CGContextTranslateCTM(int inContext, float tx, float ty);
+	
+	public static native void CGContextClipToRect(int inContext, float x, float y, float w, float h);
+	public static native int ClipCGContextToRegion(int inContext, short[] portRect, int rgnHandle);
+
+	public static native void CGContextBeginPath(int inContext);
+	public static native void CGContextMoveToPoint(int inContext, float x, float y);
+	public static native void CGContextAddArc(int inContext, float x, float y, float radius,
+					float startAngle, float endAngle, int clockwise);
+	public static native void CGContextClosePath(int inContext);
+	public static native void CGContextStrokePath(int inContext);
+	public static native void CGContextFillPath(int inContext);
+	
+	public static native void CGContextShowGlyphsAtPoint(int inContext, float x, float y, char[] glyphs);
+	public static native void CGContextShowTextAtPoint(int inContext, float x, float y, byte[] chars);
 
 	// process manager
 	public static native int GetCurrentProcess(int[] psn);
