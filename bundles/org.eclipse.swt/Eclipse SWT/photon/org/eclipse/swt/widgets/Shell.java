@@ -910,4 +910,11 @@ int topHandle () {
 	return shellHandle;
 }
 
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
+}
+
 }

@@ -2297,15 +2297,12 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 	boolean all = false;
 	switch (key_sym) {
 		case OS.Pk_Escape: {
-			Shell shell = getShell ();
-			if (!shell.isVisible () || !shell.isEnabled ()) return false;
+			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
 		case OS.Pk_Return: {
-			Button button = menuShell ().getDefaultButton ();
-			if (button == null || button.isDisposed ()) return false;
-			if (!button.isVisible () || !button.isEnabled ()) return false;
+			all = true;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
 		}
@@ -2407,11 +2404,7 @@ public boolean traverse (int traversal) {
 }
 
 boolean traverseEscape () {
-	Shell shell = getShell ();
-	if (shell.parent == null) return false;
-	if (!shell.isVisible () || !shell.isEnabled ()) return false;
-	shell.close ();
-	return true;
+	return false;
 }
 
 boolean traverseGroup (boolean next) {
@@ -2476,11 +2469,7 @@ boolean traverseMnemonic (char key) {
 }
 
 boolean traverseReturn () {
-	Button button = menuShell ().getDefaultButton ();
-	if (button == null || button.isDisposed ()) return false;
-	if (!button.isVisible () || !button.isEnabled ()) return false;
-	button.click ();
-	return true;
+	return false;
 }
 
 /**
