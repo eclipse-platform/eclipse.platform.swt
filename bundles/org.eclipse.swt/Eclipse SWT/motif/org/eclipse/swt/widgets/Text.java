@@ -1088,7 +1088,18 @@ public void selectAll () {
 * Sets the bounds.
 */
 public void setBounds (int x, int y, int width, int height) {
+	/*
+	* Bug in Motif.  For some reason an Xm warning is
+	* output whenever a Text widget's caret is beyond
+	* the visible region during a resize.  The fix is
+	* to temporarily turn off warnings below.
+	*/
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
 	super.setBounds (x, y, width, height);
+	display.setWarnings(warnings);
+	
 	/*
 	* Bug in Motif.  When the receiver is a Text widget
 	* (not a Text Field) and is resized to be smaller than
@@ -1320,7 +1331,17 @@ public void setSelection (Point selection) {
 	setSelection (selection.x, selection.y);
 }
 public void setSize (int width, int height) {
+	/*
+	* Bug in Motif.  For some reason an Xm warning is
+	* output whenever a Text widget's caret is beyond
+	* the visible region during a resize.  The fix is
+	* to temporarily turn off warnings below.
+	*/
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
 	super.setSize (width, height);
+	display.setWarnings(warnings);
 	/*
 	* Bug in Motif.  When the receiver is a Text widget
 	* (not a Text Field) and is resized to be smaller than
