@@ -229,6 +229,14 @@ public void test_getBoundsI() {
 	bounds = tableItem.getBounds(1);
 	assertTrue(":3r:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 200);
 	
+	//
+	makeCleanEnvironment();
+	
+	tableItem.setText("hello");
+	TableColumn column = new TableColumn(table, SWT.RIGHT);
+	bounds = tableItem.getBounds(0);
+	assertTrue(":3s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
+	
 	// with columns and CHECK style
 	table2.dispose();
 	table2 = new Table(shell, SWT.CHECK);
@@ -303,6 +311,16 @@ public void test_getBoundsI() {
 	assertTrue(":4q:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = tableItem2.getBounds(1);
 	assertTrue(":4r:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+	
+	tableItem2.setText("hello");
+	column = new TableColumn(table2, SWT.RIGHT);
+	bounds = tableItem2.getBounds(0);
+	assertTrue(":4s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 }
 
 public void test_getChecked() {

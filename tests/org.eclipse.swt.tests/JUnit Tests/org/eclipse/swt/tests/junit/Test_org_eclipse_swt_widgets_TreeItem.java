@@ -251,6 +251,14 @@ public void test_getBoundsI() {
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3r:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 200);
 	
+	//
+	makeCleanEnvironment();
+	
+	treeItem.setText("hello");
+	TreeColumn column = new TreeColumn(tree, SWT.RIGHT);
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
+	
 	// with columns and CHECK style
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
@@ -325,6 +333,16 @@ public void test_getBoundsI() {
 	assertTrue(":4q:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4r:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	tree2.dispose();
+	tree2 = new Tree(shell, SWT.CHECK);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	
+	treeItem2.setText("hello");
+	column = new TreeColumn(tree2, SWT.RIGHT);
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":3s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 }
 
 public void test_getChecked() {
