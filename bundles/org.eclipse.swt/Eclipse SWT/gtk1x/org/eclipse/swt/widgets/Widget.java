@@ -168,6 +168,40 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
 }
+
+/**
+ * Checks that this class can be subclassed.
+ * <p>
+ * The SWT class library is intended to be subclassed 
+ * only at specific, controlled points (most notably, 
+ * <code>Composite</code> and <code>Canvas</code> when
+ * implementing new widgets). This method enforces this
+ * rule unless it is overridden.
+ * </p><p>
+ * <em>IMPORTANT:</em> By providing an implementation of this
+ * method that allows a subclass of a class which does not 
+ * normally allow subclassing to be created, the implementer
+ * agrees to be fully responsible for the fact that any such
+ * subclass will likely fail between SWT releases and will be
+ * strongly platform specific. No support is provided for
+ * user-written classes which are implemented in this fashion.
+ * </p><p>
+ * The ability to subclass outside of the allowed SWT classes,
+ * is intended purely to enable those not on the SWT development
+ * team to implement patches in order to get around specific
+ * limitations in advance of when those limitations can be
+ * addressed by the team. Subclassing should not be attempted
+ * without an intimate and detailed understanding of the hierarchy.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ */
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 /**
  * Throws an <code>SWTException</code> if the receiver can not
  * be accessed by the caller. This may include both checks on
