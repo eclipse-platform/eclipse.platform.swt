@@ -89,7 +89,9 @@ private void hScroll() {
 	content.setLocation (-hSelection, location.y);
 }
 private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
-	//Rectangle hostRect = getClientArea();
+	ScrollBar hBar = getHorizontalBar();
+	if (hBar == null) return false;
+	
 	Rectangle hostRect = getBounds();
 	int border = getBorderWidth();
 	hostRect.width -= 2*border;
@@ -101,7 +103,9 @@ private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 	return false;
 }
 private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
-	//Rectangle hostRect = getClientArea();
+	ScrollBar vBar = getVerticalBar();
+	if (vBar == null) return false;
+	
 	Rectangle hostRect = getBounds();
 	int border = getBorderWidth();
 	hostRect.height -= 2*border;
@@ -139,8 +143,7 @@ public void setAlwaysShowScrollBars(boolean show) {
 }
 
 private void resize() {
-	if (content == null) return;
-	if (inResize) return;
+	if (content == null || inResize) return;
 	inResize = true;
 	ScrollBar hBar = getHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
@@ -151,8 +154,8 @@ private void resize() {
 		boolean hVisible = needHScroll(contentRect, false);
 		boolean vVisible = needVScroll(contentRect, hVisible);
 		if (!hVisible && vVisible) hVisible = needHScroll(contentRect, vVisible);
-		hBar.setVisible(hVisible);
-		vBar.setVisible(vVisible);
+		if (hBar != null) hBar.setVisible(hVisible);
+		if (vBar != null) vBar.setVisible(vVisible);
 	}
 
 	Rectangle hostRect = getClientArea();
