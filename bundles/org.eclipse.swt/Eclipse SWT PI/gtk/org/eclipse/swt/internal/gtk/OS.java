@@ -214,15 +214,15 @@ public class OS {
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 3;
 	public static final int GTK_TOOLBAR_CHILD_WIDGET = 4;
 
-//public static final int G_LOG_FLAG_RECURSION = 1 << 0;
-//public static final int G_LOG_FLAG_FATAL = 1 << 1;
-//public static final int G_LOG_LEVEL_ERROR = 1 << 2;
-//public static final int G_LOG_LEVEL_CRITICAL = 1 << 3;
-//public static final int G_LOG_LEVEL_WARNING = 1 << 4;
-//public static final int G_LOG_LEVEL_MESSAGE = 1 << 5;
-//public static final int G_LOG_LEVEL_INFO = 1 << 6;
-//public static final int G_LOG_LEVEL_DEBUG = 1 << 7;
-//public static final int G_LOG_LEVEL_MASK = ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL);
+	public static final int G_LOG_FLAG_RECURSION = 1 << 0;
+	public static final int G_LOG_FLAG_FATAL = 1 << 1;
+//	public static final int G_LOG_LEVEL_ERROR = 1 << 2;
+//	public static final int G_LOG_LEVEL_CRITICAL = 1 << 3;
+//	public static final int G_LOG_LEVEL_WARNING = 1 << 4;
+//	public static final int G_LOG_LEVEL_MESSAGE = 1 << 5;
+//	public static final int G_LOG_LEVEL_INFO = 1 << 6;
+//	public static final int G_LOG_LEVEL_DEBUG = 1 << 7;
+	public static final int G_LOG_LEVEL_MASK = ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL);
 	
 public static final native int GTK_WIDGET_FLAGS(int wid);
 public static final native void GTK_WIDGET_SET_FLAGS(int wid,int flag);
