@@ -187,16 +187,13 @@ public FontData open () {
 	}
 	if (fontData != null) {
 		String familyName = fontData.name;
-		byte [] buffer = new byte [256];
-		int length = familyName.length();
-		if (length > 255) length = 255;
-		buffer [0] = (byte)length;
-		for (int i=0; i<length; i++) {
-			buffer [i+1] = (byte) familyName.charAt(i);
+		int[] font = new int[1];
+		byte[] buffer = familyName.getBytes();
+		if (OS.ATSUFindFontFromName(buffer, buffer.length, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, font) == OS.noErr) {
+			short[] family = new short[1];
+			OS.FMGetFontFamilyInstanceFromFont(font[0], family, new short[1]);		
+			qdStyle.instance_fontFamily = family[0];
 		}
-		int id = OS.FMGetFontFamilyFromName (buffer);
-		if (id == OS.kInvalidFontFamily) id = OS.GetAppFont();
-		qdStyle.instance_fontFamily = (short)id;
 		int style = fontData.style;
 		int fontStyle = OS.normal;
 		if ((style & SWT.BOLD) != 0) fontStyle |= OS.bold;

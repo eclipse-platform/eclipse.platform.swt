@@ -307,24 +307,25 @@ public int hashCode() {
 void init(Device device, String name, int height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	byte[] buffer = new byte[256];
-	int length = name.length();
-	if (length > 255) length = 255;
-	buffer[0] = (byte)length;
-	for (int i=0; i<length; i++) {
-		buffer[i+1]= (byte)name.charAt(i);
+	int[] font = new int[1];
+	byte[] buffer = name.getBytes();
+	this.id = OS.kInvalidFontFamily;
+	if (OS.ATSUFindFontFromName(buffer, buffer.length, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, font) == OS.noErr) {
+		short[] family = new short[1];
+		OS.FMGetFontFamilyInstanceFromFont(font[0], family, new short[1]);
+		this.id = family[0];
 	}
-	this.id = OS.FMGetFontFamilyFromName(buffer);
 	if (this.id == OS.kInvalidFontFamily) this.id = OS.GetAppFont();
 	if ((style & SWT.ITALIC) != 0) this.style |= OS.italic;
 	if ((style & SWT.BOLD) != 0) this.style |= OS.bold;
 	this.size = (short)height;
-	int[] font = new int[1];
-	if (OS.FMGetFontFromFontFamilyInstance(id, this.style, font, null) != 0) {
-		SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.FMGetFontFromFontFamilyInstance(id, this.style, font, null);
+	if (font[0] == 0) {
+		Font systemFont = device.systemFont;
+		this.handle = systemFont.handle;
+	} else {
+		this.handle = font[0];
 	}
-	if (font[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	this.handle = font[0];
 	this.atsuiStyle = createStyle();
 }
 
