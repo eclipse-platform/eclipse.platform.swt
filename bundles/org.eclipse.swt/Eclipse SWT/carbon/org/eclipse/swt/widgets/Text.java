@@ -450,6 +450,23 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	if (modifiers [0] == OS.cmdKey) {
+		int [] keyCode = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		switch (keyCode [0]) {
+			case 7: /* X */
+				cut ();
+				return OS.noErr;
+			case 8: /* C */
+				copy ();
+				return OS.noErr;
+			case 9: /* V */
+				paste ();
+				return OS.noErr;
+		}
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
