@@ -245,6 +245,23 @@ public Composite getParent () {
 	return parent;
 }
 
+Control [] getPath () {
+	int count = 0;
+	Shell shell = getShell ();
+	Control control = this;
+	while (control != shell) {
+		count++;
+		control = control.parent;
+	}
+	control = this;
+	Control [] result = new Control [count];
+	while (control != shell) {
+		result [--count] = control;
+		control = control.parent;
+	}
+	return result;
+}
+
 public Point getSize () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -288,6 +305,7 @@ void hookEvents () {
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
 	OS.PtAddCallback (handle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
 	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddCallback (handle, OS.Pt_CB_MENU, windowProc, SWT.Show);
 }
 
 public int internal_new_GC (GCData data) {
@@ -384,6 +402,28 @@ int processPaint (int damage) {
 
 int processFocusIn (int info) {
 	sendEvent (SWT.FocusIn);
+	int index = 0;
+	Shell shell = getShell ();
+	Control [] focusIn = getPath ();
+	Control lastFocus = shell.lastFocus;
+	if (lastFocus != null) {
+		if (!lastFocus.isDisposed ()) {
+			Control [] focusOut = lastFocus.getPath ();
+			int length = Math.min (focusIn.length, focusOut.length);
+			while (index < length) {
+				if (focusIn [index] != focusOut [index]) break;
+				index++;
+			}
+			for (int i=focusOut.length-1; i>=index; --i) {
+				focusOut [i].sendEvent (SWT.Deactivate);
+			}
+		}
+		shell.lastFocus = null;
+	}
+	for (int i=focusIn.length-1; i>=index; --i) {
+		focusIn [i].sendEvent (SWT.Activate);
+	}
+
 	/*
 	* Feature in Photon.  Cannot return Pt_END
 	* or the text widget will not take focus.
@@ -393,6 +433,18 @@ int processFocusIn (int info) {
 
 int processFocusOut (int info) {
 	sendEvent (SWT.FocusOut);
+	Shell shell = getShell ();
+	shell.lastFocus = this;
+	Display display = getDisplay ();
+	Control focusControl = display.getFocusControl ();
+	if (focusControl == null || shell != focusControl.getShell ()) {
+		Control [] focusOut = getPath ();
+		for (int i=focusOut.length-1; i>=0; --i) {
+			focusOut [i].sendEvent (SWT.Deactivate);
+		}
+		shell.lastFocus = null;
+	}
+
 	/*
 	* Feature in Photon.  Cannot return Pt_END
 	* or the text widget will not take focus.
@@ -628,11 +680,33 @@ int processMouseEnter (int info) {
 	return OS.Pt_END;
 }
 
+int processShow (int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.reason == OS.Pt_CB_MENU) {
+		if (menu != null && !menu.isDisposed ()) {
+			menu.setVisible (true);
+		}
+	}	
+	return OS.Pt_CONTINUE;
+}
+
 void realizeWidget() {
 	int parentHandle = parent.handle;
 	if (OS.PtWidgetIsRealized (parentHandle)) {
 		OS.PtRealizeWidget (topHandle ());
 	}
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	if (menu != null && !menu.isDisposed ()) {
+		menu.dispose ();
+	}
+	menu = null;
+	parent = null;
+	layoutData = null;
 }
 
 public void redraw () {
@@ -891,6 +965,11 @@ public void setForeground (Color color) {
 public void setMenu (Menu menu) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	int flags = menu != null ? OS.Pt_MENUABLE : 0;
+	int [] args = {
+		OS.Pt_ARG_FLAGS, flags, OS.Pt_ALL_BUTTONS | OS.Pt_MENUABLE,
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
 	this.menu = menu;
 }
 
