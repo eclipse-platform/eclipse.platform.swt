@@ -43,12 +43,27 @@ public void addSelectionListener (SelectionListener listener) {
 void createHandle (int index) {
 	state |= HANDLE;
 	if (handle != 0) return;
+	Display display = getDisplay ();
 	int parentHandle = parent.scrolledHandle;
+	int orientation, sizeArg, size, basicFlags;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		orientation = OS.Pt_HORIZONTAL;
+		sizeArg = OS.Pt_ARG_HEIGHT;
+		size = display.SCROLLBAR_HEIGHT;
+		basicFlags = display.SCROLLBAR_HORIZONTAL_BASIC_FLAGS;
+	} else {
+		orientation = OS.Pt_VERTICAL;
+		sizeArg = OS.Pt_ARG_WIDTH;
+		size = display.SCROLLBAR_WIDTH;
+		basicFlags = display.SCROLLBAR_VERTICAL_BASIC_FLAGS;
+	}
 	int [] args = {
+		sizeArg, size, 0,
 		OS.Pt_ARG_MAXIMUM, 100, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, 10, 0,
 		OS.Pt_ARG_SLIDER_SIZE, 10, 0,
-		OS.Pt_ARG_ORIENTATION, (style & SWT.HORIZONTAL) != 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+		OS.Pt_ARG_BASIC_FLAGS, basicFlags, ~0,
+		OS.Pt_ARG_ORIENTATION, orientation, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtScrollbar (), parentHandle, args.length / 3, args);

@@ -111,6 +111,15 @@ void createScrolledHandle (int parentHandle) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	createScrollBars ();
 }
+
+public Rectangle getClientArea () {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (scrolledHandle == 0) return super.getClientArea ();
+	PhArea_t area = new PhArea_t ();
+	OS.PtWidgetArea (handle, area);
+	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
+}
 	
 public Control [] getChildren () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -180,16 +189,8 @@ int processResize (int info) {
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	
-	// BOGUS code - should add struct
-	short[] data = new short[12];
-	OS.memmove(data, cbinfo.cbdata, 2 * data.length);
-	if (data [8] == data[10] && data [9] == data [11]) {
-		return OS.Pt_CONTINUE;
-	}
-	if (layout != null) layout (false);
-	
 	sendEvent (SWT.Resize);
+	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
 }
 
@@ -220,47 +221,66 @@ boolean sendResize () {
 }
 
 void resizeClientArea (int width, int height) {
+	if (scrolledHandle == 0) return;
+	
+	/* Calculate the insets */
+	int [] args = {
+		OS.Pt_ARG_BASIC_FLAGS, 0, 0,
+		OS.Pt_ARG_BEVEL_WIDTH, 0, 0,
+	};
+	OS.PtGetResources (scrolledHandle, args.length / 3, args);
+	int flags = args [1];
+	int bevel = args [4];
+	int top = 0, left = 0, right = 0, bottom = 0;
+	if ((flags & OS.Pt_TOP_ETCH) != 0) top++;
+	if ((flags & OS.Pt_TOP_OUTLINE) != 0) top++;
+	if ((flags & OS.Pt_TOP_INLINE) != 0) top++;
+	if ((flags & OS.Pt_TOP_BEVEL) != 0) top += bevel;
+	if ((flags & OS.Pt_BOTTOM_ETCH) != 0) bottom++;
+	if ((flags & OS.Pt_BOTTOM_OUTLINE) != 0) bottom++;
+	if ((flags & OS.Pt_BOTTOM_INLINE) != 0) bottom++;
+	if ((flags & OS.Pt_BOTTOM_BEVEL) != 0) bottom += bevel;
+	if ((flags & OS.Pt_RIGHT_ETCH) != 0) right++;
+	if ((flags & OS.Pt_RIGHT_OUTLINE) != 0) right++;
+	if ((flags & OS.Pt_RIGHT_INLINE) != 0) right++;
+	if ((flags & OS.Pt_RIGHT_BEVEL) != 0) right += bevel;
+	if ((flags & OS.Pt_LEFT_ETCH) != 0) left++;
+	if ((flags & OS.Pt_LEFT_OUTLINE) != 0) left++;
+	if ((flags & OS.Pt_LEFT_INLINE) != 0) left++;
+	if ((flags & OS.Pt_LEFT_BEVEL) != 0) left += bevel;
+	
+	int clientWidth = width - (left + right);
+	int clientHeight = height - (top + bottom);
+
 	int vBarWidth = 0, hBarHeight = 0;
 	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
 	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
 	if (isVisibleHBar) {
-		int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
+		args = new int [] {OS.Pt_ARG_HEIGHT, 0, 0};
 		OS.PtGetResources (horizontalBar.handle, args.length / 3, args);
-		height = height - (hBarHeight = args [1]);
+		clientHeight -= (hBarHeight = args [1]);
 	}
 	if (isVisibleVBar) {
-		int [] args = {OS.Pt_ARG_WIDTH, 0, 0};
+		args = new int [] {OS.Pt_ARG_WIDTH, 0, 0};
 		OS.PtGetResources (verticalBar.handle, args.length / 3, args);
-		width = width - (vBarWidth = args [1]);
-	}
-	
-	//NOT DONE - used widget canvas to compute insets
-	int left = 0, right = 0;
-	if (hasBorder ()) {
-		left = 2;
-		if (isVisibleHBar && isVisibleVBar) right = 3;
+		clientWidth -= (vBarWidth = args [1]);
 	}
 	if (isVisibleHBar) {
-		horizontalBar.setBounds (-left, height - left, width + right, hBarHeight); 
+		horizontalBar.setBounds (0, clientHeight, clientWidth, hBarHeight);
 	}
 	if (isVisibleVBar) {
-		verticalBar.setBounds (width - left, -left, vBarWidth, height + right); 
+		verticalBar.setBounds (clientWidth, 0, vBarWidth, clientHeight);
 	}
-	
-	PhArea_t area = new PhArea_t ();
-	area.size_w = (short) (Math.max (width - (left * 2), 0));
-	area.size_h = (short) (Math.max (height - (left * 2), 0));
-	int ptr = OS.malloc (PhArea_t.sizeof);
-	OS.memmove (ptr, area, PhArea_t.sizeof);
-	int [] args = {OS.Pt_ARG_AREA, ptr, 0};
+	args = new int [] {
+		OS.Pt_ARG_WIDTH, clientWidth, 0,
+		OS.Pt_ARG_HEIGHT, clientHeight, 0,
+	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	OS.free (ptr);
-	if (layout != null) layout (false);
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (resize) resizeClientArea (width, height);
 	super.setBounds (x, y, width, height, move, resize);
+	if (resize) resizeClientArea (width, height);
 }
 
 public void setLayout (Layout layout) {

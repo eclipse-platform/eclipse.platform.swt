@@ -34,10 +34,10 @@ public class OS {
 	public static final int  Pt_BOTTOM_OUTLINE			= 0x00000020;
 	public static final int  Pt_LEFT_OUTLINE			= 0x00000040;
 	public static final int  Pt_RIGHT_OUTLINE			= 0x00000080;
-//	public static final int  Pt_TOP_BEVEL				= 0x00000100;
-//	public static final int  Pt_BOTTOM_BEVEL			= 0x00000200;
-//	public static final int  Pt_LEFT_BEVEL				= 0x00000400;
-//	public static final int  Pt_RIGHT_BEVEL				= 0x00000800;
+	public static final int  Pt_TOP_BEVEL				= 0x00000100;
+	public static final int  Pt_BOTTOM_BEVEL			= 0x00000200;
+	public static final int  Pt_LEFT_BEVEL				= 0x00000400;
+	public static final int  Pt_RIGHT_BEVEL				= 0x00000800;
 	public static final int  Pt_TOP_INLINE				= 0x00001000;
 	public static final int  Pt_BOTTOM_INLINE			= 0x00002000;
 	public static final int  Pt_LEFT_INLINE				= 0x00004000;
@@ -156,7 +156,9 @@ public class OS {
 
 	public static final int Pt_ARG_TOOLBAR_FLAGS                                     = ( 61 * 1000 + 0 );
 	public static final int Pt_ARG_TOOLBAR_SPACING                                     = ( 61 * 1000 + 1 );
+	public static final int Pt_TOOLBAR_DRAGGABLE                                     = 0x0001;
 	public static final int Pt_TOOLBAR_ITEM_SEPARATORS                                     = 0x0020;
+	public static final int Pt_TOOLBAR_END_SEPARATOR                                     = 0x0040;
 
 	public static final int Pt_COLORSELECT_MODAL                                     = 0x4;
 	public static final int Pt_COLORSELECT_ACCEPT                                     = 0x8000;
