@@ -823,11 +823,13 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
 		moved = true;
 		sendEvent (SWT.Move);
+		if (isDisposed ()) return 0;
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
 		resized = true;
 		resizeBounds ();
 		sendEvent (SWT.Resize);
+		if (isDisposed ()) return 0;
 		if (layout != null) layout.layout (this, false);
 		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
@@ -1033,6 +1035,7 @@ public void open () {
 	checkWidget();
 	OS.SelectWindow (shellHandle);
 	setVisible (true);
+	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
@@ -1348,9 +1351,11 @@ void setWindowVisible (boolean visible) {
 	if (visible) {
 		if (!moved) {
 			sendEvent (SWT.Move);
+			if (isDisposed ()) return;
 		}
 		if (!resized) {
 			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
 			if (layout != null) layout.layout (this, false);
 		}
 		sendEvent (SWT.Show);
