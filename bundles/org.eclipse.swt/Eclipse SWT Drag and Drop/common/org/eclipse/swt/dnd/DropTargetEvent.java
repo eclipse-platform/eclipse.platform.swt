@@ -29,10 +29,10 @@ import org.eclipse.swt.widgets.Widget;
  *
  * <p>When in drop(), the following fields apply:
  * <ul>
- * <li>(in)widget   - the object on which the data was dropped
- * <li>(in)time     - the time the drop occurred
- * <li>(in)x        - the x-cordinate of the cursor relative to the DropTarget <code>Control</code>
- * <li>(in)y        - the y-cordinate of the cursor relative to the DropTarget <code>Control</code>
+ * <li>(in)widget - the object on which the data was dropped
+ * <li>(in)time    - the time the drop occurred
+ * <li>(in)x        - the x-cordinate of the cursor relative to the <code>Display</code>
+ * <li>(in)y        - the y-cordinate of the cursor relative to the <code>Display</code>
  * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
  * <li>(in)currentDataType - the specific type of data that is be contained in the <code>data</code> field
  * <li>(in)data     - the data (which is of type currentDataType); the type Java Object contained in this field is
