@@ -1,0 +1,23 @@
+<project name="swt" default="export" basedir=".">
+
+	<target name="init">
+		<tstamp/>
+		<property name="plugin" value="org.eclipse.swt" />
+	</target>
+
+	<target name="build" depends="init">
+    	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
+	</target>
+
+	<target name="export" depends="build">
+		
+		<exec dir="." executable="javah">
+  			<arg line="-classpath ../../../bin" />
+  			<arg line="-force" />
+  			<arg line="-d ." />
+  			<arg line="org.eclipse.swt.internal.carbon.OS" />
+		</exec>
+		
+	</target>
+	
+</project>
