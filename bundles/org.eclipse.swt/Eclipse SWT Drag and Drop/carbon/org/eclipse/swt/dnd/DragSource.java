@@ -257,7 +257,6 @@ private void drag(Event dragEvent) {
 			event.time = (int)System.currentTimeMillis(); 
 			event.dataType = transferData; 
 			notifyListeners(DND.DragSetData, event);
-			if (event.data == null) continue;
 			transferAgents[i].javaToNative(event.data, transferData);
 			if (transferData.result != OS.noErr || transferData.data == null) continue; 
 			for (int k = 0; k < transferData.data.length; k++) {
