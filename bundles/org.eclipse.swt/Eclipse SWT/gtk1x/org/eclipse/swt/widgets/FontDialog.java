@@ -99,9 +99,23 @@ int destroyFunc (int widget, int colorInfo) {
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData for the selected font, or null
+ * @deprecated use #getFontDataSet ()
  */
-public FontData getFontData() {
+public FontData getFontData () {
 	return fontData;
+}
+/**
+ * Returns a FontData set describing the font that was
+ * selected in the dialog, or null if none is available.
+ * 
+ * @return the FontData for the selected font, or null
+ * @since 2.2
+ */
+public FontData [] getFontDataSet () {
+	if (fontData == null) return null;
+	FontData [] result = new FontData [1];
+	result [0] = fontData;
+	return result;
 }
 int okFunc (int widget, int callData) {
 	int hFontName = OS.gtk_font_selection_dialog_get_font_name (callData);
@@ -165,8 +179,24 @@ public FontData open () {
  * the platform choose one.
  * 
  * @param fontData the FontData to use initially, or null
+ * @deprecated use #setFontData (FontData [])
  */
 public void setFontData (FontData fontData) {
 	this.fontData = fontData;
+}
+/**
+ * Sets a set of FontData objects describing the font to
+ * be selected by default in the dialog, or null to let
+ * the platform choose one.
+ * 
+ * @param fontData the set of FontData objects to use initially, or null
+ * @since 2.2
+ */
+public void setFontData (FontData [] fontData) {
+	if (fontData != null && fontData.length > 0) {
+		this.fontData = fontData [0];
+	} else {
+		this.fontData = null;
+	}
 }
 }
