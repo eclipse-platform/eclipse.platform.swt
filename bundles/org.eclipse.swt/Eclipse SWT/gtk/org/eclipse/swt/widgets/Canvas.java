@@ -189,14 +189,15 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 	OS.g_object_unref (gdkGC);
 	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-	GdkRectangle rect = new GdkRectangle ();
 	if (disjoint) {
+		GdkRectangle rect = new GdkRectangle ();
 		rect.x = x;
 		rect.y = y;
 		rect.width = width;
 		rect.height = height;
 		OS.gdk_region_union_with_rect (invalidateRegion, rect);
 	} else {
+		GdkRectangle rect = new GdkRectangle ();
 		if (deltaX != 0) {
 			int newX = destX - deltaX;
 			if (deltaX < 0) newX = destX + width;
@@ -220,7 +221,17 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	OS.gdk_region_destroy (visibleRegion);
 	OS.gdk_region_destroy (copyRegion);
 	OS.gdk_region_destroy (invalidateRegion);
-	
+	if (all) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			Rectangle rect = child.getBounds ();
+			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) && 
+				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
+					child.setLocation (rect.x + deltaX, rect.y + deltaY);					
+			}
+		}
+	}	
 	if (isFocus) caret.setFocus ();
 }
 
