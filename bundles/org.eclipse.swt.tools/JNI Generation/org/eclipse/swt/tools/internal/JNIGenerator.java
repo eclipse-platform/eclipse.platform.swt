@@ -175,7 +175,7 @@ static boolean isNativeUnique(Method method) {
 	Method[] methods = clazz.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 		Method mth = methods[i];
-		if ((method.getModifiers() & Modifier.NATIVE) ==  0) continue;
+		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		if (method == mth || method.equals(mth)) continue;
 		if (method.getName().equals(mth.getName())) {
 			result = false;
