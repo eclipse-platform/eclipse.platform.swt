@@ -1525,7 +1525,10 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget();
 	checkItems (false);
-	//TODO - check range
+	if (start > end) return;
+	if (end < 0 || start >= itemCount) return;
+	start = Math.max (0, start);
+	end = Math.min (itemCount - 1, end);
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -1557,13 +1560,23 @@ public void select (int [] indices) {
 	checkWidget();
 	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//TODO - check range
 	int length = indices.length;
 	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
+	int count = 0;
+	for (int i=0; i<length; i++) {
+		int index = indices [length - i - 1];
+		if (index >= 0 && index < itemCount) {
+			if ((style & SWT.SINGLE) != 0) {
+				ids [0] = index + 1;
+				count = 1;
+			} else {
+				ids [count++] = index + 1;
+			}
+		}
+	}
 	ignoreSelect = true;
 	int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
-	OS.SetDataBrowserSelectedItems (handle, ids.length, ids, operation);
+	OS.SetDataBrowserSelectedItems (handle, count, ids, operation);
 	ignoreSelect = false;
 }
 
@@ -1748,14 +1761,15 @@ void setSelection (int index, boolean notify) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	checkItems (false);
+	deselectAll ();
+	if (start > end) return;
+	if (end < 0 || start >= itemCount) return;
+	start = Math.max (0, start);
+	end = Math.min (itemCount - 1, end);
 	int length = end - start + 1;
 	if (length <= 0) return;
-	int count = length;
 	int [] ids = new int [length];
-	for (int i=start; i<=end; i++) {
-		if (0 <= i && i < itemCount) ids [--count] = i + 1;
-	}
-	if (count != 0) return;
+	for (int i=0; i<length; i++) ids [i] = end - i + 1;
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
@@ -1784,17 +1798,23 @@ public void setSelection (int [] indices) {
 	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
-	int count = length;
 	int [] ids = new int [length];
+	int count = 0;
 	for (int i=0; i<length; i++) {
-		int index = indices [i];
-		if (0 <= index && index < itemCount) ids [--count] = index + 1;
+		int index = indices [length - i - 1];
+		if (index >= 0 && index < itemCount) {
+			if ((style & SWT.SINGLE) != 0) {
+				ids [0] = index + 1;
+				count = 1;
+			} else {
+				ids [count++] = index + 1;
+			}
+		}
 	}
-	if (count != 0) return;
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) showIndex (ids [0] - 1);
+	if (count > 0) showIndex (ids [0] - 1);
 }
 
 /**
@@ -1820,18 +1840,26 @@ public void setSelection (TableItem [] items) {
 	checkWidget();
 	checkItems (false);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = items.length;
-	int count = length;
+	if (length == 0) return;
 	int [] ids = new int [length];
+	int count = 0;
 	for (int i=0; i<length; i++) {
-		int index = indexOf (items [i]);
-		if (0 <= index && index < itemCount) ids [--count] = index + 1;
+		int index = indexOf (items [length - i - 1]);
+		if (index != -1) {
+			if ((style & SWT.SINGLE) != 0) {
+				ids [0] = index + 1;
+				count = 1;
+			} else {
+				ids [count++] = index + 1;
+			}
+		}
 	}
-	if (count != 0) return;
 	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, length, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) showIndex (ids [0] - 1);
+	if (count > 0) showIndex (ids [0] - 1);
 }
 
 /**
