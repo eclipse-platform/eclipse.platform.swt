@@ -389,7 +389,7 @@ Hashtable getFaces (String charsetName) {
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData for the selected font, or null
- * @deprecated use #getFontDataSet ()
+ * @deprecated use #getFontDatas ()
  */
 public FontData getFontData () {
 	if (fontData != null && fontData.length > 0) {
@@ -412,7 +412,7 @@ FontData getFontData (String charsetName, String faceName, String extStyle, int 
  * @return the FontData set for the selected font, or null
  * @since 2.2
  */
-public FontData [] getFontDataSet () {
+public FontData [] getFontDatas () {
 	return fontData;
 }
 
@@ -978,7 +978,7 @@ void setFontControls (FontData fontData) {
  * the platform choose one.
  *
  * @param fontData the FontData to use initially, or null
- * @deprecated use #setFontData (FontData [])
+ * @deprecated use #setFontDatas (FontData [])
  */
 public void setFontData (FontData fontData) {
 	if (fontData == null) {
@@ -997,7 +997,7 @@ public void setFontData (FontData fontData) {
  * @param fontData the set of FontData objects to use initially, or null
  * @since 2.2
  */
-public void setFontData (FontData [] fontData) {
+public void setFontDatas (FontData [] fontData) {
 	this.fontData = fontData;
 }
 
