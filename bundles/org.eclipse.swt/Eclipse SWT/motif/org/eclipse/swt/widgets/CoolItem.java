@@ -156,6 +156,11 @@ void createHandle (int index) {
 	handle = OS.XmCreateDrawingArea(parent.handle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
+public void dispose () {
+	CoolBar parent = this.parent;
+	super.dispose ();
+	parent.relayout ();
+}
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -380,6 +385,11 @@ void redraw() {
 	int window = OS.XtWindow (handle);
 	if (window == 0) return;
 	OS.XClearArea (display, window, 0, 0, 0, 0, true);
+}
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	control = null;
 }
 void setLocation (int x, int y) {
 	OS.XtMoveWidget (handle, x, y);
