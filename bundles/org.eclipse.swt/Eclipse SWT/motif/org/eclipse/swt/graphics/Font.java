@@ -89,25 +89,6 @@ public Font (Device device, String fontFamily, int height, int style) {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
-	
-	/* Free the fonts associated with the font list */
-	int [] buffer = new int [1];
-	int xDisplay = device.xDisplay;
-	if (OS.XmFontListInitFontContext (buffer, handle)) {
-		int context = buffer [0];
-		int fontListEntry;
-		while ((fontListEntry = OS.XmFontListNextEntry (context)) != 0) {
-			int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
-			if (buffer [0] == OS.XmFONT_IS_FONT) {
-				OS.XFreeFont(xDisplay, fontPtr);
-			} else {
-				OS.XFreeFontSet(xDisplay, fontPtr);
-			}
-		}
-		OS.XmFontListFreeFontContext (context);
-	}	
-	
-	/* Free the font list */
 	OS.XmFontListFree (handle);
 	device = null;
 	handle = 0;
@@ -158,7 +139,7 @@ public FontData[] getFontData() {
 	/* Go through each entry in the font list */
 	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
 		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
-		if (buffer[0] == OS.XmFONT_IS_FONT) { 
+		if (buffer[0] == 0) { 
 			/* FontList contains a single font */
 			OS.memmove(fontStruct,fontPtr,20 * 4);
 			int propPtr = fontStruct.properties;
@@ -256,7 +237,7 @@ void init (Device device, FontData fd) {
 	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
 	boolean warnings = device.getWarnings();
 	device.setWarnings(false);
-	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, OS.XmFONT_IS_FONT, OS.XmFONTLIST_DEFAULT_TAG);
+	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, 0, OS.XmFONTLIST_DEFAULT_TAG);
 	device.setWarnings(warnings);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = OS.XmFontListAppendEntry(0, fontListEntry);
