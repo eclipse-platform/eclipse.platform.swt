@@ -132,6 +132,9 @@ public class Display extends Device {
 	Callback windowTimerCallback;
 	int /*long*/ windowTimerProc;
 	
+	/* TrayIcons */
+	TrayIcon [] trayIcons;
+	
 	/* Caret */
 	Caret currentCaret;
 	Callback caretCallback;
@@ -435,6 +438,25 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addTrayIcon (TrayIcon icon) {
+	if (trayIcons == null) trayIcons = new TrayIcon [4];
+	int length = trayIcons.length;
+	for (int i = 0; i < length; i++) {
+		if (trayIcons [i] == icon) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (trayIcons [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		TrayIcon [] newTrayIcons = new TrayIcon [length + 4];
+		System.arraycopy (trayIcons, 0, newTrayIcons, 0, length);
+		trayIcons = newTrayIcons;
+	}
+	trayIcons [index] = icon;
 }
 
 void addWidget (int /*long*/ handle, Widget widget) {
@@ -1241,6 +1263,15 @@ public Color getSystemColor (int id) {
 	return Color.gtk_new (this, gdkColor);
 }
 
+TrayIcon getTrayIcon (int id) {
+	if (trayIcons == null) return null;
+	for (int i = 0; i < trayIcons.length; i++) {
+		TrayIcon current = trayIcons [i]; 
+		if (current != null && current.id == id) return current;
+	}
+	return null;
+}
+
 void initializeSystemResources () {
 	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -1753,6 +1784,15 @@ void releaseDisplay () {
 			if (timerIds [i] != 0) OS.gtk_timeout_remove (timerIds [i]);
 		}
 	}
+	
+	/* Release the tray icons*/
+	if (trayIcons != null) {
+		for (int i = 0; i < trayIcons.length; i++) {
+			if (trayIcons [i] != null) trayIcons [i].dispose ();
+		}
+	}
+	trayIcons = null;
+	
 	timerIds = null;
 	timerList = null;
 	timerProc = 0;
@@ -1833,6 +1873,16 @@ void removePopup (Menu menu) {
 	for (int i=0; i<popups.length; i++) {
 		if (popups [i] == menu) {
 			popups [i] = null;
+			return;
+		}
+	}
+}
+
+void removeTrayIcon (TrayIcon icon) {
+	if (trayIcons == null) return;
+	for (int i = 0; i < trayIcons.length; i++) {
+		if (trayIcons [i] == icon) {
+			trayIcons [i] = null;
 			return;
 		}
 	}

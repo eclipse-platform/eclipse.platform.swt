@@ -385,17 +385,25 @@ public static final synchronized native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int
 /** X11 Native methods and constants */
 public static final int Above = 0;
 public static final int Below = 1;
+public static final int ClientMessage = 33;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
-public static final int RevertToParent = 2;
 public static final native boolean GDK_WINDOWING_X11();
+public static final int /*long*/ NoEventMask = 0;
+public static final int RevertToParent = 2;
+public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
+public static final synchronized native int XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int window, int screen, int valueMask, XWindowChanges values);
+public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
 public static final synchronized native int XSetInputFocus(int /*long*/ display, int window, int revert, int time);
+public static final synchronized native int /*long*/gdk_x11_atom_to_xatom(int /*long*/ atom);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final synchronized native int gdk_x11_drawable_get_xid(int /*long*/ drawable);
+public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 
 /** Native methods */
+public static final synchronized native int /*long*/ GDK_DISPLAY();
 public static final synchronized native int /*long*/ GDK_ROOT_PARENT();
 public static final synchronized native int /*long*/ GDK_TYPE_COLOR();
 public static final synchronized native int /*long*/ GDK_TYPE_PIXBUF();
@@ -566,6 +574,7 @@ public static final synchronized native int /*long*/ gdk_screen_get_default();
 public static final synchronized native int gdk_screen_get_monitor_at_window(int /*long*/ screen, int /*long*/ window);
 public static final synchronized native void gdk_screen_get_monitor_geometry (int /*long*/ screen, int monitor_num, GdkRectangle dest);
 public static final synchronized native int gdk_screen_get_n_monitors(int /*long*/ screen);
+public static final synchronized native int gdk_screen_get_number(int /*long*/ screen);
 public static final synchronized native int gdk_screen_height();
 public static final synchronized native int gdk_screen_width();
 public static final synchronized native int gdk_screen_width_mm();
@@ -760,6 +769,7 @@ public static final synchronized native void gtk_notebook_set_scrollable(int /*l
 public static final synchronized native void gtk_notebook_set_show_tabs(int /*long*/ notebook, boolean show_tabs);
 public static final synchronized native void gtk_notebook_set_tab_pos(int /*long*/ notebook, int pos);
 public static final synchronized native void gtk_object_sink(int /*long*/ object);
+public static final synchronized native int /*long*/ gtk_plug_get_id(int /*long*/ plug);
 public static final synchronized native int /*long*/ gtk_plug_new(int /*long*/ socket_id);
 public static final synchronized native int /*long*/ gtk_progress_bar_new();
 public static final synchronized native void gtk_progress_bar_pulse(int /*long*/ pbar);
