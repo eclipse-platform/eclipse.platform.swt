@@ -28,21 +28,6 @@ final class GIFFileFormat extends FileFormat {
 	static final int GIF_EXTENSION_BLOCK_ID = 0x21;
 	static final int GIF_IMAGE_BLOCK_ID = 0x2C;
 	static final int GIF_TRAILER_ID = 0x3B;
-
-	/**
-	 * Return whether or not the specified input stream
-	 * represents a GIF file.
-	 */
-	public static boolean isGIFFile(LEDataInputStream stream) {
-		try {
-			byte[] signature = new byte[3];
-			stream.read(signature);
-			stream.unread(signature);
-			return new String(signature).equals("GIF");
-		} catch (Exception e) {
-			return false;
-		}
-	}
 	
 	/**
 	 * Answer a palette containing numGrays
@@ -56,6 +41,17 @@ final class GIFFileFormat extends FileFormat {
 			colors[i] = new RGB(intensity, intensity, intensity);
 		}
 		return new PaletteData(colors);
+	}
+
+	boolean isFileFormat(LEDataInputStream stream) {
+		try {
+			byte[] signature = new byte[3];
+			stream.read(signature);
+			stream.unread(signature);
+			return new String(signature).equals("GIF");
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**

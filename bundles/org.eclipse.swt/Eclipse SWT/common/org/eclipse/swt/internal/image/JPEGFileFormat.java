@@ -1374,7 +1374,7 @@ void inverseDCT(int[] dataUnit) {
 		}
 	}
 }
-public static boolean isJPEGFile(LEDataInputStream stream) {
+boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		JPEGStartOfImage soi = new JPEGStartOfImage(stream);
 		stream.unread(soi.reference);

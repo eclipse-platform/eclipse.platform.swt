@@ -22,7 +22,7 @@ int iconSize(ImageData i) {
 	int dataSize = (shapeDataStride + maskDataStride) * i.height;
 	return WinBMPFileFormat.BMPHeaderFixedSize + (i.palette.colors.length * 4) + dataSize;
 }
-public static boolean isICOFile(LEDataInputStream stream) {
+boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[4];
 		stream.read(header);

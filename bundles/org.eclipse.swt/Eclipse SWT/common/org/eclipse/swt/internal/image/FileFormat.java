@@ -12,9 +12,15 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public abstract class FileFormat {
+	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image";
+	static final String FORMAT_SUFFIX = "FileFormat";
+	static final String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG"};
+	
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
 	ImageLoader loader;
+	int compression;
+
 byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	// Destructively bit invert data in the given byte array.
 	for (int i = startIndex; i < endIndex; i++) {
@@ -22,6 +28,12 @@ byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	}
 	return data;
 }
+
+/**
+ * Return whether or not the specified input stream
+ * represents a supported file format.
+ */
+abstract boolean isFileFormat(LEDataInputStream stream);
 
 abstract ImageData[] loadFromByteStream();
 
@@ -34,62 +46,48 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 		return null;
 	}
 }
+
 public static ImageData[] load(InputStream is, ImageLoader loader) {
 	FileFormat fileFormat = null;
 	LEDataInputStream stream = new LEDataInputStream(is);
-	if (GIFFileFormat.isGIFFile(stream)) {
-		fileFormat = new GIFFileFormat();
-	} else if (WinBMPFileFormat.isBMPFile(stream)) {
-		fileFormat = new WinBMPFileFormat();
-	} else if (WinICOFileFormat.isICOFile(stream)) {
-		fileFormat = new WinICOFileFormat();
-	} else if (JPEGFileFormat.isJPEGFile(stream)) {
-		fileFormat = new JPEGFileFormat();
-	} else if (PNGFileFormat.isPNGFile(stream)) {
-		fileFormat = new PNGFileFormat();
-	} else {
-		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	boolean isSupported = false;	
+	for (int i = 1; i < FORMATS.length; i++) {
+		try {
+			Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[i] + FORMAT_SUFFIX);
+			fileFormat = (FileFormat) clazz.newInstance();
+			if (fileFormat.isFileFormat(stream)) {
+				isSupported = true;
+				break;
+			}
+		} catch (Exception e) {
+		}
 	}
+	if (!isSupported) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream);
 }
+
 public static void save(OutputStream os, int format, ImageLoader loader) {
+	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
 	/* We do not currently support writing multi-image files,
 	 * so we use the first image data in the loader's array. */
 	ImageData data = loader.data[0];
 	LEDataOutputStream stream = new LEDataOutputStream(os);
-	switch (format) {
-		case SWT.IMAGE_BMP:
-			WinBMPFileFormat f = new WinBMPFileFormat();
-			f.unloadIntoStream(data, stream);
-			break;
-		case SWT.IMAGE_BMP_RLE:
-			f = new WinBMPFileFormat();
-			if (data.depth == 8)
-				f.compression = 1;
-			if (data.depth == 4)
-				f.compression = 2;
-			f.unloadIntoStream(data, stream);
-			break;
-		case SWT.IMAGE_GIF:
-			GIFFileFormat g = new GIFFileFormat();
-			g.unloadIntoStream(data, stream);
-			break;
-		case SWT.IMAGE_ICO:
-			WinICOFileFormat i = new WinICOFileFormat();
-			i.unloadIntoStream(data, stream);
-			break;
-		case SWT.IMAGE_JPEG:
-			JPEGFileFormat j = new JPEGFileFormat();
-			j.unloadIntoStream(data, stream);
-			break;
-		case SWT.IMAGE_PNG:
-			PNGFileFormat p = new PNGFileFormat();
-			p.unloadIntoStream(data, stream);
-			break;
-		default:
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	FileFormat fileFormat = null;
+	try {
+		Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[format] + FORMAT_SUFFIX);
+		fileFormat = (FileFormat) clazz.newInstance();
+	} catch (Exception e) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (format == SWT.IMAGE_BMP_RLE) {
+		switch (data.depth) {
+			case 8: fileFormat.compression = 1; break;
+			case 4: fileFormat.compression = 2; break;
+		}
+	}
+	fileFormat.unloadIntoStream(data, stream);
 }
 
 abstract void unloadIntoByteStream(ImageData image);

@@ -122,11 +122,7 @@ void readNextChunk(PngChunkReader chunkReader) {
 void unloadIntoByteStream(ImageData p1) {
 	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 }
-/**
- * Answer whether the specified input stream
- * contains a PNG image.
- */
-public static boolean isPNGFile(LEDataInputStream stream) {
+boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] signature = new byte[SIGNATURE_LENGTH];
 		stream.read(signature);

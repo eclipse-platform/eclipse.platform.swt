@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.*;
 import java.io.*;
 
 final class WinBMPFileFormat extends FileFormat {
-	int compression;
 	int importantColors;
 	Point pelsPerMeter = new Point(0, 0);
 	public static final int BMPHeaderFixedSize = 40;
@@ -316,7 +315,7 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 	}
 	return 1;
 }
-public static boolean isBMPFile(LEDataInputStream stream) {
+boolean isFileFormat(LEDataInputStream stream) {
 	try {
 		byte[] header = new byte[2];
 		stream.read(header);
