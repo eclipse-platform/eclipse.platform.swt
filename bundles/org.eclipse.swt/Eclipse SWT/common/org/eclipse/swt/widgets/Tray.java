@@ -17,8 +17,11 @@ import org.eclipse.swt.*;
  * Instances of this class represent the system tray that is part
  * of the task bar status area on some operating systems.
  * 
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>(none)</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
