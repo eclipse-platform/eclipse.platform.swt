@@ -561,11 +561,13 @@ protected void init () {
 	}
 
 	/* Initialize scripts list */
-	int [] ppSp = new int [1];
-	int [] piNumScripts = new int [1];
-	OS.ScriptGetProperties (ppSp, piNumScripts);
-	scripts = new int [piNumScripts [0]];
-	OS.MoveMemory (scripts, ppSp [0], scripts.length * 4);
+	if (!OS.IsWinCE) {
+		int [] ppSp = new int [1];
+		int [] piNumScripts = new int [1];
+		OS.ScriptGetProperties (ppSp, piNumScripts);
+		scripts = new int [piNumScripts [0]];
+		OS.MoveMemory (scripts, ppSp [0], scripts.length * 4);
+	}
 	
 	/*
 	 * If we're not on a device which supports palettes,
