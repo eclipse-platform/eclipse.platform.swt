@@ -138,7 +138,6 @@ public class CTabFolder2 extends Composite {
 	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
 	
 	boolean tipShowing;
-	boolean ignoreUp;
 	
 	// borders and shapes
 	int borderLeft = 0;
@@ -1326,8 +1325,6 @@ char getMnemonic (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @deprecated
  */
 public boolean getMinimized() {
 	checkWidget();
@@ -1344,8 +1341,6 @@ public boolean getMinimized() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @deprecated
  */
 public boolean getMaximized() {
 	checkWidget();
@@ -1420,8 +1415,6 @@ public int getTabHeight(){
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
- *
- * @deprecated
  */
 public Control getTopRight() {
 	checkWidget();
@@ -1739,7 +1732,6 @@ void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseExit: {
-			if (ignoreUp) ignoreUp = false;
 			if (minImageState != NORMAL) {
 				minImageState = NORMAL;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
@@ -1806,7 +1798,6 @@ void onMouse(Event event) {
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
-					ignoreUp = true;
 					return;
 				}
 			}
@@ -1886,16 +1877,13 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseUp: {
-			if (ignoreUp) {
-				ignoreUp = false;
-				return;
-			}
 			if (event.button != 1) return;
-			Display display = getDisplay();
 			if (chevronRect.contains(x, y)) {
+				boolean selected = chevronImageState == SELECTED;
 				chevronImageState = HOT;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				update();
+				if (!selected) return;
 				Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 				if (single && selectedIndex != -1){
 					rect = items[selectedIndex].getBounds();	
@@ -1916,9 +1904,11 @@ void onMouse(Event event) {
 				return;
 			}
 			if (minRect.contains(x, y)) {
+				boolean selected = minImageState == SELECTED;
 				minImageState = HOT;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 				update();
+				if (!selected) return;
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
@@ -1931,13 +1921,15 @@ void onMouse(Event event) {
 						minmaxListeners[i].minimize(e);
 					}
 				}
-				if (e.doit) setMinimized(!restore);
+				if (e.doit && !isDisposed()) setMinimized(!restore);
 				return;
 			}
 			if (maxRect.contains(x, y)) {
+				boolean selected = maxImageState == SELECTED;
 				maxImageState = HOT;
 				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 				update();
+				if (!selected) return;
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
@@ -1950,15 +1942,17 @@ void onMouse(Event event) {
 						minmaxListeners[i].maximize(e);
 					}
 				}
-				if (e.doit) setMaximized(!restore);
+				if (e.doit && !isDisposed()) setMaximized(!restore);
 				return;
 			}
 			for (int i=0; i<items.length; i++) {
 				CTabItem2 item = items[i];
 				if (item.closeRect.contains(x,y)){
+					boolean selected = item.closeImageState == SELECTED;
 					item.closeImageState = HOT;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					update();
+					if (!selected) return;
 					CTabFolderEvent e = new CTabFolderEvent(this);
 					e.widget = this;
 					e.time = event.time;
@@ -2508,13 +2502,14 @@ boolean setButtonBounds() {
  * Sets the minimized state of the receiver.
  * <p>
  *
- * @deprecated
- * @param minimized false if folder is to be minimized
+ * @param expanded false if folder is to be minimized
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @deprecated use setMinimized(boolean)
  */
 public void setExpanded (boolean expanded) {
 	setMinimized(!expanded);
