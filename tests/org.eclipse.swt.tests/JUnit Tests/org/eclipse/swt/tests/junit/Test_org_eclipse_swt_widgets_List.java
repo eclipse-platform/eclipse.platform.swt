@@ -1565,7 +1565,8 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	font.dispose();
 	font = new Font(list.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	list.setFont(font);
-	assertTrue(":a:", list.getItemHeight() > lineHeight && font.equals(list.getFont()));
+	assertEquals(font, list.getFont());
+	assertTrue("itemHeight=" + list.getItemHeight() + ", lineHeight=" + lineHeight, list.getItemHeight() > lineHeight);
 	list.setFont(null);
 	font.dispose();
 }
