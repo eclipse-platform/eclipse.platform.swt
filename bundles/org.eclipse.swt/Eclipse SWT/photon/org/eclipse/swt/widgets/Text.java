@@ -870,6 +870,29 @@ public void paste () {
 	OS.free(ptr);
 }
 
+int Ph_EV_BOUNDARY (int widget, int info) {
+	/*
+	* Bug in Photon.  PtMultiText reports boundary events for
+	* the internal (hidden) child widget.  This makes it appear as
+	* though the pointer leaves as soon as it enters the widget
+	* area.  The fix is to filter out these theser events.
+	*/
+	if ((style & SWT.MULTI) != 0) {
+		if (info == 0) return OS.Pt_END;
+		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+		if (cbinfo.event == 0) return OS.Pt_END;
+		PhEvent_t ev = new PhEvent_t ();
+		OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+		switch ((int) ev.subtype) {
+			case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
+			case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
+				return OS.Pt_CONTINUE;
+		}
+	}
+	return super.Ph_EV_BOUNDARY (widget, info);
+}
+
 int Pt_CB_GOT_FOCUS (int widget, int info) {
 	
 	/*
