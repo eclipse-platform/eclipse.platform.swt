@@ -326,7 +326,7 @@ void releaseWidget () {
 int separatorType () {
 	if ((style & (SWT.SHADOW_IN)) != 0) return OS.XmSHADOW_ETCHED_IN;
 	if ((style & (SWT.SHADOW_OUT)) != 0) return OS.XmSHADOW_ETCHED_OUT;
-	return OS.XmSHADOW_ETCHED_IN;
+	return OS.XmSINGLE_LINE;
 }
 /**
  * Controls how text and images will be displayed in the receiver.

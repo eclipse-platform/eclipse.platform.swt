@@ -554,6 +554,7 @@ public class OS {
 	public static final int XmSHADOW_ETCHED_OUT = 0x6;
 	public static final int XmSHADOW_IN = 0x7;
 	public static final int XmSHADOW_OUT = 0x8;
+	public static final int XmSINGLE_LINE = 0x1;
 	public static final int XmSINGLE_LINE_EDIT = 0x1;
 	public static final int XmSTRING = 0x2;
 	public static final int XmSTRING_COMPONENT_SEPARATOR = 0x4;
