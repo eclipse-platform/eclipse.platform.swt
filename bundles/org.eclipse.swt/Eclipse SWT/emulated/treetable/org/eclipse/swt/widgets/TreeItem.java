@@ -131,8 +131,11 @@ void addItem (TreeItem item, int index) {
 		parent.makeAvailable (item);
 		parent.redrawFromItemDownwards (availableIndex);
 	} else {
-		/* receiver will need update if this is its first child */
-		if (isAvailable () && items.length == 1) redrawItem ();
+		/* receiver will now need an expander box if this is its first child */
+		if (isAvailable () && items.length == 1) {
+			Rectangle bounds = getExpanderBounds ();
+			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+		}
 	}
 }
 static Tree checkNull (Tree tree) {
@@ -856,6 +859,7 @@ void recomputeTextWidths (GC gc) {
 	}
 }
 void redrawItem () {
+	if (!isAvailable ()) return;
 	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
 }
 /*
@@ -937,7 +941,7 @@ void removeItem (TreeItem item, int index) {
 	/* second condition below handles creation of item within Expand callback */
 	if (items.length == 0 && !parent.inExpand) {
 		expanded = false;
-		if (isAvailable ()) redrawItem ();	/* expander no longer needed */
+		redrawItem ();		/* expander box no longer needed */
 	}
 }
 public void setBackground (Color value) {

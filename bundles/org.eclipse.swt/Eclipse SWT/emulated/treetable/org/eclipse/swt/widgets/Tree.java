@@ -240,7 +240,7 @@ void createItem (TreeItem item, int index) {
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	int redrawIndex = index;
-	if (redrawIndex > 0) redrawIndex--;
+	if (redrawIndex > 0 && item.isLastChild ()) redrawIndex--;
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);
 }
 public void deselectAll () {
@@ -2158,8 +2158,14 @@ void updateHorizontalBar () {
 		maxX = Math.max (maxX, itemBounds.x + itemBounds.width);
 	}
 	maxX += horizontalOffset;
+
+	int barMax = hBar.getMaximum ();
+	if (barMax == maxX) return;
+	int clientWidth = getClientArea ().width;
+	if (maxX <= clientWidth && barMax <= clientWidth) return;
+
 	hBar.setMaximum (maxX);
-	int pageSize = Math.min (maxX, getClientArea ().width);
+	int pageSize = Math.min (maxX, clientWidth);
 	hBar.setThumb (pageSize);
 	hBar.setPageIncrement (pageSize);
 
@@ -2203,13 +2209,18 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 }
 void updateVerticalBar () {
 	ScrollBar vBar = getVerticalBar ();
-	int maximum = Math.max (1,availableItems.length);
-	if (maximum == vBar.getMaximum ()) return;
+	int maximum = Math.max (1, availableItems.length);
+	int barMaximum = vBar.getMaximum ();
+	if (maximum == barMaximum) return;
+
+	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	if (maximum <= pageSize && barMaximum <= pageSize) return;
+	pageSize = Math.min (pageSize, maximum);
 
 	vBar.setMaximum (maximum);
-	int pageSize = Math.min (maximum, (getClientArea ().height - getHeaderHeight ()) / itemHeight);
 	vBar.setThumb (pageSize);
 	vBar.setPageIncrement (pageSize);
+
 	/* reclaim any space now left on the bottom */
 	if (maximum < topIndex + pageSize) {
 		topIndex = maximum - pageSize;
