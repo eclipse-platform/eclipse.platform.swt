@@ -1157,17 +1157,20 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
 	Event event = new Event ();
-	GC gc = event.gc = new GC (this);
-	Region region = Region.motif_new (display, damagedRegion);
-	gc.setClipping (region);
+	GCData data = new GCData();
+	data.damageRgn = damagedRegion;
+	GC gc = event.gc = GC.motif_new(this, data);
+	OS.XSetRegion(xDisplay, gc.handle, damagedRegion);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
-	event.x = rect.x;  event.y = rect.y;
-	event.width = rect.width;  event.height = rect.height;
+	event.x = rect.x;
+	event.y = rect.y;
+	event.width = rect.width;
+	event.height = rect.height;
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
+	OS.XDestroyRegion (damagedRegion);
+	damagedRegion = 0;
 	event.gc = null;
 	return 0;
 }

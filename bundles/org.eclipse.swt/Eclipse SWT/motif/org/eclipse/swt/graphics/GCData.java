@@ -33,7 +33,7 @@ public final class GCData {
 	public int background = -1;
 	public Font font;
 	public int colormap;
-	public int clipRgn;
+	public int clipRgn, damageRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public byte[] dashes;
 	public int renderTable;

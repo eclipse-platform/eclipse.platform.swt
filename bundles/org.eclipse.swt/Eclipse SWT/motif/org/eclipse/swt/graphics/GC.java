@@ -1879,16 +1879,11 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
-		OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
-		return new Rectangle(0, 0, width[0], height[0]);
-	}
-	XRectangle rect = new XRectangle();
-	OS.XClipBox(clipRgn, rect);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	Region region = new Region();
+	getClipping(region);
+	Rectangle rect = region.getBounds();
+	region.dispose();
+	return rect;
 }
 /** 
  * Sets the region managed by the argument to the current
@@ -1907,20 +1902,23 @@ public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int hRegion = region.handle;
+	OS.XSubtractRegion (hRegion, hRegion, hRegion);
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
+		int[] width = new int[1], height = new int[1], unused = new int[1];
 		OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
-		OS.XSubtractRegion (hRegion, hRegion, hRegion);
 		XRectangle rect = new XRectangle();
-		rect.x = 0; rect.y = 0;
-		rect.width = (short)width[0]; rect.height = (short)height[0];
+		rect.x = 0;
+		rect.y = 0;
+		rect.width = (short)width[0];
+		rect.height = (short)height[0];
 		OS.XUnionRectWithRegion(rect, hRegion, hRegion);
-		return;
+	} else {
+		OS.XUnionRegion (hRegion, clipRgn, hRegion);
 	}
-	OS.XSubtractRegion (hRegion, hRegion, hRegion);
-	OS.XUnionRegion (clipRgn, hRegion, hRegion);
+	if (data.damageRgn != 0) {
+		OS.XIntersectRegion(hRegion, data.damageRgn, hRegion);
+	}
 }
 String getCodePage () {
 	return data.font.codePage;
@@ -2435,6 +2433,31 @@ public void setBackground (Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.XSetBackground(data.display, handle, color.handle.pixel);
 }
+void setClipping(int clipRgn) {
+	if (clipRgn == 0) {
+		if (data.clipRgn != 0) {
+			OS.XDestroyRegion (data.clipRgn);
+			data.clipRgn = 0;
+		}
+		if (data.damageRgn == 0) {
+			OS.XSetClipMask (data.display, handle, OS.None);
+		} else {
+			OS.XSetRegion (data.display, handle, data.damageRgn);			
+		}
+	} else {
+		if (data.clipRgn == 0) data.clipRgn = OS.XCreateRegion ();
+		OS.XSubtractRegion (data.clipRgn, data.clipRgn, data.clipRgn);
+		OS.XUnionRegion (clipRgn, data.clipRgn, data.clipRgn);
+		int clipping = clipRgn;
+		if (data.damageRgn != 0) {
+			clipping = OS.XCreateRegion();
+			OS.XUnionRegion(clipping, clipRgn, clipping);
+			OS.XIntersectRegion(clipping, data.damageRgn, clipping);
+		}
+		OS.XSetRegion (data.display, handle, clipping);
+		if (clipping != clipRgn) OS.XDestroyRegion(clipping);
+	}
+}
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -2451,17 +2474,15 @@ public void setBackground (Color color) {
  */
 public void setClipping (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		data.clipRgn = clipRgn = OS.XCreateRegion ();
-	} else {
-		OS.XSubtractRegion (clipRgn, clipRgn, clipRgn);
-	}
 	XRectangle rect = new XRectangle ();
-	rect.x = (short) x;  rect.y = (short) y;
-	rect.width = (short) width;  rect.height = (short) height;
-	OS.XSetClipRectangles (data.display, handle, 0, 0, rect, 1, OS.Unsorted);
+	rect.x = (short) x; 
+	rect.y = (short) y;
+	rect.width = (short) width; 
+	rect.height = (short) height;
+	int clipRgn = OS.XCreateRegion();
 	OS.XUnionRectWithRegion(rect, clipRgn, clipRgn);
+	setClipping(clipRgn);
+	OS.XDestroyRegion(clipRgn);
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -2477,15 +2498,10 @@ public void setClipping (int x, int y, int width, int height) {
 public void setClipping (Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
-		OS.XSetClipMask (data.display, handle, OS.None);
-		int clipRgn = data.clipRgn;
-		if (clipRgn != 0) {
-			OS.XDestroyRegion (clipRgn);
-			data.clipRgn = 0;
-		}
-		return;
+		setClipping(0);
+	} else {
+		setClipping (rect.x, rect.y, rect.width, rect.height);
 	}
-	setClipping (rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -2500,22 +2516,7 @@ public void setClipping (Rectangle rect) {
  */
 public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
-	if (region == null) {
-		OS.XSetClipMask (data.display, handle, OS.None);
-		if (clipRgn != 0) {
-			OS.XDestroyRegion (clipRgn);
-			data.clipRgn = 0;
-		}
-	} else {
-		if (clipRgn == 0) {
-			data.clipRgn = clipRgn = OS.XCreateRegion ();
-		} else {
-			OS.XSubtractRegion (clipRgn, clipRgn, clipRgn);
-		}
-		OS.XUnionRegion (region.handle, clipRgn, clipRgn);
-		OS.XSetRegion (data.display, handle, region.handle);
-	}
+	setClipping(region != null ? region.handle : 0);
 }
 /** 
  * Sets the font which will be used by the receiver
