@@ -191,6 +191,7 @@ public class StyledText extends Canvas {
 		int endLine;									// last (wrapped) line to print
 		boolean singleLine;								// widget single line mode
 		Point selection = null;					// selected text
+		boolean mirrored;						//indicates the printing gc should be mirrored
 
 	/**
 	 * Creates an instance of <class>Printing</class>.
@@ -207,6 +208,7 @@ public class StyledText extends Canvas {
 		this.parent = parent;
 		this.printer = printer;
 		this.printOptions = printOptions;
+		this.mirrored = (parent.getStyle() & SWT.MIRRORED) != 0;
 		singleLine = parent.isSingleLine();
 		startPage = 1;
 		endPage = Integer.MAX_VALUE;
@@ -421,8 +423,8 @@ public class StyledText extends Canvas {
 		clientArea.height -= (clientArea.y + trim.height); 
 		
 		// make the orientation of the printer gc match the control
-		int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-		gc = new GC(printer, parent.getStyle() & mask);
+		int style = mirrored ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+		gc = new GC(printer, style);
 		gc.setFont(printerFont);
 		renderer = new PrintRenderer(
 			printer, printerFont, gc, printerContent,
