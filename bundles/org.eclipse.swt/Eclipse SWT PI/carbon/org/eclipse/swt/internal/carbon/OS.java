@@ -23,6 +23,7 @@ public class OS {
 	/** Constants */
 	public static final int RGBDirect = 16;
 	public static final int bold = 1;
+	public static final int cantGetFlavorErr = -1854;
 	public static final int checkMark = 18;
 	public static final int cmdKey = 1 << 8;
 	public static final int controlKey = 1 << 12;
@@ -543,6 +544,7 @@ public class OS {
 	public static final int noErr = 0;
 	public static final int normal = 0;
 	public static final int optionKey = 1 << 11;
+	public static final int osEvt = 15;
 	public static final int shiftKey = 1 << 9;
 	public static final int smSystemScript = -1;
 	public static final int srcCopy = 0;
@@ -604,7 +606,8 @@ public static final native int ATSUSetTextPointerLocation(int iTextLayout, int i
 public static final native int ATSUTextInserted(int iTextLayout, int iInsertionLocation, int iInsertionLength);
 public static final native int ATSUTextDeleted(int iTextLayout, int iInsertionLocation, int iInsertionLength);
 public static final native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
-public static final native int AddDataBrowserListViewColumn(int browser, DataBrowserListViewColumnDesc columnDesc, int position);  
+public static final native int AddDataBrowserListViewColumn(int browser, DataBrowserListViewColumnDesc columnDesc, int position);
+public static final native int AddDragItemFlavor(int theDrag, int theItemRef, int theType, byte[] dataPtr, int dataSize, int theFlags);  
 public static final native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
 public static final native int AutoSizeDataBrowserListViewColumns(int cHandle);
 public static final native void BeginUpdate(int wHandle);
@@ -732,6 +735,7 @@ public static final native int DisableControl(int cHandle);
 public static final native void DisableMenuCommand(int mHandle, int commandId);
 public static final native void DisableMenuItem(int mHandle, short index);
 public static final native void DisposeControl(int cHandle);
+public static final native int DisposeDrag(int theDrag);
 public static final native void DisposeGWorld(int offscreenGWorld);
 public static final native void DisposeHandle(int handle);
 public static final native void DisposeMenu(int mHandle);
@@ -996,6 +1000,7 @@ public static final native int NavDialogSetSaveFileName(int dialogHandle, int fi
 public static final native int NavGetDefaultDialogCreationOptions(NavDialogCreationOptions outOptions);
 public static final native int NavDialogGetReply(int inDialog, NavReplyRecord outReply);
 public static final native int NewControl(int owningWindow, Rect boundsRect, byte[] controlTitle, boolean initiallyVisible, short initialValue, short minimumValue, short maximumValue, short procID, int controlReference);
+public static final native int NewDrag(int[] theDrag); 
 public static final native int NewGWorldFromPtr(int[] offscreenGWorld, int PixelFormat, Rect boundsRect, int cTable, int aGDevice, int flags, int newBuffer, int rowBytes);
 public static final native int NewHandle(int size);
 public static final native int NewHandleClear(int size);
@@ -1095,7 +1100,9 @@ public static final native int SetDataBrowserTableViewHiliteStyle(int browser, i
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
 public static final native int SetDataBrowserTableViewNamedColumnWidth(int browser, int column, short width);
 public static final native int SetDataBrowserTarget(int cHandle, int rootID);
+public static final native int SetDragAllowableActions(int theDrag, int inActions, boolean isLocal);
 public static final native int SetDragDropAction(int theDrag, int inAction);
+public static final native int SetDragInputProc(int theDrag, int inputProc, int dragInputRefCon);
 public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
@@ -1178,6 +1185,7 @@ public static final native void TextFont(short fontID);
 public static final native void TextMode(short mode);
 public static final native void TextSize(short size);
 public static final native short TextWidth(byte[] textBuf, short firstByte, short byteCount);
+public static final native int TrackDrag(int theDrag, EventRecord theEvent, int theRegion);
 public static final native int TrackMouseLocationWithOptions(int inPort, int inOptions, double inTime, Point outPt, int [] outModifiers, short[] outResult);
 public static final native void UnionRect(Rect srcA, Rect srcB, Rect dst);
 public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);

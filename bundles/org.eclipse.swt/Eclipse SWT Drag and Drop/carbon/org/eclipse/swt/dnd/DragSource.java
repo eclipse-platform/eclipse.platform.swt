@@ -13,6 +13,9 @@ package org.eclipse.swt.dnd;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.Point;
 
 /**
  *
@@ -127,10 +130,11 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (control.getData(DRAGSOURCEID) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	}
 	control.setData(DRAGSOURCEID, this);
-
+	
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
@@ -140,7 +144,7 @@ public DragSource(Control control, int style) {
 			}
 			if (event.type == SWT.DragDetect) {
 				if (!DragSource.this.isDisposed()) {
-					//DragSource.this.drag(event);
+					DragSource.this.drag(event);
 				}
 			}
 		}
@@ -153,6 +157,11 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+}
+
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
 }
 
 /**
@@ -192,17 +201,119 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
-
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
+}
+
+private void drag(Event dragEvent) {
+	DNDEvent event = new DNDEvent();
+	event.widget = this;	
+	event.time = dragEvent.time;
+	event.doit = true;
+	try {
+		notifyListeners(DND.DragStart, event);
+	} catch (Throwable e) {
+		return;
+	}
+	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
+	
+	int[] theDrag = new int[1];
+	if (OS.NewDrag(theDrag) != OS.noErr) {
+		event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();
+		event.doit = false;
+		event.detail = DND.DROP_NONE; 
+		try {
+			notifyListeners(DND.DragEnd, event);
+		} catch (Throwable e) {}
+		return;
+	}
+	
+	Point pt = new Point();
+	OS.GetGlobalMouse (pt);
+	
+	EventRecord theEvent = new EventRecord();
+	theEvent.message = OS.kEventMouseMoved;
+	theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
+	theEvent.what = OS.osEvt;
+	theEvent.where_h = (short)pt.h;
+	theEvent.where_v = (short)pt.v;
+	
+	// Immediately get data for transfer.  On other platforms, we wait
+	// until the data is requested, but on the mac, particularly in the case of files,
+	// we need to know how many items are being transferred when registering.  
+	// The only way to know this is to get the data.
+	int index = 0;
+	for (int i = 0; i < transferAgents.length; i++) {
+		int[] types = transferAgents[i].getTypeIds();
+		for (int j = 0; j < types.length; j++) {
+			TransferData transferData = new TransferData();
+			transferData.type = types[j];
+			event = new DNDEvent();
+			event.widget = this;
+			event.time = (int)System.currentTimeMillis(); 
+			event.dataType = transferData; 
+			try {
+				notifyListeners(DND.DragSetData, event);
+			} catch (Throwable e) {
+				continue;
+			}
+			if (event.data == null) continue;
+			transferAgents[i].javaToNative(event.data, transferData);
+			if (transferData.result != OS.noErr || transferData.data == null) continue; 
+			for (int k = 0; k < transferData.data.length; k++) {
+				byte[] data = transferData.data[k];
+				OS.AddDragItemFlavor(theDrag[0], index++, types[j], data, data.length, 0);	
+			}	
+		}	
+	}
+
+	if (index == 0) {
+		OS.DisposeDrag(theDrag[0]);
+		event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();
+		event.doit = false;
+		event.detail = DND.DROP_NONE; 
+		try {
+			notifyListeners(DND.DragEnd, event);
+		} catch (Throwable e) {}
+		return;
+	}
+	
+	int theRegion = OS.NewRgn();
+	OS.SetRectRgn(theRegion, (short)(pt.h-10), (short)(pt.v-10), (short)(pt.h+10), (short)(pt.v+10));
+	
+	int operations = opToOsOp(getStyle());
+	//set operations twice - local and not local
+	OS.SetDragAllowableActions(theDrag[0], operations, true);
+	OS.SetDragAllowableActions(theDrag[0], operations, false);
+	
+	int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+	
+	int operation = DND.DROP_NONE;
+	if (result == OS.noErr) { 
+		int[] outAction = new int[1];
+		OS.GetDragDropAction(theDrag[0], outAction);
+		operation = osOpToOp(outAction[0]);
+	}
+	
+	event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis();
+	event.doit = result == OS.noErr;
+	event.detail = operation; 
+	try {
+		notifyListeners(DND.DragEnd, event);
+	} catch (Throwable e) {}
+			
+	OS.DisposeRgn(theRegion);
+	OS.DisposeDrag(theDrag[0]);
 }
 
 /**
@@ -235,6 +346,37 @@ private void onDispose() {
 	control.setData(DRAGSOURCEID, null);
 	control = null;
 	transferAgents = null;
+}
+
+private int opToOsOp(int operation) {
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= OS.kDragActionCopy;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= OS.kDragActionAlias;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= OS.kDragActionDelete;
+	}
+	return osOperation;
+}
+
+private int osOpToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & OS.kDragActionCopy) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & OS.kDragActionAlias) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & OS.kDragActionDelete) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	if (osOperation == OS.kDragActionAll) {
+		operation = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+	}
+	return operation;
 }
 
 /**

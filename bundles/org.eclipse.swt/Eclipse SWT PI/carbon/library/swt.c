@@ -120,6 +120,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEProcessAppleEve
 }
 #endif /* NO_AEProcessAppleEvent */
 
+#ifndef NO_AddDragItemFlavor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDragItemFlavor
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("AddDragItemFlavor\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)AddDragItemFlavor((DragRef)arg0, (DragItemRef)arg1, (FlavorType)arg2, (const void *)lparg3, (Size)arg4, (FlavorFlags)arg5);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_AppendMenuItemTextWithCFString
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTextWithCFString
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)
@@ -2062,6 +2078,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl
 	DisposeControl((ControlRef)arg0);
 }
 #endif /* NO_DisposeControl */
+
+#ifndef NO_DisposeDrag
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeDrag
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeDrag\n")
+
+	return (jint)DisposeDrag((DragRef)arg0);
+}
+#endif
 
 #ifndef NO_DisposeGWorld
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeGWorld
@@ -5666,6 +5692,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl
 }
 #endif /* NO_NewControl */
 
+#ifndef NO_NewDrag
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDrag
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("NewDrag\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)NewDrag((DragRef *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_NewGWorldFromPtr
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewGWorldFromPtr
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
@@ -6875,6 +6917,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTar
 }
 #endif /* NO_SetDataBrowserTarget */
 
+#ifndef NO_SetDragAllowableActions
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDragAllowableActions
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetDragAllowableActions\n")
+
+	return (jint)SetDragAllowableActions((DragRef)arg0, (DragActions)arg1, (Boolean)arg2);
+}
+#endif
+
 #ifndef NO_SetDragDropAction
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDragDropAction
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -6884,6 +6936,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDragDropAction
 	return (jint)SetDragDropAction((DragRef)arg0, (DragActions)arg1);
 }
 #endif /* NO_SetDragDropAction */
+
+#ifndef NO_SetDragInputProc
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDragInputProc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SetDragInputProc\n")
+
+	return (jint)SetDragInputProc((DragRef)arg0, (DragInputUPP)arg1, (void *)arg2);
+}
+#endif
 
 #ifndef NO_SetEventLoopTimerNextFireTime
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventLoopTimerNextFireTime
@@ -7856,6 +7918,22 @@ JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextWidth
 	return rc;
 }
 #endif /* NO_TextWidth */
+
+#ifndef NO_TrackDrag
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackDrag
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	EventRecord _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("TrackDrag\n")
+
+	if (arg1) lparg1 = getEventRecordFields(env, arg1, &_arg1);
+	rc = (jint)TrackDrag((DragRef)arg0, (const EventRecord *)lparg1, (RgnHandle)arg2);
+	if (arg1) setEventRecordFields(env, arg1, lparg1);
+	return rc;
+}
+#endif
 
 #ifndef NO_TrackMouseLocationWithOptions
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocationWithOptions
