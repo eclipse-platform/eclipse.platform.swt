@@ -148,17 +148,22 @@ void generateStringArray(Method method) {
 }
 
 void generateDefines(Method[] methods) {
-	int methodCount = 0;
+	if (methods.length == 0) return;
+	output("typedef enum {");
+	outputDelimiter();
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		output("#define ");
+		output("\t");
 		output(getFunctionName(method));
-		output("_FUNC ");
-		output(String.valueOf(methodCount));
-		methodCount++;
+		output("_FUNC,");
 		outputDelimiter();
-	}	
+	}
+	Class clazz = methods[0].getDeclaringClass();
+	output("} ");
+	output(getClassName(clazz));
+	output("_FUNCS;");
+	outputDelimiter();
 }
 
 }
