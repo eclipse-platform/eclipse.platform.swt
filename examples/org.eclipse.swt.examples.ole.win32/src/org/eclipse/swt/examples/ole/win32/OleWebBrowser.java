@@ -102,7 +102,7 @@ class OleWebBrowser {
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"LocationName"}); 
 		int dispIdMember = rgdispid[0];
 		Variant pVarResult = oleAutomation.getProperty(dispIdMember);
-		if (pVarResult == null) return null;
+		if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR) return null;
 		return pVarResult.getString();
 	}
 	
@@ -117,7 +117,7 @@ class OleWebBrowser {
 		int dispIdMember = rgdispid[0];
 		
 		Variant pVarResult = oleAutomation.getProperty(dispIdMember);
-		if (pVarResult == null) return null;
+		if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR) return null;
 		return pVarResult.getString();
 	}
 	
@@ -137,78 +137,56 @@ class OleWebBrowser {
 		int dispIdMember = rgdispid[0];
 		
 		Variant pVarResult = oleAutomation.getProperty(dispIdMember);
-		if (pVarResult == null) return -1;
+		if (pVarResult == null || pVarResult.getType() != OLE.VT_I4) return -1;
 		return pVarResult.getInt();
 	}
 	
 	/**
 	 * Navigates backwards through previously visited web sites.
-	 * 
-	 * @return the platform-defined result code for the "GoBack" method invocation
 	 */
-	public int GoBack() {
+	public void GoBack() {
 	
 		// dispid=100, type=METHOD, name="GoBack"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoBack"}); 
 		int dispIdMember = rgdispid[0];
-		
-		Variant pVarResult = oleAutomation.invoke(dispIdMember);
-		if (pVarResult == null) return 0;
-		return pVarResult.getInt();
+		oleAutomation.invoke(dispIdMember);
 	}
 	
 	/**
 	 * Navigates backwards through previously visited web sites.
-	 * 
-	 * @return the platform-defined result code for the "GoForward" method invocation
 	 */
-	public int GoForward() {
+	public void GoForward() {
 	
 		// dispid=101, type=METHOD, name="GoForward"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoForward"}); 
 		int dispIdMember = rgdispid[0];
-		
-		Variant pVarResult = oleAutomation.invoke(dispIdMember);
-		if (pVarResult == null) return 0;
-		return pVarResult.getInt();
+		oleAutomation.invoke(dispIdMember);
 	}
 	
 	/**
 	 * Navigates to home page.
-	 *
-	 * @return the platform-defined result code for the "GoHome" method invocation
 	 */
-	public int GoHome() {
+	public void GoHome() {
 		// dispid=102, type=METHOD, name="GoHome"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoHome"}); 
 		int dispIdMember = rgdispid[0];
-		
-		Variant pVarResult = oleAutomation.invoke(dispIdMember);
-		if (pVarResult == null) return 0;
-		return pVarResult.getInt();
+		oleAutomation.invoke(dispIdMember);
 	}
 	
 	/**
 	 * Navigates to user-specified Web search gateway.
-	 *
-	 * @return the platform-defined result code for the "GoSearch" method invocation
 	 */
-	public int GoSearch() {
+	public void GoSearch() {
 		// dispid=103, type=METHOD, name="GoSearch"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoSearch"}); 
 		int dispIdMember = rgdispid[0];
-		
-		Variant pVarResult = oleAutomation.invoke(dispIdMember);
-		if (pVarResult == null) return 0;
-		return pVarResult.getInt();
+		oleAutomation.invoke(dispIdMember);
 	}
 	
 	/**
 	 * Navigates to a particular URL.
-	 *
-	 * @return the platform-defined result code for the "Navigate" method invocation
 	 */
-	public int Navigate(String url) {
+	public void Navigate(String url) {
 		// dispid=104, type=METHOD, name="Navigate"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Navigate", "URL"}); 
 		int dispIdMember = rgdispid[0];
@@ -217,10 +195,7 @@ class OleWebBrowser {
 		rgvarg[0] = new Variant(url);
 		int[] rgdispidNamedArgs = new int[1];
 		rgdispidNamedArgs[0] = rgdispid[1]; // identifier of argument
-		Variant pVarResult = oleAutomation.invoke(dispIdMember, rgvarg, rgdispidNamedArgs);
-	
-		if (pVarResult == null) return 0;
-		return pVarResult.getInt();
+		oleAutomation.invoke(dispIdMember, rgvarg, rgdispidNamedArgs);
 	}
 	
 	/**
@@ -232,7 +207,6 @@ class OleWebBrowser {
 		// dispid= 4294966746, type=METHOD, name="Refresh"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Refresh"}); 
 		int dispIdMember = rgdispid[0];
-		
 		oleAutomation.invokeNoReply(dispIdMember);
 	}
 	
@@ -245,7 +219,6 @@ class OleWebBrowser {
 		// dispid=106, type=METHOD, name="Stop"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Stop"}); 
 		int dispIdMember = rgdispid[0];
-		
-		Variant pVarResult = oleAutomation.invoke(dispIdMember);
+		oleAutomation.invoke(dispIdMember);
 	}	
 }
