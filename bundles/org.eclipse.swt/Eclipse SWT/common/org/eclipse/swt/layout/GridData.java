@@ -127,18 +127,58 @@ public final class GridData {
 	public int verticalSpan = 1;
 	
 	/**
-	 * grabExcessHorizontalSpace specifies whether the cell will be made
-	 * wide enough to fit the remaining horizontal space.
-	 *
-	 * The default value is false.
+	 * <p>grabExcessHorizontalSpace specifies whether the width of the cell 
+	 * changes depending on the size of the parent Composite.  If 
+	 * grabExcessHorizontalSpace is <code>true</code>, the following rules
+	 * apply to the width of the cell:</p>
+	 * <ul>
+	 * <li>If extra horizontal space is available in the parent, the cell will 
+	 * grow to be wider than its preferred width.  The new width 
+	 * will be "preferred width + delta" where delta is the extra 
+	 * horizontal space divided by the number of grabbing columns.</li>
+	 * <li>If there is not enough horizontal space available in the parent, the 
+	 * cell will shrink until it reaches its minimum width as specified by 
+	 * GridData#minimumWidth. The new width will be the maximum of 
+	 * "minimumWidth" and "preferred width - delta", where delta is 
+	 * the amount of space missing divided by the number of grabbing columns.</li>
+	 * <li>If the parent is packed, the cell will be its preferred width 
+	 * as specified by GridData#widthHint.</li>
+	 * <li>If the control spans multiple columns and there are no other grabbing 
+	 * controls in any of the spanned columns, the last column in the span will
+	 * grab the extra space.  If there is at least one other grabbing control
+	 * in the span, the grabbing will be spread over the columns already 
+	 * marked as grabExcessHorizontalSpace.</li>
+	 * </ul>
+	 * 
+	 * <p>The default value is false.</p>
 	 */	
 	public boolean grabExcessHorizontalSpace = false;
 	
 	/**
-	 * grabExcessVerticalSpace specifies whether the cell will be made
-	 * tall enough to fit the remaining vertical space.
-	 *
-	 * The default value is false.
+	 * <p>grabExcessVerticalSpace specifies whether the height of the cell 
+	 * changes depending on the size of the parent Composite.  If 
+	 * grabExcessVerticalSpace is <code>true</code>, the following rules
+	 * apply to the height of the cell:</p>
+	 * <ul>
+	 * <li>If extra vertical space is available in the parent, the cell will 
+	 * grow to be taller than its preferred height.  The new height 
+	 * will be "preferred height + delta" where delta is the extra 
+	 * vertical space divided by the number of grabbing rows.</li>
+	 * <li>If there is not enough vertical space available in the parent, the 
+	 * cell will shrink until it reaches its minimum height as specified by 
+	 * GridData#minimumHeight. The new height will be the maximum of 
+	 * "minimumHeight" and "preferred height - delta", where delta is 
+	 * the amount of space missing divided by the number of grabbing rows.</li>
+	 * <li>If the parent is packed, the cell will be its preferred height 
+	 * as specified by GridData#heightHint.</li>
+	 * <li>If the control spans multiple rows and there are no other grabbing 
+	 * controls in any of the spanned rows, the last row in the span will
+	 * grab the extra space.  If there is at least one other grabbing control
+	 * in the span, the grabbing will be spread over the rows already 
+	 * marked as grabExcessVerticalSpace.</li>
+	 * </ul>
+	 * 
+	 * <p>The default value is false.</p>
 	 */	
 	public boolean grabExcessVerticalSpace = false;
 
