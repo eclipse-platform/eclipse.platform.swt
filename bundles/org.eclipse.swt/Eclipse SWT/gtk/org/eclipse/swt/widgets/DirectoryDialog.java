@@ -109,7 +109,7 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	boolean useChooserDialog = OS.gtk_check_version (2, 4, 10) == 0;
+	boolean useChooserDialog = OS.GTK_VERSION >= OS.VERSION (2, 4, 10); 
 	if (useChooserDialog) {
 		return openChooserDialog ();
 	} else {
