@@ -422,7 +422,7 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
 //			}
 			if (defer) {
-				hdwp = OS.DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+				hdwp = DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 				if (hdwp == 0) return false;
 			} else {
 				SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);

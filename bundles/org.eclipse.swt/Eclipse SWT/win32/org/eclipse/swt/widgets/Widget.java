@@ -307,6 +307,33 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+int DeferWindowPos(int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags){
+	if (OS.IsWinCE) {
+		/*
+		* Feature in Windows.  On Windows CE, DeferWindowPos always causes
+		* a WM_SIZE message, even when the new size is the same as the old
+		* size.  The fix is to detect that the size has not changed and set
+		* SWP_NOSIZE.
+		*/
+		if ((uFlags & OS.SWP_NOSIZE) == 0) {
+			RECT lpRect = new RECT ();
+			OS.GetWindowRect (hWnd, lpRect);
+			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
+				/*
+				* Feature in Windows.  On Windows CE, DeferWindowPos when called
+				* with SWP_DRAWFRAME always causes a WM_SIZE message, even
+				* when SWP_NOSIZE is set and when the new size is the same as the
+				* old size.  The fix is to clear SWP_DRAWFRAME when the size is
+				* the same.
+				*/
+				uFlags &= ~OS.SWP_DRAWFRAME;
+				uFlags |= OS.SWP_NOSIZE;
+			}
+		}
+	}
+	return OS.DeferWindowPos (hWinPosInfo, hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the receiver and all its descendents. After this method has
@@ -1004,7 +1031,7 @@ boolean SetWindowPos (int hWnd, int hWndInsertAfter, int X, int Y, int cx, int c
 			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
 				/*
 				* Feature in Windows.  On Windows CE, SetWindowPos() when called
-				* with SWP_DRAWFRAME always causes a WM_SIZE message, even when
+				* with SWP_DRAWFRAME always causes a WM_SIZE message, even
 				* when SWP_NOSIZE is set and when the new size is the same as the
 				* old size.  The fix is to clear SWP_DRAWFRAME when the size is
 				* the same.
