@@ -363,9 +363,6 @@ public class OS {
 	public static final int kSheetWindowClass = 11;
 	public static final int kStdCFStringAlertVersionOne = 1;
 	public static final int kControlSliderDoesNotPoint = 2;
-	public static final int kThemeMetricHSliderHeight = 41;
-	public static final int kThemeMetricScrollBarWidth = 0;
-	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
 	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
@@ -398,6 +395,12 @@ public class OS {
 	public static final int kThemeDisclosureLeft = 2;
 	public static final int kThemeEmphasizedSystemFont = 4;
 	public static final int kThemeIBeamCursor = 4;
+	public static final int kThemeMetricEditTextFrameOutset = 5;
+	public static final int kThemeMetricFocusRectOutset = 7;
+	public static final int kThemeMetricHSliderHeight = 41;
+	public static final int kThemeMetricNormalProgressBarThickness = 58;
+	public static final int kThemeMetricScrollBarWidth = 0;
+	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kThemeNotAllowedCursor = 18;
 	public static final int kThemePointingHandCursor = 10;
 	public static final int kThemePushButton = 0;
@@ -409,6 +412,7 @@ public class OS {
 	public static final int kThemeSmallSystemFont = 1;
 	public static final int kThemeSpinningCursor = 14;
 	public static final int kThemeStateActive = 1;
+	public static final int kThemeStateInactive = 0;
 	public static final int kThemeStatePressed = 2;
 	public static final int kThemeSystemFont = 0;
 	public static final int kThemeToolbarFont = 108;
