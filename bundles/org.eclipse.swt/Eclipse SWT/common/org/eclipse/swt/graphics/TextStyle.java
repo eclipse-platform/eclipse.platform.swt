@@ -15,8 +15,23 @@ import org.eclipse.swt.*;
 /**
  * <code>TextStyle</code> defines a set of styles that can be applied
  * to a range of text.
+ * <p>
+ * The hashCode() method in this class uses the values of the public
+ * fields to compute the hash value. When storing instances of the
+ * class in hashed collections, do not modify these fields after the
+ * object has been inserted.  
+ * </p>
+ * <p>
+ * Application code does <em>not</em> need to explicitly release the
+ * resources managed by each instance when those instances are no longer
+ * required, and thus no <code>dispose()</code> method is provided.
+ * </p>
  * 
- *  @since 3.0
+ * @see TextLayout
+ * @see Font
+ * @see Color
+ *  
+ * @since 3.0
  */
 public class TextStyle {
 

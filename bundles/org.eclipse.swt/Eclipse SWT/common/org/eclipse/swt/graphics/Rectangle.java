@@ -26,6 +26,12 @@ import org.eclipse.swt.*;
  * of (x, y) coordinates rather than the strict mathematical one.
  * </p>
  * <p>
+ * The hashCode() method in this class uses the values of the public
+ * fields to compute the hash value. When storing instances of the
+ * class in hashed collections, do not modify these fields after the
+ * object has been inserted.  
+ * </p>
+ * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer
  * required, and thus no <code>dispose()</code> method is provided.
