@@ -466,22 +466,26 @@ public boolean isEnabled () {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
-	/*
-	 * FIXME.  The following line of code is wrong:
-	 * the pointer position is relative to item, not the toolbar.
-	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
-	 */
+	GdkEventButton e = new GdkEventButton();
+	OS.memmove(e, callData, GdkEventButton.sizeof);
+	double x_back = e.x;   e.x += OS.GTK_WIDGET_X(handle);
+	double y_back = e.y;   e.y += OS.GTK_WIDGET_Y(handle);
+	OS.memmove(callData, e, GdkEventButton.sizeof);
 	parent.processMouseDown (callData, arg1, int2);
+	e.x = x_back; e.y = y_back;
+	OS.memmove(callData, e, GdkEventButton.sizeof);
 	return 0;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
-	/*
-	 * FIXME.  The following line of code is wrong:
-	 * the pointer position is relative to item, not the toolbar.
-	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
-	 */
+	GdkEventButton e = new GdkEventButton();
+	OS.memmove(e, callData, GdkEventButton.sizeof);
+	double x_back = e.x;   e.x += OS.GTK_WIDGET_X(handle);
+	double y_back = e.y;   e.y += OS.GTK_WIDGET_Y(handle);
+	OS.memmove(callData, e, GdkEventButton.sizeof);
 	parent.processMouseUp (callData, arg1, int2);
+	e.x = x_back; e.y = y_back;
+	OS.memmove(callData, e, GdkEventButton.sizeof);
 	return 0;
 }
 
