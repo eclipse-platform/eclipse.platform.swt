@@ -10,6 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+/* 
+ * Drawing with transformations, paths and alpha blending
+ *
+ * For a list of all SWT example snippets see
+ * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
