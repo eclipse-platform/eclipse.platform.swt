@@ -467,6 +467,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 	images = null;
+	savedFocus = null;
+	defaultButton = saveDefault = null;
 }
 
 boolean restoreFocus () {
