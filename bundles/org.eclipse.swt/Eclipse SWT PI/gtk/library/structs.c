@@ -188,10 +188,10 @@ void cacheGtkAllocationFids(JNIEnv *env, jobject lpGtkAllocation, PGtkAllocation
 	if (lpCache->cached) return;
 
 	lpCache->GtkAllocationClass = (*env)->GetObjectClass(env, lpGtkAllocation);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "x", "S");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "y", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "width", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "height", "S");
+	lpCache->x = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "x", "I");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "y", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "height", "I");
 
 	lpCache->cached = 1;
 };
@@ -799,18 +799,18 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkI
 
 void getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc)
 {
-	lpGtkAllocation->x = (*env)->GetShortField(env, lpObject, lpGtkAllocationFc->x);
-	lpGtkAllocation->y = (*env)->GetShortField(env, lpObject, lpGtkAllocationFc->y);
-	lpGtkAllocation->width = (*env)->GetShortField(env, lpObject, lpGtkAllocationFc->width);
-	lpGtkAllocation->height = (*env)->GetShortField(env, lpObject, lpGtkAllocationFc->height);
+	lpGtkAllocation->x = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->x);
+	lpGtkAllocation->y = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->y);
+	lpGtkAllocation->width = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->width);
+	lpGtkAllocation->height = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->height);
 }
 
 void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc)
 {
-	(*env)->SetShortField(env, lpObject, lpGtkAllocationFc->x, lpGtkAllocation->x);
-	(*env)->SetShortField(env, lpObject, lpGtkAllocationFc->y, lpGtkAllocation->y);
-	(*env)->SetShortField(env, lpObject, lpGtkAllocationFc->width, lpGtkAllocation->width);
-	(*env)->SetShortField(env, lpObject, lpGtkAllocationFc->height, lpGtkAllocation->height);
+	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->x, lpGtkAllocation->x);
+	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->y, lpGtkAllocation->y);
+	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->width, lpGtkAllocation->width);
+	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->height, lpGtkAllocation->height);
 }
 
 void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc)

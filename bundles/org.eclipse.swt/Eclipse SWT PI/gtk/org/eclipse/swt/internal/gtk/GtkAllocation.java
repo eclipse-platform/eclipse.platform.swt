@@ -14,9 +14,9 @@ package org.eclipse.swt.internal.gtk;
  */
 
 public class GtkAllocation {
-	public short x;
-	public short y;
-	public short width;
-	public short height;
-	public static final int sizeof = 8;
+	public int x;
+	public int y;
+	public int width;
+	public int height;
+	public static final int sizeof = 16;
 }
