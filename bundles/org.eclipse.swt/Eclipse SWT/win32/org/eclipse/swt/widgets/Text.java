@@ -682,7 +682,7 @@ int getTabWidth (int tabs) {
 	int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-	TCHAR SPACE = new TCHAR (getCodePage (), " ", true);
+	TCHAR SPACE = new TCHAR (getCodePage (), " ", false);
 	OS.DrawText (hDC, SPACE, SPACE.length (), rect, flags);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
