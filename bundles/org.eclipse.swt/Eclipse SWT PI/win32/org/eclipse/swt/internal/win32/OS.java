@@ -258,6 +258,7 @@ public class OS {
 	public static final int CFM_UNDERLINE = 0x4;
 	public static final int CFM_WEIGHT = 0x400000;
 	public static final int CFS_POINT = 0x2;
+	public static final int CFS_RECT = 0x1;
 	public static final int CF_EFFECTS = 0x100;
 	public static final int CF_INITTOLOGFONTSTRUCT = 0x40;
 	public static final int CF_SCREENFONTS = 0x1;
@@ -1203,7 +1204,14 @@ public class OS {
 	public static final int TVS_LINESATROOT = 0x4;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
+	public static final int UDM_GETRANGE32 = 0x0470;
+	public static final int UDM_GETPOS32 = 0x0472;
+	public static final int UDM_SETRANGE32 = 0x046f;
+	public static final int UDM_SETPOS32 = 0x0471;
+	public static final int UDS_AUTOBUDDY = 0x0010;
+	public static final int UDS_WRAP = 0x0001;
 	public static final int UIS_INITIALIZE = 3;
+	public static final String UPDOWN_CLASS = "msctls_updown32"; //$NON-NLS-1$
 	public static final int USP_E_SCRIPT_NOT_IN_FONT = 0x80040200;
 	public static final int VERTRES = 0xa;
 	public static final int VK_BACK = 0x8;
@@ -1315,6 +1323,7 @@ public class OS {
 	public static final int WM_IME_COMPOSITION = 0x10f;
 	public static final int WM_INITDIALOG = 0x110;
 	public static final int WM_INITMENUPOPUP = 0x117;
+	public static final int WM_INPUTLANGCHANGE = 0x51;
 	public static final int WM_KEYDOWN = 0x100;
 	public static final int WM_KEYFIRST = 0x100;
 	public static final int WM_KEYLAST = 0x108;
