@@ -773,17 +773,18 @@ boolean filterEvent (int event) {
 
 	/* Get the unaffected character and keysym */
 	char key = 0;
+	byte [] buffer = new byte [5];
+	int [] keysym = new int [1];
 	int oldState = keyEvent.state;
 	keyEvent.state = 0;
-	byte [] buffer1 = new byte [5];
-	int [] buffer2 = new int [1];
-	if (OS.XLookupString (keyEvent, buffer1, 1, buffer2, null) != 0) {
-		char [] result = Converter.mbcsToWcs (null, buffer1);
+	int length = OS.XLookupString (keyEvent, buffer, buffer.length, keysym, null);
+	keyEvent.state = oldState;
+	fixKey (keysym, buffer, 0);
+	if (length != 0) {
+		char [] result = Converter.mbcsToWcs (null, buffer);
 		if (result.length != 0) key = result [0];
 	}
-	fixKey (buffer2, buffer1, 0);
-	int keysym = buffer2 [0] & 0xFFFF;
-	keyEvent.state = oldState;
+	keysym [0] &= 0xFFFF;
 
 	/* 
 	* Bug in AIX.  If XFilterEvent() is called for every key event, accelerators
@@ -791,7 +792,7 @@ boolean filterEvent (int event) {
 	* The fix is to call XFilterEvent() only for return keys. This means that an
 	* accelerator that is only a return key will not work.
 	*/
-	if (keysym == OS.XK_Return || keysym == OS.XK_KP_Enter) {
+	if (keysym [0] == OS.XK_Return || keysym [0] == OS.XK_KP_Enter) {
 		/*
 		* Bug in Linux. If XFilter() is called more than once for the same
 		* event, it causes an infinite loop.  The fix to remember the serial
@@ -812,7 +813,7 @@ boolean filterEvent (int event) {
 	*/
 	if (OS.IsSunOS) {
 		/* Ignore modifiers. */
-		switch (keysym) {
+		switch (keysym [0]) {
 			case OS.XK_Control_L:
 			case OS.XK_Control_R:
 			case OS.XK_Alt_L:
@@ -822,7 +823,7 @@ boolean filterEvent (int event) {
 			case OS.XK_Shift_L:
 			case OS.XK_Shift_R: break;
 			default:
-				if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
+				if (widget.translateAccelerator (key, keysym [0], keyEvent, true)) {
 					return true;
 				}
 		}
@@ -830,12 +831,11 @@ boolean filterEvent (int event) {
 
 	/* Check for a mnemonic key */
 	if (key != 0) {
-		if (widget.translateMnemonic (key, keysym, keyEvent)) return true;
+		if (widget.translateMnemonic (key, keysym [0], keyEvent)) return true;
 	}
 
 	/* Check for a traversal key */
-	if (keysym == 0) return false;
-	switch (keysym) {
+	switch (keysym [0]) {
 		case OS.XK_Escape:
 		case OS.XK_Tab:
 		case OS.XK_KP_Enter:
@@ -851,11 +851,11 @@ boolean filterEvent (int event) {
 			* allow the accelerator to run, not the traversal key.
 			*/
 			if (!OS.IsSunOS) {
-				if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
+				if (widget.translateAccelerator (key, keysym [0], keyEvent, true)) {
 					return true;
 				}
 			}
-			if (widget.translateTraversal (keysym, keyEvent)) return true;
+			if (widget.translateTraversal (keysym [0], keyEvent)) return true;
 	}
 
 	/* Answer false because the event was not processed */
