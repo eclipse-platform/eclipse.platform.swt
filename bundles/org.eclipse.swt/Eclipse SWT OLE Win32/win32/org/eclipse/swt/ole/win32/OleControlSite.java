@@ -44,7 +44,9 @@ public class OleControlSite extends OleClientSite
 	private OlePropertyChangeSink olePropertyChangeSink;
 	
 	// supporting Event Sink attributes
-	private OleEventSink oleEventSink;
+	private OleEventSink[] oleEventSink = new OleEventSink[0];
+	private GUID[] oleEventSinkGUID = new GUID[0];
+	private int[] oleEventSinkIUnknown = new int[0];
 		
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
@@ -140,6 +142,7 @@ public OleControlSite(Composite parent, int style, String progId) {
  * Adds the listener to receive events.
  *
  * @param eventID the id of the event
+ * 
  * @param listener the listener
  *
  * @exception SWTError 
@@ -147,14 +150,133 @@ public OleControlSite(Composite parent, int style, String progId) {
  */
 public void addEventListener(int eventID, OleListener listener) {
 	if (listener == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	oleEventSink.addListener(eventID, listener);
+	GUID riid = getDefaultEventSinkGUID();
+	if (riid != null) {
+		addEventListener(objIUnknown.getAddress(), riid, eventID, listener);
+	}
+	
+}
+GUID getDefaultEventSinkGUID() {
+	// get Event Sink I/F from IProvideClassInfo2
+	int[] ppvObject = new int[1];
+	if (objIUnknown.QueryInterface(COM.IIDIProvideClassInfo2, ppvObject) == COM.S_OK) {
+		IProvideClassInfo2 pci2 = new IProvideClassInfo2(ppvObject[0]);
+		GUID riid = new GUID();
+		int result = pci2.GetGUID(COM.GUIDKIND_DEFAULT_SOURCE_DISP_IID, riid);
+		pci2.Release();
+		if (result == COM.S_OK) return riid;
+	}
+
+	// get Event Sink I/F from IProvideClassInfo
+	if (objIUnknown.QueryInterface(COM.IIDIProvideClassInfo, ppvObject) == COM.S_OK) {
+		IProvideClassInfo pci = new IProvideClassInfo(ppvObject[0]);
+		int[] ppTI = new int[1];
+		int[] ppEI = new int[1];
+		int result = pci.GetClassInfo(ppTI);
+		pci.Release();
+		
+		if (result == COM.S_OK && ppTI[0] != 0) {		
+			ITypeInfo classInfo = new ITypeInfo(ppTI[0]);
+			int[] ppTypeAttr = new int[1];
+			result = classInfo.GetTypeAttr(ppTypeAttr);
+			if (result == COM.S_OK  && ppTypeAttr[0] != 0) {
+				TYPEATTR typeAttribute = new TYPEATTR();
+				COM.MoveMemory(typeAttribute, ppTypeAttr[0], TYPEATTR.sizeof);
+				classInfo.ReleaseTypeAttr(ppTypeAttr[0]);
+				int implMask = COM.IMPLTYPEFLAG_FDEFAULT | COM.IMPLTYPEFLAG_FSOURCE | COM.IMPLTYPEFLAG_FRESTRICTED;
+				int implBits = COM.IMPLTYPEFLAG_FDEFAULT | COM.IMPLTYPEFLAG_FSOURCE;
+				
+				for (int i = 0; i < typeAttribute.cImplTypes; i++) {
+					int[] pImplTypeFlags = new int[1];
+					if (classInfo.GetImplTypeFlags(i, pImplTypeFlags) == COM.S_OK) {
+						if ((pImplTypeFlags[0] & implMask) == implBits) {
+							int[] pRefType = new int[1];
+							if (classInfo.GetRefTypeOfImplType(i, pRefType) == COM.S_OK) {
+								classInfo.GetRefTypeInfo(pRefType[0], ppEI);
+							}
+						}
+					}
+				}
+			}
+			classInfo.Release();
+	
+			if (ppEI[0] != 0) {
+				ITypeInfo eventInfo = new ITypeInfo(ppEI[0]);
+				ppTypeAttr = new int[1];
+				result = eventInfo.GetTypeAttr(ppTypeAttr);
+				GUID riid = null;
+				if (result == COM.S_OK && ppTypeAttr[0] != 0) {
+					riid = new GUID();
+					COM.MoveMemory(riid, ppTypeAttr[0], GUID.sizeof);
+					eventInfo.ReleaseTypeAttr(ppTypeAttr[0]);
+				}
+				eventInfo.Release();
+				return riid;
+			}
+		}
+	}
+	return null;
+}
+/**	 
+ * Adds the listener to receive events.
+ *
+ * @since 2.0
+ * 
+ * @param automation the automation object that provides the event notification
+ * 
+ * @param guid the identifier of the events COM interface
+ * 
+ * @param eventID the id of the event
+ * 
+ * @param listener the listener
+ *
+ * @exception SWTError 
+ *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
+public void addEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
+	if (listener == null || automation == null || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
+	addEventListener(automation.getAddress(), guid, eventID, listener);
+	
+}
+void addEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
+	if (listener == null || iunknown == 0 || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
+	// have we connected to this kind of event sink before?
+	int index = -1;
+	for (int i = 0; i < oleEventSinkGUID.length; i++) {
+		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
+			if (iunknown == oleEventSinkIUnknown[i]) {
+				index = i; 
+				break;
+			}
+		}
+	}
+	if (index != -1) {
+		oleEventSink[index].addListener(eventID, listener);
+	} else {
+		int oldLength = oleEventSink.length;
+		OleEventSink[] newOleEventSink = new OleEventSink[oldLength + 1];
+		GUID[] newOleEventSinkGUID = new GUID[oldLength + 1];
+		int[] newOleEventSinkIUnknown = new int[oldLength + 1];
+		System.arraycopy(oleEventSink, 0, newOleEventSink, 0, oldLength);
+		System.arraycopy(oleEventSinkGUID, 0, newOleEventSinkGUID, 0, oldLength);
+		System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, oldLength);
+		oleEventSink = newOleEventSink;
+		oleEventSinkGUID = newOleEventSinkGUID;
+		oleEventSinkIUnknown = newOleEventSinkIUnknown;
+		
+		oleEventSink[oldLength] = new OleEventSink(this, iunknown, guid);
+		oleEventSinkGUID[oldLength] = guid;
+		oleEventSinkIUnknown[oldLength] = iunknown;
+		oleEventSink[oldLength].AddRef();
+		oleEventSink[oldLength].connect();
+		oleEventSink[oldLength].addListener(eventID, listener);
+		
+	}
 }
 protected void addObjectReferences() {
 
 	super.addObjectReferences();
 	
-	// Get event notification from control
-	connectEventSink();
 	// Get property change notification from control
 	connectPropertyChangeSink();
 
@@ -182,11 +304,7 @@ public void addPropertyListener(int propertyID, OleListener listener) {
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	olePropertyChangeSink.addListener(propertyID, listener);	
 }
-private void connectEventSink() {
-	oleEventSink = new OleEventSink(this);
-	oleEventSink.AddRef();
-	oleEventSink.connect(objIUnknown);
-}
+
 private void connectPropertyChangeSink() {
 	olePropertyChangeSink = new OlePropertyChangeSink(this);
 	olePropertyChangeSink.AddRef();
@@ -219,13 +337,16 @@ protected void createCOMInterfaces () {
 		public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
-private void disconnectEventSink() {
+private void disconnectEventSinks() {
 
-	if (oleEventSink != null) {
-		oleEventSink.disconnect(objIUnknown);
-		oleEventSink.Release();
+	for (int i = 0; i < oleEventSink.length; i++) {
+		OleEventSink sink = oleEventSink[i];
+		sink.disconnect();
+		sink.Release();
 	}
-	oleEventSink = null;
+	oleEventSink = new OleEventSink[0];
+	oleEventSinkGUID = new GUID[0];
+	oleEventSinkIUnknown = new int[0];
 }
 private void disconnectPropertyChangeSink() {
 
@@ -433,7 +554,7 @@ protected int QueryInterface(int riid, int ppvObject) {
 }
 protected void releaseObjectInterfaces() {
 	
-	disconnectEventSink();
+	disconnectEventSinks();
 	
 	disconnectPropertyChangeSink();
 
@@ -442,6 +563,8 @@ protected void releaseObjectInterfaces() {
 /**	 
  * Removes the listener.
  *
+ * @param eventID the event identifier
+ * 
  * @param listener the listener
  *
  * @exception SWTError
@@ -449,7 +572,42 @@ protected void releaseObjectInterfaces() {
  */
 public void removeEventListener(int eventID, OleListener listener) {
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
-	oleEventSink.removeListener(eventID, listener);
+	
+	GUID riid = getDefaultEventSinkGUID();
+	if (riid != null) {
+		removeEventListener(objIUnknown.getAddress(), riid, eventID, listener);
+	}
+}
+/**	 
+ * Removes the listener.
+ *
+ * @since 2.0
+ * 
+ * @param automation the automation object that provides the event notification
+ * 
+ * @param guid the identifier of the events COM interface
+ * 
+ * @param eventID the event identifier
+ * 
+ * @param listener the listener
+ *
+ * @exception SWTError
+ *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
+public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
+	if (automation == null || listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	removeEventListener(automation.getAddress(), guid, eventID, listener);
+}
+void removeEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
+	if (listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	for (int i = 0; i < oleEventSink.length; i++) {
+		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
+			if (iunknown == oleEventSinkIUnknown[i]) {
+				oleEventSink[i].removeListener(eventID, listener);
+				return;
+			}
+		}
+	}
 }
 /**	 
  * Removes the listener.
