@@ -7,7 +7,6 @@
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
     <property name="jar_destdir" value="${fragment_dir}/ws/linux" />
     <property name="lib_destdir" value="${fragment_dir}/os/linux/x86" />
-	<property name="log_dir" value="${basedir}"/>
 	<property name="lib_extension" value=".so"/>
 	
     <mkdir dir="${jar_destdir}" />
@@ -19,7 +18,6 @@
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
     <property name="jar_destdir" value="${fragment_dir}/ws/aix" />
     <property name="lib_destdir" value="${fragment_dir}/os/aix/ppc" />
-	<property name="log_dir" value="${basedir}"/>
 	<property name="lib_extension" value=".a"/>
 	
     <mkdir dir="${jar_destdir}" />
@@ -31,7 +29,6 @@
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
     <property name="jar_destdir" value="${fragment_dir}/ws/hpux" />
     <property name="lib_destdir" value="${fragment_dir}/os/hpux/PA_RISC" />
-	<property name="log_dir" value="${basedir}"/>
 	<property name="lib_extension" value=".sl"/>
 	
     <mkdir dir="${jar_destdir}" />
@@ -43,7 +40,6 @@
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
     <property name="jar_destdir" value="${fragment_dir}/ws/solaris" />
     <property name="lib_destdir" value="${fragment_dir}/os/solaris/sparc" />
-	<property name="log_dir" value="${basedir}"/>
 	<property name="lib_extension" value=".so"/>
 	
     <mkdir dir="${jar_destdir}" />
@@ -51,7 +47,7 @@
 </target>
 
 <target name="build_file_lib">
-	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
+	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 	</exec>
 	<copy todir="${lib_destdir}">
@@ -61,32 +57,27 @@
 
 <!-- Build swt.so for motif linux -->
 <!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
-<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
 <target name="build_motif_linux_lib" depends="init_linux,build_file_lib">
 </target>
 
 <!-- Build swt.so for aix ppc -->
 <!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
-<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
 <target name="build_motif_aix_lib" depends="init_aix,build_file_lib">
 </target>
 
 <!-- Build swt.so for hpux PA_RISC -->
 <!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
-<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
 <target name="build_motif_hpux_lib" depends="init_hpux,build_file_lib">
 </target>
 
 <!-- Build swt.so for solaris sparc -->
 <!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
-<!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
 <target name="build_motif_solaris_lib" depends="init_solaris,build_file_lib">
 </target>
 
 <target name="clean">
 	<tstamp/>
-	<property name="log_dir" value="${basedir}"/>
-	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
+	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
 	</exec>

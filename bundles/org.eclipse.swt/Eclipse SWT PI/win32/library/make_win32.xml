@@ -9,7 +9,6 @@
     <property name="dll_destdir" value="${fragment_dir}/os/win32/x86" />
     <property name="dll_ce_destdir" value="${fragment_dir}/os/win32-ce/arm" />
     <property name="bin_dir" value="${basedir}/bin" />
-	<property name="log_dir" value="${basedir}"/>
 	
     <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
@@ -18,7 +17,7 @@
 
 <!-- Build swt.dll for Windows -->
 <target name="build_win32_dll" depends="init">
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 	</exec>
 	<copy todir="${dll_destdir}">
 		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
@@ -27,10 +26,10 @@
 
 <!-- Build swt.dll for Pocket PC -->
 <target name="build_win32_ce_dll" depends="init">
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat" output="${log_dir}/build_ce_log.txt">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat">
 	<arg line="clean"/>
 	</exec>
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat" output="${log_dir}/build_ce_log.txt">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build-ce.bat">
 	</exec>
 	<copy todir="${dll_ce_destdir}">
 		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
@@ -44,7 +43,7 @@
 </target>
 
 <target name="clean" depends="init">
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 	<arg line="clean"/>
 	</exec>
 </target>
