@@ -1270,7 +1270,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
-	Color oldBackground = gc.getBackground ();
 	if (columnIndex == 0) {
 		Rectangle focusBounds = getFocusBounds ();
 		gc.setBackground (parent.getBackground ());
@@ -1301,11 +1300,9 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
-	gc.setBackground (oldBackground);
 
 	/* draw the selection bar if the receiver is selected */
 	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
-		oldBackground = gc.getBackground ();
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		if (columnIndex == 0) {
 			Rectangle focusBounds = getFocusBounds ();
@@ -1329,7 +1326,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 					cellBounds.height - 2);
 			}
 		}
-		gc.setBackground (oldBackground);
 	}
 		
 	if (!paintCellContent) return;
@@ -1338,7 +1334,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (columnIndex == 0) {
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
-		Color oldForeground = gc.getForeground ();
 		gc.setForeground (parent.getConnectorColor ());
 
 		/* Draw vertical line above expander */
@@ -1376,7 +1371,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			}
 			item = item.parentItem;
 		}
-		gc.setForeground (oldForeground);
 		
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
@@ -1428,21 +1422,13 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (text.length () > 0) {
 		gc.setFont (getFont (columnIndex));
 		int fontHeight = getFontHeight (columnIndex);
-		Color oldForeground = gc.getForeground ();
-		boolean foregroundChanged = false;
 		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-			foregroundChanged = true;
 		} else {
-			Color foreground = getForeground (columnIndex);
-			if (!foreground.equals (oldForeground)) {
-				gc.setForeground (foreground);
-				foregroundChanged = true;
-			}
+			gc.setForeground (getForeground (columnIndex));
 		}
 		x = getTextX (columnIndex) + MARGIN_TEXT;
 		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
-		if (foregroundChanged) gc.setForeground (oldForeground);
 	}
 }
 /*

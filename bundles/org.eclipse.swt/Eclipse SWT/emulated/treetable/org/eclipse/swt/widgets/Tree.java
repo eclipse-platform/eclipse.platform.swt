@@ -1039,7 +1039,6 @@ void headerOnPaint (Event event) {
 }
 void headerPaintShadow (GC gc, int x, int y, int width, int height, boolean paintHLines, boolean paintVLines) {
 	gc.setClipping (x, y, width, getHeaderHeight ());
-	Color oldForeground = gc.getForeground ();
 	
 	/* draw highlight shadow */
 	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
@@ -1086,8 +1085,6 @@ void headerPaintShadow (GC gc, int x, int y, int width, int height, boolean pain
 			rightShadowStart.x + 1, rightShadowStart.y - 1,
 			rightShadowStop.x + 1, rightShadowStop.y + 1);
 	}
-	
-	gc.setForeground (oldForeground);
 }
 public int indexOf (TreeColumn column) {
 	checkWidget ();
@@ -2276,7 +2273,6 @@ void onPaint (Event event) {
 
 	/* repaint grid lines */
 	if (linesVisible) {
-		Color oldForeground = gc.getForeground ();
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
@@ -2293,7 +2289,6 @@ void onPaint (Event event) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;
 		}
-		gc.setForeground (oldForeground);
 	}
 }
 void onResize (Event event) {

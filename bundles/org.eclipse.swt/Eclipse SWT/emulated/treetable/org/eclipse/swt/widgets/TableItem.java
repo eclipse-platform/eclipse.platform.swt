@@ -922,7 +922,6 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 
 	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
-	Color oldBackground = gc.getBackground ();
 	TableColumn[] orderedColumns = parent.orderedColumns;
 	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
 		Rectangle focusBounds = getFocusBounds ();		
@@ -955,12 +954,10 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
-	gc.setBackground (oldBackground);
 
 	/* draw the selection bar if the receiver is selected */
 	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
-			oldBackground = gc.getBackground ();
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 			if (columnIndex == 0) {
 				Rectangle focusBounds = getFocusBounds ();
@@ -999,7 +996,6 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 						cellBounds.height - 2);
 				}
 			}
-			gc.setBackground (oldBackground);
 		}
 	}
 
@@ -1046,25 +1042,17 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	
 	/* draw the text */
 	if (text.length () > 0) {
-		boolean foregroundChanged = false;
 		gc.setFont (getFont (columnIndex));
 		int fontHeight = getFontHeight (columnIndex);
-		Color oldForeground = gc.getForeground ();
 		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
 				gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-				foregroundChanged = true;
 			}
 		} else {
-			Color foreground = getForeground (columnIndex);
-			if (!foreground.equals (oldForeground)) {
-				gc.setForeground (foreground);
-				foregroundChanged = true;
-			}
+			gc.setForeground (getForeground (columnIndex));
 		}
 		x = getTextX (columnIndex) + MARGIN_TEXT;
 		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
-		if (foregroundChanged) gc.setForeground (oldForeground);
 	}
 }
 /*
