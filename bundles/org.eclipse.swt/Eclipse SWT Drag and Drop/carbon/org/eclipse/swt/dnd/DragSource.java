@@ -285,9 +285,7 @@ private void drag(Event dragEvent) {
 		int operations = opToOsOp(getStyle());
 		//set operations twice - local and not local
 		OS.SetDragAllowableActions(theDrag[0], operations, true);
-		// until the interaction with Finder is understood, only allow data to be
-		// transferred internally
-		OS.SetDragAllowableActions(theDrag[0], OS.kDragActionNothing, false);
+		OS.SetDragAllowableActions(theDrag[0], operations, false);
 		
 		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
 		
