@@ -156,6 +156,8 @@ void createHandle () {
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
 
+	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
+
 	int inputMode = OS.kWindowModalityNone;
 	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
 	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;

@@ -267,14 +267,16 @@ Rectangle getBounds (int control) {
 
 int getClipping (int control) {
 	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
+	int window = OS.GetControlOwner (control);
+	int port = OS.GetWindowPort (window);
+	OS.GetPortVisibleRegion (port, visibleRgn);
 	Rect rect = new Rect();
-	OS.GetControlBounds (control, rect);
-	OS.RectRgn (visibleRgn, rect);
 	short [] count = new short [1];
 	int [] outControl = new int [1];
 	int tempControl = control, lastControl = 0;
 	while (tempControl != 0) {
 		OS.GetControlBounds (tempControl, rect);
+		if (WidgetTable.get (tempControl) instanceof Button) rect.bottom += 1; // NOT DONE
 		OS.RectRgn (tempRgn, rect);
 		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
 		if (OS.EmptyRgn (visibleRgn)) break;
@@ -285,6 +287,7 @@ int getClipping (int control) {
 			if (child == lastControl) break;
 			if (!OS.IsControlVisible (child)) continue;
 			OS.GetControlBounds (child, rect);
+			if (WidgetTable.get (child) instanceof Button) rect.bottom += 1; // NOT DONE
 			OS.RectRgn (tempRgn, rect);
 			OS.UnionRgn (tempRgn, childRgn, childRgn);
 		}
