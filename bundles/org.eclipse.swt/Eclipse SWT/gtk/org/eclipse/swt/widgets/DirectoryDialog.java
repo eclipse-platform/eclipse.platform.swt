@@ -139,6 +139,12 @@ public String open () {
 	int fileListParent = OS.gtk_widget_get_parent (selection.file_list);
 	OS.gtk_widget_hide (selection.file_list);
 	OS.gtk_widget_hide (fileListParent);
+	if (message != null && message.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		int labelHandle = OS.gtk_label_new (buffer);
+		OS.gtk_container_add (selection.main_vbox, labelHandle);
+		OS.gtk_widget_show (labelHandle);
+	}
 	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
 		int fileNamePtr = OS.gtk_file_selection_get_filename (handle);
