@@ -1088,7 +1088,7 @@ boolean isActive () {
 		int index = modalShells.length;
 		while (--index >= 0) {
 			Shell modal = modalShells [index];
-			if (modal != null && modal != this) {
+			if (modal != null) {
 				if ((modal.style & bits) != 0) {
 					Control control = this;
 					while (control != null) {
