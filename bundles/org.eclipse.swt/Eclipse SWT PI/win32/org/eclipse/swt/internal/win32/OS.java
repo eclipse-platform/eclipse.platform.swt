@@ -1237,9 +1237,11 @@ public class OS {
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
 	public static final int WS_EX_LAYOUTRTL = 0x00400000;
+	public static final int WS_EX_LEFTSCROLLBAR = 0x00004000;
 	public static final int WS_EX_MDICHILD = 0x00000040;
 	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
 	public static final int WS_EX_RIGHT = 0x00001000;
+	public static final int WS_EX_RTLREADING = 0x00002000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
 	public static final int WS_EX_TOPMOST = 0x8;
