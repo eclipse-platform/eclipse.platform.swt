@@ -773,8 +773,8 @@ void releaseDisplay () {
 
 	/* Free the timers */
 	if (timers != null) {
-		for (int i=0; i<=timers.length; i++) {
-			 OS.PtDestroyWidget (timers [i]);
+		for (int i=0; i<timers.length; i++) {
+			 if (timers [i] != 0) OS.PtDestroyWidget (timers [i]);
 		}
 	}
 	timers = null;
