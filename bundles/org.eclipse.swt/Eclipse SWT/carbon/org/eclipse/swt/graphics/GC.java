@@ -728,12 +728,10 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	OS.CGContextSetFillColor(handle, data.foreground);
 	if (string != data.string) {
 		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-		char[] buffer = new char[length];
-		string.getChars(0, length, buffer, 0);
 		Font font = data.font;
 		int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
 		int ptr = OS.NewPtr(length * 2);
-		OS.memcpy(ptr, buffer, length * 2);
+		OS.memcpy(ptr, string, length * 2);
 		OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
 		OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 		data.string = string;
@@ -1737,12 +1735,10 @@ public Point stringExtent(String string) {
 	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
 	if (string != data.string) {
 		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-		char[] buffer = new char[length];
-		string.getChars(0, length, buffer, 0);
 		Font font = data.font;
 		int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
 		int ptr = OS.NewPtr(length * 2);
-		OS.memcpy(ptr, buffer, length * 2);
+		OS.memcpy(ptr, string, length * 2);
 		OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
 		OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 		data.string = string;
