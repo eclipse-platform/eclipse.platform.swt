@@ -333,8 +333,13 @@ public String open () {
 	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, 0);
 
 	OS.XtManageChild (dialog);
+
+	// fix for bug 17507
+	if (OS.IsAIX) {
+	    OS.XtRealizeWidget (parentHandle);
+	}
 	
-//BOGUS - should be a pure OS message loop (no SWT AppContext)
+	//BOGUS - should be a pure OS message loop (no SWT AppContext)
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
 		if (!appContext.readAndDispatch ()) appContext.sleep ();
 
