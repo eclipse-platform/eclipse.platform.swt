@@ -19,6 +19,21 @@ public class OS extends Platform {
 		Library.loadLibrary("swt-pi");
 	}
 	
+	/** OS Constants */
+	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
+	static {
+		
+		/* Initialize the OS flags and locale constants */
+		String osName = System.getProperty ("os.name");
+		boolean isAIX = false, isSunOS = false, isLinux = false, isHPUX = false;
+		if (osName.equals ("Linux")) isLinux = true;
+		if (osName.equals ("AIX")) isAIX = true;
+		if (osName.equals ("Solaris")) isSunOS = true;
+		if (osName.equals ("SunOS")) isSunOS = true;
+		if (osName.equals ("HP-UX")) isHPUX = true;
+		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
+	}
+
 	/** Constants */
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
