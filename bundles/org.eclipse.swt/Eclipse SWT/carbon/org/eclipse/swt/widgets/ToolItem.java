@@ -38,6 +38,7 @@ public class ToolItem extends Item {
 	// AW
 	private boolean fPressed;
 	private short[] fPrevInfo;
+	private int fBackground;
 	// AW
 	
 	static final int DEFAULT_WIDTH = 24;
@@ -964,8 +965,6 @@ int processPaint (Object callData) {
 	if ((style & SWT.SEPARATOR) != 0 && control != null)
 		return 0;
 		
-	final Display display = getDisplay ();
-
 	MacRect bounds= new MacRect();
 	OS.GetControlBounds(handle, bounds.getData());
 	bounds.setLocation(0, 0);
@@ -973,11 +972,13 @@ int processPaint (Object callData) {
 	int width= bounds.getWidth();
 	int height= bounds.getHeight();
 	
+	final Display display = getDisplay ();
+
 	Drawable drawable= new Drawable() {
 		public int internal_new_GC (GCData data) {
 			data.device = display;
-			data.foreground = parent.foreground;
-			data.background = parent.background;
+			data.foreground = parent.getForegroundPixel();
+			data.background = parent.getBackgroundPixel();
 			data.font = parent.font.handle;
 			data.controlHandle = handle;
 			return OS.GetWindowPort(OS.GetControlOwner(handle));
@@ -997,19 +998,19 @@ int processPaint (Object callData) {
 		// erase background
 		gc.fillRectangle(0, 0, width, height);
 		
-		if ((parent.style & SWT.FLAT) != 0 && set) {
-			gc.setBackground(Color.carbon_new(display, 0xE0E0E0, false));
-			gc.fillRoundRectangle(1, 1, width-2, height-2, 8, 8);
-			gc.setForeground(display.getSystemColor (SWT.COLOR_GRAY));
-			gc.drawRoundRectangle(1, 1, width-3, height-3, 8, 8);
-		}
-		
 		if ((style & SWT.SEPARATOR) != 0) {
 		
 			OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
 			
 		} else {
 					
+			if ((parent.style & SWT.FLAT) != 0 && set) {
+				gc.setBackground(Color.carbon_new(display, 0xE0E0E0, false));
+				gc.fillRoundRectangle(1, 1, width-2, height-2, 8, 8);
+				gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+				gc.drawRoundRectangle(1, 1, width-3, height-3, 8, 8);
+			}
+		
 			Image currentImage = image;
 			boolean enabled = getEnabled();
 		

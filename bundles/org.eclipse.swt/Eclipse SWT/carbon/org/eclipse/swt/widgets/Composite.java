@@ -461,50 +461,6 @@ int processNonMaskable (Object callData) {
     */
 	return 0;
 }
-/* AW
-int processPaint (Object callData) {
-	if ((state & CANVAS) == 0) {
-		return super.processPaint (callData);
-	}
-	if (!hooks (SWT.Paint)) return 0;
-	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-		return super.processPaint (callData);
-	}
-	
-	XExposeEvent xEvent = new XExposeEvent ();
-	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
-	int exposeCount = xEvent.count;
-	if (damagedRegion == 0 && exposeCount == 0) {
-		XAnyEvent event = new XAnyEvent ();
-		Display display = getDisplay ();
-		display.exposeCount = 0;
-		int checkExposeProc = display.checkExposeProc;
-		OS.XCheckIfEvent (xEvent.display, event, checkExposeProc, xEvent.window);
-		if (display.exposeCount == 0) return super.processPaint (callData);
-		exposeCount = display.exposeCount;
-	}
-	if (damagedRegion == 0) damagedRegion = OS.XCreateRegion ();
-	OS.XtAddExposureToRegion (callData, damagedRegion);
-	if (exposeCount != 0) return 0;
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return 0;
-		
-	Event event = new Event ();
-	GC gc = event.gc = new GC (this);
-	OS.XSetRegion (xDisplay, gc.handle, damagedRegion);
-	XRectangle rect = new XRectangle ();
-	OS.XClipBox (damagedRegion, rect);
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
-	event.time = OS.XtLastTimestampProcessed (xDisplay);
-	event.x = rect.x;  event.y = rect.y;
-	event.width = rect.width;  event.height = rect.height;
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
- 	return 0;
-}
-*/
 void propagateChildren (boolean enabled) {
 	super.propagateChildren (enabled);
 	Control [] children = _getChildren ();

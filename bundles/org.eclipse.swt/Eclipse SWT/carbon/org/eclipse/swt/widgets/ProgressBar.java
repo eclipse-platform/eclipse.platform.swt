@@ -121,8 +121,8 @@ void createHandle (int index) {
 	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
+/* AW
 void disableButtonPress () {
-    /* AW
 	int xWindow = OS.XtWindow (handle);
 	if (xWindow == 0) return;
 	int xDisplay = OS.XtDisplay (handle);
@@ -131,14 +131,12 @@ void disableButtonPress () {
 	XSetWindowAttributes attributes = new XSetWindowAttributes ();
 	attributes.event_mask = event_mask & ~OS.ButtonPressMask;
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
-    */
 }
 void disableTraversal () {
-    /* AW
 	int [] argList = {OS.XmNtraversalOn, 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
 }
+*/
 /**
  * Returns the maximum value which the receiver will allow.
  *
@@ -151,11 +149,6 @@ void disableTraversal () {
  */
 public int getMaximum () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNmaximum, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
-    */
     return OS.GetControl32BitMaximum(handle);
 }
 /**
@@ -170,11 +163,6 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNminimum, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
-    */
     return OS.GetControl32BitMinimum(handle);
 }
 /**
@@ -202,12 +190,14 @@ public int getSelection () {
     */
     return OS.GetControl32BitValue(handle);
 }
+/* AW
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	/*
 	* ProgressBars never participate in focus traversal when
 	* either enabled or disabled.
 	*/
+	/* AW
 	if (enabled) {
 		disableTraversal ();
 		disableButtonPress ();
@@ -217,6 +207,7 @@ void realizeChildren () {
 	super.realizeChildren ();
 	disableButtonPress ();
 }
+*/
 /**
  * Sets the maximum value which the receiver will allow
  * to be the argument which must be greater than or
@@ -232,14 +223,6 @@ void realizeChildren () {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-    /* AW
-	int [] argList = {OS.XmNmaximum, value, OS.XmNvalue, 0};
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	display.setWarnings (warnings);
-    */
     OS.SetControl32BitMaximum(handle, value);
 }
 /**
@@ -373,5 +356,4 @@ void handleResize(int hndl, int x, int y, int width, int height) {
 		super.handleResize(hndl, x+shift, y, WIDTH, height);
 	}
 }
-
 }

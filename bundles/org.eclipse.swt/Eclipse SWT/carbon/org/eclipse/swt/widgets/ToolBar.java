@@ -387,16 +387,6 @@ void releaseWidget () {
 	items = null;
 	super.releaseWidget ();
 }
-void setBackgroundPixel (int pixel) {
-	super.setBackgroundPixel (pixel);
-	/* AW
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setBackgroundPixel (pixel);
-		}
-	}
-	*/
-}
 public void setBounds (int x, int y, int width, int height) {
 	fGotSize= true;
 	super.setBounds (x, y, width, height);
