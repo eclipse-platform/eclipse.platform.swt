@@ -444,13 +444,16 @@ public void setText (String string) {
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	
 	/*
-	 * Solaris bug.  If a mnemonic is defined to be a character
+	 * Bug in Solaris.  If a mnemonic is defined to be a character
 	 * that only appears in a string in a position that follows
-	 * a newline character in the string then Solaris GP's since
-	 * it cannot find an instance of the mnemonic to underline in
-	 * the first isplay line.  So labels containing newlines are
-	 * not allowed to display mnemonics, which is fine since such
-	 * labels generally just act as descriptive texts anyways.
+	 * a newline character then Solaris GP's since it
+	 * does not find an instance of the letter to underline in
+	 * the first display line.  For example, a label with text
+	 * "Hello\nthe&re" would GP since "r" does not appear in "Hello".
+	 *
+	 * The fix is to remove mnemonics from labels that contain
+	 * newlines, which is fine since such labels generally just act
+	 * as descriptive texts anyways.
 	 */ 
 	if (mnemonic == 0 || hasLf) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
