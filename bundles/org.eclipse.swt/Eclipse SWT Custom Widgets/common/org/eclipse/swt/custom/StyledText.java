@@ -142,6 +142,7 @@ public class StyledText extends Canvas {
 	int caretDirection = SWT.NULL;
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
+	boolean isCarbon;					// flag set to true on Mac OSX
 	
 	/**
 	 * The Printing class implements printing of a range of text.
@@ -1608,6 +1609,9 @@ public StyledText(Composite parent, int style) {
 	setCursor(ibeamCursor);
 	installListeners();
 	installDefaultLineStyler();
+	
+	String platform= SWT.getPlatform();
+	isCarbon = "carbon".equals(platform);	
 }
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
@@ -4996,13 +5000,18 @@ void handleKey(Event event) {
 	if (action == SWT.NULL) {
 		// -ignore any ALT, SHIFT+ALT, CTRL, SHIFT+CTRL key combination; 
 		//  Don't ignore CTRL+ALT combinations since that is the Alt Gr 
-		//	key on some keyboards.
+		//	key on some keyboards. Never filter characters on Mac OSX. 
+		//  See bug 20953.
 		// -ignore anything below SPACE except for line delimiter keys and tab.
 		// -ignore DEL 
-		boolean isCtrlAlt = (event.stateMask ^ SWT.ALT) == 0 || 
-							(event.stateMask ^ SWT.CTRL) == 0 ||
-							(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
-							(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
+		boolean isCtrlAlt = false;
+		
+		if (isCarbon == false) {
+			isCtrlAlt = (event.stateMask ^ SWT.ALT) == 0 || 
+						(event.stateMask ^ SWT.CTRL) == 0 ||
+						(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
+						(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
+		}
 		if (isCtrlAlt == false && event.character > 31 && event.character != SWT.DEL || 
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
