@@ -1603,9 +1603,9 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		OS.PatBlt(handle, x, y, width, height, dwRop);
 		return;
 	}
-
-	/* Use GradientFill if supported, only on Windows 98, 2000 and newer */
-	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN) {
+	
+	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. Don't use on printers. */
+	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final int hHeap = OS.GetProcessHeap();
 		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
 			GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);

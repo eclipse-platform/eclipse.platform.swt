@@ -352,6 +352,7 @@ public class OS {
 	public static final int DT_EXPANDTABS = 0x40;
 	public static final int DT_LEFT = 0x0;
 	public static final int DT_NOPREFIX = 0x800;
+	public static final int DT_RASPRINTER = 0x2;	
 	public static final int DT_SINGLELINE = 0x20;
 	public static final int DT_WORDBREAK = 0x10;
 	public static final int ECOOP_AND = 0x3;
@@ -1077,6 +1078,7 @@ public class OS {
 	public static final int TCS_MULTILINE = 0x200;
 	public static final int TCS_TABS = 0x0;
 	public static final int TCS_TOOLTIPS = 0x4000;
+	public static final int TECHNOLOGY = 0x2;
 	public static final int TME_HOVER = 0x1;
 	public static final int TME_LEAVE = 0x2;
 	public static final int TME_QUERY = 0x40000000;
