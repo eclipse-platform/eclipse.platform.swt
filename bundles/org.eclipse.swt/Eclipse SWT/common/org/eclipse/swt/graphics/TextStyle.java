@@ -91,4 +91,15 @@ public int hashCode() {
 	if (background != null) hash ^= background.hashCode();
 	return hash;
 }
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the <code>RGB</code>
+ */
+public String toString () {
+	return "TextStyle {font: " + font + ", foreground: " + foreground + ", background: " + background + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+}
+
 }
