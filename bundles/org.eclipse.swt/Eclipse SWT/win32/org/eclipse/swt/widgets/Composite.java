@@ -629,11 +629,11 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				* has a sibling that is currently on top.  The fix is to
 				* lock the z-order of the active window.
 				* 
-				* Feature in Windows.  Using SetWindowPos() to with HWND_NOTOPMOST
-				* to clear the top most state of a window whose parent is already
-				* a top most clears the top most state of the parent.  The fix is
-				* to check if the parent is already on top and neither set or clear
-				* the top most status of the tool tip.
+				* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
+				* to clear the topmost state of a window whose parent is already
+				* topmost clears the topmost state of the parent.  The fix is to
+				* check if the parent is already on top and neither set or clear
+				* the topmost status of the tool tip.
 				*/
 				int hwndParent = hdr.hwndFrom;
 				do {
