@@ -1289,9 +1289,10 @@ int processMouse (int info) {
 			if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
 				return OS.Pt_CONTINUE;
 			}
-			if ((state & CANVAS) != 0) {
-				return OS.Pt_CONTINUE;
-			}
+			//TEMPORARY CODE
+//			if ((state & CANVAS) != 0) {
+//				return OS.Pt_CONTINUE;
+//			}
 			event.type = SWT.MouseUp;
 			break;
 		case OS.Ph_EV_PTR_MOTION_BUTTON:
