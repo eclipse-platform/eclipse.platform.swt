@@ -333,12 +333,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects, boolean stippled) {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		parent.getShell ().update ();
-	} else {
-		display.update ();
-	}
 	int rid = OS.Ph_DEV_RID;
 	if (parent != null) rid = OS.PtWidgetRid (parent.handle);
 	
@@ -489,6 +483,7 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
+	update ();
 	drawRectangles (rectangles, stippled);
 	if ((style & SWT.MENU) == 0) {
 		oldX = info.pos_x;
@@ -573,6 +568,7 @@ public boolean open () {
 							}
 							if (draw) {
 								drawRectangles (rectsToErase, oldStippled);
+								update ();
 								drawRectangles (rectangles, stippled);
 							}
 							cursorPos = adjustResizeCursor ();
@@ -614,6 +610,7 @@ public boolean open () {
 							}
 							if (draw) {
 								drawRectangles (rectsToErase, oldStippled);
+								update ();
 								drawRectangles (rectangles, stippled);
 							}
 						}
@@ -699,6 +696,7 @@ public boolean open () {
 								}
 								if (draw) {
 									drawRectangles (rectsToErase, oldStippled);
+									update ();
 									drawRectangles (rectangles, stippled);
 								}
 								cursorPos = adjustResizeCursor ();
@@ -739,6 +737,7 @@ public boolean open () {
 								}
 								if (draw) {
 									drawRectangles (rectsToErase, oldStippled);
+									update ();
 									drawRectangles (rectangles, stippled);
 								}
 								cursorPos = adjustMoveCursor ();
@@ -766,7 +765,10 @@ public boolean open () {
 		OS.PtEventHandler (buffer);
 	}
 	OS.free (buffer);
-	if (!isDisposed ()) drawRectangles (rectangles, stippled);
+	if (!isDisposed ()) {
+		update ();
+		drawRectangles (rectangles, stippled);
+	}
 	tracking = false;
 	if (region != 0) OS.PtDestroyWidget (region);
 	return !cancelled;
@@ -836,11 +838,14 @@ void resizeRectangles (int xChange, int yChange) {
 	*/
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
 		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+	}
+	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
 		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+	}
+	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+	}
+	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
@@ -1031,4 +1036,12 @@ public void setStippled (boolean stippled) {
 	this.stippled = stippled;
 }
 
+void update () {
+	if (parent != null) {
+		if (parent.isDisposed ()) return;
+		parent.getShell ().update ();
+	} else {
+		display.update ();
+	}
+}
 }
