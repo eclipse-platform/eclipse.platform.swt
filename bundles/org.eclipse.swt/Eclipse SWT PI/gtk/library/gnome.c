@@ -22,6 +22,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <libgnome/libgnome.h>
+#include <libgnome/gnome-program.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-info.h>
@@ -74,6 +76,17 @@ void setGnomeVFSMimeApplicationFields(JNIEnv *env, jobject lpObject, GnomeVFSMim
 	(*env)->SetIntField(env, lpObject, GnomeVFSMimeApplicationFc.id, (jint)lpStruct->id);
 }
 #endif /* NO_GnomeVFSMimeApplication */
+
+#ifndef NO_LIBGNOME_1MODULE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_LIBGNOME_1MODULE
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	/* custom */
+	rc = (jint)LIBGNOME_MODULE;
+	return rc;
+}
+#endif
 
 #ifndef NO_gnome_1vfs_1get_1registered_1mime_1types
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1get_1registered_1mime_1types
@@ -165,4 +178,46 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_memmove
 }
 #endif
 
+#ifndef NO_gnome_1vfs_1mime_1get_1icon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1mime_1get_1icon
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
 
+	DEBUG_CALL("gnome_1vfs_1mime_1get_1icon\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gnome_vfs_mime_get_icon(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_gnome_1program_1init
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1program_1init
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)gnome_program_init((const char *)lparg0, (const char *)lparg1, (const GnomeModuleInfo *)arg2, arg3, (char **)lparg4, (void *)arg5);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_gnome_1program_1locate_1file
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1program_1locate_1file
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jint arg4)
+{
+	jint rc;
+	rc = (jint)gnome_program_locate_file((GnomeProgram *)arg0, arg1, (const gchar *)arg2, (gboolean)arg3,  (GSList **)arg4);
+	return rc;
+}
+#endif
