@@ -85,12 +85,6 @@ void createHandle (int index) {
 	OS.gtk_progress_bar_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {
 		timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
-	} else {
-		/*
-		* Note: this API is deprecated, but there is no replacement.
-		*/
-		int barStyle = (this.style & SWT.SMOOTH) == 0 ? OS.GTK_PROGRESS_DISCRETE : OS.GTK_PROGRESS_CONTINUOUS;
-		OS.gtk_progress_bar_set_bar_style (handle, barStyle);
 	}
 }
 
