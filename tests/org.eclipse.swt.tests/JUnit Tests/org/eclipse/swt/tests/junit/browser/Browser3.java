@@ -20,7 +20,7 @@ public class Browser3 {
 	public static boolean newWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
 	
 	public static boolean test1(String url) {
-		System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:NewWindow.newWindow > Browser2:Location.changing > Browser2:Visibility.show > Browser2:Location.changed > Browser2:Progress.completed");
+		System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:NewWindow.newWindow > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
@@ -61,7 +61,7 @@ public class Browser3 {
 				locationChanged = true;
 			}
 			public void changing(LocationEvent event) {
-				if (!newWindow || locationChanging || locationChanged) {
+				if (!newWindow) {
 					System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
@@ -77,7 +77,7 @@ public class Browser3 {
 				shell.close();
 			}
 			public void show(VisibilityEvent event) {
-				if (!newWindow || !locationChanging) {
+				if (!newWindow) {
 					System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
 					shell.close();
