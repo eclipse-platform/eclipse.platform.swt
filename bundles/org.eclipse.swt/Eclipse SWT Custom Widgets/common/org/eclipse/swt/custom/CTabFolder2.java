@@ -235,6 +235,7 @@ public class CTabFolder2 extends Composite {
 public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	int style2 = super.getStyle();
+	oldFont = getFont();
 	onBottom = (style2 & SWT.BOTTOM) != 0;
 	showClose = (style2 & SWT.CLOSE) != 0;
 //	showMin = (style2 & SWT.MIN) != 0; - conflicts with SWT.TOP
@@ -328,8 +329,18 @@ static int checkStyle (int style) {
 	if ((style & SWT.MULTI) != 0) 
 		style = style & ~(SWT.SINGLE | SWT.MULTI) | SWT.MULTI;
 	// reduce the flash by not redrawing the entire area on a Resize event
-	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND;
-	return style;
+	style |= SWT.NO_REDRAW_RESIZE;
+	//TEMPORARY CODE
+	/*
+	 * The default background on carbon and some GTK themes is not a solid color 
+	 * but a texture.  To show the correct default background, we must allow
+	 * the operating system to draw it and therefore, we can not use the 
+	 * NO_BACKGROUND style.  The NO_BACKGROUND style is not required on platforms
+	 * that use double buffering which is true in both of these cases.
+	 */
+	String platform = SWT.getPlatform();
+	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
+	return style | SWT.NO_BACKGROUND;
 }
 static void fillRegion(GC gc, Region region) {
 	// NOTE: region passed in to this function will be modified
@@ -784,7 +795,7 @@ void drawBody(Event event) {
 		}
 	}
 	
-	// fill in client area
+	// Draw highlight margin
 	if (!minimized){
 		int style = getStyle();
 		int width = size.x  - borderLeft - borderRight;
@@ -810,7 +821,7 @@ void drawBody(Event event) {
 						           x2-HIGHLIGHT_MARGIN,y2-HIGHLIGHT_MARGIN, x2-HIGHLIGHT_MARGIN,y1,
 								   x2,y1, x2,y2, x1,y2};
 			}
-			// Draw highlight margin - if horizontal gradient, show gradient across the whole area
+			// If horizontal gradient, show gradient across the whole area
 			if (selectedIndex != -1 && selectionGradientColors != null && selectionGradientColors.length > 1 && !selectionGradientVertical) {
 				drawBackground(gc, shape, true);
 			} else if (selectedIndex == -1 && gradientColors != null && gradientColors.length > 1 && !gradientVertical) {
@@ -821,8 +832,10 @@ void drawBody(Event event) {
 			}
 		}
 		//Draw client area
-		gc.setBackground(getBackground());
-		gc.fillRectangle(xClient - marginWidth, yClient - marginHeight, width, height);
+		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+			gc.setBackground(getBackground());
+			gc.fillRectangle(xClient - marginWidth, yClient - marginHeight, width, height);
+		}
 	}
 }
 
@@ -1908,7 +1921,13 @@ void onPaint(Event event) {
 		if (!updateTabHeight(tabHeight, false)) {
 			updateItems();
 			redraw();
-			return;
+			/*
+			* Bug on carbon.  Calling redraw inside 
+			* a paint event will not cause a redraw
+			* to happen.
+			*/
+			String platform = SWT.getPlatform();
+			if (!("carbon".equals(platform))) return;
 		}
 	}
 
