@@ -103,9 +103,11 @@ void createHandle () {
 	column.propertyDesc_propertyType = OS.kDataBrowserTextType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	//NOT DONE
-	column.headerBtnDesc_maximumWidth= 300;
+	column.headerBtnDesc_maximumWidth= 0x7FFF;
 	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
-	OS.AddDataBrowserListViewColumn (handle, column, 1);
+	OS.AddDataBrowserListViewColumn (handle, column, 0);
+	//NOT DONE
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)0x7FFF);
 }
 
 void createWidget () {
