@@ -129,6 +129,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	Point leftSize = new Point(0, 0);
 	if (topLeft != null) {
 		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		leftSize.x += 1; // +1 for highlight line
 	}
 	Point centerSize = new Point(0, 0);
 	if (topCenter != null) {
@@ -140,29 +141,42 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	}
 	Point size = new Point(0, 0);
 	// calculate width of title bar
-	if (separateTopCenter) {
+	if (separateTopCenter ||
+	    (wHint != SWT.DEFAULT &&  leftSize.x + centerSize.x + rightSize.x > wHint)) {
 		size.x = leftSize.x + rightSize.x;
 		size.x = Math.max(centerSize.x, size.x);
-		size.y = Math.max(leftSize.y, rightSize.y);
+		size.y = Math.max(leftSize.y, rightSize.y) + 1; // +1 for highlight line
 		if (topCenter != null){
 			size.y += centerSize.y;
 		}
 	} else {
 		size.x = leftSize.x + centerSize.x + rightSize.x;
-		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y));
+		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y)) + 1; // +1 for highlight line
 	}
 	
 	if (content != null) {
 		Point contentSize = new Point(0, 0);
 		contentSize = content.computeSize(SWT.DEFAULT, SWT.DEFAULT); 
 		size.x = Math.max (size.x, contentSize.x);
-		size.y += contentSize.y;
+		size.y += contentSize.y + 1; // +1 for line bewteen content and header
 	}
 	
-	size.x += 2 * marginWidth + BORDER_LEFT + BORDER_RIGHT;
-	size.y += 2 * marginHeight + BORDER_TOP + BORDER_BOTTOM;
-
-	return size;
+	size.x += 2 * marginWidth;
+	size.y += 2 * marginHeight;
+	
+	if (wHint != SWT.DEFAULT) size.x  = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	
+	Rectangle trim = computeTrim(0, 0, size.x, size.y);
+	return new Point (trim.width, trim.height);
+}
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+	int trimX = x - BORDER_LEFT;
+	int trimY = y - BORDER_TOP;
+	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT;
+	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM;
+	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
 }
 public Rectangle getClientArea() {
 	checkWidget();
