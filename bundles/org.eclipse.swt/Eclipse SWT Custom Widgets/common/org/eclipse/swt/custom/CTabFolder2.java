@@ -1706,6 +1706,15 @@ void onMouse(Event event) {
 				chevronImageState = NORMAL;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 			}
+			if (showClose && !single) {
+				for (int i=0; i<items.length; i++) {
+					CTabItem2 item = items[i];
+					if (item.closeImageState != NORMAL) {
+						item.closeImageState = NORMAL;
+						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					}
+				}
+			}
 			break;
 		}
 		case SWT.MouseDown: {
@@ -1788,7 +1797,7 @@ void onMouse(Event event) {
 				for (int i=0; i<items.length; i++) {
 					CTabItem2 item = items[i];
 					close = false;
-					if (item.closeRect.contains(x, y)) {
+					if (item.getBounds().contains(x, y)) {
 						close = true;
 						if (item.closeImageState != HOT) {
 							item.closeImageState = HOT;
