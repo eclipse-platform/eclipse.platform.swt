@@ -82,8 +82,11 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
 	return newLines;
 }
 /**
- * Adds <code>TextChangedEvent</code> listener. A <code>TextChangedEvent</code> is sent 
- * when changes to the textStore occur.
+ * Adds a <code>TextChangeListener</code> listening for 
+ * <code>TextChangingEvent</code> and <code>TextChangedEvent</code>. A 
+ * <code>TextChangingEvent</code> is sent before changes to the text occur.
+ * A <code>TextChangedEvent</code> is sent after changes to the text 
+ * occured.
  * <p>
  *
  * @param listener the listener
@@ -91,7 +94,7 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
-public void addTextChangedListener(TextChangedListener listener) {
+public void addTextChangeListener(TextChangeListener listener) {
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	StyledTextListener typedListener = new StyledTextListener(listener);
 	textListeners.addElement(typedListener);	
@@ -387,6 +390,31 @@ int lineCount(int startOffset, int length){
 	}			
 	return lineCnt;
 }
+/** 
+ * Returns the number of lines that are in the specified text.
+ * <p>
+ *
+ * @param text the text to lineate
+ * @return number of lines in the text
+ */
+int lineCount(String text){
+	int lineCount = 0;
+	int length = text.length();
+	for (int i = 0; i < length; i++) {
+		char ch = text.charAt(i);
+		if (ch == SWT.CR) {
+			if (i + 1 < length && text.charAt(i + 1) == SWT.LF) {
+				i++;
+			}
+			lineCount++;
+		}
+		else
+		if (ch == SWT.LF) {
+			lineCount++;
+		}
+	}
+	return lineCount;	
+}
 /**
  * @return the logical length of the text store
  */
@@ -649,7 +677,7 @@ public String getTextRange(int start, int length) {
 	return buf.toString();
 }
 /**
- * Removes the specified text changed listener.
+ * Removes the specified <code>TextChangeListener</code>.
  * <p>
  *
  * @param listener the listener
@@ -657,7 +685,7 @@ public String getTextRange(int start, int length) {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
-public void removeTextChangedListener(TextChangedListener listener){
+public void removeTextChangeListener(TextChangeListener listener){
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<textListeners.size(); i++) {
 		TypedListener typedListener = (TypedListener) textListeners.elementAt(i);
@@ -672,11 +700,12 @@ public void removeTextChangedListener(TextChangedListener listener){
  * for a length of <code>replaceLength</code>.  Notifies the appropriate listeners.
  * <p>
  *
- * When sending the TextChangedEvent, <code>numNewLines</code> is the number of 
- * inserted lines and <code>numReplacedLines</code> is the number of deleted lines based 
- * on the change that occurs visually.  For example:
+ * When sending the TextChangingEvent, <code>newLineCount</code> is the number of 
+ * lines that are going to be inserted and <code>replaceLineCount</code> is 
+ * the number of lines that are going to be deleted, based on the change 
+ * that occurs visually.  For example:
  * <ul>
- * <li>(replacedText,newText) ==> (numReplacedLines,numNewLines)
+ * <li>(replaceText,newText) ==> (replaceLineCount,newLineCount)
  * <li>("","\n") ==> (0,1)
  * <li>("\n\n","a") ==> (2,0)
  * </ul>
@@ -687,22 +716,25 @@ public void removeTextChangedListener(TextChangedListener listener){
  * @param newText start offset of text to replace
  */
 public void replaceTextRange(int start, int replaceLength, String newText){
-	StyledTextEvent event = new StyledTextEvent(this);
-	event.type = StyledText.TextReplaced;
-	event.start = start;
-	event.replacedLineCount = lineCount(start, replaceLength);
-	event.text = getTextRange(start, replaceLength);
-
-	// first delete the text to be replaced
-	delete(start, replaceLength, event.replacedLineCount + 1);
-	// then insert the new text
-	insert(start, newText);
-		
 	// inform listeners
-	event.newLineCount = lineCount(start, newText.length());
-	event.replacedCharCount = replaceLength;
+	StyledTextEvent event = new StyledTextEvent(this);
+	event.type = StyledText.TextChanging;
+	event.start = start;
+	event.replaceLineCount = lineCount(start, replaceLength);
+	event.text = newText;
+	event.newLineCount = lineCount(newText);
+	event.replaceCharCount = replaceLength;
 	event.newCharCount = newText.length();
 	sendTextEvent(event);
+
+	// first delete the text to be replaced
+	delete(start, replaceLength, event.replaceLineCount + 1);
+	// then insert the new text
+	insert(start, newText);
+	// inform listeners
+	event = new StyledTextEvent(this);
+	event.type = StyledText.TextChanged;
+	sendTextEvent(event);		
 	// printLines();
 }
 /**
@@ -793,5 +825,5 @@ void delete(int position, int length, int numLines) {
 	}
 	lineCount -= numOldLines;
 	gapLine = getLineAtPhysicalOffset(gapStart);		
-}		
+}
 }

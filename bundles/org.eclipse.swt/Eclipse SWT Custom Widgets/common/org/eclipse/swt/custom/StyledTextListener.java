@@ -45,15 +45,19 @@ public void handleEvent(Event e) {
 			e.doit = verifyEvent.doit;
 		break;		
 
+		case StyledText.TextChanging:
+			TextChangingEvent textChangingEvent = new TextChangingEvent((StyledTextContent) e.data, (StyledTextEvent) e);
+			((TextChangeListener) eventListener).textChanging(textChangingEvent);
+		break;
 
-		case StyledText.TextReplaced:
-			textChangedEvent = new TextChangedEvent((StyledTextContent)e.data, (StyledTextEvent) e);
-			((TextChangedListener) eventListener).textReplaced(textChangedEvent);
+		case StyledText.TextChanged:
+			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
+			((TextChangeListener) eventListener).textChanged(textChangedEvent);
 		break;
 
 		case StyledText.TextSet:
-			textChangedEvent = new TextChangedEvent((StyledTextContent)e.data, (StyledTextEvent) e);
-			((TextChangedListener) eventListener).textSet(textChangedEvent);
+			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
+			((TextChangeListener) eventListener).textSet(textChangedEvent);
 		break;
 	}
 }

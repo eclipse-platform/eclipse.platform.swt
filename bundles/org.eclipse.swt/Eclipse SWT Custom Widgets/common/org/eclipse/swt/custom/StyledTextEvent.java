@@ -17,9 +17,9 @@ class StyledTextEvent extends Event {
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by TextChangedEvent
-	int replacedCharCount; 	
+	int replaceCharCount; 	
 	int newCharCount; 
-	int replacedLineCount;
+	int replaceLineCount;
 	int newLineCount; 
 
 StyledTextEvent (StyledTextContent content) {

@@ -12,13 +12,6 @@ import org.eclipse.swt.events.*;
  * the text occurs.
  */
 public class TextChangedEvent extends TypedEvent {
-	public int start;				// replace start offset
-	public String replacedText;		// the replaced text or empty String of no text was replaced
-	public int replacedCharCount; 	// length of text being replaced
-	public int newCharCount; 		// length of new text
-	public int replacedLineCount;	// number of lines replaced
-	public int newLineCount; 		// number of new lines
-
 /**
  * Create the TextChangedEvent to be used by the StyledTextContent implementor.
  * <p>
@@ -28,14 +21,4 @@ public class TextChangedEvent extends TypedEvent {
 public TextChangedEvent(StyledTextContent source) {
 	super(source);
 }
-TextChangedEvent(StyledTextContent source, StyledTextEvent e) {
-	super(source);
-	start = e.start;
-	replacedCharCount = e.replacedCharCount;
-	newCharCount = e.newCharCount;
-	replacedLineCount = e.replacedLineCount;
-	newLineCount = e.newLineCount;
-	replacedText = e.text;
-}
-
 }

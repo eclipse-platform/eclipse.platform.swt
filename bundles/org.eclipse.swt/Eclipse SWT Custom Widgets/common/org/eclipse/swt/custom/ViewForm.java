@@ -63,6 +63,7 @@ public class ViewForm extends Composite {
 	private Color borderColor3;
 	
 	private Rectangle oldArea;
+	private static final int OFFSCREEN = -200;
 /**
 * Creates a ViewForm.
 * <p>
@@ -376,7 +377,7 @@ public void setContent(Control content) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.content != null && !this.content.isDisposed()) {
-		this.content.setVisible(false);
+		this.content.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.content = content;
 	layout();
@@ -422,7 +423,7 @@ public void setTopCenter(Control topCenter) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topCenter != null && !this.topCenter.isDisposed()) {
-		this.topCenter.setVisible(false);
+		this.topCenter.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topCenter = topCenter;
 	layout();
@@ -438,7 +439,7 @@ public void setTopLeft(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topLeft != null && !this.topLeft.isDisposed()) {
-		this.topLeft.setVisible(false);
+		this.topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topLeft = c;
 	layout();
@@ -454,7 +455,7 @@ public void setTopRight(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topRight != null && !this.topRight.isDisposed()) {
-		this.topRight.setVisible(false);
+		this.topRight.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topRight = c;
 	layout();
