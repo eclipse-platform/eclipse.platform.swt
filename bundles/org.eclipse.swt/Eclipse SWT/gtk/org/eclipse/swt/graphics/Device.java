@@ -337,7 +337,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 		OS.memmove(family, families[0] + i * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
 		boolean match = true;
 		if (faceName != null) {
-			int /*long*/ familyName = OS.pango_font_family_get_name (family[0]);
+			int /*long*/ familyName = OS.pango_font_family_get_name(family[0]);
 			int length = OS.strlen(familyName);
 			byte[] buffer = new byte[length];
 			OS.memmove(buffer, familyName, length);
