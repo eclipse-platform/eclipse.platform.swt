@@ -1485,15 +1485,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		count = content.getLineCount();
 	}
 	if (wordWrap) {
-		if (wHint != SWT.DEFAULT) {
-			width = wHint;
-		} 
-		else {
-			width = DEFAULT_WIDTH;
+		if (((WrappedContent) content).getVisualLineCount() != 0) {
+			// lines have already been wrapped to a specific width.
+			// use existing line count. fixes bug 9191
+			width = lineCache.getWidth();
+			if (singleLine == false) {
+				count = content.getLineCount();
+			}
 		}
-		if (singleLine == false) {
-			((WrappedContent) content).wrapLines(width);
-			count = content.getLineCount();
+		else {
+			// lines have not been wrapped yet. wrap to width hint 
+			// or to default width.
+			if (wHint != SWT.DEFAULT) {
+				width = wHint;
+			} 
+			else {
+				width = DEFAULT_WIDTH;
+			}
+			if (singleLine == false) {
+				((WrappedContent) content).wrapLines(width);
+				count = content.getLineCount();
+			}
 		}
 	}
 	else

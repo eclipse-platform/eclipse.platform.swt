@@ -199,6 +199,14 @@ public String getTextRange(int start, int length) {
     return logicalContent.getTextRange(start, length);
 }
 /**
+ * Returns the number of visual (wrapped) lines.
+ * 
+ * @return the number of visual (wrapped) lines
+ */
+int getVisualLineCount() {
+	return visualLineCount;	
+}
+/**
  * Returns the offset of the character after the word at the specified
  * offset.
  * <p>
