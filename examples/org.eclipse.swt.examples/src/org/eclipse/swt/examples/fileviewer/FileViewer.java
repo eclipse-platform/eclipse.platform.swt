@@ -419,23 +419,27 @@ public class FileViewer {
 		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dragSource.addDragListener(new DragSourceListener() {
 			TreeItem[] dndSelection = null;
+			String[] sourceNames = null;
 			public void dragStart(DragSourceEvent event){
 				dndSelection = tree.getSelection();
+				sourceNames = null;
 				event.doit = dndSelection.length > 0;
 			}
 			public void dragFinished(DragSourceEvent event){
+				dragSourceHandleDragFinished(event, sourceNames);
 				dndSelection = null;
+				sourceNames = null;
 			}
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
 				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
 				
-				final String[] data = new String[dndSelection.length];
+				sourceNames  = new String[dndSelection.length];
 				for (int i = 0; i < dndSelection.length; i++) {
 					File file = (File) dndSelection[i].getData(TREEITEMDATA_FILE);
-					data[i] = file.getAbsolutePath();
+					sourceNames[i] = file.getAbsolutePath();
 				}
-				event.data = data;
+				event.data = sourceNames;
 			}
 		});
 		return dragSource;
@@ -452,13 +456,14 @@ public class FileViewer {
 		dropTarget.addDropListener(new TreeDropFeedbackListener(tree));
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragOver(DropTargetEvent event) {
-				validateDropTarget(event, getTargetFile(event));
+				dropTargetValidate(event, getTargetFile(event));
 			}
 			public void dropAccept(DropTargetEvent event) {
-				validateDropTarget(event, getTargetFile(event));
+				dropTargetValidate(event, getTargetFile(event));
 			}
 			public void drop(DropTargetEvent event) {
-				performDrop(event, getTargetFile(event));
+				if (dropTargetValidate(event, getTargetFile(event)))
+					dropTargetHandleDrop(event, getTargetFile(event));
 			}				
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
@@ -615,23 +620,27 @@ public class FileViewer {
 		dragSource.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dragSource.addDragListener(new DragSourceListener() {
 			TableItem[] dndSelection = null;
+			String[] sourceNames = null;
 			public void dragStart(DragSourceEvent event){
 				dndSelection = table.getSelection();
+				sourceNames = null;
 				event.doit = dndSelection.length > 0;
 			}
 			public void dragFinished(DragSourceEvent event){
+				dragSourceHandleDragFinished(event, sourceNames);
 				dndSelection = null;
+				sourceNames = null;
 			}
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
 				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
 				
-				final String[] data = new String[dndSelection.length];
+				sourceNames  = new String[dndSelection.length];
 				for (int i = 0; i < dndSelection.length; i++) {
 					File file = (File) dndSelection[i].getData(TABLEITEMDATA_FILE);
-					data[i] = file.getAbsolutePath();
+					sourceNames[i] = file.getAbsolutePath();
 				}
-				event.data = data;
+				event.data = sourceNames;
 			}
 		});
 		return dragSource;
@@ -647,13 +656,14 @@ public class FileViewer {
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragOver(DropTargetEvent event) {
-				validateDropTarget(event, getTargetFile(event));
+				dropTargetValidate(event, getTargetFile(event));
 			}
 			public void dropAccept(DropTargetEvent event) {
-				validateDropTarget(event, getTargetFile(event));
+				dropTargetValidate(event, getTargetFile(event));
 			}
 			public void drop(DropTargetEvent event) {
-				performDrop(event, getTargetFile(event));
+				if (dropTargetValidate(event, getTargetFile(event)))
+					dropTargetHandleDrop(event, getTargetFile(event));
 			}				
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
@@ -751,6 +761,9 @@ public class FileViewer {
 	 * @param files the files that were selected, null or empty array indicates no active selection
 	 */
 	void notifySelectedFiles(File[] files) {
+		/* Details:
+		 * Update the details that are visible on screen.
+		 */
 		if ((files != null) && (files.length != 0)) {
 			numObjectsLabel.setText(getResourceString("details.NumberOfSelectedFiles.text",
 				new Object[] { new Integer(files.length) }));
@@ -859,13 +872,14 @@ public class FileViewer {
 	/**
 	 * Validates a drop target as a candidate for a drop operation.
 	 * <p>
+	 * Used in dragOver() and dropAccept().<br>
 	 * Note event.detail is set to DND.DROP_NONE by this method if the target is not valid.
 	 * </p>
-	 * @param event the DropTargetEvent we are validating
+	 * @param event the DropTargetEvent to validate
 	 * @param targetFile the File representing the drop target location
 	 *        under inspection, or null if none
 	 */
-	void validateDropTarget(DropTargetEvent event, File targetFile) {
+	private boolean dropTargetValidate(DropTargetEvent event, File targetFile) {
 		if (targetFile != null && targetFile.isDirectory()) {
 			if (event.detail != DND.DROP_COPY && event.detail != DND.DROP_MOVE) {
 				event.detail = DND.DROP_MOVE;
@@ -873,47 +887,72 @@ public class FileViewer {
 		} else {
 			event.detail = DND.DROP_NONE;
 		}
+		return event.detail != DND.DROP_NONE;
 	}
 
 	/**
-	 * Perform a drop on a target
+	 * Handles a drop on a dropTarget.
 	 * <p>
+	 * Used in drop().<br>
 	 * Note event.detail is modified by this method
 	 * </p>
 	 * @param event the DropTargetEvent passed as parameter to the drop() method
 	 * @param targetFile the File representing the drop target location
 	 *        under inspection, or null if none
 	 */
-	void performDrop(DropTargetEvent event, File targetFile) {
-		validateDropTarget(event, targetFile);		
-
+	private void dropTargetHandleDrop(DropTargetEvent event, File targetFile) {
 		// Get dropped data (an array of filenames)
+		if (! dropTargetValidate(event, targetFile)) return;
 		final String[] sourceNames = (String[]) event.data;
 		if (sourceNames == null) event.detail = DND.DROP_NONE;
 		if (event.detail == DND.DROP_NONE) return;
 
-		Vector /* of File */ dirtyFiles = new Vector();
-		try {		
-			dirtyFiles.add(targetFile);
-			for (int i = 0; i < sourceNames.length; i++){
-				final File source = new File(sourceNames[i]);
-				final File dest = new File(targetFile, source.getName());
+		for (int i = 0; i < sourceNames.length; i++){
+			final File source = new File(sourceNames[i]);
+			final File dest = new File(targetFile, source.getName());
 	
-				// Perform action on each file
-				switch (event.detail) {
-					default:
-					case DND.DROP_COPY:
-						if (! copyFileStructure(source, dest)) return;
-						break;
-					case DND.DROP_MOVE:
-						dirtyFiles.add(source);
-						if (! moveFileStructure(source, dest)) return;
-						break;
-				}
+			// Copy each file
+			if (! copyFileStructure(source, dest)) {
+				event.detail = DND.DROP_NONE; // forbid the source from deleting files on us
+				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				box.setText(getResourceString("dialog.FailedCopy.title"));
+				box.setMessage(getResourceString("dialog.FailedCopy.description",
+					new Object[] { source, dest }));
+				box.open();
+				break;
 			}
-		} finally {
-			notifyRefreshFiles((File[]) dirtyFiles.toArray(new File[dirtyFiles.size()]));
 		}
+		notifyRefreshFiles(new File[] { targetFile });
+	}
+
+	/**
+	 * Handles the completion of a drag on a dragSource.
+	 * <p>
+	 * Used in dragFinished().<br>
+	 * </p>
+	 * @param event the DragSourceEvent passed as parameter to the dragFinished() method
+	 * @param sourceNames the names of the files that were dragged (event.data is inadequate)
+	 */
+	private void dragSourceHandleDragFinished(DragSourceEvent event, String[] sourceNames) {
+		if (sourceNames == null) return;
+		if (event.detail != DND.DROP_MOVE) return;
+
+		Vector /* of File */ dirtyFiles = new Vector();
+		for (int i = 0; i < sourceNames.length; i++){
+			final File source = new File(sourceNames[i]);
+			dirtyFiles.add(source);
+	
+			// Delete each file
+			if (! deleteFileStructure(source)) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				box.setText(getResourceString("dialog.FailedDelete.title"));
+				box.setMessage(getResourceString("dialog.FailedDelete.description",
+					new Object[] { source }));
+				box.open();
+				break;
+			}
+		}
+		notifyRefreshFiles((File[]) dirtyFiles.toArray(new File[dirtyFiles.size()]));
 	}
 
 	/**
@@ -964,27 +1003,6 @@ public class FileViewer {
 	}
 	
 	/**
-	 * Moves a file or entire directory structure.
-	 * [Note only works within a specific volume on some platforms for now]
-	 *
-	 * @param oldFile the location of the old file or directory
-	 * @param newFile the location of the new file or directory
-	 * @return true iff the operation succeeds without errors
-	 */
-	boolean moveFileStructure(File oldFile, File newFile) {
-		if (oldFile == null || newFile == null) return false;
-		if (! oldFile.exists());
-		if (newFile.exists());
-		if (simulateOnly) {
-			System.out.println(getResourceString("simulate.MoveFromTo.text",
-				new Object[] { oldFile.getPath(), newFile.getPath() }));
-			return true;
-		} else {
-			return oldFile.renameTo(newFile);
-		}
-	}
-	
-	/**
 	 * Copies a file or entire directory structure.
 	 * 
 	 * @param oldFile the location of the old file or directory
@@ -992,9 +1010,14 @@ public class FileViewer {
 	 * @return true iff the operation succeeds without errors
 	 */
 	boolean copyFileStructure(File oldFile, File newFile) {
-		if (oldFile == null || newFile == null) return false;		
-		if (! oldFile.exists());
-		if (newFile.exists());
+		if (oldFile == null || newFile == null) return false;
+		
+		// ensure that newFile is not a child of oldFile
+		File searchFile = newFile;
+		do {
+			if (oldFile.equals(searchFile)) return false;
+			searchFile = searchFile.getParentFile();
+		} while (searchFile != null);
 		
 		if (oldFile.isFile()) {
 			/*
@@ -1050,10 +1073,39 @@ public class FileViewer {
 			 * Unknown type
 			 */
 			if (simulateOnly) {
-				System.out.println(getResourceString("simulate.IgnoringUnknownResource.text",
+				System.out.println(getResourceString("simulate.UnknownResource.text",
 					new Object[] { oldFile.getPath() }));
 			}
-			return true; // ignore it
+			return false; // error we don't know how to copy this
+		}
+	}
+
+	/**
+	 * Deletes a file or entire directory structure.
+	 * 
+	 * @param oldFile the location of the old file or directory
+	 * @return true iff the operation succeeds without errors
+	 */
+	boolean deleteFileStructure(File oldFile) {
+		if (oldFile == null) return false;		
+		if (oldFile.isDirectory()) {
+			/*
+			 * Delete a directory
+			 */
+			File[] subFiles = oldFile.listFiles();
+			if (subFiles != null) {
+				for (int i = 0; i < subFiles.length; i++) {
+					File oldSubFile = subFiles[i];
+					if (! deleteFileStructure(oldSubFile)) return false;
+				}
+			}
+		}
+		if (simulateOnly) {
+			System.out.println(getResourceString("simulate.Delete.text",
+				new Object[] { oldFile.getPath(), oldFile.getPath() }));
+			return true;
+		} else {
+			return oldFile.delete();
 		}
 	}
 	
