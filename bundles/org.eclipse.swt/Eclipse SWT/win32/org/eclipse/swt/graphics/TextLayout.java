@@ -31,6 +31,7 @@ public final class TextLayout {
 	Font font;
 	String text, segmentsText;
 	int lineSpacing;
+	int ascent, descent;
 	int alignment;
 	int wrapWidth;
 	int orientation;
@@ -65,7 +66,8 @@ public final class TextLayout {
 		int advances;
 		int goffsets;
 		int width;
-		int height;
+		int ascent;
+		int descent;
 
 		/* ScriptBreak */
 		int psla;
@@ -108,8 +110,7 @@ public final class TextLayout {
 			OS.DeleteObject(fallbackFont);
 			fallbackFont = 0;
 		}
-		width = 0;
-		height = 0;
+		width = ascent = descent = 0;
 		lineBreak = softBreak = false;		
 	}
 	}
@@ -134,7 +135,7 @@ public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	wrapWidth = -1;
+	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
@@ -307,20 +308,26 @@ void computeRuns (GC gc) {
 	lineOffset = new int[lineCount + 1];
 	lineY = new int[lineCount + 1];
 	this.lineWidth = new int[lineCount];
-	int lineHeight = 0, lineRunCount = 0, line = 0;
+	int lineRunCount = 0, line = 0;
+	int ascent = Math.max(0, this.ascent);
+	int descent = Math.max(0, this.descent);
 	StyleItem[] lineRuns = new StyleItem[allRuns.length];
 	for (int i=0; i<allRuns.length; i++) {
 		StyleItem run = allRuns[i];
 		lineRuns[lineRunCount++] = run;
 		lineWidth += run.width;
-		lineHeight = Math.max(run.height + lineSpacing, lineHeight);
+		ascent = Math.max(ascent, run.ascent);
+		descent = Math.max(descent, run.descent);
 		if (run.lineBreak || i == allRuns.length - 1) {
+			/* Update the run metrics if the last run is a hard break. */
 			if (lineRunCount == 1 && i == allRuns.length - 1) {
 				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 				OS.SelectObject(srcHdc, getItemFont(run));
 				OS.GetTextMetrics(srcHdc, lptm);
-				run.height = lptm.tmHeight;
-				lineHeight = run.height + lineSpacing;
+				run.ascent = lptm.tmAscent;
+				run.descent = lptm.tmDescent;
+				ascent = Math.max(ascent, run.ascent);
+				descent = Math.max(descent, run.descent);
 			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
@@ -328,9 +335,11 @@ void computeRuns (GC gc) {
 			runs[line] = reorder(runs[line]);
 			this.lineWidth[line] = lineWidth;
 			line++;
-			lineY[line] = lineY[line - 1] + lineHeight;
+			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
 			lineOffset[line] = lastRun.start + lastRun.length;
-			lineRunCount = lineWidth = lineHeight = 0;
+			lineRunCount = lineWidth = 0;
+			ascent = Math.max(0, this.ascent);
+			descent = Math.max(0, this.descent);
 		}
 	}
 	if (srcHdc != 0) OS.DeleteDC(srcHdc);
@@ -405,7 +414,6 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int foreground = OS.GetTextColor(hdc);
 	int state = OS.SaveDC(hdc);
 	RECT rect = new RECT();
-	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	int selBrush = 0;
 	if (hasSelection) selBrush = OS.CreateSolidBrush (selectionBackground.handle);
 	int rop2 = 0;
@@ -429,9 +437,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
 		StyleItem[] lineRuns = runs[line];
-		FontMetrics metrics = getLineMetrics(line);
-		int baseline = metrics.getAscent() + metrics.getLeading();
-		int lineHeight = metrics.getHeight();
+		int baseline = Math.max(0, this.ascent);
+		for (int i = 0; i < lineRuns.length; i++) {
+			baseline = Math.max(baseline, lineRuns[i].ascent);
+		}
+		int lineHeight = lineY[line+1] - lineY[line];
 		int alignmentX = drawX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -447,12 +457,10 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					} else {
 						if (run.style != null && run.style.background != null) {
 							int bg = run.style.background.handle;
-							OS.SelectObject(hdc, getItemFont(run));
-							OS.GetTextMetrics(hdc, lptm);
-							int drawRunY = drawY + (baseline - lptm.tmAscent);
+							int drawRunY = drawY + (baseline - run.ascent);
 							int hBrush = OS.CreateSolidBrush (bg);
 							int oldBrush = OS.SelectObject(hdc, hBrush);
-							OS.PatBlt(hdc, drawX, drawRunY, run.width, run.height, dwRop);
+							OS.PatBlt(hdc, drawX, drawRunY, run.width, run.ascent + run.descent, dwRop);
 							OS.SelectObject(hdc, oldBrush);
 							OS.DeleteObject(hBrush);
 						}
@@ -496,8 +504,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					}
 					OS.SetTextColor(hdc, fg);
 					OS.SelectObject(hdc, getItemFont(run));
-					OS.GetTextMetrics(hdc, lptm);
-					int drawRunY = drawY + (baseline - lptm.tmAscent);
+					int drawRunY = drawY + (baseline - run.ascent);
 					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
 					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
@@ -546,6 +553,11 @@ void freeRuns () {
 public int getAlignment () {
 	checkLayout();
 	return alignment;
+}
+
+public int getAscent () {
+	checkLayout();
+	return ascent;
 }
 
 /**
@@ -682,6 +694,11 @@ public Rectangle getBounds (int start, int end) {
 	return new Rectangle (startX, y, width, lineY[startLine + 1] - y);
 }
 
+public int getDescent () {
+	checkLayout();
+	return descent;
+}
+
 /**
  * Returns the font of the receiver
  * 
@@ -802,8 +819,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		Font font = this.font != null ? this.font : device.getSystemFont();
 		OS.SelectObject(srcHdc, font.handle);
 		OS.GetTextMetrics(srcHdc, lptm);
+		lptm.tmAscent = Math.max(lptm.tmAscent, this.ascent);
+		lptm.tmDescent = Math.max(lptm.tmDescent, this.descent);		
 	} else {
-		int ascent = 0, descent = 0, leading = 0, aveCharWidth = 0, height = 0;
+		int ascent = this.ascent, descent = this.descent, leading = 0, aveCharWidth = 0, height = 0;
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i<lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -1390,6 +1409,22 @@ public void setAlignment (int alignment) {
 	this.alignment = alignment;
 }
 
+public void setAscent(int ascent) {
+	checkLayout();
+	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.ascent == ascent) return;
+	freeRuns();
+	this.ascent = ascent;
+}
+
+public void setDescent(int descent) {
+	checkLayout();
+	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.descent == descent) return;
+	freeRuns();
+	this.descent = descent;
+}
+
 /**
  * Sets the font
  * 
@@ -1681,9 +1716,11 @@ void shape (final int hdc, final StyleItem run) {
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
-	OS.ScriptCacheGetHeight(hdc, run.psc, buffer);
 	run.width = abc[0] + abc[1] + abc[2];
-	run.height = buffer[0];
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	OS.GetTextMetrics(hdc, lptm);
+	run.ascent = lptm.tmAscent;
+	run.descent = lptm.tmDescent;
 }
 
 int translateOffset(int offset) {

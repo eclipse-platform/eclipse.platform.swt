@@ -43,15 +43,14 @@ StyledTextRenderer(Device device, Font regularFont) {
  */
 void calculateLineHeight() {
 	GC gc = getGC();
-	Font originalFont = gc.getFont();
-	FontMetrics metrics = gc.getFontMetrics();
-	
-	ascent = metrics.getAscent() + metrics.getLeading();
-	ascent = metrics.getDescent();
-	lineEndSpaceWidth = gc.stringExtent(" ").x;
+	lineEndSpaceWidth = gc.stringExtent(" ").x;	
 	
 	// don't assume that bold and normal fonts have the same height
 	// fixes bug 41773
+	Font originalFont = gc.getFont();
+	FontMetrics metrics = gc.getFontMetrics();
+	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+	descent = Math.max(descent, metrics.getDescent());
 	gc.setFont(getFont(SWT.BOLD));
 	metrics = gc.getFontMetrics();
 	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());

@@ -19,6 +19,7 @@ public final class TextLayout {
 	Font font;
 	String text;
 	int lineSpacing;
+	int ascent, descent;
 	int alignment;
 	int wrapWidth;
 	int orientation;
@@ -28,7 +29,7 @@ public final class TextLayout {
 	
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
-	int defaultFontHeight;
+	int defaultAscent, defaultDescent;
 	
 	static class StyleItem {
 		TextStyle style;
@@ -40,10 +41,12 @@ public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	wrapWidth = -1;
+	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
-	defaultFontHeight = getFontHeigth(device.getSystemFont());
+	XFontStruct fontStruct = getFontHeigth(device.getSystemFont());
+	defaultAscent = fontStruct.ascent;
+	defaultDescent = fontStruct.descent;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -184,15 +187,18 @@ void computeRuns () {
 	lineY = new int[lineCount + 1];
 	this.lineWidth = new int[lineCount];
 	int lineRunCount = 0, line = 0;
-	int lineHeight = defaultFontHeight + lineSpacing;
+	int ascent = Math.max(defaultAscent, this.ascent);
+	int descent = Math.max(defaultDescent, this.descent);
 	StyleItem[] lineRuns = new StyleItem[allRuns.length];
+	XFontStruct fontStruct;
 	for (int i=0; i<allRuns.length; i++) {
 		StyleItem run = allRuns[i];
 		lineRuns[lineRunCount++] = run;
 		lineWidth += run.width;
 		if (run.style != null && run.style.font != null) {
-			int runLogicalHeight = getFontHeigth(run.style.font) + lineSpacing;
-			lineHeight = Math.max(lineHeight, runLogicalHeight);
+			fontStruct = getFontHeigth(run.style.font);
+			ascent = Math.max(ascent, fontStruct.ascent);
+			descent = Math.max(descent, fontStruct.descent);
 		}
 		if (run.lineBreak || i == allRuns.length - 1) {
 			runs[line] = new StyleItem[lineRunCount];
@@ -200,10 +206,11 @@ void computeRuns () {
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			this.lineWidth[line] = lineWidth;
 			line++;
-			lineY[line] = lineY[line - 1] + lineHeight;
+			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
 			lineOffset[line] = lastRun.start + lastRun.length;
 			lineRunCount = lineWidth = 0;
-			lineHeight = defaultFontHeight + lineSpacing;
+			ascent = Math.max(defaultAscent, this.ascent);
+			descent = Math.max(defaultDescent, this.descent);
 		}
 	}
 }
@@ -257,7 +264,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		}
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
-		int baseline = 0;
+		int baseline = Math.max(0, this.ascent);
 		for (int i = 0; i < lineRuns.length; i++) {
 			baseline = Math.max(baseline, lineRuns[i].baseline);
 		}
@@ -327,6 +334,11 @@ public int getAlignment () {
 	return alignment;
 }
 
+public int getAscent () {
+	checkLayout();
+	return ascent;
+}
+
 public Rectangle getBounds () {
 	checkLayout();
 	computeRuns();
@@ -340,7 +352,6 @@ public Rectangle getBounds () {
 	}
 	return new Rectangle (0, 0, width, lineY[lineY.length - 1]);
 }
-
 
 public Rectangle getBounds (int start, int end) {
 	checkLayout();
@@ -367,19 +378,24 @@ public Rectangle getBounds (int start, int end) {
 	return rect;
 }
 
+public int getDescent () {
+	checkLayout();
+	return descent;
+}
+
 public Font getFont () {
 	checkLayout();
 	return font;
 }
 
-int getFontHeigth(Font font) {
+XFontStruct getFontHeigth(Font font) {
 	int fontList = font.handle;
 	int [] buffer = new int [1];
 	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int context = buffer [0];
-	int height = 0;
+	int ascent = 0, descent = 0;
 	XFontStruct fontStruct = new XFontStruct ();
 	int fontListEntry;
 	int [] fontStructPtr = new int [1];
@@ -388,21 +404,23 @@ int getFontHeigth(Font font) {
 		int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
 		if (buffer [0] == 0) {
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontHeight = fontStruct.ascent + fontStruct.descent;
-			height = Math.max(height, fontHeight);
+			ascent = Math.max(ascent, fontStruct.ascent);
+			descent = Math.max(descent, fontStruct.descent);			
 		} else {
 			int nFonts = OS.XFontsOfFontSet (fontPtr, fontStructPtr, fontNamePtr);
 			int [] fontStructs = new int [nFonts];
 			OS.memmove (fontStructs, fontStructPtr [0], nFonts * 4);
 			for (int i=0; i<nFonts; i++) {
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontHeight = fontStruct.ascent + fontStruct.descent;
-				height = Math.max(height, fontHeight);
+				ascent = Math.max(ascent, fontStruct.ascent);
+				descent = Math.max(descent, fontStruct.descent);			
 			}
 		}
 	}
 	OS.XmFontListFreeFontContext (context);
-	return height;
+	fontStruct.ascent = ascent;
+	fontStruct.descent = descent;
+	return fontStruct;
 }
 
 public int getLevel (int offset) {
@@ -465,8 +483,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	if (text.length() == 0) {
 		gc.setFont(font);
 		metrics = gc.getFontMetrics();
+		metrics.ascent = Math.max(metrics.ascent, this.ascent);
+		metrics.descent = Math.max(metrics.descent, this.descent);		
 	} else {
-		int ascent = 0, descent = 0, leading = 0, aveCharWidth = 0, height = 0;
+		int ascent = this.ascent, descent = this.descent, leading = 0, aveCharWidth = 0, height = 0;
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -799,6 +819,22 @@ public void setAlignment (int alignment) {
 	this.alignment = alignment;
 }
 
+public void setAscent (int ascent) {
+	checkLayout();
+	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.ascent == ascent) return;
+	freeRuns();
+	this.ascent = ascent;
+}
+
+public void setDescent (int descent) {
+	checkLayout();
+	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.descent == descent) return;
+	freeRuns();
+	this.descent = descent;
+}
+
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -806,7 +842,9 @@ public void setFont (Font font) {
 	if (font != null && font.equals(this.font)) return;
 	freeRuns();
 	this.font = font;
-	defaultFontHeight = getFontHeigth(font != null ? font : device.getSystemFont());
+	XFontStruct fontStruct = getFontHeigth(font != null ? font : device.getSystemFont());
+	defaultAscent = fontStruct.ascent;
+	defaultDescent = fontStruct.descent;
 }
 
 public void setOrientation (int orientation) {

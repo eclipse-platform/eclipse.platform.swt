@@ -18,6 +18,7 @@ public final class TextLayout {
 	Font font;
 	String text;
 	int lineSpacing;
+	int ascent, descent;
 	int alignment;
 	int wrapWidth;
 	int orientation;
@@ -30,7 +31,7 @@ public final class TextLayout {
 	
 	static class StyleItem {
 		TextStyle style;
-		int start, length, width, height;
+		int start, length, width, ascent, descent;
 		boolean lineBreak, softBreak, tab;
 	}
 	
@@ -38,7 +39,7 @@ public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	wrapWidth = -1;
+	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
@@ -171,28 +172,36 @@ void computeRuns (GC gc) {
 	lineOffset = new int[lineCount + 1];
 	lineY = new int[lineCount + 1];
 	this.lineWidth = new int[lineCount];
-	int lineHeight = 0, lineRunCount = 0, line = 0;
+	int lineRunCount = 0, line = 0;
+	int ascent = Math.max(0, this.ascent);
+	int descent = Math.max(0, this.descent);
 	StyleItem[] lineRuns = new StyleItem[allRuns.length];
 	for (int i=0; i<allRuns.length; i++) {
 		StyleItem run = allRuns[i];
 		lineRuns[lineRunCount++] = run;
 		lineWidth += run.width;
-		lineHeight = Math.max(run.height + lineSpacing, lineHeight);
+		ascent = Math.max(ascent, run.ascent);
+		descent = Math.max(descent, run.descent);
 		if (run.lineBreak || i == allRuns.length - 1) {
+			/* Update the run metrics if the last run is a hard break */
 			if (lineRunCount == 1 && i == allRuns.length - 1) {
 				gc.setFont(getItemFont(run));
 				FontMetrics metrics = gc.getFontMetrics();
-				run.height = metrics.getHeight();
-				lineHeight = run.height + lineSpacing;
+				run.ascent = metrics.getAscent() + metrics.getLeading();
+				run.descent = metrics.getDescent();
+				ascent = Math.max(ascent, run.ascent);
+				descent = Math.max(descent, run.descent);	
 			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			this.lineWidth[line] = lineWidth;
 			line++;
-			lineY[line] = lineY[line - 1] + lineHeight;
+			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
 			lineOffset[line] = lastRun.start + lastRun.length;
-			lineRunCount = lineWidth = lineHeight = 0;
+			lineRunCount = lineWidth = 0;
+			ascent = Math.max(0, this.ascent);
+			descent = Math.max(0, this.descent);
 		}
 	}
 	if (newGC) gc.dispose();
@@ -247,9 +256,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
-		FontMetrics metrics = getLineMetrics(line);
-		int baseline = metrics.getAscent() + metrics.getLeading();
-		int lineHeight = metrics.getHeight();
+		int baseline = Math.max(0, this.ascent);
+		for (int i = 0; i < lineRuns.length; i++) {
+			baseline = Math.max(baseline, lineRuns[i].ascent);
+		}
+		int lineHeight = lineY[line+1] - lineY[line];
 		Font lastFont = null, currentFont = null;
 		int drawRunY = 0;
 		for (int i = 0; i < lineRuns.length; i++) {
@@ -261,10 +272,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					currentFont = getItemFont(run);
 					if (!currentFont.equals(lastFont)) {
 						gc.setFont(currentFont);
-						metrics = gc.getFontMetrics();
-						drawRunY = drawY + (baseline - metrics.getAscent());
 						lastFont = currentFont;
 					}
+					drawRunY = drawY + (baseline - run.ascent);
 					int end = run.start + run.length - 1;
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 					if (fullSelection) {
@@ -279,7 +289,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (run.style != null && run.style.background != null) {
 							Color bg = run.style.background;
 							gc.setBackground(bg);
-							gc.fillRectangle(drawX, drawRunY, run.width, run.height);
+							gc.fillRectangle(drawX, drawRunY, run.width, run.ascent + run.descent);
 						}
 						if (!run.tab) {
 							Color fg = foreground;
@@ -323,6 +333,11 @@ public int getAlignment () {
 	return alignment;
 }
 
+public int getAscent () {
+	checkLayout();
+	return ascent;
+}
+
 public Rectangle getBounds () {
 	checkLayout();
 	computeRuns(null);
@@ -361,6 +376,11 @@ public Rectangle getBounds (int start, int end) {
 		}
 	}
 	return rect;
+}
+
+public int getDescent () {
+	checkLayout();
+	return descent;
 }
 
 public Font getFont () {
@@ -429,7 +449,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		gc.setFont(font);
 		metrics = gc.getFontMetrics();
 	} else {
-		int ascent = 0, descent = 0, leading = 0, aveCharWidth = 0, height = 0;
+		int ascent = this.ascent, descent = this.descent, leading = 0, aveCharWidth = 0, height = 0;
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -743,8 +763,10 @@ StyleItem[] merge (StyleItem[] items, int itemCount) {
 void place (GC gc, StyleItem run) {
 	String string = text.substring(run.start, run.start + run.length);
 	Point extent = gc.stringExtent(string);
+	FontMetrics metrics = gc.getFontMetrics();
 	run.width = extent.x;
-	run.height = extent.y; 
+	run.ascent = metrics.getAscent() + metrics.getLeading();
+	run.descent = metrics.getDescent();
 }
 
 public void setAlignment (int alignment) {
@@ -755,6 +777,22 @@ public void setAlignment (int alignment) {
 	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT;
 	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT;
 	this.alignment = alignment;
+}
+
+public void setAscent (int ascent) {
+	checkLayout();
+	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.ascent == ascent) return;
+	freeRuns();
+	this.ascent = ascent;
+}
+
+public void setDescent (int descent) {
+	checkLayout();
+	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.descent == descent) return;
+	freeRuns();
+	this.descent = descent;
 }
 
 public void setFont (Font font) {
