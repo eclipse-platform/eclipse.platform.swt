@@ -30,8 +30,8 @@ Control [] _getChildren () {
 	if (count [0] == 0) return new Control [0];
 	Control [] children = new Control [count [0]];
 	int [] outControl= new int [1];
-	int i = count [0] - 1, j = 0;
-	while (i >= 0) {
+	int i = 0, j = 0;
+	while (i < count [0]) {
 		int status = OS.GetIndexedSubControl (handle, (short)(i+1), outControl);
 		if (status == OS.noErr) {
 			Widget widget = WidgetTable.get (outControl [0]);
@@ -41,7 +41,7 @@ Control [] _getChildren () {
 				}
 			}
 		}
-		--i;
+		i++;
 	}
 	if (j == count [0]) return children;
 	Control [] newChildren = new Control [j];
@@ -124,8 +124,6 @@ void createHandle (int parentHandle) {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parentHandle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 void createScrolledHandle (int parentHandle) {
@@ -140,9 +138,6 @@ void createScrolledHandle (int parentHandle) {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parentHandle, scrolledHandle);
-	OS.HIViewAddSubview (scrolledHandle, handle);
-	OS.HIViewSetZOrder (scrolledHandle, OS.kHIViewZOrderBelow, 0);
 }
 
 public Control [] getChildren () {
@@ -305,4 +300,10 @@ public void setTabList (Control [] tabList) {
 	} 
 	this.tabList = tabList;
 }
+
+void setZOrder () {
+	super.setZOrder ();
+	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+}
+
 }

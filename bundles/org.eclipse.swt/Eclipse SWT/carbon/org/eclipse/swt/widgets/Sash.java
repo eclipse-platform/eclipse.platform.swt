@@ -53,8 +53,6 @@ void createHandle () {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
@@ -72,10 +70,15 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	event.height = rect.bottom - rect.top;
 	sendEvent (SWT.Selection, event);
 	if (!event.doit) return result;
-	CGPoint ioPoint = new CGPoint ();
-	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, ioPoint.sizeof, null, ioPoint);
-	OS.HIViewConvertPoint (ioPoint, 0, handle);
-	int offsetX = (int)ioPoint.x, offsetY = (int)ioPoint.y;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	int offsetX = pt.h - rect.left;
+	int offsetY = pt.v - rect.top;
+	OS.GetControlBounds (handle, rect);
+	offsetX -= rect.left;
+	offsetY -= rect.top;
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
@@ -85,19 +88,19 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			case OS.kMouseTrackingMouseDown:
 			case OS.kMouseTrackingMouseUp:
 			case OS.kMouseTrackingMouseDragged: {
-				int window = OS.GetControlOwner (handle);
-				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-				ioPoint.x = outPt.h - rect.left;
-				ioPoint.y = outPt.v - rect.top;
-				OS.HIViewConvertPoint (ioPoint, 0, parent.handle);
-				OS.GetControlBounds (parent.handle, rect);
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				int x = pt.h - rect.left;
+				int y = pt.v - rect.top;
+				OS.GetControlBounds (handle, rect);
+				x -= rect.left;
+				y -= rect.top;				
 				int newX = startX, newY = startY;
 				if ((style & SWT.VERTICAL) != 0) {
 					int clientWidth = rect.right - rect.left;
-					newX = Math.min (Math.max (0, (int)ioPoint.x - offsetX), clientWidth - width);
+					newX = Math.min (Math.max (0, x - offsetX), clientWidth - width);
 				} else {
 					int clientHeight = rect.bottom - rect.top;
-					newY = Math.min (Math.max (0, (int)ioPoint.y - offsetY), clientHeight - height);
+					newY = Math.min (Math.max (0, y - offsetY), clientHeight - height);
 				}
 				event = new Event ();
 				event.x = newX;

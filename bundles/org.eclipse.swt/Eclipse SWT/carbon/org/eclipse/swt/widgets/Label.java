@@ -66,8 +66,6 @@ void createHandle () {
 	}
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 public int getAlignment () {

@@ -161,8 +161,6 @@ void createHandle () {
 		int placement = (parent.style & SWT.RIGHT) != 0 ? OS.kControlBevelButtonPlaceToRightOfGraphic :  OS.kControlBevelButtonPlaceBelowGraphic;
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short) placement});
 	}
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 	parent.relayout ();
 }
 

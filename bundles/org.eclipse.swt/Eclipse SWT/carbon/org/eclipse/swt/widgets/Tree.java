@@ -98,8 +98,6 @@ void createHandle () {
 	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, 1);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {

@@ -107,7 +107,7 @@ Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void createWidget () {
+void createHandle () {
 	Display display = getDisplay ();
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
@@ -115,8 +115,12 @@ void createWidget () {
 	OS.CreateScrollBarControl (window, null, 0, 0, 100, 10, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parent.scrolledHandle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderAbove, 0);
+}
+
+void createWidget () {
+	createHandle ();
+	hookEvents ();
+	setZOrder ();
 }
 
 public Display getDisplay () {
@@ -170,6 +174,16 @@ public int getThumb () {
 public boolean getVisible () {
 	checkWidget();
 	return (state & HIDDEN) == 0;
+}
+
+void hookEvents () {
+	Display display = getDisplay ();
+	int controlProc = display.controlProc;
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 }
 
 public boolean isEnabled () {
@@ -284,4 +298,9 @@ public void setVisible (boolean visible) {
 	OS.HIViewSetVisible (handle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
+
+void setZOrder () {
+	OS.HIViewAddSubview (parent.scrolledHandle, handle);
+}
+
 }

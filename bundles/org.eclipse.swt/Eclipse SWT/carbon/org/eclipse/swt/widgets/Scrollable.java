@@ -99,6 +99,7 @@ void hookEvents () {
 		Display display = getDisplay ();
 		int controlProc = display.controlProc;
 		int [] mask = new int [] {
+			OS.kEventClassControl, OS.kEventControlDraw,
 			OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		};
 		int controlTarget = OS.GetControlEventTarget (scrolledHandle);
@@ -118,7 +119,8 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 		if (theControl [0] == handle) {
 			super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 		} else {
-			layoutControl ();
+			//TEMPORARY CODE
+//			layoutControl ();
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -136,7 +138,6 @@ void layoutControl () {
 			vWidth = size.x;
 		}
 		int window = OS.GetControlOwner (scrolledHandle);
-		boolean visible = OS.IsWindowVisible (window);
 		int [] theRoot = new int [1];
 		OS.GetRootControl (window, theRoot);
 		Rect rect = new Rect ();
@@ -151,19 +152,16 @@ void layoutControl () {
 			int x = 0, y = height;
 			Rect rect1 = new Rect ();
 			OS.SetRect (rect1, (short) x, (short) y, (short)(x + width), (short)(y + hHeight));
-			if (visible) toRoot (horizontalBar.handle, rect1);
-			OS.SetControlBounds (horizontalBar.handle, rect1);
+			OS.SetControlBounds (horizontalBar.handle, toRoot (horizontalBar.handle, rect1));
 		}
 		if (verticalBar != null) {
 			int x = width, y = 0;
 			Rect rect2 = new Rect ();
 			OS.SetRect (rect2, (short) x, (short) y, (short)(x + vWidth), (short)(y + height));
-			if (visible) toRoot (verticalBar.handle, rect2);
-			OS.SetControlBounds (verticalBar.handle, rect2);
+			OS.SetControlBounds (verticalBar.handle, toRoot (verticalBar.handle, rect2));
 		}
 		OS.SetRect (rect, (short) 0, (short) 0, (short) width, (short) height);
-		if (visible) toRoot (handle, rect);
-		OS.SetControlBounds (handle, rect);
+		OS.SetControlBounds (handle, toRoot (handle, rect));
 	}	
 }
 
@@ -181,6 +179,18 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
+}
+
+public void setBounds (int x, int y, int width, int height) {
+	super.setBounds (x, y, width, height);
+	//TEMPORARY CODE
+	layoutControl ();
+}
+
+public void setSize (int width, int height) {
+	super.setSize (width, height);
+	//TEMPORARY CODE
+	layoutControl ();
 }
 
 int topHandle () {

@@ -470,4 +470,8 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 }
+
+void setZOrder () {
+}
+
 }

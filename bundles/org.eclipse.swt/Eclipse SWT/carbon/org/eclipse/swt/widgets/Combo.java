@@ -179,8 +179,6 @@ void createHandle () {
 		handle = outControl [0];
 		OS.HIViewSetVisible (handle, true);
 	}
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 public void cut () {

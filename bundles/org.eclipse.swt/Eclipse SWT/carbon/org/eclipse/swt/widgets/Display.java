@@ -420,17 +420,15 @@ public Control getCursorControl () {
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
 	int [] theWindow = new int [1];
-	//NOT DONE - exclude window trim
-	if (OS.FindWindow (where, theWindow) != OS.inContent) ; //return null;
+	if (OS.FindWindow (where, theWindow) != OS.inContent) return null;
 	if (theWindow [0] == 0) return null;
 	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);	
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
 	CGPoint inPoint = new CGPoint ();
 	inPoint.x = where.h - rect.left;
 	inPoint.y = where.v - rect.top;
 	int [] theRoot = new int [1];
 	OS.GetRootControl (theWindow [0], theRoot);
-	OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
 	int [] theControl = new int [1];
 	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
 	if (theControl [0] != 0) {
@@ -715,41 +713,33 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 int mouseProc (int nextHandler, int theEvent, int userData) {
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
-	int theWindow = userData;
-	if (theWindow == 0) {
-		int [] window = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, window);
-		if (window [0] == 0) {
+	int [] theWindow = new int [1];
+	short part = OS.FindWindow (where, theWindow);
+	switch (part) {
+		case OS.inMenuBar: {
 			int eventKind = OS.GetEventKind (theEvent);
-			short part = OS.FindWindow (where, window);
-			if (eventKind == OS.kEventMouseDown && part == OS.inMenuBar) {
+			if (eventKind == OS.kEventMouseDown) {
 				OS.MenuSelect (where);
 				return OS.noErr;
 			}
+			break;
 		}
-		theWindow = window [0];
-	}
-	int [] theRoot = new int [1];
-	OS.GetRootControl (theWindow, theRoot);
-	int [] theControl = new int [1];
-	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow, (short) OS.kWindowStructureRgn, rect);
-	CGPoint inPoint = new CGPoint ();
-	inPoint.x = where.h - rect.left;
-	inPoint.y = where.v - rect.top;
-	OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
-	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-	//FIXME - look for part code?
-	if (theControl [0] == 0) {
-		if (0 <= inPoint.x && inPoint.x < (rect.right - rect.left)) {
-			if (0 <= inPoint.y && inPoint.y < (rect.bottom - rect.top)) {
-				OS.HIViewGetViewForMouseEvent (theRoot [0], theEvent, theControl);
+		case OS.inContent: {
+			Rect rect = new Rect ();
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+			CGPoint inPoint = new CGPoint ();
+			inPoint.x = where.h - rect.left;
+			inPoint.y = where.v - rect.top;
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow [0], theRoot);
+			int [] theControl = new int [1];
+			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			Control control = WidgetTable.get (theControl [0]);
+			if (control != null && control.handle == theControl [0]) {
+				return control.mouseProc (nextHandler, theEvent, userData);
 			}
+			break;
 		}
-	}
-	Control control = WidgetTable.get (theControl [0]);
-	if (control != null && control.handle == theControl [0]) {
-		return control.mouseProc (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -941,12 +931,14 @@ void runGrabs () {
 			if (type != 0) {	
 				int handle = grabControl.handle;
 				int window = OS.GetControlOwner (handle);
-				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-				ioPoint.x = outPt.h - rect.left;
-				ioPoint.y = outPt.v - rect.top;
-				OS.HIViewConvertPoint (ioPoint, 0, handle);
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				int x = outPt.h - rect.left;
+				int y = outPt.v - rect.top;
+				OS.GetControlBounds (handle, rect);
+				x -= rect.left;
+				y -=  rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
-				grabControl.sendMouseEvent (type, (short)button, chord, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
+				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
 			}
 		}
 	} finally {

@@ -181,6 +181,7 @@ void createWidget () {
 	createHandle ();
 	register ();
 	hookEvents ();
+	setZOrder ();
 }
 
 void deregister () {
@@ -224,28 +225,31 @@ public Rectangle getBounds () {
 }
 
 int getClipping (int control) {
-	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn();
-	short [] count = new short [1];
+	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
 	Rect rect = new Rect();
 	OS.GetControlBounds (control, rect);
 	OS.RectRgn (visibleRgn, rect);
+	short [] count = new short [1];
+	int [] outControl = new int [1];
 	int tempControl = control, lastControl = 0;
-	int [] child = new int [1], parent = new int [1];
 	while (tempControl != 0) {
 		OS.GetControlBounds (tempControl, rect);
 		OS.RectRgn (tempRgn, rect);
 		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+		if (OS.EmptyRgn (visibleRgn)) break;
 		OS.CountSubControls (tempControl, count);
-		for (int i = count [0] - 1; i >= 0; i--) {
-			OS.GetIndexedSubControl (tempControl, (short)(i + 1), child);
-			if (child [0] == lastControl) break;
-			OS.GetControlBounds (child [0], rect);
+		for (int i = 0; i < count [0]; i++) {
+			OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+			int child = outControl [0];
+			if (child == lastControl) break;
+			if (!OS.IsControlVisible (child)) continue;
+			OS.GetControlBounds (child, rect);
 			OS.RectRgn (tempRgn, rect);
 			OS.UnionRgn (tempRgn, childRgn, childRgn);
 		}
 		lastControl = tempControl;
-		OS.GetSuperControl (tempControl, parent);
-		tempControl = parent [0];
+		OS.GetSuperControl (tempControl, outControl);
+		tempControl = outControl [0];
 	}
 	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
 	OS.DisposeRgn (childRgn);
@@ -691,7 +695,7 @@ public void moveAbove (Control control) {
 		if (parent != control.parent) return;
 		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderAbove, inOther);
+	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderBelow, inOther);
 }
 
 public void moveBelow (Control control) {
@@ -702,7 +706,7 @@ public void moveBelow (Control control) {
 		if (parent != control.parent) return;
 		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderBelow, inOther);
+	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderAbove, inOther);
 }
 
 public void pack () {
@@ -842,18 +846,16 @@ boolean sendMouseEvent (int type, int theEvent) {
 boolean sendMouseEvent (int type, short button, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
-	CGPoint pt = new CGPoint ();
-	if (OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt) != OS.noErr) {
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		pt.x -= rect.left;
-		pt.y -= rect.top;
-	}
-	OS.HIViewConvertPoint (pt, 0, handle);
-	event.x = (int) pt.x;
-	event.y = (int) pt.y;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	event.x = pt.h - rect.left;
+	event.y = pt.v - rect.top;
+	OS.GetControlBounds (handle, rect);
+	event.x -= rect.left;
+	event.y -= rect.top;
 	setInputState (event, theEvent);
 	postEvent (type, event);
 	return true;
@@ -1047,6 +1049,12 @@ public void setVisible (boolean visible) {
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
+void setZOrder () {
+	int topHandle = topHandle ();
+	int parentHandle = parent.handle;
+	OS.HIViewAddSubview (parentHandle, topHandle);
+}
+
 void sort (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
@@ -1068,29 +1076,26 @@ public Point toControl (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	CGPoint ioPoint = new CGPoint ();
-	ioPoint.x = point.x - rect.left;
-	ioPoint.y = point.y - rect.top;
-	OS.HIViewConvertPoint (ioPoint, 0, handle); 
-    return new Point ((int) ioPoint.x, (int) ioPoint.y);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	int x = point.x - rect.left;
+	int y = point.y - rect.top;
+	OS.GetControlBounds (handle, rect);
+    return new Point (x - rect.left, y - rect.top);
 }
 
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	CGPoint ioPoint = new CGPoint ();
-	ioPoint.x = point.x;
-	ioPoint.y = point.y;
-	OS.HIViewConvertPoint (ioPoint, handle, 0);
 	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int x = point.x + rect.left; 
+	int y = point.y + rect.top; 
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-    return new Point (rect.left + (int) ioPoint.x, rect.top + (int) ioPoint.y);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+    return new Point (x + rect.left, y + rect.top);
 }
 
 Rect toControl (int control, Rect rect) {
-//	if (true) return rect;
 	int window = OS.GetControlOwner (control);
 	int [] theRoot = new int [1];
 	OS.GetRootControl (window, theRoot);
@@ -1105,7 +1110,6 @@ Rect toControl (int control, Rect rect) {
 }
 
 Rect toRoot (int control, Rect rect) {
-//	if (true) return rect;
 	int window = OS.GetControlOwner (control);
 	int [] theRoot = new int [1];
 	OS.GetRootControl (window, theRoot);

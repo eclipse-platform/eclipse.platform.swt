@@ -106,8 +106,6 @@ void createHandle () {
 	column.headerBtnDesc_maximumWidth= 300;
 	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, 1);
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 void createWidget () {

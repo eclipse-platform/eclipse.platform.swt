@@ -163,8 +163,6 @@ void createHandle () {
 	fontRec.flags = (short)OS.kControlUseFontMask;
 	fontRec.font = 0;
 	OS.SetControlFontStyle (handle, fontRec);
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 	
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
 		int textAlignment = 0;
