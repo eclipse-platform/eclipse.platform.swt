@@ -1474,6 +1474,15 @@ void setKeyState (Event event, int theEvent) {
 				OS.GetEventParameter (theEvent, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode);
 				event.character = (char) charCode [0];
 			}
+			if (event.character != 0) {
+				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
+				if (display.kchrPtr != kchrPtr) {
+					display.kchrPtr = kchrPtr;
+					display.kchrState [0] = 0;
+				}
+				int result = OS.KeyTranslate (kchrPtr, (short)keyCode [0], display.kchrState);
+				event.keyCode = result & 0x7f;
+			}
 			break;
 		}
 		case SWT.LF:

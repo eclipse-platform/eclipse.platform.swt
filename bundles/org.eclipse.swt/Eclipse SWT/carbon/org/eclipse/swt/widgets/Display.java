@@ -171,6 +171,10 @@ public class Display extends Device {
 	int [] disposeWindows;
 	int [] disposeControls;
 	
+	/* Keyboard */
+	int kchrPtr;
+	int [] kchrState = new int [1];
+
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
