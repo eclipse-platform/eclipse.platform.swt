@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class provide by an etched border
+ * Instances of this class provide an etched border
  * with an optional title.
  * <p>
  * Shadow styles are hints and may not be honoured

@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * Instances of the receiver represent is an unselectable
  * user interface object that is used to display progress,
- * typlically in the form of a bar.
+ * typically in the form of a bar.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SMOOTH, HORIZONTAL, VERTICAL</dd>
