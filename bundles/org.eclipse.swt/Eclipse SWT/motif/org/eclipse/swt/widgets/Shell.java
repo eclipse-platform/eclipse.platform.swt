@@ -1068,6 +1068,9 @@ void register () {
 	super.register ();
 	display.addWidget (shellHandle, this);
 }
+void releaseChild () {
+	/* Do nothing */
+}
 void releaseHandle () {
 	super.releaseHandle ();
 	shellHandle = 0;

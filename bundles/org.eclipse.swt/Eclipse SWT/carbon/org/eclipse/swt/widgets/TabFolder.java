@@ -475,7 +475,7 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	int count = getItemCount ();
+	int count = OS.GetControl32BitMaximum (handle);
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
 		if (item.control == control) item.setControl (null);
