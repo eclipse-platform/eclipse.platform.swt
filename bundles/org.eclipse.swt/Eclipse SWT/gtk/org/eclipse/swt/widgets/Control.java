@@ -1693,7 +1693,7 @@ int gtk_expose_event (int widget, int eventPtr) {
 	event.width = gdkEvent.area_width;
 	event.height = gdkEvent.area_height;
 	GC gc = event.gc = new GC (this);
-	Region region = Region.gtk_new (gdkEvent.region);
+	Region region = Region.gtk_new (display, gdkEvent.region);
 	gc.setClipping (region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();

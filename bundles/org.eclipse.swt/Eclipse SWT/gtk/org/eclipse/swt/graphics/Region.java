@@ -31,6 +31,11 @@ public final class Region {
 	 */
 	public int handle;
 
+	/**
+	 * The device where this region was created.
+	 */
+	Device device;
+
 /**
  * Constructs a new empty region.
  * 
@@ -39,10 +44,20 @@ public final class Region {
  * </ul>
  */
 public Region() {
-	handle = OS.gdk_region_new();
+	this(null);
 }
 
-Region(int handle) {
+public Region(Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	handle = OS.gdk_region_new();
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
+Region(Device device, int handle) {
+	this.device = device;
 	this.handle = handle;
 }
 
@@ -131,14 +146,19 @@ public boolean contains(Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return contains(pt.x, pt.y);
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the region. Applications must dispose of all regions which
  * they allocate.
  */
 public void dispose() {
-	if (handle != 0) OS.gdk_region_destroy(handle);
+	if (handle == 0) return;
+	if (device.isDisposed()) return;
+	OS.gdk_region_destroy(handle);
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 
 /**
@@ -178,8 +198,8 @@ public Rectangle getBounds() {
 	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
 }
 
-public static Region gtk_new(int handle) {
-	return new Region(handle);
+public static Region gtk_new(Device device, int handle) {
+	return new Region(device, handle);
 }
 
 /**
@@ -194,6 +214,28 @@ public static Region gtk_new(int handle) {
  */
 public int hashCode() {
 	return handle;
+}
+
+public void intersect(Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int rectRgn = OS.gdk_region_new();
+	GdkRectangle gdkRect = new GdkRectangle();
+	gdkRect.x = rect.x;
+	gdkRect.y = rect.y;
+	gdkRect.width = rect.width;
+	gdkRect.height = rect.height;
+	OS.gdk_region_union_with_rect(rectRgn, gdkRect);
+	OS.gdk_region_intersect(handle, rectRgn);
+	OS.gdk_region_destroy(rectRgn);
+}
+
+public void intersect(Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.gdk_region_intersect(handle, region.handle);
 }
 
 /**
@@ -272,6 +314,28 @@ public boolean isDisposed() {
 public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.gdk_region_empty(handle);
+}
+
+public void subtract(Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int rectRgn = OS.gdk_region_new();
+	GdkRectangle gdkRect = new GdkRectangle();
+	gdkRect.x = rect.x;
+	gdkRect.y = rect.y;
+	gdkRect.width = rect.width;
+	gdkRect.height = rect.height;
+	OS.gdk_region_union_with_rect(rectRgn, gdkRect);
+	OS.gdk_region_subtract(handle, rectRgn);
+	OS.gdk_region_destroy(rectRgn);
+}
+
+public void subtract(Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.gdk_region_subtract(handle, region.handle);
 }
 
 /**
