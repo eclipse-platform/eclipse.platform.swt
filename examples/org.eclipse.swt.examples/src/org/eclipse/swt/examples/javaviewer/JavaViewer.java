@@ -66,7 +66,6 @@ void createShell (Display display) {
 	shell.setText (resources.getString("Window_title"));	
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
-	shell.setSize(500, 400);
 	shell.setLayout(layout);
 	shell.addShellListener (new ShellAdapter () {
 		public void shellClosed (ShellEvent e) {
@@ -108,6 +107,7 @@ public Shell open (Display display) {
 	createShell (display);
 	createMenuBar ();
 	createStyledText ();
+	shell.setSize(500, 400);
 	shell.open ();
 	return shell;
 }
