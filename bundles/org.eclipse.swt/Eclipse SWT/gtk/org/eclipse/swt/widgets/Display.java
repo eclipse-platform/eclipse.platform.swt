@@ -92,7 +92,7 @@ import org.eclipse.swt.graphics.*;
  * @see Device#dispose
  */
 public class Display extends Device {
-
+	
 	/* Events Dispatching and Callback */
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
@@ -859,6 +859,11 @@ void error (int code) {
 }
 
 int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
+
+	/*
+	* NOTE: The event may not be a GdkEventButton.
+	* Check the event type before accessing any fields.
+	*/
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	boolean dispatch = true;
 	if (dispatchEvents != null) {
@@ -874,7 +879,18 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-	lastEventTime = gdkEvent.time;
+
+	/*
+	* Use gdk_event_get_time() rather than event.time or
+	* gtk_get_current_event_time().  If the event does not
+	* have a time stamp, then the field will contain garbage.
+	* Note that calling gtk_get_current_event_time() from
+	* outside of gtk_main_do_event() seems to always
+	* return zero.
+	*/
+	int time = OS.gdk_event_get_time (event);
+	if (time != 0) lastEventTime = time;
+
 	Control control = null;
 	int /*long*/ window = 0;
 	switch (gdkEvent.type) {
@@ -908,6 +924,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		}
 	}
 	OS.gtk_main_do_event (event);
+	
 	if (dispatchEvents == null) putGdkEvents ();
 	if (control != null ) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
