@@ -124,11 +124,13 @@ public class CTabFolder2 extends Composite {
 	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
+	boolean showUnselectedImage = false;
 	
 	static Color borderColor;
 	
 	// close, min/max and chevron buttons
 	boolean showClose = false;
+	boolean showUnselectedClose = true;
 	
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
 	int chevronImageState = NORMAL;
@@ -2680,13 +2682,19 @@ boolean setItemSize() {
 	int totalWidth = 0;
 	for (int i = 0; i < items.length; i++) { 
 		CTabItem2 tab = items[i];
-		if (tab.height != tabHeight || tab.width != widths[i]) changed = true;
+		if (tab.height != tabHeight || tab.width != widths[i]) {
+			changed = true;
+			tab.shortenedText = null;
+			tab.shortenedTextWidth = 0;
+		}
 		tab.height = tabHeight;
 		tab.width = widths[i];
 		tab.closeRect.width = tab.closeRect.height = 0;
 		if (showClose || tab.showClose) {
-			tab.closeRect.width = BUTTON_SIZE;
-			tab.closeRect.height = BUTTON_SIZE;
+			if (i == selectedIndex || showUnselectedClose) {
+				tab.closeRect.width = BUTTON_SIZE;
+				tab.closeRect.height = BUTTON_SIZE;
+			}
 		}
 		totalWidth += widths[i];
 	}
@@ -3107,6 +3115,26 @@ public void setTopRight(Control control) {
 	}
 	topRight = control;
 	if (updateItems()) redraw();
+}
+/**
+ * @since 3.0
+ */
+public void setUnselectedCloseVisible(boolean visible) {
+	if (showUnselectedClose == visible) return;
+	// display close button when mouse hovers
+	showUnselectedClose = visible;
+	updateItems();
+	redraw();
+}
+/**
+ * @since 3.0
+ */
+public void setUnselectedImageVisible(boolean visible) {
+	if (showUnselectedImage == visible) return;
+	// display image on unselected items
+	showUnselectedImage = visible;
+	updateItems();
+	redraw();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,

@@ -436,8 +436,23 @@ void drawUnselected(GC gc) {
 		gc.setForeground(CTabFolder2.borderColor);
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
+	// draw Image
+	int xDraw = x + LEFT_MARGIN;
+	Image image = getImage();
+	if (image != null && parent.showUnselectedImage) {
+		Rectangle imageBounds = image.getBounds();
+		int imageX = xDraw;
+		int imageHeight = imageBounds.height;
+		int imageY = y + (height - imageHeight) / 2;
+		imageY += parent.onBottom ? -1 : 1;
+		int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
+		gc.drawImage(image, 
+			         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
+			         imageX, imageY, imageWidth, imageHeight);
+		xDraw += imageWidth + INTERNAL_SPACING;
+	}
 	// draw Text
-	int textWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
+	int textWidth = x + width - xDraw - RIGHT_MARGIN;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	Font gcFont = gc.getFont();
 	if (font != null) {
@@ -451,10 +466,10 @@ void drawUnselected(GC gc) {
 	int textY = y + (height - extent.y) / 2;
 	textY += parent.onBottom ? -1 : 1;
 	gc.setForeground(foreground != null ? foreground : parent.getForeground());
-	gc.drawText(shortenedText, x + LEFT_MARGIN, textY, FLAGS);
+	gc.drawText(shortenedText, xDraw, textY, FLAGS);
 	gc.setFont(gcFont);
 	// draw close
-	if (parent.showClose || showClose) drawClose(gc);
+	if (parent.showUnselectedClose && (parent.showClose || showClose)) drawClose(gc);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -559,7 +574,7 @@ int preferredHeight(GC gc) {
 int preferredWidth(GC gc, boolean isSelected) {
 	int w = 0;
 	Image image = getImage();
-	if (isSelected && image != null) w += image.getBounds().width;
+	if (image != null && (isSelected || parent.showUnselectedImage)) w += image.getBounds().width;
 	String text = getText();
 	if (text != null) {
 		if (w > 0) w += INTERNAL_SPACING;
@@ -573,8 +588,10 @@ int preferredWidth(GC gc, boolean isSelected) {
 		}
 	}
 	if (parent.showClose || showClose) {
-		if (w > 0) w += INTERNAL_SPACING;
-		w += CTabFolder2.BUTTON_SIZE;
+		if (isSelected || parent.showUnselectedClose) {
+			if (w > 0) w += INTERNAL_SPACING;
+			w += CTabFolder2.BUTTON_SIZE;
+		}
 	}
 	if (isSelected) w += 8; // why 8?
 	return w + LEFT_MARGIN + RIGHT_MARGIN;
