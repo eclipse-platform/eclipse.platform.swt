@@ -380,6 +380,14 @@ public void setFont (Font font) {
 	super.setFont (font);
 	layout.setFont (this.font);
 }
+void setForegroundPixel (int pixel) {
+	super.setForegroundPixel (pixel);
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
+}
 /**
  * Sets the receiver's text.
  * <p>
