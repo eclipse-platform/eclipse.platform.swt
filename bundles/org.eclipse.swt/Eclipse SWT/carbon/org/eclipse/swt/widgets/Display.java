@@ -766,12 +766,27 @@ void initializeInsets () {
 
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	//NOT DONE
-	return 0;
+	// NEEDS WORK
+	int window = OS.FrontWindow ();
+	int port = OS.GetWindowPort (window);
+	int [] buffer = new int [1];
+	OS.CreateCGContextForPort (port, buffer);
+	int context = buffer [0];
+	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (data != null) {
+		data.device = this;
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
+		data.font = getSystemFont ();
+	}
+	return context;
 }
 
-public void internal_dispose_GC (int gc, GCData data) {
-	//NOT DONE
+public void internal_dispose_GC (int context, GCData data) {
+	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	// NEEDS WORK
+	OS.CGContextFlush (context);
+	OS.CGContextRelease (context);
 }
 
 static boolean isValidClass (Class clazz) {
