@@ -134,7 +134,7 @@ void dispose_Object (Object object) {
 public Rectangle getBounds () {
 	checkDevice ();
 	PhRect_t rect = new PhRect_t ();
-	OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, 0, 1, rect);
+	OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, 0, OS.PhInputGroup (0), rect);
 	int width = rect.lr_x - rect.ul_x + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Rectangle (rect.ul_x, rect.ul_y, width, height);
@@ -155,7 +155,7 @@ public Rectangle getBounds () {
 public Rectangle getClientArea () {
 	checkDevice ();
 	PhRect_t rect = new PhRect_t ();
-	OS.PhWindowQueryVisible (OS.Ph_QUERY_WORKSPACE, 0, 1, rect);
+	OS.PhWindowQueryVisible (OS.Ph_QUERY_WORKSPACE, 0, OS.PhInputGroup (0), rect);
 	int width = rect.lr_x - rect.ul_x + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Rectangle (rect.ul_x, rect.ul_y, width, height);
@@ -250,13 +250,12 @@ public Point getDPI () {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-	int flags = OS.PHFONT_FIXED | OS.PHFONT_PROP | OS.PFFONT_DONT_SHOW_LEGACY;
+	int flags = OS.PHFONT_FIXED | OS.PHFONT_PROP | OS.PHFONT_DONT_SHOW_LEGACY;
 	flags |= scalable ? OS.PHFONT_SCALABLE : OS.PHFONT_BITMAP;
-	int nfonts = OS.PfQueryFonts(OS.PHFONT_ALL_FONTS, flags, 0, 0);
+	int nfonts = OS.PfQueryFonts(OS.PHFONT_ALL_SYMBOLS, flags, 0, 0);
 	if (nfonts <= 0) return new FontData[0];
-	
 	int list_ptr = OS.malloc(nfonts * FontDetails.sizeof);
-	nfonts = OS.PfQueryFonts(OS.PHFONT_ALL_FONTS, flags, list_ptr, nfonts);
+	nfonts = OS.PfQueryFonts(OS.PHFONT_ALL_SYMBOLS, flags, list_ptr, nfonts);
 	int ptr = list_ptr;
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : nfonts];
