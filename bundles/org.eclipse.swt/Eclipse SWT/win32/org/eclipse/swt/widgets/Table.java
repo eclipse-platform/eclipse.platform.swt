@@ -746,7 +746,7 @@ public TableItem getItem (int index) {
  * @return the item at the given point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1103,6 +1103,7 @@ void releaseWidget () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2051,9 +2052,6 @@ public void showItem (TableItem item) {
  * this method simply returns.  Otherwise, the items are scrolled until
  * the selection is visible.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
