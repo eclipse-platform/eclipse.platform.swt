@@ -116,7 +116,7 @@ void addItem (TreeItem item, int index) {
 	/* adds a child item to the receiver */
 	TreeItem[] newChildren = new TreeItem [items.length + 1];
 	System.arraycopy (items, 0, newChildren, 0, index);
-	newChildren[index] = item;
+	newChildren [index] = item;
 	System.arraycopy (items, index, newChildren, index + 1, items.length - index);
 	items = newChildren;
 
@@ -145,18 +145,18 @@ static TreeItem checkNull (TreeItem item) {
  */
 TreeItem[] computeAllDescendents () {
 	int childCount = items.length;
-	TreeItem[][] childResults = new TreeItem[childCount][];
+	TreeItem[][] childResults = new TreeItem [childCount][];
 	int count = 1;	/* self */
 	for (int i = 0; i < childCount; i++) {
-		childResults[i] = items[i].computeAllDescendents ();
-		count += childResults[i].length;
+		childResults [i] = items [i].computeAllDescendents ();
+		count += childResults [i].length;
 	}
-	TreeItem[] result = new TreeItem[count];
+	TreeItem[] result = new TreeItem [count];
 	int index = 0;
-	result[index++] = this;
+	result [index++] = this;
 	for (int i = 0; i < childCount; i++) {
-		System.arraycopy (childResults[i], 0, result, index, childResults[i].length);
-		index += childResults[i].length;
+		System.arraycopy (childResults [i], 0, result, index, childResults [i].length);
+		index += childResults [i].length;
 	}
 	return result;
 }
@@ -169,7 +169,7 @@ int computeAvailableDescendentCount () {
 	int result = 1;		/* receiver */
 	if (!expanded) return result;
 	for (int i = 0; i < items.length; i++) {
-		result += items[i].computeAvailableDescendentCount ();
+		result += items [i].computeAvailableDescendentCount ();
 	}
 	return result;
 }
@@ -182,18 +182,18 @@ int computeAvailableDescendentCount () {
 TreeItem[] computeAvailableDescendents () {
 	if (!expanded) return new TreeItem[] {this};
 	int childCount = items.length;
-	TreeItem[][] childResults = new TreeItem[childCount][];
+	TreeItem[][] childResults = new TreeItem [childCount][];
 	int count = 1;	/* self */
 	for (int i = 0; i < childCount; i++) {
-		childResults[i] = items[i].computeAvailableDescendents ();
-		count += childResults[i].length;
+		childResults [i] = items [i].computeAvailableDescendents ();
+		count += childResults [i].length;
 	}
-	TreeItem[] result = new TreeItem[count];
+	TreeItem[] result = new TreeItem [count];
 	int index = 0;
-	result[index++] = this;
+	result [index++] = this;
 	for (int i = 0; i < childCount; i++) {
-		System.arraycopy (childResults[i], 0, result, index, childResults[i].length);
-		index += childResults[i].length;
+		System.arraycopy (childResults [i], 0, result, index, childResults [i].length);
+		index += childResults [i].length;
 	}
 	return result;
 }
@@ -208,9 +208,9 @@ public void dispose () {
 		if (isLastChild () && index > 0) {
 			/* vertical connector lines no longer needed for this item */
 			if (parentItem != null) {
-				startIndex = parentItem.getItems ()[index - 1].availableIndex;
+				startIndex = parentItem.getItems () [index - 1].availableIndex;
 			} else {
-				startIndex = parent.getItems ()[index - 1].availableIndex;
+				startIndex = parent.getItems () [index - 1].availableIndex;
 			}
 		} else {
 			startIndex = availableIndex;
@@ -241,7 +241,7 @@ void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
 	for (int i = 0; i < items.length; i++) {
-		items[i].dispose (notifyParent);
+		items [i].dispose (notifyParent);
 	}
 	background = foreground = null;
 	cellBackgrounds = cellForegrounds = null;
@@ -324,7 +324,7 @@ Rectangle getCheckboxBounds () {
 	int itemHeight = parent.getItemHeight ();
 	Rectangle result = parent.uncheckedImage.getBounds ();
 	Point[] hLinePoints = getHconnectorEndpoints ();
-	result.x = hLinePoints[1].x;
+	result.x = hLinePoints [1].x;
 	result.y = parent.getItemY (this) + (itemHeight - result.height) / 2;
 	return result;
 }
@@ -362,7 +362,7 @@ int getContentX (int columnIndex) {
 		Rectangle checkBounds = getCheckboxBounds ();
 		return checkBounds.x + checkBounds.width + Tree.MARGIN_IMAGE;
 	}
-	return getHconnectorEndpoints ()[1].x + Tree.MARGIN_IMAGE;
+	return getHconnectorEndpoints () [1].x + Tree.MARGIN_IMAGE;
 }
 int getDepth () {
 	if (parentItem == null) return 0;
@@ -532,7 +532,7 @@ int getIndex () {
 		items = parent.getItems ();
 	}
 	for (int i = 0; i < items.length; i++) {
-		if (items[i] == this) return i;
+		if (items [i] == this) return i;
 	}
 	return -1;
 }
@@ -542,7 +542,7 @@ public int getItemCount () {
 }
 public TreeItem [] getItems () {
 	checkWidget ();
-	TreeItem result[] = new TreeItem[items.length];
+	TreeItem[] result = new TreeItem [items.length];
 	System.arraycopy (items, 0, result, 0, items.length);
 	return result;
 }
@@ -713,7 +713,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 		/* Draw horizontal line to right of expander */
 		Point[] endpoints = getHconnectorEndpoints ();
-		gc.drawLine (endpoints[0].x, endpoints[0].y, endpoints[1].x - Tree.MARGIN_IMAGE, endpoints[1].y);
+		gc.drawLine (endpoints [0].x, endpoints [0].y, endpoints [1].x - Tree.MARGIN_IMAGE, endpoints [1].y);
 		
 		/* 
 		 * Draw hierarchy lines that are needed by other items that are shown below
@@ -812,7 +812,7 @@ void recomputeTextWidths (GC gc) {
 				gc.setFont (font);
 				fontChanged = true;
 			}
-			textWidths[i] = gc.textExtent (value).x;
+			textWidths [i] = gc.textExtent (value).x;
 			if (fontChanged) gc.setFont (oldFont);
 		}
 	}
@@ -835,7 +835,7 @@ void removeColumn (TreeColumn column, int index) {
 		}
 		/* notify all child items as well */
 		for (int i = 0; i < items.length; i++) {
-			items[i].removeColumn (column, index);
+			items [i].removeColumn (column, index);
 		}
 		return;
 	}
@@ -881,7 +881,7 @@ void removeColumn (TreeColumn column, int index) {
 
 	/* notify all child items as well */
 	for (int i = 0; i < items.length; i++) {
-		items[i].removeColumn (column, index);
+		items [i].removeColumn (column, index);
 	}
 }
 /*
@@ -889,7 +889,7 @@ void removeColumn (TreeColumn column, int index) {
  */
 void removeItem (TreeItem item, int index) {
 	if (isDisposed ()) return;
-	TreeItem[] newItems = new TreeItem[items.length - 1];
+	TreeItem[] newItems = new TreeItem [items.length - 1];
 	System.arraycopy (items, 0, newItems, 0, index);
 	System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
@@ -1052,7 +1052,7 @@ public void setImage (Image[] value) {
 	
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
-		if (value[i] != null) setImage (i, value[i]);
+		if (value [i] != null) setImage (i, value [i]);
 	}
 }
 public void setImage (int columnIndex, Image value) {
@@ -1116,7 +1116,7 @@ public void setText (String[] value) {
 
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
-		if (value[i] != null) setText (i, value[i]);
+		if (value [i] != null) setText (i, value [i]);
 	}
 	
 	parent.updateHorizontalBar ();
@@ -1147,7 +1147,7 @@ void updateFont (GC gc) {
 	}
 	/* pass notification on to all children */
 	for (int i = 0; i < items.length; i++) {
-		items[i].updateFont (gc);
+		items [i].updateFont (gc);
 	}
 }
 }
