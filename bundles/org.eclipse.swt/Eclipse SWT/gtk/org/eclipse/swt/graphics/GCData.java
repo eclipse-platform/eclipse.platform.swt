@@ -39,5 +39,7 @@ public final class GCData {
 	public boolean xorMode;
 
 	public String string;
+	public int stringWidth = -1;
+	public int stringHeight = -1;
 	public int drawFlags;
 }

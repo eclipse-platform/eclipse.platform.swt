@@ -304,6 +304,7 @@ public void dispose() {
 	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = 0;
 	drawable = null;
 	data.image = null;
+	data.string = null;
 	data = null;
 	handle = 0;
 }
@@ -905,10 +906,9 @@ public void drawText (String string, int x, int y, int flags) {
 	if (data.updateClip) setCGClipping();
 	int length = string.length();
 	if (length == 0) return;
+	length = setString(string, flags);
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
-	if (data.layout == 0) createLayout ();
-	length = setString(string, flags);
 	if ((flags & SWT.DRAW_DELIMITER) != 0) {
 		int layout = data.layout;
 		int[] breakCount = new int[1];
@@ -1765,6 +1765,7 @@ void setGCFont() {
 		data.atsuiStyle = font.createStyle();
 	}
 	data.string = null;
+	data.stringWidth = data.stringHeight = -1;
 }
 
 /**
@@ -1844,6 +1845,7 @@ public void setLineWidth(int width) {
 }
 
 int setString(String string, int flags) {
+	if (data.layout == 0) createLayout ();
 	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags & ~SWT.DRAW_TRANSPARENT)) {
 		return data.stringLength;
 	}
@@ -1908,6 +1910,7 @@ int setString(String string, int flags) {
 	data.stringPtr = ptr;
 	data.string = string;
 	data.stringLength = length;
+	data.stringWidth = data.stringHeight = -1;
 	data.drawFlags = flags;
 	return length;
 }
@@ -2012,34 +2015,35 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int length = string.length();
-	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
-	if (data.layout == 0) createLayout ();
-	int layout = data.layout;
-	length = setString(string, flags);
-	int width, height;
-	ATSTrapezoid trapezoid = new ATSTrapezoid();
-	if ((flags & SWT.DRAW_DELIMITER) != 0) {
-		width = 0;
-		height = 0;
-		int[] breakCount = new int[1];
-		OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
-		int[] breaks = new int[breakCount[0] + 1];
-		OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
-		breaks[breakCount[0]] = length;
-		for (int i=0, start=0; i<breaks.length; i++) {
-			int lineBreak = breaks[i];
-			OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineBreak - start, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-			width = Math.max(width, OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x));
-			height += OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-			start = lineBreak;
-		}
+	int length = setString(string, flags);
+	if (data.stringWidth != -1) return new Point(data.stringWidth, data.stringHeight);
+	int width = 0, height;
+	if (length == 0) {
+		height = data.fontAscent + data.fontDescent;
 	} else {
-		OS.ATSUGetGlyphBounds(layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-		width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
-		height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+		ATSTrapezoid trapezoid = new ATSTrapezoid();
+		if ((flags & SWT.DRAW_DELIMITER) != 0) {
+			height = 0;
+			int layout = data.layout;
+			int[] breakCount = new int[1];
+			OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
+			int[] breaks = new int[breakCount[0] + 1];
+			OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
+			breaks[breakCount[0]] = length;
+			for (int i=0, start=0; i<breaks.length; i++) {
+				int lineBreak = breaks[i];
+				OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineBreak - start, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+				width = Math.max(width, OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x));
+				height += OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+				start = lineBreak;
+			}
+		} else {
+			OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+			width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+			height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+		}
 	}
-	return new Point(width, height);
+	return new Point(data.stringWidth = width, data.stringHeight = height);
 }
 
 /**

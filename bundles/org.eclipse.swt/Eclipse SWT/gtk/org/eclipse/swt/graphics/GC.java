@@ -208,6 +208,7 @@ public void dispose() {
 	drawable = null;
 	handle = 0;
 	data.image = null;
+	data.string = null;
 	if (device.tracking) device.dispose_Object(this);
 	data.device = null;
 	data = null;
@@ -876,15 +877,22 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int length = string.length();
-	if (length == 0) return;
-	int layout = data.layout;
+	if (string.length() == 0) return;
 	setString(string, flags);
 	GdkColor background = null;
-	if ((flags & SWT.DRAW_TRANSPARENT) == 0) background = getBackground().handle;
+	GdkGCValues values = null;
+	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+		values = new GdkGCValues();
+		OS.gdk_gc_get_values(handle, values);
+		background = new GdkColor();
+		background.pixel = values.background_pixel;
+		int colormap = OS.gdk_colormap_get_system();
+		OS.gdk_colormap_query_color(colormap, background.pixel, background);
+	}
 	if (!data.xorMode) {
-		OS.gdk_draw_layout_with_colors(data.drawable, handle, x, y, layout, null, background);
+		OS.gdk_draw_layout_with_colors(data.drawable, handle, x, y, data.layout, null, background);
 	} else {
+		int layout = data.layout;
 		int[] w = new int[1], h = new int[1];
 		OS.pango_layout_get_size(layout, w, h);
 		int width = OS.PANGO_PIXELS(w[0]);
@@ -896,8 +904,10 @@ public void drawText (String string, int x, int y, int flags) {
 		GdkColor foreground = new GdkColor();
 		OS.gdk_gc_set_foreground(gdkGC, foreground);
 		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
-		GdkGCValues values = new GdkGCValues();
-		OS.gdk_gc_get_values(handle, values);
+		if (values == null) {
+			values = new GdkGCValues();
+			OS.gdk_gc_get_values(handle, values);
+		}
 		foreground.pixel = values.foreground_pixel;
 		OS.gdk_gc_set_foreground(gdkGC, foreground);
 		OS.gdk_draw_layout_with_colors(pixmap, gdkGC, 0, 0, layout, null, background);
@@ -1702,6 +1712,7 @@ public void setFont(Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int fontHandle = data.font = font.handle;
 	OS.pango_layout_set_font_description(data.layout, fontHandle);
+	data.stringWidth = data.stringHeight = -1;
 }
 
 /**
@@ -1819,6 +1830,7 @@ void setString(String string, int flags) {
 	OS.pango_layout_set_single_paragraph_mode(layout, (flags & SWT.DRAW_DELIMITER) == 0);
 	OS.pango_layout_set_tabs(layout, (flags & SWT.DRAW_TAB) != 0 ? 0 : data.device.emptyTab);
 	data.string = string;
+	data.stringWidth = data.stringHeight = -1;
 	data.drawFlags = flags;
 }
 
@@ -1923,9 +1935,10 @@ public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	setString(string, flags);
+	if (data.stringWidth != -1) return new Point(data.stringWidth, data.stringHeight);
 	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_size(data.layout, width, height);
-	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+	return new Point(data.stringWidth = OS.PANGO_PIXELS(width[0]), data.stringHeight = OS.PANGO_PIXELS(height[0]));
 }
 
 /**
