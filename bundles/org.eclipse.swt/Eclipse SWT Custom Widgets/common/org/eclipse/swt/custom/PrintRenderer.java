@@ -84,7 +84,7 @@ protected void disposeGC(GC gc) {
  * Do not print the selection.
  * @see StyledTextRenderer#drawLineSelectionBackground
  */
-protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
+protected void drawLineBreakSelection(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
 }
 /**
  * Returns from cache the text segments that should be treated as 

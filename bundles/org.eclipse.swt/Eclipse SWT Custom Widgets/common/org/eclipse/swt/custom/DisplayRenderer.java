@@ -11,10 +11,10 @@
 package org.eclipse.swt.custom;
 
 
-import java.util.*;
+import java.util.Vector;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.StyledText.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText.LineCache;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -49,7 +49,7 @@ protected void disposeGC(GC gc) {
 	gc.dispose();
 }
 /** 
- * Draws the background of the line selection.
+ * Draws the line delimiter selection if the selection extends beyond the given line.
  * </p>
  *
  * @param line the line to draw
@@ -61,91 +61,58 @@ protected void disposeGC(GC gc) {
  * @param bidi the bidi object to use for measuring and rendering 	text in bidi
  * locales. null when not in bidi mode.
  */
-protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
+protected void drawLineBreakSelection(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
 	Point selection = parent.internalGetSelection();
-	LineCache lineCache = parent.internalGetLineCache();
-	StyledTextContent content = getContent();
 	int lineLength = line.length();
 	int paintX;
-	int selectionBackgroundWidth = -1;
 	int selectionStart = Math.max(0, selection.x - lineOffset);
 	int selectionEnd = selection.y - lineOffset;
-	int selectionLength = selectionEnd - selectionStart;
 	int horizontalScrollOffset = parent.internalGetHorizontalPixel();
 	int leftMargin = getLeftMargin();
 	int lineEndSpaceWidth = getLineEndSpaceWidth();
 	int lineHeight = getLineHeight();
-	boolean wordWrap = parent.internalGetWordWrap();
-	boolean isRightOriented = (parent.getStyle() & SWT.MIRRORED) != 0;
 	
-	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength) {
+	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength || selectionEnd <= lineLength) {
 		return;
 	}
 	if (bidi != null) {
-		paintX = parent.getBidiTextPosition(line, selectionStart, bidi);
+		paintX = bidi.getTextWidth();
+		// handle empty line case
+		if (paintX == 0) {
+			paintX = StyledText.XINSET;
+		}
 	}
 	else {
-		paintX = getTextPosition(line, lineOffset, selectionStart, filterLineStyles(styles), gc);
-	}
-	// selection extends past end of line?
-	if (selectionEnd > lineLength) {
-		if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
-			// use the greater of the client area width and the content 
-			// width. fixes 1G8IYRD
-			selectionBackgroundWidth = Math.max(getClientArea().width, lineCache.getWidth());
-		}
-		else {
-			selectionLength = lineLength - selectionStart;
-		}
+		paintX = getTextPosition(line, lineOffset, lineLength, filterLineStyles(styles), gc);
 	}
 	gc.setBackground(parent.getSelectionBackground());
 	gc.setForeground(parent.getSelectionForeground());
-	if (selectionBackgroundWidth == -1) {
+	if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
+		LineCache lineCache = parent.internalGetLineCache();
+		// use the greater of the client area width and the content 
+		// width. fixes 1G8IYRD
+		int selectionBackgroundWidth = Math.max(getClientArea().width, lineCache.getWidth());
+		gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, selectionBackgroundWidth, lineHeight);
+	}
+	else {
 		boolean isWrappedLine = false;
-
-		if (wordWrap) {
+		if (parent.internalGetWordWrap()) {
+			StyledTextContent content = getContent();
 			int lineEnd = lineOffset + lineLength;
 			int lineIndex = content.getLineAtOffset(lineEnd);
 
 			// is the start offset of the next line the same as the end 
-			// offset of this line?			
+			// offset of this line?
 			if (lineIndex < content.getLineCount() - 1 &&
 				content.getOffsetAtLine(lineIndex + 1) == lineEnd) {
 				isWrappedLine = true;
 			}
 		}
-		if (bidi != null) {
-			selectionBackgroundWidth = parent.getBidiTextPosition(line, selectionStart + selectionLength, bidi) - paintX;
-		}
-		else {
-			selectionBackgroundWidth = getTextWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc);
-		}
-		if (selectionBackgroundWidth < 0) {
-			// width can be negative when in R2L bidi segment
-			paintX += selectionBackgroundWidth;
-			selectionBackgroundWidth *= -1;
-		}
-		if (selectionEnd > lineLength && isWrappedLine == false) {
-			selectionEnd = selectionStart + selectionLength;
-			// if the selection extends past this line, render an additional 
-			// whitespace background at the end of the line to represent the 
-			// selected line break
-			if (bidi != null && selectionEnd > 0 && (bidi.isRightToLeft(selectionEnd - 1) || (isRightOriented && bidi.isRightToLeft(selectionEnd - 1) == false))) {
-				int lineEndX = bidi.getTextWidth();
-				gc.fillRectangle(lineEndX - horizontalScrollOffset + leftMargin, paintY, lineEndSpaceWidth, lineHeight);
-			}
-			else {
-				selectionBackgroundWidth += lineEndSpaceWidth;
-			}
+		if (isWrappedLine == false) {
+			// render the line break selection
+			gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, lineEndSpaceWidth, lineHeight);
 		}
 	}	
-	// handle empty line case
-	if (bidi != null && paintX == 0) {
-		paintX = StyledText.XINSET;	
-	}
-	// fill the background first since expanded tabs are not 
-	// drawn as spaces. tabs just move the draw position. 
-	gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, selectionBackgroundWidth, lineHeight);
 }
 /**
  * Returns the text segments that should be treated as if they 
