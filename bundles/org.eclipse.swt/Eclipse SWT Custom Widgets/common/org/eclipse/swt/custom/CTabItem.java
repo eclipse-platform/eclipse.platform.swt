@@ -44,7 +44,7 @@ public class CTabItem extends Item {
 	static final int RIGHT_MARGIN = 4;
 	static final int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
-	static final String ELLIPSIS = "\u2026"; //$NON-NLS-1$
+	static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use the ellipsis glyph on some platforms "\u2026"
 	
 /**
  * Constructs a new instance of this class given its parent

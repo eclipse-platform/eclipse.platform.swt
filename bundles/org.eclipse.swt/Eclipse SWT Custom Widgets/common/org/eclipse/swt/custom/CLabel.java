@@ -47,7 +47,7 @@ public class CLabel extends Canvas {
 	/** Left and right margins */
 	private static final int INDENT = 3;
 	/** a string inserted in the middle of text that has been shortened */
-	private static final String ELLIPSIS = "\u2026"; //$NON-NLS-1$
+	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use the ellipsis glyph on some platforms "\u2026"
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT*/
 	private int align = SWT.LEFT;
 	private int hIndent = INDENT;
