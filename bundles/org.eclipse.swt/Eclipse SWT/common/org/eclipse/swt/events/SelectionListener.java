@@ -34,8 +34,11 @@ public interface SelectionListener extends SWTEventListener {
 /**
  * Sent when selection occurs in the control.
  * <p>
- * For example, on some platforms selection occurs in
- * a List when the user selects an item or items.
+ * For example, selection occurs in a List when the user selects
+ * an item or items with the keyboard or mouse.  On some platforms,
+ * the event occurs when a mouse button or key is pressed.  On others,
+ * it happens when the mouse or key is released.  The exact key or
+ * mouse gesture that causes this event is platform specific.
  * </p>
  *
  * @param e an event containing information about the selection
@@ -45,9 +48,12 @@ public void widgetSelected(SelectionEvent e);
 /**
  * Sent when default selection occurs in the control.
  * <p>
- * For example, on some platforms default selection occurs
- * in a List when the user double-clicks an item or types
- * return in a Text.
+ * For example, on some platforms default selection occurs in a List
+ * when the user double-clicks an item or types return in a Text.
+ * On some platforms, the event occurs when a mouse button or key is
+ * pressed.  On others, it happens when the mouse or key is released.
+ * The exact key or mouse gesture that causes this event to is platform
+ * specific.
  * </p>
  *
  * @param e an event containing information about the default selection

@@ -119,11 +119,28 @@ public class SWT {
 	
 	/**
 	 * The selection event type (value is 13).
+	 * <p>
+	 * This event is sent when selection occurs.
+	 * For example, selection occurs in a List when the user selects
+	 * an item or items with the keyboard or mouse.  On some platforms,
+	 * the event occurs when a mouse button or key is pressed.  On others,
+	 * it happens when the mouse or key is released.  The exact key or
+	 * mouse gesture that causes this event is platform specific.
+	 * </p>
 	 */
 	public static final int Selection = 13;
 	
 	/**
 	 * The default selection event type (value is 14).
+	 * <p>
+	 * This event is sent when default selection occurs.
+	 * For example, on some platforms default selection occurs in a List
+	 * when the user double-clicks an item or types return in a Text.
+	 * On some platforms, the event occurs when a mouse button or key is
+	 * pressed.  On others, it happens when the mouse or key is released.
+	 * The exact key or mouse gesture that causes this event is platform
+	 * specific.
+	 * </p>
 	 */
 	public static final int DefaultSelection = 14;
 	
