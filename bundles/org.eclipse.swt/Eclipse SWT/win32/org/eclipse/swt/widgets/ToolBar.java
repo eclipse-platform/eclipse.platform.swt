@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends Composite {
 	int lastFocusId;
 	ToolItem [] items;
+	boolean ignoreResize;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final int ToolBarProc;
 	static final TCHAR ToolBarClass = new TCHAR (0, OS.TOOLBARCLASSNAME, true);
@@ -168,6 +169,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int newWidth = wHint, newHeight = hHint;
 	if (newWidth == SWT.DEFAULT) newWidth = 0x3FFF;
 	if (newHeight == SWT.DEFAULT) newHeight = 0x3FFF;
+	ignoreResize = true;
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 	OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -178,6 +180,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (height, rect.bottom);
 	}
 	OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+	ignoreResize = false;
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
 	*
@@ -774,6 +777,11 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
+	if (ignoreResize) {
+		int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+		if (code == 0) return LRESULT.ZERO;
+		return new LRESULT (code);
+	}
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
 	* It is possible (but unlikely), that application
