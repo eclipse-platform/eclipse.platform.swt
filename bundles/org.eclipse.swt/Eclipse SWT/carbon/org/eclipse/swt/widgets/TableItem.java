@@ -37,6 +37,8 @@ public class TableItem extends Item {
 	boolean checked, grayed;
 	Color foreground, background;
 	Color[] cellForeground, cellBackground;
+	Font font;
+	Font[] cellFont;
 	int width = -1;
 	
 /**
@@ -234,7 +236,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
-	return parent.getFont ();
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -253,7 +255,10 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
-	return parent.getFont ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getFont ();
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -448,6 +453,7 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	background = foreground = null;
+	font = null;
 	parent = null;
 }
 
@@ -548,6 +554,11 @@ public void setChecked (boolean checked) {
  */
 public void setFont (Font font){
 	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.font = font;
+	redraw ();
 }
 
 /**
@@ -571,6 +582,16 @@ public void setFont (Font font){
  */
 public void setFont (int index, Font font) {
 	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
+	if (cellFont == null) {
+		cellFont = new Font [count];
+	}
+	cellFont [index] = font;
+	redraw ();
 }
 
 /**

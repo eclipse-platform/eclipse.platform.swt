@@ -339,6 +339,13 @@ void createItem (TableColumn column, int index) {
 				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
 				items [i].cellForeground = temp;
 			}
+			Font [] cellFont = items [i].cellFont;
+			if (cellFont != null) {
+				Font [] temp = new Font [columnCount];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+				items [i].cellFont = temp;
+			}
 		}
 	}
 }
@@ -524,6 +531,13 @@ void destroyItem (TableColumn column) {
 				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
 				items [i].cellForeground = temp;
 			}
+			Font [] cellFont = items [i].cellFont;
+			if (cellFont != null) {
+				Font [] temp = new Font [columnCount - 1];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+				items [i].cellFont = temp;
+			}
 		}
 	}
 	if (columnCount == 1) {
@@ -619,6 +633,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		x += bounds.width + 2;
 	}
 	String text = item.getText (columnIndex);
+	Font font = item.getFont (columnIndex); 
+	gc.setFont (font);
 	Point extent = gc.stringExtent (text);
 	if (selected) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
