@@ -145,6 +145,9 @@ protected void checkWidget () {
 public void dispose () {
 	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) == COM.S_OK) {
+		COM.OleFlushClipboard();
+	}	
 	this.Release();
 	display = null;
 }
@@ -266,30 +269,6 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	if (COM.OleSetClipboard(this.iDataObject.getAddress()) != COM.S_OK ) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) != COM.S_OK) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	}
-	
-	int result = COM.OleFlushClipboard();
-	/*
-	* Bug in Windows.  When a new application takes control
-	* of the clipboard, other applications may open the 
-	* clipboard to determine if they want to record the 
-	* clipoard updates.  When this happens, the clipboard 
-	* cannot be flushed until the other aplication is finished.
-	* The fix is to call PeekMessage() with the flag PM_NOREMOVE
-	* to touch the event queue but not dispatch events.
-	*/
-	if (result != COM.S_OK) {
-		MSG msg = new MSG();
-		COM.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
-		result = COM.OleFlushClipboard();
-	}
-	if (result != COM.S_OK) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	}
-	this.data = new Object[0];
-	this.transferAgents = new Transfer[0];
 }
 private int AddRef() {
 	refCount++;
@@ -417,6 +396,8 @@ private int QueryInterface(int riid, int ppvObject) {
 private int Release() {
 	refCount--;
 	if (refCount == 0) {
+		this.data = new Object[0];
+		this.transferAgents = new Transfer[0];
 		disposeCOMInterfaces();
 		COM.CoFreeUnusedLibraries();
 	}
