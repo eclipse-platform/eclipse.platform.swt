@@ -561,6 +561,7 @@ public static final native void CGImageRelease (int image);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
 public static final native short CharWidth(short c);
 public static final native int ClearCurrentScrap();
+public static final native int ClearKeyboardFocus(int inWindow);
 public static final native int ClipCGContextToRegion(int inContext, Rect portRect, int rgnHandle);
 public static final native int CloseDataBrowserContainer(int cHandle, int container);
 public static final native void ClosePoly();

@@ -1035,6 +1035,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClearCurrentScrap
 }
 #endif /* NO_ClearCurrentScrap */
 
+#ifndef NO_ClearKeyboardFocus
+JNIEXPORT jint JNICALL OS_NATIVE(ClearKeyboardFocus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ClearKeyboardFocus\n")
+
+	return (jint)ClearKeyboardFocus((WindowRef)arg0);
+}
+#endif
+
 #ifndef NO_ClipCGContextToRegion
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClipCGContextToRegion
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
