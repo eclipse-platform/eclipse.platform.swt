@@ -145,7 +145,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	if (type == SWT.HORIZONTAL) {
 		extent = layoutHorizontal (composite, false, (wHint != SWT.DEFAULT) && wrap, wHint, flushCache);
 	} else {
-		extent = layoutVertical (composite, false, (hHint != SWT.DEFAULT) && wrap, wHint, flushCache);
+		extent = layoutVertical (composite, false, (hHint != SWT.DEFAULT) && wrap, hHint, flushCache);
 	}
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
