@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
@@ -29,8 +29,8 @@ import org.eclipse.swt.internal.gtk.OS;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String COMPOUND_TEXT = "COMPOUND_TEXT";
-	private static final String STRING = "STRING";
+	private static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
+	private static final String STRING = "STRING"; //$NON-NLS-1$
 	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
 	private static final int STRING_ID = registerType(STRING);
 
@@ -56,10 +56,10 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String string = (String)object;
-	if (string.length() == 0) return;
-	
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
 		int /*long*/[] encoding = new int /*long*/[1];
@@ -130,5 +130,9 @@ protected int[] getTypeIds() {
 
 protected String[] getTypeNames() {
 	return new String[] {COMPOUND_TEXT, STRING};
+}
+
+protected boolean validate(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 }

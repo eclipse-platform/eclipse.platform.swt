@@ -13,7 +13,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
- * The class <code>FileTransfer</code> provides a platform specific mechanism 
+ * The class <code>er</code> provides a platform specific mechanism 
  * for converting a list of files represented as a java <code>String[]</code> to a 
  * platform specific representation of the data and vice versa.  
  * Each <code>String</code> in the array contains the absolute path for a single 
@@ -34,7 +34,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	private static final String URI_LIST = "text/uri-list";
+	private static final String URI_LIST = "text/uri-list"; //$NON-NLS-1$
 	private static final int URI_LIST_ID = registerType(URI_LIST);
 	private static final byte[] separator = new byte[]{'\r', '\n'};
 	
@@ -63,8 +63,9 @@ public static FileTransfer getInstance () {
  */
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (object == null || !(object instanceof String[])) return;
-	if (!isSupportedType(transferData)) return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String[] files = (String[])object;
 	byte[] buffer = new byte[0];
 	for (int i = 0; i < files.length; i++) {
@@ -183,5 +184,14 @@ protected int[] getTypeIds(){
 
 protected String[] getTypeNames(){
 	return new String[]{URI_LIST};
+}
+
+protected boolean validate(Object object) {
+	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	for (int i = 0; i < strings.length; i++) {
+		if (strings[i] == null || strings[i].length() == 0) return false;
+	}
+	return true;
 }
 }

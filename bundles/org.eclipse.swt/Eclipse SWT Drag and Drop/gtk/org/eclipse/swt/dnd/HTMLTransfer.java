@@ -55,10 +55,11 @@ public static HTMLTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
-	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String string = (String)object;
 	int charCount = string.length();
-	if (charCount == 0) return;
 	char [] chars = new char[charCount +1];
 	string.getChars(0, charCount , chars, 0);
 	int byteCount = chars.length*2;
@@ -98,5 +99,9 @@ protected int[] getTypeIds() {
 
 protected String[] getTypeNames() {
 	return new String[] {TEXT_HTML, TEXT_HTML2};
+}
+
+protected boolean validate(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 }

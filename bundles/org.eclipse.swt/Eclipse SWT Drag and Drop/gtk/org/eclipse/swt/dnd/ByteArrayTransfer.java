@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * The class <code>ByteArrayTransfer</code> provides a platform specific 
@@ -149,7 +149,12 @@ public boolean isSupportedType(TransferData transferData){
  */
 protected void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
-	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) return;
+	if (object == null || !(object instanceof byte[]) || ((byte[])object).length == 0) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	if (!isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	byte[] buffer = (byte[])object;
 	if (buffer.length == 0) return;
 	int /*long*/ pValue = OS.g_malloc(buffer.length);
@@ -180,5 +185,9 @@ protected Object nativeToJava(TransferData transferData) {
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);
 	return buffer;
+}
+
+protected boolean validate(Object object) {
+	return true;
 }
 }
