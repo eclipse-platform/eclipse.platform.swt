@@ -97,10 +97,11 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 		case OS.BFFM_VALIDATEFAILEDA:
 		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
-			TCHAR buffer = new TCHAR (0, 256);
+			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+			TCHAR buffer = new TCHAR (0, length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);
-			directoryPath = buffer.toString (0, buffer.strlen ());
+			directoryPath = buffer.toString (0, length);
 			break;
 	}
 	return 0;
@@ -235,7 +236,7 @@ public String open () {
 	boolean success = lpItemIdList != 0;
 	if (success) {
 		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, 256);
+		TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
 		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
 			directoryPath = buffer.toString (0, buffer.strlen ());
 			filterPath = directoryPath;
