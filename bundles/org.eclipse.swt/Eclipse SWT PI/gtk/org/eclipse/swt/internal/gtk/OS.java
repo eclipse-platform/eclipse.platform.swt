@@ -855,8 +855,6 @@ public static final native int strlen(int str);
 
 
 
-public static final native int malloc(int size);
-public static final native void free(int ptr);
 public static final native int  g_object_get_data(int object, byte[] key);
 public static final native void g_object_set_data(int object, byte[] key, int data);
 public static final native boolean g_value_get_boolean(int value);
@@ -912,5 +910,4 @@ static final native int GValue_sizeof();
 public static final native int G_TYPE_BOOLEAN();
 public static final native int G_TYPE_STRING();
 public static final native int GDK_TYPE_COLOR();
-
 }

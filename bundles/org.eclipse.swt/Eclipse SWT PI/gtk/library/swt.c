@@ -5453,22 +5453,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GValue_1sizeof
 	return (jint) sizeof (GValue);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_malloc
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("malloc\n")
-
-	return (jint)malloc(arg0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_free
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("free\n")
-
-	free((void*)arg0);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIIZI
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jint arg4)
 {
