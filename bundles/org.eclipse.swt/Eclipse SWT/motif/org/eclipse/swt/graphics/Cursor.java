@@ -125,11 +125,11 @@ public Cursor (Device device, int style) {
 	this.device = device;
 	int shape = 0;
 	switch (style) {
+		case SWT.CURSOR_APPSTARTING: break;
 		case SWT.CURSOR_ARROW: shape = OS.XC_left_ptr; break;
 		case SWT.CURSOR_WAIT: shape = OS.XC_watch; break;
 		case SWT.CURSOR_HAND: shape = OS.XC_hand2; break;
 		case SWT.CURSOR_CROSS: shape = OS.XC_cross; break;
-		case SWT.CURSOR_APPSTARTING: if (!OS.IsLinux) shape = OS.XC_left_ptr; break;
 		case SWT.CURSOR_HELP: shape = OS.XC_question_arrow; break;
 		case SWT.CURSOR_SIZEALL: shape = OS.XC_fleur; break;
 		case SWT.CURSOR_SIZENESW: shape = OS.XC_sizing; break;
@@ -151,7 +151,7 @@ public Cursor (Device device, int style) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
-		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2, false);
+		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2, true);
 	} else {
 		handle = OS.XCreateFontCursor(device.xDisplay, shape);
 	}
