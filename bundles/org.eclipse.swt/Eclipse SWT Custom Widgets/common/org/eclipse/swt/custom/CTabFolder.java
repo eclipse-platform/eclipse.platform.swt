@@ -805,11 +805,11 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
 	FontData fd = getFont().getFontData()[0];
-	fd.setHeight(fd.getHeight() - 1);
+	fd.setHeight(7);
 	Font f = new Font(getDisplay(), fd);
 	int fHeight = f.getFontData()[0].getHeight() * getDisplay().getDPI().y / 72;
-	int indent = Math.max(1, (chevronRect.height - fHeight - 4) /2);
-	int x = chevronRect.x + indent;
+	int indent = Math.max(2, (chevronRect.height - fHeight - 4) /2);
+	int x = chevronRect.x + 2;
 	int y = chevronRect.y + indent;
 	int count;
 	if (single) {
