@@ -1,3 +1,4 @@
+@echo off
 rem *******************************************************************************
 rem  Copyright (c) 2000, 2003 IBM Corporation and others.
 rem  All rights reserved. This program and the accompanying materials 
