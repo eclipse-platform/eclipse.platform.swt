@@ -5523,16 +5523,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1ins
 	return (jint)gtk_tree_view_insert_column((GtkTreeView*)arg0, (GtkTreeViewColumn*)arg1, arg2);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1title
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1title__I_3B
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
-	const jbyte *lparg1= NULL;
+	jbyte *lparg1=NULL;
 
-	DEBUG_CALL("gtk_1tree_1view_1column_1set_1title\n")
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1title__I_3B\n")
 
-	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	gtk_tree_view_column_set_title((GtkTreeViewColumn*)arg0, lparg1);
-	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1headers_1visible
@@ -5877,6 +5877,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get
 
 	return (jint)gtk_tree_view_get_bin_window((GtkTreeView*)arg0);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1from_1string___3B
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1tree_1path_1new_1from_1string___3B\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_tree_path_new_from_string((const gchar *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
 
 /*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_TREE_1VIEW_1HEADER_1HEIGHT
