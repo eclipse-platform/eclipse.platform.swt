@@ -35,6 +35,7 @@ public class TableColumn extends Item {
 	int boxHandle, labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
+	boolean customDraw;
 
 /**
  * Constructs a new instance of this class given its parent

@@ -502,13 +502,20 @@ public void setBackground (int index, Color color) {
 	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
 	
-	if (color != null && !parent.customDraw [index]) {
-		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-		int length = OS.g_list_length (list);
-		int renderer = OS.g_list_nth_data (list, length - 1);
-		OS.g_list_free (list);
-		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
-		parent.customDraw [index] = true;
+	if (color != null) {
+		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
+		if (!customDraw) {
+			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int length = OS.g_list_length (list);
+			int renderer = OS.g_list_nth_data (list, length - 1);
+			OS.g_list_free (list);
+			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
+			if (parent.columnCount == 0) {
+				parent.firstCustomDraw = true;
+			} else {
+				parent.columns [index].customDraw = true;
+			}
+		}
 	}
 }
 
@@ -589,13 +596,20 @@ public void setForeground (int index, Color color){
 	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
 	
-	if (color != null && !parent.customDraw [index]) {
-		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-		int length = OS.g_list_length (list);
-		int renderer = OS.g_list_nth_data (list, length - 1);
-		OS.g_list_free (list);
-		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
-		parent.customDraw [index] = true;
+	if (color != null) {
+		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
+		if (!customDraw) {
+			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int length = OS.g_list_length (list);
+			int renderer = OS.g_list_nth_data (list, length - 1);
+			OS.g_list_free (list);
+			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
+			if (parent.columnCount == 0) {
+				parent.firstCustomDraw = true;
+			} else {
+				parent.columns [index].customDraw = true;
+			}
+		}
 	}
 }
 

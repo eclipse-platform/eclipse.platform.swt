@@ -47,7 +47,7 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
-	boolean[] customDraw = new boolean [1];
+	boolean firstCustomDraw;
 	
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -328,21 +328,19 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
 	
-	if (customDraw != null) {
-		boolean setCellDataFunc = false;
-		if (columnCount == 0) {
-			setCellDataFunc = customDraw [0];
-		} else {
-			for (int i = 0; i < columns.length; i++) {
-				if (columns [i] != null && columns [i].handle == columnHandle) {
-					setCellDataFunc = customDraw [i];
-					break;
-				}
+	boolean setCellDataFunc = false;
+	if (columnCount == 0) {
+		setCellDataFunc = firstCustomDraw;
+	} else {
+		for (int i = 0; i < columns.length; i++) {
+			if (columns [i] != null && columns [i].handle == columnHandle) {
+				setCellDataFunc = columns [i].customDraw;
+				break;
 			}
 		}
-		if (setCellDataFunc) {
-			OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
-		}
+	}
+	if (setCellDataFunc) {
+		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
 	}
 }
 
@@ -351,6 +349,8 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		column.handle = OS.gtk_tree_view_get_column (handle, 0);
 		column.modelIndex = FIRST_COLUMN;
+		column.customDraw = firstCustomDraw;
+		firstCustomDraw = false;
 		createRenderers (column.handle, column.modelIndex, true, column.style);
 	} else {
 		createColumn (column, index);
@@ -378,13 +378,6 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	column.setFontDescription (getFontDescription ());
-	
-	if (customDraw.length < columnCount) {
-		boolean  [] temp = new boolean [columnCount];
-		System.arraycopy (customDraw, 0, temp, 0, index);
-		System.arraycopy (customDraw, index, temp, index+1, columnCount-index-1);
-		customDraw = temp;
-	}
 }
 
 void createItem (TableItem item, int index) {
@@ -528,6 +521,9 @@ void destroyItem (TableColumn column) {
 	}
 	if (index == columnCount) return;
 	int columnHandle = column.handle;
+	if (columnCount == 1) {
+		firstCustomDraw = column.customDraw;
+	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
 	column.deregister ();
@@ -564,7 +560,6 @@ void destroyItem (TableColumn column) {
 		OS.gtk_tree_view_set_model (handle, newModel);
 		OS.g_object_unref (oldModel);
 		modelHandle = newModel;
-		customDraw = new boolean [] {customDraw [index]};
 		createColumn (null, 0);
 	} else {
 		for (int i=0; i<itemCount; i++) {
@@ -575,10 +570,6 @@ void destroyItem (TableColumn column) {
 			OS.gtk_list_store_set (modelHandle, item, modelIndex + 2, 0, -1); //foreground
 			OS.gtk_list_store_set (modelHandle, item, modelIndex + 3, 0, -1); //background
 		}
-		boolean [] temp = new boolean [columnCount];
-		System.arraycopy (customDraw, 0, temp, 0, index);
-		System.arraycopy (customDraw, index + 1, temp, index, columnCount - index);
-		customDraw = temp;
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
 			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
@@ -606,15 +597,25 @@ void destroyItem (TableItem item) {
 	items [itemCount] = null;
 	
 	if (itemCount == 0) {
-		for (int i = 0; i < customDraw.length; i++) {
-			if (customDraw [i]) {
-				int column = OS.gtk_tree_view_get_column (handle, i);
-				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-				int length = OS.g_list_length (list);
-				int renderer = OS.g_list_nth_data (list, length - 1);
-				OS.g_list_free (list);
-				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-				customDraw [i] = false;
+		if (columnCount == 0) {
+			int column = OS.gtk_tree_view_get_column (handle, 0);
+			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int length = OS.g_list_length (list);
+			int renderer = OS.g_list_nth_data (list, length - 1);
+			OS.g_list_free (list);
+			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+			firstCustomDraw = false;
+		} else {
+			for (int i = 0; i < columnCount; i++) {
+				if (columns [i].customDraw) {
+					int column = OS.gtk_tree_view_get_column (handle, i);
+					int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+					int length = OS.g_list_length (list);
+					int renderer = OS.g_list_nth_data (list, length - 1);
+					OS.g_list_free (list);
+					OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+					columns [i].customDraw = false;
+				}
 			}
 		}
 	}
@@ -1434,15 +1435,25 @@ public void removeAll () {
 	}
 	items = new TableItem [4];
 	itemCount = 0;
-	for (int i = 0; i < customDraw.length; i++) {
-		if (customDraw [i]) {
-			int column = OS.gtk_tree_view_get_column (handle, i);
-			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int length = OS.g_list_length (list);
-			int renderer = OS.g_list_nth_data (list, length - 1);
-			OS.g_list_free (list);
-			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-			customDraw [i] = false;
+	if (columnCount == 0) {
+		int column = OS.gtk_tree_view_get_column (handle, 0);
+		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+		int length = OS.g_list_length (list);
+		int renderer = OS.g_list_nth_data (list, length - 1);
+		OS.g_list_free (list);
+		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+		firstCustomDraw = false;
+	} else {
+		for (int i = 0; i < columnCount; i++) {
+			if (columns [i].customDraw) {
+				int column = OS.gtk_tree_view_get_column (handle, i);
+				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+				int length = OS.g_list_length (list);
+				int renderer = OS.g_list_nth_data (list, length - 1);
+				OS.g_list_free (list);
+				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+				columns [i].customDraw = false;
+			}
 		}
 	}
 }
