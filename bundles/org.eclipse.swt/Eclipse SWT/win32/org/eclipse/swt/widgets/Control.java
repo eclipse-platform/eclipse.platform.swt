@@ -1088,8 +1088,7 @@ public void moveAbove (Control control) {
 		* with GW_HWNDPREV is used to query the previous window
 		* in the z-order with the first child, Windows returns
 		* the first child instead of NULL.  The fix is to detect
-		* this case and return because the window is already the
-		* first child in the z-order.
+		* this case and move the control to the top.
 		*/
 		if (hwndAfter == 0 || hwndAfter == handle) {
 			hwndAfter = OS.HWND_TOP;
