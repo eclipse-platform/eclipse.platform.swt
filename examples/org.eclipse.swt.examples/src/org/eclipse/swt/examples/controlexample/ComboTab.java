@@ -13,6 +13,7 @@ package org.eclipse.swt.examples.controlexample;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 class ComboTab extends Tab {
@@ -73,6 +74,30 @@ class ComboTab extends Tab {
 		}
 	}
 	
+	/**
+	 * Creates the tab folder page.
+	 *
+	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
+	 * @return the new page for the tab folder
+	 */
+	Composite createTabFolderPage (TabFolder tabFolder) {
+		super.createTabFolderPage (tabFolder);
+
+		/*
+		 * Add a resize listener to the tabFolderPage so that
+		 * if the user types into the example widget to change
+		 * its preferred size, and then resizes the shell, we
+		 * recalculate the preferred size correctly.
+		 */
+		tabFolderPage.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				setExampleWidgetSize ();
+			}
+		});
+		
+		return tabFolderPage;
+	}
+
 	/**
 	 * Creates the "Style" group.
 	 */
