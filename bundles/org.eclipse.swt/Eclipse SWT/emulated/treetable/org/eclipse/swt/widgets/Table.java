@@ -2554,11 +2554,11 @@ public void setTopIndex(int index) {
 	if (index >= itemCount) index = itemCount - 1;		
 	if (itemCount > itemCountWhole) {
 		if (index + itemCountWhole <= itemCount) {
-			super.setTopIndex(index, true);
+			setTopIndex(index, true);
 		} else if (index > itemCount - itemCountWhole) {
-			super.setTopIndex(itemCount - itemCountWhole, true);
+			setTopIndex(itemCount - itemCountWhole, true);
 		} else {
-			showSelectableItem(getItem(index));
+			showSelectableItem(index);
 		}
 	}
 }

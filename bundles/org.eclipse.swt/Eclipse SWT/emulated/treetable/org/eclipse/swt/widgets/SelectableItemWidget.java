@@ -1587,12 +1587,8 @@ abstract void scrollHorizontal(int numPixel);
 void scrollHorizontal(Event event) {
 	setHorizontalOffset(getHorizontalBar().getSelection() * -1);
 }
-/**
- * Scroll 'item' into the receiver's client area if necessary.
- * @param item - the item that should be scrolled.
- */
-void scrollShowItem(SelectableItem item) {
-	int itemIndexFromTop = getIndex(item) - getTopIndex();
+void scrollShowItem(int index) {
+	int itemIndexFromTop = index - getTopIndex();
 	int clientAreaWholeItemCount = getItemCountWhole();
 	int scrollAmount = 0;
 
@@ -1997,8 +1993,17 @@ void showSelectableItem(SelectableItem item) {
 	if (item.getSelectableParent() != this) {
 		return;
 	}
-	scrollShowItem(item);
-	scrollShowItem(item);						// second call makes sure that the item is still visible
+	int index = getIndex (item);
+	showSelectableItem(index);
+}
+/**
+ * Make 'index' visible by scrolling it into the receiver's client
+ * area if necessary.
+ * @param index - the item index that should be made visible to the user.
+ */
+void showSelectableItem(int index) {
+	scrollShowItem(index);
+	scrollShowItem(index);						// second call makes sure that the item is still visible
 												// even if the first scroll caused the horizontal scroll
 												// to be displayed and the item to be hidden again.
 }
