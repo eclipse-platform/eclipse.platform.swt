@@ -805,10 +805,16 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_INFO_BACKGROUND:		pixel = OS.GetSysColor (OS.COLOR_INFOBK);		break;
 		case SWT.COLOR_TITLE_FOREGROUND: 		pixel = OS.GetSysColor (OS.COLOR_CAPTIONTEXT);	break;
 		case SWT.COLOR_TITLE_BACKGROUND:		pixel = OS.GetSysColor (OS.COLOR_ACTIVECAPTION);		break;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:	pixel = OS.GetSysColor (OS.COLOR_GRADIENTACTIVECAPTION);	break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 
+			pixel = OS.GetSysColor (OS.COLOR_GRADIENTACTIVECAPTION);
+			if (pixel == 0) pixel = OS.GetSysColor (OS.COLOR_ACTIVECAPTION);
+			break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND: 		pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTIONTEXT);	break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTION);		break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	pixel = OS.GetSysColor (OS.COLOR_GRADIENTINACTIVECAPTION);	break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	
+			pixel = OS.GetSysColor (OS.COLOR_GRADIENTINACTIVECAPTION);
+			if (pixel == 0) pixel = OS.GetSysColor (OS.COLOR_INACTIVECAPTION);
+			break;
 		default:
 			return super.getSystemColor (id);
 	}
