@@ -1123,26 +1123,18 @@ int getLastEventTime () {
  * 
  * @since 2.2
  */
-public Monitor[] getMonitors() {
+public Monitor [] getMonitors () {
 	checkDevice ();
 	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
-		Monitor monitor = new Monitor();
-		monitor.handle = 0;
-		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-		monitor.bounds = new Rectangle (0, 0, width, height);
-		RECT rect = new RECT ();
-		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-		monitor.clientArea = new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-		return new Monitor[] { monitor };
+		return new Monitor [] {getPrimaryMonitor ()};
 	}
-	monitors = new Monitor[4];
+	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4);
 	int lpfnEnum = callback.getAddress ();
-	OS.EnumDisplayMonitors(0, null, lpfnEnum, 0);
-	callback.dispose();
-	Monitor[] result = new Monitor[monitorCount];
-	System.arraycopy(monitors, 0, result, 0, monitorCount);
+	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
+	callback.dispose ();
+	Monitor [] result = new Monitor [monitorCount];
+	System.arraycopy (monitors, 0, result, 0, monitorCount);
 	monitors = null;
 	monitorCount = 0;
 	return result;
@@ -1155,30 +1147,33 @@ public Monitor[] getMonitors() {
  * 
  * @since 2.2
  */
-public Monitor getPrimaryMonitor() {
+public Monitor getPrimaryMonitor () {
 	checkDevice ();
 	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		Monitor monitor = new Monitor();
-		monitor.handle = 0;
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-		monitor.bounds = new Rectangle (0, 0, width, height);
+		monitor.width = width;
+		monitor.height = height;
 		RECT rect = new RECT ();
 		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-		monitor.clientArea = new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		monitor.clientX = rect.left;
+		monitor.clientY = rect.top;
+		monitor.clientWidth = rect.right - rect.left;
+		monitor.clientHeight = rect.bottom - rect.top;
 		return monitor;
 	}
-	monitors = new Monitor[4];
+	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4);
 	int lpfnEnum = callback.getAddress ();
-	OS.EnumDisplayMonitors(0, null, lpfnEnum, 0);
-	callback.dispose();
+	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
+	callback.dispose ();
 	Monitor result = null;
-	MONITORINFO lpmi = new MONITORINFO();
+	MONITORINFO lpmi = new MONITORINFO ();
 	lpmi.cbSize = MONITORINFO.sizeof;
 	for (int i = 0; i < monitorCount; i++) {
-		Monitor monitor = monitors[i];
-		OS.GetMonitorInfo(monitors[i].handle, lpmi);
+		Monitor monitor = monitors [i];
+		OS.GetMonitorInfo (monitors [i].handle, lpmi);
 		if ((lpmi.dwFlags & OS.MONITORINFOF_PRIMARY) != 0) {
 			result = monitor;
 			break;
@@ -1536,19 +1531,24 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 
 int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 	if (monitorCount >= monitors.length) {
-		Monitor[] newMonitors = new Monitor[monitors.length + 4];
-		System.arraycopy(monitors, 0, newMonitors, 0, monitors.length);
+		Monitor[] newMonitors = new Monitor [monitors.length + 4];
+		System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
 		monitors = newMonitors;
 	}
-	MONITORINFO lpmi = new MONITORINFO();
+	MONITORINFO lpmi = new MONITORINFO ();
 	lpmi.cbSize = MONITORINFO.sizeof;
-	OS.GetMonitorInfo(hmonitor, lpmi);
-	Monitor monitor = new Monitor();
-	monitor.handle = hmonitor;		
-	monitor.bounds = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right, lpmi.rcMonitor_bottom);
-	monitor.clientArea = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right, lpmi.rcWork_bottom);				
-	monitors[monitorCount] = monitor;
-	monitorCount++;
+	OS.GetMonitorInfo (hmonitor, lpmi);
+	Monitor monitor = new Monitor ();
+	monitor.handle = hmonitor;
+	monitor.x = lpmi.rcMonitor_left;
+	monitor.y = lpmi.rcMonitor_top;
+	monitor.width = lpmi.rcMonitor_right - lpmi.rcMonitor_left;
+	monitor.height = lpmi.rcMonitor_bottom - lpmi.rcMonitor_top;
+	monitor.clientX = lpmi.rcWork_left;
+	monitor.clientY = lpmi.rcWork_top;
+	monitor.clientWidth = lpmi.rcWork_right - lpmi.rcWork_left;
+	monitor.clientHeight = lpmi.rcWork_bottom - lpmi.rcWork_top;
+	monitors [monitorCount++] = monitor;
 	return 1;
 }
 

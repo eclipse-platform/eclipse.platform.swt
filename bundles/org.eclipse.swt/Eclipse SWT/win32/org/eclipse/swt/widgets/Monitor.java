@@ -20,15 +20,14 @@ import org.eclipse.swt.graphics.*;
  * @since 2.2
  */
 public final class Monitor {
-
-int handle;
-Rectangle bounds;
-Rectangle clientArea;
+	int handle;
+	int x, y, width, height;
+	int clientX, clientY, clientWidth, clientHeight;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Monitor() {	
+Monitor () {	
 }
 	
 public boolean equals (Object object) {
@@ -44,8 +43,8 @@ public boolean equals (Object object) {
  *
  * @return the receiver's bounding rectangle
  */	
-public Rectangle getBounds() {
-	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+public Rectangle getBounds () {
+	return new Rectangle (x, y, width, height);
 }
 	
 /**
@@ -54,8 +53,8 @@ public Rectangle getBounds() {
  * 
  * @return the client area
  */
-public Rectangle getClientArea() {
-	return new Rectangle(clientArea.x, clientArea.y, clientArea.width, clientArea.height);
+public Rectangle getClientArea () {
+	return new Rectangle (clientX, clientY, clientWidth, clientHeight);
 }
 	
 public int hashCode () {
