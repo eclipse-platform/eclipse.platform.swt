@@ -32,7 +32,9 @@ public final class GC {
 	
 	Drawable drawable;
 	GCData data;
-		
+
+	int dirtyBits;
+
 	static final int DefaultBack = 0xffffff;
 	static final int DefaultFore = 0x000000;
 	static final byte[][] DashList = {
@@ -44,6 +46,14 @@ public final class GC {
 	};
 	// Photon Draw Buffer Size for off screen drawing.
 	static int DrawBufferSize = 48 * 1024;
+	
+	static final int DIRTY_BACKGROUND = 1 << 0;
+	static final int DIRTY_FOREGROUND = 1 << 1;
+	static final int DIRTY_CLIPPING = 1 << 2;
+	static final int DIRTY_FONT = 1 << 3;
+	static final int DIRTY_LINESTYLE = 1 << 4;
+	static final int DIRTY_LINEWIDTH = 1 << 5;
+	static final int DIRTY_XORMODE = 1 << 6;
 	
 GC() {
 }
@@ -332,7 +342,10 @@ public void dispose() {
 			data.clipRects = data.clipRectsCount = 0;		
 		}
 		Image image = data.image;
-		if (image != null) image.memGC = null;
+		if (image != null) {
+			flushImage();
+			image.memGC = null;
+		}
 		
 		/*
 		* Dispose the HDC.
@@ -535,6 +548,7 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	int flags = OS.PtEnter(0);
 	try {
+		if (image.memGC != null) image.memGC.flushImage();
 		int drawImage = image.handle;
 		PhImage_t phDrawImage = new PhImage_t();
 		OS.memmove(phDrawImage, drawImage, PhImage_t.sizeof);
@@ -1574,6 +1588,17 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 }
 
 /**
+ * Force outstanding drawing commands to be processed.
+ */
+void flushImage () {
+	Image image = data.image;
+	if (image == null) return;
+	OS.PmMemStart(handle);
+	OS.PmMemFlush(handle, image.handle);
+	OS.PmMemStop(handle);
+}
+
+/**
  * Returns the <em>advance width</em> of the specified character in
  * the font which is currently selected into the receiver.
  * <p>
@@ -1849,27 +1874,16 @@ public int hashCode () {
 }
 
 void init(Drawable drawable, GCData data, int context) {
-	int prevContext;
-	Image image = data.image;
-	if (image == null) {
-	 	prevContext = OS.PgSetGC(context);
-	} else {
-		prevContext = OS.PmMemStart(context);
-		OS.PgSetDrawBufferSize(DrawBufferSize);
-	}
-
 	if (data.foreground == -1) data.foreground = DefaultFore;
-	OS.PgSetStrokeColor(data.foreground);
-	OS.PgSetTextColor(data.foreground);
 	if (data.background == -1) data.background = DefaultBack;
-	OS.PgSetFillColor(data.background);
 	if (data.font == null) data.font = Font.DefaultFont;
-	OS.PgSetFont(data.font);
+	dirtyBits = DIRTY_FOREGROUND | DIRTY_BACKGROUND | DIRTY_FONT;
 
-	if (image == null) {
-		OS.PgSetGC(prevContext);
-	} else {
+	Image image = data.image;
+	if (image != null) {
 		image.memGC = this;
+		OS.PmMemStart(context);
+		OS.PgSetDrawBufferSize(DrawBufferSize);
 		OS.PmMemStop(context);
 		
 		
@@ -1965,14 +1979,8 @@ public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		OS.PgSetFillColor(data.background = color.handle);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.background = color.handle;
+	dirtyBits |= DIRTY_BACKGROUND;
 }
 
 /**
@@ -1991,27 +1999,20 @@ public void setBackground (Color color) {
  */
 public void setClipping (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int flags = OS.PtEnter(0);
-	try {
-		int clipRects = data.clipRects;
-		if (clipRects != 0)
-			OS.free(clipRects);
-		clipRects = OS.malloc(PhRect_t.sizeof);
-		int clipRectsCount = 1;
-		PhRect_t rect = new PhRect_t();
-		rect.ul_x = (short)x;
-		rect.ul_y = (short)y;
-		rect.lr_x = (short)(x + width - 1);
-		rect.lr_y = (short)(y + height - 1);
-		OS.memmove(clipRects, rect, PhRect_t.sizeof);
-		int prevContext = setGC();
-		OS.PgSetMultiClip(clipRectsCount, clipRects);
-		data.clipRects = clipRects;
-		data.clipRectsCount = clipRectsCount;
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	int clipRects = data.clipRects;
+	if (clipRects != 0)
+		OS.free(clipRects);
+	clipRects = OS.malloc(PhRect_t.sizeof);
+	int clipRectsCount = 1;
+	PhRect_t rect = new PhRect_t();
+	rect.ul_x = (short)x;
+	rect.ul_y = (short)y;
+	rect.lr_x = (short)(x + width - 1);
+	rect.lr_y = (short)(y + height - 1);
+	OS.memmove(clipRects, rect, PhRect_t.sizeof);
+	data.clipRects = clipRects;
+	data.clipRectsCount = clipRectsCount;
+	dirtyBits |= DIRTY_CLIPPING;
 }
 
 /**
@@ -2028,20 +2029,14 @@ public void setClipping (int x, int y, int width, int height) {
 public void setClipping (Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
-		int flags = OS.PtEnter(0);
-		try {
-			int clipRects = data.clipRects;
-			if (clipRects != 0)
-				OS.free(clipRects);
-			data.clipRects = data.clipRectsCount = 0;
-			int prevContext = setGC();
-			OS.PgSetMultiClip(0, 0);
-			unsetGC(prevContext);
-		} finally {
-			if (flags >= 0) OS.PtLeave(flags);
-		}
-	} else 
+		int clipRects = data.clipRects;
+		if (clipRects != 0)
+			OS.free(clipRects);
+		data.clipRects = data.clipRectsCount = 0;
+		dirtyBits |= DIRTY_CLIPPING;
+	} else {
 		setClipping (rect.x, rect.y, rect.width, rect.height);
+	}
 }
 
 /**
@@ -2057,30 +2052,23 @@ public void setClipping (Rectangle rect) {
  */
 public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int flags = OS.PtEnter(0);
-	try {
-		int clipRects = data.clipRects;
-		int clipRectsCount = data.clipRectsCount;
-		if (clipRects != 0)
-			OS.free(clipRects);
-		if (region == null || region.handle == 0) {
-			clipRects = clipRectsCount = 0;
-		} else if (region.handle == Region.EMPTY_REGION) {
-			clipRects = OS.malloc(PhRect_t.sizeof);
-			clipRectsCount = 1;
-		} else {
-			int[] clip_rects_count = new int[1];
-			clipRects = OS.PhTilesToRects(region.handle, clip_rects_count);
-			clipRectsCount = clip_rects_count[0];
-		}
-		int prevContext = setGC();
-		OS.PgSetMultiClip(clipRectsCount, clipRects);
-		data.clipRects = clipRects;
-		data.clipRectsCount = clipRectsCount;
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
+	int clipRects = data.clipRects;
+	int clipRectsCount = data.clipRectsCount;
+	if (clipRects != 0)
+		OS.free(clipRects);
+	if (region == null || region.handle == 0) {
+		clipRects = clipRectsCount = 0;
+	} else if (region.handle == Region.EMPTY_REGION) {
+		clipRects = OS.malloc(PhRect_t.sizeof);
+		clipRectsCount = 1;
+	} else {
+		int[] clip_rects_count = new int[1];
+		clipRects = OS.PhTilesToRects(region.handle, clip_rects_count);
+		clipRectsCount = clip_rects_count[0];
 	}
+	data.clipRects = clipRects;
+	data.clipRectsCount = clipRectsCount;
+	dirtyBits |= DIRTY_CLIPPING;
 }
 
 /** 
@@ -2101,16 +2089,8 @@ public void setClipping (Region region) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		byte[] newFont = font == null ? Font.DefaultFont : font.handle;
-		OS.PgSetFont(newFont);
-		data.font = newFont;
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.font = font == null ? Font.DefaultFont : font.handle;
+	dirtyBits |= DIRTY_FONT;
 }
 
 /**
@@ -2131,16 +2111,8 @@ public void setForeground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		int foreColor = data.foreground = color.handle;
-		OS.PgSetStrokeColor(foreColor);
-		OS.PgSetTextColor(foreColor);
-		unsetGC(prevContext);
-	} finally {	
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.foreground = color.handle;
+	dirtyBits |= DIRTY_FOREGROUND;
 }
 
 /** 
@@ -2157,26 +2129,19 @@ public void setForeground (Color color) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] dashList;
 	switch (lineStyle) {
-		case SWT.LINE_SOLID: dashList = DashList[0]; break;
-		case SWT.LINE_DASH:	dashList = DashList[1]; break;
-		case SWT.LINE_DOT: dashList = DashList[2]; break;
-		case SWT.LINE_DASHDOT: dashList = DashList[3]; break;
-		case SWT.LINE_DASHDOTDOT: dashList = DashList[4]; break;
+		case SWT.LINE_SOLID:
+		case SWT.LINE_DASH:
+		case SWT.LINE_DOT:
+		case SWT.LINE_DASHDOT:
+		case SWT.LINE_DASHDOTDOT:
+			break;
 		default:
 			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			return;
 	}
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		data.lineStyle = lineStyle;
-		OS.PgSetStrokeDash(dashList, dashList.length, 0x10000);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.lineStyle = lineStyle;
+	dirtyBits |= DIRTY_LINESTYLE;
 }
 
 /** 
@@ -2193,21 +2158,52 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		data.lineWidth = lineWidth;
-		OS.PgSetStrokeWidth(lineWidth);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.lineWidth = lineWidth;
+	dirtyBits |= DIRTY_LINEWIDTH;
 }
 
 int setGC() {
-	if (data.image != null) return OS.PmMemStart(handle);
-	else if (data.rid == OS.Ph_DEV_RID || data.widget != 0) return OS.PgSetGC(handle);
-	else return 0;
+	int result = 0;
+	if (data.image != null) result = OS.PmMemStart(handle);
+	else if (data.rid == OS.Ph_DEV_RID || data.widget != 0) result = OS.PgSetGC(handle);
+	else return result;
+	
+	if (dirtyBits != 0) {
+		if ((dirtyBits & DIRTY_BACKGROUND) != 0) {
+			OS.PgSetFillColor(data.background);
+		}
+		if ((dirtyBits & DIRTY_FOREGROUND) != 0) {
+			int foreColor = data.foreground;
+			OS.PgSetStrokeColor(foreColor);
+			OS.PgSetTextColor(foreColor);
+		}
+		if ((dirtyBits & DIRTY_FONT) != 0) {
+			OS.PgSetFont(data.font);
+		}
+		if ((dirtyBits & DIRTY_CLIPPING) != 0) {
+			OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
+		}
+		if ((dirtyBits & DIRTY_LINESTYLE) != 0) {
+			byte[] dashList = null;
+			switch (data.lineStyle) {
+				case SWT.LINE_SOLID: dashList = DashList[0]; break;
+				case SWT.LINE_DASH:	dashList = DashList[1]; break;
+				case SWT.LINE_DOT: dashList = DashList[2]; break;
+				case SWT.LINE_DASHDOT: dashList = DashList[3]; break;
+				case SWT.LINE_DASHDOTDOT: dashList = DashList[4]; break;
+			}
+			OS.PgSetStrokeDash(dashList, dashList.length, 0x10000);
+		}
+		if ((dirtyBits & DIRTY_LINEWIDTH) != 0) {
+			OS.PgSetStrokeWidth(data.lineWidth);
+		}
+		if ((dirtyBits & DIRTY_XORMODE) != 0) {
+			if (data.xorMode) OS.PgSetDrawMode(OS.Pg_DRAWMODE_XOR);
+			else OS.PgSetDrawMode(OS.Pg_DRAWMODE_OPAQUE);
+		}
+		dirtyBits = 0;
+	}
+	return result;
 }
 
 void setGCClipping() {
@@ -2323,16 +2319,8 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		data.xorMode = xor;
-		if (xor) OS.PgSetDrawMode(OS.Pg_DRAWMODE_XOR);
-		else OS.PgSetDrawMode(OS.Pg_DRAWMODE_OPAQUE);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	data.xorMode = xor;
+	dirtyBits |= DIRTY_XORMODE;
 }
 
 /**
@@ -2468,7 +2456,7 @@ public String toString () {
 void unsetGC(int prevContext) {
 	Image image = data.image;
 	if (image != null) {
-		OS.PmMemFlush(handle, image.handle);
+//		OS.PmMemFlush(handle, image.handle);
 		OS.PmMemStop(handle);
 	} else if (data.rid == OS.Ph_DEV_RID || data.widget != 0) {
 		OS.PgSetGC(prevContext);
