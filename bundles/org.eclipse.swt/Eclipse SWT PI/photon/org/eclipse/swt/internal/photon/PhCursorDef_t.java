@@ -34,5 +34,5 @@ public class PhCursorDef_t {
 	public byte bytesperline2;
 //	byte Spare; // 14 bytes
 //	byte images; // variable number of bytes
-	public static final int sizeof = 48;
+	public static final int sizeof = 47;
 }
