@@ -97,10 +97,7 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	int messagesSize;
-	RunnableLock [] messages;
-	Object messageLock = new Object ();
-	Thread thread = Thread.currentThread ();
+	Thread thread;
 
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -288,18 +285,6 @@ public Display () {
 
 public Display (DeviceData data) {
 	super (data);
-}
-
-void addLast (RunnableLock entry) {
-	synchronized (messageLock) {
-		if (messages == null) messages = new RunnableLock [4];
-		if (messagesSize == messages.length) {
-			RunnableLock[] newMessages = new RunnableLock [messagesSize + 4];
-			System.arraycopy (messages, 0, newMessages, 0, messagesSize);
-			messages = newMessages;
-		}
-		messages [messagesSize++] = entry;
-	}
 }
 
 /**
@@ -1376,9 +1361,10 @@ void releaseDisplay () {
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
 
-	messages = null;  messageLock = null; thread = null;
-	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = keyProc = 0;
+	thread = null;
+	windowProc2 = windowProc3 = windowProc4 = windowProc5 = keyProc = 0;
 	
+	/* Dispose the default font */
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
 	defaultFont = 0;
 	
