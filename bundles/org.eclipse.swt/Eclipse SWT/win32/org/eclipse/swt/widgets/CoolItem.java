@@ -309,9 +309,8 @@ public void setPreferredSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE | OS.RBBIM_SIZE;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cxIdeal = width - rect.left - rect.right;
-	rbBand.cx = width;
 	rbBand.cyMinChild = rbBand.cyMaxChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
