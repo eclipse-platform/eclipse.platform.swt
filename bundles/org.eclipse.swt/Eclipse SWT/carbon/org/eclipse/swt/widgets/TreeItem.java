@@ -718,6 +718,8 @@ public void removeAll () {
 			item.destroyWidget ();
 		}
 	}
+	// TODO this redraw should not be required
+	// Find out why item.dispose does not redraw the parent item 
 	redraw (OS.kDataBrowserNoItem);
 }
 
