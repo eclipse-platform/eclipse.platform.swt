@@ -26,7 +26,9 @@ public abstract class Device implements Drawable {
 	Error [] errors;
 	Object [] objects;
 	
-	/* Palette */
+	/* Palette 
+	* (Warning: This field is platform dependent)
+	*/
 	public int hPalette = 0;
 	int [] colorRefCount;
 	
