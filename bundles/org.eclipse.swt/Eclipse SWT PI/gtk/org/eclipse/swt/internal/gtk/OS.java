@@ -453,6 +453,7 @@ public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native int XVisibilityEvent_sizeof();
 public static final native int XWindowChanges_sizeof();
+public static final native int /*long*/ getenv(byte[] name);
 public static final native int strlen(int /*long*/ str);
 
 /** Object private fields accessors */

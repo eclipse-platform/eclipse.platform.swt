@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 
@@ -120,6 +121,28 @@ public Browser(Composite parent, int style) {
 
 	int[] result = new int[1];
 	if (!mozilla) {
+		String mozillaPath = null;;
+		int ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
+		if (ptr != 0) {
+			int length = OS.strlen(ptr);
+			byte[] buffer = new byte[length];
+			OS.memmove(buffer, ptr, length);
+			mozillaPath = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		if (mozillaPath == null) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
+		}
+		/*
+		* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
+		* is to check the version of GTK used by Mozilla by looking for
+		* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
+		* uses the libwidget_gtk2.so library.   
+		*/
+		File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
+		if (file.exists()) {
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
+		}
 		try {
 			Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
@@ -128,12 +151,6 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES, e);
 		}
 		
-		String mozillaPath = GRE.mozillaPath;
-		if (mozillaPath == null) {
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]");
-		}
-
 		int[] retVal = new int[1];
 		nsEmbedString path = new nsEmbedString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);

@@ -374,6 +374,7 @@ typedef enum {
 	gdk_1x11_1atom_1to_1xatom_FUNC,
 	gdk_1x11_1drawable_1get_1xdisplay_FUNC,
 	gdk_1x11_1drawable_1get_1xid_FUNC,
+	getenv_FUNC,
 	gtk_1accel_1group_1new_FUNC,
 	gtk_1accel_1groups_1activate_FUNC,
 	gtk_1accel_1label_1set_1accel_1widget_FUNC,

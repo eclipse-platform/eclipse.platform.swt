@@ -23,6 +23,7 @@
 #define GTK_DISABLE_DEPRECATED
 */
 
+#include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <pango/pango.h>

@@ -109,19 +109,18 @@ public Browser(Composite parent, int style) {
 	
 	int[] result = new int[1];
 	if (!mozilla) {
-		try {
-			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
-		} catch (UnsatisfiedLinkError e) {
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, e);
+		String mozillaPath = null;;
+		int ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
+		if (ptr != 0) {
+			int length = OS.strlen(ptr);
+			byte[] buffer = new byte[length];
+			OS.memmove(buffer, ptr, length);
+			mozillaPath = new String (Converter.mbcsToWcs (null, buffer));
 		}
-		
-		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]"); //$NON-NLS-1$
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
 		}
-
 		/*
 		* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
 		* is to check the version of GTK used by Mozilla by looking for
@@ -131,6 +130,13 @@ public Browser(Composite parent, int style) {
 		File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
 		if (file.exists()) {
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
+		}
+
+		try {
+			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+		} catch (UnsatisfiedLinkError e) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES, e);
 		}
 		
 		int[] retVal = new int[1];
