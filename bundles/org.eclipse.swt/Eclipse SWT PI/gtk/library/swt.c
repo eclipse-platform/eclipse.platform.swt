@@ -248,6 +248,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1Y
 	return (jint)((GtkWidget *)arg0)->allocation.y;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1SCROLLED_1WINDOW_1HSCROLLBAR
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1SCROLLED_1WINDOW_1HSCROLLBAR\n")
+
+	return (jint)((GtkScrolledWindow *)arg0)->hscrollbar;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1SCROLLED_1WINDOW_1VSCROLLBAR
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1SCROLLED_1WINDOW_1VSCROLLBAR\n")
+
+	return (jint)((GtkScrolledWindow *)arg0)->vscrollbar;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PANGO_1PIXELS
 	(JNIEnv *env, jclass that, jint arg0)
 {
