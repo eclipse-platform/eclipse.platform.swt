@@ -1963,6 +1963,7 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
+	if (!hooks (type) && !filters (type)) return true;
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -1982,6 +1983,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 }
 
 boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers, boolean send) {
+	if (!hooks (type) && !filters (type)) return true;
 	return sendMouseEvent (type, button, 0, 0, chord, x, y, modifiers, send);
 }
 
