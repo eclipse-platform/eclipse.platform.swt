@@ -554,7 +554,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setDigits (int digits) {
 	checkWidget ();
-	if (digits < 0) return;
+	if (digits < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	int [] argList1 = {OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	int [] argList2 = {OS.XmNdecimalPoints, digits, OS.XmNposition, argList1 [1]};

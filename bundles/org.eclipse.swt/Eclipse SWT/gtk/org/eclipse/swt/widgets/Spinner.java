@@ -827,7 +827,7 @@ public void setSelection (int value) {
 
 public void setDigits (int digits) {
 	checkWidget ();
-	if (digits < 0) return;
+	if (digits < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	int oldDigits = OS.gtk_spin_button_get_digits (handle);
 	if (digits == oldDigits) return;
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
