@@ -5124,19 +5124,24 @@ void handleTextChanged(TextChangedEvent event) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
 		int startY = startLine * lineHeight - verticalScrollOffset + topMargin;
 
-		GC gc = getGC();
-		Caret caret = getCaret();
-		boolean caretVisible = false;
-		
-		if (caret != null) {
-			caretVisible = caret.getVisible();
-			caret.setVisible(false);
+		if (DOUBLE_BUFFERED) {
+			GC gc = getGC();
+			Caret caret = getCaret();
+			boolean caretVisible = false;
+			
+			if (caret != null) {
+				caretVisible = caret.getVisible();
+				caret.setVisible(false);
+			}
+			performPaint(gc, startLine, startY, lineHeight);
+			if (caret != null) {		
+				caret.setVisible(caretVisible);
+			}
+			gc.dispose();
+		} else {
+			redraw(startY, 0, getClientArea().width, lineHeight, false);
+			update();
 		}
-		performPaint(gc, startLine, startY, lineHeight);
-		if (caret != null) {		
-			caret.setVisible(caretVisible);
-		}
-		gc.dispose();
 	}
 }
 /**
