@@ -2833,10 +2833,18 @@ NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICO
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+#endif
 	return lpStruct;
 }
 
@@ -2849,10 +2857,18 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+#endif
 }
 #endif
 
@@ -2885,22 +2901,34 @@ NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+#endif
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
 	}
+#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
 	}
+#endif
+#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
 	}
+#endif
 	return lpStruct;
 }
 
@@ -2913,22 +2941,34 @@ void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+#endif
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
 	}
+#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
 	}
+#endif
+#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
 	}
+#endif
 }
 #endif
 
@@ -2961,22 +3001,34 @@ NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+#endif
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
 	}
+#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
 	}
+#endif
+#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
 	}
+#endif
 	return lpStruct;
 }
 
@@ -2989,22 +3041,34 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+#endif
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
 	}
+#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
 	}
+#endif
+#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
 	}
+#endif
 }
 #endif
 

@@ -254,6 +254,7 @@
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
 #define NO_SetLayout
+#define NO_Shell_1NotifyIconA
 #define NO_SHBrowseForFolderA
 #define NO_SHBrowseForFolderW
 #define NO_SHGetPathFromIDListA
@@ -316,6 +317,8 @@
 #define CHOOSECOLORW CHOOSECOLOR
 #define LPCHOOSECOLORW LPCHOOSECOLOR
 #define FONTENUMPROCW FONTENUMPROC
+#define NOTIFYICONDATAW NOTIFYICONDATA
+#define Shell_NotifyIconW Shell_NotifyIcon
 #define ShellExecuteExW ShellExecuteEx
 #define LPSHELLEXECUTEINFOW LPSHELLEXECUTEINFO
 #endif /* _WIN32_WCE */
