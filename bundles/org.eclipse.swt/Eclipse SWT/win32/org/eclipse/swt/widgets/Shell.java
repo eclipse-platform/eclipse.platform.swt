@@ -1328,11 +1328,15 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 			return LRESULT.ZERO;			
 		}
 	}
-	/* 
-	* Note in WinCE PPC.  Sub menu item events originate from the menubar.
-	* Top menu items event originate from the toolbar used internally by
-	* the menubar. The toolbar has been observed to be the first child
-	* of the menubar.
+	/*
+	* Feature in Windows.  On PPC, the menu is not actually an HMENU.
+	* By observation, it is a tool bar that is configured to look like
+	* a menu.  Therefore, when the PPC menu sends WM_COMMAND messages,
+	* lParam is not zero because the WM_COMMAND was not sent from a menu.
+	* Sub menu item events originate from the menu bar.  Top menu items
+	* events originate from a tool bar.  The fix is to detect the source
+	* of the WM_COMMAND and set lParam to zero to pretend that the message
+	* came from a real Windows menu, not a tool bar.
 	*/
 	if (OS.IsPPC || OS.IsSP) {
 		if (menuBar != null) {
