@@ -42,7 +42,7 @@
 #
 # Place of the SWT dll. 
 #
-SWT_DLL="/Users/weinand/tmp/eclipse/workspace3/export/libswt-carbon-2101.jnilib"
+SWT_DLL="/Users/weinand/tmp/eclipse/workspace3/export/libswt-carbon-2103.jnilib"
 
 #
 # In order to build an application bundle under MacOS X we need
