@@ -267,6 +267,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		if (items [i] != null && items [i].parentItem == parentItem) count++;
 	}
 	if (index == -1) index = count;
+	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	item.index = index;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
