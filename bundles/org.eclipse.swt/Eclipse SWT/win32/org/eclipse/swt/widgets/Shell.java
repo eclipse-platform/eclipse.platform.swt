@@ -433,6 +433,31 @@ int findBrush (int pixel) {
 int findCursor () {
 	return hCursor;
 }
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and forces the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void forceActive () {
+	checkWidget ();
+	OS.SetForegroundWindow (handle);
+}
 
 public Rectangle getBounds () {
 	checkWidget ();
@@ -554,15 +579,21 @@ public boolean isEnabled () {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one).
+ * and sets focus to its default button (if it has one)
+ * and asks the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see Control#moveAbove
+ * @see Control#setFocus
  * @see Control#setVisible
+ * @see Display#getActiveShell
  * @see Decorations#setDefaultButton
+ * @see Shell#setActive
+ * @see Shell#forceActive
 */
 public void open () {
 	checkWidget ();
@@ -664,6 +695,32 @@ LRESULT selectPalette (int hPalette) {
 	}
 	OS.ReleaseDC (handle, hDC);
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
+}
+
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and asks the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void setActive () {
+	checkWidget ();
+	bringToTop ();
 }
 
 void setActiveControl (Control control) {
