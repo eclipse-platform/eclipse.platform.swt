@@ -401,6 +401,7 @@ public class OS {
 	public static final int HINST_COMMCTRL = 0xffffffff;
 	public static final int HKEY_CLASSES_ROOT = 0x80000000;
 	public static final int HKEY_CURRENT_USER = 0x80000001;
+	public static final int HKEY_LOCAL_MACHINE = 0x80000002;
 	public static final int HORZRES = 0x8;
 	public static final int HTBORDER = 0x12;
 	public static final int HTCAPTION = 0x2;
