@@ -15,6 +15,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+
+/**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
+
 public class CTabItem2 extends Item {
 	CTabFolder2 parent;
 	int x,y,width,height = 0;
@@ -29,8 +36,7 @@ public class CTabItem2 extends Item {
 	static final int LEFT_MARGIN = 6;
 	static final int RIGHT_MARGIN = 6;
 	static final int TOP_MARGIN = 3;
-	static final int SELECTION_BORDER = 3;
-	static final int BOTTOM_MARGIN = TOP_MARGIN + SELECTION_BORDER;
+	static final int BOTTOM_MARGIN = TOP_MARGIN + CTabFolder2.SELECTION_BORDER;
 	static final int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
 	static final String ellipsis = "..."; //$NON-NLS-1$
@@ -132,29 +138,31 @@ public void dispose () {
 void drawSelected(GC gc ) {
 	Display display = getDisplay();
 	int[] shape = null;
-	int extra = parent.curveWidth/2;
+	int extra = parent.CURVE_WIDTH/2;
 	if (this.parent.onBottom) {
 		int[] left = parent.bottomLeftCorner;
 		int[] right = parent.curve;
 		shape = new int[left.length+right.length+4];
 		int index = 0;
+		shape[index++] = x;
+		shape[index++] = y + CTabFolder2.SELECTION_BORDER - 1;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++]=x+left[2*i];
-			shape[index++]=y+height+left[2*i+1];
+			shape[index++]=y+height+left[2*i+1]-1;
 		}
 		for (int i = 0; i < right.length/2; i++) {
 			shape[index++]=x+width-extra+right[2*i];
-			shape[index++]=y+right[2*i+1];
+			shape[index++]=y+right[2*i+1]-2;
 		}
-		shape[index++] = x+width;
-		shape[index++] = y + SELECTION_BORDER;
-		shape[index++] = x;
-		shape[index++] = y + SELECTION_BORDER;
+		shape[index++] = x + width + extra;
+		shape[index++] = y + CTabFolder2.SELECTION_BORDER - 1;
 	} else {
 		int[] left = parent.topLeftCorner;
 		int[] right = parent.curve;
 		shape = new int[left.length+right.length+4];
 		int index = 0;
+		shape[index++] = x;
+		shape[index++] = y + height - CTabFolder2.SELECTION_BORDER;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++]=x+left[2*i];
 			shape[index++]=y+left[2*i+1];
@@ -163,16 +171,18 @@ void drawSelected(GC gc ) {
 			shape[index++]=x+width-extra+right[2*i];
 			shape[index++]=y+right[2*i+1];
 		}
-		shape[index++] = x+width;
-		shape[index++] = y + height - SELECTION_BORDER;
-		shape[index++] = x;
-		shape[index++] = y + height - SELECTION_BORDER;
+		shape[index++] = x + width + extra;
+		shape[index++] = y + height - CTabFolder2.SELECTION_BORDER+1;
 	}
 	parent.drawSelectionBackground(gc, y, shape);
 	
 	// Shape is non-rectangular
 	Region r = new Region();
-	r.add(new Rectangle(x, y, width, height));
+	if (parent.onBottom) {
+		r.add(new Rectangle(x, y + CTabFolder2.SELECTION_BORDER, width, height - CTabFolder2.SELECTION_BORDER));
+	} else {
+		r.add(new Rectangle(x, y, width, height - CTabFolder2.SELECTION_BORDER));
+	}
 	r.subtract(shape);
 	if (parent.single) {
 		// for a single tab,  fill in gaps with background colour
@@ -184,6 +194,12 @@ void drawSelected(GC gc ) {
 	CTabFolder2.fillRegion(gc, r);
 	r.dispose();
 
+	// draw border
+	Color c = new Color(getDisplay(), parent.borderRGB);
+	gc.setForeground(c);
+	gc.drawPolyline(shape);
+	c.dispose();
+	
 	// draw Image
 	int xDraw = x + LEFT_MARGIN;
 	Image image = getImage();
