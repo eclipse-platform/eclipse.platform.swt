@@ -172,7 +172,9 @@ public class StyledText extends Canvas {
 		int endPage;									// last page to print
 		int pageSize;									// number of lines on a page
 		int startLine;									// first (wrapped) line to print
+		int endLine;									// last (wrapped) line to print
 		boolean singleLine;								// widget single line mode
+		Point selection = null;					// selected text
 
 	/**
 	 * Creates an instance of <class>Printing</class>.
@@ -199,7 +201,10 @@ public class StyledText extends Canvas {
 				endPage = startPage;
 				startPage = temp;
 			}			
-		}	
+		} if (data.scope == PrinterData.SELECTION) {
+			selection = parent.getSelectionRange();
+		}
+
 		displayFontData = getFont().getFontData()[0];
 		copyContent(parent.getContent());
 		cacheLineData(printerContent);
@@ -411,7 +416,20 @@ public class StyledText extends Canvas {
 			clientArea.height -= renderer.getLineHeight() * 2;
 		}
 		pageSize = clientArea.height / renderer.getLineHeight();
-		startLine = (startPage - 1) * pageSize;
+		StyledTextContent content = renderer.getContent();
+		startLine = 0;
+		endLine = content.getLineCount() - 1;
+		PrinterData data = printer.getPrinterData();
+		if (data.scope == PrinterData.PAGE_RANGE) {
+			startLine = (startPage - 1) * pageSize;
+		} else if (data.scope == PrinterData.SELECTION) {
+			startLine = content.getLineAtOffset(selection.x);
+			if (selection.y > 0) {
+				endLine = content.getLineAtOffset(selection.x + selection.y - 1);
+			} else {
+				endLine = startLine - 1;
+			}
+		}
 	}
 	/**
 	 * Returns the printer color for the given display color.
@@ -448,7 +466,7 @@ public class StyledText extends Canvas {
 		if (singleLine) {
 			lineCount = 1;
 		}
-		for (int i = startLine; i < lineCount && page <= endPage; i++, paintY += lineHeight) {
+		for (int i = startLine; i <= endLine && page <= endPage; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
 			
 			if (paintY == clientArea.y) {
