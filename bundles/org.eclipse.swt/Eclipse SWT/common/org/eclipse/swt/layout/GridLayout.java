@@ -91,7 +91,7 @@ public final class GridLayout extends Layout {
 	 */
  	public int verticalSpacing = 5;
 
- 		/**
+ 	/**
 	 * marginLeft specifies the number of pixels of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
