@@ -303,6 +303,7 @@ void releaseWidget () {
 		}
 	}
 	items = null;
+	super.releaseWidget();
 }
 
 void setBackgroundPixel (int pixel) {
