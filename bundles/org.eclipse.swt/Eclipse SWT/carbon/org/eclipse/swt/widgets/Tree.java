@@ -837,7 +837,16 @@ int itemNotificationProc (int browser, int id, int message) {
 					OS.memcpy (ids, start [0], count * 4);
 					OS.HUnlock (ptr);
 					ignoreSelect = true;
+					int [] selectionFlags = null;
+					if ((style & SWT.SINGLE) != 0) {
+						selectionFlags = new int [1];
+						OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+						OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+					}
 					OS.SetDataBrowserSelectedItems (handle, ids.length, ids, OS.kDataBrowserItemsRemove);
+					if ((style & SWT.SINGLE) != 0) {
+						OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+					}
 					ignoreSelect = false;
 					Event event = new Event ();
 					event.item = item;
