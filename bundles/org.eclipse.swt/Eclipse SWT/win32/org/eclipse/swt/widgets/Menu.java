@@ -500,7 +500,7 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	return true;
+	return this == getShell ().activeMenu;
 }
 
 /**
@@ -804,6 +804,19 @@ public void setVisible (boolean visible) {
 	if (!success && GetMenuItemCount (handle) == 0) {
 		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
 	}
+	/*
+	* Feature in Windows.  Because TrackPopupMenu() runs a
+	* modal menu loop and does not return until an item is
+	* selected or the user cancels the menu and SWT.Selection
+	* events are posted, they won't run until execution returns
+	* to the event loop.  While this is not strictly incorrect,
+	* it means that code that relies on the modal menu loop
+	* to decide when to destroy the menu will destroy the menu
+	* before the SWT.Selection event is delivered.  The fix is
+	* to run the deferred events after the menu is hidden. 
+	*/
+	Display display = getDisplay ();
+	display.runDeferredEvents ();
 }
 
 }

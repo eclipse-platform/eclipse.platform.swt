@@ -251,7 +251,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = count * tm.tmHeight, width = 0;
 	RECT rect = new RECT ();
 	int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
-	if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+	boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
+	if (wrap && wHint != SWT.DEFAULT) {
 		flags |= OS.DT_WORDBREAK;
 		rect.right = wHint;
 	}
@@ -259,7 +260,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	TCHAR buffer = new TCHAR (getCodePage (), text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	width = rect.right - rect.left;
-	if ((style & SWT.WRAP) != 0 && hHint == SWT.DEFAULT) {
+	if (wrap && hHint == SWT.DEFAULT) {
 		int newHeight = rect.bottom - rect.top;
 		if (newHeight != 0) height = newHeight;
 	}
