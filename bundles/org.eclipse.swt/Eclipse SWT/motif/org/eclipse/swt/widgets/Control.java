@@ -1915,7 +1915,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height, true, true);
+	setBounds (x, y, width, height);
 }
 /**
  * Sets the receiver's size and location to the rectangular
