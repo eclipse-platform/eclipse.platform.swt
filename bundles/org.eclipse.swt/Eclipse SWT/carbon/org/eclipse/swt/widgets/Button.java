@@ -389,12 +389,6 @@ void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	int window = OS.GetControlOwner (handle);
 	OS.SetWindowDefaultButton (window, value ? handle : 0);
- }
-
-public boolean setFocus () {
-	checkWidget ();
-	if ((style & SWT.ARROW) != 0) return false;
-	return super.setFocus ();
 }
 
 public void setImage (Image image) {
