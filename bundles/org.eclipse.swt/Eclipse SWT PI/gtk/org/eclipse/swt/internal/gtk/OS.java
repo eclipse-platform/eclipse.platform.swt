@@ -411,6 +411,7 @@ public static final synchronized native int PangoRectangle_sizeof();
 public static final synchronized native int XAnyEvent_sizeof();
 public static final synchronized native int XClientMessageEvent_sizeof();
 public static final synchronized native int XEvent_sizeof();
+public static final synchronized native int XCrossingEvent_sizeof();
 public static final synchronized native int XExposeEvent_sizeof();
 public static final synchronized native int XFocusChangeEvent_sizeof();
 public static final synchronized native int XVisibilityEvent_sizeof();
@@ -437,12 +438,15 @@ public static final int Below = 1;
 public static final int ClientMessage = 33;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
+public static final int EnterNotify = 7;
 public static final int Expose = 12;
 public static final int FocusChangeMask = 1 << 21;
+public static final int FocusIn = 9;
 public static final int FocusOut = 10;
 public static final int GraphicsExpose = 13;
 public static final int NoExpose = 14;
 public static final int ExposureMask = 1 << 15;
+public static final int NotifyNonlinear = 3;
 public static final int NotifyPointer = 5;
 public static final int VisibilityChangeMask = 1 << 16;
 public static final int VisibilityFullyObscured = 2;
@@ -469,10 +473,14 @@ public static final synchronized native int /*long*/gdk_x11_atom_to_xatom(int /*
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_window_lookup(int /*long*/ xid);
+public static final synchronized native void gdk_window_add_filter(int /*long*/ window, int /*long*/ function, int /*long*/ data);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, XCrossingEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XExposeEvent src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, XFocusChangeEvent src, int /*long*/ size);
+public static final native void memmove(XCrossingEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XExposeEvent dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(XFocusChangeEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
 
 /** Native methods */

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 839;
-int OS_nativeFunctionCallCount[839];
+int OS_nativeFunctionCount = 844;
+int OS_nativeFunctionCallCount[844];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -95,6 +95,7 @@ char * OS_nativeFunctionNames[] = {
 	"XCheckMaskEvent", 
 	"XCheckWindowEvent", 
 	"XClientMessageEvent_1sizeof", 
+	"XCrossingEvent_1sizeof", 
 	"XDefaultScreen", 
 	"XEvent_1sizeof", 
 	"XExposeEvent_1sizeof", 
@@ -277,6 +278,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1unicode_1to_1keyval", 
 	"gdk_1utf8_1to_1compound_1text", 
 	"gdk_1visual_1get_1system", 
+	"gdk_1window_1add_1filter", 
 	"gdk_1window_1at_1pointer", 
 	"gdk_1window_1begin_1paint_1rect", 
 	"gdk_1window_1destroy", 
@@ -745,6 +747,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I", 
+	"memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I", 
 	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I", 
 	"memmove__I_3BI", 
@@ -775,7 +778,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II", 
 	"memmove___3BII", 
 	"memmove___3CII", 

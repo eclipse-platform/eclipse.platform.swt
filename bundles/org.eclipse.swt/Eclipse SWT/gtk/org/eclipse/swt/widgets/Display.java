@@ -100,9 +100,9 @@ public class Display extends Device {
 	int [] dispatchEvents;
 	Widget [] gdkEventWidgets;
 	Event [] eventQueue;
-	Callback eventCallback;
+	Callback eventCallback, filterCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
-	int /*long*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
+	int /*long*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
@@ -1012,6 +1012,12 @@ boolean filters (int eventType) {
 	return filterTable.hooks (eventType);
 }
 
+int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
+	Widget widget = getWidget (data);
+	if (widget == null) return 0;
+	return widget.filterProc (xEvent, gdkEvent, data);
+}
+
 /**
  * Returns the location of the on-screen pointer relative
  * to the top left corner of the screen.
@@ -1826,6 +1832,10 @@ void initializeCallbacks () {
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
 	checkIfEventProc = checkIfEventCallback.getAddress ();
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	filterCallback = new Callback (this, "filterProc", 3);
+	filterProc = filterCallback.getAddress ();
+	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeWidgetTable () {
@@ -2355,6 +2365,10 @@ void releaseDisplay () {
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
+	
+	/* Dispose xfilter callback */
+	filterCallback.dispose(); filterCallback = null;
+	filterProc = 0;
 
 	/* Dispose checkIfEvent callback */
 	checkIfEventCallback.dispose(); checkIfEventCallback = null;

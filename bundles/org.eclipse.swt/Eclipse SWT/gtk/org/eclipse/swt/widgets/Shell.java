@@ -536,39 +536,6 @@ void createHandle (int index) {
 	OS.gtk_window_set_modal (shellHandle, modal);
 }
 
-void fixShellFocus () {
-	/*
-	* Bug in GTK.  When a shell that has no window manager trimmings
-	* is given focus, GTK gets stuck in "focus follows pointer" mode when
-	* the pointer is within the shell and its parent when the shell is disposed.
-	* The fix is to send a fake XFocusChangeEvent with FocusOut to the
-	* parent shell to clear the mode. 
-	*/
-	if (!OS.GDK_WINDOWING_X11 ()) return;
-	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-	if (xDisplay == 0) return;
-	int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
-	if (xWindow == 0) return;
-	int /*long*/ [] root = new int /*long*/ [1];
-	int /*long*/ [] parent = new int /*long*/ [1];
-	OS.XQueryTree (xDisplay, xWindow, root, parent, new int /*long*/ [1], new int[1]);
-	if (parent [0] == root [0]) return;
-	XFocusChangeEvent focusEvent = new XFocusChangeEvent ();
-	focusEvent.type = OS.FocusOut;
-	focusEvent.display = xDisplay;
-	focusEvent.window = xWindow;
-	focusEvent.detail = OS.NotifyPointer;
-	int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
-	if (xEvent != 0) {
-		OS.memmove (xEvent, focusEvent, XFocusChangeEvent.sizeof);
-		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.gtk_get_current_event_time ());
-		OS.gdk_flush ();
-		OS.XSendEvent (xDisplay, xWindow, false, 0, xEvent);
-		OS.gdk_flush ();	
-		OS.g_free (xEvent);
-	}
-}
-
 boolean hasBorder () {
 	return false;
 }
@@ -587,6 +554,10 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
 	OS.g_signal_connect (shellHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+	if (OS.GDK_WINDOWING_X11 ()) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	}
 }
 
 public boolean isEnabled () {
@@ -610,6 +581,37 @@ void releaseChild () {
 
 int /*long*/ topHandle () {
 	return shellHandle;
+}
+
+int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
+	/*
+	* Bug in GTK.  When a shell that has no window manager trimmings
+	* is given focus, GTK gets stuck in "focus follows pointer" mode when
+	* the pointer is within the shell and its parent when the shell is disposed.
+	* The fix is to modify the X events that cause this to happen.
+	*/
+	XFocusChangeEvent focusEvent = new XFocusChangeEvent ();
+	OS.memmove (focusEvent, xEvent, 4);
+	switch (focusEvent.type) {
+		case OS.FocusIn: {
+			OS.memmove (focusEvent, xEvent, XFocusChangeEvent.sizeof);
+			if (focusEvent.detail == OS.NotifyPointer) {
+				focusEvent.detail = OS.NotifyNonlinear;
+				OS.memmove (xEvent, focusEvent, XFocusChangeEvent.sizeof);
+			}
+			break;
+		}
+		case OS.EnterNotify: {
+			XCrossingEvent crossingEvent = new XCrossingEvent ();
+			OS.memmove (crossingEvent, xEvent, XCrossingEvent.sizeof);
+			if (crossingEvent.focus) {
+				crossingEvent.focus = false;
+				OS.memmove (xEvent, crossingEvent, XCrossingEvent.sizeof);
+			}
+			break;
+		}
+	}
+	return 0;
 }
 
 void fixShell (Shell newShell, Control control) {
@@ -739,11 +741,6 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_enter_notify_event (widget, event);
 	}
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-	if (gdkEvent.detail != OS.GDK_NOTIFY_INFERIOR && gdkEvent.focus) {
-		fixShellFocus ();
-	}
 	return 0;
 }
 
@@ -768,7 +765,6 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
 	}
-	fixShellFocus ();
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 	hasFocus = true;
 	sendEvent (SWT.Activate);

@@ -423,6 +423,18 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 #define XClientMessageEvent_sizeof() 0
 #endif
 
+#ifndef NO_XCrossingEvent
+void cacheXCrossingEventFields(JNIEnv *env, jobject lpObject);
+XCrossingEvent *getXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct);
+void setXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct);
+#define XCrossingEvent_sizeof() sizeof(XCrossingEvent)
+#else
+#define cacheXCrossingEventFields(a,b)
+#define getXCrossingEventFields(a,b,c) NULL
+#define setXCrossingEventFields(a,b,c)
+#define XCrossingEvent_sizeof() 0
+#endif
+
 #ifndef NO_XEvent
 void cacheXEventFields(JNIEnv *env, jobject lpObject);
 XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct);

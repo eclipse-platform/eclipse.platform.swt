@@ -888,6 +888,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XClientMessageEvent_1sizeof)
 }
 #endif
 
+#ifndef NO_XCrossingEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XCrossingEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XCrossingEvent_1sizeof_FUNC);
+	rc = (jint)XCrossingEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XCrossingEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XDefaultScreen
 JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3417,6 +3429,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1visual_1get_1system)
 	rc = (jint)gdk_visual_get_system();
 	OS_NATIVE_EXIT(env, that, gdk_1visual_1get_1system_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1window_1add_1filter
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1add_1filter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1add_1filter_FUNC);
+	gdk_window_add_filter((GdkWindow *)arg0, (GdkFilterFunc)arg1, (gpointer)arg2);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1add_1filter_FUNC);
 }
 #endif
 
@@ -8987,6 +9009,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClient
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XCrossingEvent _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
+	if (arg1) lparg1 = getXCrossingEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -9382,6 +9416,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLog
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XCrossingEvent _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXCrossingEventFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -9392,6 +9439,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeE
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXExposeEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XFocusChangeEvent _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXFocusChangeEventFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC);
 }
 #endif
 
