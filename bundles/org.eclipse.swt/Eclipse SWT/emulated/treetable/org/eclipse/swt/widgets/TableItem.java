@@ -252,7 +252,7 @@ public Rectangle getBounds(int index) {
 	TableColumn column;
 	int itemIndex = parent.indexOf(this);
 	int itemHeight = parent.getItemHeight();
-	int gridLineWidth = parent.getGridLineWidth();
+	int gridLineWidth = parent.getLinesVisible() ? parent.getGridLineWidth() : 0;
 	int itemYPos;
 	
 	if (itemIndex == -1 || index < 0 || index >= parent.internalGetColumnCount()) {
