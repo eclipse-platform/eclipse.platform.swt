@@ -771,16 +771,30 @@ void popupEvent(Event event) {
 			break;
 	}
 }
+public void redraw () {
+	super.redraw();
+	text.redraw();
+	arrow.redraw();
+	if (popup.isVisible()) list.redraw();
+}
 public void redraw (int x, int y, int width, int height, boolean all) {
-	checkWidget();
-	if (!all) return;
-	Point location = text.getLocation();
-	text.redraw(x - location.x, y - location.y, width, height, all);
-	location = list.getLocation();
-	list.redraw(x - location.x, y - location.y, width, height, all);
-	if (arrow != null) {
-		location = arrow.getLocation();
-		arrow.redraw(x - location.x, y - location.y, width, height, all);
+	super.redraw(x, y, width, height, all);
+	Display display = getDisplay();
+	Rectangle rect = new Rectangle(x, y, width, height);
+	Rectangle bounds = text.getBounds();
+	if (bounds.intersects(rect)) {
+		Rectangle damage = bounds.intersection(rect);
+		damage = display.map(this, text, damage);
+		text.redraw(damage.x, damage.y, damage.width, damage.height, all);
+	}
+	bounds = arrow.getBounds();
+	if (bounds.intersects(rect)) {
+		Rectangle damage = bounds.intersection(rect);
+		damage = display.map(this, arrow, damage);
+		arrow.redraw(damage.x, damage.y, damage.width, damage.height, all);
+	}
+	if (popup.isVisible()) {
+		list.redraw();
 	}
 }
 
