@@ -116,19 +116,6 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-void destroyWidget () {
-	if (OS.IsWinCE) {
-		super.destroyWidget ();
-		return;
-	}
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-	releaseHandle ();
-}
-
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -191,6 +178,12 @@ void releaseWidget () {
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	toolTipText = null;
+	if (OS.IsWinCE) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	iconData.cbSize = NOTIFYICONDATA.sizeof;
+	iconData.uID = id;
+	iconData.hWnd = display.hwndMessage;
+	OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
 }
 	
 /**

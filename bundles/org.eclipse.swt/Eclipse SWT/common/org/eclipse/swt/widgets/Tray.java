@@ -122,4 +122,20 @@ public TrayItem [] getItems () {
 	return result;
 }
 
+void releaseChild () {
+	super.releaseChild ();
+	if (display.tray == this) display.tray = null;
+}
+
+void releaseWidget () {
+	for (int i=0; i<items.length; i++) {
+		TrayItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseResources ();
+		}
+	}
+	items = null;
+	super.releaseWidget ();
+}
+
 }
