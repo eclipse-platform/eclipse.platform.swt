@@ -271,6 +271,7 @@ public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -283,6 +284,8 @@ public Display getDisplay () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget ();
@@ -301,6 +304,7 @@ public boolean getEnabled () {
 	if (!success) error (SWT.ERROR_CANNOT_GET_ENABLED);
 	return (info.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) == 0;
 }
+
 /**
  * Returns the receiver's cascade menu if it has one or null
  * if it does not. Only <code>CASCADE</code> menu items can have
@@ -365,11 +369,12 @@ public boolean getSelection () {
 	if (!success) error (SWT.ERROR_CANNOT_GET_SELECTION);
 	return (info.fState & OS.MFS_CHECKED) !=0;
 }
+
 /**
- * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
- * not selectable from the user interface and draws with an
- * inactive or "grayed" look.
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -377,6 +382,8 @@ public boolean getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getEnabled
  */
 public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();

@@ -361,10 +361,10 @@ void hookEvents () {
 }
 
 /**
- * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
- * not selectable from the user interface and draws with an
- * inactive or "grayed" look.
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -372,6 +372,8 @@ void hookEvents () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getEnabled
  */
 public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();

@@ -885,10 +885,10 @@ public void internal_dispose_GC (int phGC, GCData data) {
 }
 
 /**
- * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
- * not selectable from the user interface and draws with an
- * inactive or "grayed" look.
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -896,6 +896,8 @@ public void internal_dispose_GC (int phGC, GCData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getEnabled
  */
 public boolean isEnabled () {
 	checkWidget();
@@ -981,14 +983,9 @@ boolean isTabItem () {
 }
 
 /**
- * Returns <code>true</code> if the receiver is visible, and
- * <code>false</code> otherwise.
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, this method
- * may still indicate that it is considered visible even though
- * it may not actually be showing.
- * </p>
+ * Returns <code>true</code> if the receiver is visible and all
+ * of the receiver's ancestors are visible and <code>false</code>
+ * otherwise.
  *
  * @return the receiver's visibility state
  *
@@ -996,6 +993,8 @@ boolean isTabItem () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #getVisible
  */
 public boolean isVisible () {
 	checkWidget();

@@ -224,14 +224,9 @@ boolean isFocusCaret () {
 }
 
 /**
- * Returns <code>true</code> if the receiver is visible, and
- * <code>false</code> otherwise.
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, this method
- * may still indicate that it is considered visible even though
- * it may not actually be showing.
- * </p>
+ * Returns <code>true</code> if the receiver is visible and all
+ * of the receiver's ancestors are visible and <code>false</code>
+ * otherwise.
  *
  * @return the receiver's visibility state
  *
@@ -239,6 +234,8 @@ boolean isFocusCaret () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #getVisible
  */
 public boolean isVisible () {
 	checkWidget();

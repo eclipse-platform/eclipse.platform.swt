@@ -266,11 +266,9 @@ public Display getDisplay () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise.
- * <p>
- * A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
- * </p>
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -278,6 +276,8 @@ public Display getDisplay () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget();
@@ -380,12 +380,10 @@ public int getWidth () {
 }
 
 /**
- * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise.
- * <p>
- * A disabled control is typically not selectable from the
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
  * user interface and draws with an inactive or "grayed" look.
- * </p>
  *
  * @return the receiver's enabled state
  *
@@ -393,6 +391,8 @@ public int getWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getEnabled
  */
 public boolean isEnabled () {
 	checkWidget();
