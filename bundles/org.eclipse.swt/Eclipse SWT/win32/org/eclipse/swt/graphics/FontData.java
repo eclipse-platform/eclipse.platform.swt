@@ -345,18 +345,17 @@ int EnumLocalesProc(int lpLocaleString) {
 
 	/* Check the language */
 	int size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO639LANGNAME, buffer, length);
-	String osLang = buffer.toString(0, size - 1);
-	if (!lang.equals(osLang)) return 1;
+	if (size <= 0 || !lang.equals(buffer.toString(0, size - 1))) return 1;
 
 	/* Check the country */
 	if (country != null) {
 		size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
-		String osCountry = buffer.toString(0, size - 1);
-		if (!country.equals(osCountry)) return 1;
+		if (size <= 0 || !country.equals(buffer.toString(0, size - 1))) return 1;
 	}
 
 	/* Get the charset */
 	size = OS.GetLocaleInfo(lcid, OS.LOCALE_IDEFAULTANSICODEPAGE, buffer, length);
+	if (size <= 0) return 1;
 	int cp = Integer.parseInt(buffer.toString(0, size - 1));
 	int [] lpCs = new int[8];
 	OS.TranslateCharsetInfo(cp, lpCs, OS.TCI_SRCCODEPAGE);
