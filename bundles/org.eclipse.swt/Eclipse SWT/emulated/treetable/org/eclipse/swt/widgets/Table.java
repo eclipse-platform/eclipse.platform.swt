@@ -711,9 +711,19 @@ Header getHeader() {
 	return tableHeader;
 }
 /**
- * Answer the header height or 0 if the header is not visible.
+ * Returns the height of the receiver's header 
+ *
+ * @return the height of the header or zero if the header is not visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0 
  */
-int getHeaderHeight() {
+public int getHeaderHeight() {
+	checkWidget();
 	Header header = getHeader();
 	int height = 0;
 	
