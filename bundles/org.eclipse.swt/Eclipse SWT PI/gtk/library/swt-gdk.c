@@ -945,7 +945,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1or
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1pointer
-  (JNIEnv *env, jclass that, jint window, jintArray x, jintArray y, jint mask)
+  (JNIEnv *env, jclass that, jint window, jintArray x, jintArray y, jintArray mask)
 {
 	jint rc;
 	jint *x1 = NULL;

@@ -88,6 +88,35 @@ public Caret getCaret () {
 	return caret;
 }
 
+int processFocusIn (int int0, int int1, int int2) {
+	int result = super.processFocusIn (int0, int1, int2);
+	if (caret != null) caret.setFocus ();
+	return result;
+}
+
+int processFocusOut(int int0, int int1, int int2) {
+	int result = super.processFocusOut (int0, int1, int2);
+	if (caret != null) caret.killFocus ();
+	return result;
+}
+
+int processPaint (int callData, int int1, int int2) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	int result = super.processPaint (callData, int1, int2);
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
+void releaseWidget () {
+	if (caret != null) {
+		caret.releaseWidget ();
+		caret.releaseHandle ();
+	}
+	caret = null;
+	super.releaseWidget();
+}
+
 /**
  * Scrolls a rectangular area of the receiver by first copying 
  * the source area to the destination and then causing the area
@@ -116,8 +145,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;
-	boolean isVisible = caret != null && caret.isVisible ();
-	if (isVisible) caret.hideCaret ();
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	
 //	update ();
 //	GC gc = new GC (this);
@@ -179,7 +208,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	OS.gdk_region_destroy (copyRegion);
 	OS.gdk_region_destroy (invalidateRegion);
 	
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -211,48 +240,23 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
  * </ul>
  */
 public void setCaret (Caret caret) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Caret newCaret = caret;
 	Caret oldCaret = this.caret;
 	this.caret = newCaret;
-	if (isFocusControl()) {
+	if (hasFocus ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
-		if (newCaret != null) newCaret.setFocus ();
+		if (newCaret != null) {
+			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+			newCaret.setFocus ();
+		}
 	}
 }
 
 public boolean setFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
-}
-
-int processFocusIn (int int0, int int1, int int2) {
-	int result = super.processFocusIn (int0, int1, int2);
-	if (caret != null) caret.setFocus ();
-	return result;
-}
-
-int processFocusOut(int int0, int int1, int int2) {
-	int result = super.processFocusOut (int0, int1, int2);
-	if (caret != null) caret.killFocus ();
-	return result;
-}
-
-int processPaint (int callData, int int1, int int2) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	int result = super.processPaint (callData, int1, int2);
-	if (isFocus) caret.setFocus ();
-	return result;
-}
-
-void releaseWidget () {
-	if (caret != null) caret.releaseWidget ();
-	caret = null;
-	super.releaseWidget ();
 }
 
 }

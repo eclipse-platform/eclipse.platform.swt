@@ -85,6 +85,10 @@ int fontHandle () {
 	return handle;
 }
 
+boolean hasFocus () {
+	return OS.GTK_WIDGET_HAS_FOCUS(handle);
+}
+
 void hookEvents () {
 	int eventHandle = eventHandle ();
 	int mask =
@@ -1472,7 +1476,7 @@ public boolean isEnabled () {
  */
 public boolean isFocusControl () {
 	checkWidget();
-	return OS.GTK_WIDGET_HAS_FOCUS(handle);
+	return hasFocus ();
 }
 
 /**
@@ -1674,6 +1678,9 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	rect.height = height;
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
+
+
+
 void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;

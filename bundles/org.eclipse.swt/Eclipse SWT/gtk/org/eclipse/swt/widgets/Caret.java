@@ -270,7 +270,7 @@ boolean hideCaret () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return isVisible && parent.isVisible () && parent.isFocusControl ();
+	return isVisible && parent.isVisible () && parent.hasFocus ();
 }
 
 boolean isFocusCaret () {
