@@ -93,7 +93,7 @@ class CoolBarTab extends Tab {
 		pushSize = pushItem.computeSize(pushSize.x, pushSize.y);
 		pushItem.setSize(pushSize);
 		pushItem.setMinimumSize(item.getWidth(), pushSize.y);
-        pushItem.addSelectionListener (new CoolItemDropDownSelectionListener());
+        pushItem.addSelectionListener (new CoolItemSelectionListener());
 				
 		/* create the dropdown toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -111,7 +111,7 @@ class CoolBarTab extends Tab {
 		dropSize = dropDownItem.computeSize(dropSize.x, dropSize.y);
 		dropDownItem.setSize(dropSize);
 		dropDownItem.setMinimumSize(item.getWidth(), dropSize.y);
-        dropDownItem.addSelectionListener (new CoolItemDropDownSelectionListener());
+        dropDownItem.addSelectionListener (new CoolItemSelectionListener());
 				
 		/* create the radio button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -130,7 +130,7 @@ class CoolBarTab extends Tab {
 		radioSize = radioItem.computeSize(radioSize.x, radioSize.y);
 		radioItem.setSize(radioSize);
 		radioItem.setMinimumSize(item.getWidth(), radioSize.y);
-        radioItem.addSelectionListener (new CoolItemDropDownSelectionListener());
+        radioItem.addSelectionListener (new CoolItemSelectionListener());
 		
 		/* create the check button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -152,7 +152,7 @@ class CoolBarTab extends Tab {
 		checkSize = checkItem.computeSize(checkSize.x, checkSize.y);
 		checkItem.setSize(checkSize);
 		checkItem.setMinimumSize(item.getWidth(), checkSize.y);
-        checkItem.addSelectionListener (new CoolItemDropDownSelectionListener());
+        checkItem.addSelectionListener (new CoolItemSelectionListener());
 		
 		/* if we have saved state, restore it */
 		if (order != null) {
@@ -320,7 +320,7 @@ class CoolBarTab extends Tab {
 	 * Listens to widgetSelected() events on SWT.DROP_DOWN type CoolItems
 	 * and opens/closes a menu when appropriate.
 	 */
-	class CoolItemDropDownSelectionListener extends SelectionAdapter {
+	class CoolItemSelectionListener extends SelectionAdapter {
 		private Menu menu = null;
 		
 		public void widgetSelected(SelectionEvent event) {
