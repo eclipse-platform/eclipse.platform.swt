@@ -263,7 +263,9 @@ public void setSelection (int value) {
 void setThumb (int sliderSize) {
 	Display display = getDisplay ();
 	int backgroundPixel = defaultBackground ();
-	int [] argList1 = new int [] {OS.XmNbackground, 0};
+	int [] argList1 = new int [] {
+		OS.XmNbackground, 0,
+		OS.XmNminimum, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	if (sliderSize == 0) {
 		if (argList1 [1] != backgroundPixel) {
@@ -279,6 +281,7 @@ void setThumb (int sliderSize) {
 		OS.XmNtroughColor, backgroundPixel,
 		OS.XmNtopShadowColor, backgroundPixel,
 		OS.XmNbottomShadowColor, backgroundPixel,
+		OS.XmNvalue, argList1[3]
 	};
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);

@@ -49,7 +49,7 @@ public class OS {
 //	public static final int ClipByChildren = 0x0;
 //	public static final int ColormapChangeMask = 1 << 23;
 //	public static final int ColormapNotify = 32;
-//	public static final int Complex = 0;
+	public static final int Complex = 0;
 	public static final int ConfigureNotify = 22;
 //	public static final int ConfigureRequest = 23;
 	public static final int ControlMask = (1<<2);
@@ -160,7 +160,7 @@ public class OS {
 //	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask	= 1 << 5;
 	public static final int LineDoubleDash = 0x2;
-//	public static final int LineOnOffDash = 0x1;
+	public static final int LineOnOffDash = 0x1;
 	public static final int LineSolid = 0x0;
 //	public static final int LockMask = (1<<1);
 	public static final int LSBFirst = 0;

@@ -823,7 +823,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	}
 	if (nh < 0) {
 		nh = 0 - nh;
-		ny = ny -nh;
+		ny = ny - nh;
 	}
 	if (naw < 0) 
 		naw = 0 - naw;
@@ -835,14 +835,33 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx,ny,naw,nah,5760,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx,ny + nh - nah,naw,nah,11520,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx + nw - naw, ny + nh - nah, naw, nah,17280,5760);
-	OS.XDrawArc(xDisplay,xDrawable,handle,nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + naw2, ny, nx + nw - naw2, ny);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx,ny + nah2, nx, ny + nh - nah2);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
-	OS.XDrawLine(xDisplay,xDrawable,handle,nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+	
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, naw, nah, 5760, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, naw, nah, 11520, 5760);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, naw, nh, 5760, 11520);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + naw2, ny, nx + nw - naw2, ny);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nh, 17280, 11520);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+		}
+	} else {
+		if (nh > nah) {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, nw, nah, 0, 11520);
+			OS.XDrawLine(xDisplay, xDrawable, handle, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, nw, nah, 11520, 11520);
+			OS.XDrawLine(xDisplay,xDrawable,handle, nx, ny + nah2, nx, ny + nh - nah2);
+		} else {
+			OS.XDrawArc(xDisplay, xDrawable, handle, nx, ny, nw, nh, 0, 23040);
+		}
+	}
 }
 /** 
  * Draws the given string, using the receiver's current font and
@@ -1139,7 +1158,7 @@ public void fillPolygon(int[] pointArray) {
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Convex, OS.CoordModeOrigin);
+	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Complex, OS.CoordModeOrigin);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
 /** 
@@ -1232,9 +1251,6 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	if (nah < 0)
 		nah = 0 - nah;
 
-	naw = naw < nw ? naw : nw;
-	nah = nah < nh ? nah : nh;
-		
 	int naw2 = naw / 2;
 	int nah2 = nah / 2;
 
@@ -1243,13 +1259,30 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground(xDisplay, handle, values.background);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx,ny,naw,nah,5760,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx,ny + nh - nah,naw,nah,11520,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx + nw - naw, ny + nh - nah, naw, nah,17280,5760);
-	OS.XFillArc(xDisplay,xDrawable,handle,nx + nw - naw, ny, naw, nah, 0, 5760);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx + naw2, ny, nw - naw, nh);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx,ny + nah2, naw2, nh - nah);
-	OS.XFillRectangle(xDisplay,xDrawable,handle,nx + nw - (naw / 2), ny + nah2, naw2, nh -nah);
+
+	if (nw > naw) {
+		if (nh > nah) {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nah, 5760, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nah2);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nah, 0, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny + nh - nah2, nw - naw, nah2);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, naw, nah, 11520, 5760);
+		} else {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nh, 5760, 11520);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nh);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nh, 17280, 11520);
+		}
+	} else {
+		if (nh > nah) {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nah, 0, 11520);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, nw, nah, 11520, 11520);
+		} else {
+			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nh, 0, 23040);
+		}
+	}
 	OS.XSetForeground(xDisplay, handle, values.foreground);
 }
 /**
