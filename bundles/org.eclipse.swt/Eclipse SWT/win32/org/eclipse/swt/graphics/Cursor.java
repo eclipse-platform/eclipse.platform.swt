@@ -329,30 +329,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Modify the source image to contain black wherever the mask is 0 */
 	ImageData mask = source.getTransparencyMask();
-	int[] sourcePixels = new int[source.width];
-	int[] maskPixels = new int[mask.width];
-	for (int y = 0; y < source.height; y++) {
-		source.getPixels(0, y, source.width, sourcePixels, 0);
-		mask.getPixels(0, y, mask.width, maskPixels, 0);
-		for (int i = 0; i < sourcePixels.length; i++) {
-			if (maskPixels[i] == 0) sourcePixels[i] = 0;
-		}
-		source.setPixels(0, y, source.width, sourcePixels, 0);
-	}
-	boolean hasTransparencyPixel = source.getTransparencyType() == SWT.TRANSPARENCY_PIXEL;
-	if (hasTransparencyPixel) {
-		source.maskData = mask.data;
-		source.maskPad = mask.scanlinePad;
-	}
-	int[] result = Image.init(device, null, source);
+	int[] result = Image.init(device, null, source, mask);
 	int hBitmap = result[0];
 	int hMask = result[1];
-	if (hasTransparencyPixel) {
-		source.maskData = null;
-		source.maskPad = -1;
-	}
 	/* Create the icon */
 	ICONINFO info = new ICONINFO();
 	info.fIcon = true;
