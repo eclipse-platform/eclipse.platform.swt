@@ -980,7 +980,14 @@ public class ImageAnalyzer {
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
-		if (fileName != null) fileChooser.setFileName(fileName);
+		if (fileName != null) {
+			String name = fileName;
+			int nameStart = name.lastIndexOf(java.io.File.separatorChar);
+			if (nameStart > -1) {
+				name = name.substring(nameStart + 1);
+			}
+			fileChooser.setFileName(name);
+		}
 		fileChooser.setFilterExtensions(new String[] { "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png" });
 		fileChooser.setFilterNames(new String[] { "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)" });
 		String filename = fileChooser.open();
