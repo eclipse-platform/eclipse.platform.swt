@@ -7507,11 +7507,10 @@ boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 
 	verticalScrollOffset = pixelOffset;
 	calculateTopIndex();
-	Caret caret = getCaret();
-	if (caret != null) {
-		int line = getCaretLine();
-		caret.setLocation(caret.getLocation().x, line * lineHeight - verticalScrollOffset);
-	}
+	int oldColumnX = columnX;
+	setCaretLocation();
+	// restore the original horizontal caret index
+	columnX = oldColumnX;
 	return true;
 }
 /**
