@@ -869,6 +869,7 @@ public ImageData getImageData() {
 	OS.memmove(srcData, xSrcImage.data, length);
     */
 	OS.copyPixmapData(srcData, pixmap, length);
+	System.out.println("Image.getImageData: depth: " + xSrcImage.depth);
 	
 	switch (xSrcImage.depth) {
 		case 1:
@@ -963,7 +964,7 @@ public ImageData getImageData() {
 	}
 	ImageData data = new ImageData(width, height, xSrcImage.depth, palette);
 	data.data = srcData;
-	if (xSrcImage.bits_per_pixel == 32) {
+	if (false && xSrcImage.bits_per_pixel == 32) {
 		/*
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
 		 * support 32-bit images
@@ -1003,6 +1004,7 @@ public ImageData getImageData() {
 		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
 		*/
 		data.maskData = new byte[xMask.bytes_per_line * xMask.height];
+		OS.copyPixmapData(data.maskData, mask, data.maskData.length);
 		/* AW
 		OS.memmove(data.maskData, xMask.data, data.maskData.length);
 		OS.XDestroyImage(xMaskPtr);
