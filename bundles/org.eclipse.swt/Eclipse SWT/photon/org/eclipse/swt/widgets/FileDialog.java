@@ -197,10 +197,13 @@ public String open () {
 		mask = mask.substring(1, Math.max(1, mask.length() - 1));
 	}
 	byte [] file_spec = Converter.wcsToMbcs (null, mask, true);
-	
+	byte [] btn1_text = null;
+	if ((style & SWT.SAVE) != 0) {
+		btn1_text = Converter.wcsToMbcs(null, SWT.getMessage("SWT_Save"));
+	}
 	int flags = OS.Pt_FSR_NO_FCHECK;
 	PtFileSelectionInfo_t info = new PtFileSelectionInfo_t ();
-	OS.PtFileSelection (parentHandle, null, title, root_dir, file_spec, null, null, null, info, flags);
+	OS.PtFileSelection (parentHandle, null, title, root_dir, file_spec, btn1_text, null, null, info, flags);
 	if (info.ret == OS.Pt_FSDIALOG_BTN2) return null;
 	int length = 0;
 	while (length < info.path.length && info.path [length] != 0) length++;
