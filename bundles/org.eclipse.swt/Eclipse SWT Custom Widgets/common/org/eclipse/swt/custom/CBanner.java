@@ -213,8 +213,11 @@ public int getRightWidth() {
 public void layout (boolean changed) {
 	checkWidget();
 	Point size = getSize();
-	Point rightSize = (right == null) ? new Point (0, 0) : right.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	if (rightWidth != SWT.DEFAULT && rightSize.x > rightWidth) {
+	Point rightSize;
+	if (right == null) {
+		int width = rightWidth == SWT.DEFAULT ? 0 : rightWidth;
+		rightSize = new Point(width, 0);
+	} else {
 		rightSize = right.computeSize(rightWidth, SWT.DEFAULT);
 	}
 	int width = size.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT - BORDER_LEFT - BORDER_RIGHT; 
