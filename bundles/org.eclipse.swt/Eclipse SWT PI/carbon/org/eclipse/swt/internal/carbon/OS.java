@@ -769,6 +769,7 @@ public static final native int FMGetNextFontFamily(int ioIterator, short[] oFont
 public static final native int FMGetNextFontFamilyInstance(int ioIterator, int[] oFont, short[] oStyle, short[] oSize);
 public static final native boolean FPIsFontPanelVisible();
 public static final native int FPShowHideFontPanel();
+public static final native int FSpGetFInfo(byte[] spec, byte[] fndrInfo);
 public static final native int FSpMakeFSRef(byte[] source, byte[] newRef);
 public static final native int FSGetCatalogInfo(byte[] ref, int whichInfo, byte[] catalogInfo, byte[] outName, byte[] fsSpec, byte[] parentRef); 
 public static final native short FindWindow(Point where, int[] wHandle);

@@ -2584,6 +2584,27 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FSGetCatalogInfo
 }
 #endif
 
+#ifndef NO_FSpGetFInfo
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FSpGetFInfo
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("FSpGetFInfo\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)FSpGetFInfo((FSSpec *)lparg0, (FInfo *)lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
+
+
 #ifndef NO_FindWindow
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FindWindow
 	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1)

@@ -108,7 +108,9 @@ public void javaToNative(Object object, TransferData transferData) {
 					byte[] fsSpec = new byte[70];
 					if (OS.FSGetCatalogInfo(fsRef, 0, null, null, fsSpec, null) != OS.noErr) return;
 					byte[] hfsflavor = new byte[10 + fsSpec.length];
-					//OS.FpGetFInfo();
+					byte[] finfo = new byte[16];
+					OS.FSpGetFInfo(fsSpec, finfo);
+					System.arraycopy(finfo, 0, hfsflavor, 0, 10);
 					System.arraycopy(fsSpec, 0, hfsflavor, 10, fsSpec.length);
 					data[i] = hfsflavor;
 				} finally {
