@@ -20,6 +20,7 @@ public class Caret extends Widget {
 	boolean isVisible, isShowing;
 	int blinkRate;
 	Image image;
+	Font font;
 
 public Caret (Canvas parent, int style) {
 	super (parent, style);
@@ -100,9 +101,9 @@ public Display getDisplay () {
 
 public Font getFont () {
 	checkWidget();
+	if (font != null) return font;
 	return parent.getFont ();
 }
-
 
 public Image getImage () {
 	checkWidget();
@@ -201,6 +202,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	this.font = font;
 }
 
 public void setImage (Image image) {
