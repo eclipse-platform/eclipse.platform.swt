@@ -700,123 +700,120 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
-void setInputState (Event event, int state) {
+boolean setInputState (Event event, int state) {
 	if ((state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
 	if ((state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
 	if ((state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
 	if ((state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
+	if ((state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
+	return true;
 }
-void setKeyState (Event event, XKeyEvent xEvent) {
-	if (xEvent.keycode != 0) {
-		byte [] buffer = new byte [5];
-		int [] keysym = new int [1];
-		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
-		
-		/*
-		* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
-		* translated correctly by XLookupString().  They are mapped
-		* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
-		* look for these values explicitly and correct them.
-		*/
-		if (OS.IsSunOS && keysym [0] != 0) {
-			switch (keysym [0]) {
-				case 0x1005FF10: 
-					keysym [0] = OS.XK_F11;
-					buffer [0] = 0;
-					break;
-				case 0x1005FF11:
-					keysym [0] = OS.XK_F12;
-					buffer [0] = 0;
-					break;
-			}
-			/*
-			* Bug in MOTIF.  On Solaris only, there is garbage in the
-			* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
-			* must be 16-bits to fit into a Character, mask away the
-			* high 16-bits on all platforms.
-			*/
-			keysym [0] &= 0xFFFF;
-		}
-		
-		/*
-		* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
-		* and Shift+F12 are not translated correctly by XLookupString().
-		* The fix is to look for these values explicitly and correct them.
-		*/
-		if (OS.IsHPUX && keysym [0] != 0) {
-			switch (keysym [0]) {
-				case 0xFF91:
-					keysym [0] = OS.XK_F9;
-					break;
-				case 0xFF92:
-					keysym [0] = OS.XK_F10;
-					break;
-				case 0xFF93:
-					keysym [0] = OS.XK_F11;
-					break;
-				case 0xFF94:
-					keysym [0] = OS.XK_F12;
-					break;
-			}
-		}
-		
-		/*
-		* Feature in MOTIF. For some reason, XLookupString() fails 
-		* to translate both the keysym and the character when the
-		* control key is down.  For example, Ctrl+2 has the correct
-		* keysym value (50) but no character value, while Ctrl+/ has
-		* the keysym value (2F) but an invalid character value
-		* (1F).  It seems that Motif is applying the algorithm to
-		* convert a character to a control character for characters
-		* that are not valid control characters.  The fix is to test
-		* for 7-bit ASCII keysym values that fall outside of the
-		* the valid control character range and use the keysym value
-		* as the character, not the incorrect value that XLookupString()
-		* returns.  Even though lower case values are not strictly
-		* valid control characters, they are included in the range.
-		* 
-		* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
-		*/
-		int key = keysym [0];
-		if ((xEvent.state & OS.ControlMask) != 0 && (0 <= key && key <= 0x7F)) {
-			if ('a' <= key && key <= 'z') key -= 'a' - 'A';
-			if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
-		}
-		
-		/*
-		* Bug in Motif.  There are some keycodes for which 
-		* XLookupString() does not translate the character.
-		* Some of examples are Shift+Tab and Ctrl+Space.
-		*/
+boolean setKeyState (Event event, XKeyEvent xEvent) {
+	if (xEvent.keycode == 0) return false;
+	boolean isNull = false;
+	byte [] buffer = new byte [5];
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+	
+	/*
+	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
+	* translated correctly by XLookupString().  They are mapped
+	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
+	* look for these values explicitly and correct them.
+	*/
+	if (OS.IsSunOS && keysym [0] != 0) {
 		switch (keysym [0]) {
-			case OS.XK_ISO_Left_Tab: buffer [0] = '\t'; break;
-			case OS.XK_space: buffer [0] = ' '; break;
+			case 0x1005FF10: 
+				keysym [0] = OS.XK_F11;
+				buffer [0] = 0;
+				break;
+			case 0x1005FF11:
+				keysym [0] = OS.XK_F12;
+				buffer [0] = 0;
+				break;
 		}
-			
-		/* Fill in the event keyCode or character */
-		if (keysym [0] != 0) {
-			event.keyCode = Display.translateKey (keysym [0]);
-		}
-		if (event.keyCode == 0) {
-			byte [] buffer1 = new byte [5];
-			int [] keysym1 = new int [1];
-			int oldState = xEvent.state;
-			xEvent.state = 0;
-			OS.XLookupString (xEvent, buffer1, buffer1.length, keysym1, null);
-			xEvent.state = oldState;
-			if (buffer1 [0] != 0) {
-				char [] result = Converter.mbcsToWcs (null, buffer1);
-				if (result.length != 0) event.keyCode = result [0];
-			}
-		}
-		if (buffer [0] != 0) {
-			char [] result = Converter.mbcsToWcs (null, buffer);
-			if (result.length != 0) event.character = result [0];
+		/*
+		* Bug in MOTIF.  On Solaris only, there is garbage in the
+		* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+		* must be 16-bits to fit into a Character, mask away the
+		* high 16-bits on all platforms.
+		*/
+		keysym [0] &= 0xFFFF;
+	}
+	
+	/*
+	* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
+	* and Shift+F12 are not translated correctly by XLookupString().
+	* The fix is to look for these values explicitly and correct them.
+	*/
+	if (OS.IsHPUX && keysym [0] != 0) {
+		switch (keysym [0]) {
+			case 0xFF91: keysym [0] = OS.XK_F9; break;
+			case 0xFF92: keysym [0] = OS.XK_F10; break;
+			case 0xFF93: keysym [0] = OS.XK_F11; break;
+			case 0xFF94: keysym [0] = OS.XK_F12; break;
 		}
 	}
-	setInputState (event, xEvent.state);
+	
+	/*
+	* Feature in MOTIF. For some reason, XLookupString() fails 
+	* to translate both the keysym and the character when the
+	* control key is down.  For example, Ctrl+2 has the correct
+	* keysym value (50) but no character value, while Ctrl+/ has
+	* the keysym value (2F) but an invalid character value
+	* (1F).  It seems that Motif is applying the algorithm to
+	* convert a character to a control character for characters
+	* that are not valid control characters.  The fix is to test
+	* for 7-bit ASCII keysym values that fall outside of the
+	* the valid control character range and use the keysym value
+	* as the character, not the incorrect value that XLookupString()
+	* returns.  Even though lower case values are not strictly
+	* valid control characters, they are included in the range.
+	* 
+	* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
+	*/
+	int key = keysym [0];
+	if ((xEvent.state & OS.ControlMask) != 0 && (0 <= key && key <= 0x7F)) {
+		if ('a' <= key && key <= 'z') key -= 'a' - 'A';
+		if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
+		isNull = key == '@' && buffer [0] == 0;
+	}
+	
+	/*
+	* Bug in Motif.  There are some keycodes for which 
+	* XLookupString() does not translate the character.
+	* Some of examples are Shift+Tab and Ctrl+Space.
+	*/
+	switch (keysym [0]) {
+		case OS.XK_ISO_Left_Tab: buffer [0] = '\t'; break;
+		case OS.XK_space: buffer [0] = ' '; break;
+	}
+		
+	/* Fill in the event keyCode or character */
+	if (keysym [0] != 0) {
+		event.keyCode = Display.translateKey (keysym [0]);
+	}
+	if (event.keyCode == 0) {
+		byte [] buffer1 = new byte [5];
+		int [] keysym1 = new int [1];
+		int oldState = xEvent.state;
+		xEvent.state = 0;
+		OS.XLookupString (xEvent, buffer1, buffer1.length, keysym1, null);
+		xEvent.state = oldState;
+		if (buffer1 [0] != 0) {
+			char [] result = Converter.mbcsToWcs (null, buffer1);
+			if (result.length != 0) event.keyCode = result [0];
+		}
+	}
+	if (buffer [0] != 0) {
+		char [] result = Converter.mbcsToWcs (null, buffer);
+		if (result.length != 0) event.character = result [0];
+	}
+	if (event.keyCode == 0 && event.character == 0) {
+		if (!isNull) return false;
+	}
+	return setInputState (event, xEvent.state);
 }
 void sendEvent (Event event) {
 	Display display = event.display;

@@ -1738,7 +1738,7 @@ boolean sendIMKeyEvent (int type, XKeyEvent xEvent, int textHandle) {
 boolean sendKeyEvent (int type, XKeyEvent xEvent) {
 	Event event = new Event ();
 	event.time = xEvent.time;
-	setKeyState (event, xEvent);
+	if (!setKeyState (event, xEvent)) return true;
 	Control control = this;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) {
@@ -2508,16 +2508,14 @@ public Point toDisplay (Point point) {
 boolean translateAccelerator (char key, int keysym, XKeyEvent xEvent, boolean doit) {
 	return menuShell ().translateAccelerator (key, keysym, xEvent, doit);
 }
-boolean translateMnemonic (char key, XKeyEvent xEvent) {
+boolean translateMnemonic (Event event, Control control) {
+	if (control == this) return false;
 	if (!isVisible () || !isEnabled ()) return false;
-	Event event = new Event();
-	event.doit = mnemonicMatch (key);
-	event.detail = SWT.TRAVERSE_MNEMONIC;
-	event.time = xEvent.time;
-	setKeyState (event, xEvent);
+	event.doit = mnemonicMatch (event.character);
 	return traverse (event);
 }
 boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
+	if (key < 0x20) return false;
 	if (xEvent.state == 0) {
 		int code = traversalCode (key, xEvent);
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
@@ -2526,7 +2524,12 @@ boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		return key >= 0x20 && shell.translateMnemonic (key, xEvent);
+		Event event = new Event();
+		event.time = xEvent.time;
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		if (setKeyState (event, xEvent)) {
+			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
+		}
 	}
 	return false;
 }
@@ -2574,14 +2577,12 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
 	event.time = xEvent.time;
-	setKeyState (event, xEvent);
+	if (!setKeyState (event, xEvent)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
 		if (control.traverse (event)) return true;
-		if (!event.doit && control.hooks (SWT.Traverse)) {
-			return false;
-		}
+		if (!event.doit && control.hooks (SWT.Traverse)) return false;
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);

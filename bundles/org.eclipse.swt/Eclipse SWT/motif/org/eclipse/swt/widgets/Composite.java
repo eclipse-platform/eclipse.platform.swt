@@ -778,12 +778,14 @@ int traversalCode (int key, XKeyEvent xEvent) {
 	}
 	return super.traversalCode (key, xEvent);
 }
-boolean translateMnemonic (char key, XKeyEvent xEvent) {
-	if (super.translateMnemonic (key, xEvent)) return true;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.translateMnemonic (key, xEvent)) return true;
+boolean translateMnemonic (Event event, Control control) {
+	if (super.translateMnemonic (event, control)) return true;
+	if (control != null) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			if (child.translateMnemonic (event, control)) return true;
+		}
 	}
 	return false;
 }
