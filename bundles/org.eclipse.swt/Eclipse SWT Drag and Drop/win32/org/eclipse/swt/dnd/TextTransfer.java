@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.ole.win32.STGMEDIUM;
-import org.eclipse.swt.internal.ole.win32.FORMATETC;
-import org.eclipse.swt.internal.ole.win32.IDataObject;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
@@ -31,11 +29,11 @@ import org.eclipse.swt.internal.ole.win32.IDataObject;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String CF_UNICODETEXT = "CF_UNICODETEXT";
-	private static final String CF_TEXT = "CF_TEXT";
+	private static final String CF_UNICODETEXT = "CF_UNICODETEXT"; //$NON-NLS-1$
+	private static final String CF_TEXT = "CF_TEXT"; //$NON-NLS-1$
 	private static final int CF_UNICODETEXTID = COM.CF_UNICODETEXT;
 	private static final int CF_TEXTID = COM.CF_TEXT;
-	private static int CodePage = COM.GetACP();
+	private static int CodePage = OS.GetACP();
 	
 private TextTransfer() {}
 
@@ -59,23 +57,18 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.E_FAIL;
-	if (object == null || !(object instanceof String)) return;
-	String string = (String)object;
-	if (string.length() == 0) return;
-	if (!isSupportedType(transferData)) {
-		// did not match the TYMED
-		transferData.stgmedium = new STGMEDIUM();
-		transferData.result = COM.DV_E_TYMED;
-		return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
 	}
+	String string = (String)object;
 	switch (transferData.type) {
 		case COM.CF_UNICODETEXT: {
 			int charCount = string.length ();
 			char[] chars = new char[charCount+1];
 			string.getChars (0, charCount, chars, 0);
 			int byteCount = chars.length * 2;
-			int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
-			COM.MoveMemory(newPtr, chars, byteCount);
+			int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
+			OS.MoveMemory(newPtr, chars, byteCount);
 			transferData.stgmedium = new STGMEDIUM();
 			transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 			transferData.stgmedium.unionField = newPtr;
@@ -87,14 +80,14 @@ public void javaToNative (Object object, TransferData transferData){
 			int count = string.length();
 			char[] chars = new char[count + 1];
 			string.getChars(0, count, chars, 0);
-			int cchMultiByte = COM.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
+			int cchMultiByte = OS.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
 			if (cchMultiByte == 0) {
 				transferData.stgmedium = new STGMEDIUM();
 				transferData.result = COM.DV_E_STGMEDIUM;
 				return;
 			}
-			int lpMultiByteStr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
-			COM.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+			int lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+			OS.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 			transferData.stgmedium = new STGMEDIUM();
 			transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 			transferData.stgmedium.unionField = lpMultiByteStr;
@@ -132,13 +125,13 @@ public Object nativeToJava(TransferData transferData){
 		switch (transferData.type) {
 			case CF_UNICODETEXTID: {
 				/* Ensure byteCount is a multiple of 2 bytes */
-				int size = COM.GlobalSize(hMem) / 2 * 2;
+				int size = OS.GlobalSize(hMem) / 2 * 2;
 				if (size == 0) return null;
 				char[] chars = new char[size/2];
-				int ptr = COM.GlobalLock(hMem);
+				int ptr = OS.GlobalLock(hMem);
 				if (ptr == 0) return null;
 				try {
-					COM.MoveMemory(chars, ptr, size);
+					OS.MoveMemory(chars, ptr, size);
 					int length = chars.length;
 					for (int i=0; i<chars.length; i++) {
 						if (chars [i] == '\0') {
@@ -148,25 +141,25 @@ public Object nativeToJava(TransferData transferData){
 					}
 					return new String (chars, 0, length);
 				} finally {
-					COM.GlobalUnlock(hMem);	
+					OS.GlobalUnlock(hMem);	
 				}
 			}
 			case CF_TEXTID: {
-				int lpMultiByteStr = COM.GlobalLock(hMem);
+				int lpMultiByteStr = OS.GlobalLock(hMem);
 				if (lpMultiByteStr == 0) return null;
 				try {
-					int cchWideChar = COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+					int cchWideChar = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
 					if (cchWideChar == 0) return null;
 					char[] lpWideCharStr = new char [cchWideChar - 1];
-					COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+					OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 					return new String(lpWideCharStr);
 				} finally {
-					COM.GlobalUnlock(hMem);
+					OS.GlobalUnlock(hMem);
 				}
 			}
 		}
 	} finally {
-		COM.GlobalFree(hMem);
+		OS.GlobalFree(hMem);
 	}
 	return null;
 }
@@ -179,4 +172,7 @@ protected String[] getTypeNames(){
 	return new String[] {CF_UNICODETEXT, CF_TEXT};
 }
 
+protected boolean validate(Object object) {
+	return (object != null  && object instanceof String && ((String)object).length() > 0);
+}
 }

@@ -55,17 +55,12 @@ public static HTMLTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.E_FAIL;
-	if (object == null || !(object instanceof String)) return;
-	if (!isSupportedType(transferData)) {
-		// did not match the TYMED
-		transferData.stgmedium = new STGMEDIUM();
-		transferData.result = COM.DV_E_TYMED;
-		return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	// HTML Format is stored as a null terminated byte array
 	String string = (String)object;
 	int count = string.length();
-	if (count == 0) return;
 	char[] chars = new char[count + 1];
 	string.getChars(0, count, chars, 0);
 	int cchMultiByte = OS.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
@@ -126,5 +121,8 @@ protected int[] getTypeIds(){
 }
 protected String[] getTypeNames(){
 	return new String[] {HTML_FORMAT}; 
+}
+protected boolean validate(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 }

@@ -11,8 +11,7 @@
 package org.eclipse.swt.dnd;
 
  
-import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.win32.TCHAR;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
@@ -111,6 +110,17 @@ abstract protected void javaToNative (Object object, TransferData transferData);
 abstract protected Object nativeToJava(TransferData transferData);
 
 /**
+ * Test that the object is of the correct format for this Transfer class.
+ * 
+ * @param object a java representation of the data to be converted
+ * 
+ * @return true if object is of the correct form for this transfer type
+ * 
+ * @since 3.1
+ */
+abstract protected boolean validate(Object object);
+
+/**
  * Registers a name for a data type and returns the associated unique identifier.
  *
  * <p>You may register the same type more than once, the same unique identifier 
@@ -129,6 +139,6 @@ public static int registerType(String formatName) {
 	// If name is not in registry, add it and return assigned value.
 	// If name already exists in registry, return its assigned value
 	TCHAR chFormatName = new TCHAR(0, formatName, true);
-	return COM.RegisterClipboardFormat(chFormatName);
+	return OS.RegisterClipboardFormat(chFormatName);
 }
 }

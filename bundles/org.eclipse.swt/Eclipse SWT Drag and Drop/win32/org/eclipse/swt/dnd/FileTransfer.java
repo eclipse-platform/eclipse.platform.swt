@@ -11,8 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.TCHAR;
-import org.eclipse.swt.internal.win32.DROPFILES;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
@@ -36,9 +35,9 @@ import org.eclipse.swt.internal.win32.DROPFILES;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	private static final String CF_HDROP = "CF_HDROP ";
+	private static final String CF_HDROP = "CF_HDROP "; //$NON-NLS-1$
 	private static final int CF_HDROPID = COM.CF_HDROP;
-	private static final String CF_HDROP_SEPARATOR = "\0";
+	private static final String CF_HDROP_SEPARATOR = "\0"; //$NON-NLS-1$
 	
 private FileTransfer() {}
 
@@ -64,15 +63,9 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
-	transferData.result = COM.E_FAIL;
-	if (object == null || !(object instanceof String[])) return;
-	if (!isSupportedType(transferData)) {
-		// did not match the TYMED
-		transferData.stgmedium = new STGMEDIUM();
-		transferData.result = COM.DV_E_TYMED;
-		return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
 	}
-
 	String[] fileNames = (String[]) object;
 	StringBuffer allFiles = new StringBuffer();
 	for (int i = 0; i < fileNames.length; i++) {
@@ -84,13 +77,13 @@ public void javaToNative(Object object, TransferData transferData) {
 	dropfiles.pFiles = DROPFILES.sizeof;
 	dropfiles.pt_x = dropfiles.pt_y = 0;
 	dropfiles.fNC = 0;
-	dropfiles.fWide = COM.IsUnicode ? 1 : 0;
+	dropfiles.fWide = OS.IsUnicode ? 1 : 0;
 	// Allocate the memory because the caller (DropTarget) has not handed it in
 	// The caller of this method must release the data when it is done with it.
 	int byteCount = buffer.length() * TCHAR.sizeof;
-	int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
-	COM.MoveMemory(newPtr, dropfiles, DROPFILES.sizeof);
-	COM.MoveMemory(newPtr + DROPFILES.sizeof, buffer, byteCount);
+	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
+	OS.MoveMemory(newPtr, dropfiles, DROPFILES.sizeof);
+	OS.MoveMemory(newPtr + DROPFILES.sizeof, buffer, byteCount);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = newPtr;
@@ -127,17 +120,17 @@ public Object nativeToJava(TransferData transferData) {
 	dataObject.Release();
 	if (transferData.result != COM.S_OK) return null;
 	// How many files are there?
-	int count = COM.DragQueryFile(stgmedium.unionField, 0xFFFFFFFF, null, 0);
+	int count = OS.DragQueryFile(stgmedium.unionField, 0xFFFFFFFF, null, 0);
 	String[] fileNames = new String[count];
 	for (int i = 0; i < count; i++) {
 		// How long is the name ?
-		int size = COM.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
+		int size = OS.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
 		TCHAR lpszFile = new TCHAR(0, size);	
 		// Get file name and append it to string
-		COM.DragQueryFile(stgmedium.unionField, i, lpszFile, size);
+		OS.DragQueryFile(stgmedium.unionField, i, lpszFile, size);
 		fileNames[i] = lpszFile.toString(0, lpszFile.strlen());
 	}
-	COM.DragFinish(stgmedium.unionField); // frees data associated with HDROP data
+	OS.DragFinish(stgmedium.unionField); // frees data associated with HDROP data
 	return fileNames;
 }
 
@@ -148,5 +141,12 @@ protected int[] getTypeIds(){
 protected String[] getTypeNames(){
 	return new String[] {CF_HDROP};
 }
-
+protected boolean validate(Object object) {
+	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	for (int i = 0; i < strings.length; i++) {
+		if (strings[i] == null || strings[i].length() == 0) return false;
+	}
+	return true;
+}
 }

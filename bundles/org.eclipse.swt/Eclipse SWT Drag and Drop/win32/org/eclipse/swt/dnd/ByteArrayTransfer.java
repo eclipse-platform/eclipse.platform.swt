@@ -158,13 +158,11 @@ public boolean isSupportedType(TransferData transferData){
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	transferData.result = COM.E_FAIL;
-	if (object == null || !(object instanceof byte[])) return;
+	if (object == null || !(object instanceof byte[]) || ((byte[])object).length == 0) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	if (!isSupportedType(transferData)) {
-		// did not match the TYMED
-		transferData.stgmedium = new STGMEDIUM();
-		transferData.result = COM.DV_E_TYMED;
-		return;
+		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	// Allocate the memory because the caller (DropTarget) has not handed it in
 	// The caller of this method must release the data when it is done with it.
@@ -210,5 +208,8 @@ protected Object nativeToJava(TransferData transferData) {
 	OS.GlobalUnlock(hMem);	
 	OS.GlobalFree(hMem);
 	return buffer;
+}
+protected boolean validate(Object object) {
+	return true;
 }
 }
