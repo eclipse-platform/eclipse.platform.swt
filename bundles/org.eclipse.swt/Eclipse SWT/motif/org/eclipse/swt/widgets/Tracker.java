@@ -27,7 +27,11 @@ public /*final*/ class Tracker extends Widget {
 	Composite parent;
 	Display display;
 	boolean tracking, stippled;
-	Rectangle [] rectangles;
+	Rectangle [] rectangles, proportions;
+	int cursorOrientation = SWT.NONE;
+	int cursor;
+	final static int STEPSIZE_SMALL = 1;
+	final static int STEPSIZE_LARGE = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -58,7 +62,7 @@ public /*final*/ class Tracker extends Widget {
  * @see Widget#getStyle
  */
 public Tracker (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
 	this.parent = parent;
 	display = parent.getDisplay ();
 }
@@ -98,7 +102,7 @@ public Tracker (Display display, int style) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-	this.style = style;
+	this.style = checkStyle (style);
 	this.display = display;
 }
 
@@ -121,11 +125,68 @@ public Tracker (Display display, int style) {
  * @see ControlListener
  * @see #removeControlListener
  */
-public void addControlListener(ControlListener listener) {
-	checkWidget();
+public void addControlListener (ControlListener listener) {
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Move,typedListener);
+}
+
+Point adjustMoveCursor (int xDisplay, int xWindow) {
+	final int unused[] = new int[1];
+	int actualX[] = new int[1];
+	int actualY[] = new int[1];
+	
+	Rectangle bounds = computeBounds ();
+	int newX = bounds.x + bounds.width / 2;
+	int newY = bounds.y;
+	
+	OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX, newY);
+	/*
+	 * The call to XWarpPointer does not always place the pointer on the
+	 * exact location that is specified, so do a query (below) to get the
+	 * actual location of the pointer after it has been moved.
+	 */
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, actualX, actualY, unused, unused, unused);
+	return new Point (actualX[0], actualY[0]);
+}
+Point adjustResizeCursor (int xDisplay, int xWindow) {
+	int newX, newY;
+	Rectangle bounds = computeBounds ();
+
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		newX = bounds.x;
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		newX = bounds.x + bounds.width;
+	} else {
+		newX = bounds.x + bounds.width / 2;
+	}
+	
+	if ((cursorOrientation & SWT.UP) != 0) {
+		newY = bounds.y;
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		newY = bounds.y + bounds.height;
+	} else {
+		newY = bounds.y + bounds.height / 2;
+	}
+
+	final int unused[] = new int[1];
+	int actualX[] = new int[1];
+	int actualY[] = new int[1];
+	OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX, newY);
+	/*
+	 * The call to XWarpPointer does not always place the pointer on the
+	 * exact location that is specified, so do a query (below) to get the
+	 * actual location of the pointer after it has been moved.
+	 */
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, actualX, actualY, unused, unused, unused);
+	return new Point (actualX[0], actualY[0]);
+}
+static int checkStyle (int style) {
+	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
+		style |= SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN;
+	}
+	return style;
 }
 /**
  * Stop displaying the tracker rectangles.
@@ -136,10 +197,10 @@ public void addControlListener(ControlListener listener) {
  * </ul>
  */
 public void close () {
-	checkWidget();
+	checkWidget ();
 	tracking = false;
 }
-Rectangle computeBounds() {
+Rectangle computeBounds () {
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -155,6 +216,19 @@ Rectangle computeBounds() {
 	}
 	
 	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
+}
+
+Rectangle [] computeProportions (Rectangle [] rects) {
+	Rectangle [] result = new Rectangle [rects.length];
+	Rectangle bounds = computeBounds ();
+	for (int i = 0; i < rects.length; i++) {
+		result[i] = new Rectangle (
+			(rects[i].x - bounds.x) * 100 / bounds.width,
+			(rects[i].y - bounds.y) * 100 / bounds.height,
+			rects[i].width * 100 / bounds.width,
+			rects[i].height * 100 / bounds.height);
+	}
+	return result;
 }
 
 void drawRectangles () {
@@ -209,7 +283,7 @@ public Display getDisplay () {
  * </ul>
  */
 public Rectangle [] getRectangles () {
-	checkWidget();
+	checkWidget ();
 	return rectangles;
 }
 /**
@@ -223,11 +297,18 @@ public Rectangle [] getRectangles () {
  * </ul>
  */
 public boolean getStippled () {
-	checkWidget();
+	checkWidget ();
 	return stippled;
 }
 
-void moveRectangles(int xChange, int yChange) {
+void moveRectangles (int xChange, int yChange, Rectangle moveBounds) {
+	if (xChange < 0 && ((style & SWT.LEFT) == 0)) return;
+	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
+	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
+	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
+//	Rectangle bounds = computeBounds();
+//	bounds.x += xChange; bounds.y += yChange;
+//	if (!bounds.union (moveBounds).equals (moveBounds)) return;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -243,7 +324,7 @@ void moveRectangles(int xChange, int yChange) {
  * </ul>
  */
 public boolean open () {
-	checkWidget();
+	checkWidget ();
 	if (rectangles == null) return false;
 	int xDisplay = display.xDisplay;
 	int color = OS.XWhitePixel (xDisplay, 0);
@@ -255,11 +336,23 @@ public boolean open () {
 	boolean cancelled = false;
 	tracking = true;
 	drawRectangles ();
-	XAnyEvent xEvent = new XAnyEvent ();
+	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1];
-	int [] newX = new int [1], newY = new int [1], oldX = new int [1], oldY = new int [1];
+	Point cursorPos;
+	if ((style & SWT.MENU) != 0) {
+		if ((style & SWT.RESIZE) != 0) {
+			cursorPos = adjustResizeCursor (xDisplay, xWindow);
+		} else {
+			cursorPos = adjustMoveCursor (xDisplay, xWindow);
+		}
+		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
+	} else {
+		OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, unused);
+	}
+		
+	XAnyEvent xEvent = new XAnyEvent ();
+	int [] newX = new int [1], newY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, unused);
 	/*
 	 *  Tracker behaves like a Dialog with its own OS event loop.
 	 */
@@ -272,14 +365,16 @@ public boolean open () {
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
-					Event event = new Event();
+					Event event = new Event ();
 					event.x = newX [0];
 					event.y = newY [0];
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
+						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0], null);
 						sendEvent (SWT.Resize, event);
+						cursorPos = adjustResizeCursor (xDisplay, xWindow);
+						newX [0] = cursorPos.x; newY [0] = cursorPos.y;
 					} else {
-						moveRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
+						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0], null);
 						sendEvent (SWT.Move, event);
 					}
 					/*
@@ -302,7 +397,7 @@ public boolean open () {
 					OS.XLookupString (keyEvent, null, 0, keysym, null);
 					keysym [0] &= 0xFFFF;
 					int xChange = 0, yChange = 0;
-					int stepSize = ((keyEvent.state & OS.ControlMask) != 0) ? 2 : 10;
+					int stepSize = ((keyEvent.state & OS.ControlMask) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 					switch (keysym [0]) {
 						case OS.XK_Return:
 							tracking = false;
@@ -316,37 +411,31 @@ public boolean open () {
 							cancelled = true;
 							break;
 						case OS.XK_Left:
-							if ((useAllDirections() | (style & SWT.LEFT) != 0)) {
-								xChange = -stepSize;
-							}
+							xChange = -stepSize;
 							break;
 						case OS.XK_Right:
-							if ((useAllDirections() | (style & SWT.RIGHT) != 0)) {
-								xChange = stepSize;
-							}
+							xChange = stepSize;
 							break;
 						case OS.XK_Up:
-							if ((useAllDirections() | (style & SWT.UP) != 0)) {
-								yChange = -stepSize;
-							}
+							yChange = -stepSize;
 							break;
 						case OS.XK_Down:
-							if ((useAllDirections() | (style & SWT.DOWN) != 0)) {
-								yChange = stepSize;
-							}
+							yChange = stepSize;
 							break;
 					}
 					if (xChange != 0 || yChange != 0) {
 						drawRectangles ();
-						Event event = new Event();
+						Event event = new Event ();
 						event.x = oldX[0] + xChange;
 						event.y = oldY[0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
-							resizeRectangles(xChange, yChange);
+							resizeRectangles (xChange, yChange, null);
 							sendEvent (SWT.Resize,event);
+							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
-							moveRectangles(xChange, yChange);
+							moveRectangles (xChange, yChange, null);
 							sendEvent (SWT.Move,event);
+							cursorPos = adjustMoveCursor (xDisplay, xWindow);
 						}
 						/*
 						 * It is possible (but unlikely) that application code
@@ -356,21 +445,7 @@ public boolean open () {
 						 */
 						if (isDisposed()) return false;
 						drawRectangles ();
-						Rectangle bounds = computeBounds();
-						newX [0] = bounds.x + bounds.width / 2;
-						if ((style & SWT.RESIZE) != 0) {
-							newY [0] = bounds.y + bounds.height / 2;
-						} else {
-							newY [0] = bounds.y;
-						}
-						OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX [0], newY [0]);
-						/*
-						 * The call to XWarpPointer does not always place the pointer on the
-						 * exact location that is specified, so do a query (below) to get the
-						 * actual location of the pointer after it has been moved.
-						 */
-						OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
-						oldX[0] = newX[0];  oldY[0] = newY[0];
+						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
 					}
 				}
 				break;
@@ -400,18 +475,56 @@ public boolean open () {
  * @see #addControlListener
  */
 public void removeControlListener (ControlListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 }
-void resizeRectangles(int xChange, int yChange) {
-	Rectangle bounds = computeBounds();
-	for (int i = 0; i < rectangles.length; i++) {
-		rectangles [i].width += rectangles [i].width * xChange / Math.max (1, bounds.width);
-		rectangles [i].height += rectangles [i].height * yChange / Math.max (1, bounds.height);
+void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
+	/*
+	* If the cursor orientation has not been set in the orientation of
+	* this change then try to set it here.
+	*/
+	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+		cursorOrientation |= SWT.LEFT;
+	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+		cursorOrientation |= SWT.RIGHT;
+	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+		cursorOrientation |= SWT.UP;
+	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+		cursorOrientation |= SWT.DOWN;
 	}
+	Rectangle bounds = computeBounds ();
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		bounds.x += xChange;
+		bounds.width -= xChange;
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		bounds.width += xChange;
+	}
+	if ((cursorOrientation & SWT.UP) != 0) {
+		bounds.y += yChange;
+		bounds.height -= yChange;
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		bounds.height += yChange;
+	}
+	/*
+	* The following are conditions under which the resize should not be applied
+	*/
+//	if (!bounds.union (resizeBounds).equals (resizeBounds)) return;
+	if (bounds.width < 0 || bounds.height < 0) return;
+	
+	Rectangle [] newRects = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
+		Rectangle proportion = proportions[i];
+		newRects[i] = new Rectangle (
+			proportion.x * bounds.width / 100 + bounds.x,
+			proportion.y * bounds.height / 100 + bounds.y,
+			proportion.width * bounds.width / 100,
+			proportion.height * bounds.height / 100);
+	}
+	rectangles = newRects;	
 }
+
 /**
  * Specify the rectangles that should be drawn.
  *
@@ -423,8 +536,9 @@ void resizeRectangles(int xChange, int yChange) {
  * </ul>
  */
 public void setRectangles (Rectangle [] rectangles) {
-	checkWidget();
+	checkWidget ();
 	this.rectangles = rectangles;
+	proportions = computeProportions (rectangles);
 }
 /**
  * Change the appearance of the line used to draw the rectangles.
@@ -437,10 +551,7 @@ public void setRectangles (Rectangle [] rectangles) {
  * </ul>
  */
 public void setStippled (boolean stippled) {
-	checkWidget();
+	checkWidget ();
 	this.stippled = stippled;
-}
-boolean useAllDirections() {
-	return ((SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN) & style) == 0;
 }
 }
