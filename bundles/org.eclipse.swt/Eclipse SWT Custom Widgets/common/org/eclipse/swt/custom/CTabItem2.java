@@ -31,6 +31,15 @@ public class CTabItem2 extends Item {
 	String shortenedText;
 	int shortenedTextWidth;
 	
+	// Appearance
+	Color foreground;
+	Font font;
+	Color background;
+	Image bgImage;
+	Color[] gradientColors;
+	int[] gradientPercents;
+	boolean gradientVertical;
+	
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder2.NONE;
 	boolean showClose = false;
@@ -137,15 +146,23 @@ public void dispose() {
 	control = null;
 	toolTipText = null;
 	shortenedText = null;
+	foreground = null;
+	font = null;
+	background = null;
+	bgImage = null;
+	gradientColors = null;
+	gradientPercents = null;
 }
 void drawClose(GC gc) {
 	if (closeRect.width == 0 || closeRect.height == 0) return;
 	Display display = getDisplay();
 
-	// draw X (10x10 or 11x11)
-	int indent = Math.max(1, (parent.tabHeight-11)/2);
-	int x = closeRect.x + indent - 1;
+	// draw X 9x9
+	int indent = Math.max(1, (CTabFolder2.BUTTON_SIZE-9)/2);
+	int x = closeRect.x + indent;
 	int y = closeRect.y + indent;
+	y += parent.onBottom ? -1 : 1;
+	
 	switch (closeImageState) {
 		case CTabFolder2.NORMAL: {
 			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
@@ -188,7 +205,12 @@ void drawClose(GC gc) {
 		}
 		case CTabFolder2.NONE: {
 			int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
-			parent.drawBackground(gc, shape, false);
+			if (background != null || bgImage != null || gradientColors != null) {
+				Color defaultBackground = background != null ? background : parent.getBackground();
+				parent.drawBackground(gc, shape, defaultBackground, bgImage, gradientColors, gradientPercents, gradientVertical);
+			}else {
+				parent.drawBackground(gc, shape, false);
+			}
 			break;
 		}
 	}
@@ -317,6 +339,10 @@ void drawSelected(GC gc ) {
 		// draw Text
 		int textWidth = x + width - xDraw - RIGHT_MARGIN;
 		if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+		Font gcFont = gc.getFont();
+		if (font != null) {
+			gc.setFont(font);
+		}
 		if (shortenedText == null || shortenedTextWidth != textWidth) {
 			shortenedText = shortenText(gc, getText(), textWidth);
 			shortenedTextWidth = textWidth;
@@ -327,6 +353,7 @@ void drawSelected(GC gc ) {
 		
 		gc.setForeground(parent.selectionForeground);
 		gc.drawText(shortenedText, xDraw, textY, FLAGS);
+		gc.setFont(gcFont);
 		
 		if (parent.showClose || showClose) drawClose(gc);
 		
@@ -350,9 +377,15 @@ void drawSelected(GC gc ) {
 		if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
 	}
 	RGB inside = parent.selectionBackground.getRGB();
-	if (parent.selectionBgImage != null || (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1 && !parent.selectionGradientVertical)) inside = null;
+	if (parent.selectionBgImage != null || 
+	    (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
+	    inside = null;
+	}
 	RGB outside = parent.getBackground().getRGB();		
-	if (parent.bgImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1)) outside = null;
+	if (parent.bgImage != null || 
+	    (parent.gradientColors != null && parent.gradientColors.length > 1)) {
+	    outside = null;
+	}
 	parent.antialias(shape, CTabFolder2.borderColor.getRGB(), inside, outside, gc);
 	gc.setForeground(CTabFolder2.borderColor);
 	gc.drawPolyline(shape);
@@ -363,6 +396,41 @@ void drawUnselected(GC gc) {
 	if (parent.items[parent.topTabIndex] != this && x + width > rightTabEdge){
 		return;
 	}
+	if (background != null || bgImage != null || gradientColors != null) {
+		int x1 = x, y1 = parent.onBottom ? y : y+1;
+		int x2 = x + width, y2 = parent.onBottom ? y+height-1 : y+height;
+		int index = parent.indexOf(this);
+		if (!parent.single && parent.selectedIndex != -1) {
+			if (parent.selectedIndex + 1 == index) {
+				x1 -= CTabFolder2.CURVE_WIDTH/2;
+			}
+			if (parent.selectedIndex - 1 == index) {
+				x2 += CTabFolder2.CURVE_WIDTH/2;
+			}
+		}
+		int[] shape = null;
+		if (index == parent.topTabIndex) {
+			if (parent.borderLeft != 0) x1 += 1;
+			int[] left = parent.onBottom ? CTabFolder2.BOTTOM_LEFT_CORNER : CTabFolder2.TOP_LEFT_CORNER;
+			shape = new int[left.length+6];
+			int i = 0;
+			shape[i++] = x1;
+			shape[i++] = parent.onBottom ? y1 : y2;
+			for (int j = 0; j < left.length/2; j++) {
+				shape[i++] = x1 + left[2*j];
+				shape[i++] = parent.onBottom ? y2 + left[2*j+1] : y1 + left[2*j+1] - 1;
+				if (parent.borderLeft == 0) shape[i-1] +=  parent.onBottom ? 1 : -1;
+			}
+			shape[i++] = x2;
+			shape[i++] = parent.onBottom ? y2 : y1;
+			shape[i++] = x2;
+			shape[i++] = parent.onBottom ? y1 : y2;
+		} else {
+			shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2};
+		}
+		Color defaultBackground = background != null ? background : parent.getBackground();
+		parent.drawBackground(gc, shape, defaultBackground, bgImage, gradientColors, gradientPercents, gradientVertical);
+	}
 	// draw border
 	if (parent.indexOf(this) != parent.selectedIndex - 1) {
 		gc.setForeground(CTabFolder2.borderColor);
@@ -371,6 +439,10 @@ void drawUnselected(GC gc) {
 	// draw Text
 	int textWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+	Font gcFont = gc.getFont();
+	if (font != null) {
+		gc.setFont(font);
+	}
 	if (shortenedText == null || shortenedTextWidth != textWidth) {
 		shortenedText = shortenText(gc, getText(), textWidth);
 		shortenedTextWidth = textWidth;
@@ -378,8 +450,9 @@ void drawUnselected(GC gc) {
 	Point extent = gc.textExtent(shortenedText, FLAGS);
 	int textY = y + (height - extent.y) / 2;
 	textY += parent.onBottom ? -1 : 1;
-	gc.setForeground(parent.getForeground());
+	gc.setForeground(foreground != null ? foreground : parent.getForeground());
 	gc.drawText(shortenedText, x + LEFT_MARGIN, textY, FLAGS);
+	gc.setFont(gcFont);
 	// draw close
 	if (parent.showClose || showClose) drawClose(gc);
 }
@@ -473,7 +546,14 @@ int preferredHeight(GC gc) {
 	Image image = getImage();
 	int h = (image == null) ? 0 : image.getBounds().height;
 	String text = getText();
-	h = Math.max(h, gc.textExtent(text, FLAGS).y);
+	if (font == null) {
+		h = Math.max(h, gc.textExtent(text, FLAGS).y);
+	} else {
+		Font gcFont = gc.getFont();
+		gc.setFont(font);
+		h = Math.max(h, gc.textExtent(text, FLAGS).y);
+		gc.setFont(gcFont);
+	}
 	return h + TOP_MARGIN + BOTTOM_MARGIN;
 }
 int preferredWidth(GC gc, boolean isSelected) {
@@ -483,7 +563,14 @@ int preferredWidth(GC gc, boolean isSelected) {
 	String text = getText();
 	if (text != null) {
 		if (w > 0) w += INTERNAL_SPACING;
-		w += gc.textExtent(text, FLAGS).x;
+		if (font == null) {
+			w += gc.textExtent(text, FLAGS).x;
+		} else {
+			Font gcFont = gc.getFont();
+			gc.setFont(font);
+			w += gc.textExtent(text, FLAGS).x;
+			gc.setFont(gcFont);
+		}
 	}
 	if (parent.showClose || showClose) {
 		if (w > 0) w += INTERNAL_SPACING;
@@ -491,6 +578,165 @@ int preferredWidth(GC gc, boolean isSelected) {
 	}
 	if (isSelected) w += 8; // why 8?
 	return w + LEFT_MARGIN + RIGHT_MARGIN;
+}
+/**
+ * Sets the background color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setBackground(Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	background = color;
+	int edge = parent.getRightItemEdge();
+	int index = parent.indexOf(this);
+	if (x + width < edge && parent.selectedIndex != index) {
+		parent.redraw(x, y, width, height, false);
+	}
+}
+/**
+ * Specify a gradient of colours to be draw in the background of the unselected tab.
+ * For example to draw a vertical gradient that varies from dark blue to blue and then to
+ * white, use the following call to setBackground:
+ * <pre>
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *		                           display.getSystemColor(SWT.COLOR_BLUE),
+ *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE)},
+ *		                  new int[] {25, 50, 100}, true);
+ * </pre>
+ *
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
+ *               in order of appearance left to right.  The value <code>null</code> clears the
+ *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               Color to specify the background color.
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ *                 of the widget at which the color should change.  The size of the percents array must be one 
+ *                 less than the size of the colors array.
+ * 
+ * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ *
+ *@since 3.0
+ */
+public void setBackground(Color[] colors, int[] percents, boolean vertical) {
+	checkWidget();
+	if (colors != null) {
+		if (percents == null || percents.length != colors.length - 1) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		for (int i = 0; i < percents.length; i++) {
+			if (percents[i] < 0 || percents[i] > 100) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+			if (i > 0 && percents[i] < percents[i-1]) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+		if (getDisplay().getDepth() < 15) {
+			// Don't use gradients on low color displays
+			colors = new Color[] {colors[0]};
+			percents = new int[] {};
+		}
+	}
+	
+	// Are these settings the same as before?
+	if (bgImage == null) {
+		if ((gradientColors != null) && (colors != null) && 
+			(gradientColors.length == colors.length)) {
+			boolean same = false;
+			for (int i = 0; i < gradientColors.length; i++) {
+				if (gradientColors[i] == null) {
+					same = colors[i] == null;
+				} else {
+					same = gradientColors[i].equals(colors[i]);
+				}
+				if (!same) break;
+			}
+			if (same) {
+				for (int i = 0; i < gradientPercents.length; i++) {
+					same = gradientPercents[i] == percents[i];
+					if (!same) break;
+				}
+			}
+			if (same && this.gradientVertical == vertical) return;
+		}
+	} else {
+		bgImage = null;
+	}
+	// Store the new settings
+	if (colors == null) {
+		gradientColors = null;
+		gradientPercents = null;
+		gradientVertical = false;
+		setBackground((Color)null);
+	} else {
+		gradientColors = new Color[colors.length];
+		for (int i = 0; i < colors.length; ++i) {
+			gradientColors[i] = colors[i];
+		}
+		gradientPercents = new int[percents.length];
+		for (int i = 0; i < percents.length; ++i) {
+			gradientPercents[i] = percents[i];
+		}
+		gradientVertical = vertical;
+		setBackground(gradientColors[gradientColors.length-1]);
+	}
+
+	// Refresh with the new settings
+	int edge = parent.getRightItemEdge();
+	int index = parent.indexOf(this);
+	if (x + width < edge && parent.selectedIndex != index) {
+		parent.redraw(x, y, width, height, false);
+	}
+}
+
+/**
+ * Set the image to be drawn in the background of the unselected tab.  Image
+ * is stretched or compressed to cover entire unselected tab area.
+ * 
+ * @param image the image to be drawn in the background
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setBackground(Image image) {
+	checkWidget();
+	if (image == bgImage) return;
+	if (image != null) {
+		gradientColors = null;
+		gradientPercents = null;
+	}
+	bgImage = image;
+	int edge = parent.getRightItemEdge();
+	int index = parent.indexOf(this);
+	if (x + width < edge && parent.selectedIndex != index) {
+		parent.redraw(x, y, width, height, false);
+	}
 }
 /**
  * Sets the control that is used to fill the client area of
@@ -542,6 +788,62 @@ public void setControl (Control control) {
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
+}
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font){
+	checkWidget();
+	if (font != null && font.equals(this.font)) return;
+	this.font = font;
+	if (!parent.updateTabHeight(parent.tabHeight, false)) {
+		parent.updateItems();
+		parent.redraw();
+	}
+}
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	foreground = color;
+	int edge = parent.getRightItemEdge();
+	int index = parent.indexOf(this);
+	if (x + width < edge && parent.selectedIndex != index) {
+		parent.redraw(x, y, width, height, false);
+	}
 }
 public void setImage (Image image) {
 	checkWidget();

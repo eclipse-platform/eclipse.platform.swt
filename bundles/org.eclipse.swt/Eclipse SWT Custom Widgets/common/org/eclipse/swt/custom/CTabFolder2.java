@@ -682,6 +682,15 @@ void destroyItem (CTabItem2 item) {
 	if (updateItems()) redraw();
 }
 void drawBackground(GC gc, int[] shape, boolean selected) {
+	Color defaultBackground = selected ? selectionBackground : getBackground();
+	Image image = selected ? selectionBgImage : bgImage;
+	Color[] colors = selected ? selectionGradientColors : gradientColors;
+	int[] percents = selected ? selectionGradientPercents : gradientPercents;
+	boolean vertical = selected ? selectionGradientVertical : gradientVertical;
+	
+	drawBackground(gc, shape, defaultBackground, image, colors, percents, vertical);
+}
+void drawBackground(GC gc, int[] shape, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
 	Point size = getSize();
 	int height = tabHeight + HIGHLIGHT_HEADER; 
 	int y = onBottom ? size.y - borderBottom - height : borderTop;
@@ -697,12 +706,6 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 	region.add(shape);
 	region.intersect(clipping);
 	gc.setClipping(region);
-	
-	Color defaultBackground = selected ? selectionBackground : getBackground();
-	Image image = selected ? selectionBgImage : bgImage;
-	Color[] colors = selected ? selectionGradientColors : gradientColors;
-	boolean vertical = selected ? selectionGradientVertical : gradientVertical;
-	int[] percents = selected ? selectionGradientPercents : gradientPercents;
 	
 	if (image != null) {
 		// draw the background image in shape
@@ -852,8 +855,8 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	Display display = getDisplay();
 	// draw chevron (10x7)
-	int indent = Math.max(1, (tabHeight-11)/2);
-	int x = chevronRect.x + indent - 1;
+	int indent = Math.max(1, (CTabFolder2.BUTTON_SIZE-9)/2);
+	int x = chevronRect.x + indent;
 	int y = chevronRect.y + indent;
 	switch (chevronImageState) {
 		case NORMAL: {
@@ -891,7 +894,8 @@ void drawChevron(GC gc) {
 void drawMaximize(GC gc) {
 	if (maxRect.width == 0 || maxRect.height == 0) return;
 	Display display = getDisplay();
-	int indent = Math.max(1, (tabHeight-11)/2);
+	// 5x4 or 7x9
+	int indent = Math.max(1, (CTabFolder2.BUTTON_SIZE-9)/2);
 	int x = maxRect.x + indent - 1;
 	int y = maxRect.y + indent;
 	switch (maxImageState) {
@@ -963,7 +967,8 @@ void drawMaximize(GC gc) {
 void drawMinimize(GC gc) {
 	if (minRect.width == 0 || minRect.height == 0) return;
 	Display display = getDisplay();
-	int indent = Math.max(1, (tabHeight-11)/2);
+	// 5x4 or 9x3
+	int indent = Math.max(1, (CTabFolder2.BUTTON_SIZE-9)/2);
 	int x = minRect.x + indent - 1;
 	int y = minRect.y + indent;
 	switch (minImageState) {
@@ -1037,7 +1042,7 @@ void drawTabArea(Event event) {
 	int y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
 	int width = size.x - borderLeft - borderRight + 1;
 	int height = tabHeight - 1;
-
+	
 	// Draw Tab Header
 	if (onBottom) {
 		shape = new int[BOTTOM_LEFT_CORNER.length + BOTTOM_RIGHT_CORNER.length + 4];
@@ -1089,7 +1094,7 @@ void drawTabArea(Event event) {
 		antialias(shape, borderColor.getRGB(), inside, outside, gc);
 		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
-	}
+	}	
 	
 	// Draw the unselected tabs.
 	if (!single) {
@@ -1098,7 +1103,7 @@ void drawTabArea(Event event) {
 				items[i].onPaint(gc, false);
 			}
 		}
-	}	
+	}
 	
 	// Draw selected tab
 	if (selectedIndex != -1) {
@@ -2377,9 +2382,9 @@ boolean setButtonBounds() {
 	if (showMax) {
 		maxRect.x = size.x - borderRight - BUTTON_SIZE - 3;
 		if (borderRight > 0) maxRect.x += 1;
-		maxRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		maxRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		maxRect.width = BUTTON_SIZE;
-		maxRect.height = tabHeight - 1;
+		maxRect.height = BUTTON_SIZE;
 	}
 	if (oldX != maxRect.x || oldWidth != maxRect.width ||
 	    oldY != maxRect.y || oldHeight != maxRect.height) changed = true;
@@ -2392,9 +2397,9 @@ boolean setButtonBounds() {
 	if (showMin) {
 		minRect.x = size.x - borderRight - maxRect.width - BUTTON_SIZE - 3;
 		if (borderRight > 0) minRect.x += 1;
-		minRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		minRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		minRect.width = BUTTON_SIZE;
-		minRect.height = tabHeight - 1;
+		minRect.height = BUTTON_SIZE;
 	}
 	if (oldX != minRect.x || oldWidth != minRect.width ||
 	    oldY != minRect.y || oldHeight != minRect.height) changed = true;
@@ -2432,18 +2437,18 @@ boolean setButtonBounds() {
 			CTabItem2 item = items[selectedIndex];
 			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - BUTTON_SIZE - 3);
 			if (borderRight > 0) chevronRect.x += 1;
-			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			chevronRect.width = BUTTON_SIZE;
-			chevronRect.height = tabHeight - 1;
+			chevronRect.height = BUTTON_SIZE;
 		} else {
 			int rightEdge = getRightItemEdge();
 			CTabItem2 item = items[items.length-1];
 			if (topTabIndex > 0 || item.x + item.width >= rightEdge) {
 				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - BUTTON_SIZE - 3;
 				if (borderRight > 0) chevronRect.x += 1;
-				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 				chevronRect.width = BUTTON_SIZE;
-				chevronRect.height = tabHeight - 1;
+				chevronRect.height = BUTTON_SIZE;
 			}
 		}
 	}
@@ -2551,7 +2556,7 @@ boolean setItemLocation() {
 			item.y = y;
 			if (showClose || item.showClose) {
 				item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN - 8;
-				item.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
+				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
 			if (item.x != oldX || item.y != oldY) changed = true;
 		}
@@ -2567,7 +2572,7 @@ boolean setItemLocation() {
 			item.y = y;
 			item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN;
 			if (i == selectedIndex) item.closeRect.x -= 8;
-			item.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
+			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		}
 		
 		x = borderLeft <= 1 ? 0 : HIGHLIGHT_MARGIN;
@@ -2578,7 +2583,7 @@ boolean setItemLocation() {
 			item.y = y;
 			item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN;
 			if (i == selectedIndex) item.closeRect.x -= 8;
-			item.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
+			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			x = x + item.width;
 		}
 
