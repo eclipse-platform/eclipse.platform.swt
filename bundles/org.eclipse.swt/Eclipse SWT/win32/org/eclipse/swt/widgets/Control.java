@@ -2487,6 +2487,9 @@ boolean translateTraversal (MSG msg) {
 			if ((code & (OS.DLGC_WANTTAB | OS.DLGC_WANTALLKEYS)) != 0) {
 				if (next && OS.GetKeyState (OS.VK_CONTROL) >= 0) doit = false;
 			}
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
+			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
