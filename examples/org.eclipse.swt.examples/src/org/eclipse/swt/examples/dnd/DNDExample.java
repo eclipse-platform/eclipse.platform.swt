@@ -727,8 +727,11 @@ private void createDropTarget() {
 				}
 				case TABLE: {
 					Table table = (Table)dropControl;
+					Point p = event.display.map(null, table, event.x, event.y);
+					TableItem dropItem = table.getItem(p);
+					int index = dropItem == null ? table.getItemCount() : table.indexOf(dropItem);
 					for(int i = 0; i < strings.length; i++) {
-						TableItem item = new TableItem(table, SWT.NONE);
+						TableItem item = new TableItem(table, SWT.NONE, index);
 						item.setText(0, strings[i]);
 						item.setText(1, "dropped item");
 					}
