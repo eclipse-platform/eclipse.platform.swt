@@ -179,7 +179,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.upper *= 10; 
 	String string = String.valueOf ((int) adjustment.upper);
+	if (digits > 0) {
+		StringBuffer buffer = new StringBuffer ();
+		buffer.append (string);
+		buffer.append (getDecimalSeparator ());
+		int count = digits - string.length ();
+		while (count >= 0) {
+			buffer.append ("0");
+			count--;
+		}
+		string = buffer.toString ();
+	}
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, false);
 	int /*long*/ ptr = OS.pango_layout_get_text (layout);
 	int length = OS.strlen (ptr);
@@ -333,6 +346,8 @@ public int getIncrement () {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.step_increment *= 10;
 	return (int) adjustment.step_increment;
 }
 
@@ -351,6 +366,8 @@ public int getMaximum () {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.upper *= 10;
 	return (int) adjustment.upper;
 }
 
@@ -369,6 +386,8 @@ public int getMinimum () {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.lower *= 10;
 	return (int) adjustment.lower;
 }
 
@@ -388,6 +407,8 @@ public int getPageIncrement () {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.page_increment *= 10;
 	return (int) adjustment.page_increment;
 }
 
@@ -406,7 +427,22 @@ public int getSelection () {
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) adjustment.value *= 10;
 	return (int) adjustment.value;
+}
+
+public int getDigits () {
+	checkWidget ();
+	return OS.gtk_spin_button_get_digits (handle);
+}
+
+String getDecimalSeparator () {
+	int /*long*/ ptr = OS.localeconv_decimal_point ();
+	int length = OS.strlen (ptr);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, ptr, length);	
+	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
 int gtk_activate (int widget) {
@@ -673,8 +709,14 @@ void setForegroundColor (GdkColor color) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	double newValue = value;
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) newValue /= 10;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_increments (handle, value, getPageIncrement ());
+	OS.gtk_spin_button_set_increments (handle, newValue, adjustment.page_increment);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -694,10 +736,15 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-	int minimum = getMinimum();
-	if (value <= minimum) return;
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	double newValue = value;
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) newValue /= 10;
+	if (newValue <= adjustment.lower) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_range (handle, minimum, value);
+	OS.gtk_spin_button_set_range (handle, adjustment.lower, newValue);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -717,10 +764,15 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-	int maximum = getMaximum ();
-	if (value >= maximum) return;
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	double newValue = value;
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) newValue /= 10;
+	if (newValue >= adjustment.upper) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_range (handle, value, maximum);
+	OS.gtk_spin_button_set_range (handle, newValue, adjustment.upper);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -739,8 +791,14 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	double newValue = value;
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) newValue /= 10;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_increments (handle, getIncrement (), value);
+	OS.gtk_spin_button_set_increments (handle, adjustment.step_increment, newValue);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -759,9 +817,40 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
+	double newValue = value;
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	for (int i = 0; i < digits; i++) newValue /= 10;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_value (handle, value);
+	OS.gtk_spin_button_set_value (handle, newValue);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+}
+
+public void setDigits (int digits) {
+	checkWidget ();
+	if (digits < 0) return;
+	int oldDigits = OS.gtk_spin_button_get_digits (handle);
+	if (digits == oldDigits) return;
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	int diff = Math.abs (digits - oldDigits);
+	int factor = 1;
+	for (int i = 0; i < diff; i++) factor *= 10;
+	if (oldDigits > digits) {
+		adjustment.value *= factor;
+		adjustment.upper *= factor;
+		adjustment.lower *= factor;
+		adjustment.step_increment *= factor;
+		adjustment.page_increment *= factor;
+	} else {
+		adjustment.value /= factor;
+		adjustment.upper /= factor;
+		adjustment.lower /= factor;
+		adjustment.step_increment /= factor;
+		adjustment.page_increment /= factor;
+	}
+	OS.memmove (hAdjustment, adjustment);
+	OS.gtk_spin_button_set_digits (handle, digits);
 }
 
 boolean translateTraversal (GdkEventKey keyEvent) {
@@ -802,6 +891,14 @@ String verifyText (String string, int start, int end) {
 		OS.gdk_event_free (eventPtr);
 	}
 	int index = 0;
+	if (OS.gtk_spin_button_get_digits (handle) > 0) {
+		String decimalSeparator = getDecimalSeparator ();
+		index = string.indexOf (decimalSeparator);
+		if (index != -1) {
+			string = string.substring (0, index) + string.substring (index + 1);
+		}
+		index = 0;
+	}
 	while (index < string.length ()) {
 		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
