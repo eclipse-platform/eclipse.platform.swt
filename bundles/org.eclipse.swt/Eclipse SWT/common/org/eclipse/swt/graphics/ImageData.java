@@ -1618,9 +1618,8 @@ static final byte[] convertPad(byte[] data, int width, int height, int depth, in
 	int newBpl = (stride + (newPad - 1)) / newPad * newPad;
 	byte[] newData = new byte[height * newBpl];
 	int srcIndex = 0, destIndex = 0;
-	int length = Math.min (bpl, newBpl);
 	for (int y = 0; y < height; y++) {
-		System.arraycopy(data, srcIndex, newData, destIndex, length);
+		System.arraycopy(data, srcIndex, newData, destIndex, stride);
 		srcIndex += bpl;
 		destIndex += newBpl;
 	}
