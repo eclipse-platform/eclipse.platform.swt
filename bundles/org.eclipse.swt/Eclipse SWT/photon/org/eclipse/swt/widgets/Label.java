@@ -155,6 +155,24 @@ int processPaint (int damage) {
 	return super.processPaint (damage);
 }
 
+int processActivate (int info) {
+	Composite control = this.parent;
+	while (control != null) {
+		Control [] children = control._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		index++;
+		if (index < children.length) {
+			if (children [index].setFocus ()) return OS.Pt_CONTINUE;
+		}
+		control = control.parent;
+	}
+	return OS.Pt_CONTINUE;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
@@ -219,6 +237,7 @@ public void setText (String string) {
 		ptr2 = OS.malloc (buffer2.length);
 		OS.memmove (ptr2, buffer2, buffer2.length);
 	}
+	replaceMnemonic (mnemonic, 0);
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,

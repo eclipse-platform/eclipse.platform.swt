@@ -310,6 +310,10 @@ public int getTextLimit () {
 	return args [1];
 }
 
+boolean hasFocus () {
+	return OS.PtIsFocused (handle) != 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
@@ -493,6 +497,19 @@ public void setTextLimit (int limit) {
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, limit, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	int code = super.traversalCode (key_sym, ke);
+	if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
+		code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+	}
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
+			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+		}
+	}
+	return code;
 }
 
 }

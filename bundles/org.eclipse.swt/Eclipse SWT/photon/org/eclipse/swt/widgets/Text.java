@@ -268,6 +268,11 @@ public int getLineHeight () {
 	return extent.lr_y - extent.ul_y + 1 + args [4];
 }
 
+String getNameText () {
+	if ((style & SWT.SINGLE) != 0) return getText ();
+	return getText (0, Math.min(getCharCount () - 1, 10));
+}
+
 public Point getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -364,9 +369,6 @@ public int getTopPixel () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	if ((style & SWT.MULTI) != 0) {
-		OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
-	}
 	OS.PtAddCallback (handle, OS.Pt_CB_MODIFY_VERIFY, windowProc, SWT.Verify); 
 	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, SWT.Modify);
 }
@@ -615,6 +617,17 @@ public void showSelection () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	
 	//NOT DONE - NOT NEEDED
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	if ((style & SWT.SINGLE) != 0) {
+		int code = super.traversalCode (key_sym, ke);
+		if (key_sym == OS.Pk_Right || key_sym == OS.Pk_Left) {
+			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+		}
+		return code;
+	}
+	return SWT.TRAVERSE_ESCAPE;
 }
 
 }
