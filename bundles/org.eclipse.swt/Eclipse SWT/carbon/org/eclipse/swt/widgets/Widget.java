@@ -463,8 +463,8 @@ void drawBackground (int control, float [] background) {
 	}
 }
 
-void drawFocus (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
-	drawBackground (control, null);
+void drawFocus (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
+	drawBackground (control, background);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	rect.left += inset.left;
@@ -481,7 +481,7 @@ void drawFocus (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
 	}
 }
 
-void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
+void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
 	int visibleRgn = getVisibleRegion (control, true);
 	if (!OS.EmptyRgn (visibleRgn)) {
 		int [] currentPort = new int [1];
@@ -492,7 +492,7 @@ void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect in
 		int oldClip = OS.NewRgn ();
 		OS.GetClip (oldClip);
 		OS.SetClip (visibleRgn);
-		drawFocus (control, hasFocus, hasBorder, inset);
+		drawFocus (control, hasFocus, hasBorder, background, inset);
 		OS.SetClip (oldClip);
 		OS.SetPort (currentPort [0]);
 	}

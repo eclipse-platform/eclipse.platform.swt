@@ -368,7 +368,7 @@ public void cut () {
 }
 
 void drawBackground (int control) {
-	drawFocus (control, hasFocus (), hasBorder (), inset ());
+	drawFocus (control, hasFocus (), hasBorder (), getParentBackground (), inset ());
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
@@ -850,7 +850,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	drawFocusClipped (handle, part [0] != 0, hasBorder (), inset ());
+	drawFocusClipped (handle, part [0] != 0, hasBorder (), getParentBackground (), inset ());
 	OS.TXNDraw (txnObject, 0);
 	OS.TXNFocus (txnObject, part [0] != 0);
 	return OS.noErr;
