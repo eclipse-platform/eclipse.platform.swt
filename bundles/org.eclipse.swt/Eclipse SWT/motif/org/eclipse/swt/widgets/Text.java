@@ -987,7 +987,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
 }
-byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
+void sendIMKeyEvent (int type, XKeyEvent xEvent, byte [] mbcs, char [] chars) {
 	/*
 	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
 	* the characters from the IME. This causes the characters to be
@@ -995,12 +995,12 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	* has been cleared and use XmTextInsert() to insert the stolen
 	* characters. This problem does not happen on AIX.
 	*/
-	byte [] mbcs = super.sendIMKeyEvent (type, xEvent);
-	if (mbcs == null || xEvent.keycode != 0) return null;
+	super.sendIMKeyEvent (type, xEvent, mbcs, chars);
+	if (mbcs == null || xEvent.keycode != 0) return;
 	int [] unused = new int [1];
 	byte [] buffer = new byte [2];
 	int length = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, unused, unused);
-	if (length != 0) return null;
+	if (length != 0) return;
 	int [] start = new int [1], end = new int [1];
 	OS.XmTextGetSelectionPosition (handle, start, end);
 	if (start [0] == end [0]) {
@@ -1009,10 +1009,14 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextReplace (handle, start [0], end [0], mbcs);
-	int position = start [0] + mbcs.length - 1;
+	int index = 0;
+	while (index < chars.length) {
+		if (chars [index] == 0) break;
+		index++;
+	}
+	int position = start [0] + index;
 	OS.XmTextSetInsertionPosition (handle, position);
 	display.setWarnings (warnings);
-	return mbcs;
 }
 /**
  * Selects all the text in the receiver.

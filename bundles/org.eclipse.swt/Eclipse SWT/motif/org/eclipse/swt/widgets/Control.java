@@ -1601,7 +1601,7 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
+void sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	/*
 	* Bug in Motif. On Linux only, XmImMbLookupString () does not return 
 	* XBufferOverflow as the status if the buffer is too small. The fix
@@ -1615,22 +1615,24 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 		buffer = new byte [length];
 		length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, length, unused, status);
 	}
-	if (length == 0) return null;
+	if (length == 0) return;
 	
 	/* Convert from MBCS to UNICODE and send the event */
 	/* Use the character encoding for the default locale */
 	char [] result = Converter.mbcsToWcs (null, buffer);
+	sendIMKeyEvent (type, xEvent, buffer, result);
+}
+void sendIMKeyEvent (int type, XKeyEvent xEvent, byte [] mbcs, char [] chars) {
 	int index = 0;
-	while (index < result.length) {
-		if (result [index] == 0) break;
+	while (index < chars.length) {
+		if (chars [index] == 0) break;
 		Event event = new Event ();
 		event.time = xEvent.time;
-		event.character = result [index];
+		event.character = chars [index];
 		setInputState (event, xEvent);
 		postEvent (type, event);
 		index++;
 	}
-	return buffer;
 }
 void sendKeyEvent (int type, XKeyEvent xEvent) {
 	Event event = new Event ();
@@ -2783,47 +2785,41 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	return 0;
 }
 int xFocusIn () {
+	if (!hasIMSupport()) {
+		short [] point = getIMCaretPos ();
+		int ptr = OS.XtMalloc (4);
+		OS.memmove (ptr, point, 4);
+		/*
+		* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
+		* a GP when the XmNfontList resources does not containt a FontSet.
+		* The fix is to call XmImSetValues() to set the values and then call
+		* XmImSetFocusValues() with no parameters to set the IME focus.
+		*/
+		int[] argList = {
+//			OS.XmNforeground, getForegroundPixel(),
+//			OS.XmNbackground, getBackgroundPixel(),
+			OS.XmNspotLocation, ptr,
+			OS.XmNfontList, font.handle,
+		};
+		int focusHandle = focusHandle ();
+		OS.XmImSetValues (focusHandle, argList, argList.length / 2);
+		OS.XmImSetFocusValues (focusHandle, null, 0);
+		if (ptr != 0) OS.XtFree (ptr);
+	}
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (!hasIMSupport()) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			short [] point = getIMCaretPos ();
-			int ptr = OS.XtMalloc (4);
-			OS.memmove (ptr, point, 4);
-			/*
-			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
-			* a GP when the XmNfontList resources does not containt a FontSet.
-			* The fix is to call XmImSetValues() to set the values and then call
-			* XmImSetFocusValues() with no parameters to set the IME focus.
-			*/
-			int[] argList = {
-//				OS.XmNforeground, getForegroundPixel(),
-//				OS.XmNbackground, getBackgroundPixel(),
-				OS.XmNspotLocation, ptr,
-				OS.XmNfontList, font.handle,
-			};
-			int focusHandle = focusHandle ();
-			OS.XmImSetValues (focusHandle, argList, argList.length / 2);
-			OS.XmImSetFocusValues (focusHandle, null, 0);
-			if (ptr != 0) OS.XtFree (ptr);
-		}
-	}	
 	return 0;
 }
 int xFocusOut () {
+	if (!hasIMSupport()) {
+		int focusHandle = focusHandle ();
+		OS.XmImUnsetFocus (focusHandle);
+	}
 	if (display.postFocusOut) {
 		postEvent (SWT.FocusOut);
 	} else {
 		sendEvent (SWT.FocusOut);
 		// widget could be disposed at this point
-		if (handle == 0) return 0;
-	}
-	if (!hasIMSupport()) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			int focusHandle = focusHandle ();
-			OS.XmImUnsetFocus (focusHandle);
-		}
 	}
 	return 0;
 }
