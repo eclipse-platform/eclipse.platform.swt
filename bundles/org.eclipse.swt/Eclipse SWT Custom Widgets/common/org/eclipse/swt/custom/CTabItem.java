@@ -348,12 +348,17 @@ void drawSelected(GC gc ) {
 		gc.setFont(gcFont);
 		
 		// draw a Focus rectangle
-//		if (parent.isFocusControl()) {
-//			Display display = getDisplay();
-//			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-//			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-//			gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
-//		}
+		if (parent.isFocusControl()) {
+			Display display = getDisplay();
+			if (parent.simple || parent.single) {
+				gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+				gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+				gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
+			} else {
+				gc.setForeground(parent.selectionForeground);
+				gc.drawLine(xDraw, textY+extent.y+1, xDraw+extent.x+1, textY+extent.y+1);
+			}
+		}
 	}
 	if (parent.showClose || showClose) drawClose(gc);
 }
