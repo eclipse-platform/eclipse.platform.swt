@@ -281,7 +281,6 @@ public void setPageIncrement (int value) {
 
 public void setSelection (int value) {
 	checkWidget();
-	if (value < 0) return;
 	OS.SetControl32BitValue (handle, value);
 }
 
