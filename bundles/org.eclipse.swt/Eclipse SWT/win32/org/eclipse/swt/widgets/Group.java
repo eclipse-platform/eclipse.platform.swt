@@ -285,9 +285,24 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
+		/*
+		* The DragDetect function captures the mouse and tracks its movement until the user releases
+		* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
+		* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
+		* returns true.
+		*/
 		if (OS.DragDetect (handle, pt)) {
 			sendEvent (SWT.DragDetect);
 			// widget could be disposed at this point
+		} else {
+			/*
+			* The Mouse up event and the ESC key event have been consumed by DragDetect so 
+			* detect the cases and send the events.
+			*/
+			if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
+				sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+				// widget could be disposed at this point
+			}
 		}
 	}
 	return LRESULT.ZERO;
