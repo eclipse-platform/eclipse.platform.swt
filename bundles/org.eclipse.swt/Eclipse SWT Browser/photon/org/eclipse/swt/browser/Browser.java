@@ -501,6 +501,10 @@ public void removeStatusTextListener(StatusTextListener listener) {
  *
  * @return true if the operation was successfull and false otherwise.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -512,7 +516,7 @@ public void removeStatusTextListener(StatusTextListener listener) {
  */
 public boolean setUrl(String url) {
 	checkWidget();
-	if (url == null) return false;
+	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte[] buffer = Converter.wcsToMbcs(null, url, true);
 	int ptr = OS.malloc(buffer.length);
 	OS.memmove(ptr, buffer, buffer.length);
