@@ -7211,7 +7211,9 @@ public void setStyleRange(StyleRange range) {
 			int firstLineOffset = content.getOffsetAtLine(firstLine);
 			int lastLineOffset = content.getOffsetAtLine(lastLine);
 			if (isBidi()) {
-				redrawFirstLine = true;
+				if (firstLine != lastLine) {
+					redrawFirstLine = true;
+				}
 				redrawLastLine = true;
 			} else {
 				redrawFirstLine = isRedrawFirstLine(new StyleRange[] {range}, firstLine, firstLineOffset);
