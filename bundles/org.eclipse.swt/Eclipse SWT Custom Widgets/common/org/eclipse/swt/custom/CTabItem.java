@@ -170,7 +170,7 @@ void drawClose(GC gc) {
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
 			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.fillPolygon(shape);
-			gc.setForeground(CTabFolder.borderColor);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
 			gc.drawPolygon(shape);
 			break;
 		}
@@ -235,10 +235,9 @@ void drawSelected(GC gc ) {
 		gc.drawLine(x1, y1, x2, y1);
 		return;
 	}
-	
+		
 	// draw selected tab background and outline
-	int extra = parent.simple ? 0 : CTabFolder.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
-	int rightTabEdge = parent.getRightItemEdge();
+	int rightEdge = Math.min (x+width, parent.getRightItemEdge());
 	shape = null;
 	if (this.parent.onBottom) {
 		int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
@@ -254,25 +253,13 @@ void drawSelected(GC gc ) {
 			shape[index++] = y + height + left[2*i+1] - 1;
 		}
 		for (int i = 0; i < right.length/2; i++) {
-			shape[index++] = x + width - extra + right[2*i];
+			shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
 			shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
 		}
-		shape[index++] = Math.min(x + width + extra, rightTabEdge);
+		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
 		shape[index++] = y - 1;
-		shape[index++] = Math.max(x + width + extra, rightTabEdge);
+		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
 		shape[index++] = y - 1;
-		int temp = 0;
-		for (int i = 0; i < shape.length/2; i++) {
-			if (shape[2*i] > rightTabEdge) {
-				if (temp == 0 && i > 0) {
-					temp = shape[2*i-1];
-				} else {
-					temp = y - 1;
-				}
-				shape[2*i] = rightTabEdge;
-				shape[2*i+1] = temp;
-			}
-		}
 	} else {
 		int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
 		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
@@ -287,43 +274,26 @@ void drawSelected(GC gc ) {
 			shape[index++] = y + left[2*i+1];
 		}
 		for (int i = 0; i < right.length/2; i++) {
-			shape[index++] = x + width - extra + right[2*i];
+			shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
 			shape[index++] = y + right[2*i+1];
 		}
-		shape[index++] = Math.min (x + width + extra, rightTabEdge);
+		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
 		shape[index++] = y + height + 1;
-		shape[index++] = Math.max (x + width + extra, rightTabEdge);
+		shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
 		shape[index++] = y + height + 1;
-		int temp = 0;
-		for (int i = 0; i < shape.length/2; i++) {
-			if (shape[2*i] > rightTabEdge) {
-				if (temp == 0 && i > 0) {
-					temp = shape[2*i-1];
-				} else {
-					temp = y + height + 1;
-				}
-				shape[2*i] = rightTabEdge;
-				shape[2*i+1] = temp;
-			}
-		}
 	}
 	parent.drawBackground(gc, shape, true);
-	
-	if ( x < rightTabEdge) {
-		// Limit drawing area of tab
-		Region r = new Region();
-		r.subtract(r); //clear
-		Region clipping = new Region();
-		gc.getClipping(clipping);
-		r.add(clipping);
-		r.intersect(new Rectangle(x, y, Math.min(width, rightTabEdge-x), height));
-		gc.setClipping(r);
-	
-		// draw Image
-		int xDraw = x + LEFT_MARGIN;
-		Image image = getImage();
-		if (image != null) {
-			Rectangle imageBounds = image.getBounds();
+
+	// draw Image
+	int xDraw = x + LEFT_MARGIN;
+	Image image = getImage();
+	if (image != null) {
+		Rectangle imageBounds = image.getBounds();
+		// only draw image if it won't overlap with close button
+		int maxImageWidth = rightEdge - xDraw - RIGHT_MARGIN;
+		if (!parent.simple) maxImageWidth -= CTabFolder.CURVE_INDENT;
+		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+		if (closeRect.width == 0 || imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
 			int imageHeight = imageBounds.height;
 			int imageY = y + (height - imageHeight) / 2;
@@ -334,10 +304,13 @@ void drawSelected(GC gc ) {
 				         imageX, imageY, imageWidth, imageHeight);
 			xDraw += imageWidth + INTERNAL_SPACING;
 		}
-		
-		// draw Text
-		int textWidth = x + width - xDraw - RIGHT_MARGIN;
-		if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+	}
+	
+	// draw Text
+	int textWidth = rightEdge - xDraw - RIGHT_MARGIN;
+	if (!parent.simple) textWidth -= CTabFolder.CURVE_INDENT;
+	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+	if (textWidth > 0) {
 		Font gcFont = gc.getFont();
 		if (font != null) {
 			gc.setFont(font);
@@ -354,8 +327,6 @@ void drawSelected(GC gc ) {
 		gc.drawText(shortenedText, xDraw, textY, FLAGS);
 		gc.setFont(gcFont);
 		
-		if (parent.showClose || showClose) drawClose(gc);
-		
 		// draw a Focus rectangle
 		if (parent.isFocusControl()) {
 			Display display = getDisplay();
@@ -363,11 +334,8 @@ void drawSelected(GC gc ) {
 			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 			gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
 		}
-		
-		gc.setClipping(clipping);
-		r.dispose();
-		clipping.dispose();
 	}
+	if (parent.showClose || showClose) drawClose(gc);
 	
 	// draw outline
 	shape[0] = Math.max(0, parent.borderLeft - 1);
@@ -583,9 +551,16 @@ public String getToolTipText () {
 }
 boolean isShowing () {
 	int index = parent.indexOf(this);
-	if (parent.single) return index == parent.selectedIndex;
+	if (parent.single) {
+		if (index == parent.selectedIndex) {
+			return x <= parent.getRightItemEdge();
+		}
+		return false;
+	}
 	if (index < parent.firstIndex) return false;
-	if (parent.firstIndex == index) return true;
+	if (parent.firstIndex == index) {
+		return x <= parent.getRightItemEdge();
+	}
 	return (x + width < parent.getRightItemEdge());
 }
 void onPaint(GC gc, boolean isSelected) {
