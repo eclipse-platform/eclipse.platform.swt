@@ -323,10 +323,12 @@ void createHandle () {
 		OS.HIViewAddSubview (handle, scrollBar [0]);
 	}
 	
-	/* Configure the TXNOBject */
+	/* Configure the TXNObject */
 	int ptr = OS.NewPtr (Rect.sizeof);
 	Rect rect = new Rect ();
-	OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
+	if (hasBorder ()) {
+		OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
+	}
 	OS.memcpy (ptr, rect, Rect.sizeof);
 	int [] tags = new int [] {
 		OS.kTXNDisableDragAndDropTag,
