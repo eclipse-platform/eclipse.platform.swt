@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 845;
-int OS_nativeFunctionCallCount[845];
+int OS_nativeFunctionCount = 846;
+int OS_nativeFunctionCallCount[846];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -631,6 +631,7 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1tree_1view_1column_1cell_1set_1cell_1data", 
 	"gtk_1tree_1view_1column_1clear", 
 	"gtk_1tree_1view_1column_1get_1cell_1renderers", 
+	"gtk_1tree_1view_1column_1get_1fixed_1width", 
 	"gtk_1tree_1view_1column_1get_1resizable", 
 	"gtk_1tree_1view_1column_1get_1spacing", 
 	"gtk_1tree_1view_1column_1get_1visible", 

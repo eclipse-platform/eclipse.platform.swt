@@ -7678,6 +7678,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1cell_1renderers)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1get_1fixed_1width
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1fixed_1width)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1get_1fixed_1width_FUNC);
+	rc = (jint)gtk_tree_view_column_get_fixed_width((GtkTreeViewColumn *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1get_1fixed_1width_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1get_1resizable
 JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1resizable)
 	(JNIEnv *env, jclass that, jint arg0)

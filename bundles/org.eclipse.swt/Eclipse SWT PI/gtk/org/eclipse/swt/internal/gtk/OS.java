@@ -1020,6 +1020,7 @@ public static final synchronized native void gtk_tree_view_column_cell_get_size(
 public static final synchronized native void gtk_tree_view_column_cell_set_cell_data(int /*long*/ tree_column, int /*long*/ tree_model, int /*long*/ iter, boolean is_expander, boolean is_expanded);
 public static final synchronized native void gtk_tree_view_column_clear(int /*long*/ tree_column);
 public static final synchronized native int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);
+public static final synchronized native int gtk_tree_view_column_get_fixed_width(int /*long*/ column);
 public static final synchronized native boolean gtk_tree_view_column_get_resizable(int /*long*/ column);
 public static final synchronized native int gtk_tree_view_column_get_spacing(int /*long*/ tree_column);
 public static final synchronized native boolean gtk_tree_view_column_get_visible(int /*long*/ column);
