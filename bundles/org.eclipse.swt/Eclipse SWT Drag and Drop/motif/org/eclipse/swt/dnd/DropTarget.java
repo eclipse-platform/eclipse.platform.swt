@@ -98,6 +98,8 @@ public class DropTarget extends Widget {
 	private int lastOperation;
 	private int selectionTimeout;
 	
+	private boolean registered = false;
+	
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
  * <code>Control</code>.
@@ -134,19 +136,38 @@ public DropTarget(Control control, int style) {
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-				case SWT.Dispose:
+				case SWT.Dispose: {
 					if (!DropTarget.this.isDisposed()){
 						DropTarget.this.dispose();
 					}
 					break;
-				case SWT.Show:
-					if (DropTarget.this.control.isVisible()) {
-						registerDropTarget();
-					}
+				}
+				case SWT.Show: {
+					Display display = event.display;
+					display.asyncExec(new Runnable() {
+						public void run() {
+							if (DropTarget.this.control == null || 
+								DropTarget.this.control.isDisposed() ||
+								!DropTarget.this.control.isVisible()) return;
+
+							registerDropTarget();
+						}
+					});
 					break;
-				case SWT.Hide:
-					unregisterDropTarget();
+				}
+				case SWT.Hide: {
+					Display display = event.display;
+					display.asyncExec(new Runnable() {
+						public void run() {
+							if (DropTarget.this.control == null || 
+							    DropTarget.this.control.isDisposed() || 
+							    DropTarget.this.control.isVisible()) return;
+					
+							unregisterDropTarget();
+						}
+					});	
 					break;
+				}
 			}
 		}
 	};
@@ -160,6 +181,7 @@ public DropTarget(Control control, int style) {
 	
 	this.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
+			unregisterDropTarget();
 			onDispose();
 		}
 	});
@@ -551,8 +573,6 @@ public void notifyListeners (int eventType, Event event) {
 }
 
 private void onDispose() {
-
-	unregisterDropTarget();
 	
 	if (controlListener != null) {
 		Control c = control;
@@ -593,7 +613,7 @@ private int osOpToOp(byte osOperation){
 	return operation;
 }
 private void registerDropTarget() {	
-	if (control == null || control.isDisposed()) return;
+	if (control == null || control.isDisposed() || registered) return;
 
 	int[] args = new int[]{
 		OS.XmNdropSiteOperations, opToOsOp(getStyle()),
@@ -635,12 +655,13 @@ private void registerDropTarget() {
 	}
 	
 	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
+	registered = true;
 }
 
 private void unregisterDropTarget() {
-	if (control == null || control.isDisposed()) return;
-
+	if (control == null || control.isDisposed() || !registered) return;
 	OS.XmDropSiteUnregister(control.handle);
+	registered = false;
 }
 private void releaseDropInfo(){
 	selectedDataType = null;
