@@ -102,9 +102,10 @@ void createHandle (int index) {
 	Display display = getDisplay ();
 	int clazz = display.PtProgress;
 	int parentHandle = parent.parentingHandle ();
+	int gaugeFlags = (style & SWT.INDETERMINATE) != 0 ? OS.Pt_GAUGE_INDETERMINATE : 0;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
-//		OS.Pt_ARG_GAUGE_FLAGS, OS.Pt_GAUGE_LIVE, OS.Pt_GAUGE_LIVE,
+		OS.Pt_ARG_GAUGE_FLAGS, gaugeFlags, OS.Pt_GAUGE_INDETERMINATE,
 		OS.Pt_ARG_ORIENTATION, (style & SWT.HORIZONTAL) != 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
