@@ -1162,7 +1162,7 @@ public void setMinimized (boolean minimized) {
 	}
 
 	/* Minimize or restore the shell */
-	this.minimized = minimized;
+	super.setMinimized (minimized);
 	argList [1] = minimized ? 1 : 0;
 	argList [3] = minimized ? OS.IconicState : OS.NormalState;
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
