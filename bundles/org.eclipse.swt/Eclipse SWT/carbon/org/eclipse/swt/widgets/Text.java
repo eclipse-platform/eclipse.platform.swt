@@ -743,7 +743,8 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start < 0 || start > end) return "";
+	int length = OS.TXNDataSize (txnObject) / 2;
+	if (!(0 <= start && start <= end && end < length)) error (SWT.ERROR_INVALID_RANGE);
 	return getTXNText (start, end + 1);
 }
 
