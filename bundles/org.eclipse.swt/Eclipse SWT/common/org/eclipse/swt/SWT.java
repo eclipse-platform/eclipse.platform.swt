@@ -223,7 +223,7 @@ public class SWT {
 	/**
 	 * The menu detect event type (value is 35).
 	 * 
-	 * @since 2.2
+	 * @since 3.0
 	 */
 	public static final int MenuDetect = 35;
 		

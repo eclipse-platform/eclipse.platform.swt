@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Display
  * 
- * @since 2.2
+ * @since 3.0
  */
 public final class Monitor {
 	int handle;

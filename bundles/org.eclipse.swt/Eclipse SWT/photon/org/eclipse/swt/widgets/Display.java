@@ -849,7 +849,7 @@ public int getIconDepth () {
  * 
  * @return the array of monitors
  * 
- * @since 2.2
+ * @since 3.0
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
@@ -861,7 +861,7 @@ public Monitor [] getMonitors () {
  * 
  * @return the primary monitor
  * 
- * @since 2.2
+ * @since 3.0
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();

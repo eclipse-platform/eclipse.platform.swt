@@ -101,7 +101,7 @@ public FontData getFontData () {
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData for the selected font, or null
- * @since 2.2
+ * @since 3.0
  */
 public FontData [] getFontDatas () {
 	if (fontData == null) return null;
@@ -184,7 +184,7 @@ public void setFontData (FontData fontData) {
  * the platform choose one.
  * 
  * @param fontData the set of FontData objects to use initially, or null
- * @since 2.2
+ * @since 3.0
  */
 public void setFontDatas (FontData [] fontData) {
 	if (fontData != null && fontData.length > 0) {
