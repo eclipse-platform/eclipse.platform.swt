@@ -508,6 +508,8 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 		selectedOperation = event.detail;
 	}
 	
+	OS.SetDragDropAction(theDrag, opToOsOp(selectedOperation));
+	
 	effect.show(event.feedback, event.x, event.y);
 
 	switch (selectedOperation) {
@@ -592,7 +594,7 @@ private int opToOsOp(int operation) {
 		osOperation |= OS.kDragActionAlias;
 	}
 	if ((operation & DND.DROP_MOVE) != 0) {
-		osOperation |= OS.kDragActionDelete;
+		osOperation |= OS.kDragActionMove;
 	}
 	return osOperation;
 }
@@ -605,7 +607,7 @@ private int osOpToOp(int osOperation){
 	if ((osOperation & OS.kDragActionAlias) != 0) {
 		operation |= DND.DROP_LINK;
 	}
-	if ((osOperation & OS.kDragActionDelete) != 0) {
+	if ((osOperation & OS.kDragActionMove) != 0) {
 		operation |= DND.DROP_MOVE;
 	}
 	if (osOperation == OS.kDragActionAll) {
