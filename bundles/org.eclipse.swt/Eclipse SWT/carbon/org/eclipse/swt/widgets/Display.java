@@ -707,7 +707,7 @@ public Control getFocusControl () {
  * </ul>
  */
 public int getIconDepth () {
-	return 8;
+	return 8;	// we don't support direct icons yet
 }
 /**
  * Returns an array containing all shells which have not been
