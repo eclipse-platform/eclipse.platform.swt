@@ -1431,7 +1431,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		GRADIENT_RECT gradientRect = new GRADIENT_RECT();
 		gradientRect.UpperLeft = 0;
 		gradientRect.LowerRight = 1;
-		OS.MoveMemory(pMesh, gradientRect, gradientRect.sizeof);
+		OS.MoveMemory(pMesh, gradientRect, GRADIENT_RECT.sizeof);
 	
 		TRIVERTEX trivertex = new TRIVERTEX();
 		trivertex.x = x;
