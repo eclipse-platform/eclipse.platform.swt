@@ -9520,6 +9520,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3C_3BI)
 }
 #endif
 
+#ifndef NO_memcpy___3FII
+JNIEXPORT void JNICALL OS_NATIVE(memcpy___3FII)
+	(JNIEnv *env, jclass that, jfloatArray arg0, jint arg1, jint arg2)
+{
+	jfloat *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memcpy___3FII\n")
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memcpy___3FII\n")
+}
+#endif
+
 #ifndef NO_memcpy___3III
 JNIEXPORT void JNICALL OS_NATIVE(memcpy___3III)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)

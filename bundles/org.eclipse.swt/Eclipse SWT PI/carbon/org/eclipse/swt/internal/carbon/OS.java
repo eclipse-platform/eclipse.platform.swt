@@ -1336,5 +1336,6 @@ public static final native void memcpy(char[] dest, byte[] src, int size);
 public static final native void memcpy(byte[] dest, char[] src, int size);
 public static final native void memcpy(int dest, EventRecord src, int size);
 public static final native void memcpy(int dest, ATSUTab src, int size);
+public static final native void memcpy(float[] dest, int src, int size);
 public static final native void memset(int dest, int value, int size);
 }
