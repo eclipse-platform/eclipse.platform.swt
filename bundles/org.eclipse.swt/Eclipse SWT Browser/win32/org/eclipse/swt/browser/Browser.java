@@ -855,7 +855,9 @@ public String getUrl() {
 	Variant pVarResult = auto.getProperty(rgdispid[0]);
 	if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR)
 		return "";
-	return pVarResult.getString();
+	String result = pVarResult.getString();
+	pVarResult.dispose();
+	return result;
 }
 
 /**
@@ -1194,7 +1196,11 @@ public boolean setText(String html) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
+	rgvarg[0].dispose();
+	if (pVarResult == null) return false;
+	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
+	pVarResult.dispose();
+	return result;
 }
 
 /**
@@ -1227,7 +1233,11 @@ public boolean setUrl(String url) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
+	rgvarg[0].dispose();
+	if (pVarResult == null) return false;
+	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
+	pVarResult.dispose();
+	return result;
 }
 
 /**
