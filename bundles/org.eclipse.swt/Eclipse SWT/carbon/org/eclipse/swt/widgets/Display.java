@@ -818,7 +818,7 @@ int mouseHoverProc (int id, int handle) {
 		//OPTIMIZE - use OS calls
 		int chord = OS.GetCurrentEventButtonState ();
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		Point pt = currentControl.toControl (getCursorLocation ());
+		Point pt = hoverControl.toControl (getCursorLocation ());
 		hoverControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
 	}
 	hoverControl = null;
