@@ -150,10 +150,7 @@ void createHandle(int index) {
 	OS.gtk_container_add (handle, clientHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_show (clientHandle);
-	OS.gtk_widget_show (fixedHandle);
-	
-	OS.gtk_frame_set_label_widget (handle, labelHandle);
-	
+	OS.gtk_widget_show (fixedHandle);	
 	if ((style & SWT.SHADOW_IN) != 0) {
 		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
 	}
@@ -263,7 +260,13 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	OS.gtk_widget_show (labelHandle);
+	if (string.length () != 0) {
+		OS.gtk_frame_set_label_widget (handle, labelHandle);
+		OS.gtk_widget_show (labelHandle);
+	} else {	
+		OS.gtk_frame_set_label_widget (handle, 0);
+		OS.gtk_widget_hide (labelHandle);
+	}
 }
 
 }
