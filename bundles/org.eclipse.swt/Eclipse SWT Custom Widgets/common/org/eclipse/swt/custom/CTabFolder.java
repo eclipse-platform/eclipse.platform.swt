@@ -1837,9 +1837,23 @@ void onMouse(Event event) {
 				update();
 				return;
 			}
-			for (int i=0; i<items.length; i++) {
-				CTabItem item = items[i];
-				Rectangle bounds = item.getBounds();
+			CTabItem item = null;
+			if (single) {
+				if (selectedIndex != -1) {
+					Rectangle bounds = items[selectedIndex].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[selectedIndex];
+					}
+				}
+			} else {
+				for (int i=0; i<items.length; i++) {
+					Rectangle bounds = items[i].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[i];
+					}
+				}
+			}
+			if (item != null) {
 				if (item.closeRect.contains(x,y)){
 					if (event.button != 1) return;
 					item.closeImageState = SELECTED;
@@ -1847,16 +1861,15 @@ void onMouse(Event event) {
 					update();
 					return;
 				}
-				if (bounds.contains(x, y)) {
-					if (event.button == 1 && i == selectedIndex && items.length > 1) {
-						showList = true;
-					}
-					if (item.isShowing()){
-						setSelection(i, true);
-						setFocus();
-					}
-					return;
+				int index = indexOf(item);
+				if (event.button == 1 && index == selectedIndex && items.length > 1) {
+					showList = true;
 				}
+				if (item.isShowing()){
+					setSelection(index, true);
+					setFocus();
+				}
+				return;
 			}
 			break;
 		}
@@ -1990,8 +2003,23 @@ void onMouse(Event event) {
 				if (e.doit && !isDisposed()) setMaximized(!restore);
 				return;
 			}
-			for (int i=0; i<items.length; i++) {
-				CTabItem item = items[i];
+			CTabItem item = null;
+			if (single) {
+				if (selectedIndex != -1) {
+					Rectangle bounds = items[selectedIndex].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[selectedIndex];
+					}
+				}
+			} else {
+				for (int i=0; i<items.length; i++) {
+					Rectangle bounds = items[i].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[i];
+					}
+				}
+			}
+			if (item != null) {
 				if (item.closeRect.contains(x,y)) {
 					boolean selected = item.closeImageState == SELECTED;
 					item.closeImageState = HOT;
