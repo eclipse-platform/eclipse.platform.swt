@@ -4,7 +4,6 @@
     <classpathentry kind="src" path="Eclipse SWT/carbon"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
-    <classpathentry kind="src" path="Eclipse SWT/emulated/tabfolder"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/treetable"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
