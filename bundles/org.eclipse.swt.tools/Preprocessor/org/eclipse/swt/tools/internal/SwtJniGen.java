@@ -17,6 +17,7 @@ public class SwtJniGen extends Task {
 	/* Attributes */
 	String classpath;
 	String outputdir;
+	String mainclass;
 	
 	public SwtJniGen() {
 	}
@@ -28,11 +29,16 @@ public class SwtJniGen extends Task {
 	public void setOutputdir(String outputdir) {
 		this.outputdir = outputdir;
 	}
-	
+
+	public void setMainClass(String mainclass) {
+		this.mainclass = mainclass;
+	}
+
 	public void execute() throws BuildException {
 		try {
-			System.out.println(new java.io.File(".").getAbsolutePath());
-			JNIGeneratorApp.main(new String[] {JNIGeneratorApp.getDefaultMainClass(), outputdir, classpath});
+			System.out.println("jnigen mainclass "+mainclass+" classpath "+classpath+" outputdir "+outputdir);
+			JNIGeneratorApp.main(new String[] {mainclass, outputdir, classpath});
+			System.out.println("jnigen done");
 		} catch (Exception e) {
 			throw new BuildException(e);
 		}
