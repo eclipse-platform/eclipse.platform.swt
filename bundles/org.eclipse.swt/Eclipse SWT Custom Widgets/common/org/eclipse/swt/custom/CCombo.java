@@ -625,7 +625,7 @@ void internalLayout () {
 	Point size = getSize();
 	int itemHeight = list.getItemHeight () * ITEMS_SHOWING;
 	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
-	list.setBounds (1, 1, Math.max (size.x, listSize.x), listSize.y);
+	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
 }
 void listEvent (Event event) {
 	switch (event.type) {
