@@ -14,7 +14,7 @@ import org.eclipse.swt.accessibility.*;
 /**
  * A Label which supports aligned text and/or an image and different border styles.
  * <p>
- * If there is not enough space a SmartLabel uses the following strategy to fit the 
+ * If there is not enough space a CLabel uses the following strategy to fit the 
  * information into the available space:
  * <pre>
  * 		ignores the indent in left align mode
