@@ -1294,7 +1294,12 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget ();
+	if (start > end) return;
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (start == 0 && end == count - 1) {
+		removeAll ();
+		return;
+	} 
 	int index = start;
 	while (index <= end) {
 		ignoreSelect = true;

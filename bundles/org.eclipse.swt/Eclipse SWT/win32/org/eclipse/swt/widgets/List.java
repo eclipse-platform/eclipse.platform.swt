@@ -855,6 +855,10 @@ public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (start == 0 && end == count - 1) {
+		removeAll ();
+		return;
+	} 
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
