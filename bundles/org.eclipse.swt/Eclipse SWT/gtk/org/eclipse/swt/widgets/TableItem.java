@@ -235,6 +235,7 @@ public Image getImage (int index) {
 	int clist = parent.handle;
 	int [] pixmap = new int [1], mask = new int [1];
 	OS.gtk_clist_get_pixtext (clist, row, index, null, null, pixmap, null);
+	if (pixmap [0] == 0) return null;
 	Display display = getDisplay ();
 	return Image.gtk_new (display, mask [0] == 0 ? SWT.BITMAP : SWT.ICON, pixmap [0], mask [0]);
 }
@@ -328,15 +329,17 @@ public String getText (int index) {
 	checkWidget ();
 	if (index == 0) return getText ();
 	int row = parent.indexOf (this);
-	if (row == -1) return null;
+	if (row == -1) error (SWT.ERROR_CANNOT_GET_TEXT);
 	int clist = parent.handle;
-//	int ptr = 0;
-	int ptr = OS.g_malloc (256);
-	int [] address = new int [] {ptr};
-	OS.gtk_clist_get_pixtext (clist, row, index, address, null, null, null);
+	int [] address = new int [1];
+	int [] pixmap = new int [1];
+	OS.gtk_clist_get_pixtext (clist, row, index, address, null, pixmap, null);
+	if (pixmap [0] == 0) {
+		OS.gtk_clist_get_text (clist, row, index, address);
+	}
+	if (address [0] == 0) return "";
 	byte [] buffer = new byte [OS.strlen (address [0])];
 	OS.memmove (buffer, address [0], buffer.length);
-	OS.g_free (ptr);
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
@@ -471,9 +474,10 @@ public void setImage (int index, Image image) {
 	int row = parent.indexOf (this);
 	if (row == -1) return;
 	int clist = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	String string = getText (index);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	if (image == null) {
-		OS.gtk_clist_set_text (clist, row, 0, buffer);
+		OS.gtk_clist_set_text (clist, row, index, buffer);
 	} else {
 		int pixmap = image.pixmap, mask = image.mask;
 		byte [] spacing = new byte [] {2};

@@ -235,8 +235,8 @@ void createHandle (int index) {
 	 * Initially all those fake columns are invisible
 	 */
 	byte [] buffer = new byte [1];
-	OS.gtk_clist_set_column_title (handle, 0, buffer);
 	for (int i=1; i<MAX_COLUMNS; i++) {
+		OS.gtk_clist_set_column_title (handle, i, buffer);
 		OS.gtk_clist_set_column_visibility (handle, i, false);
 	}
 
