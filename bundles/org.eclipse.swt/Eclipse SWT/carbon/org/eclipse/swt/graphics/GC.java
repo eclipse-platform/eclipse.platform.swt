@@ -38,6 +38,8 @@ public final class GC {
 	Drawable drawable;
 	GCData data;
 
+	static final int TAB_COUNT = 32;
+
 GC() {
 }
 
@@ -260,11 +262,10 @@ void createLayout () {
 }
 
 void createTabs () {
-	int tabCount = 32;
 	ATSUTab tabs = new ATSUTab();
 	int tabWidth = getCharWidth(' ') * 8;
-	int ptr = OS.NewPtr(ATSUTab.sizeof * tabCount);
-	for (int i=0, offset=ptr; i<tabCount; i++, offset += ATSUTab.sizeof) {
+	int ptr = OS.NewPtr(ATSUTab.sizeof * TAB_COUNT);
+	for (int i=0, offset=ptr; i<TAB_COUNT; i++, offset += ATSUTab.sizeof) {
 		tabs.tabPosition += OS.Long2Fix(tabWidth);
 		OS.memcpy(offset, tabs, ATSUTab.sizeof);
 	}
@@ -1832,26 +1833,6 @@ public void setLineWidth(int width) {
 	OS.CGContextSetLineWidth(handle, width);
 }
 
-/** 
- * If the argument is <code>true</code>, puts the receiver
- * in a drawing mode where the resulting color in the destination
- * is the <em>exclusive or</em> of the color values in the source
- * and the destination, and if the argument is <code>false</code>,
- * puts the receiver in a drawing mode where the destination color
- * is replaced with the source color value.
- *
- * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public void setXORMode(boolean xor) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	//NOT DONE
-	data.xorMode = xor;
-}
-
 int setString(String string, int flags) {
 	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags & ~SWT.DRAW_TRANSPARENT)) {
 		return data.stringLength;
@@ -1887,7 +1868,7 @@ int setString(String string, int flags) {
 	}
 	if ((flags & SWT.DRAW_TAB) != 0) {
 		if (data.tabs == 0) createTabs ();
-		OS.ATSUSetTabArray(layout, data.tabs, 32);
+		OS.ATSUSetTabArray(layout, data.tabs, TAB_COUNT);
 	} else {
 		OS.ATSUSetTabArray(layout, 0, 0);
 	}
@@ -1908,6 +1889,26 @@ int setString(String string, int flags) {
 	data.drawFlags = flags;
 	data.stringPtr = ptr;
 	return length;
+}
+
+/** 
+ * If the argument is <code>true</code>, puts the receiver
+ * in a drawing mode where the resulting color in the destination
+ * is the <em>exclusive or</em> of the color values in the source
+ * and the destination, and if the argument is <code>false</code>,
+ * puts the receiver in a drawing mode where the destination color
+ * is replaced with the source color value.
+ *
+ * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setXORMode(boolean xor) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	//NOT DONE
+	data.xorMode = xor;
 }
 
 /**
