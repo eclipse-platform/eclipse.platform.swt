@@ -1777,7 +1777,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1get_1scrollable
-  (JNIEnv *env, jclass that, jint notebook, jboolean scrollable)
+  (JNIEnv *env, jclass that, jint notebook)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "gtk_notebook_get_scrollable");
