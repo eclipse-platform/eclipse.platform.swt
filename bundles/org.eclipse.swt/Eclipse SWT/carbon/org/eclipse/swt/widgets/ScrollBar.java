@@ -638,17 +638,11 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	
-	this.visible= visible;
-	if (OS.IsControlVisible(handle) != visible) {
+	if (this.visible != visible) {
+		this.visible= visible;
 		OS.HIViewSetVisible(handle, visible);		
 		parent._relayout();
 		sendEvent(visible ? SWT.Show : SWT.Hide);
 	}
 }
-
-void internalSetBounds(Rect bounds) {
-	OS.SetControlBounds(handle, bounds);
-}
-
 }
