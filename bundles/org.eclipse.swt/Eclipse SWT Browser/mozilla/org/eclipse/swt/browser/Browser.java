@@ -1353,8 +1353,15 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 		if (request == aRequest) request = 0;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (html != null) {
-			byte[] data = html.getBytes();
+			/* Convert the String containing HTML to an array of
+			 * bytes with UTF-16 data.
+			 */
+			int length = html.length();
+			char[] src = new char[length];
+			html.getChars(0, length, src, 0);
 			html = null;
+			byte[] data = new byte[length * 2];
+			XPCOM.memmove(data, src, length * 2);
 
 			/* render HTML in memory */
 			String contentType = "text/html"; //$NON-NLS-1$
@@ -1433,7 +1440,7 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 			rc = inputStreamChannel.SetContentType(aContentType);
 			XPCOM.nsCString_delete(aContentType);
 			if (rc != XPCOM.NS_OK) error(rc);
-			byte[] contentCharsetBuffer = new byte[1];
+			byte[] contentCharsetBuffer = "UTF-16".getBytes();
 			int aContentCharset = XPCOM.nsCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
 			rc = inputStreamChannel.SetContentCharset(aContentCharset);
 			XPCOM.nsCString_delete(aContentCharset);
@@ -1458,7 +1465,7 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 			categoryManager.Release();
 	
-			int length = XPCOM.strlen(result[0]);
+			length = XPCOM.strlen(result[0]);
 			aContractID = new byte[length + 1];
 			XPCOM.memmove(aContractID, result[0], length);
 			rc = serviceManager.GetServiceByContractID(aContractID, nsIDocumentLoaderFactory.NS_IDOCUMENTLOADERFACTORY_IID, result);

@@ -415,6 +415,18 @@ JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3CI)
 	if (arg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
 }
 
+JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3B_3CI)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	jchar *lparg1=NULL;
+	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	if (arg1) lparg1 = env->GetCharArrayElements(arg1, NULL);
+	memmove((void *)lparg0, lparg1, arg2);
+	if (arg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+}
+
 JNIEXPORT jint JNICALL XPCOM_NATIVE(PR_1Malloc)
 	(JNIEnv *, jclass, jint Length)
 {

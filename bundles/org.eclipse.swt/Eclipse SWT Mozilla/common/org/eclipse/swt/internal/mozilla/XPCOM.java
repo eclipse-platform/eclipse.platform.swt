@@ -90,6 +90,7 @@ public static final native void memmove(byte[] dest, int src, int nbytes);
 public static final native void memmove(char[] dest, int src, int nbytes);
 public static final native void memmove(int dest, byte[] src, int nbytes);
 public static final native void memmove(int dest, char[] src, int nbytes);
+public static final native void memmove(byte[] dest, char[] src, int nbytes);
 public static final native int NS_GetComponentManager(int[] result);
 public static final native int NS_GetServiceManager(int[] result);
 public static final native int NS_InitEmbedding(int aMozBinDirectory, int aAppFileLocProvider);
