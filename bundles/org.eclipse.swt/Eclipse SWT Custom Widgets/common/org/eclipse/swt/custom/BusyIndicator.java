@@ -59,9 +59,9 @@ public static void showWhile(Display display, Runnable runnable) {
 	if (cursor == null || cursor.isDisposed()) {
 		cursor = new Cursor(display, SWT.CURSOR_WAIT);
 		display.setData(BUSY_CURSOR, cursor);
-		display.addListener(SWT.Dispose, new Listener() {
-			public void handleEvent(Event e) {
-				Display display = e.display;
+		display.disposeExec(new Runnable() {
+			public void run() {
+				Display display = Display.getCurrent();
 				Cursor cursor =  (Cursor)display.getData(BUSY_CURSOR);
 				if (cursor != null) {
 					if (!cursor.isDisposed()) cursor.dispose();
