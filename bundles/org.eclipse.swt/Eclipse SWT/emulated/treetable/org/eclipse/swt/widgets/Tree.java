@@ -32,6 +32,8 @@ import java.util.Vector;
  * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles SINGLE and MULTI may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */

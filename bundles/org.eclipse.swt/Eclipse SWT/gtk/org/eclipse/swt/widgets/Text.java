@@ -21,8 +21,11 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles MULTI and SINGLE may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 
 public class Text extends Scrollable {
