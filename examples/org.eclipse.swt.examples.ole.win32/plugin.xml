@@ -3,12 +3,10 @@
 <plugin
    id="org.eclipse.swt.examples.ole.win32"
    name="%plugin.SWTOLEExample.name"
-   version="1.0.0"
+   version="0.9"
    provider-name="IBM"
    class="org.eclipse.swt.examples.ole.win32.OlePlugin">
-
 <!-- Required plugins -->
-
 <requires>
    <import plugin="org.eclipse.core.runtime"/>
    <import plugin="org.eclipse.core.resources"/>
@@ -17,15 +15,12 @@
 </requires>
 
 <!-- Runtime -->
-
 <runtime>
    <library name="olewin32.jar"/>
 </runtime>
 
-<!-- Extension points -->
-
-
 <!-- Extensions -->
+<!-- Extension points -->
 <extension
       point="org.eclipse.ui.views">
    <category
@@ -39,20 +34,19 @@
          id="org.eclipse.swt.examples.ole.win32.browserView">
    </view>
 </extension>
-
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
-      <category
-      	name="%launchcategory.SWTExamples.name"
-        description="%launchcategory.SWTExamples.description"
-      	id="org.eclipse.swt.examples.launchcategory">
-      </category>
-      <viewItem
-      	name="%launchitem.OLEWebBrowserExample.name"
-      	id="org.eclipse.swt.examples.ole.win32.launcher"
-      	viewId="org.eclipse.swt.examples.ole.win32.browserView"
-      	description="%launchitem.OLEWebBrowserExample.description"
-      	category="org.eclipse.swt.examples.launchcategory"/>      	
+   <category
+         name="%launchcategory.SWTExamples.name"
+         description="%launchcategory.SWTExamples.description"
+         id="org.eclipse.swt.examples.launchcategory">
+   </category>
+   <viewItem
+         viewId="org.eclipse.swt.examples.ole.win32.browserView"
+         name="%launchitem.OLEWebBrowserExample.name"
+         description="%launchitem.OLEWebBrowserExample.description"
+         category="org.eclipse.swt.examples.launchcategory"
+         id="org.eclipse.swt.examples.ole.win32.launcher">
+   </viewItem>
 </extension>
-
 </plugin>

@@ -3,12 +3,10 @@
 <plugin
    id="org.eclipse.swt.examples.paint"
    name="%plugin.SWTPaintExample.name"
-   version="1.0.0"
+   version="0.9"
    provider-name="IBM"
    class="org.eclipse.swt.examples.paint.PaintPlugin">
-
 <!-- Required plugins -->
-
 <requires>
    <import plugin="org.eclipse.core.runtime"/>
    <import plugin="org.eclipse.core.resources"/>
@@ -17,15 +15,12 @@
 </requires>
 
 <!-- Runtime -->
-
 <runtime>
    <library name="paint.jar"/>
 </runtime>
 
-<!-- Extension points -->
-
-
 <!-- Extensions -->
+<!-- Extension points -->
 <extension
       point="org.eclipse.ui.views">
    <category
@@ -39,110 +34,108 @@
          id="org.eclipse.swt.examples.paint.view">
    </view>
 </extension>
-
 <extension
       point="org.eclipse.ui.viewActions">
    <viewContribution
          targetID="org.eclipse.swt.examples.paint.view"
          id="org.eclipse.swt.examples.paint.viewContribution">
       <menu
-            id="org.eclipse.swt.examples.paint.menuTools"
-            label="%menu.Tools.label">
+            label="%menu.Tools.label"
+            id="org.eclipse.swt.examples.paint.menuTools">
       </menu>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolPencil"
             toolbarPath="Normal/Pencil"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Pencil"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/pencil_tool.gif"
             label="%tool.Pencil.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Pencil"
             tooltip="%tool.Pencil.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolAirbrush"
             toolbarPath="Normal/Airbrush"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Airbrush"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/airbrush_tool.gif"
             label="%tool.Airbrush.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Airbrush"
             tooltip="%tool.Airbrush.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolLine"
             toolbarPath="Normal/Line"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Line"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/line_tool.gif"
             label="%tool.Line.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Line"
             tooltip="%tool.Line.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolPolyLine"
             toolbarPath="Normal/Polygon"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/PolyLine"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/polyline_tool.gif"
             label="%tool.PolyLine.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/PolyLine"
             tooltip="%tool.PolyLine.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolEllipse"
             toolbarPath="Normal/Ellipse"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Ellipse"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/ellipse_tool.gif"
             label="%tool.Ellipse.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Ellipse"
             tooltip="%tool.Ellipse.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolRectangle"
             toolbarPath="Normal/Rectangle"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/Rectangle"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/rectangle_tool.gif"
             label="%tool.Rectangle.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/Rectangle"
             tooltip="%tool.Rectangle.tooltip">
       </action>
       <action
+            state="false"
             id="org.eclipse.swt.examples.paint.toolFilledRectangle"
             toolbarPath="Normal/FilledRectangle"
-            menubarPath="org.eclipse.swt.examples.paint.menuTools/FilledRectangle"
             class="org.eclipse.swt.examples.paint.PaintViewAction"
-            state="false"
             enablesFor="*"
             icon="icons/filledrectangle_tool.gif"
             label="%tool.FilledRectangle.label"
+            menubarPath="org.eclipse.swt.examples.paint.menuTools/FilledRectangle"
             tooltip="%tool.FilledRectangle.tooltip">
       </action>
    </viewContribution>
 </extension>
-
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
-      <category
-      	name="%launchcategory.SWTExamples.name"
-        description="%launchcategory.SWTExamples.description"
-      	id="org.eclipse.swt.examples.launchcategory">
-      </category>
-      <viewItem
-      	name="%launchitem.PaintExample.name"
-      	id="org.eclipse.swt.examples.paint.launcher"
-      	viewId="org.eclipse.swt.examples.paint.view"
-      	description="%launchitem.PaintExample.description"
-      	source="paintsrc.zip"
-      	category="org.eclipse.swt.examples.launchcategory"/>
+   <category
+         name="%launchcategory.SWTExamples.name"
+         description="%launchcategory.SWTExamples.description"
+         id="org.eclipse.swt.examples.launchcategory">
+   </category>
+   <viewItem
+         viewId="org.eclipse.swt.examples.paint.view"
+         name="%launchitem.PaintExample.name"
+         description="%launchitem.PaintExample.description"
+         category="org.eclipse.swt.examples.launchcategory"
+         source="paintsrc.zip"
+         id="org.eclipse.swt.examples.paint.launcher">
+   </viewItem>
 </extension>
-
 </plugin>

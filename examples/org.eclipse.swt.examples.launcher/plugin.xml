@@ -3,12 +3,10 @@
 <plugin
    id="org.eclipse.swt.examples.launcher"
    name="%plugin.SWTLauncherExample.name"
-   version="1.0.0"
+   version="0.9"
    provider-name="IBM"
    class="org.eclipse.swt.examples.launcher.LauncherPlugin">
-
 <!-- Required plugins -->
-
 <requires>
    <import plugin="org.eclipse.core.runtime"/>
    <import plugin="org.eclipse.core.resources"/>
@@ -17,13 +15,11 @@
 </requires>
 
 <!-- Runtime -->
-
 <runtime>
    <library name="launcher.jar"/>
 </runtime>
 
 <!-- Extension points -->
-
 <extension-point id="launchItems" name="%extension-point.launchItems.name" schema="schema/org.eclipse.swt.examples.launcher.launchItems.xsd"/>
 
 <!-- Extensions -->
@@ -50,8 +46,8 @@
    <viewItem
          viewId="org.eclipse.swt.examples.launcher.view"
          name="%launchitem.LauncherExample.name"
+         description="%launchitem.LauncherExample.description"
          category="org.eclipse.swt.examples.launchcategory"
-      	description="%launchitem.LauncherExample.description"
          id="org.eclipse.swt.examples.launcher.launcher">
    </viewItem>
 </extension>
