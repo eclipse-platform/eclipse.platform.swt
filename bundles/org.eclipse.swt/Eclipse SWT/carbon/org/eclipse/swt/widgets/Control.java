@@ -391,34 +391,6 @@ void createWidget (int index) {
 	foreground = background = -1;
 
 	/*
-	* Feature in MOTIF.  When a widget is created before the
-	* parent has been realized, the widget is created behind
-	* all siblings in the Z-order.  When a widget is created
-	* after the parent has been realized, it is created in
-	* front of all siblings.  This is not incorrect but is
-	* unexpected.  The fix is to force all widgets to always
-	* be created behind their siblings.
-	*/
-    /* AW
-	int topHandle = topHandle ();
-	if (OS.XtIsRealized (topHandle)) {
-		int window = OS.XtWindow (topHandle);
-		if (window != 0) {
-			int display = OS.XtDisplay (topHandle);
-			if (display != 0) OS.XLowerWindow (display, window);
-		}
-		/*
-		* Make that the widget has been properly realized
-		* because the widget was created after the parent
-		* has been realized.  This is not part of the fix
-		* for Z-order in the code above.
-		*/
-        /* AW
-		realizeChildren ();
-	}
-    */
-
-	/*
 	* Feature in Motif.  When the XmNfontList resource is set for
 	* a widget, Motif creates a copy of the fontList and disposes
 	* the copy when the widget is disposed.  This means that when
@@ -543,9 +515,6 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget();
-    /* AW
-	return Color.motif_new (getDisplay (), getXColor (getBackgroundPixel ()));
-    */
 	return Color.carbon_new (getDisplay (), getBackgroundPixel (), false);
 }
 int getBackgroundPixel () {
@@ -647,11 +616,6 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNsensitive, 0};
-	OS.XtGetValues (topHandle (), argList, argList.length / 2);
-	return argList [1] != 0;
-    */
 	int h= topHandle();
 	if (OS.IsValidControlHandle(h))
 		return OS.IsControlEnabled(h);
@@ -708,9 +672,6 @@ int getFontHeight () {
  */
 public Color getForeground () {
 	checkWidget();
-    /* AW
-	return Color.motif_new (getDisplay (), getXColor (getForegroundPixel ()));
-    */
 	return Color.carbon_new (getDisplay (), getForegroundPixel (), false);
 }
 int getForegroundPixel () {
@@ -755,11 +716,6 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget();
 	int topHandle = topHandle ();
-    /*
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	return new Point ((short) argList [1], (short) argList [3]);
-    */	
 	short[] bounds= new short[4];
 	short[] pbounds= new short[4];
 	OS.GetControlBounds(topHandle, bounds);
@@ -959,12 +915,6 @@ public int internal_new_GC (GCData data) {
 	*/
 	if (data != null) {
 		data.device = getDisplay ();
-		/* AW
-		data.display = xDisplay;
-		data.drawable = xWindow;
-		data.foreground = argList [1];
-		data.background = argList [3];
-		*/
 		data.foreground = getForegroundPixel();
 		data.background = getBackgroundPixel();
 		data.font = font.handle;
@@ -1188,14 +1138,7 @@ int processHelp (Object callData) {
 	return 0;
 }
 int processKeyDown (Object callData) {
-    /* AW
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	*/
 	MacEvent macEvent = (MacEvent) callData;
-	/* AW
-	if (xEvent.keycode != 0) {
-	*/
 	int keyCode= macEvent.getKeyCode();
 	if (Display.translateKey(keyCode) != 0) {
 		sendKeyEvent (SWT.KeyDown, macEvent);
@@ -1205,10 +1148,6 @@ int processKeyDown (Object callData) {
 	return 0;
 }
 int processKeyUp (Object callData) {
-    /* AW
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-    */
 	MacEvent macEvent = (MacEvent) callData;
 	int keyCode= macEvent.getKeyCode();
 	if (Display.translateKey(keyCode) != 0) {
@@ -1485,9 +1424,6 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
-    /* AW
-	OS.XmImUnregister (handle);
-    */
 	parent = null;
 	layoutData = null;
 }
@@ -1714,23 +1650,7 @@ void sendHelpEvent (Object callData) {
 		control = control.parent;
 	}
 }
-final byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
-	/*
-	* Bug in Motif. On Linux only, XmImMbLookupString () does not return
-	* XBufferOverflow as the status if the buffer is too small. The fix
-	* is to pass a large buffer.
-	*/
-	/* AW
-	byte [] buffer = new byte [512];
-	int [] status = new int [1], unused = new int [1];
-	int length = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, unused, status);
-	if (status [0] == OS.XBufferOverflow) {
-		buffer = new byte [length];
-		length = OS.XmImMbLookupString (handle, xEvent, buffer, length, unused, status);
-	}
-	if (length == 0) return null;
-	*/
-	
+private final byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
 	byte [] buffer = new byte[0];
 
 	/* Convert from MBCS to UNICODE and send the event */
@@ -1836,27 +1756,6 @@ void setBackgroundPixel (int pixel) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	/*
-	* Feature in Motif.  Motif will not allow a window
-	* to have a zero width or zero height.  The fix is
-	* to ensure these values are never zero.
-	*/
-    /* AW
-	int [] argList = {
-		OS.XmNx, 0, 			// 1
-		OS.XmNy, 0, 			// 3
-		OS.XmNwidth, 0, 		// 5
-		OS.XmNheight, 0, 		// 7
-		OS.XmNborderWidth, 0, 	        // 9
-	};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	int newWidth = Math.max (width - (argList [9] * 2), 1);
-	int newHeight = Math.max (height - (argList [9] * 2), 1);
-	boolean sameOrigin = (x == (short) argList [1]) && (y == (short) argList [3]);
-	boolean sameExtent = (newWidth == argList [5]) && (newHeight == argList [7]);
-	if (sameOrigin && sameExtent) return;
-	OS.XtConfigureWidget (topHandle, x, y, newWidth, newHeight, argList [9]);
-    */
 	int topHandle = topHandle ();
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
@@ -2022,31 +1921,10 @@ public void setFont (Font font) {
 	if (font == null) font = defaultFont ();
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.font = font;
-	/*
-	* Feature in Motif.  Setting the font in a widget
-	* can cause the widget to automatically resize in
-	* the OS.  This behavior is unwanted.  The fix is
-	* to force the widget to resize to original size
-	* after every font change.
-	*/
-    /* AW
-	int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
-    */
 
-	/* Set the font list */
 	int fontHandle = fontHandle ();
-    /* AW
-	int [] argList2 = {OS.XmNfontList, fontList};
-	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
-    */
 	if (OS.SetControlFontStyle(fontHandle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.kNoErr)
 		; //System.out.println("Control.setFont("+this+"): error");
-
-	/* Restore the widget size */
-    /* AW
-	OS.XtSetValues (handle, argList1, argList1.length / 2);
-    */
 }
 /**
  * Sets the receiver's foreground color to the color specified
@@ -2372,8 +2250,6 @@ public void setVisible (boolean visible) {
 }
 void setZOrder (Control control, boolean above) {
 	
-	//System.out.println("Control.setZOrder(" + parent + "): move " + this + (above?" above ":" below ") + control);
-	
 	if (control != null && control.parent != parent)
 		return;
 	
@@ -2590,7 +2466,6 @@ boolean traverseMnemonic (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-/* AW
 public boolean traverse (int traversal) {
 	checkWidget();
 	if (!isFocusControl () && !setFocus ()) return false;
@@ -2613,10 +2488,16 @@ boolean traverseEscape () {
 	return true;
 }
 boolean traverseGroup (boolean next) {
+	/* AW
 	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT_TAB_GROUP : OS.XmTRAVERSE_PREV_TAB_GROUP);
+	*/
+	return false;
 }
 boolean traverseItem (boolean next) {
+	/* AW
 	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT : OS.XmTRAVERSE_PREV);
+	*/
+	return false;
 }
 boolean traverseReturn () {
 	Button button = menuShell ().getDefaultButton ();
@@ -2625,7 +2506,6 @@ boolean traverseReturn () {
 	button.click ();
 	return true;
 }
-*/
 /**
  * Forces all outstanding paint requests for the widget tree
  * to be processed before this method returns.

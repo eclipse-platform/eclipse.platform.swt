@@ -290,10 +290,6 @@ public void dispose () {
 	destroyWidget ();
 }
 void enableHandle (boolean enabled, int widgetHandle) {
-	/* AW
-	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
-	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
-	*/
 	if (enabled)
 		OS.EnableControl(widgetHandle);
 	else
