@@ -791,6 +791,18 @@ failTag:
 }
 #endif
 
+#ifndef NO_PgSetStrokeJoin
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeJoin)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PgSetStrokeJoin_FUNC);
+	rc = (jint)PgSetStrokeJoin(arg0);
+	OS_NATIVE_EXIT(env, that, PgSetStrokeJoin_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PgSetStrokeWidth
 JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeWidth)
 	(JNIEnv *env, jclass that, jint arg0)

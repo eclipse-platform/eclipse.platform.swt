@@ -72,6 +72,7 @@ typedef enum {
 	PgSetStrokeCap_FUNC,
 	PgSetStrokeColor_FUNC,
 	PgSetStrokeDash_FUNC,
+	PgSetStrokeJoin_FUNC,
 	PgSetStrokeWidth_FUNC,
 	PgSetTextColor_FUNC,
 	PgSetTextXORColor_FUNC,
