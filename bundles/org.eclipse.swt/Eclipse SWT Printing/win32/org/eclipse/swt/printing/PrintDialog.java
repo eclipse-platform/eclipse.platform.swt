@@ -228,6 +228,7 @@ public PrinterData open() {
 			else i++;
 		}
 		String driver = buffer.toString(driverOffset, i);
+
 		int deviceOffset = offsets[1];
 		i = 0;
 		while (deviceOffset + i < size) {
@@ -235,6 +236,14 @@ public PrinterData open() {
 			else i++;
 		}
 		String device = buffer.toString(deviceOffset, i);	
+
+		int outputOffset = offsets[2];
+		i = 0;
+		while (outputOffset + i < size) {
+			if (buffer.tcharAt(outputOffset + i) == 0) break;
+			else i++;
+		}
+		String output = buffer.toString(outputOffset, i);
 		
 		/* Create PrinterData object and set fields from PRINTDLG */
 		PrinterData data = new PrinterData(driver, device);
@@ -246,6 +255,7 @@ public PrinterData open() {
 			data.scope = PrinterData.SELECTION;
 		}
 		data.printToFile = (pd.Flags & OS.PD_PRINTTOFILE) != 0;
+		data.fileName = output;
 		data.copyCount = pd.nCopies;
 		data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
 
