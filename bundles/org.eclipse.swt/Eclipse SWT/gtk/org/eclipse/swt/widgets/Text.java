@@ -133,7 +133,7 @@ void hookEvents () {
 	signal_connect_after (handle, "changed", SWT.Modify, 2);
 	signal_connect (handle, "insert-text", SWT.Verify, 5);
 	signal_connect (handle, "delete-text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.Selection, 2);
+	signal_connect (handle, "activate", SWT.DefaultSelection, 2);
 }
 
 /**
@@ -812,7 +812,7 @@ int processVerify (int int0, int int1, int int2) {
 	return 0;
 }
 
-int processSelection (int int0, int int1, int int2) {
+int processDefaultSelection (int int0, int int1, int int2) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }

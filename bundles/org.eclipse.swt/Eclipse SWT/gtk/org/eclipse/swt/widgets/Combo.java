@@ -302,6 +302,7 @@ void hookEvents () {
 	// TO DO - fix multiple selection events for one user action
 	signal_connect (listHandle, "select_child", SWT.Selection, 3);
 	signal_connect_after (entryHandle, "changed", SWT.Modify, 2);
+	signal_connect (entryHandle, "activate", SWT.DefaultSelection, 2);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -630,6 +631,11 @@ public int indexOf (String string, int start) {
 
 int parentingHandle() {
 	return fixedHandle;
+}
+
+int processDefaultSelection (int int0, int int1, int int2) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
 }
 
 int processModify (int arg0, int arg1, int int2) {

@@ -551,7 +551,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
 		case SWT.Expand:			return processExpand        	(int0, int1, int2);
 		case SWT.Dispose:			return processDispose        	(int0, int1, int2);
-		case SWT.DefaultSelection:	return processDoubleSelection	(int0, int1, int2);
+		case SWT.DefaultSelection:	return processDefaultSelection	(int0, int1, int2);
 		case SWT.Deiconify:		return processDeiconify		(int0, int1, int2);
 		case SWT.FocusIn:			return processFocusIn         	(int0, int1, int2);
 		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
@@ -601,11 +601,11 @@ int processDispose (int arg0, int arg1, int int2) {
 	return 1;
 }
 
-int processDeiconify (int int0, int int1, int int2) {
+int processDefaultSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
-int processDoubleSelection (int int0, int int1, int int2) {
+int processDeiconify (int int0, int int1, int int2) {
 	return 0;
 }
 

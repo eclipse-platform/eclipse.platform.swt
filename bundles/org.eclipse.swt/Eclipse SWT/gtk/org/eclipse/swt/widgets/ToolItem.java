@@ -496,7 +496,7 @@ int processSelection  (int int0, int int1, int int2) {
 	postEvent (SWT.Selection, event);
 	return 0;
 }
-int processDoubleSelection (int int0, int int1, int int2) {
+int processDefaultSelection (int int0, int int1, int int2) {
 	Event event = new Event ();
 	event.detail = SWT.ARROW;
 	postEvent (SWT.Selection, event);
