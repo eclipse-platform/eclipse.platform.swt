@@ -381,6 +381,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 	return new Point (width, height);
 }
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void copy () {
+	checkWidget ();
+	//NOT IMPLEMENTED
+}
 void createHandle (int index) {
 	state |= HANDLE;
 
@@ -437,6 +454,27 @@ void createHandle (int index) {
 			OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
 		}
 	}
+}
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void cut () {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 void deregister () {
 	super.deregister ();
@@ -841,6 +879,24 @@ public int indexOf (String string, int start) {
 			return i;
 	}
 	return -1;
+}
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void paste () {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 int processFocusIn () {
 	super.processFocusIn ();
