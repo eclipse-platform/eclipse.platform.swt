@@ -1117,7 +1117,9 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 				switch (eventKind) {
 					case OS.kEventMouseDown: {
 						int result = control.kEventMouseDown (nextHandler, theEvent, userData);
-						return userData == 0 ? result : OS.noErr;
+						//TEMPORARY CODE
+//						return userData == 0 ? result : OS.noErr;
+						return result;
 					}
 					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);
 					case OS.kEventMouseDragged:		return control.kEventMouseDragged (nextHandler, theEvent, userData);
