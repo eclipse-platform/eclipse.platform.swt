@@ -704,8 +704,8 @@ int hwndMDIClient () {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one)
- * and asks the window manager to make the shell active.
+ * sets the focus and asks the window manager to make the
+ * shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
