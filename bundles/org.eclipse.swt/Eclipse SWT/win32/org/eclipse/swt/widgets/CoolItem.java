@@ -207,7 +207,7 @@ public Rectangle getBounds () {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	int width = rect.right - rect.left;
+	int width = rect.right - rect.left + 2;
 	int height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -443,7 +443,7 @@ public Point getSize() {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	int width = rect.right - rect.left;
+	int width = rect.right - rect.left + 2;
 	int height = rect.bottom - rect.top;
 	return new Point (width, height);
 }
@@ -500,7 +500,7 @@ public void setSize (int width, int height) {
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;
 	if (!isLastItem) {
-		rbBand.cx = width;
+		rbBand.cx = width - 2;
 		rbBand.fMask |= OS.RBBIM_SIZE;
 	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);

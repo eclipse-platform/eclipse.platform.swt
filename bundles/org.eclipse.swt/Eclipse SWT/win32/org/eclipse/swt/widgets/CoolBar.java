@@ -485,7 +485,7 @@ public Point [] getItemSizes () {
 	for (int i=0; i<count; i++) {
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
-		sizes [i] = new Point (rect.right - rect.left, rect.bottom - rect.top);
+		sizes [i] = new Point (rect.right - rect.left + 2, rect.bottom - rect.top);
 	}
 	return sizes;
 }
