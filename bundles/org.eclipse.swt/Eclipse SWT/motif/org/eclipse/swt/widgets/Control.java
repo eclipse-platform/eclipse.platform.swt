@@ -1454,6 +1454,9 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	redrawHandle (x, y, width, height, handle);
 }
+void releaseChild () {
+	parent.removeControl (this);
+}
 void releaseWidget () {
 	/*
 	* Restore the default font for the widget in case the

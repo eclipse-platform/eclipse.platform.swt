@@ -1585,6 +1585,10 @@ void realizeWidget() {
 	}
 }
 
+void releaseChild () {
+	parent.removeControl (this);
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);

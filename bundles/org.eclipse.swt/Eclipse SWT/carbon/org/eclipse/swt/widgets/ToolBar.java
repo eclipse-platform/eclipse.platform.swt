@@ -400,6 +400,17 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void removeControl (Control control) {
+	super.removeControl (control);
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null && item.control == control) {
+			item.setControl (null);
+		}
+	}
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) {

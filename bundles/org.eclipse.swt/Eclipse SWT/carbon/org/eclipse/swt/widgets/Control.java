@@ -1619,8 +1619,8 @@ void register () {
 }
 
 void releaseChild () {
-	super.releaseChild ();
 	setVisible (topHandle (), false);
+	parent.removeControl (this);
 }
 
 void releaseHandle () {

@@ -227,6 +227,26 @@ void deregister () {
 	super.deregister ();
 	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
+void fixTabList (Control control) {
+	if (tabList == null) return;
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (tabList [i] == control) count++;
+	}
+	if (count == 0) return;
+	Control [] newList = null;
+	int length = tabList.length - count;
+	if (length != 0) {
+		newList = new Control [length];
+		int index = 0;
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] != control) {
+				newList [index++] = tabList [i];
+			}
+		}
+	}
+	tabList = newList;
+}
 int focusHandle () {
 	if (focusHandle == 0) return super.focusHandle ();
 	return focusHandle;
@@ -603,6 +623,9 @@ void releaseWidget () {
 	tabList = null;
 	if (damagedRegion != 0) OS.XDestroyRegion (damagedRegion);
 	damagedRegion = 0;
+}
+void removeControl (Control control) {
+	fixTabList (control);
 }
 void resizeClientWindow	() {
 	if (clientWindow == 0) return;

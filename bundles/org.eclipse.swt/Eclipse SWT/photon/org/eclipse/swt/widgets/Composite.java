@@ -269,6 +269,26 @@ void drawWidget (int widget, int damage) {
 	}
 }
 
+void fixTabList (Control control) {
+	if (tabList == null) return;
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (tabList [i] == control) count++;
+	}
+	if (count == 0) return;
+	Control [] newList = null;
+	int length = tabList.length - count;
+	if (length != 0) {
+		newList = new Control [length];
+		int index = 0;
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] != control) {
+				newList [index++] = tabList [i];
+			}
+		}
+	}
+	tabList = newList;
+}
 
 public boolean forceFocus () {
 	checkWidget();
@@ -595,6 +615,10 @@ void releaseWidget () {
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;
+}
+
+void removeControl (Control control) {
+	fixTabList (control);
 }
 
 void resizeClientArea () {

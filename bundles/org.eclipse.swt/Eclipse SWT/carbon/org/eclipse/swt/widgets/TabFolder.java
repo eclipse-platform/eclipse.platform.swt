@@ -145,9 +145,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			bounds = new Rect ();
 			bounds.right = bounds.bottom = 100;
 			OS.SetControlBounds (handle, bounds);
-		} else {
+	} else {
 			bounds = oldBounds;
-		}
+	}
 		Rect client = new Rect ();
 		OS.GetTabContentRect (handle, client);
 		if (fixBounds) OS.SetControlBounds (handle, oldBounds);
@@ -155,7 +155,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		Rect inset = getInset ();
 		width += inset.left + inset.right;
 		size.x = Math.max (width, size.x);	
-	}
+}
 	return size;
 }
 
@@ -471,6 +471,15 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
+}
+
+void removeControl (Control control) {
+	super.removeControl (control);
+	int count = getItemCount ();
+	for (int i=0; i<count; i++) {
+		TabItem item = items [i];
+		if (item.control == control) item.setControl (null);
+	}
 }
 
 /**

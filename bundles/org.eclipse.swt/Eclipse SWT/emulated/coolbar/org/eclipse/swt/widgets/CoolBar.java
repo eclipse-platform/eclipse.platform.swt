@@ -705,6 +705,16 @@ void onPaint(Event event) {
 		}
 	}
 }
+void removeControl (Control control) {
+	super.removeControl (control);
+	CoolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		CoolItem item = items [i];
+		if (item != null && item.control == control) {
+			item.setControl (null);
+		}
+	}
+}
 /**
  * Remove the item from the row. Adjust the x and width values
  * appropriately.
