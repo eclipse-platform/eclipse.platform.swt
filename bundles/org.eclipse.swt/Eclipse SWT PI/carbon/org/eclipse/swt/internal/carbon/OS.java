@@ -325,6 +325,7 @@ public class OS {
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
 	public static final int kHICommandFromMenu = 1 << 0;
+	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kHIViewZOrderAbove = 1;
 	public static final int kHIViewZOrderBelow = 2;
 	public static final int kHMCFStringContent = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';

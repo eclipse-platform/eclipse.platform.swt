@@ -2790,6 +2790,24 @@ public void update () {
 //	}
 }
 
+void updateQuitMenu () {
+	boolean enabled = true;
+	Shell [] shells = getShells();
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	for (int i = 0; i < shells.length; i++) {
+		Shell shell = shells[i];
+		if ((shell.style & mask) != 0 && shell.isVisible ()) {
+			enabled = false;
+			break;
+		}
+	}
+	if (enabled) {
+		OS.EnableMenuCommand(0, OS.kHICommandQuit);
+	} else {
+		OS.DisableMenuCommand(0, OS.kHICommandQuit);		
+	}
+}
+
 /**
  * If the receiver's user-interface thread was <code>sleep</code>'ing, 
  * causes it to be awakened and start running again. Note that this

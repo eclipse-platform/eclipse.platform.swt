@@ -844,6 +844,7 @@ void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
+	display.updateQuitMenu ();
 	windowGroup = 0;
 	lastActive = null;
 }
@@ -1079,6 +1080,7 @@ void setWindowVisible (boolean visible) {
 		invalidateVisibleRegion (topHandle);
 		sendEvent (SWT.Hide);
 	}
+	display.updateQuitMenu ();
 }
 
 void setZOrder () {
