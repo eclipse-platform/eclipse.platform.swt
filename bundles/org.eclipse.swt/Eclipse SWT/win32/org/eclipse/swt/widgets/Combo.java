@@ -494,11 +494,6 @@ public void deselectAll () {
 	// widget could be disposed at this point
 }
 
-boolean getEditable () {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	return (bits & 0x0F) == OS.CBS_DROPDOWNLIST;
-}
-
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -1127,10 +1122,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 }
 
-void setEditable (boolean editable) {
-	error (SWT.ERROR_NOT_IMPLEMENTED);
-}
-
 void setForegroundPixel (int pixel) {
 	if (foreground == pixel) return;
 	super.setForegroundPixel (pixel);
@@ -1466,15 +1457,22 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  For some reason, when the
 	* widget is a single line text widget, when the
-	* user presses tab or return, Windows beeps.
+	* user presses tab, return or escape, Windows beeps.
 	* The fix is to look for these keys and not call
 	* the window proc.
+	* 
+	* NOTE: This only happens when the drop down list
+	* is not visible.
 	*/
 	switch (wParam) {
+		case OS.VK_TAB: return LRESULT.ZERO;
 		case OS.VK_RETURN:
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH
-		case OS.VK_TAB: return LRESULT.ZERO;
+		case OS.VK_ESCAPE: 
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
+				return LRESULT.ZERO;
+			}
 	}
 	return result;
 }
