@@ -2247,8 +2247,9 @@ public void redraw () {
 	int /*long*/ paintHandle = paintHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
-	redrawWidget (0, 0, width, height, true);
+	redrawWidget (0, 0, width, height, false);
 }
+
 /**
  * Causes the rectangular area of the receiver specified by
  * the arguments to be marked as needing to be redrawn. 
