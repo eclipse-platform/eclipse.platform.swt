@@ -335,7 +335,7 @@ public CoolBar getParent () {
 public Point getPreferredSize () {
 	checkWidget();
 	int height = getSize().y;
-	return new Point(preferredWidth, height + (2 * MARGIN_HEIGHT));
+	return new Point(preferredWidth, height);
 }
 public Point getSize () {
 	checkWidget();
