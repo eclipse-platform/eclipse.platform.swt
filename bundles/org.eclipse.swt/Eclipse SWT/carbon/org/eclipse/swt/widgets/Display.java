@@ -135,6 +135,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* System Tray */
+	Tray tray;
+	
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
@@ -1136,6 +1139,11 @@ Control getFocusControl (int window) {
 	return null;
 }
 
+public boolean getHighContrast () {
+	checkDevice ();
+	return false;
+}
+
 /**
  * Returns the maximum allowed depth of icons on this display.
  * On some platforms, this may be different than the actual
@@ -1376,6 +1384,12 @@ public Color getSystemColor (int id) {
 	float green = ((rgb.green >> 8) & 0xFF) / 255f;
 	float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
 	return Color.carbon_new (this, new float[]{red, green, blue, 1});
+}
+
+public Tray getSystemTray () {
+	checkDevice ();
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NONE);
 }
 
 /**
