@@ -93,7 +93,7 @@ public Printer() {
  * @see #dispose
  */
 public Printer(PrinterData data) {
-	super(data);
+	SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 
