@@ -35,6 +35,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
 
+/* Swing Imports */
+import javax.swing.MenuSelectionManager;
+import javax.swing.UIManager;
+
 /**
  * This class provides a bridge between SWT and AWT, so that it
  * is possible to embedded AWT components in SWT and vice versa.
@@ -110,6 +114,7 @@ public static Frame new_Frame (final Composite parent) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
 	}
+	UIManager.getDefaults();
 	Object value = null;
 	try {
 		value = constructor.newInstance (new Object [] {new Integer (handle)});
@@ -155,6 +160,8 @@ public static Frame new_Frame (final Composite parent) {
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+						MenuSelectionManager manager = MenuSelectionManager.defaultManager();
+						manager.clearSelectedPath();
 					}
 				}
 			});
