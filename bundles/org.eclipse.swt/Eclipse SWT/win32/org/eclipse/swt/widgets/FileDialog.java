@@ -350,6 +350,8 @@ public String open () {
 				fileNames = newFileNames;
 			}
 		}
+	} else {
+		fileName = "";
 	}
 	
 	/* Free the memory that was allocated. */
