@@ -615,94 +615,81 @@ public void deselectAll () {
 
 void destroyItem (TreeColumn column) {
 	if (hwndHeader == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	int index = 0;
-	while (index < count) {
+	while (index < columnCount) {
 		if (columns [index] == column) break;
 		index++;
 	}
 	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	System.arraycopy (columns, index + 1, columns, index, --count - index);
-	columns [count] = null;
+	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
+	columns [columnCount] = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
-			if (count == 0) {
+			if (columnCount == 0) {
 				item.strings = null;
+				item.images = null;
+				item.cellBackground = null;
+				item.cellForeground = null;
+				item.cellFont = null;
 			} else {
-				String [] strings = item.strings;
-				if (strings != null) {
+				if (item.strings != null) {
+					String [] strings = item.strings;
 					if (index == 0) {
 						item.text = strings [1] != null ? strings [1] : "";
 					}
-					String [] temp = new String [count];
+					String [] temp = new String [columnCount];
 					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index + 1, temp, index, count - index);
+					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
 					item.strings = temp;
 				} else {
 					if (index == 0) item.text = "";
 				}
-			}
-			if (count == 0) {
-				item.images = null;
-			} else {
-				Image [] images = item.images;
-				if (images != null) {
+				if (item.images != null) {
+					Image [] images = item.images;
 					if (index == 0) item.image = images [1];
-					Image [] temp = new Image [count];
+					Image [] temp = new Image [columnCount];
 					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index + 1, temp, index, count - index);
+					System.arraycopy (images, index + 1, temp, index, columnCount - index);
 					item.images = temp;
 				} else {
 					if (index == 0) item.image = null;
 				}
-			}
-			if (item.cellBackground != null) {
-				if (count == 0) {
-					item.cellBackground = null;
-				} else {
+				if (item.cellBackground != null) {
 					int [] cellBackground = item.cellBackground;
-					int [] temp = new int [count];
+					int [] temp = new int [columnCount];
 					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index + 1, temp, index, count - index);
+					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
 					item.cellBackground = temp;
 				}
-			}
-			if (item.cellForeground != null) {
-				if (count == 0) {
-					item.cellForeground = null;
-				} else {
+				if (item.cellForeground != null) {
 					int [] cellForeground = item.cellForeground;
-					int [] temp = new int [count];
+					int [] temp = new int [columnCount];
 					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index + 1, temp, index, count - index);
+					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
 					item.cellForeground = temp;
 				}
-			}
-			if (item.cellFont != null) {
-				if (count == 0) {
-					item.cellFont = null;
-				} else {
+				if (item.cellFont != null) {
 					int [] cellFont = item.cellFont;
-					int [] temp = new int [count];
+					int [] temp = new int [columnCount];
 					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index + 1, temp, index, count - index);
+					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 					item.cellFont = temp;
 				}
 			}
 		}
 	}
-	if (count == 0) {
+	if (columnCount == 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if  ((bits & OS.TVS_NOHSCROLL) != 0) {
 			bits &= ~OS.TVS_NOHSCROLL;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		}
-		setScrollWidth ();
+	    OS.InvalidateRect (handle, null, true);
 	} else {
-		setScrollWidth ();
 		if (index == 0) {
 			columns [0].style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 			columns [0].style |= SWT.LEFT;
@@ -719,6 +706,7 @@ void destroyItem (TreeColumn column) {
 		rect.left = itemRect.right;
 	    OS.InvalidateRect (handle, rect, true);
 	}
+	setScrollWidth ();
 }
 
 void destroyItem (TreeItem item) {

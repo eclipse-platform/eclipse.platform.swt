@@ -948,9 +948,13 @@ void destroyItem (TableColumn column) {
 		if (item != null) {
 			if (columnCount == 0) {
 				item.strings = null;
+				item.images = null;
+				item.cellBackground = null;
+				item.cellForeground = null;
+				item.cellFont = null;
 			} else {
-				String [] strings = item.strings;
-				if (strings != null) {
+				if (item.strings != null) {
+					String [] strings = item.strings;
 					if (index == 0) {
 						item.text = strings [1] != null ? strings [1] : "";
 					}
@@ -961,12 +965,8 @@ void destroyItem (TableColumn column) {
 				} else {
 					if (index == 0) item.text = "";
 				}
-			}
-			if (columnCount == 0) {
-				item.images = null;
-			} else {
-				Image [] images = item.images;
-				if (images != null) {
+				if (item.images != null) {
+					Image [] images = item.images;
 					if (index == 0) item.image = images [1];
 					Image [] temp = new Image [columnCount];
 					System.arraycopy (images, 0, temp, 0, index);
@@ -975,33 +975,21 @@ void destroyItem (TableColumn column) {
 				} else {
 					if (index == 0) item.image = null;
 				}
-			}
-			if (item.cellBackground != null) {
-				if (columnCount == 0) {
-					item.cellBackground = null;
-				} else {
+				if (item.cellBackground != null) {
 					int [] cellBackground = item.cellBackground;
 					int [] temp = new int [columnCount];
 					System.arraycopy (cellBackground, 0, temp, 0, index);
 					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
 					item.cellBackground = temp;
 				}
-			}
-			if (item.cellForeground != null) {
-				if (columnCount == 0) {
-					item.cellForeground = null;
-				} else {
+				if (item.cellForeground != null) {
 					int [] cellForeground = item.cellForeground;
 					int [] temp = new int [columnCount];
 					System.arraycopy (cellForeground, 0, temp, 0, index);
 					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
 					item.cellForeground = temp;
 				}
-			}
-			if (item.cellFont != null) {
-				if (columnCount == 0) {
-					item.cellFont = null;
-				} else {
+				if (item.cellFont != null) {
 					int [] cellFont = item.cellFont;
 					int [] temp = new int [columnCount];
 					System.arraycopy (cellFont, 0, temp, 0, index);
