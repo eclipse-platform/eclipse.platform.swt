@@ -1461,21 +1461,33 @@ StyleItem[] merge (int items, int itemCount) {
  *  Reorder the run 
  */
 StyleItem[] reorder (StyleItem[] runs) {
-	byte[] bidiLevels = new byte[runs.length];
-	for (int i=0; i<runs.length; i++) {
+	int length = runs.length;
+	if (length <= 1) return runs;
+	byte[] bidiLevels = new byte[length];
+	for (int i=0; i<length; i++) {
 		bidiLevels[i] = (byte)(runs[i].analysis.s.uBidiLevel & 0x1F);
 	}
-	int[] log2vis = new int[runs.length];
-	OS.ScriptLayout(runs.length, bidiLevels, null, log2vis);
-	StyleItem[] result = new StyleItem[runs.length];
-	for (int i=0; i<runs.length; i++) {
+	/*
+	* Feature in Windows.  If the orientation is RTL Uniscribe will
+	* resolve the level of line breaks to 1, this can cause the line 
+	* break to be reorder to the middle of the line. The fix is to set
+	* the level to zero to prevent it to be reordered.
+	*/
+	StyleItem lastRun = runs[length - 1];
+	if (lastRun.lineBreak && !lastRun.softBreak) {
+		bidiLevels[length - 1] = 0;
+	}
+	int[] log2vis = new int[length];
+	OS.ScriptLayout(length, bidiLevels, null, log2vis);
+	StyleItem[] result = new StyleItem[length];
+	for (int i=0; i<length; i++) {
 		result[log2vis[i]] = runs[i];
 	}	
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		for (int i = 0; i < (result.length - 1) / 2 ; i++) {
+		for (int i = 0; i < (length - 1) / 2 ; i++) {
 			StyleItem tmp = result[i];
-			result[i] = result[result.length - i - 2];
-			result[result.length - i - 2] = tmp;
+			result[i] = result[length - i - 2];
+			result[length - i - 2] = tmp;
 		}
 	}
 	return result;
