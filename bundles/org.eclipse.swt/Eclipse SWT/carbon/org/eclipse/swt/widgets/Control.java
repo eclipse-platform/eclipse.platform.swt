@@ -669,7 +669,9 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = getControlBounds (topHandle ());
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	int width = Math.max(0, rect.right - rect.left);
+	int height = Math.max(0, rect.bottom - rect.top);
+	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 int getDrawCount (int control) {
@@ -2625,6 +2627,8 @@ void setZOrder () {
 	newBounds.top = (short) (parentRect.top + inset.top);
 	newBounds.right = (short) (newBounds.left - inset.right - inset.left);
 	newBounds.bottom = (short) (newBounds.top - inset.bottom - inset.top);
+	if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
+	if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
 	OS.SetControlBounds (topHandle, newBounds);
 }
 

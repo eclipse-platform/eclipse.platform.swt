@@ -1256,8 +1256,10 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	newBounds.left = (short) (parentRect.left + x + inset.left);
 	newBounds.top = (short) (parentRect.top + y + inset.top);
 	newBounds.right = (short) (newBounds.left + width - inset.right - inset.left);
-	newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);
-	
+	newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);	
+	if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
+	if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
+
 	/* Get bounds again, since the one above is in SWT coordinates */
 	OS.GetControlBounds (control, oldBounds);
 	
