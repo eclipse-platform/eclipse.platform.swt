@@ -1746,14 +1746,16 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	boolean send = false;
 	switch (button) {
 		case 4:
-			if (type == SWT.MouseUp) return false;
+			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
+			if (type != SWT.MouseDown) return false;
 			detail = SWT.SCROLL_LINE;
 			count = 3;
 			type = SWT.MouseWheel;
 			button = 0;
 			break;
 		case 5:
-			if (type == SWT.MouseUp) return false;
+			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
+			if (type != SWT.MouseDown) return false;
 			detail = SWT.SCROLL_LINE;
 			count = -3;
 			type = SWT.MouseWheel;
