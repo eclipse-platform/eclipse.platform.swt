@@ -4599,7 +4599,8 @@ void handleKey(Event event) {
 	}
 	if (action == SWT.NULL) {
 		// ignore anything below SPACE and ignore DEL
-		if (event.character > 31 && event.character != SWT.DEL || 
+		if (event.character > 31 && 
+			event.character != SWT.DEL && event.stateMask != SWT.ALT || 
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
 			doContent(event.character);
