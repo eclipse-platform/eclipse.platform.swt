@@ -191,7 +191,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA | OS.Pt_GRADIENT_TITLE_AREA;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string), true);
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
 	int [] args = {

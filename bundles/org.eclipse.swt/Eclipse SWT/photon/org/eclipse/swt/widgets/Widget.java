@@ -106,6 +106,25 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	return style;
 }
 
+/**
+ * Returns the provided string without mnemonic indicators.
+ * 
+ * @param string the string to demangle
+ */
+static String stripMnemonics (String string) {
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	int j = 0;
+	for (int i = 0; i < text.length;) {
+		if ((text[j++] = text[i++]) == Mnemonic) {
+			if (i != text.length) {
+				if (text[i] == Mnemonic) i++; else j--;
+			}
+		}
+	}
+	return new String(text, 0, j);
+}
+
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

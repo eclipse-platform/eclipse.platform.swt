@@ -265,22 +265,4 @@ public void setToolTipText (String string) {
 	toolTipText = string;
 }
 
-/**
- * Returns the provided string without mnemonic indicators.
- * 
- * @param string the string to demangle
- */
-static String stripMnemonics (String string) {
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
-	int j = 0;
-	for (int i = 0; i < text.length;) {
-		if ((text[j++] = text[i++]) == Mnemonic) {
-			if (i != text.length) {
-				if (text[i] == Mnemonic) i++; else j--;
-			}
-		}
-	}
-	return new String(text, 0, j);
-}
 }
