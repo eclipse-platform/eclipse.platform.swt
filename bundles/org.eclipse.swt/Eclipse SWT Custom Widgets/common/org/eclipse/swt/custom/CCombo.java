@@ -708,6 +708,10 @@ void listEvent (Event event) {
 		case SWT.Traverse: {
 			switch (event.detail) {
 				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					// No tab traversal when pop up list open
+					// Do not forward on as a CCombo event
+					return;
 				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ESCAPE:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
@@ -719,6 +723,7 @@ void listEvent (Event event) {
 			e.time = event.time;
 			e.detail = event.detail;
 			e.doit = event.doit;
+			e.character = event.character;
 			e.keyCode = event.keyCode;
 			notifyListeners(SWT.Traverse, e);
 			event.doit = e.doit;
@@ -735,21 +740,21 @@ void listEvent (Event event) {
 		}
 		case SWT.KeyDown: {
 			if (event.character == SWT.ESC) { 
-				// escape key cancels popup list
+				// Escape key cancels popup list
 				dropDown (false);
 			}
 			if ((event.stateMask & SWT.ALT) != 0 && (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN)) {
 				dropDown (false);
 			}
-			if (event.character == SWT.CR || event.character == '\t') {
-				// Enter and Tab cause default selection
+			if (event.character == SWT.CR) {
+				// Enter causes default selection
 				dropDown (false);
 				Event e = new Event();
 				e.time = event.time;
 				e.stateMask = event.stateMask;
 				notifyListeners(SWT.DefaultSelection, e);
 			}
-			//At this point the widget may have been disposed.
+			// At this point the widget may have been disposed.
 			// If so, do not continue.
 			if (isDisposed()) break;
 			Event e = new Event();
@@ -1228,6 +1233,7 @@ void textEvent (Event event) {
 			e.time = event.time;
 			e.detail = event.detail;
 			e.doit = event.doit;
+			e.character = event.character;
 			e.keyCode = event.keyCode;
 			notifyListeners(SWT.Traverse, e);
 			event.doit = e.doit;
