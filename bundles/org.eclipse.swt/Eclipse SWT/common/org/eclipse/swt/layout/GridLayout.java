@@ -91,6 +91,38 @@ public final class GridLayout extends Layout {
 	 */
  	public int verticalSpacing = 5;
 
+ 		/**
+	 * marginLeft specifies the number of pixels of horizontal margin
+	 * that will be placed along the left edge of the layout.
+	 *
+	 * The default value is 0.
+	 */
+	public int marginLeft = 0;
+
+	/**
+	 * marginTop specifies the number of pixels of vertical margin
+	 * that will be placed along the top edge of the layout.
+	 *
+	 * The default value is 0.
+	 */
+	public int marginTop = 0;
+
+	/**
+	 * marginRight specifies the number of pixels of horizontal margin
+	 * that will be placed along the right edge of the layout.
+	 *
+	 * The default value is 0.
+	 */
+	public int marginRight = 0;
+
+	/**
+	 * marginBottom specifies the number of pixels of vertical margin
+	 * that will be placed along the bottom edge of the layout.
+	 *
+	 * The default value is 0.
+	 */
+	public int marginBottom = 0;
+	
 /**
  * Constructs a new instance of this class.
  */
@@ -147,7 +179,7 @@ protected void layout (Composite composite, boolean flushCache) {
 }
 
 Point layout (Composite composite, boolean move, int x, int y, int width, int height, boolean flushCache) {
-	if (numColumns < 1) return new Point (marginWidth * 2, marginHeight * 2);
+	if (numColumns < 1) return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	Control [] children = composite.getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -222,7 +254,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 
 	/* Column widths */
-	int availableWidth = width - horizontalSpacing * (columnCount - 1) - marginWidth * 2;
+	int availableWidth = width - horizontalSpacing * (columnCount - 1) - (marginLeft + marginWidth * 2 + marginRight);
 	int expandCount = 0;
 	int [] widths = new int [columnCount];
 	int [] minWidths = new int [columnCount];
@@ -420,7 +452,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 
 	/* Row heights */
-	int availableHeight = height - verticalSpacing * (rowCount - 1) - marginHeight * 2;
+	int availableHeight = height - verticalSpacing * (rowCount - 1) - (marginTop + marginHeight * 2 + marginBottom);
 	expandCount = 0;
 	int [] heights = new int [rowCount];
 	int [] minHeights = new int [rowCount];
@@ -566,9 +598,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 
 	/* Position the controls */
 	if (move) {
-		int gridY = y + marginHeight;
+		int gridY = y + marginTop + marginHeight;
 		for (int i=0; i<rowCount; i++) {
-			int gridX = x + marginWidth;
+			int gridX = x + marginLeft + marginWidth;
 			for (int j=0; j<columnCount; j++) {
 				GridData data = getData (grid, i, j, rowCount, columnCount, true);
 				if (data != null) {
@@ -639,8 +671,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	for (int i=0; i<rowCount; i++) {
 		totalDefaultHeight += heights [i];
 	}
-	totalDefaultWidth += horizontalSpacing * (columnCount - 1) + marginWidth * 2;
-	totalDefaultHeight += verticalSpacing * (rowCount - 1) + marginHeight * 2;
+	totalDefaultWidth += horizontalSpacing * (columnCount - 1) + marginLeft + marginWidth * 2 + marginRight;
+	totalDefaultHeight += verticalSpacing * (rowCount - 1) + marginTop + marginHeight * 2 + marginBottom;
 	return new Point (totalDefaultWidth, totalDefaultHeight);
 }
 
@@ -657,6 +689,10 @@ public String toString () {
  	if (makeColumnsEqualWidth) string += "makeColumnsEqualWidth="+makeColumnsEqualWidth+" ";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
  	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+ 	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
+ 	if (marginRight != 0) string += "marginRight="+marginRight+" ";
+ 	if (marginTop != 0) string += "marginTop="+marginTop+" ";
+ 	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
  	if (horizontalSpacing != 0) string += "horizontalSpacing="+horizontalSpacing+" ";
  	if (verticalSpacing != 0) string += "verticalSpacing="+verticalSpacing+" ";
  	string = string.trim();
