@@ -1668,13 +1668,41 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  * </ul>
  */
 public void setKeyBinding(int key, int action) {
-	checkWidget();
-	if (action == SWT.NULL) {
-		keyActionMap.remove(new Integer(key));
+	checkWidget(); 
+	
+	int modifiers = SWT.ALT | SWT.SHIFT | SWT.CTRL | SWT.COMMAND;
+	int keyValue = key & ~modifiers;
+	int modifierValue = key & ~keyValue;
+	char keyChar = (char)keyValue;
+
+	if (Character.isLetter(keyChar)) {
+		// make the keybinding case insensitive by adding it
+		// in its upper and lower case form
+		char ch = Character.toUpperCase(keyChar);
+		int newKey = ch | modifierValue;
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(newKey));
+		}
+		else {
+		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		}
+		ch = Character.toLowerCase(keyChar);
+		newKey = ch | modifierValue;
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(newKey));
+		}
+		else {
+		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		}
+	} else {
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(key));
+		}
+		else {
+		 	keyActionMap.put(new Integer(key), new Integer(action));
+		}
 	}
-	else {
-	 	keyActionMap.put(new Integer(key), new Integer(action));
-	}
+		
 }
 /**
  * Adds a bidirectional segment listener. A BidiSegmentEvent is sent 
@@ -2222,17 +2250,12 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
+	
 	// Modification
 	// Cut, Copy, Paste
-	if (isCarbon) {
-		setKeyBinding('x' | SWT.MOD1, ST.CUT);
-		setKeyBinding('c' | SWT.MOD1, ST.COPY);
-		setKeyBinding('v' | SWT.MOD1, ST.PASTE);
-	} else {
-		setKeyBinding('\u0018' | SWT.MOD1, ST.CUT);
-		setKeyBinding('\u0003' | SWT.MOD1, ST.COPY);
-		setKeyBinding('\u0016' | SWT.MOD1, ST.PASTE);
-	}
+	setKeyBinding('X' | SWT.MOD1, ST.CUT);
+	setKeyBinding('C' | SWT.MOD1, ST.COPY);
+	setKeyBinding('V' | SWT.MOD1, ST.PASTE);
 	// Cut, Copy, Paste Wordstar style
 	setKeyBinding(SWT.DEL | SWT.MOD2, ST.CUT);
 	setKeyBinding(SWT.INSERT | SWT.MOD1, ST.COPY);
@@ -5028,10 +5051,21 @@ void handleKey(Event event) {
 	int action;
 	
 	if (event.keyCode != 0) {
+		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
 	}
 	else {
+		// character key pressed
 		action = getKeyBinding(event.character | event.stateMask);
+		if (action == SWT.NULL) { 
+			// see if we have a control character
+			if ((event.stateMask & SWT.CTRL) != 0 && (event.character >= 0) && event.character <= 31) {
+				// get the character from the CTRL+char sequence, the control
+				// key subtracts 64 from the value of the key that it modifies
+				int c = event.character + 64;
+				action = getKeyBinding(c | event.stateMask);
+			}
+		}
 	}
 	if (action == SWT.NULL) {
 		boolean ignore = false;
