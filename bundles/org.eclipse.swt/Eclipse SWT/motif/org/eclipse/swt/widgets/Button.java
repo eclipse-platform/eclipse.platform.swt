@@ -268,7 +268,6 @@ void createHandle (int index) {
 			OS.XmNindicatorType, indicatorType,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
-			OS.XmNmarginHeight, 0,
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
