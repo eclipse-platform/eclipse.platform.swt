@@ -315,9 +315,7 @@ void createItem (TreeItem item, int index) {
 	 */
 	if (item.availableIndex < topIndex) {
 		topIndex++;
-		if (drawCount == 0) {
-			getVerticalBar ().setSelection (topIndex);
-		}
+		getVerticalBar ().setSelection (topIndex);
 		return;
 	}
 
@@ -433,9 +431,7 @@ void destroyItem (TreeItem item) {
 		 */
 		if (availableIndex < topIndex) {
 			topIndex = oldTopIndex - 1;
-			if (drawCount == 0) {
-				getVerticalBar ().setSelection (topIndex);
-			}
+			getVerticalBar ().setSelection (topIndex);
 		}
 	}
 	/* selectedItems array */
@@ -1382,9 +1378,7 @@ void onArrowLeft (int stateMask) {
 			gc.dispose();
 		}
 		horizontalOffset = newSelection;
-		if (drawCount == 0) {
-			getHorizontalBar ().setSelection (horizontalOffset);
-		}
+		getHorizontalBar ().setSelection (horizontalOffset);
 		return;
 	}
 	/* Left Arrow with no modifiers, Shift+Left Arrow */
@@ -2836,8 +2830,8 @@ public void setTopItem (TreeItem item) {
 	update ();
 	int change = topIndex - index;
 	topIndex = index;
+	getVerticalBar ().setSelection (topIndex);
 	if (drawCount == 0) {
-		getVerticalBar ().setSelection (topIndex);
 		GC gc = new GC (this);
 		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 		gc.dispose ();
@@ -2881,11 +2875,9 @@ public void showColumn (TreeColumn column) {
 	} else {
 		horizontalOffset = absX + column.width - bounds.width;
 	}
-	if (drawCount == 0) {
-		getHorizontalBar ().setSelection (horizontalOffset);
-		redraw ();
-		if (header.isVisible ()) header.redraw ();
-	}
+	getHorizontalBar ().setSelection (horizontalOffset);
+	redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,

@@ -3034,6 +3034,7 @@ public void setRedraw (boolean value) {
 		drawCount++;
 	}
 	super.setRedraw (value);
+	header.setRedraw (value);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -3217,9 +3218,11 @@ public void setTopIndex (int index) {
 	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	GC gc = new GC (this);
-	gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
-	gc.dispose ();
+	if (parent.drawCount == 0) {
+		GC gc = new GC (this);
+		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
+		gc.dispose ();
+	}
 }
 /**
  * Shows the column.  If the column is already showing in the receiver,
