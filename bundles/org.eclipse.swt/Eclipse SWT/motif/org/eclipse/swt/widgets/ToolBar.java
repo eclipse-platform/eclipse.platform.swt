@@ -41,6 +41,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends Composite {
 	int drawCount, itemCount;
 	ToolItem [] items;
+	ToolItem lastFocus;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -78,7 +79,7 @@ public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	
 	/*
-	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* Ensure that either HORIZONTAL or VERTICAL is set.
 	* NOTE: HORIZONTAL and VERTICAL have the same values
 	* as H_SCROLL and V_SCROLL so it is necessary to first
 	* clear these bits to avoid scroll bars and then reset
@@ -147,6 +148,16 @@ void destroyItem (ToolItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
+	if (lastFocus == item) lastFocus = null;
+}
+public boolean forceFocus () {
+	checkWidget ();
+	if (lastFocus != null && lastFocus.setFocus ()) return true;
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = items [i];
+		if (item.setFocus ()) return true;
+	}
+	return super.forceFocus ();
 }
 /**
  * Returns the item at the given, zero-relative index in the
@@ -448,5 +459,18 @@ boolean setTabItemFocus () {
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;
+}
+int xFocusIn (XFocusChangeEvent xEvent) {
+	int newFocus = OS.XmGetFocusWidget (handle); 
+	if (newFocus != focusHandle ()) {
+		/* a child ToolItem has received focus */
+		for (int i = 0; i < itemCount; i++) {
+			if (items [i].handle == newFocus) {
+				lastFocus = items [i];
+				break;
+			}
+		}
+	}
+	return super.xFocusIn (xEvent);
 }
 }

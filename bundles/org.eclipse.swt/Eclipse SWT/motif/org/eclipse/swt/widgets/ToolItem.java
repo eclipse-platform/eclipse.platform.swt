@@ -677,6 +677,13 @@ public void setDisabledImage (Image image) {
 	disabledImage = image;
 	if (!getEnabled ()) redraw ();
 }
+boolean setFocus () {
+	if ((style & SWT.SEPARATOR) != 0) return false;
+	Decorations shell = parent.menuShell ();
+	shell.setSavedFocus (parent);
+	shell.bringToTop (false);
+	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+}
 /**
  * Sets the receiver's hot image to the argument, which may be
  * null indicating that no hot image should be displayed.
