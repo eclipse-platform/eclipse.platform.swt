@@ -12,15 +12,21 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
- *  Instances of this class implement rubber banding rectangles.
+ *  Instances of this class implement rubber banding rectangles that are
+ *  drawn onto a parent <code>Composite</code> or <code>Display</code>.
+ *  These rectangles can be specified to respond to mouse and key events
+ *  by either moving or resizing themselves accordingly.  Trackers are
+ *  typically used to represent window geometries in a lightweight manner.
  *  
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, UP, DOWN, RESIZE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Move</dd>
+ * <dd>Move, Resize</dd>
  * </dl>
  * <p>
+ * Note: Rectangle move behavior is assumed unless RESIZE is specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -186,7 +192,8 @@ public Display getDisplay () {
 
 /**
  * Returns the bounds that are being drawn, expressed relative to the parent
- * widget.  If the parent is a Display then these are screen coordinates.
+ * widget.  If the parent is a <code>Display</code> then these are screen
+ * coordinates.
  *
  * @return the bounds of the Rectangles being drawn
  * 
@@ -216,7 +223,7 @@ public boolean getStippled () {
 }
 
 /**
- * Specify the rectangles that should be drawn, expressed relative to the parent
+ * Specifies the rectangles that should be drawn, expressed relative to the parent
  * widget.  If the parent is a Display then these are screen coordinates.
  *
  * @param rectangles the bounds of the rectangles to be drawn
@@ -232,7 +239,7 @@ public void setRectangles (Rectangle [] rectangles) {
 }
 
 /**
- * Change the appearance of the line used to draw the rectangles.
+ * Changes the appearance of the line used to draw the rectangles.
  *
  * @param stippled <code>true</code> if rectangle should appear stippled
  *
@@ -266,7 +273,7 @@ public void close () {
 }
 
 /**
- * Start displaying the Tracker rectangles.
+ * Displays the Tracker rectangles.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -399,6 +406,17 @@ private int calculateWindow() {
 	return answer;
 }
 
+/**
+ * Sets the <code>Cursor</code> of the Tracker.  If this cursor is <code>null</code>
+ * then the cursor reverts to the default.
+ *
+ * @param newCursor the new <code>Cursor</code> to display
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCursor (Cursor value) {
 	checkWidget ();
 	cursor = 0;
