@@ -1245,7 +1245,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	drawText(string, x, y);
+	drawText(string, x, y, (flags & SWT.DRAW_TRANSPARENT) != 0);
 }
 
 /**
