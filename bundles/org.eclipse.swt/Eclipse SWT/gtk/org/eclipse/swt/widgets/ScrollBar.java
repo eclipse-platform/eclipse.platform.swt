@@ -320,8 +320,14 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	//NOT DONE
-	return true;
+	int scrolledHandle = parent.scrolledHandle;
+	int [] hsp = new int [1], vsp = new int [1];
+	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
+	if ((style & SWT.HORIZONTAL) != 0) {
+		return hsp [0] != OS.GTK_POLICY_NEVER;
+	} else {
+		return vsp [0] != OS.GTK_POLICY_NEVER;
+	}
 }
 
 void hookEvents () {
