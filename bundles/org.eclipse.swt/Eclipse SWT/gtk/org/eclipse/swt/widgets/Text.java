@@ -957,19 +957,19 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
-		return 0;
-	}
-	if (newText.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
-		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
-		OS.gtk_text_buffer_delete (bufferHandle, startIter, endIter);
-		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
-		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
-		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
+	} else {
+		if (newText.length () > 0) {
+			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+			OS.gtk_text_buffer_delete (bufferHandle, startIter, endIter);
+			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
+			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
+		}
 	}
 	return 0;
 }
@@ -979,18 +979,18 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
-		return 0;
-	}
-	if (newText.length () > 0) {
-		int [] pos = new int [1];
-		pos [0] = (int)/*64*/end_pos;
-		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.gtk_editable_set_position (handle, pos [0]);
+	} else {
+		if (newText.length () > 0) {
+			int [] pos = new int [1];
+			pos [0] = (int)/*64*/end_pos;
+			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_editable_set_position (handle, pos [0]);
+		}
 	}
 	return 0;
 }
