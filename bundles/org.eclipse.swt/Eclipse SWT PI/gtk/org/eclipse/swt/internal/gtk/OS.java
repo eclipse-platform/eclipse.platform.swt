@@ -216,6 +216,7 @@ public class OS {
 	public static final int PANGO_TAB_LEFT = 0;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
+	public static final int XA_CARDINAL = 0x6;
 	
 	/** Signals */
 	public static final byte[] activate = signal("activate");
@@ -290,7 +291,6 @@ public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int widget);
 public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int widget);
 
 /** Native methods */
-public static final synchronized native int GDK_DISPLAY();
 public static final synchronized native int GDK_ROOT_PARENT();
 public static final synchronized native int GDK_TYPE_COLOR();
 public static final synchronized native int GDK_TYPE_PIXBUF();
@@ -414,6 +414,7 @@ public static final synchronized native int gdk_pixmap_new(int window, int width
 public static final synchronized native int gdk_pointer_grab(int window, boolean owner_events, int event_mask, int confine_to, int cursor, int time);
 public static final synchronized native boolean gdk_pointer_is_grabbed();
 public static final synchronized native void gdk_pointer_ungrab(int time);
+public static final synchronized native boolean gdk_property_get(int window, int property, int type, int offset, int length, int pdelete, int[] actual_property_type, int[] actual_format, int[] actual_length, int[] data);
 public static final synchronized native void gdk_region_destroy(int region);
 public static final synchronized native boolean gdk_region_empty(int region);
 public static final synchronized native void gdk_region_get_clipbox(int region, GdkRectangle rectangle);
@@ -881,6 +882,5 @@ public static final synchronized native void pango_tab_array_free(int tab_array)
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
 public static final native int strlen(int str);
-public static final synchronized native int XInternAtom(int display, byte[] name, boolean ifExists);
 
 }

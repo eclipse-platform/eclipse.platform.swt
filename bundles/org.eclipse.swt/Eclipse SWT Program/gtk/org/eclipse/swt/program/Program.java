@@ -228,17 +228,20 @@ private static Program[] getPrograms(Display display) {
 
 private static boolean isGnomeDesktop() {
 	/*
-	* Bug in GTK.   gdk_atom_intern() ignores the only_if_exists
-	* argument.   It always creates a new atom if the requested
-	* one does not exist.  The workaround is to directly call
-	* XInternAtom(). 
-	* Note.  This introduces a dependency on X which is
-	* unwanted on GTK ports to non X platforms.  
-	*/
-	int display = OS.GDK_DISPLAY();
+	 * A Gnome Window Manager is detected by looking for a specific
+	 * property on the root window.
+	 */
 	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
-	int atom = OS.XInternAtom(display, name, true);
-	return atom != OS.None;
+	int atom = OS.gdk_atom_intern(name, true);
+	if (atom == OS.GDK_NONE) return false;	
+	int[] actualType = new int[1];
+	int[] actualFormat = new int[1];
+	int[] actualLength = new int[1];
+	int[] data = new int[1];
+	if (!OS.gdk_property_get(OS.GDK_ROOT_PARENT(), atom, OS.XA_CARDINAL,
+		0, 1, 0, actualType, actualFormat, actualLength, data)) return false;
+	if (data[0] != 0) OS.g_free(data[0]);
+	return actualLength[0] > 0;
 }
 
 /*

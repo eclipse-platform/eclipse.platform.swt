@@ -22,30 +22,6 @@
 #include <string.h>
 #include <dlfcn.h>
 
-#ifndef NO_X_WINDOW
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#endif
-
-#ifndef NO_GDK_1DISPLAY
-/* SPECIAL */
-#ifndef NO_X_WINDOW
-extern Display *gdk_display;
-#endif
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1DISPLAY
-	(JNIEnv *env, jclass that)
-{
-	DEBUG_CALL("GDK_1DISPLAY\n")
-
-#ifndef NO_X_WINDOW
-	return (jint)gdk_display;
-#else
-	return 0;
-#endif
-}
-#endif
-
 #ifndef NO_GDK_1ROOT_1PARENT
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1ROOT_1PARENT
 	(JNIEnv *env, jclass that)
@@ -1607,6 +1583,31 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1ungrab
 	DEBUG_CALL("gdk_1pointer_1ungrab\n")
 
 	gdk_pointer_ungrab((guint32)arg0);
+}
+#endif
+
+#ifndef NO_gdk_1property_1get
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1property_1get
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jintArray arg7, jintArray arg8, jintArray arg9)
+{
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("gdk_1property_1get\n")
+
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	rc = (jboolean)gdk_property_get((GdkWindow *)arg0, (GdkAtom)arg1, (GdkAtom)arg2, arg3, arg4, arg5, (GdkAtom *)lparg6, (gint *)lparg7, (gint *)lparg8, (guchar **)lparg9);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	return rc;
 }
 #endif
 
@@ -6958,24 +6959,3 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 	return (jint)strlen((const char *)arg0);
 }
 #endif
-
-#ifndef NO_XInternAtom
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_XInternAtom
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
-{
-	jbyte *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("XInternAtom\n")
-	/* SPECIAL */
-#ifndef NO_X_WINDOW
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, (Bool)arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	return rc;
-#else
-	return 0;
-#endif
-}
-#endif
-
