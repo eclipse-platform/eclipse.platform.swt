@@ -1038,6 +1038,33 @@ void drawTabArea(Event event) {
 	GC gc = event.gc;
 	Point size = getSize();
 	int[] shape = null;
+	
+	if (tabHeight == 0) {
+		int x1 = borderLeft - 1;
+		int x2 = size.x - borderRight;
+		int y1 = onBottom ? size.y - borderBottom - HIGHLIGHT_HEADER - 1 : borderTop +HIGHLIGHT_HEADER;
+		int y2 = onBottom ? size.y - borderBottom - 1 : borderTop;
+		
+		shape = new int[] {x1, y1, x1,y2, x2,y2, x2,y1};
+
+		// If horizontal gradient, show gradient across the whole area
+		if (selectedIndex != -1 && selectionGradientColors != null && selectionGradientColors.length > 1 && !selectionGradientVertical) {
+			drawBackground(gc, shape, true);
+		} else if (selectedIndex == -1 && gradientColors != null && gradientColors.length > 1 && !gradientVertical) {
+			drawBackground(gc, shape, false);
+		} else {
+			gc.setBackground(selectedIndex == -1 ? getBackground() : selectionBackground);
+			gc.fillPolygon(shape);
+		}
+		
+		//draw 1 pixel border
+		if (borderLeft > 0) {
+			gc.setForeground(borderColor);
+			gc.drawPolyline(shape); 
+		}
+		return;
+	}
+	
 	int x = Math.max(0, borderLeft - 1);
 	int y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
 	int width = size.x - borderLeft - borderRight + 1;
