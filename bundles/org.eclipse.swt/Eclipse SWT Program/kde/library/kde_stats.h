@@ -54,4 +54,6 @@ typedef enum {
 	QString_1equals_FUNC,
 	QString_1new_FUNC,
 	QString_1utf8_FUNC,
+	free_FUNC,
+	malloc_FUNC,
 } KDE_FUNCS;

@@ -50,5 +50,7 @@ public static final synchronized native void QString_delete(int /*long*/ qString
 public static final synchronized native boolean QString_equals(int /*long*/ qString, int /*long*/ qString2);
 public static final synchronized native int /*long*/ QString_new(byte[] string);
 public static final synchronized native int /*long*/ QString_utf8(int /*long*/ qString);
+public static final synchronized native void free(int /*long*/ mem);
+public static final synchronized native int /*long*/ malloc(int /*long*/ size);
 
 }

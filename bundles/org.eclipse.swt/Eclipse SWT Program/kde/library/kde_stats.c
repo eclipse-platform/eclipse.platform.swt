@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int KDE_nativeFunctionCount = 34;
-int KDE_nativeFunctionCallCount[34];
+int KDE_nativeFunctionCount = 36;
+int KDE_nativeFunctionCallCount[36];
 char * KDE_nativeFunctionNames[] = {
 	"KApplication_1new", 
 	"KGlobal_1iconLoader", 
@@ -51,6 +51,8 @@ char * KDE_nativeFunctionNames[] = {
 	"QString_1equals", 
 	"QString_1new", 
 	"QString_1utf8", 
+	"free", 
+	"malloc", 
 };
 
 #endif

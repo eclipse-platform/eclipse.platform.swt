@@ -483,4 +483,26 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1utf8)
 }
 #endif
 
+#ifndef NO_free
+JNIEXPORT void JNICALL KDE_NATIVE(free)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	KDE_NATIVE_ENTER(env, that, free_FUNC);
+	free((void *)arg0);
+	KDE_NATIVE_EXIT(env, that, free_FUNC);
+}
+#endif
+
+#ifndef NO_malloc
+JNIEXPORT jint JNICALL KDE_NATIVE(malloc)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	KDE_NATIVE_ENTER(env, that, malloc_FUNC);
+	rc = (jint)malloc(arg0);
+	KDE_NATIVE_EXIT(env, that, malloc_FUNC);
+	return rc;
+}
+#endif
+
 }
