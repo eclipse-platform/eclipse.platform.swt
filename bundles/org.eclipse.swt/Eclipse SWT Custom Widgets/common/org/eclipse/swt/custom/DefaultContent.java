@@ -763,7 +763,7 @@ public void removeTextChangeListener(TextChangeListener listener){
  */
 public void replaceTextRange(int start, int replaceLength, String newText){
 	// check for invalid replace operations
-//	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
+	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
 
 	// inform listeners
 	StyledTextEvent event = new StyledTextEvent(this);
