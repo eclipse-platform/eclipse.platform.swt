@@ -116,7 +116,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	Event event = new Event ();
 	setInputState (event, (short) 0, modifiers [0]);
 	postEvent (SWT.Selection, event);
-	return OS.eventNotHandledErr;
+	return OS.noErr;
 }
 
 public boolean isEnabled () {
