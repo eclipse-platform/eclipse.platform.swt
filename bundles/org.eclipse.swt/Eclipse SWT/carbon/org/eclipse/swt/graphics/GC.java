@@ -159,17 +159,26 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		if (data.clipRgn != 0) {
 			OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
 		}
+		Rect rect = new Rect();
+		OS.GetControlBounds(data.control, rect);
+		Rect tempRect = new Rect();
+		int left = rect.left + srcX;
+		int top = rect.top + srcY;
+		OS.SetRect(tempRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
+		int tempRgn = OS.NewRgn();
+		OS.RectRgn(tempRgn, tempRect);
+		OS.OffsetRgn(tempRgn, (short)deltaX, (short)deltaY);
+		OS.SectRgn(tempRgn, clipRgn, clipRgn);
+		OS.DisposeRgn(tempRgn);
 		OS.SetClip(clipRgn);
 		OS.DisposeRgn(clipRgn);
-		
+
 		/*
 		* Feature in the Macintosh.  ScrollRect() only copies bits
 		* in the intersection of the source and destination rectangle
 		* and it does not damage any obscured area.  The fix is to
 		* copy bits for the whole control and damage obscured areas
 		* ourselves.		*/
-		Rect rect = new Rect();
-		OS.GetControlBounds(data.control, rect);
 		int invalRgn = OS.NewRgn();
 		OS.ScrollRect(rect, (short)deltaX, (short)deltaY, invalRgn);
 		int controlRgn = OS.NewRgn();
