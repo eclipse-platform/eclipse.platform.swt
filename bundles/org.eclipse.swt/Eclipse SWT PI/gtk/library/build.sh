@@ -1,4 +1,4 @@
-#!/bin/csh
+#!/bin/sh
 
 #**********************************************************************
 # Copyright (c) 2000, 2002 IBM Corp. All rights reserved.
@@ -10,21 +10,26 @@
 # the LGPL accompanying this distribution and there is any conflict
 # between the two license versions, the terms of the LGPL accompanying
 # this distribution shall govern.
-#********************************************************************** 
+#
+# Contributors: 
+#    Kevin Cornell (Rational Software Corporation)
+#    Tom Tromey    (Red Hat, Inc.)
+#**********************************************************************
 
 # Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
-set fixup_files = `grep -l "\" *.[ch]`
-if ( "$fixup_files" != "" ) then
+fixup_files=`grep -l "\
+" *.[ch]`
+if test -n "$fixup_files"; then
     echo "Converting files from DOS to UNIX format:"
-    foreach file ($fixup_files)
+    for file in $fixup_files; do
 	echo "    $file"
-	ex $file << EOF >& /dev/null
-g/\$/s///
+	ex $file << EOF 2> /dev/null
+g/\$/s///
 w
 EOF
-    end
-endif
+    done
+fi
 
 # Determine the operating system being built
 
-make -f make_gtk.mak $1 $2 $3 $4
+make -f make_gtk.mak ${1+"$@"}
