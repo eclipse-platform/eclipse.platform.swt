@@ -296,6 +296,14 @@ boolean hasBorder () {
 	return false;
 }
 
+boolean isTabGroup () {
+	return true;
+}
+
+boolean isTabItem () {
+	return false;
+}
+
 Decorations menuShell () {
 	return this;
 }
