@@ -573,11 +573,12 @@ void drawSelectionFocus(TableItem item, GC gc) {
 public Control [] getChildren() {
 	checkWidget();
 	Control[] controls = _getChildren();
+	if (tableHeader == null) return controls;
 	Control[] result = new Control[controls.length - 1];
 	// remove the Header from the returned set of children
 	int index = 0;
 	for (int i = 0; i < controls.length; i++) {
-		 if (!(controls[i] instanceof Header)) {
+		 if (controls[i] != tableHeader) {
 		 	result[index++] = controls[i];
 		 }
 	}
