@@ -2557,6 +2557,7 @@ public void setToolTipText (String string) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	int topHandle = topHandle();
+	if ((OS.GTK_WIDGET_VISIBLE (topHandle) == visible)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		OS.gtk_widget_show (topHandle);

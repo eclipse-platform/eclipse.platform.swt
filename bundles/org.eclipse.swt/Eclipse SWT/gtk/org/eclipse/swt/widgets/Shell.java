@@ -934,6 +934,7 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
 	if (visible) {
 		/*
 		* Bug in GTK.  When an application opens a new modal top level
