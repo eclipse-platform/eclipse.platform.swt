@@ -94,7 +94,7 @@ public String getExtension() {
 	return ".properties";
 }
 
-public String getFileName() {
+public String getOutputName() {
 	return getMainClass().getName();
 }
 

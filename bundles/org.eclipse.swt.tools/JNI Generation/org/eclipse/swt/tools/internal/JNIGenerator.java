@@ -277,6 +277,7 @@ public void generate() {
 		Class clazz = classes[i];
 		if (getGenerate(clazz)) generate(clazz);
 	}
+	output.flush();
 }
 
 public void generateMetaData(String key) {
