@@ -222,28 +222,20 @@ void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int 
 int[] getCaretOffsetAndDirectionAtX(int x) {
 	int lineLength = getTextLength();
 	int offset;
-
-	if (lineLength == 0) {
-		return new int[] {0,0};
-	}
+	int direction;
 	
+	if (lineLength == 0) {
+		return new int[] {0, 0};
+	}	
 	int eol = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
 	if (x > eol) {
-		return new int[] {lineLength,ST.COLUMN_NEXT};
+		return new int[] {lineLength, ST.COLUMN_NEXT};
 	}
-	
 	// get the index visually clicked character
-	int visualIndex = 0;
-	int visualX = renderPositions[visualIndex];
-	while ((x > visualX) && (visualIndex < renderPositions.length)) {
-		visualIndex++;
-		if (visualIndex < renderPositions.length) visualX = renderPositions[visualIndex];
-	}
-	visualIndex = Math.max(0,visualIndex-1);
+	int visualIndex = getVisualOffsetAtX(x);	
 	// figure out if the character was clicked on the right or left
 	int halfway = renderPositions[visualIndex] + (dx[visualIndex] / 2);
 	boolean visualLeft = (x <= halfway);
-	int direction;
 	offset = getLogicalOffset(visualIndex);
 
 	// handle visual beginning
@@ -465,17 +457,23 @@ private int getLogicalOffset(int visualOffset) {
 	return logicalOffset;
 }
 int getOffsetAtX(int x) {
-	int lineLength = getTextLength();
-	int low = -1;
-	int high = lineLength;
+	int visualOffset;
 
-	if (lineLength == 0) {
+	if (getTextLength() == 0) {
 		return 0;
 	}
 	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
 		// Return when x is past the end of the line. Fixes 1GLADBK.
 		return -1;
 	}
+	visualOffset = getVisualOffsetAtX(x);
+	return getLogicalOffset(visualOffset);
+}
+private int getVisualOffsetAtX(int x) {
+	int lineLength = getTextLength();
+	int low = -1;
+	int high = lineLength;
+
 	while (high - low > 1) {
 		int offset = (high + low) / 2;
 		int visualX = renderPositions[offset];
@@ -494,7 +492,7 @@ int getOffsetAtX(int x) {
 			low = offset;
 		}
 	}
-	return getLogicalOffset(high);
+	return high;
 }
 private int[] getRenderIndexesFor(int start, int length) {
 	int[] positions = new int[length];
