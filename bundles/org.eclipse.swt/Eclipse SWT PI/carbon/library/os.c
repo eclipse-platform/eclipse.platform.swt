@@ -6379,6 +6379,22 @@ fail:
 }
 #endif
 
+#ifndef NO_InstallEventLoopIdleTimer
+JNIEXPORT jint JNICALL OS_NATIVE(InstallEventLoopIdleTimer)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, InstallEventLoopIdleTimer_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)InstallEventLoopIdleTimer((EventLoopRef)arg0, (EventTimerInterval)arg1, (EventTimerInterval)arg2, (EventLoopIdleTimerUPP)arg3, (void *)arg4, (EventLoopTimerRef *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, InstallEventLoopIdleTimer_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_InstallEventLoopTimer
 JNIEXPORT jint JNICALL OS_NATIVE(InstallEventLoopTimer)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jintArray arg5)

@@ -460,6 +460,7 @@ typedef enum {
 	InsertMenu_FUNC,
 	InsertMenuItemTextWithCFString_FUNC,
 	InstallEventHandler_FUNC,
+	InstallEventLoopIdleTimer_FUNC,
 	InstallEventLoopTimer_FUNC,
 	InstallReceiveHandler_FUNC,
 	InstallTrackingHandler_FUNC,

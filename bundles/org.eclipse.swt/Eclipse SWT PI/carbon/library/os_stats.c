@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 761;
-int OS_nativeFunctionCallCount[761];
+int OS_nativeFunctionCount = 762;
+int OS_nativeFunctionCallCount[762];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -456,6 +456,7 @@ char * OS_nativeFunctionNames[] = {
 	"InsertMenu",
 	"InsertMenuItemTextWithCFString",
 	"InstallEventHandler",
+	"InstallEventLoopIdleTimer",
 	"InstallEventLoopTimer",
 	"InstallReceiveHandler",
 	"InstallTrackingHandler",
