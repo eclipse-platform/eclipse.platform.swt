@@ -390,38 +390,22 @@ public class FileViewer {
 	}
 
 	/**
-	 * Validate a drop target event
+	 * Validates a drop target as a candidate for a drop operation.
 	 * <p>
-	 * Note event.detail is modified by this method
+	 * Note event.detail is set to DND.DROP_NONE by this method if the target is not valid.
 	 * </p>
 	 * @param event the DropTargetEvent we are validating
 	 * @param targetFile the File representing the drop target location
 	 *        under inspection, or null if none
-	 * @return an array of files to be operated on, or null on error
 	 */
-	/* package */ File[] validateDrop(DropTargetEvent event, File targetFile) {
-		final int dropMode = (event.detail != DND.DROP_NONE) ? event.detail : DND.DROP_MOVE;
-		event.detail = DND.DROP_NONE; // simplify error reporting
-		// Validate the target
-		if (targetFile == null) return null;
-		if (! targetFile.isDirectory()) return null;
-
-		// Get dropped data (an array of filenames)
-		final String[] names = (String[]) event.data;
-		final File[] files;
-		if (names != null) {			
-			// Validate the source
-			files = new File[names.length];
-			for (int i = 0; i < names.length; ++i) {
-				files[i] = new File(names[i]);
-				if (files[i].equals(targetFile)) return null;
+	/* package */ void validateDropTarget(DropTargetEvent event, File targetFile) {
+		if (targetFile != null && targetFile.isDirectory()) {
+			if (event.detail != DND.DROP_COPY && event.detail != DND.DROP_MOVE) {
+				event.detail = DND.DROP_MOVE;
 			}
 		} else {
-			// Files not available yet
-			files = null;
+			event.detail = DND.DROP_NONE;
 		}
-		event.detail = dropMode;
-		return files;
 	}
 
 	/**
@@ -434,23 +418,22 @@ public class FileViewer {
 	 *        under inspection, or null if none
 	 */
 	/* package */ void performDrop(DropTargetEvent event, File targetFile) {
-		Vector /* of File */ dirtyFiles = new Vector();
-		try {
-			final File[] sourceFiles = validateDrop(event, targetFile);
-			final int dropMode = event.detail;
+		validateDropTarget(event, targetFile);		
 
-			if (sourceFiles == null) {
-				event.detail = DND.DROP_NONE;
-				return;
-			}
-		
+		// Get dropped data (an array of filenames)
+		final String[] sourceNames = (String[]) event.data;
+		if (sourceNames == null) event.detail = DND.DROP_NONE;
+		if (event.detail == DND.DROP_NONE) return;
+
+		Vector /* of File */ dirtyFiles = new Vector();
+		try {		
 			dirtyFiles.add(targetFile);
-			for (int i = 0; i < sourceFiles.length; i++){
-				final File source = sourceFiles[i];
+			for (int i = 0; i < sourceNames.length; i++){
+				final File source = new File(sourceNames[i]);
 				final File dest = new File(targetFile, source.getName());
 	
 				// Perform action on each file
-				switch (dropMode) {
+				switch (event.detail) {
 					default:
 					case DND.DROP_COPY:
 						if (! copyFileStructure(source, dest)) return;
