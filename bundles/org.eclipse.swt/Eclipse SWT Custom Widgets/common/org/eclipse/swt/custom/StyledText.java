@@ -508,11 +508,17 @@ public class StyledText extends Canvas {
 		String osVersion = System.getProperty("os.version");
 		int majorVersion = 0;
 		
-		if (osVersion != null) {
+		if (osName.startsWith(WinNT) && osVersion != null) {
 			int majorIndex = osVersion.indexOf('.');
 			if (majorIndex != -1) {
 				osVersion = osVersion.substring(0, majorIndex);
-				majorVersion = Integer.parseInt(osVersion);
+				try {
+					majorVersion = Integer.parseInt(osVersion);
+				}
+				catch (NumberFormatException exception) {
+					// ignore exception. version number remains unknown.
+					// will write without Unicode
+				}
 			}
 		}
 		if (osName != null &&
