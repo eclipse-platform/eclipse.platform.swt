@@ -1393,16 +1393,14 @@ public void showSelection () {
 	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 }
 
-int traversalCode (int key, int event) {
+int traversalCode (int key, GdkEventKey event) {
 	int bits = super.traversalCode (key, event);
 	if ((style & SWT.READ_ONLY) != 0)  return bits;
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
-		if (key == OS.GDK_Tab && event != 0) {
-			int [] state = new int [1];
-			OS.gdk_event_get_state (event, state);
-			boolean next = (state[0] & OS.GDK_SHIFT_MASK) == 0;
-			if (next && (state[0] & OS.GDK_CONTROL_MASK) == 0) {
+		if (key == OS.GDK_Tab && event != null) {
+			boolean next = (event.state & OS.GDK_SHIFT_MASK) == 0;
+			if (next && (event.state & OS.GDK_CONTROL_MASK) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 			}
 		}

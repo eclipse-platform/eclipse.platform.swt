@@ -1583,7 +1583,7 @@ boolean isTabGroup () {
 			if (tabList [i] == this) return true;
 		}
 	}
-	int code = traversalCode (0, 0);
+	int code = traversalCode (0, null);
 	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
 	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
 }
@@ -1594,7 +1594,7 @@ boolean isTabItem () {
 			if (tabList [i] == this) return false;
 		}
 	}
-	int code = traversalCode (0, 0);
+	int code = traversalCode (0, null);
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
@@ -1747,10 +1747,12 @@ int processKeyDown (int callData, int arg1, int int2) {
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
 	}
-	if (translateTraversal (callData)) return 1;
+	GdkEventKey event = new GdkEventKey ();
+	OS.memmove (event, callData, GdkEventKey.sizeof);
+	if (translateTraversal (event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	sendKeyEvent (SWT.KeyDown, callData);
+	sendKeyEvent (SWT.KeyDown, event);
 	return 0;
 }
 
@@ -1759,7 +1761,9 @@ int processKeyUp (int callData, int arg1, int int2) {
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
 	}
-	sendKeyEvent (SWT.KeyUp, callData);
+	GdkEventKey event = new GdkEventKey ();
+	OS.memmove (event, callData, GdkEventKey.sizeof);
+	sendKeyEvent (SWT.KeyUp, event);
 	return 0;
 }
 
@@ -1971,41 +1975,13 @@ boolean sendHelpEvent (int helpType) {
 	return false;
 }
 
-void sendKeyEvent (int type, int gdkEvent) {
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
+void sendKeyEvent (int type, GdkEventKey keyEvent) {
 	int time = keyEvent.time;
 	int length = keyEvent.length;
 	if (length <= 1) {
 		Event event = new Event ();
 		event.time = time;
-		setInputState (event, gdkEvent);
-		event.keyCode = Display.translateKey (keyEvent.keyval);
-		switch (keyEvent.keyval) {
-			case OS.GDK_BackSpace:		event.character = '\b'; break;
-			case OS.GDK_Linefeed:		event.character = '\n'; break;
-			case OS.GDK_Return: 		event.character = '\r'; break;
-			case OS.GDK_Delete:		event.character = 0x7F; break;
-			case OS.GDK_Cancel:
-			case OS.GDK_Escape:		event.character = 0x1B; break;
-			case OS.GDK_Tab:
-			case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
-//			case OS.GDK_Clear:			event.character = 0xB; break;
-//			case OS.GDK_Pause:			event.character = 0x13; break;
-//			case OS.GDK_Scroll_Lock:	event.character = 0x14; break;
-			default: {
-				if (event.keyCode == 0) {
-					int key = keyEvent.keyval;
-					if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
-						if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
-						if (64 <= key && key <= 95) key -= 64;
-						event.character = (char) key;
-					} else {
-						event.character = (char) OS.gdk_keyval_to_unicode (key);
-					}
-				}
-			}
-		}
+		setKeyState (event, keyEvent);
 		postEvent (type, event);
 	} else {
 		int string = keyEvent.string;
@@ -2018,7 +1994,7 @@ void sendKeyEvent (int type, int gdkEvent) {
 			Event event = new Event ();
 			event.time = time;
 			event.character = result [index];
-			setInputState (event, gdkEvent);
+			setInputState (event, keyEvent.state);
 			postEvent (type, event);
 			index++;
 		}
@@ -2034,7 +2010,9 @@ void sendMouseEvent (int type, int button, int gdkEvent) {
 	OS.gdk_event_get_coords (gdkEvent, x, y);
 	event.x = (int) x [0];
 	event.y = (int) y [0];
-	setInputState (event, gdkEvent);
+	int [] state = new int [1];
+	OS.gdk_event_get_state (gdkEvent, state);
+	setInputState (event, state [0]);
 	postEvent (type, event);
 }
 
@@ -2444,14 +2422,10 @@ public boolean traverse (int traversal) {
 	return traverse (event);
 }
 
-boolean translateTraversal (int gdkEvent) {
+boolean translateTraversal (GdkEventKey keyEvent) {
 	int detail = SWT.TRAVERSE_NONE;
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
 	int key = keyEvent.keyval;
-	int code = traversalCode (key, gdkEvent);
-	int [] state = new int [1];
-	OS.gdk_event_get_state (gdkEvent, state);
+	int code = traversalCode (key, keyEvent);
 	boolean all = false;
 	switch (key) {
 		case OS.GDK_Escape:
@@ -2468,7 +2442,7 @@ boolean translateTraversal (int gdkEvent) {
 		}
 		case OS.GDK_ISO_Left_Tab: 
 		case OS.GDK_Tab: {
-			boolean next = (state [0] & OS.GDK_SHIFT_MASK) == 0;
+			boolean next = (keyEvent.state & OS.GDK_SHIFT_MASK) == 0;
 			/*
 			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
 			* always attempt traversal which is not correct.
@@ -2479,7 +2453,7 @@ boolean translateTraversal (int gdkEvent) {
 			* control that wants to see every key.  The default
 			* behavior for a Canvas should be to see every key.
 			*/
-			switch (state [0]) {
+			switch (keyEvent.state) {
 				case OS.GDK_SHIFT_MASK:
 				case OS.GDK_CONTROL_MASK:
 					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
@@ -2498,7 +2472,7 @@ boolean translateTraversal (int gdkEvent) {
 		case OS.GDK_Page_Up:
 		case OS.GDK_Page_Down: {
 			all = true;
-			if ((state [0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			if ((keyEvent.state & OS.GDK_CONTROL_MASK) == 0) return false;
 			/*
 			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
 			* attempt traversal which is not correct.  This behavior is
@@ -2519,7 +2493,7 @@ boolean translateTraversal (int gdkEvent) {
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
 	event.time = keyEvent.time;
-	setInputState (event, gdkEvent);
+	setKeyState (event, keyEvent);
 	Shell shell = getShell ();
 	Control control = this;
 	do {
@@ -2533,7 +2507,7 @@ boolean translateTraversal (int gdkEvent) {
 	return false;
 }
 
-int traversalCode (int key, int event) {
+int traversalCode (int key, GdkEventKey event) {
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;

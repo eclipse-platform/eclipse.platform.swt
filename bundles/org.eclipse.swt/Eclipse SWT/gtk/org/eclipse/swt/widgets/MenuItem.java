@@ -407,7 +407,9 @@ int processSelection (int int0, int int1, int int2) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: 
 			case OS.GDK_BUTTON_RELEASE: {
-				setInputState (event, ptr);
+				int [] state = new int [1];
+				OS.gdk_event_get_state (ptr, state);
+				setInputState (event, state [0]);
 				break;
 			}
 		}

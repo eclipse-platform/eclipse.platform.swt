@@ -656,7 +656,7 @@ public void setTabList (Control [] tabList) {
 	this.tabList = tabList;
 }
 
-int traversalCode(int key, int event) {
+int traversalCode(int key, GdkEventKey event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
 		if (hooksKeys ()) return 0;

@@ -964,15 +964,45 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
-void setInputState (Event event, int gdkEvent) {
-	int [] state = new int [1];
-	OS.gdk_event_get_state (gdkEvent, state);
-	if ((state [0] & OS.GDK_MOD1_MASK)    != 0) event.stateMask |= SWT.ALT;
-	if ((state [0] & OS.GDK_SHIFT_MASK)   != 0) event.stateMask |= SWT.SHIFT;
-	if ((state [0] & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
-	if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((state [0] & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((state [0] & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
+void setInputState (Event event, int state) {
+	if ((state & OS.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
+	if ((state & OS.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;
+	if ((state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
+	if ((state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
+}
+
+void setKeyState (Event event, GdkEventKey keyEvent) {
+	if (keyEvent.length <= 1) {
+		event.keyCode = Display.translateKey (keyEvent.keyval);
+		switch (keyEvent.keyval) {
+			case OS.GDK_BackSpace:		event.character = '\b'; break;
+			case OS.GDK_Linefeed:		event.character = '\n'; break;
+			case OS.GDK_Return: 		event.character = '\r'; break;
+			case OS.GDK_Delete:		event.character = 0x7F; break;
+			case OS.GDK_Cancel:
+			case OS.GDK_Escape:		event.character = 0x1B; break;
+			case OS.GDK_Tab:
+			case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
+//			case OS.GDK_Clear:			event.character = 0xB; break;
+//			case OS.GDK_Pause:			event.character = 0x13; break;
+//			case OS.GDK_Scroll_Lock:	event.character = 0x14; break;
+			default: {
+				if (event.keyCode == 0) {
+					int key = keyEvent.keyval;
+					if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
+						if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
+						if (64 <= key && key <= 95) key -= 64;
+						event.character = (char) key;
+					} else {
+						event.character = (char) OS.gdk_keyval_to_unicode (key);
+					}
+				}
+			}
+		}
+	}
+	setInputState (event, keyEvent.state);
 }
 
 /**
