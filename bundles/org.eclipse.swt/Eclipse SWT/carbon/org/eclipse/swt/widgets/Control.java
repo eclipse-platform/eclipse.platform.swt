@@ -1432,12 +1432,12 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKey (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	return kEventRawKey (nextHandler, theEvent, userData);
+	return kEventRawKeyPressed (nextHandler, theEvent, userData);
 }
 
 int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
@@ -1473,7 +1473,7 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	return kEventRawKey (nextHandler, theEvent, userData);
+	return kEventRawKeyPressed (nextHandler, theEvent, userData);
 }
 
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {

@@ -364,7 +364,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventRawKey (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	/*
 	* Feature in the Macintosh.  For some reason, the default handler
 	* does not issue kEventTextInputUnicodeForKeyEvent when the user

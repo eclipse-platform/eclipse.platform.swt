@@ -968,7 +968,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKey (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	/*
 	* Feature in the Macintosh. The combo box widget consumes the
 	* kEventRawKeyDown event when the Return key is pressed causing
