@@ -26,27 +26,21 @@ import org.eclipse.swt.layout.*;
  * </p>
  */
 public class ColorDialog extends Dialog {
-	private static final int DEPTH_4 = 0;				// index for COLOR_SWATCH_EXTENTS
-	private static final int DEPTH_8 = 1;				// index for COLOR_SWATCH_EXTENTS
-	private static final int COLOR_SWATCH_EXTENTS[] = {40, 10};	// extents of the squares drawn to display a 
-																// color out of 4 bit and 8 bit color depth
-	private static final int COLOR_SWATCH_BORDER = 1;	// border between each color pad
-	
+	private static final int COLORSWATCH_SIZE_DEPTH4 = 40;
+	private static final int COLORSWATCH_SIZE_DEPTH8 = 15;
+	private static final int COLORSWATCH_SIZE_DEPTH16 = 10; 
+	private static final int COLORSWATCH_BORDER = 1;	// border between each color pad
+
 	private Shell shell;								// the dialog shell
 	private Canvas colorsCanvas;
-	private Label sampleLabel;
-	private Canvas sampleCanvas;
-	private Label selectionLabel;
-	private Canvas selectionCanvas;
-	private Button ok;
-	private Button cancel;
+	private Label sampleLabel, selectionLabel;
+	private Canvas sampleCanvas, selectionCanvas;
+	private Button okButton, cancelButton;
 
-	private boolean okSelected;							// true if the dialog was hidden 
-														// because the ok button was selected
+	private boolean okSelected;
 	private RGB rgb;
 	private int colorDepth;								// color depth of the display
-	private int colorSwatchExtent;						// the size of on square used 
-														// to display one color
+	private int colorSwatchExtent;						// the size of each color square
 	private Color colorGrid[][];						// the colors displayed in the dialog
 	
 /**
@@ -101,97 +95,85 @@ public ColorDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 	checkSubclass ();
 }
-
 void createChildren() {
-	Shell dialog = getDialogShell();
-	GridData gridData = new GridData();
-	GridLayout layout = new GridLayout();
-	final int ButtonHeight = 30;
-	final int ColorChooserWidth = COLOR_SWATCH_EXTENTS[DEPTH_8] * 32 - COLOR_SWATCH_BORDER;	// extent of one color field multiplied with number of fields in a row
-	final int ColorChooserHeight = COLOR_SWATCH_EXTENTS[DEPTH_8] * 8 - COLOR_SWATCH_BORDER;	// extent of one color field multiplied with number of rows
-
-	layout.numColumns = 3;
-	layout.marginWidth = 15;
-	layout.marginHeight = 15;
-	layout.horizontalSpacing = 10;
-	layout.verticalSpacing = 2;
+	Shell dialog = shell;
+	GridLayout layout = new GridLayout (2, false);
 	dialog.setLayout(layout);
+	
+	int colorChooserWidth = colorSwatchExtent * colorGrid.length;
+	int colorChooserHeight = colorSwatchExtent * colorGrid[0].length;
+	colorsCanvas = new Canvas(dialog, SWT.BORDER);
+	GridData data = new GridData ();
+	data.widthHint = colorChooserWidth;
+	data.heightHint = colorChooserHeight;
+	colorsCanvas.setLayoutData(data);
 
-	// row one
-	colorsCanvas = new Canvas(dialog, SWT.BORDER);	
-	gridData.widthHint = ColorChooserWidth;
-	gridData.heightHint = ColorChooserHeight;	
-	gridData.verticalSpan = 2;
-	gridData.horizontalSpan = 2;	
-	colorsCanvas.setLayoutData(gridData);
+	Composite buttonsGroup = new Composite (dialog, SWT.NONE);
+	buttonsGroup.setLayout(new GridLayout());
+	buttonsGroup.setLayoutData(new GridData(GridData.BEGINNING));
+	createOkCancel(buttonsGroup);
 
-	// create ok and cancel buttons (row two and three)
-	createOkCancel();
+	Composite bottomGroup = new Composite (dialog,SWT.NONE);
+	layout = new GridLayout(2, true);
+	layout.marginHeight = 0;
+	layout.marginWidth = 0;
+	bottomGroup.setLayout(layout);
+	bottomGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-	// row three - empty row
-	Label fillLabel = new Label(dialog, SWT.NULL);
-	gridData = new GridData();	
-	gridData.heightHint = 5;
-	gridData.horizontalSpan = layout.numColumns;
-	fillLabel.setLayoutData(gridData);
-
-	// row four - setup group box with sample text and canvas
-	createSampleGroup(ColorChooserWidth);
-	createSelectionGroup();	
+	createSampleGroup(bottomGroup);
+	createSelectionGroup(bottomGroup);
 }
-void createSampleGroup(int colorChooserWidth) {
-	Shell dialog = getDialogShell();
-	Group sampleGroup = new Group(dialog, SWT.NULL);
-	GridData gridData = new GridData();
-	GridLayout layout = new GridLayout();
-	int sampleGroupWidth;
+void createOkCancel(Composite parent) {
+	okButton = new Button(parent, SWT.PUSH);
+	okButton.setText(SWT.getMessage("SWT_OK"));
+	shell.setDefaultButton(okButton);
+	GridData data = new GridData(GridData.FILL_HORIZONTAL);
+	okButton.setLayoutData(data);
 
+	cancelButton = new Button(parent, SWT.PUSH);
+	cancelButton.setText(SWT.getMessage("SWT_Cancel"));
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	cancelButton.setLayoutData(data);
+}
+void createSampleGroup(Composite parent) {
+	Group sampleGroup = new Group(parent, SWT.NULL);
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.grabExcessHorizontalSpace = true;
+	sampleGroup.setLayout(new GridLayout());
+	sampleGroup.setLayoutData(data);
 	sampleGroup.setText(SWT.getMessage("SWT_Sample"));
-	gridData.horizontalAlignment = GridData.FILL;	
-	sampleGroup.setLayoutData(gridData);
-	sampleGroup.setLayout(layout);
-	sampleGroupWidth = (colorChooserWidth - layout.marginWidth * 4 - layout.horizontalSpacing * 4) / 2;
-		
+
 	sampleLabel = new Label(sampleGroup, SWT.CENTER | SWT.BORDER);
 	sampleLabel.setAlignment(SWT.CENTER);
 	sampleLabel.setText(SWT.getMessage("SWT_A_Sample_Text"));
-	gridData = new GridData();
-	gridData.grabExcessHorizontalSpace = true;
-	gridData.widthHint = sampleGroupWidth;
-	sampleLabel.setLayoutData(gridData);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	sampleLabel.setLayoutData(data);
 
 	sampleCanvas = new Canvas(sampleGroup, SWT.BORDER);
-	gridData = new GridData();
-	gridData.grabExcessHorizontalSpace = true;
-	gridData.heightHint = 15;
-	gridData.widthHint = sampleGroupWidth;
-	sampleCanvas.setLayoutData(gridData);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	data.heightHint = 15;
+	sampleCanvas.setLayoutData(data);
 }
-void createSelectionGroup() {
-	Shell dialog = getDialogShell();
-	Group selectionGroup = new Group(dialog, SWT.NULL);
-	GridData gridData = new GridData();
-	GridLayout layout = new GridLayout();
-
+void createSelectionGroup(Composite parent) {
+	Group selectionGroup = new Group(parent, SWT.NULL);
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.grabExcessHorizontalSpace = true;
+	selectionGroup.setLayout(new GridLayout());
+	selectionGroup.setLayoutData(data);
 	selectionGroup.setText(SWT.getMessage("SWT_Selection"));
-	gridData.horizontalAlignment = GridData.FILL;	
-	selectionGroup.setLayoutData(gridData);
-	selectionGroup.setLayout(layout);
-	
+
 	selectionLabel = new Label(selectionGroup, SWT.CENTER | SWT.BORDER);
 	selectionLabel.setAlignment(SWT.CENTER);
 	selectionLabel.setText(SWT.getMessage("SWT_Current_Selection"));
-	gridData = new GridData();
-	gridData.grabExcessHorizontalSpace = true;
-	gridData.horizontalAlignment = GridData.FILL;
-	selectionLabel.setLayoutData(gridData);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	data.grabExcessHorizontalSpace = true;
+	selectionLabel.setLayoutData(data);
 
 	selectionCanvas = new Canvas(selectionGroup, SWT.BORDER);
-	gridData = new GridData();
-	gridData.grabExcessHorizontalSpace = true;
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.heightHint = 15;
-	selectionCanvas.setLayoutData(gridData);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	data.grabExcessHorizontalSpace = true;
+	data.heightHint = 15;
+	selectionCanvas.setLayoutData(data);
 }
 void disposeColors() {
 	for (int row = 0; row < colorGrid.length; row++) {
@@ -201,51 +183,23 @@ void disposeColors() {
 	}
 }
 void drawColor(int xIndex, int yIndex, Color color, GC gc) {
-	int colorSwatchExtent = getColorSwatchExtent();
-	int colorExtent = colorSwatchExtent - COLOR_SWATCH_BORDER;
-
+	int colorExtent = colorSwatchExtent - COLORSWATCH_BORDER;
 	gc.setBackground(color);	
 	gc.fillRectangle(
-		xIndex * colorSwatchExtent, yIndex * colorSwatchExtent, 
+		xIndex * colorSwatchExtent,
+		yIndex * colorSwatchExtent, 
 		colorExtent, colorExtent);
-}
-Canvas getColorCanvas() {
-	return colorsCanvas;
-}
-int getColorDepth() {
-	return colorDepth;
-}
-Color [][] getColorGrid() {
-	return colorGrid;
-}
-int getColorSwatchExtent() {
-	return colorSwatchExtent;
 }
 /**
  * Returns the currently selected color in the receiver.
  *
  * @return the RGB value for the selected color, may be null
- *
  * @see PaletteData#getRGBs
  */
 public RGB getRGB() {
 	return rgb;
 }
-Canvas getSampleCanvas() {
-	return sampleCanvas;
-}
-Label getSampleText() {
-	return sampleLabel;
-}
-Canvas getSelectionCanvas() {
-	return selectionCanvas;
-}
-Label getSelectionText() {
-	return selectionLabel;
-}
 void handleEvents(Event event) {
-	Color selectionColor;
-	
 	if (event.type == SWT.Paint) {
 		paint(event);
 	}
@@ -259,19 +213,19 @@ void handleEvents(Event event) {
 	}
 	else
 	if (event.type == SWT.Selection) {
-		if (event.widget == getOKButton()) {
-			setOkSelected(true);
-			getDialogShell().setVisible(false);
+		if (event.widget == okButton) {
+			okSelected = true;
+			shell.setVisible(false);
 		}
 		else
-		if (event.widget == getCancelButton()) {
-			setOkSelected(false);		
-			getDialogShell().setVisible(false);
+		if (event.widget == cancelButton) {
+			okSelected = false;
+			shell.setVisible(false);
 		}
 	}	
 }
 void initialize4BitColors() {
-	Display display = getDialogShell().getDisplay();
+	Display display = shell.getDisplay();
 	
 	colorGrid[0][0] = new Color(display, 0, 0, 0);
 	colorGrid[0][1] = new Color(display, 255, 255, 255);
@@ -294,23 +248,44 @@ void initialize4BitColors() {
 	colorGrid[7][1] = new Color(display, 255, 0, 255);
 }
 void initialize8BitColors() {
-	Display display = getDialogShell().getDisplay();	
+	Display display = shell.getDisplay();	
+	int numColumns = colorGrid.length;
+	int numRows = colorGrid[0].length;
+	int iterationStep = 64;
+	int row = 0, column = 0;
+	int red, green, blue;
+	// run the loops from 0 to 256 inclusive since this is easiest for the step
+	// size, then adjust the 256 case to the proper 255 value when needed
+	for (red = 0; red <= 256; red += iterationStep) {
+		for (blue = 0; blue <= 256; blue += iterationStep) {
+			for (green = 0; green <= 256; green += iterationStep) {
+				if (row == numRows) {
+					row = 0;
+					column++;
+				}
+				if (red == 256) red = 255;
+				if (blue == 256) blue = 255;
+				if (green == 256) green = 255;				
+				colorGrid[column][row++] = new Color(display, red, green, blue);
+			}
+		}
+	}
+}
+void initialize16BitColors() {
+	Display display = shell.getDisplay();
 	int numColumns = colorGrid.length;
 	int numRows = colorGrid[0].length;
 	int iterationStep = 51;
-	int row = 0;
-	int column = 0;
-	int red;
-	int green;
-	int blue;
-	
+	int row = 0, column = 0;
+	int red, green, blue;
+
 	for (red = 0; red <= 255; red += iterationStep) {
 		for (blue = 0; blue <= 255; blue += iterationStep) {
-			if (blue == iterationStep && column < 20) {	// hack to evenly distribute 256 colors on 32 columns
+			if (blue == iterationStep && column < 20) {		// hack to evenly distribute 256 colors on 32 columns
 				blue += iterationStep;
 			}
 			for (green = 0; green <= 255; green += iterationStep) {
-				if (row == 2 || row == 5) {				// hack to evenly distribute 256 colors on 8 rows
+				if (row == 2 || row == 5) {					// hack to evenly distribute 256 colors on 8 rows
 					colorGrid[column][row++] = new Color(display, red, green - iterationStep / 2, blue);
 				}
 				if (row == numRows) {
@@ -323,43 +298,38 @@ void initialize8BitColors() {
 	}
 }
 void initializeWidgets() {
-	Display display = getDialogShell().getDisplay();
-	Color selectionColor;
+	Display display = shell.getDisplay();
 	if (rgb != null) {
-		selectionColor = new Color(display, rgb);
-		getSelectionCanvas().setBackground(selectionColor);
-		getSelectionText().setBackground(selectionColor);
+		Color selectionColor = new Color(display, rgb);
+		selectionCanvas.setBackground(selectionColor);
+		selectionLabel.setBackground(selectionColor);
 		selectionColor.dispose();
 	}
-	setColorDepth(display.getDepth());
 }
 void installListeners() {
-	Canvas colorCanvas = getColorCanvas();
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {handleEvents(event);}
 	};
-	
-	getOKButton().addListener(SWT.Selection, listener);
-	getCancelButton().addListener(SWT.Selection, listener);
-	colorCanvas.addListener(SWT.Paint, listener);
-	colorCanvas.addListener(SWT.MouseDown, listener);
-	colorCanvas.addListener(SWT.MouseMove, listener);
+	okButton.addListener(SWT.Selection, listener);
+	cancelButton.addListener(SWT.Selection, listener);
+	colorsCanvas.addListener(SWT.Paint, listener);
+	colorsCanvas.addListener(SWT.MouseDown, listener);
+	colorsCanvas.addListener(SWT.MouseMove, listener);
 }
 void mouseDown(Event event) {
-	int swatchExtent = getColorSwatchExtent();
-	Color colorGrid[][] = getColorGrid();
+	int swatchExtent = colorSwatchExtent;
 	Color color = colorGrid[event.x / swatchExtent][event.y / swatchExtent];
-
-	getSelectionCanvas().setBackground(color);
-	getSelectionText().setBackground(color);	
+	selectionCanvas.setBackground(color);
+	selectionLabel.setBackground(color);	
 }
 void mouseMove(Event event) {
-	int swatchExtent = getColorSwatchExtent();
-	Color colorGrid[][] = getColorGrid();
-	Color color = colorGrid[event.x / swatchExtent][event.y / swatchExtent];
-
-	getSampleCanvas().setBackground(color);
-	getSampleText().setBackground(color);
+	int swatchExtent = colorSwatchExtent;
+	// adjust for events received from moving over the Canvas' border
+	int xgrid = Math.min(colorGrid.length - 1, event.x / swatchExtent);
+	int ygrid = Math.min(colorGrid[0].length - 1, event.y / swatchExtent);
+	Color color = colorGrid[xgrid][ygrid];
+	sampleCanvas.setBackground(color);
+	sampleLabel.setBackground(color);
 }
 /**
  * Makes the receiver visible and brings it to the front
@@ -375,113 +345,31 @@ void mouseMove(Event event) {
  * </ul>
  */
 public RGB open() {
-	Color selectionColor;
-	Shell dialog = new Shell(getParent(), getStyle() | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
-	
-	setDialogShell(dialog);
+	shell = new Shell(parent, getStyle() | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	setColorDepth(shell.getDisplay().getDepth());
 	createChildren();
 	installListeners();
 	openModal();
-	rgb = null;
-	if (isOkSelected() == true) {
-		selectionColor = getSelectionCanvas().getBackground();
+	if (okSelected) {
+		Color selectionColor = selectionCanvas.getBackground();
 		rgb = new RGB(
 			selectionColor.getRed(), 
 			selectionColor.getGreen(), 
 			selectionColor.getBlue());
 	}
 	disposeColors();	
-	// Fix for 1G5NLY7
-	if (dialog.isDisposed() == false) {
-		dialog.dispose();
+	if (shell.isDisposed() == false) {
+		shell.dispose();
 	}	
+	if (!okSelected) return null;
 	return rgb;
-}
-void paint(Event event) {
-	Color colorGrid[][] = getColorGrid();
-	
-	for (int column = 0; column < colorGrid.length; column++) {
-		for (int row = 0; row < colorGrid[0].length; row++) {
-			drawColor(column, row, colorGrid[column][row], event.gc);			
-		}
-	}
-}
-void setColorDepth(int bits) {
-	colorDepth = bits;
-	if (bits == 4) {
-		colorSwatchExtent = COLOR_SWATCH_EXTENTS[DEPTH_4];
-		colorGrid = new Color[8][2];
-		initialize4BitColors();
-	}
-	else {
-		colorSwatchExtent = COLOR_SWATCH_EXTENTS[DEPTH_8];
-		colorGrid = new Color[32][8];
-		initialize8BitColors();				
-	}
-}
-/**
- * Returns the receiver's selected color to be the argument.
- *
- * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
- *        open() is called
- *
- * @see PaletteData#getRGBs
- */
-public void setRGB(RGB rgb) {
-	this.rgb = rgb;
-}
-/**
- * Create the widgets of the dialog.
- */
-void createOkCancel() {
-	Shell dialog = getDialogShell();
-	GridData gridData;
-	
-	ok = new Button(dialog, SWT.PUSH);
-	ok.setText(SWT.getMessage("SWT_OK"));
-	dialog.setDefaultButton(ok);	
-	gridData = new GridData();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.widthHint = 70;
-	ok.setLayoutData(gridData);
-
-	cancel = new Button(dialog, SWT.PUSH);
-	cancel.setText(SWT.getMessage("SWT_Cancel"));
-	gridData = new GridData();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.verticalAlignment = GridData.BEGINNING;		
-	cancel.setLayoutData(gridData);
-}
-/**
- * Answer the cancel button
- */
-Button getCancelButton() {
-	return cancel;
-}
-
-/**
- * Answer the dialog shell.
- */
-Shell getDialogShell() {
-	return shell;
-}
-/**
- * Answer the ok button.
- */
-Button getOKButton() {
-	return ok;
-}
-
-boolean isOkSelected() {
-	return okSelected;
 }
 /**
  * Open the receiver and set its size to the size calculated by 
  * the layout manager.
  */
 void openDialog() {
-	Shell dialog = getDialogShell();
+	Shell dialog = shell;
 		
 	// Start everything off by setting the shell size to its computed size.
 	Point pt = dialog.computeSize(-1, -1, false);
@@ -509,34 +397,53 @@ void openDialog() {
 	if (title.length () == 0) title = SWT.getMessage ("SWT_ColorDialog_Title");
 	shell.setText(title);
 	
-	// Open the window.
 	dialog.open();
 }
-/**
- * Initialize the widgets of the receiver, open the dialog
- * and block the method until the dialog is closed by the user.
- */
 void openModal() {
-	Shell dialog = getDialogShell();
-	Display display = dialog.getDisplay();
-
+	Display display = shell.getDisplay();
 	initializeWidgets();
 	openDialog();
-	while (dialog.isDisposed() == false && dialog.getVisible() == true) {
+	while (shell.isDisposed() == false && shell.getVisible() == true) {
 		if (display.readAndDispatch() == false) {
 			display.sleep();
 		}
 	}
 }
-
-void setOkSelected(boolean newOkSelected) {
-	okSelected = newOkSelected;
+void paint(Event event) {
+	for (int column = 0; column < colorGrid.length; column++) {
+		for (int row = 0; row < colorGrid[0].length; row++) {
+			drawColor(column, row, colorGrid[column][row], event.gc);			
+		}
+	}
+}
+void setColorDepth(int bits) {
+	colorDepth = bits;
+	if (bits == 4) {
+		colorSwatchExtent = COLORSWATCH_SIZE_DEPTH4;
+		colorGrid = new Color[8][2];
+		initialize4BitColors();
+		return;
+	}
+	if (bits == 8) {
+		colorSwatchExtent = COLORSWATCH_SIZE_DEPTH8;
+		colorGrid = new Color[25][5];
+		initialize8BitColors();
+		return;				
+	}
+	// default case: 16, 24 or 32 bits
+	colorSwatchExtent = COLORSWATCH_SIZE_DEPTH16;
+	colorGrid = new Color[32][8];
+	initialize16BitColors();
 }
 /**
- * Set the shell used as the dialog window.
+ * Sets the receiver's selected color to be the argument.
+ *
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
+ * @see PaletteData#getRGBs
  */
-void setDialogShell(Shell shell) {
-	this.shell = shell;
+public void setRGB(RGB rgb) {
+	this.rgb = rgb;
 }
-
 }
