@@ -1643,17 +1643,12 @@ int gtk_enter_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_event_after (int widget, int event) {
-	GdkEvent gdkEvent = new GdkEvent ();
-	OS.memmove (gdkEvent, event, GdkEvent.sizeof);
-	if (menu != null && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		GdkEventButton gdkEventButton = new GdkEventButton ();
-		OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-		int button = gdkEventButton.button;
-		if (button == 3) {
-			menu.createIMMenu (imHandle());
-			getDisplay().runDeferredEvents();
-			menu.setVisible (true);
+int gtk_event_after (int widget, int gdkEvent) {
+	GdkEventButton gdkEventButton = new GdkEventButton ();
+	OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+	if (gdkEventButton.type == OS.GDK_BUTTON_PRESS) {
+		if (gdkEventButton.button == 3) {
+			showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
 		}
 	}
 	return 0;
@@ -1810,7 +1805,9 @@ int gtk_motion_notify_event (int widget, int event) {
 }
 
 int gtk_popup_menu (int widget) {
-	if (menu != null) menu.setVisible(true);
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, null);
+	showMenu (x [0], y [0]);
 	return 0;
 }
 
@@ -2224,15 +2221,13 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int hCursor = 0;
+	int gdkCursor = 0;
 	if (cursor != null) {
 		if (cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		hCursor = cursor.handle;
+		gdkCursor = cursor.handle;
 	}
 	int window = paintWindow ();
-	if (window != 0) {
-		OS.gdk_window_set_cursor (window,hCursor);
-	}
+	if (window != 0) OS.gdk_window_set_cursor (window, gdkCursor);
 }
 
 /**
@@ -2521,6 +2516,22 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 	if (!above && fixChildren && parent.parentingHandle () == parent.fixedHandle) {
 		window = OS.GTK_WIDGET_WINDOW (parent.handle);
 		if (window != 0) OS.gdk_window_lower (window);
+	}
+}
+
+void showMenu (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (event.doit) {
+		if (menu != null && !menu.isDisposed ()) {
+			menu.createIMMenu (imHandle());
+			if (event.x != x || event.y != y) {
+				menu.setLocation (event.x, event.y);
+			}
+			menu.setVisible (true);
+		}
 	}
 }
 

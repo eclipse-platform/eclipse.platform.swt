@@ -1270,10 +1270,17 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
 	if (event.button == 3) {
-		if (menu != null && !menu.isDisposed ()) {
-			Display display = getDisplay ();
-			display.runDeferredEvents ();
-			menu.setVisible (true);
+		Event menuEvent = new Event ();
+		menuEvent.x = event.x;
+		menuEvent.y = event.y;
+		sendEvent (SWT.MenuDetect);
+		if (menuEvent.doit) {
+			if (menu != null && !menu.isDisposed ()) {
+				if (menuEvent.x != event.x || menuEvent.y != event.y) {
+					menu.setLocation (menuEvent.x, menuEvent.y);
+				}
+				menu.setVisible (true);
+			}
 		}
 	}
 	/*

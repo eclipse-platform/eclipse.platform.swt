@@ -805,6 +805,8 @@ public void setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
 	if (visible) {
+		Display display = getDisplay ();
+		display.runDeferredEvents ();
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			int address = 0;
