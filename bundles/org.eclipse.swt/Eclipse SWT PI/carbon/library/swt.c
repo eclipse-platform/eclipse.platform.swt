@@ -1188,6 +1188,44 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAle
 }
 #endif /* NO_CreateStandardAlert */
 
+#ifndef NO_CreateScrollBarControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateScrollBarControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6, jint arg7, jintArray arg8)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateScrollBarControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)CreateScrollBarControl((WindowRef)arg0, (const Rect *)lparg1, (SInt32)arg2, (SInt32)arg3, (SInt32) arg4, (ControlSliderOrientation)arg5, (Boolean)arg6, (ControlActionUPP)arg7, (ControlRef *)lparg8);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif NO_CreateScrollBarControl
+
+#ifndef NO_CreateSeparatorControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateSeparatorControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateSeparatorControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)CreateSeparatorControl((WindowRef)arg0, (const Rect *)lparg1, (ControlRef *)lparg2);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_CreateSeparatorControl */
+
 #ifndef NO_CreateSliderControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateSliderControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, short arg6, jboolean arg7, jint arg8, jintArray arg9)
@@ -1206,6 +1244,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateSliderContr
 	return rc;
 }
 #endif NO_CreateSliderControl
+
+#ifndef NO_CreateStaticTextControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStaticTextControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jobject arg3, jintArray arg4)
+{
+	Rect _arg1, *lparg1=NULL;
+	ControlFontStyleRec _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateStaticTextControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = getControlFontStyleRecFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CreateStaticTextControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (const ControlFontStyleRec *)lparg3, (ControlRef *)lparg4);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg3) setControlFontStyleRecFields(env, arg3, lparg3);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_CreateStaticTextControl */
 
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl

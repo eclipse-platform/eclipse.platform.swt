@@ -97,6 +97,7 @@ public class OS {
 	public static final int kControlStructureMetaPart = -1;
 	public static final int kControlSupportsEmbedding = 1 << 1;
 	public static final int kControlSupportsFocus = 1 << 2;
+	public static final int kControlStaticTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlTabContentRectTag = ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';
 	public static final int kControlTabInfoVersionOne = 1;
 	public static final int kControlTabInfoTag = ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';
@@ -474,7 +475,10 @@ public static final native int CreatePushButtonControl(int window, Rect boundsRe
 public static final native int CreateRadioButtonControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateRootControl(int windowHandle, int[] cHandle);
 public static final native int CreateSliderControl(int window, Rect boundsRect, int value, int minimum, int maximum, int orientation, short numTickMarks, boolean liveTracking, int liveTrackingProc, int [] outControl);
+public static final native int CreateScrollBarControl(int window, Rect boundsRect, int value, int minimum, int maximum, int viewSize, boolean liveTracking, int liveTrackingProc, int [] outControl);
+public static final native int CreateSeparatorControl(int window, Rect boundsRect, int [] outControl);
 public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, int alertParamHandle, int[] dialogHandle);
+public static final native int CreateStaticTextControl(int window, Rect boundsRect, int text, ControlFontStyleRec style, int [] outControl);    
 public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
 public static final native void DeleteMenu(short menuID);
 public static final native void DeleteMenuItem(int mHandle, short index);
