@@ -34,7 +34,7 @@ public final class GC {
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 	Drawable drawable;
 	GCData data;
@@ -71,7 +71,7 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	data.style = checkStyle(style);
-	int gdkGC = drawable.internal_new_GC(data);
+	int /*long*/ gdkGC = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -87,7 +87,7 @@ static int checkStyle (int style) {
 
 public static GC gtk_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
-	int gdkGC = drawable.internal_new_GC(data);
+	int /*long*/ gdkGC = drawable.internal_new_GC(data);
 	gc.init(drawable, data, gdkGC);
 	return gc;
 }
@@ -112,7 +112,7 @@ public void copyArea(Image image, int x, int y) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = image.getBounds();
-	int gdkGC = OS.gdk_gc_new(image.pixmap);
+	int /*long*/ gdkGC = OS.gdk_gc_new(image.pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.gdk_gc_set_subwindow(gdkGC, OS.GDK_INCLUDE_INFERIORS);
 	OS.gdk_draw_drawable(image.pixmap, gdkGC, data.drawable, x, y, 0, 0, rect.width, rect.height);
@@ -139,7 +139,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
-	int drawable = data.drawable;
+	int /*long*/ drawable = data.drawable;
 	OS.gdk_gc_set_exposures(handle, true);
 	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
 	OS.gdk_gc_set_exposures(handle, false);
@@ -187,7 +187,7 @@ public void dispose() {
 	if (data.device.isDisposed()) return;
 	
 	/* Free resources */
-	int clipRgn = data.clipRgn;
+	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
 	Image image = data.image;
 	if (image != null) {
@@ -195,9 +195,9 @@ public void dispose() {
 		if (image.transparentPixel != -1) image.createMask();
 	}
 	
-	int context = data.context;
+	int /*long*/ context = data.context;
 	if (context != 0) OS.g_object_unref(context);
-	int layout = data.layout;
+	int /*long*/ layout = data.layout;
 	if (layout != 0) OS.g_object_unref(layout);
 
 	/* Dispose the GC */
@@ -391,7 +391,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	if (srcWidth == destWidth && srcHeight == destHeight) {
 		OS.gdk_draw_drawable(data.drawable, handle, srcImage.pixmap, srcX, srcY, destX, destY, destWidth, destHeight);
 	} else {
-		int pixbuf = scale(srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destWidth, destHeight);
+		int /*long*/ pixbuf = scale(srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destWidth, destHeight);
 		if (pixbuf != 0) {
 			OS.gdk_pixbuf_render_to_drawable(pixbuf, data.drawable, handle, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
 			OS.g_object_unref(pixbuf);
@@ -404,12 +404,12 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		return;
 	}
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
+	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) return;
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-	int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+	int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 	byte[] line = new byte[stride];
 	byte alpha = (byte)srcImage.alpha;
 	byte[] alphaData = srcImage.alphaData;
@@ -422,7 +422,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		OS.memmove(pixels + (y * stride), line, stride);
 	}
 	if (srcWidth != destWidth || srcHeight != destHeight) {
-		int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+		int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 		OS.g_object_unref(pixbuf);
 		if (scaledPixbuf == 0) return;
 		pixbuf = scaledPixbuf;
@@ -434,25 +434,25 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	OS.g_object_unref(pixbuf);
 }
 void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
-	int drawable = data.drawable;
-	int colorPixmap = srcImage.pixmap;
+	int /*long*/ drawable = data.drawable;
+	int /*long*/ colorPixmap = srcImage.pixmap;
 	/* Generate the mask if necessary. */
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
-	int maskPixmap = srcImage.mask;
+	int /*long*/ maskPixmap = srcImage.mask;
 
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		//NOT DONE - there must be a better way of scaling a GdkBitmap
-		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
+		int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 		if (pixbuf != 0) {
-			int colormap = OS.gdk_colormap_get_system();
+			int /*long*/ colormap = OS.gdk_colormap_get_system();
 			OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
-			int gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
+			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
 			if (gdkImagePtr != 0) {
 				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-				int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 				byte[] line = new byte[stride];
 				for (int y=0; y<srcHeight; y++) {
-					int offset = pixels + (y * stride);
+					int /*long*/ offset = pixels + (y * stride);
 					OS.memmove(line, offset, stride);
 					for (int x=0; x<srcWidth; x++) {
 						if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) == 0) {
@@ -462,9 +462,9 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 					OS.memmove(offset, line, stride);
 				}
 				OS.g_object_unref(gdkImagePtr);
-				int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+				int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 				if (scaledPixbuf != 0) {
-					int[] colorBuffer = new int[1];
+					int /*long*/[] colorBuffer = new int /*long*/[1];
 					int[] maskBuffer = new int[1];
 					OS.gdk_pixbuf_render_pixmap_and_mask(scaledPixbuf, colorBuffer, maskBuffer, 128);
 					colorPixmap = colorBuffer[0];
@@ -486,9 +486,9 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 		int newHeight = srcY + srcHeight;
 		int bytesPerLine = (((newWidth + 7) / 8) + 3) / 4 * 4;
 		byte[] maskData = new byte[bytesPerLine * newHeight];
-		int mask = OS.gdk_bitmap_create_from_data(0, maskData, bytesPerLine * 8, newHeight);
+		int /*long*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, bytesPerLine * 8, newHeight);
 		if (mask != 0) {
-			int gc = OS.gdk_gc_new(mask);
+			int /*long*/ gc = OS.gdk_gc_new(mask);
 			OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
 			OS.gdk_gc_set_clip_region(gc, data.clipRgn);
 			OS.gdk_region_offset(data.clipRgn, destX - srcX, destY - srcY);
@@ -519,12 +519,12 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 }
-int scale(int src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
+int /*long*/ scale(int /*long*/ src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
+	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) return 0;
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
-	int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+	int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 	OS.g_object_unref(pixbuf);
 	return scaledPixbuf;
 }
@@ -723,7 +723,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	int naw2 = naw / 2;
 	int nah2 = nah / 2;
 
-	int drawable = data.drawable;
+	int /*long*/ drawable = data.drawable;
 	if (nw > naw) {
 		if (nh > nah) {
 			OS.gdk_draw_arc(drawable, handle, 0, nx, ny, naw, nah, 5760, 5760);
@@ -891,20 +891,20 @@ public void drawText (String string, int x, int y, int flags) {
 		OS.gdk_gc_get_values(handle, values);
 		background = new GdkColor();
 		background.pixel = values.background_pixel;
-		int colormap = OS.gdk_colormap_get_system();
+		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, background.pixel, background);
 	}
 	if (!data.xorMode) {
 		OS.gdk_draw_layout_with_colors(data.drawable, handle, x, y, data.layout, null, background);
 	} else {
-		int layout = data.layout;
+		int /*long*/ layout = data.layout;
 		int[] w = new int[1], h = new int[1];
 		OS.pango_layout_get_size(layout, w, h);
 		int width = OS.PANGO_PIXELS(w[0]);
 		int height = OS.PANGO_PIXELS(h[0]);
-		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+		int /*long*/ pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
 		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int gdkGC = OS.gdk_gc_new(pixmap);
+		int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
 		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		GdkColor foreground = new GdkColor();
 		OS.gdk_gc_set_foreground(gdkGC, foreground);
@@ -1224,7 +1224,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	color.pixel = values.background_pixel;
 	OS.gdk_gc_set_foreground(handle, color);
 	
-	int drawable = data.drawable;
+	int /*long*/ drawable = data.drawable;
 	if (nw > naw) {
 		if (nh > nah) {
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, naw, nah, 5760, 5760);
@@ -1304,7 +1304,7 @@ public Color getBackground() {
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
@@ -1345,7 +1345,7 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
+	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
 		OS.gdk_drawable_get_size(data.drawable, width, height);
@@ -1372,8 +1372,8 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	int clipRgn = data.clipRgn;
+	int /*long*/ hRegion = region.handle;
+	int /*long*/ clipRgn = data.clipRgn;
 	OS.gdk_region_subtract(hRegion, hRegion);
 	if (data.clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
@@ -1414,9 +1414,9 @@ public Font getFont() {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int context = data.context;
-	int lang = OS.pango_context_get_language(context);
-	int metrics = OS.pango_context_get_metrics(context, data.font, lang);
+	int /*long*/ context = data.context;
+	int /*long*/ lang = OS.pango_context_get_language(context);
+	int /*long*/ metrics = OS.pango_context_get_metrics(context, data.font, lang);
 	FontMetrics fm = new FontMetrics();
 	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
 	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
@@ -1441,7 +1441,7 @@ public Color getForeground() {
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.foreground_pixel;
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
@@ -1523,16 +1523,16 @@ public boolean getXORMode() {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return (int)/*64*/handle;
 }
 
-void init(Drawable drawable, GCData data, int gdkGC) {
-	int context = OS.gdk_pango_context_get();
+void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
+	int /*long*/ context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
 	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
 	data.context = context;	
-	int layout = OS.pango_layout_new(context);
+	int /*long*/ layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
 
@@ -1540,7 +1540,7 @@ void init(Drawable drawable, GCData data, int gdkGC) {
 	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
 	GdkColor background = data.background;
 	if (background != null) OS.gdk_gc_set_background(gdkGC, background);	
-	int font = data.font;
+	int /*long*/ font = data.font;
 	if (font != 0) OS.pango_layout_set_font_description(layout, font);
 
 	Image image = data.image;
@@ -1629,7 +1629,7 @@ public void setBackground(Color color) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
+	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		data.clipRgn = clipRgn = OS.gdk_region_new();
 	} else {
@@ -1654,7 +1654,7 @@ public void setClipping(int x, int y, int width, int height) {
  */
 public void setClipping(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
+	int /*long*/ clipRgn = data.clipRgn;
 	if (rect == null) {
 		OS.gdk_gc_set_clip_region(handle, 0);
 		if (clipRgn != 0) {
@@ -1678,7 +1678,7 @@ public void setClipping(Rectangle rect) {
  */
 public void setClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int clipRgn = data.clipRgn;
+	int /*long*/ clipRgn = data.clipRgn;
 	if (region == null) {
 		OS.gdk_gc_set_clip_region(handle, 0);
 		if (clipRgn != 0) {
@@ -1715,7 +1715,7 @@ public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int fontHandle = data.font = font.handle;
+	int /*long*/ fontHandle = data.font = font.handle;
 	OS.pango_layout_set_font_description(data.layout, fontHandle);
 	data.stringWidth = data.stringHeight = -1;
 }
@@ -1804,7 +1804,8 @@ void setString(String string, int flags) {
 		return;
 	}
 	byte[] buffer;
-	int mnemonic, layout = data.layout, length = string.length ();
+	int mnemonic, length = string.length ();
+	int /*long*/ layout = data.layout;
 	char[] text = new char[length];
 	string.getChars(0, length, text, 0);	
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (mnemonic = fixMnemonic(text)) != -1) {
@@ -1817,8 +1818,8 @@ void setString(String string, int flags) {
 		buffer = new byte[buffer1.length + buffer2.length];
 		System.arraycopy(buffer1, 0, buffer, 0, buffer1.length);
 		System.arraycopy(buffer2, 0, buffer, buffer1.length, buffer2.length);
-		int attr_list = OS.pango_attr_list_new();
-		int attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_LOW);
+		int /*long*/ attr_list = OS.pango_attr_list_new();
+		int /*long*/ attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_LOW);
 		PangoAttribute attribute = new PangoAttribute();
 		OS.memmove(attribute, attr, PangoAttribute.sizeof);
 		attribute.start_index = buffer1.length;

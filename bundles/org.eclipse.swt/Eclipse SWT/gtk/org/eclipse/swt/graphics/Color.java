@@ -119,7 +119,7 @@ public void dispose() {
 			device.gdkColors[pixel] = null;
 		}
 	}
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_free_colors(colormap, handle, 1);
 	handle = null;
 	if (device.tracking) device.dispose_Object(this);
@@ -249,7 +249,7 @@ void init(Device device, int red, int green, int blue) {
 	gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
 	gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
 	gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
-	int colormap = OS.gdk_colormap_get_system();
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
 		/* Allocate black. */
 		gdkColor = new GdkColor();

@@ -28,13 +28,13 @@ public final class GCData {
 	public Device device;
 	public int style;
 	public Image image;
-	public int drawable;
+	public int /*long*/ drawable;
 	public GdkColor foreground;
 	public GdkColor background;
-	public int font;
-	public int context;
-	public int layout;
-	public int clipRgn;
+	public int /*long*/ font;
+	public int /*long*/ context;
+	public int /*long*/ layout;
+	public int /*long*/ clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public boolean xorMode;
 

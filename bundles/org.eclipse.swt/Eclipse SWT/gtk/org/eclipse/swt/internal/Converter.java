@@ -38,7 +38,7 @@ public static String defaultCodePage () {
 
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 	int [] items_written = new int [1];
-	int ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
+	int /*long*/ ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
 	if (ptr == 0) return EmptyCharArray;
 	int length = items_written [0];
 	char [] chars = new char [length];
@@ -60,7 +60,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 	* Note that g_utf16_to_utf8()  stops converting 
 	* when it finds the first NULL.
 	*/
-	int ptr = OS.g_utf16_to_utf8 (buffer, buffer.length, items_read, items_written, null);
+	int /*long*/ ptr = OS.g_utf16_to_utf8 (buffer, buffer.length, items_read, items_written, null);
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
 	int written = items_written [0];
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];

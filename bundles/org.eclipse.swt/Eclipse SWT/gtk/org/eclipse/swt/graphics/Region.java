@@ -29,7 +29,7 @@ public final class Region {
 	 * the OS resource for the region
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 	/**
 	 * The device where this region was created.
@@ -56,7 +56,7 @@ public Region(Device device) {
 	if (device.tracking) device.new_Object(this);
 }
 
-Region(Device device, int handle) {
+Region(Device device, int /*long*/ handle) {
 	this.device = device;
 	this.handle = handle;
 }
@@ -80,7 +80,7 @@ Region(Device device, int handle) {
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_union(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
 }
@@ -222,7 +222,7 @@ public Rectangle getBounds() {
 	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
 }
 
-public static Region gtk_new(Device device, int handle) {
+public static Region gtk_new(Device device, int /*long*/ handle) {
 	return new Region(device, handle);
 }
 
@@ -237,7 +237,7 @@ public static Region gtk_new(Device device, int handle) {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 public void intersect(Rectangle rect) {
@@ -249,7 +249,7 @@ public void intersect(Rectangle rect) {
 	gdkRect.y = rect.y;
 	gdkRect.width = rect.width;
 	gdkRect.height = rect.height;
-	int rectRgn = OS.gdk_region_rectangle(gdkRect);
+	int /*long*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_intersect(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }
@@ -357,7 +357,7 @@ public boolean isEmpty() {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_subtract(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
 }
@@ -371,7 +371,7 @@ public void subtract(Rectangle rect) {
 	gdkRect.y = rect.y;
 	gdkRect.width = rect.width;
 	gdkRect.height = rect.height;
-	int rectRgn = OS.gdk_region_rectangle(gdkRect);
+	int /*long*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_subtract(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }

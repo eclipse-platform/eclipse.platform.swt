@@ -38,7 +38,7 @@ public abstract class Device implements Drawable {
 	boolean disposed;
 	
 	/* Warning and Error Handlers */
-	int logProc;
+	int /*long*/ logProc;
 	Callback logCallback;
 	//NOT DONE - get list of valid names
 	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS"};
@@ -57,7 +57,7 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
-	int emptyTab;
+	int /*long*/ emptyTab;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -323,13 +323,13 @@ public Point getDPI () {
 public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	int[] family = new int[1];
+	int /*long*/[] family = new int /*long*/[1];
 	int[] face = new int[1];
-	int[] families = new int[1];
+	int /*long*/[] families = new int /*long*/[1];
 	int[] n_families = new int[1];
-	int[] faces = new int[1];
+	int /*long*/[] faces = new int /*long*/[1];
 	int[] n_faces = new int[1];
-	int context = OS.gdk_pango_context_get();
+	int /*long*/ context = OS.gdk_pango_context_get();
 	OS.pango_context_list_families(context, families, n_families);
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
@@ -338,7 +338,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 		OS.pango_font_family_list_faces(family[0], faces, n_faces);
 		for (int j=0; j<n_faces[0]; j++) {
 			OS.memmove(face, faces[0] + j * 4, 4);
-			int fontDesc = OS.pango_font_face_describe(face[0]);
+			int /*long*/ fontDesc = OS.pango_font_face_describe(face[0]);
 			Font font = Font.gtk_new(this, fontDesc);
 			FontData data = font.getFontData()[0];
 			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, data.name)) {
@@ -507,7 +507,7 @@ protected void init () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public abstract int internal_new_GC (GCData data);
+public abstract int /*long*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -522,7 +522,7 @@ public abstract int internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public abstract void internal_dispose_GC (int handle, GCData data);
+public abstract void internal_dispose_GC (int /*long*/ handle, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,
@@ -538,12 +538,12 @@ public boolean isDisposed () {
 	return disposed;
 }
 
-int logProc (int log_domain, int log_level, int message, int user_data) {
+int /*long*/ logProc (int /*long*/ log_domain, int /*long*/ log_level, int /*long*/ message, int /*long*/ user_data) {
 	if (warningLevel == 0) {
 		if (DEBUG || debug) {
 			new Error ().printStackTrace ();
 		}
-		OS.g_log_default_handler (log_domain, log_level, message, 0);
+		OS.g_log_default_handler (log_domain, (int)/*64*/log_level, message, 0);
 	}
 	return 0;
 }
@@ -591,7 +591,7 @@ void new_Object (Object object) {
  */
 protected void release () {
 	if (gdkColors != null) {
-		int colormap = OS.gdk_colormap_get_system();
+		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		for (int i = 0; i < gdkColors.length; i++) {
 			GdkColor color = gdkColors [i];
 			if (color != null) {

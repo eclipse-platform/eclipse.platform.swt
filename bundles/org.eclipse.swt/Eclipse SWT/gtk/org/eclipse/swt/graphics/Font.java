@@ -33,7 +33,7 @@ public final class Font {
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 	/**
 	 * The device where this image was created.
@@ -177,7 +177,7 @@ public boolean equals(Object object) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	int family = OS.pango_font_description_get_family(handle);
+	int /*long*/ family = OS.pango_font_description_get_family(handle);
 	int length = OS.strlen(family);
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
@@ -214,7 +214,7 @@ public FontData[] getFontData() {
  * 
  * @private
  */
-public static Font gtk_new(Device device, int handle) {
+public static Font gtk_new(Device device, int /*long*/ handle) {
 	if (device == null) device = Device.getDevice();
 	Font font = new Font();
 	font.handle = handle;
@@ -233,7 +233,7 @@ public static Font gtk_new(Device device, int handle) {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 void init(Device device, String name, int height, int style, byte[] fontString) {

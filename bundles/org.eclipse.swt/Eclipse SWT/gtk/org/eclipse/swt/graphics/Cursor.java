@@ -43,7 +43,7 @@ public final class Cursor {
 	 * the handle to the OS cursor resource
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 	/**
 	 * The device where this cursor was created.
@@ -245,9 +245,9 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		maskData[i] = (byte) ~maskData[i];
 	}
 
-	int sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
+	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
 	if (sourcePixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
+	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
 	if (maskPixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	/* Get the colors */
@@ -347,9 +347,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
-	int sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
+	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
 	if (sourcePixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
+	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
 	if (maskPixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	/* Get the colors */
@@ -434,7 +434,7 @@ public static Cursor gtk_new(Device device, int handle) {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 /**
