@@ -192,7 +192,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
-		height = itemCount * getItemHeight ();
+		height = itemCount * getItemHeight () + getHeaderHeight();
 	} else {
 		height = hHint;
 	}
@@ -211,12 +211,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	border += outMetric [0];
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
-	short [] headerHeight = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, headerHeight);
 	x -= rect.left + border;
-	y -= rect.top + border + headerHeight [0];
+	y -= rect.top + border;
 	width += rect.left + rect.right + border + border;
-	height += rect.top + rect.bottom + border + border + headerHeight [0];
+	height += rect.top + rect.bottom + border + border;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -663,10 +661,8 @@ public Rectangle getClientArea () {
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	short [] headerHeight = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, headerHeight);
 	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
-	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border - headerHeight [0]);
+	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
 	return new Rectangle (inset.left, inset.top, width, height);
 }
 
