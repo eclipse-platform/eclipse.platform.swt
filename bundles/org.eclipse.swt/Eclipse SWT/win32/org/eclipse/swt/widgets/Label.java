@@ -465,11 +465,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 		if ((bits & OS.SS_BITMAP) != OS.SS_BITMAP &&
 			(bits & OS.SS_ICON) != OS.SS_ICON) return result;
 	}
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	int pixel = getBackgroundPixel ();
-	int hBrush = findBrush (pixel);
-	OS.FillRect (wParam, rect, hBrush);
+	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 

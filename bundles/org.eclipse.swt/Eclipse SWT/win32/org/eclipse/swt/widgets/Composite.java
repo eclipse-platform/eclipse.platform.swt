@@ -158,13 +158,11 @@ void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
 }
-void drawBackground (int hdc, RECT rect) {
+void drawBackground (int hDC, RECT rect) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) != 0) return;
 	}
-	int pixel = getBackgroundPixel ();
-	int hBrush = findBrush (pixel);
-	OS.FillRect (hdc, rect, hBrush);
+	super.drawBackground (hDC, rect);
 }
 
 /**
@@ -479,9 +477,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	if ((state & CANVAS) != 0) {
 		return super.WM_ERASEBKGND (wParam, lParam);
 	}
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	drawBackground (wParam, rect);
+	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 

@@ -385,9 +385,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* occupies when the size of the cool bar grows.
 	* The fix is to erase the cool bar background.
 	*/
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	drawBackground (wParam, rect);
+	drawBackground (wParam);
 	return null;
 }
 

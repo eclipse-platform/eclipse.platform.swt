@@ -479,6 +479,24 @@ void destroyWidget () {
 	}
 }
 
+void drawBackground (int hDC) {
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	drawBackground (hDC, rect);
+}
+
+void drawBackground (int hDC, RECT rect) {
+	Display display = getDisplay ();
+	int hPalette = display.hPalette;
+	if (hPalette != 0) {
+		OS.SelectPalette (hDC, hPalette, false);
+		OS.RealizePalette (hDC);
+	}
+	int pixel = getBackgroundPixel ();
+	int hBrush = findBrush (pixel);
+	OS.FillRect (hDC, rect, hBrush);
+}
+
 int findBrush (int pixel) {
 	return parent.findBrush (pixel);
 }

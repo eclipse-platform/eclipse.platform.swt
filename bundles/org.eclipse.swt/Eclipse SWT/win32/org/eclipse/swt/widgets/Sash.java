@@ -169,11 +169,7 @@ int windowProc () {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	int pixel = getBackgroundPixel ();
-	int hBrush = findBrush (pixel);
-	OS.FillRect (wParam, rect, hBrush);
+	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
