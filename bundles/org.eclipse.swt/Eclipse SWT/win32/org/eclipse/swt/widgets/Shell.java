@@ -103,7 +103,7 @@ public class Shell extends Decorations {
 	int toolTipHandle, lpstrTip;
 	Control lastActive;
 	static final int DialogProc;
-	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
+	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
