@@ -13,20 +13,15 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.gtk.OS;
 
 class TreeDragUnderEffect extends DragUnderEffect {
-
 	private Tree tree;
 	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
-	private TreeItem dropSelection = null;
-	private TreeItem insertMark = null;
-	private boolean insertBefore = false;
 	
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
-	private static final int SCROLL_WIDTH = 100; // pixels
+	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
 	
 	private TreeItem expandItem;
 	private long expandBeginTime;
@@ -39,17 +34,9 @@ void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
-	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
-	}
 	currentEffect = effect;
 }
 private int checkEffect(int effect) {
@@ -115,16 +102,29 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 	setDropSelection(null);
 }
 private void setDropSelection (TreeItem item) {	
-	if (item == dropSelection) return;
-	if (dropSelection != null) tree.deselectAll();
-	dropSelection = item;
-	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
+	if (item == null) {
+		OS.gtk_tree_view_unset_rows_drag_dest(tree.handle);
+		return;
+	}
+	Rectangle rect = item.getBounds();
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
+	if (path [0] == 0) return;
+	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+	OS.gtk_tree_path_free (path [0]);
 }
 private void setInsertMark(TreeItem item, boolean before) {
-	if (item == insertMark && before == insertBefore) return;
-	insertMark = item;
-	insertBefore = before;
-	tree.setInsertMark(item, before);
+	if (item == null) {
+		OS.gtk_tree_view_unset_rows_drag_dest(tree.handle);
+		return;
+	}
+	Rectangle rect = item.getBounds();
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
+	if (path [0] == 0) return;
+	int position = before ? OS.GTK_TREE_VIEW_DROP_BEFORE : OS.GTK_TREE_VIEW_DROP_AFTER;
+	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], position);
+	OS.gtk_tree_path_free (path [0]);
 }
 private void scrollHover (int effect, TreeItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
@@ -148,14 +148,17 @@ private void scroll(TreeItem item, int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	Rectangle area = tree.getClientArea();
-	TreeItem showItem = null;
-	if (coordinates.y - area.y < SCROLL_WIDTH) {
-		showItem = getPreviousVisibleItem(item);
-	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
-		showItem = getNextVisibleItem(item, true);
+	TreeItem top = tree.getTopItem();
+	TreeItem newTop = null;
+	// scroll if two lines from top or bottom
+	int scroll_width = 2*tree.getItemHeight();
+	if (coordinates.y < area.y + scroll_width) {
+		 newTop = getPreviousVisibleItem(top);
+	} else if (coordinates.y > area.y + area.height - scroll_width) {
+		newTop = getNextVisibleItem(top, true);
 	}
-	if (showItem != null) {
-		tree.showItem(showItem);
+	if (newTop != null && newTop != top) {
+		tree.setTopItem(newTop);
 	}		
 }
 private void expandHover (int effect, TreeItem item, int x, int y) {
