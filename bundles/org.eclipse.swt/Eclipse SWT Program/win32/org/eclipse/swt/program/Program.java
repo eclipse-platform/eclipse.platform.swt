@@ -206,9 +206,9 @@ public static Program [] getPrograms () {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
- *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
- *	</ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -237,9 +237,9 @@ public static boolean launch (String fileName) {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
- *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
- *	</ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
