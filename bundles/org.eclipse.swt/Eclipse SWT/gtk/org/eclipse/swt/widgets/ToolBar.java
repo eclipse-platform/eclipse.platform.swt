@@ -268,7 +268,7 @@ static int checkStyle (int style) {
 
 void setFontDescription (int font) {
 	super.setFontDescription (font);
-	ToolItem [] items = getItems (); //BAD
+	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
 			items[i].setFontDescription (font);
@@ -278,7 +278,7 @@ void setFontDescription (int font) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	ToolItem [] items = getItems (); //BAD
+	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
 			items[i].setForegroundColor (color);
