@@ -162,7 +162,6 @@ public void clearSelection () {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
@@ -375,12 +374,10 @@ void deregister () {
 }
 
 int defaultBackground () {
-	Display display = getDisplay ();
 	return display.TEXT_BACKGROUND;
 }
 
 int defaultForeground () {
-	Display display = getDisplay ();
 	return display.TEXT_FOREGROUND;
 }
 
@@ -812,7 +809,7 @@ public int getTopPixel () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_MODIFY_VERIFY, windowProc, OS.Pt_CB_MODIFY_VERIFY); 
 	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, OS.Pt_CB_TEXT_CHANGED);
 }

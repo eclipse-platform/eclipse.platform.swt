@@ -143,7 +143,6 @@ public void addSelectionListener (SelectionListener listener) {
 void createHandle (int index) {
 	state |= HANDLE;
 	if (handle != 0) return;
-	Display display = getDisplay ();
 	int parentHandle = parent.scrolledHandle;
 	int orientation, sizeArg, size, basicFlags;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -169,12 +168,6 @@ void createHandle (int index) {
 	};
 	handle = OS.PtCreateWidget (OS.PtScrollbar (), parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 /**
@@ -366,7 +359,7 @@ public boolean getVisible () {
 }
 
 void hookEvents () {
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, OS.Pt_CB_SCROLL_MOVE);
 }
 

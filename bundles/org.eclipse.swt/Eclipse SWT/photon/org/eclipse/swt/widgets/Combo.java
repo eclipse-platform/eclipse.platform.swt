@@ -203,7 +203,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtComboBox;
 	int parentHandle = parent.parentingHandle ();
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
@@ -477,7 +476,6 @@ public void cut () {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.TEXT_FONT;
 }
 
@@ -754,7 +752,7 @@ boolean hasFocus () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, OS.Pt_CB_SELECTION);
 	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, OS.Pt_CB_TEXT_CHANGED);
 }

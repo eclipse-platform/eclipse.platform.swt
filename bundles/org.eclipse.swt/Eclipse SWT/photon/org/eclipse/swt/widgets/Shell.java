@@ -101,7 +101,6 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int shellHandle;
-	Display display;
 	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
@@ -311,7 +310,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
 public static Shell photon_new (Display display, int handle) {
@@ -530,11 +529,6 @@ public Rectangle getBounds () {
 	return new Rectangle (area.pos_x, area.pos_y, width, height);
 }
 
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
-}
-
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -646,7 +640,7 @@ public Point getSize () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, OS.Pt_CB_WINDOW);
 	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, OS.Pt_CB_RESIZE);
 }
@@ -775,7 +769,6 @@ void releaseWidget () {
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;
 	lastActive = null;
-	display = null;
 }
 
 /**

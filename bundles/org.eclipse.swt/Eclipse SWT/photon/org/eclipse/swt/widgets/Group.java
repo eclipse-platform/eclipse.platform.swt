@@ -112,7 +112,6 @@ protected void checkSubclass () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
@@ -123,7 +122,6 @@ void createHandle (int index) {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.GROUP_FONT;
 }
 

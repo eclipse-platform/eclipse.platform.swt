@@ -469,17 +469,14 @@ void createWidget (int index) {
 }
 
 int defaultBackground () {
-	Display display = getDisplay ();
 	return display.WIDGET_BACKGROUND;
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.TEXT_FONT;
 }
 
 int defaultForeground () {
-	Display display = getDisplay ();
 	return display.WIDGET_FOREGROUND;
 }
 
@@ -591,7 +588,7 @@ public Color getBackground () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_FILL_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	return Color.photon_new (getDisplay (), args [1]);
+	return Color.photon_new (display, args [1]);
 }
 
 /**
@@ -625,7 +622,7 @@ public Font getFont () {
 		font = new byte [length + 1];
 		OS.memmove (font, ptr, length);
 	}
-	return Font.photon_new (getDisplay (), font);
+	return Font.photon_new (display, font);
 }
 
 /**
@@ -642,7 +639,7 @@ public Color getForeground () {
 	checkWidget();
 	int [] args = {OS.Pt_ARG_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	return Color.photon_new (getDisplay (), args [1]);
+	return Color.photon_new (display, args [1]);
 }
 
 /**
@@ -691,22 +688,6 @@ public Rectangle getBounds () {
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
-}
-
-/**
- * Returns the display that the receiver was created on.
- *
- * @return the receiver's display
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 /**
@@ -902,7 +883,7 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	int focusHandle = focusHandle ();
 	OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, OS.Ph_EV_KEY);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_PRESS, windowProc, OS.Ph_EV_BUT_PRESS);
@@ -941,7 +922,7 @@ public int internal_new_GC (GCData data) {
 
 	int [] args = {OS.Pt_ARG_COLOR, 0, 0, OS.Pt_ARG_FILL_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	data.device = getDisplay ();
+	data.device = display;
 	data.widget = handle;
 	data.topWidget = topHandle ();
 	data.foreground = args [1];
@@ -989,7 +970,6 @@ public boolean isEnabled () {
 }
 
 public boolean isFocusAncestor () {
-	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
@@ -1441,7 +1421,6 @@ int Ph_EV_KEY (int widget, int info) {
 	Event event = new Event ();
 	event.time = ev.timestamp;
 	setKeyState (event, ke);
-	Display display = getDisplay ();
 	if (type == SWT.KeyDown) {
 		display.lastKey = event.keyCode;
 		display.lastAscii = event.character;
@@ -1513,7 +1492,6 @@ int Pt_CB_LOST_FOCUS (int widget, int info) {
 	* events.
 	*/
 	if (!shell.isDisposed ()) {
-		Display display = shell.getDisplay ();
 		Control control = display.getFocusControl ();
 		if (control == null || shell != control.getShell () ) {
 			shell.setActiveControl (null);
@@ -2058,7 +2036,6 @@ void setBackgroundPixel (int pixel) {
 }
 
 void setDefaultFont () {
-	Display display = getDisplay ();
 	if (display.defaultFont != null) setFont (defaultFont ());
 }
 

@@ -208,7 +208,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 		
 	/* ARROW button */
@@ -402,7 +401,7 @@ public String getText () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 }
 

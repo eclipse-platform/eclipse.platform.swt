@@ -184,7 +184,6 @@ void createScrollBars () {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.TITLE_FONT;
 }
 
@@ -199,7 +198,6 @@ void createScrolledHandle (int parentHandle) {
 	};
 	scrolledHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	Display display = getDisplay ();
 	if ((style & SWT.H_SCROLL) != 0 && (style & SWT.V_SCROLL) != 0) {
 		etches = OS.Pt_TOP_OUTLINE | OS.Pt_LEFT_OUTLINE;
 		args = new int [] {

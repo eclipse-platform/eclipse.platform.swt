@@ -128,7 +128,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				OS.memmove (font, args [4], length);
 				String string = text;
 				if (wHint != SWT.DEFAULT) {
-					Display display = getDisplay ();
 					string = display.wrapText (text, font, wHint);
 				}
 				byte [] buffer = Converter.wcsToMbcs (null, string, false);
@@ -177,7 +176,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 		
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -433,7 +431,6 @@ public void setText (String string) {
 		if ((style & SWT.BORDER) != 0) border = 2;
 		int width = args [4];
 		width -= (args [7] * 2) + args [10] + args [13] + border * 2;
-		Display display = getDisplay ();
 		if (mnemonic != '\0') string = new String (unicode);
 		string = display.wrapText (string, font, width);
 		buffer = Converter.wcsToMbcs (null, string, true);

@@ -43,8 +43,13 @@ import org.eclipse.swt.events.*;
  * @see #checkSubclass
  */
 public abstract class Widget {
+	/**
+	 * the handle to the resource 
+	 * (Warning: This field is platform dependent)
+	 */
 	public int handle;
 	int style, state;
+	Display display;
 	EventTable eventTable;
 	Object data;
 	
@@ -107,6 +112,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	display = parent.display;
 }
 
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
@@ -153,8 +159,7 @@ void checkOrientation (Widget parent) {
 
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 
 /**
@@ -213,8 +218,10 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 int copyPhImage(int image) {
@@ -317,7 +324,6 @@ int createToolTip (String string, int handle, byte [] font) {
 
 	int shellHandle = OS.PtFindDisjoint (handle);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	Display display = getDisplay ();
 	int fill = display.INFO_BACKGROUND;
 	int text_color = display.INFO_FOREGROUND;
 	int toolTipHandle = OS.PtInflateBalloon (shellHandle, handle, OS.Pt_BALLOON_RIGHT, buffer, font, fill, text_color);
@@ -418,7 +424,6 @@ static void error (int code) {
 }
 
 boolean filters (int eventType) {
-	Display display = getDisplay ();
 	return display.filters (eventType);
 }
 
@@ -501,7 +506,11 @@ public Object getData (String key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public abstract Display getDisplay ();
+public Display getDisplay () {
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	return display;
+}
 
 String getName () {
 	String string = getClass ().getName ();
@@ -725,6 +734,7 @@ void register () {
 void releaseHandle () {
 	handle = 0;
 	state |= DISPOSED;
+	display = null;
 }
 
 void releaseResources () {
@@ -820,7 +830,6 @@ public void removeDisposeListener (DisposeListener listener) {
 }
 
 void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
-	Display display = getDisplay ();
 	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (args [1] != 0) {
@@ -868,7 +877,6 @@ void sendEvent (int eventType, Event event) {
 }
 
 void sendEvent (int eventType, Event event, boolean send) {
-	Display display = getDisplay ();
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}

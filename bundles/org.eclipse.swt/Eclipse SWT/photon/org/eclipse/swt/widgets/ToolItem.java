@@ -327,12 +327,6 @@ public Image getDisabledImage () {
 	return disabledImage;
 }
 
-public Display getDisplay () {
-	ToolBar parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -451,7 +445,7 @@ boolean hasFocus () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, OS.Ph_EV_BOUNDARY);	
 	OS.PtAddCallback (button, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -640,7 +634,6 @@ public void setControl (Control control) {
 }
 
 void setDefaultFont () {
-	Display display = getDisplay ();
 	if (display.defaultFont != null) setFont (parent.defaultFont ());
 }
 

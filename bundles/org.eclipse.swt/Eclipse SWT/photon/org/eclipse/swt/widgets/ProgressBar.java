@@ -103,7 +103,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtProgress;
 	int parentHandle = parent.parentingHandle ();
 	int gaugeFlags = (style & SWT.INDETERMINATE) != 0 ? OS.Pt_GAUGE_INDETERMINATE : 0;
@@ -118,7 +117,6 @@ void createHandle (int index) {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.GAUGE_FONT;
 }
 

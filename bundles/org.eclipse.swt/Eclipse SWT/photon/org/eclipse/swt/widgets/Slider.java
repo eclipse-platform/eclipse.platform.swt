@@ -145,7 +145,6 @@ public void addSelectionListener (SelectionListener listener) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Display display = getDisplay ();
 	int border = getBorderWidth () * 2;
 	int width = display.SCROLLBAR_WIDTH + border, height = width * 5;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -165,7 +164,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtScrollbar;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
@@ -180,7 +178,6 @@ void createHandle (int index) {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.GAUGE_FONT;
 }
 
@@ -300,7 +297,7 @@ public int getThumb () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, OS.Pt_CB_SCROLL_MOVE);
 }
 

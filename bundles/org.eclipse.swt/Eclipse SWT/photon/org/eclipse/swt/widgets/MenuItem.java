@@ -123,7 +123,6 @@ void addAccelerator () {
 	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
 	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
 	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
-	Display display = getDisplay ();
 	int keyCode = Display.untranslateKey (key);
 	if (keyCode != 0) key = keyCode;
 	else key = Character.toLowerCase ((char)key);
@@ -277,12 +276,6 @@ public int getAccelerator () {
 	return accelerator;
 }
 
-public Display getDisplay () {
-	Menu parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -372,7 +365,7 @@ public boolean getSelection () {
 
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	if ((style & SWT.CASCADE) != 0) {
 		OS.PtAddCallback (handle, OS.Pt_CB_ARM, windowProc, OS.Pt_CB_ARM);
 	}
@@ -533,7 +526,6 @@ void removeAccelerator () {
 	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
 	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
 	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
-	Display display = getDisplay ();
 	int keyCode = Display.untranslateKey (key);
 	if (keyCode != 0) key = keyCode;
 	else key = Character.toLowerCase ((char)key);
@@ -656,7 +648,6 @@ public void setImage (Image image) {
 		* PtMenuButton, it can never be removed.  The fix is to set it to
 		* a small blank image.
 		*/
-		Display display = getDisplay ();
 		imageHandle = copyPhImage (display.nullImage);
 	}
 	int [] args = {

@@ -219,7 +219,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtList;
 	int parentHandle = parent.parentingHandle ();
 	int mode = OS.Pt_SELECTION_MODE_SINGLE | OS.Pt_SELECTION_MODE_AUTO;
@@ -247,17 +246,14 @@ void createHandle (int index) {
 }
 
 int defaultBackground () {
-	Display display = getDisplay ();
 	return display.LIST_BACKGROUND;
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.LIST_FONT;
 }
 
 int defaultForeground () {
-	Display display = getDisplay ();
 	return display.LIST_FOREGROUND;
 }
 
@@ -635,7 +631,7 @@ public int getTopIndex () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, OS.Pt_CB_SELECTION);
 	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 }

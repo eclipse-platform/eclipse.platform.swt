@@ -125,7 +125,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= GRAB | HANDLE;
-	Display display = getDisplay ();
 	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
 	int cursor = ((style & SWT.HORIZONTAL) != 0) ? OS.Ph_CURSOR_DRAG_VERTICAL : OS.Ph_CURSOR_DRAG_HORIZONTAL;
@@ -139,7 +138,6 @@ void createHandle (int index) {
 }
 
 byte [] defaultFont () {
-	Display display = getDisplay ();
 	return display.TITLE_FONT;
 }
 
