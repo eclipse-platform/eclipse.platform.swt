@@ -491,13 +491,28 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 		if (column == -1) {
 			OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
 		} else {
-			if (drawText) rect.left |= OS.LVIR_LABEL;
-			if (drawImage) rect.left |= OS.LVIR_ICON;
 			if (column == 0) {
+				if (drawText) rect.left |= OS.LVIR_LABEL;
+				if (drawImage) rect.left |= OS.LVIR_ICON;
 				if (OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, index, rect) != 0) {	
 					OS.InvalidateRect (hwnd, rect, true);
 				}
 			} else {
+				/*
+				* Feature in Windows.  When LVM_GETSUBITEMRECT is called with
+				* LVIR_ICON and LVIR_LABEL instead of LIVR_BOUNDS and the item
+				* does not contain an image, LVM_GETSUBITEMRECT fails and returns
+				* an error code.  The fix is to use LVIR_BOUNDS instead.  Note
+				* that the MSDN says that LVIR_BOUNDS and LIVR_LABEL both return
+				* the bounds of the entire item, not just the label when used
+				* with LVM_GETSUBITEMRECT.  There is no API to get just the bounds
+				* of the label.
+				*/
+				if (drawText) {
+					rect.left = OS.LVIR_BOUNDS;
+				} else {
+					if (drawImage) rect.left = OS.LVIR_ICON;
+				}
 				rect.top = column;
 				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, rect) != 0) {
 					if (drawText && !drawImage && images != null) {
@@ -508,8 +523,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 							/*
 							* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
 							* value even when the subitem does not contain an image.  The
-							* fix is to detect this case and avoid subtracting the image
-							* from the damage rectangle. 
+							* fix is to detect this case and avoid adjusting the rectangle. 
 							*/
 							boolean fixWidth = true;
 							if (column != 0) {
