@@ -92,8 +92,8 @@ private static int checkStyle (int style) {
 * @return the widget font
 *
 * @exception SWTException <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *	</ul>
 */
 public Font getFont () {
@@ -108,8 +108,8 @@ public Font getFont () {
 * @return the items in the widget
 *
 * @exception SWTException <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *	</ul>
 */
 public String[] getItems () {
@@ -197,8 +197,8 @@ public String open (Rectangle rect) {
 * @param string the text of the item
 *
 * @exception SWTException <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *	</ul>
 */
 public void select(String string) {
@@ -225,8 +225,8 @@ public void select(String string) {
 * @param font the new font (or null)
 * 
 * @exception SWTException <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *	</ul>
 */
 public void setFont (Font font) {
@@ -246,11 +246,12 @@ public void setFont (Font font) {
 * or could not be added in the OS.
 * 
 * @exception IllegalArgumentException <ul>
-*    <li>ERROR_NULL_ARGUMENT - when items is null</li>
+*    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+*    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
 * </ul>
 * @exception SWTException <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
 *	</ul>
 */
 public void setItems (String[] strings) {
