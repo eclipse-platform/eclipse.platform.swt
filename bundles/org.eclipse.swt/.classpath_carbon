@@ -18,5 +18,7 @@
     <classpathentry kind="src" path="Eclipse SWT Printing/carbon"/>
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
     <classpathentry kind="src" path="Eclipse SWT Program/carbon"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/carbon"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

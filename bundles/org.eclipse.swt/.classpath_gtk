@@ -18,5 +18,9 @@
     <classpathentry kind="src" path="Eclipse SWT Program/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/mozilla"/>
+    <classpathentry kind="src" path="Eclipse SWT Mozilla/gtk"/>
+    <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
