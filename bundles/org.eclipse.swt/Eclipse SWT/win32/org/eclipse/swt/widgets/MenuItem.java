@@ -613,9 +613,11 @@ public void setMenu (Menu menu) {
 	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
 	if (OS.IsWinCE) {
 		/*
-		* Feature in WinCE.  InsertMenuItem is not available. SetMenuItemInfo
-		* cannot set the menu item state and submenu. The fix is to use InsertMenu
-		* to set those, and SetMenuItemInfo to set the application data field.
+		* On WinCE, InsertMenuItem is not available.  SetMenuItemInfo
+		* does not set the menu item state and submenu use InsertMenu
+		* to set these fields and SetMenuItemInfo to set the menu item
+		* data.  NOTE: SetMenuItemInfo is also used to set the string
+		* that was queried from the original menu item.
 		*/
 		int uIDNewItem = id;
 		int uFlags = OS.MF_BYPOSITION;

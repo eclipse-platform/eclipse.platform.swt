@@ -552,11 +552,11 @@ public boolean isVisible () {
 
 void redraw () {
 	/*
-	* Feature in WinCE.  Each time a menu has been modified, we need
+	* Each time a menu has been modified, we need
 	* to redraw the command bar.
 	*/
 	if (OS.IsWinCE) {
-		OS.CommandBar_DrawMenuBar (parent.handleCB, 0);
+		OS.CommandBar_DrawMenuBar (parent.hwndCB, 0);
 	} else {
 		if ((style & SWT.BAR) != 0) {
 			OS.DrawMenuBar (parent.handle);

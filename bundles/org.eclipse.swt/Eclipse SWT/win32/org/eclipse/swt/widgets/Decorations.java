@@ -91,9 +91,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
-	
-	// WinCE: handle to the CommandBar
-	int handleCB;
+	int hwndCB;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -309,29 +307,30 @@ public Rectangle getBounds () {
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			RECT rect = new RECT ();
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			int width = lpwndpl.right - lpwndpl.left;
-			int height = lpwndpl.bottom - lpwndpl.top;
-			OS.SetRect (rect, 0, 0, width, height);
-			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
-			return new Rectangle (0, 0, rect.right, rect.bottom);
-		}
-	}
 	/* 
-	* Feature in WinCE.  CommandBar is part of the client area. The fix
-	* is to return a client area excluding the command bar.
+	* Note: The CommandBar is part of the client area,
+	* not the trim.  Applications don't expect this so
+	* subtract the height of the CommandBar.
 	*/
-	if (OS.IsWinCE && handleCB != 0) {
+	if (OS.IsWinCE) {
 		Rectangle rect = super.getClientArea ();
-		int height = OS.CommandBar_Height(handleCB);
-		rect.y += height;
-		rect.height -= height;
+		if (hwndCB != 0) {
+			int height = OS.CommandBar_Height (hwndCB);
+			rect.y += height;
+			rect.height -= height;
+		}
 		return rect;
+	}
+	if (OS.IsIconic (handle)) {
+		RECT rect = new RECT ();
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		int width = lpwndpl.right - lpwndpl.left;
+		int height = lpwndpl.bottom - lpwndpl.top;
+		OS.SetRect (rect, 0, 0, width, height);
+		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
+		return new Rectangle (0, 0, rect.right, rect.bottom);
 	}
 	return super.getClientArea ();
 }
@@ -773,15 +772,15 @@ public void setMenuBar (Menu menu) {
 	int hMenu = 0;
 	if (menuBar != null) hMenu = menuBar.handle;
 	if (OS.IsWinCE) {
-		if (handleCB != 0) {
+		if (hwndCB != 0) {
 			// not implemented - switch to a new menu bar
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 		}
 		if (hMenu != 0) {		
-			handleCB = OS.CommandBar_Create(OS.GetModuleHandle(null), handle, 1);
-			OS.CommandBar_InsertMenubarEx(handleCB, 0, hMenu, 0);
+			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
+			OS.CommandBar_InsertMenubarEx (hwndCB, 0, hMenu, 0);
 		} else {
-			handleCB = 0;
+			hwndCB = 0;
 		}
 	} else {
 		OS.SetMenu (handle, hMenu);
@@ -924,8 +923,11 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (OS.IsWinCE) OS.CommandBar_DrawMenuBar (handleCB, 0);
-		else OS.DrawMenuBar (handle);
+		if (OS.IsWinCE) {
+			OS.CommandBar_DrawMenuBar (hwndCB, 0);
+		} else {
+			OS.DrawMenuBar (handle);
+		}
 		OS.ShowWindow (handle, swFlags);
 		OS.UpdateWindow (handle);
 	} else {
