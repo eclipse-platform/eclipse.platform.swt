@@ -1172,9 +1172,9 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {		 
 		/*
-		* Bug in GTK.  Any text put copied into the clipboard will be lost
-		* when the GtkTextView is destroyed.  The fix is to cause a paste as
-		* it is being destroyed, which references the text buffer and keeps
+		* Bug in GTK.  Any text copied into the clipboard will be lost when
+		* the GtkTextView is destroyed.  The fix is to paste the contents as
+		* the widget is being destroyed to reference the text buffer, keeping
 		* it around until ownership of the clipboard is lost.
 		*/
 		if ((style & SWT.MULTI) != 0) {
