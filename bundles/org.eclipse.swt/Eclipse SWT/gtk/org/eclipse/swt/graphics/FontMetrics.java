@@ -105,6 +105,16 @@ public int getLeading() {
 	return leading;
 }
 
+public static FontMetrics gtk_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+	FontMetrics fontMetrics = new FontMetrics();
+	fontMetrics.ascent = ascent;
+	fontMetrics.descent = descent;
+	fontMetrics.averageCharWidth = averageCharWidth;
+	fontMetrics.leading = leading;
+	fontMetrics.height = height;
+	return fontMetrics;
+}
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
