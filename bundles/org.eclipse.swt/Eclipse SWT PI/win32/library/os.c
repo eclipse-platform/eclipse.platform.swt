@@ -1652,6 +1652,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(FindWindowW)
 }
 #endif
 
+#ifndef NO_FormatMessageA
+JNIEXPORT jint JNICALL OS_NATIVE(FormatMessageA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
+{
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "FormatMessageA\n")
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)FormatMessageA(arg0, (LPCVOID)arg1, arg2, arg3, (LPSTR)lparg4, arg5, (va_list*)arg6);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "FormatMessageA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_FormatMessageW
+JNIEXPORT jint JNICALL OS_NATIVE(FormatMessageW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
+{
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "FormatMessageW\n")
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)FormatMessageW(arg0, (LPCVOID)arg1, arg2, arg3, (LPWSTR)lparg4, arg5, (va_list*)arg6);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "FormatMessageW\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_FreeLibrary
 JNIEXPORT jboolean JNICALL OS_NATIVE(FreeLibrary)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4267,6 +4297,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LoadLibraryW)
 	rc = (jint)LoadLibraryW((LPWSTR)lparg0);
 	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "LoadLibraryW\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_LocalFree
+JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "LocalFree\n")
+	rc = (jint)LocalFree((HLOCAL)arg0);
+	NATIVE_EXIT(env, that, "LocalFree\n")
 	return rc;
 }
 #endif

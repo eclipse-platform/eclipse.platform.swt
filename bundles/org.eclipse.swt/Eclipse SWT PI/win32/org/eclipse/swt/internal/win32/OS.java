@@ -403,6 +403,9 @@ public class OS {
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
+	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
+	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
 	public static final int GCS_COMPSTR = 0x8;
@@ -519,6 +522,7 @@ public class OS {
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
+	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
 	public static final int LBN_SELCHANGE = 0x1;
@@ -1534,6 +1538,13 @@ public static final int FindWindow (TCHAR lpClassName, TCHAR lpWindowName) {
 	return FindWindowA (lpClassName1, lpWindowName1);
 }
 
+public static final int FormatMessage (int dwFlags, int lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int Arguments) {
+	if (IsUnicode) {
+		return FormatMessageW (dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments); 
+	}
+	return FormatMessageA (dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments);
+}
+
 public static final boolean GetCharABCWidths (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
 	if (IsUnicode) return GetCharABCWidthsW (hdc,iFirstChar, iLastChar, lpabc);
 	return GetCharABCWidthsA (hdc,iFirstChar, iLastChar, lpabc);
@@ -2207,7 +2218,9 @@ public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex,
 public static final native int ExtractIconExA (byte [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int FillRect(int hDC, RECT lprc, int hbr);
 public static final native int FindWindowA (byte [] lpClassName, byte [] lpWindowName);
-public static final native int FindWindowW (char [] lpClassName, char [] lpWindowName); 
+public static final native int FindWindowW (char [] lpClassName, char [] lpWindowName);
+public static final native int FormatMessageA(int dwFlags, int lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int Arguments);
+public static final native int FormatMessageW(int dwFlags, int lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int Arguments);
 public static final native boolean FreeLibrary (int hLibModule);
 public static final native int GetACP ();
 public static final native int GetActiveWindow ();
@@ -2394,6 +2407,7 @@ public static final native int LoadImageW (int hinst, char [] lpszName, int uTyp
 public static final native int LoadImageA (int hinst, byte [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
+public static final native int LocalFree(int hMem);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);
