@@ -789,7 +789,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (tooltipsHandle == 0) tooltipsHandle = OS.gtk_tooltips_new();
+	if (tooltipsHandle == 0) tooltipsHandle = OS.gtk_tooltips_new ();
 	byte [] buffer = null;
 	if (string != null) buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);

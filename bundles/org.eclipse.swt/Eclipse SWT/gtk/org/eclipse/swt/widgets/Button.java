@@ -170,15 +170,14 @@ void createHandle (int index) {
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, -1);
-		if (pixmap == 0) error (SWT.ERROR_NO_HANDLES);
-		pixmapHandle = OS.gtk_pixmap_new (pixmap, 0);
-		OS.g_object_unref (pixmap);
+		Display display = getDisplay ();
+		pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
 		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, boxHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
 		OS.gtk_container_add (boxHandle, pixmapHandle);
 		OS.gtk_widget_show (boxHandle);
+		OS.gtk_widget_show (labelHandle);
 	}
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
@@ -467,11 +466,8 @@ public void setImage (Image image) {
 		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
 		OS.gtk_widget_show (pixmapHandle);
 	} else {
-//		int pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), 1, 1, -1);
-//		if (pixmap == 0) error (SWT.ERROR_NO_HANDLES);
-//		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
-//		OS.g_object_unref (pixmap);
-		//??? REF
+		Display display = getDisplay ();
+		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
 		OS.gtk_widget_hide (pixmapHandle);
 	}
 }
@@ -531,7 +527,11 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (pixmapHandle);
-	OS.gtk_widget_show (labelHandle);
+	if (string.length () != 0) {
+		OS.gtk_widget_show (labelHandle);
+	} else {
+		OS.gtk_widget_hide (labelHandle);
+	}
 }
 
 }

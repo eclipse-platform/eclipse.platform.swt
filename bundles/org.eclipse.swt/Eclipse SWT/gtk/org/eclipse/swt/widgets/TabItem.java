@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class TabItem extends Item {
-	int pageHandle;
+	int labelHandle, pixmapHandle, pageHandle;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -162,6 +162,11 @@ void releaseChild () {
 	parent.destroyItem (this);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	labelHandle = pixmapHandle = 0;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
@@ -199,16 +204,26 @@ public void setControl (Control control) {
 }
 
 void setFontDescription (int font) {
-	OS.gtk_widget_modify_font (handle, font);
+	OS.gtk_widget_modify_font (labelHandle, font);
+	OS.gtk_widget_modify_font (pixmapHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (handle, 0, color);
+	OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
+	if (image != null) {
+		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (pixmapHandle);
+	} else {
+		Display display = getDisplay ();
+		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
+		OS.gtk_widget_hide (pixmapHandle);
+	}
 }
 
 public void setText (String string) {
@@ -222,7 +237,12 @@ public void setText (String string) {
 		if (text [i] == '&') text [i] = '_';
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
-	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	if (string.length () != 0) {
+		OS.gtk_widget_show (labelHandle);
+	} else {
+		OS.gtk_widget_hide (labelHandle);
+	}
 	parent.fixPage ();
 }
 

@@ -110,6 +110,9 @@ public class Display extends Device {
 	Callback caretCallback;
 	int caretID, caretProc;
 	
+	/* Pixmaps */
+	int nullPixmap;
+	
 	/* Fonts */
 	int defaultFont;
 	
@@ -798,10 +801,13 @@ public Color getSystemColor (int id) {
 	return Color.gtk_new (this, gdkColor);
 }
 
-final void initializeSystemResources() {
+void initializeSystemResources () {
 	int shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize (shellHandle);
+
+	nullPixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, -1);
+	if (nullPixmap == 0) error (SWT.ERROR_NO_HANDLES);	
 
 	GdkColor gdkColor;
 	GtkStyle style = new GtkStyle();
@@ -1201,6 +1207,9 @@ void releaseDisplay () {
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
+	
+	if (nullPixmap != 0) OS.g_object_unref (nullPixmap);
+	nullPixmap = 0;
 	
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
 	defaultFont = 0;
