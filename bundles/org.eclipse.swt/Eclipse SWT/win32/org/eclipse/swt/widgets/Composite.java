@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -881,6 +882,23 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 			if (hooks (SWT.Paint)) {
 				OS.InvalidateRect (handle, null, true);
 			}
+		}
+	}
+
+	/* Resize the embedded window */
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+		int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
+		if (threadId != OS.GetCurrentThreadId ()) {
+			if (display.msgHook == 0) {
+				if (!OS.IsWinCE) {
+					display.getMsgCallback = new Callback (display, "getMsgProc", 3);
+					display.getMsgProc = display.getMsgCallback.getAddress ();
+					if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+					display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
+				}
+			}
+			//OS.PostThreadMessage (threadId, OS.WM_APP + 4, hwndChild, lParam);
 		}
 	}
 	return result;

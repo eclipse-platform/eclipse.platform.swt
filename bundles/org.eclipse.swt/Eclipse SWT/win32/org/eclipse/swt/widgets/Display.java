@@ -118,11 +118,15 @@ public class Display extends Device {
 	/* Menus */
 	Menu [] bars, popups;
 	
-	/* Message Filter */
+	/* Filter Hook */
 	Callback msgFilterCallback;
-	int msgFilterProc, hHook;
+	int msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
 	
+	/* Message Hook */
+	Callback getMsgCallback, embeddedCallback;
+	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
+
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
@@ -148,8 +152,8 @@ public class Display extends Device {
 	int lastHittest;
 	
 	/* Message Only Window */
-	int hwndMessage, messageProc;
 	Callback messageCallback;
+	int hwndMessage, messageProc;
 	int [] systemFonts;
 	
 	/* ImageList Cache */	
@@ -642,6 +646,34 @@ void drawMenuBars () {
 		if (menu != null && !menu.isDisposed ()) menu.update ();
 	}
 	bars = null;
+}
+
+int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
+	switch (msg) {
+		case OS.WM_APP + 2: {
+			MSG keyMsg = new MSG ();
+			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
+			OS.TranslateMessage (keyMsg);
+			OS.DispatchMessage (keyMsg);
+			int hHeap = OS.GetProcessHeap ();
+			OS.HeapFree (hHeap, 0, lParam);
+			break;
+		}
+		case OS.WM_APP + 3: {
+			OS.DestroyWindow (hwnd);
+			if (embeddedCallback != null) embeddedCallback.dispose ();
+			if (getMsgCallback != null) getMsgCallback.dispose ();
+			embeddedCallback = getMsgCallback = null;
+			embeddedProc = getMsgProc = 0;
+			break;
+		}
+		case OS.WM_APP + 4: {
+			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+			OS.SetWindowPos (wParam, 0, 0, 0, lParam & 0xFFFF, lParam >> 16, flags);
+			break;
+		}
+	}
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 /**
@@ -1212,6 +1244,51 @@ public Monitor [] getMonitors () {
 	return result;
 }
 
+int getMsgProc (int code, int wParam, int lParam) {
+	if (embeddedHwnd == 0) {
+		int hInstance = OS.GetModuleHandle (null);
+		embeddedHwnd = OS.CreateWindowEx (0,
+			windowClass,
+			null,
+			OS.WS_OVERLAPPED,
+			0, 0, 0, 0,
+			0,
+			0,
+			hInstance,
+			null);
+		embeddedCallback = new Callback (this, "embeddedProc", 4);
+		embeddedProc = embeddedCallback.getAddress ();
+		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.SetWindowLong (embeddedHwnd, OS.GWL_WNDPROC, embeddedProc);
+	}
+	if (code >= 0 && wParam != OS.PM_NOREMOVE) {
+		MSG msg = new MSG ();
+		OS.MoveMemory (msg, lParam, MSG.sizeof);
+		switch (msg.message) {
+			case OS.WM_APP + 4: {
+				if (msg.hwnd == 0 && msg.wParam != 0) {
+					OS.PostMessage (embeddedHwnd, OS.WM_APP + 4, msg.wParam, lParam);
+					msg.message = OS.WM_NULL;
+					OS.MoveMemory (lParam, msg, MSG.sizeof);
+				}
+				break;
+			}
+			case OS.WM_KEYDOWN:
+			case OS.WM_KEYUP:
+			case OS.WM_SYSKEYDOWN:
+			case OS.WM_SYSKEYUP: {
+				int hHeap = OS.GetProcessHeap ();
+				int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
+				OS.MoveMemory (keyMsg, msg, MSG.sizeof);
+				OS.PostMessage (hwndMessage, OS.WM_APP + 2, wParam, keyMsg);
+				msg.message = OS.WM_NULL;
+				OS.MoveMemory (lParam, msg, MSG.sizeof);
+			}
+		}
+	}
+	return OS.CallNextHookEx (msgHook, code, wParam, lParam);
+}
+
 /**
  * Returns the primary monitor for that device.
  * 
@@ -1503,12 +1580,12 @@ protected void init () {
 	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
 
-	/* Create the message filter hook */
+	/* Create the filter hook */
 	if (!OS.IsWinCE) {
 		msgFilterCallback = new Callback (this, "msgFilterProc", 3);
 		msgFilterProc = msgFilterCallback.getAddress ();
 		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
+		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
 	
 	/* Initialize the Widget Table */
@@ -1723,6 +1800,29 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
+		case OS.WM_APP + 2:
+			boolean consumed = false;
+			MSG keyMsg = new MSG ();
+			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
+			Control control = findControl (keyMsg.hwnd);
+			if (control != null) {
+				keyMsg.hwnd = control.handle;
+				consumed = filterMessage (keyMsg);
+				if (!consumed) {
+					OS.TranslateMessage (keyMsg);
+					consumed = OS.DispatchMessage (keyMsg) == 1;
+					while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, OS.PM_REMOVE)) {
+						consumed |= OS.DispatchMessage (keyMsg) == 1;
+					}
+				}
+			}
+			if (consumed) {
+				int hHeap = OS.GetProcessHeap ();
+				OS.HeapFree (hHeap, 0, lParam);
+			} else {
+				OS.PostMessage (embeddedHwnd, OS.WM_APP + 2, wParam, lParam);
+			}
+			return 0;
 		case OS.WM_ACTIVATEAPP:
 			/*
 			* Feature in Windows.  When multiple shells are
@@ -1794,7 +1894,7 @@ int msgFilterProc (int code, int wParam, int lParam) {
 		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
 		if (hookMsg.message == OS.WM_NULL) runAsyncMessages ();
 	}
-	return OS.CallNextHookEx (hHook, code, wParam, lParam);
+	return OS.CallNextHookEx (filterHook, code, wParam, lParam);
 }
 
 int numpadKey (int key) {
@@ -1939,11 +2039,20 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	if (embeddedHwnd != 0) {
+		OS.PostMessage (embeddedHwnd, OS.WM_APP + 3, 0, 0);
+	}
 
 	/* Unhook the message hook */
 	if (!OS.IsWinCE) {
-		if (hHook != 0) OS.UnhookWindowsHookEx (hHook);
-		hHook = 0;
+		if (msgHook != 0) OS.UnhookWindowsHookEx (msgHook);
+		msgHook = 0;
+	}
+
+	/* Unhook the filter hook */
+	if (!OS.IsWinCE) {
+		if (filterHook != 0) OS.UnhookWindowsHookEx (filterHook);
+		filterHook = 0;
 		msgFilterCallback.dispose ();
 		msgFilterCallback = null;
 		msgFilterProc = 0;

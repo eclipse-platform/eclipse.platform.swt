@@ -3027,7 +3027,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	display.lastAscii = wParam;
 	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
-		return LRESULT.ZERO;
+		return LRESULT.ONE;
 	}
 	// widget could be disposed at this point
 	return null;
@@ -3205,12 +3205,12 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 	display.lastAscii = wParam;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
-		return LRESULT.ZERO;
+		return LRESULT.ONE;
 	}
 	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
-	return LRESULT.ZERO;
+	return LRESULT.ONE;
 }
 
 LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
@@ -3460,7 +3460,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		display.lastAscii = display.controlKey (display.lastAscii);
 	}
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_KEYDOWN, wParam, lParam)) {
-		return LRESULT.ZERO;
+		return LRESULT.ONE;
 	}
 	// widget could be disposed at this point
 	return null;
@@ -3546,7 +3546,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	}
 	LRESULT result = null;
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
-		result = LRESULT.ZERO;
+		result = LRESULT.ONE;
 	}
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
@@ -4128,12 +4128,14 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	}
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
+	boolean consumed = false;
 	if (!display.mnemonicKeyHit) {
-		sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
+		consumed = !sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
 	}
+	consumed |= display.mnemonicKeyHit;
 	// widget could be disposed at this point
 	display.mnemonicKeyHit = false;
-	return new LRESULT (result);
+	return consumed ? LRESULT.ONE : new LRESULT (result);
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
@@ -4342,7 +4344,7 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	}
 
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {
-		return LRESULT.ZERO;
+		return LRESULT.ONE;
 	}
 	// widget could be disposed at this point
 	return null;
