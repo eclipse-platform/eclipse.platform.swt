@@ -261,7 +261,7 @@ public boolean getChecked () {
 	int ctree = parent.handle;
 	int [] pixmap = new int [1];
 	OS.gtk_ctree_get_node_info (ctree, handle, null, null, pixmap, null, null, null, null, null);
-	return pixmap [0] == parent.check.pixmap;
+	return pixmap [0] == parent.check;
 }
 
 public Display getDisplay () {
@@ -412,7 +412,7 @@ public void setChecked (boolean checked) {
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
-	pixmap [0] = pixmap [0] == parent.check.pixmap ? parent.uncheck.pixmap : parent.check.pixmap;
+	pixmap [0] = pixmap [0] == parent.check ? parent.uncheck : parent.check;
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
 }
 

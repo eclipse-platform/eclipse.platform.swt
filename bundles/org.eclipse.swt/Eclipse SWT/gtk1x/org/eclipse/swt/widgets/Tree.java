@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	boolean selected, doubleSelected;
-	Image check, uncheck;
+	int check, uncheck;
 	
 	static int CHECK_WIDTH = 12;
 	static int CHECK_HEIGHT = 12;
@@ -199,11 +199,17 @@ void createHandle (int index) {
 //		int height = clist.row_height + 1, width = height;
 		int width = CHECK_WIDTH, height = CHECK_HEIGHT;
 		int style = OS.gtk_widget_get_style (handle);
-		Display display = getDisplay ();
-		uncheck = new Image (display, width, height);
-		OS.gtk_draw_check (style, uncheck.pixmap, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, 0, 0, width, height);
-		check = new Image (display, width, height);
+
+		GdkVisual visual = new GdkVisual ();
+		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+		uncheck = OS.gdk_pixmap_new(0, width, height, visual.depth);
+		if (uncheck == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+		OS.gtk_draw_check (style, uncheck, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, 0, 0, width, height);
+
+/*		check = new Image (display, width, height);
 		OS.gtk_draw_check (style, check.pixmap, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, 0, 0, width, height);
+		*/
 	}
 }
 
@@ -234,11 +240,10 @@ void createItem (TreeItem item, int node, int index) {
 	int selectionMode = sm[0];
 	sm [0] = OS.GTK_SELECTION_MULTIPLE;
 	OS.memmove (handle+148, sm, 1);
-		
-	int pixmap = uncheck == null ? 0 : uncheck.pixmap;
+// FIXME		
 	int sibling = index == -1 ? 0 : findSibling (node, index);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, pixmap, 0, pixmap, 0, false, false);
+	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	if (item.handle == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_ctree_node_set_row_data (handle, item.handle, id + 1);
@@ -609,7 +614,7 @@ int processMouseDown (int callData, int arg1, int int2) {
 						int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
 						byte [] text = Converter.wcsToMbcs (null, items [index].getText (), true);
 						OS.gtk_ctree_get_node_info (handle, node, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
-						pixmap [0] = pixmap [0] == check.pixmap ? uncheck.pixmap : check.pixmap;
+						//pixmap [0] = pixmap [0] == check;
 						OS.gtk_ctree_set_node_info (handle, node, text, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);
 						Event event = new Event ();
 						event.detail = SWT.CHECK;
@@ -722,9 +727,7 @@ void releaseWidget () {
 		}
 	}
 	items = null;
-	if (check != null) check.dispose ();
-	if (uncheck != null) uncheck.dispose ();
-	check = uncheck = null;
+	check = uncheck = 0;
 	super.releaseWidget ();
 }
 
