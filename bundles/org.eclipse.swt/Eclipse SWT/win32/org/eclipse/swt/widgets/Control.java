@@ -2928,13 +2928,13 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	* originated from a mouse event and display the menu when the
 	* mouse was released in the client area.
 	*/
-	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
-	if (pt.x != -1 || pt.y != -1) {
+	if (lParam == -1) {
+		POINT pt = new POINT ();
+		pt.x = (short) (lParam & 0xFFFF);
+		pt.y = (short) (lParam >> 16);
+		OS.ScreenToClient (handle, pt);
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		OS.ScreenToClient (handle, pt);
 		if (!OS.PtInRect (rect, pt)) return null;
 	}
 	
