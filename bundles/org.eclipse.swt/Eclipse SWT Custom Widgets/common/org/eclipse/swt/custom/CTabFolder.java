@@ -2430,6 +2430,7 @@ boolean updateToolTip (int x, int y, Label label) {
 	if (item == null) return false;
 	String tooltip = item.getToolTipText();
 	if (tooltip == null) return false;
+	if (tooltip.equals(label.getText())) return true;
 	
 	Shell tip = label.getShell();
 	label.setText(tooltip);
@@ -2449,14 +2450,18 @@ boolean updateToolTip (int x, int y, Label label) {
 	 * Position the tooltip and ensure that it is not located off
 	 * the screen.
 	 */
-	Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
-	pt = toDisplay(pt);
-	Rectangle rect = tip.getMonitor().getBounds();
+	Point cursorLocation = getDisplay().getCursorLocation();
+	// Assuming cursor is 21x21 because this is the size of
+	// the arrow cursor on Windows 
+	int cursorHeight = 21; 
 	Point size = tip.getSize();
+	Rectangle rect = tip.getMonitor().getBounds();
+	Point pt = new Point(cursorLocation.x, cursorLocation.y + cursorHeight + 2);
 	pt.x = Math.max(pt.x, rect.x);
-	pt.y = Math.max(pt.y, rect.y);
 	if (pt.x + size.x > rect.x + rect.width) pt.x = rect.x + rect.width - size.x;
-	if (pt.y + size.y > rect.y + rect.height) pt.y = toDisplay(0, item.y - size.y - 2).y;
+	if (pt.y + size.y > rect.y + rect.height) {
+		pt.y = cursorLocation.y - 2 - size.y;
+	}
 	tip.setLocation(pt);
 	return true;
 }
