@@ -85,6 +85,21 @@ public SWTException (int code, String message) {
 }
 
 /**
+ * Returns the underlying throwable that caused the problem,
+ * or null if this information is not available.
+ * <p>
+ * NOTE: This method overrides Throwable.getCause() that was
+ * added to JDK1.4. It is necessary to override this method
+ * in order for inherited printStackTrace() methods to work.
+ * </p>
+ * 
+ * @since 3.1
+ */
+public Throwable getCause() {
+	return throwable;
+}
+
+/**
  *  Returns the string describing this SWTException object.
  *  <p>
  *  It is combined with the message string of the Throwable
