@@ -82,7 +82,11 @@ public class Table extends SelectableItemWidget {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#CHECK
+ * @see SWT#FULL_SELECTION
+ * @see SWT#HIDE_SELECTION
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

@@ -15,14 +15,15 @@ import org.eclipse.swt.graphics.*;
  * areas of a <code>CoolBar</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
- * <dd>(none)</dd>
+ * <dd>Selection</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
+
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
@@ -70,10 +71,11 @@ public class CoolItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public CoolItem (CoolBar parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -97,7 +99,7 @@ public CoolItem (CoolBar parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the index at which to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -107,7 +109,7 @@ public CoolItem (CoolBar parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#DROP_DOWN
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -176,7 +178,7 @@ void calculateChevronTrim () {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a <code>CoolItem</code> is the size that
+ * The <em>preferred size</em> of a <code>CoolItem</code> is the size that
  * it would best be displayed at. The width hint and height hint arguments
  * allow the caller to ask the instance questions such as "Given a particular
  * width, how high does it need to be to show all of the contents?"
@@ -194,6 +196,11 @@ void calculateChevronTrim () {
  * </ul>
  *
  * @see Layout
+ * @see #getBounds
+ * @see #getSize
+ * @see CoolBar#getBorderWidth
+ * @see CoolBar#computeTrim
+ * @see CoolBar#getClientArea
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget();
@@ -286,9 +293,9 @@ public Rectangle getBounds () {
 	return new Rectangle(itemBounds.x, itemBounds.y, itemBounds.width, itemBounds.height);
 }
 /**
- * Gets the control which is associated with the receiver.
+ * Returns the control that is associated with the receiver.
  *
- * @return the control
+ * @return the control that is contained by the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -335,11 +342,36 @@ public CoolBar getParent () {
 	checkWidget();
 	return parent;
 }
+/**
+ * Returns a point describing the receiver's ideal size.
+ * The x coordinate of the result is the ideal width of the receiver.
+ * The y coordinate of the result is the ideal height of the receiver.
+ *
+ * @return the receiver's ideal size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getPreferredSize () {
 	checkWidget();
 	int height = getSize().y;
 	return new Point(preferredWidth, height);
 }
+/**
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getSize () {
 	checkWidget();
 	return new Point (itemBounds.width, itemBounds.height);
@@ -409,10 +441,10 @@ void setBounds (int x, int y, int width, int height) {
 	updateChevron();
 }
 /**
- * Sets the control which is associated with the receiver
+ * Sets the control that is associated with the receiver
  * to the argument.
  *
- * @param control the new control
+ * @param control the new control that will be contained by the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -448,8 +480,8 @@ public void setControl (Control control) {
 	}
 }
 /**
- * Sets the minimum size that the cool item can
- * be resized to using the cool item's gripper.
+ * Sets the minimum size that the cool item can be resized to
+ * using the cool item's gripper, to the point specified by the arguments.
  * 
  * @param width the minimum width of the cool item, in pixels
  * @param height the minimum height of the cool item, in pixels
@@ -466,11 +498,14 @@ public void setMinimumSize (int width, int height) {
 	setMinimumSize(new Point(width, height));
 }
 /**
- * Sets the minimum size that the cool item can
- * be resized to using the cool item's gripper.
+ * Sets the minimum size that the cool item can be resized to
+ * using the cool item's gripper, to the point specified by the argument.
  * 
  * @param size a point representing the minimum width and height of the cool item, in pixels
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -483,6 +518,17 @@ public void setMinimumSize (Point size) {
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);	
 	minimumSize = size;
 }
+/**
+ * Sets the receiver's ideal size to the point specified by the arguments.
+ *
+ * @param width the new ideal width for the receiver
+ * @param height the new ideal height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
@@ -490,11 +536,41 @@ public void setPreferredSize (int width, int height) {
 	setBounds(bounds.x, bounds.y, bounds.width, height);
 	if (height != bounds.height) parent.relayout();
 }
+/**
+ * Sets the receiver's ideal size to the point specified by the argument.
+ *
+ * @param size the new ideal size for the receiver
+ * @param height the new ideal height for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setPreferredSize (Point size) {
 	checkWidget();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
+/**
+ * Sets the receiver's size to the point specified by the arguments.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause that
+ * value to be set to zero instead.
+ * </p>
+ *
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (int width, int height) {
 	checkWidget();
 	int newWidth = Math.max (width, MINIMUM_WIDTH);
@@ -512,6 +588,25 @@ public void setSize (int width, int height) {
 	parent.relayout();
 	updateChevron();
 }
+/**
+ * Sets the receiver's size to the point specified by the argument.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause them to be
+ * set to zero instead.
+ * </p>
+ *
+ * @param size the new size for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -434,11 +434,16 @@ public Image getImage() {
 	return getImage(0);
 }
 /**
- * Returns the item image of the column identified by 'columnIndex' or 
- * null if no image has been set for that column.
- * 
- * @param columnIndex - the column whose image should be returned
- * @return the item image
+ * Returns the image stored at the given column index in the receiver,
+ * or null if the image has not been set or if the column does not exist.
+ *
+ * @param index the column index
+ * @return the image stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Image getImage(int columnIndex) {
 	checkWidget();
@@ -649,11 +654,19 @@ public String getText() {
 	return getText(0);
 }
 /**
- * Returns the item tezt of the column identified by 'columnIndex',
- * or null if no text has been set for that column.
- * 
- * @param columnIndex - the column whose text should be returned
- *	@return the item text or null if no text has been set for that column.
+ * Returns the text stored at the given column index in the receiver,
+ * or empty string if the text has not been set.
+ *
+ * @param index the column index
+ * @return the text stored at the given column index in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
+ * </ul>
  */
 public String getText(int columnIndex) {
 	checkWidget();

@@ -85,7 +85,9 @@ public class Tree extends SelectableItemWidget {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#CHECK
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -115,6 +117,7 @@ void addItem(TreeItem item, int index) {
  * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
  * the event object detail field contains the value <code>SWT.CHECK</code>.
  * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * The item field of the event object is valid for default selection, but the detail field is not used.
  * </p>
  *
  * @param listener the listener which should be notified

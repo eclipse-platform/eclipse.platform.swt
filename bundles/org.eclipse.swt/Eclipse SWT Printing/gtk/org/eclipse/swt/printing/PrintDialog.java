@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.gtk.*;
  * within the SWT implementation.
  * </p>
  */
+
 public class PrintDialog extends Dialog {
 	int scope = PrinterData.ALL_PAGES;
 	int startPage = -1, endPage = -1;
@@ -41,6 +42,7 @@ public class PrintDialog extends Dialog {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public PrintDialog (Shell parent) {
 	this (parent, SWT.PRIMARY_MODAL);
 }
@@ -53,8 +55,8 @@ public PrintDialog (Shell parent) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -72,6 +74,7 @@ public PrintDialog (Shell parent) {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
+
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
@@ -87,6 +90,7 @@ public PrintDialog (Shell parent, int style) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public PrinterData open() {
 	/* Return the first printer in the list */
 	PrinterData[] printers = Printer.getPrinterList();
@@ -108,6 +112,7 @@ public PrinterData open() {
  *
  * @return the scope setting that the user selected
  */
+
 public int getScope() {
 	return scope;
 }
@@ -126,6 +131,7 @@ public int getScope() {
  *
  * @param int the scope setting when the dialog is opened
  */
+
 public void setScope(int scope) {
 	this.scope = scope;
 }
@@ -138,6 +144,7 @@ public void setScope(int scope) {
  *
  * @return the start page setting that the user selected
  */
+
 public int getStartPage() {
 	return startPage;
 }
@@ -147,6 +154,7 @@ public int getStartPage() {
  *
  * @param int the startPage setting when the dialog is opened
  */
+
 public void setStartPage(int startPage) {
 	this.startPage = startPage;
 }
@@ -159,6 +167,7 @@ public void setStartPage(int startPage) {
  *
  * @return the end page setting that the user selected
  */
+
 public int getEndPage() {
 	return endPage;
 }
@@ -168,6 +177,7 @@ public int getEndPage() {
  *
  * @param int the end page setting when the dialog is opened
  */
+
 public void setEndPage(int endPage) {
 	this.endPage = endPage;
 }
@@ -177,6 +187,7 @@ public void setEndPage(int endPage) {
  *
  * @return the 'Print to file' setting that the user selected
  */
+
 public boolean getPrintToFile() {
 	return printToFile;
 }
@@ -186,6 +197,7 @@ public boolean getPrintToFile() {
  *
  * @param boolean the 'Print to file' setting when the dialog is opened
  */
+
 public void setPrintToFile(boolean printToFile) {
 	this.printToFile = printToFile;
 }
