@@ -5900,7 +5900,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
     for (i = 0; i < numArgs; i++) {   
         zeros[i] = values[i] = 0;
         if (argList1[i * 2 + 1] == 0) {
-        	if ((RESOURCES_START <= (argList1[i*2]) && (argList1[i*2] <= RESOURCES_END)) {
+        	if ((RESOURCES_START <= argList1[i*2]) && (argList1[i*2] <= RESOURCES_END)) {
 	            zeros[i] = 1;
     	        argList1[i * 2 + 1] = (int)&values[i];
             }
