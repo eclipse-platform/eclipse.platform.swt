@@ -95,6 +95,18 @@ fail:
 }
 #endif
 
+#ifndef NO_BeginPath
+JNIEXPORT jboolean JNICALL OS_NATIVE(BeginPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, BeginPath_FUNC);
+	rc = (jboolean)BeginPath((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, BeginPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_BitBlt
 JNIEXPORT jboolean JNICALL OS_NATIVE(BitBlt)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
@@ -1460,6 +1472,18 @@ fail:
 }
 #endif
 
+#ifndef NO_EndPath
+JNIEXPORT jboolean JNICALL OS_NATIVE(EndPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, EndPath_FUNC);
+	rc = (jboolean)EndPath((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, EndPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_EnumDisplayMonitors
 JNIEXPORT jboolean JNICALL OS_NATIVE(EnumDisplayMonitors)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
@@ -1836,6 +1860,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, ExtractIconExW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FillPath
+JNIEXPORT jboolean JNICALL OS_NATIVE(FillPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, FillPath_FUNC);
+	rc = (jboolean)FillPath((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, FillPath_FUNC);
 	return rc;
 }
 #endif
@@ -8803,6 +8839,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(StretchBlt)
 	OS_NATIVE_ENTER(env, that, StretchBlt_FUNC);
 	rc = (jboolean)StretchBlt((HDC)arg0, arg1, arg2, arg3, arg4, (HDC)arg5, arg6, arg7, arg8, arg9, arg10);
 	OS_NATIVE_EXIT(env, that, StretchBlt_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StrokePath
+JNIEXPORT jboolean JNICALL OS_NATIVE(StrokePath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, StrokePath_FUNC);
+	rc = (jboolean)StrokePath((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, StrokePath_FUNC);
 	return rc;
 }
 #endif

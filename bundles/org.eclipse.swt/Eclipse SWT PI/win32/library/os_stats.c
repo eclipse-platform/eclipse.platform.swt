@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 589;
-int OS_nativeFunctionCallCount[589];
+int OS_nativeFunctionCount = 593;
+int OS_nativeFunctionCallCount[593];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -23,6 +23,7 @@ char * OS_nativeFunctionNames[] = {
 	"Arc",
 	"BeginDeferWindowPos",
 	"BeginPaint",
+	"BeginPath",
 	"BitBlt",
 	"BringWindowToTop",
 	"Call",
@@ -116,6 +117,7 @@ char * OS_nativeFunctionNames[] = {
 	"EndDoc",
 	"EndPage",
 	"EndPaint",
+	"EndPath",
 	"EnumDisplayMonitors",
 	"EnumFontFamiliesA",
 	"EnumFontFamiliesExA",
@@ -134,6 +136,7 @@ char * OS_nativeFunctionNames[] = {
 	"ExtTextOutW",
 	"ExtractIconExA",
 	"ExtractIconExW",
+	"FillPath",
 	"FillRect",
 	"FindWindowA",
 	"FindWindowW",
@@ -570,6 +573,7 @@ char * OS_nativeFunctionNames[] = {
 	"StartDocW",
 	"StartPage",
 	"StretchBlt",
+	"StrokePath",
 	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I",
 	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I",
 	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I",

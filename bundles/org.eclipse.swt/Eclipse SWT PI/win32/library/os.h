@@ -128,6 +128,7 @@
 #define NO_AbortDoc
 #define NO_ActivateKeyboardLayout
 #define NO_Arc
+#define NO_BeginPath
 #define NO_CallNextHookEx
 #define NO_CallWindowProcA
 #define NO_CharLowerA
@@ -162,6 +163,7 @@
 #define NO_EnableScrollBar
 #define NO_EndDoc
 #define NO_EndPage
+#define NO_EndPath
 #define NO_EnumDisplayMonitors
 #define NO_EnumFontFamiliesA
 #define NO_EnumFontFamiliesExA
@@ -174,6 +176,7 @@
 #define NO_ExtCreatePen
 #define NO_ExtTextOutA
 #define NO_ExtractIconExA
+#define NO_FillPath
 #define NO_FindWindowA
 #define NO_FormatMessageA
 #define NO_GdiSetBatchLimit
@@ -354,6 +357,7 @@
 #define NO_ScriptShape
 #define NO_ScriptTextOut
 #define NO_ScriptXtoCP
+#define NO_StrokePath
 #define NO_ToAscii
 #define NO_ToUnicode
 #define NO_TrackMouseEvent
