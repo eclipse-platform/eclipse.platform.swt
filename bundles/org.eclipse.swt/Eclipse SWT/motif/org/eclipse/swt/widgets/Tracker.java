@@ -141,7 +141,7 @@ Point adjustMoveCursor (int xDisplay, int xWindow) {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	
-	OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX, newY);
+	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, newX, newY);
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
 	 * exact location that is specified, so do a query (below) to get the
