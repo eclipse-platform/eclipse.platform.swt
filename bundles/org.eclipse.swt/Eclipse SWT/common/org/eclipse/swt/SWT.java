@@ -403,6 +403,14 @@ public class SWT {
 	public static final int SIMPLE = 1 << 6;
 
 	/**
+	 * Style constant for password behavior (value is 1&lt;&lt;22).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
+	 */
+	public static final int PASSWORD = 1 << 22;
+	
+	/**
 	 * Style constant for shadow in behavior (value is 1&lt;&lt;2).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
@@ -750,7 +758,6 @@ public class SWT {
 	 * 
 	 * @since 3.0
 	 */
-//	public static final int LTR = 1 << 25;
 	public static final int LEFT_TO_RIGHT = 1 << 25;
 	
 	/**
@@ -769,7 +776,6 @@ public class SWT {
 	 * 
 	 * @since 3.0
 	 */
-//	public static final int RTL = 1 << 26;
 	public static final int RIGHT_TO_LEFT = 1 << 26;
 	
 	/**
