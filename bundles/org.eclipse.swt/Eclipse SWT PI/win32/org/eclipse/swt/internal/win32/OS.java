@@ -868,6 +868,8 @@ public class OS {
 	public static final int TVE_EXPAND = 0x2;
 	public static final int TVGN_CARET = 0x9;
 	public static final int TVGN_CHILD = 0x4;
+	public static final int TVGN_FIRSTVISIBLE = 0x5;
+	public static final int TVGN_LASTVISIBLE = 0xa;
 	public static final int TVGN_NEXT = 0x1;
 	public static final int TVGN_NEXTVISIBLE = 0x6;
 	public static final int TVGN_PARENT = 0x3;
