@@ -86,10 +86,15 @@ GC() {
  * </ul>
  */
 public GC(Drawable drawable) {
+	this(drawable, 0);
+}
+
+public GC(Drawable drawable, int style) {
 	int flags = OS.PtEnter(0);
 	try {
 		if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		GCData data = new GCData ();
+		data.style = checkStyle(style);
 		int hDC = drawable.internal_new_GC (data);
 		Device device = data.device;
 		if (device == null) device = Device.getDevice();
@@ -100,6 +105,11 @@ public GC(Drawable drawable) {
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
 	}
+}
+
+static int checkStyle (int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**
@@ -1904,6 +1914,11 @@ public int getLineStyle() {
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineWidth;
+}
+
+public int getStyle () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.style;
 }
 
 /** 

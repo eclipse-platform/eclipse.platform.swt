@@ -910,6 +910,10 @@ public int internal_new_GC (GCData data) {
 	PhPoint_t trans = new PhPoint_t();
 	int pmMC = OS.PmMemCreateMC(handle, dim, trans);
 	if (pmMC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	if ((data.style & mask) == 0) {
+		data.style |= SWT.LEFT_TO_RIGHT;
+	}
 
 	data.device = device;
 	data.image = this;
