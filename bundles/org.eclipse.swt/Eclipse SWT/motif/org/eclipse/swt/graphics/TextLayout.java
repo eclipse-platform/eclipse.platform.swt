@@ -83,6 +83,7 @@ void computeRuns () {
 			switch (ch) {
 				case '\t': {
 					run.tab = true;
+					run.baseline = 0;
 					if (tabs == null) break;
 					int tabsLength = tabs.length, j;
 					for (j = 0; j < tabsLength; j++) {
@@ -101,9 +102,11 @@ void computeRuns () {
 				}
 				case '\n':
 					run.lineBreak = true;
+					run.baseline = run.width = 0;
 					break;
 				case '\r':
 					run.lineBreak = true;
+					run.baseline = run.width = 0;
 					StyleItem next = allRuns[i + 1];
 					if (next.length != 0 && text.charAt(next.start) == '\n') {
 						run.length += 1;
@@ -772,11 +775,9 @@ void place (StyleItem run) {
 	short[] width = new short[1], height = new short[1];
 	int xmString = OS.XmStringCreateLocalized(buffer);
 	OS.XmStringExtent(fontList, xmString, width, height);
+	run.width = width[0] & 0xFFFF;
 	run.height = height[0] & 0xFFFF;
-	if (!(run.tab || run.lineBreak)) {
-		run.width = width[0] & 0xFFFF;
-		run.baseline = OS.XmStringBaseline(fontList, xmString);
-	}
+	run.baseline = OS.XmStringBaseline(fontList, xmString);
 	OS.XmStringFree(xmString);
 }
 
