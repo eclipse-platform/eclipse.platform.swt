@@ -41,8 +41,8 @@ import org.eclipse.swt.accessibility.*;
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Cursor cursor;
-	Font font;
 	Menu menu;
+	Font font;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
@@ -1385,6 +1385,7 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
+	cursor = null;
 	if (!hasIMSupport()) {
 		OS.XmImUnregister (handle);
 	}
@@ -1873,6 +1874,7 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
+	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	if (!isEnabled ()) return;
 	int xDisplay = OS.XtDisplay (handle);
