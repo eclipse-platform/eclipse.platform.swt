@@ -911,27 +911,27 @@ public void setMaximized (boolean maximized) {
 		*/
 		if (maximized) {
 			if ((style & SWT.TITLE) == 0) {
-				/* remove caption when maximized */
+				/* Remove caption when maximized */
 				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 				bits &= ~OS.WS_CAPTION;
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 			}
-			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 			RECT rect = new RECT ();
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			int width = rect.right - rect.left, height = rect.bottom - rect.top;
 			if (OS.IsPPC) {
-				/* leave space for menubar */
+				/* Leave space for the menu bar */
 				if (menuBar != null) {
 					RECT rectCB = new RECT ();
 					OS.GetWindowRect (hwndCB, rectCB);
 					height -= rectCB.bottom - rectCB.top;
 				}
 			}
+			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 			OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
 		} else {
 			if ((style & SWT.NO_TRIM) == 0) {
-				/* insert caption when no longer maximized */
+				/* Insert caption when no longer maximized */
 				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 				bits |= OS.WS_CAPTION;
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
