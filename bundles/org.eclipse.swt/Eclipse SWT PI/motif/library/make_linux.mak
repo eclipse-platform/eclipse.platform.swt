@@ -28,7 +28,7 @@ SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama -lXtst
-CFLAGS = -O -s -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DMOTIF  -fpic -I./ \
+CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DMOTIF  -fpic -I./ \
 	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
 
 GNOME_PREFIX = swt-gnome
