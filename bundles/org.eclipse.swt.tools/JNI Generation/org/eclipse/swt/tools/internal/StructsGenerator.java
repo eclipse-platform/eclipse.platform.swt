@@ -27,15 +27,14 @@ public void generateCopyright() {
 }
 
 public void generateIncludes() {
-	String className = getClassName(getMainClass()).toLowerCase();
 	if (header) {
 		output("#include \"");
-		output(className);
+		output(getOutputName());
 		outputln(".h\"");
 	} else {
 		outputln("#include \"swt.h\"");
 		output("#include \"");
-		output(className);
+		output(getOutputName());
 		outputln("_structs.h\"");
 	}
 	outputln();

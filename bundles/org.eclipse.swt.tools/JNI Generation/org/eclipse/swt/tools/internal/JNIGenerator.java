@@ -18,13 +18,13 @@ import org.eclipse.swt.SWT;
 
 public abstract class JNIGenerator {
 
-Class mainClass;
-Class[] classes;
-MetaData metaData;
-boolean isCPP;
-String delimiter;
-PrintStream output;
-ProgressMonitor progress;
+	Class mainClass;
+	Class[] classes;
+	MetaData metaData;
+	boolean isCPP;
+	String delimiter;
+	PrintStream output;
+	ProgressMonitor progress;
 
 public JNIGenerator() {
 	delimiter = System.getProperty("line.separator");

@@ -26,10 +26,9 @@ public void generateCopyright() {
 
 public void generateIncludes() {
 	if (!header) {
-		String className = getClassName(getMainClass()).toLowerCase();
 		outputln("#include \"swt.h\"");
 		output("#include \"");
-		output(className);
+		output(getOutputName());
 		outputln("_stats.h\"");
 		outputln();
 	}

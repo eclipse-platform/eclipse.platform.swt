@@ -65,7 +65,6 @@ void generateSTATS_C(Class[] classes) {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -84,7 +83,6 @@ void generateSTATS_H(Class[] classes) {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -103,7 +101,6 @@ void generateSTRUCTS_H(Class[] classes) {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -123,7 +120,6 @@ void generateSTRUCTS_C(Class[] classes) {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -143,7 +139,6 @@ void generateSWT_C(Class[] classes) {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -163,7 +158,6 @@ void generateAllMetaData() {
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
 		gen.generate();
-		print.flush();
 		if (!new File(getMetaDataDir()).exists()) {
 			System.out.println("Warning: Meta data output dir does not exist");
 			return;
