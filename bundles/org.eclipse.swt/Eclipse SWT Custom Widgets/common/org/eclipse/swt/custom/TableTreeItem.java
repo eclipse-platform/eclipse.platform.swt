@@ -478,10 +478,14 @@ void expandAll(boolean notify) {
 	if (items.length == 0) return;
 	if (!expanded) {
 		setExpanded(true);
-		if (notify) notifyListeners(SWT.Expand, new Event());
-		for (int i = 0; i < items.length; i++) {
-			items[i].expandAll(notify);
+		if (notify) {
+			Event event = new Event();
+			event.item = this;
+			parent.notifyListeners(SWT.Expand, event);
 		}
+	}
+	for (int i = 0; i < items.length; i++) {
+		items[i].expandAll(notify);
 	}
 }
 int expandedIndexOf (TableTreeItem item) {	
