@@ -477,6 +477,7 @@ void updateFont (Font oldFont, Font newFont) {
 		}
 	}
 	super.updateFont (oldFont, newFont);
+	layout (true);
 }
 
 int widgetStyle () {
