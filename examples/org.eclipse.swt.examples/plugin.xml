@@ -13,6 +13,7 @@
 
 <!-- Runtime -->
 <runtime>
+	<library name="swtexamples.jar"/>
 </runtime>
 
 <!-- Extensions -->
