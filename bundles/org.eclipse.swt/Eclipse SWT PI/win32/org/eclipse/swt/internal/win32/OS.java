@@ -1091,6 +1091,7 @@ public class OS {
 	public static final int WM_PAINT = 0xf;
 	public static final int WM_PALETTECHANGED = 0x311;
 	public static final int WM_PASTE = 0x302;
+	public static final int WM_PRINTCLIENT = 0x0318;
 	public static final int WM_QUERYENDSESSION = 0x11;
 	public static final int WM_QUERYNEWPALETTE = 0x30f;
 	public static final int WM_QUERYOPEN = 0x13;
