@@ -740,7 +740,7 @@ public int indexOf(CTabItem item) {
 }
 
 private void initAccessible() {
-	Accessible accessible = getAccessible();
+	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void getName(AccessibleEvent e) {
 			String name = null;
@@ -834,6 +834,18 @@ private void initAccessible() {
 			e.result = action;
 		}
 
+		public void getFocus(AccessibleControlEvent e) {
+			int childID = ACC.CHILDID_NONE;
+			if (isFocusControl()) {
+				if (selectedIndex == -1) {
+					childID = ACC.CHILDID_SELF;
+				} else {
+					childID = selectedIndex;
+				}
+			}
+			e.childID = childID;
+		}
+
 		public void getRole(AccessibleControlEvent e) {
 			int role = 0;
 			int childID = e.childID;
@@ -875,6 +887,28 @@ private void initAccessible() {
 				children[i] = new Integer(i);
 			}
 			e.children = children;
+		}
+	});
+	
+	addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			if (isFocusControl()) {
+				if (selectedIndex == -1) {
+					accessible.setFocus(ACC.CHILDID_SELF);
+				} else {
+					accessible.setFocus(selectedIndex);
+				}
+			}
+		}
+	});
+
+	addListener(SWT.FocusIn, new Listener() {
+		public void handleEvent(Event event) {
+			if (selectedIndex == -1) {
+				accessible.setFocus(ACC.CHILDID_SELF);
+			} else {
+				accessible.setFocus(selectedIndex);
+			}
 		}
 	});
 }
