@@ -295,18 +295,32 @@ void destroyItem (CoolItem item) {
 	* is to show the child.
 	*/		
 	Control control = item.control;
-	boolean wasWrap = item.getWrap ();
 	boolean wasVisible = control != null && !control.isDisposed() && control.getVisible ();
+	
+	/*
+	* When a wrapped item is being deleted, make the next
+	* item in the row wrapped in order to preserve the row.
+	* In order to avoid an unnecessary layout, temporarily
+	* ignore WM_SIZE.  If the next item is wrappedm then a
+	* row will be deleted and the WM_SIZE is necessary.
+	*/
+	CoolItem nextItem = null;
+	if (item.getWrap ()) {
+		if (index + 1 < count) {
+			nextItem = getItem (index + 1);
+			ignoreResize = !nextItem.getWrap ();
+		}
+	}
 	if (OS.SendMessage (handle, OS.RB_DELETEBAND, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	items [item.id] = null;
 	item.id = -1;
-	if (wasWrap) {
-		if (0 <= index && index < getItemCount ()) {
-			getItem (index).setWrap (true);
-		}
-	}
+	if (ignoreResize) {
+		nextItem.setWrap (true);
+		ignoreResize = false;
+	}	
+
 	if (wasVisible) control.setVisible (true);
 	index = 0;
 	while (index < originalItems.length) {
