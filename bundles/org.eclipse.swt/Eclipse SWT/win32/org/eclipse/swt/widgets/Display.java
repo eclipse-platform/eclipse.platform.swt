@@ -1757,12 +1757,33 @@ void sendEvent (int eventType, Event event) {
  * of the screen.  <b>Note: It is typically considered bad practice for a
  * program to move the on-screen pointer location.</b>
  *
- * @param point new position 
- * @since 2.0
+ * @param x the new x coordinate for the cursor
+ * @param y the new y coordinate for the cursor
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public void setCursorLocation (int x, int y) {
+	checkDevice ();
+	OS.SetCursorPos (x, y);
+}
+
+/**
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the on-screen pointer location.</b>
+ *
+ * @param point new position
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null
  * </ul>
+ * 
+ * @since 2.0
  */
 public void setCursorLocation (Point point) {
 	checkDevice ();

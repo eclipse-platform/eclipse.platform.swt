@@ -1395,6 +1395,11 @@ void setCurrentCaret (Caret caret) {
 	}
 }
 
+public void setCursorLocation (int x, int y) {
+	checkDevice ();
+	/* Not possible on the MAC */
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1410,7 +1415,7 @@ void setCurrentCaret (Caret caret) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/* Not possible on the MAC */
+	setCursorLocation (point.x, point.y);
 }
 
 public void setData (String key, Object value) {

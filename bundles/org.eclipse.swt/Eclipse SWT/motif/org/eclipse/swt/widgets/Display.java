@@ -1848,6 +1848,11 @@ void sendEvent (int eventType, Event event) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}
 }
+public void setCursorLocation (int x, int y) {
+	checkDevice ();
+	int xWindow = OS.XDefaultRootWindow (xDisplay);	
+	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+}
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1863,10 +1868,7 @@ void sendEvent (int eventType, Event event) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int x = point.x;
-	int y = point.y;
-	int xWindow = OS.XDefaultRootWindow (xDisplay);	
-	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+	setCursorLocation (point.x, point.y);
 }
 /**
  * On platforms which support it, sets the application name
