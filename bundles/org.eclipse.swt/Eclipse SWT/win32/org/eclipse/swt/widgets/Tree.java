@@ -829,7 +829,7 @@ public void removeTreeListener(TreeListener listener) {
  * will be inserted when dropped on the tree.
  * 
  * @param item the insert item.  Null will clear the insertion mark.
- * @param after true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
