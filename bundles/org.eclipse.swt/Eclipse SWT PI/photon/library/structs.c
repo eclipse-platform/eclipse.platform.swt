@@ -38,6 +38,7 @@ PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
 PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc;
 PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
 PhClipHeader_FID_CACHE PhClipHeaderFc;
+PtTreeCallback_t_FID_CACHE PtTreeCallback_tFc;
 
 void cachePhPoint_tFids(JNIEnv *env, jobject lpObject, PPhPoint_t_FID_CACHE lpCache)
 {
@@ -1377,4 +1378,49 @@ void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct
 	(*env)->SetByteField(env, lpObject, lpCache->type_2, lpStruct->type[2]);
 	(*env)->SetByteField(env, lpObject, lpCache->type_1, lpStruct->type[1]);
 	(*env)->SetByteField(env, lpObject, lpCache->type_0, lpStruct->type[0]);
+}
+
+void cachePtTreeCallback_tFids(JNIEnv *env, jobject lpObject, PPtTreeCallback_t_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->sel_mode = (*env)->GetFieldID(env, lpCache->clazz, "sel_mode", "I");
+	lpCache->item = (*env)->GetFieldID(env, lpCache->clazz, "item", "I");
+	lpCache->nitems = (*env)->GetFieldID(env, lpCache->clazz, "nitems", "I");
+	lpCache->expand = (*env)->GetFieldID(env, lpCache->clazz, "expand", "I");
+	lpCache->click_count = (*env)->GetFieldID(env, lpCache->clazz, "click_count", "I");
+	lpCache->old_iflags = (*env)->GetFieldID(env, lpCache->clazz, "old_iflags", "I");
+	lpCache->new_iflags = (*env)->GetFieldID(env, lpCache->clazz, "new_iflags", "I");
+	lpCache->column = (*env)->GetFieldID(env, lpCache->clazz, "column", "I");
+	lpCache->cattr = (*env)->GetFieldID(env, lpCache->clazz, "cattr", "I");
+	lpCache->cached = 1;
+}
+
+PtTreeCallback_t* getPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cachePtTreeCallback_tFids(env, lpObject, lpCache);
+	lpStruct->sel_mode = (*env)->GetIntField(env, lpObject, lpCache->sel_mode);
+	lpStruct->item = (PtTreeItem_t *)(*env)->GetIntField(env, lpObject, lpCache->item);
+	lpStruct->nitems = (*env)->GetIntField(env, lpObject, lpCache->nitems);
+	lpStruct->expand = (*env)->GetIntField(env, lpObject, lpCache->expand);
+	lpStruct->click_count = (*env)->GetIntField(env, lpObject, lpCache->click_count);
+	lpStruct->old_iflags = (*env)->GetIntField(env, lpObject, lpCache->old_iflags);
+	lpStruct->new_iflags = (*env)->GetIntField(env, lpObject, lpCache->new_iflags);
+	lpStruct->column = (*env)->GetIntField(env, lpObject, lpCache->column);
+	lpStruct->cattr = (PtTreeColumnAttributes_t const *)(*env)->GetIntField(env, lpObject, lpCache->cattr);
+	return lpStruct;
+}
+
+void setPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cachePtTreeCallback_tFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->sel_mode, lpStruct->sel_mode);
+	(*env)->SetIntField(env, lpObject, lpCache->item, (jint)lpStruct->item);
+	(*env)->SetIntField(env, lpObject, lpCache->nitems, lpStruct->nitems);
+	(*env)->SetIntField(env, lpObject, lpCache->expand, lpStruct->expand);
+	(*env)->SetIntField(env, lpObject, lpCache->click_count, lpStruct->click_count);
+	(*env)->SetIntField(env, lpObject, lpCache->old_iflags, lpStruct->old_iflags);
+	(*env)->SetIntField(env, lpObject, lpCache->new_iflags, lpStruct->new_iflags);
+	(*env)->SetIntField(env, lpObject, lpCache->column, lpStruct->column);
+	(*env)->SetIntField(env, lpObject, lpCache->cattr, (jint)lpStruct->cattr);
 }

@@ -1163,6 +1163,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhCoalesceTiles
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhSortTiles
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhSortTiles
+  (JNIEnv *env, jobject that, jint tiles)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhSortTiles\n");
+#endif
+	
+	return (jint)PhSortTiles((PhTile_t *)tiles);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PhMergeTiles
  * Signature: (I)I
  */
@@ -5271,7 +5286,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeClearSelect
 	PtTreeClearSelection((PtWidget_t *)tree);
 }
 
-
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtTreeSelect
@@ -5284,7 +5298,37 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeSelect
     fprintf(stderr, "PtTreeSelect\n");
 #endif
 	
-	PtTreeSelect((PtWidget_t *)widget, (PtTreeItem_t *) item);
+	PtTreeSelect((PtWidget_t *)widget, (PtTreeItem_t *)item);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtTreeShow
+ * Signature: (II)
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeShow
+  (JNIEnv *env, jobject that, jint widget, jint item)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtTreeShow\n");
+#endif
+	
+	return PtTreeShow((PtWidget_t *)widget, (PtTreeItem_t *)item);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtTreeSelectedItems
+ * Signature: (II)
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeSelectedItems
+  (JNIEnv *env, jobject that, jint widget, jint buffer)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtTreeSelectedItems\n");
+#endif
+	
+	PtTreeSelectedItems((PtWidget_t *)widget, (PtTreeItem_t **) buffer);
 }
 
 /*
@@ -5331,6 +5375,21 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeFreeAllItem
 #endif
 	
 	PtTreeFreeAllItems ((PtWidget_t *)tree);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtTreeFreeAllItems 
+ * Signature: (I)
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTreeFreeItems 
+  (JNIEnv *env, jobject that, jint item)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtTreeFreeItems \n");
+#endif
+	
+	PtTreeFreeItems ((PtTreeItem_t *)item);
 }
 
 /*
@@ -6734,4 +6793,65 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___ILorg_e
     }
     
     memmove((void *)dest, (void *)src1, count);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PtTreeCallback_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtTreeCallback_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PtTreeCallback_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PtTreeCallback_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePtTreeCallback_tFids(env, src, &PGLOB(PtTreeCallback_tFc));
+        getPtTreeCallback_tFields(env, src, src1, &PGLOB(PtTreeCallback_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PtTreeCallback_t;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtTreeCallback_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PtTreeCallback_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PtTreeCallback_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePtTreeCallback_tFids(env, dest, &PGLOB(PtTreeCallback_tFc));
+        setPtTreeCallback_tFields(env, dest, dest1, &PGLOB(PtTreeCallback_tFc));
+    }
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhMoveCursorAbs
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMoveCursorAbs
+  (JNIEnv *env, jobject that, jint input_group, jint x, jint y)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PhMoveCursorAbs\n");
+#endif
+	PhMoveCursorAbs(input_group, x, y);
 }

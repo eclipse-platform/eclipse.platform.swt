@@ -201,7 +201,12 @@ public class OS {
 	public static final int Pt_ARG_BEVEL_CONTRAST                                    = ( 2 * 1000 + 20 );
 
 	public static final int Pt_NO_PARENT	                                    = 1;
-
+	
+	public static final int Pt_CB_TREE_STATE	                                     = ( 23 * 1000 + 21 );
+	public static final int Pt_CB_TREE_SELECTION	                                     = ( 23 * 1000 + 22 );
+	public static final int Pt_TREE_COLLAPSING  = 0;
+	public static final int Pt_TREE_EXPANDING   = 1;
+	public static final int Pt_ARG_ARM_FILL                                    = ( 6 * 1000 + 2 );
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
@@ -2615,6 +2620,7 @@ public static final native int PhGetMsgSize (int event_buf);
 public static final native int PhGetTile ();
 public static final native int PhAddMergeTiles (int tiles, int add_tiles, int[] added);
 public static final native int PhIntersectTilings (int tile1, int tile2, short[] num_intersect_tiles);
+public static final native int PhSortTiles (int tiles);
 public static final native int PhCoalesceTiles (int tiles);
 public static final native int PhMergeTiles (int tiles);
 public static final native int PhRectUnion (int rect1, int rect2);
@@ -2878,6 +2884,8 @@ public static final native void PtTreeFreeAllItems (int tree);
 public static final native int PtTreeRootItem (int tree);
 public static final native void PtTreeClearSelection (int tree);
 public static final native void PtTreeSelect (int tree, int item);
+public static final native int PtTreeSetSelIndexes (int widget, int []buffer, int count );
+public static final native int PtTreeSelectedItems (int widget, int buffer);
 
 public static final native void memmove (PtTreeItem_t dest, int src, int size);
 public static final native void memmove (int dest, PtTreeItem_t src, int size);
@@ -2968,4 +2976,9 @@ public static final native int PhClipboardPasteStart (short ig);
 public static final native int PhClipboardPasteType (int cbdata, byte[] type);
 public static final native int PhClipboardPasteTypeN (int cbdata, int n);
 public static final native void PhClipboardPasteFinish (int cbdata);
+
+//public static final native void memmove (int dest, PtTreeCallback_t src, int size);
+public static final native void memmove (PtTreeCallback_t dest, int src, int size);
+public static final native int PtTreeShow(int widget, int item );
+public static final native void PhMoveCursorAbs (int input_group, int x, int y );
 }

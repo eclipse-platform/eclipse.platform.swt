@@ -334,6 +334,18 @@ void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACH
 void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
 void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
 
+/* PtTreeCallback_t struct */
+typedef struct PtTreeCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID sel_mode, item, nitems, expand, click_count, old_iflags, new_iflags, column, cattr;
+} PtTreeCallback_t_FID_CACHE;
+typedef PtTreeCallback_t_FID_CACHE *PPtTreeCallback_t_FID_CACHE;
+
+void cachePtTreeCallback_tFids(JNIEnv *env, jobject lpObject, PPtTreeCallback_t_FID_CACHE lpCache);
+PtTreeCallback_t* getPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache);
+void setPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache);
+
 extern PhPoint_t_FID_CACHE PhPoint_tFc;
 extern PhRect_t_FID_CACHE PhRect_tFc;
 extern PhTile_t_FID_CACHE PhTile_tFc;
@@ -361,5 +373,6 @@ extern PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
 extern PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc;
 extern PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
 extern PhClipHeader_FID_CACHE PhClipHeaderFc;
+extern PtTreeCallback_t_FID_CACHE PtTreeCallback_tFc;
 
 #endif // INC_structs_H
