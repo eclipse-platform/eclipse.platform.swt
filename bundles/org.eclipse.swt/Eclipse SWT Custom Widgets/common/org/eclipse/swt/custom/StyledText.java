@@ -5797,9 +5797,8 @@ public void print() {
  * </ul>
  */
 public Runnable print(Printer printer) {
-	StyledTextPrintOptions options = new StyledTextPrintOptions();
-
 	checkWidget();	
+	StyledTextPrintOptions options = new StyledTextPrintOptions();
 	options.printTextForeground = true;
 	options.printTextBackground = true;
 	options.printTextFontStyle = true;
