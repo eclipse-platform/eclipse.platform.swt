@@ -26,19 +26,10 @@ public class SwtTestCase extends TestCase {
 	 * it in the junit tests.
 	 */
 
-	// call should result in an 'Argument cannot be null' SWT error
-	public static boolean fCheckSwtNullExceptions = false;
-
-	// an out of range value is not handled gracefully according to our SWT policy
-	public static boolean fCheckOutOfRangeBehaviour = false;
-
 	// run test cases that may themselves be dubious
 	// these should be eventually checked to see if 
 	// there is a valid failure or the test is bogus
 	public static boolean fCheckBogusTestCases = false;
-
-	// check multi select tree api
-	public static boolean fCheckMultiSelectTree = false;
 
 	// check visibility api (eg in menu)
 	public static boolean fCheckVisibility = false;
