@@ -1,7 +1,7 @@
 package org.eclipse.swt.examples.hoverhelp;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -11,7 +11,10 @@ import java.io.*;import java.text.*;import java.util.*;import org.eclipse.sw
  * using the MouseTrackListener.
  */
 public class HoverHelp {
-	private static ResourceBundle resourceBundle;
+	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");;
+	public static Display display;
+	private static Shell shell;
+	
 	static final int
 		hhiInformation = 0,
 		hhiWarning = 1;
@@ -25,17 +28,21 @@ public class HoverHelp {
 	 * Runs main program.
 	 */
 	public static void main (String [] args) {
-		resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");
+		display = new Display();
 		new HoverHelp().open();
+		// Event loop
+		while (! shell.isDisposed()) {
+			if (! display.readAndDispatch()) display.sleep();
+		}
+		// Cleanup
+		display.dispose();
+
 	}
 	
 	/**
 	 * Opens the main program.
 	 */
 	public void open() {		
-		// Create the display
-		Display display = new Display();
-
 		// Load the images
 		Class clazz = HoverHelp.class;
 		try {
@@ -59,25 +66,20 @@ public class HoverHelp {
 		// Create the window
 		Shell shell = new Shell();
 		createPartControl(shell);
+		shell.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+				/* Free resources */
+				if (images != null) {
+					for (int i = 0; i < images.length; ++i) {
+						final Image image = images[i];
+						if (image != null) image.dispose();
+					}
+					images = null;
+				}
+			}
+		});
 		shell.pack();
 		shell.open();
-
-		// Event loop
-		while (! shell.isDisposed()) {
-			if (! display.readAndDispatch()) display.sleep();
-		}
-
-		// Cleanup
-		display.dispose();
-
-		/* Free resources */
-		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
-				if (image != null) image.dispose();
-			}
-			images = null;
-		}
 	}
 
 	/**

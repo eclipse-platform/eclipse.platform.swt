@@ -1,14 +1,21 @@
 package org.eclipse.swt.examples.launcher;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
-import java.net.*;import org.eclipse.jface.dialogs.*;import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;import org.eclipse.ui.part.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.examples.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
+import org.eclipse.ui.part.*;
+import java.lang.reflect.*;
 
 /**
- * Launcher uses <code>org.eclipse.swt</code> and <code>org.eclipse.core</code>
+ * Launcher uses <code>org.eclipse.swt</code> 
  * to launch the other registered examples.
  * 
  * @see ViewPart
@@ -18,7 +25,6 @@ public class LauncherView extends ViewPart {
 	
 	private Tree launchTree;
 	private Text descriptionText;
-	//private Button importButton;
 	private Button runButton;
 
 	/**
@@ -56,7 +62,7 @@ public class LauncherView extends ViewPart {
 			public void widgetDefaultSelected(SelectionEvent event) {
 				final ItemDescriptor item = getSelectedItem();
 				setDescriptionByItem(item);
-				runItem(getSelectedItem());
+				launchItem(getSelectedItem());
 			}
 		});
 		launchTree.addTreeListener(new TreeListener() {
@@ -76,22 +82,11 @@ public class LauncherView extends ViewPart {
 		runButton.setText(LauncherPlugin.getResourceString("view.launchButton.text"));
 		runButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent event) {
-				runItem(getSelectedItem());
+				launchItem(getSelectedItem());
 			}
 			public void widgetDefaultSelected(SelectionEvent event) {
 			}
 		});
-		
-		//importButton = new Button(launchGroup, SWT.PUSH);
-		//importButton.setText(LauncherPlugin.getResourceString("view.importButton.text"));
-		//importButton.addSelectionListener(new SelectionListener() {
-		//	public void widgetSelected(SelectionEvent event) {
-		//		importItem(getSelectedItem());
-		//	}
-		//	public void widgetDefaultSelected(SelectionEvent event) {
-		//	}
-		//});
-		
 
 		Group descriptionGroup = new Group(parent, SWT.NULL);
 		descriptionGroup.setText(LauncherPlugin.getResourceString("view.descriptionGroup.text"));
@@ -121,7 +116,6 @@ public class LauncherView extends ViewPart {
 		workbenchShell = null;
 		launchTree = null;
 		descriptionText = null;
-		//importButton = null;
 		runButton = null;		
 		super.dispose();
 	}
@@ -168,36 +162,40 @@ public class LauncherView extends ViewPart {
 	 * 
 	 * @param itemDescriptor the launch item to execute
 	 */
-	private void runItem(final ItemDescriptor itemDescriptor) {
-		if ((workbenchShell == null) || (itemDescriptor == null)) return;
-		final LaunchDelegate launchDelegate = itemDescriptor.getLaunchDelegate();
-		if (launchDelegate == null) return;		
-		
-		boolean result = launchDelegate.launch(this);
-		if (! result) {
-			MessageDialog.openError(workbenchShell,
-				LauncherPlugin.getResourceString("dialog.RunProgramProblems.title"),
-				LauncherPlugin.getResourceString("dialog.RunProgramErrorCheckLog.message",
-				new Object[] { itemDescriptor.getName() }));
-		}					
+	private void launchItem(ItemDescriptor itemDescriptor) {
+		/* Case 1: The launch item is a view */
+		String pluginViewId = itemDescriptor.getView ();
+		if (pluginViewId != null) {
+			final IWorkbenchPart workbenchPart = this;
+			final IWorkbenchPartSite workbenchPartSite = workbenchPart.getSite();
+			final IWorkbenchPage workbenchPage = workbenchPartSite.getPage();
+			try {
+				workbenchPage.showView(pluginViewId);
+			} catch (PartInitException e) {
+				LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.Invocation"), e);
+			}
+			return;
+		}
+		/* Case 2: The launch item is a standalone program */
+		if (workbenchShell == null) return;
+		try {
+			Class cl = Class.forName(itemDescriptor.getMainType());
+			Field displayField = cl.getField("display");
+			displayField.set(cl, workbenchShell.getDisplay());
+			Object exampleInstance = cl.newInstance();
+			Method openMethod = cl.getDeclaredMethod("open", new Class[] {});
+			openMethod.invoke(exampleInstance, new Object[] {});
+		} catch (NoSuchFieldException e) {
+			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementField"), null);
+		} catch (NoSuchMethodException e) {
+			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementMethod"), null);
+		} catch (ClassNotFoundException e) {
+			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.CouldNotFindClass"), e);
+		} catch (Exception e) {
+			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.CouldNotInstantiateClass"), e);
+		}		
 	}
 
-	/**
-	 * Imports the specified launch item into the workspace.
-	 * 
-	 * @param itemDescriptor the launch item to import.
-	 */
-	private void importItem(final ItemDescriptor itemDescriptor) {
-		if ((workbenchShell == null) || (itemDescriptor == null)) return;
-
-		URL sourceUrl = itemDescriptor.getSourceCodePath();
-		if (sourceUrl == null) return; // oops! can't do that!
-		
-		ImportProjectTask task = new ImportProjectTask(workbenchShell, itemDescriptor.getName(),
-			sourceUrl);
-		boolean success = task.execute();
-		task.dispose();
-	}
 	/**
 	 * Obtains the selected launch item.
 	 * 
@@ -220,14 +218,13 @@ public class LauncherView extends ViewPart {
 		if (itemDescriptor == null) {
 			description = LauncherPlugin.getResourceString("launchitem.Null.description");
 			if (runButton != null) runButton.setEnabled(false);
-			//if (importButton != null) importButton.setEnabled(false);
 		} else {
 			description = itemDescriptor.getDescription();
 			if (description == null)
 				description = LauncherPlugin.getResourceString("launchitem.Missing.description");
-				
-			if (runButton != null) runButton.setEnabled(itemDescriptor.getLaunchDelegate() != null);
-			//if (importButton != null) importButton.setEnabled(itemDescriptor.getSourceCodePath() != null);
+			if (runButton != null) {
+				runButton.setEnabled(itemDescriptor.getView() != null || itemDescriptor.getMainType() != null);
+			}
 		}
 		descriptionText.setText(description);
 	}

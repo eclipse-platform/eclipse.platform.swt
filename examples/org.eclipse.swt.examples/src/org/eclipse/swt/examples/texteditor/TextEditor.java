@@ -1,7 +1,7 @@
 package org.eclipse.swt.examples.texteditor;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -15,8 +15,9 @@ import java.util.*;
 import java.io.*;
 
 /**
-*/
+ */
 public class TextEditor {  
+	public static Display display;
 	Shell shell;
 	ToolBar toolBar;
 	StyledText text;	
@@ -32,19 +33,6 @@ public class TextEditor {
 	ExtendedModifyListener extendedModifyListener;
 	VerifyKeyListener verifyKeyListener;
 	static ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");
-	
-/*
- * Free the allocated resources.
- */
-public void close () {
-	if (shell != null && !shell.isDisposed ()) 
-		shell.dispose ();
-	if (font != null) font.dispose();
-	Images.freeAll ();
-	RED.dispose();
-	GREEN.dispose();
-	BLUE.dispose();
-}
 
 Menu createEditMenu() {
 	Menu bar = shell.getMenuBar ();
@@ -140,13 +128,22 @@ void createMenuBar () {
 }
 
 void createShell () {
-	shell = new Shell ();
+	shell = new Shell (display);
 	shell.setText (resources.getString("Window_title"));	
-	Images.loadAll (shell.getDisplay ());
+	Images.loadAll (display);
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
 	shell.setSize(500, 300);
 	shell.setLayout(layout);
+	shell.addShellListener (new ShellAdapter () {
+		public void shellClosed (ShellEvent e) {
+			if (font != null) font.dispose();
+			Images.freeAll ();
+			RED.dispose();
+			GREEN.dispose();
+			BLUE.dispose();
+		}
+	});
 }
 void createStyledText() {
 	initializeColors();
@@ -294,13 +291,13 @@ void handleVerifyKey(VerifyEvent event) {
 }
 
 public static void main (String [] args) {
+	display = new Display ();
 	TextEditor example = new TextEditor ();
 	example.open ();
 	example.run ();
-	example.close ();
 }
 
-void open () {
+public void open () {
 	createShell ();
 	createMenuBar ();
 	createToolBar ();
@@ -309,9 +306,9 @@ void open () {
 }
 
 void run () {
-	Display display = shell.getDisplay ();
 	while (!shell.isDisposed ())
 		if (!display.readAndDispatch ()) display.sleep ();
+	display.dispose ();
 }
 
 void setFont() {

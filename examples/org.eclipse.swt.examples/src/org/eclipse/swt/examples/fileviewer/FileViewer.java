@@ -1,6 +1,6 @@
 package org.eclipse.swt.examples.fileviewer;
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -20,13 +20,13 @@ import java.util.*;
  * File Viewer example
  */
 public class FileViewer { 
- 	private static ResourceBundle resourceBundle;
+ 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
 	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
 
 	/* UI elements */ 	  
- 	private Display display;
-	private Shell   shell;
+ 	public static Display display;
+	private static Shell   shell;
 	private ToolBar toolBar;
 
 	private Label numObjectsLabel;
@@ -107,30 +107,31 @@ public class FileViewer {
 	 * Runs main program.
 	 */
 	public static void main (String [] args) {
-		if (resourceBundle == null)
-			resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
+		display = new Display ();
 		new FileViewer().open();
+		while (! shell.isDisposed()) {
+			if (! display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
 	}
-	
+
 	/**
 	 * Opens the main program.
 	 */
-	void open() {		
+	public void open() {		
 		// Create the window
-		display = new Display();
 		IconCache.initResources(display);
 		shell = new Shell();
 		createShellContents();
 		notifyRefreshFiles(null);
-		shell.open();
-		// Event loop
-		while (! shell.isDisposed()) {
-			if (! display.readAndDispatch()) display.sleep();
-		}
-		// Cleanup
-		workerStop();
-		IconCache.freeResources();
-		display.dispose();
+		shell.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+				// Cleanup
+				workerStop();
+				IconCache.freeResources();
+			}
+		}); 
+		shell.open();
 	}
 	/**
 	 * Closes the main program.

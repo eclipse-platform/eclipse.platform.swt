@@ -1,28 +1,24 @@
-package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import java.net.*;import org.eclipse.swt.graphics.*;
+package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001, 2002. * All Rights Reserved */import java.net.*;import org.eclipse.swt.graphics.*;
 /** * ItemDescriptor collects information about a launch item. */
 class ItemDescriptor {
 	private String id;
 	private String name;
-	private String description;	private Image  icon;
-	private URL sourceCodePath;
-	private LaunchDelegate launchDelegate;
+	private String description;	private Image  icon;	private String view;	private String mainType;	private String pluginId;	
 	
 	/**
 	 * Constructs an ItemDescriptor.
 	 *
 	 * @param id the id
 	 * @param name the name
-	 * @param description the description
-	 * @param launchDelegate a launch delegate for the program to be launched using this descriptor,
-	 *        may be null if item is not launchable
+	 * @param description the description	 * @param icon the icon
+	 * @param view the host view may be null if it is a standalone application	 * @param mainType the fully qualified class name to run may be null if it is a view	 * @param pluginId the name of the plugin which contains the main class
 	 */
-	public ItemDescriptor(String id, String name, String description, URL sourceCodePath,
-		Image icon, LaunchDelegate launchDelegate) {
+	public ItemDescriptor(String id, String name, String description,
+		Image icon, String view, String mainType, String pluginId) {
 		this.id = id;
 		this.name = name;
-		this.description = description;
-		this.sourceCodePath = sourceCodePath;		this.icon = icon;
-		this.launchDelegate = launchDelegate;
+		this.description = description;		this.icon = icon;
+		this.view = view;		this.mainType = mainType;		this.pluginId = pluginId;
 	}
 
 	/**
@@ -51,25 +47,13 @@ class ItemDescriptor {
 	public String getDescription() {
 		return description;
 	}
-
-	/**
-	 * Returns source code path
-	 * 
-	 * @return a URL specifying the name of a zip/jar or the base of a directory where the source
-	 *         code is stored, null if no source is available
-	 */
-	public URL getSourceCodePath() {
-		return sourceCodePath;
-	}
 	/**	 * Returns an icon for this descriptor	 * 	 * @returns an icon, null if the item is a folder	 */	public Image getIcon() {		return icon;	}	
 	/**
-	 * Returns launch delegate for the program.
+	 * Returns the host view for the program.
 	 * 
-	 * @return the launch delegate, null if the item is a folder
+	 * @return the host view, null if the item is a standalone program.
 	 */
-	public LaunchDelegate getLaunchDelegate() {
-		return launchDelegate;
-	}		/**	 * Determines if an item is a folder.	 *	 * @return true if the item is a folder	 */	public boolean isFolder() {		return launchDelegate == null;	}
+	public String getView () {		return view;	}		/**	 * Returns the fully qualified class to run	 * for the program.	 * 	 * @return the class to run for the program.	 */	public String getMainType () {		return mainType;	}		/**	 * Returns the name of the plugin that contains the program.	 * 	 * @return the name of the plugin that contains the program.	 */	public String getPluginId () {		return pluginId;	}		/**	 * Determines if an item is a folder.	 *	 * @return true if the item is a folder	 */	public boolean isFolder() {		return (mainType == null && view == null);	}
 	
 	/**
 	 * Determines the equality of descriptors.

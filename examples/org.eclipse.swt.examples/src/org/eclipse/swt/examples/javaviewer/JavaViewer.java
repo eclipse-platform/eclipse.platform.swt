@@ -1,9 +1,9 @@
 package org.eclipse.swt.examples.javaviewer;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
-*/
+ */
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -16,22 +16,13 @@ import java.io.*;
 import java.text.*;
 
 /**
-*/
-public class JavaViewer implements DisposeListener {  
+ */
+public class JavaViewer {  
+	public static Display display;
 	Shell shell;
 	StyledText text;
 	JavaLineStyler lineStyler = new JavaLineStyler();
 	static ResourceBundle resources = ResourceBundle.getBundle("examples_javaviewer");
-	
-public void close () {
-	if (shell != null && !shell.isDisposed ()) 
-		shell.dispose ();
-	lineStyler.disposeColors();
-}
-public void widgetDisposed (DisposeEvent event) {
-	text.removeLineStyleListener(lineStyler);
-	text.removeDisposeListener(this);
-}
 
 Menu createFileMenu() {
 	Menu bar = shell.getMenuBar ();
@@ -69,12 +60,18 @@ void createMenuBar () {
 }
 
 void createShell () {
-	shell = new Shell ();
+	shell = new Shell (display);
 	shell.setText (resources.getString("Window_title"));	
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
 	shell.setSize(500, 400);
 	shell.setLayout(layout);
+	shell.addShellListener (new ShellAdapter () {
+		public void shellClosed (ShellEvent e) {
+			lineStyler.disposeColors();
+			text.removeLineStyleListener(lineStyler);
+		}
+	});
 }
 void createStyledText() {
 	text = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -85,7 +82,6 @@ void createStyledText() {
 	spec.grabExcessVerticalSpace = true;
 	text.setLayoutData(spec);
 	text.addLineStyleListener(lineStyler);
-	text.addDisposeListener(this);
 	text.setEditable(false);
 	Color bg = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
 	text.setBackground(bg);
@@ -98,10 +94,17 @@ void displayError(String msg) {
 }
 
 public static void main (String [] args) {
+	display = new Display();
 	JavaViewer example = new JavaViewer ();
 	example.open ();
 	example.run ();
-	example.close ();
+}
+
+public void open () {
+	createShell ();
+	createMenuBar ();
+	createStyledText ();
+	shell.open ();
 }
 
 void openFile() {	
@@ -163,17 +166,11 @@ void menuFileExit () {
 	shell.close ();
 }
 
-public void open () {
-	createShell ();
-	createMenuBar ();
-	createStyledText ();
-	shell.open ();
-}
-
 public void run () {
 	Display display = shell.getDisplay ();
 	while (!shell.isDisposed ())
 		if (!display.readAndDispatch ()) display.sleep ();
+	display.dispose ();
 }
 
 

@@ -1,7 +1,7 @@
 package org.eclipse.swt.examples.launcher;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -148,7 +148,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 */
 	public static ItemTreeNode getLaunchItemTree() {
 		ItemTreeNode categoryTree =
-			new ItemTreeNode(new ItemDescriptor("<<Root>>", "<<Root>>", null, null, null, null));
+			new ItemTreeNode(new ItemDescriptor("<<Root>>", "<<Root>>", null, null, null, null, null));
 
 		// get the platform's public plugin registry
 		IPluginRegistry pluginRegistry = Platform.getPluginRegistry();
@@ -157,7 +157,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			pluginRegistry.getConfigurationElementsFor(LAUNCH_ITEMS_POINT_ID);
 			
 		if (configurationElements == null || configurationElements.length == 0) {
-			logError("Could not find registered extensions", null);
+			logError(getResourceString("error.CouldNotFindRegisteredExtensions"), null);
 			return categoryTree;
 		}
 		
@@ -172,7 +172,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_CATEGORY)) {
 				final String attribName = getItemName(ce); 
 				ItemDescriptor theDescriptor = new ItemDescriptor(attribId, attribName,
-					getItemDescription(ce), null, null, null);
+					getItemDescription(ce), null, null, null, null);
 				idMap.put(attribId, new ItemTreeNode(theDescriptor));
 			}
 		}
@@ -247,22 +247,20 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		final String attribName = getItemName(ce);
 		final Image  attribIcon = getItemIcon(ce);
 		final String attribDescription = getItemDescription(ce);
-		final URL attribSourceZip;
-		final LaunchDelegate launchDelegate;
-
-		IConfigurationElement sourceCE = getItemElement(ce, LAUNCH_ITEMS_XML_SOURCE);
-		attribSourceZip = (sourceCE != null) ? getSourceCodePath(sourceCE) : null;
 
 		IConfigurationElement viewCE = getItemElement(ce, LAUNCH_ITEMS_XML_VIEW);
 		if (viewCE != null) {
+			//Item is a view
 			final String attribView = getItemAttribute(viewCE, LAUNCH_ITEMS_XML_VIEW_VIEWID, null);		
 			if (attribView == null) {
 				logError(getResourceString("error.IncompleteViewLaunchItem",
 					new Object[] { attribId } ), null);
 				return null;
 			}
-			launchDelegate = new ViewLaunchDelegate(attribView);
+			return new ItemDescriptor(attribId, attribName, attribDescription,
+					attribIcon, attribView, null, null);
 		} else {
+			//Item is a standalone
 			IConfigurationElement programCE = getItemElement(ce, LAUNCH_ITEMS_XML_PROGRAM);
 			if (programCE != null) {
 				final String attribPluginId = getItemAttribute(programCE, LAUNCH_ITEMS_XML_PROGRAM_PLUGIN, null);
@@ -273,15 +271,14 @@ public class LauncherPlugin extends AbstractUIPlugin {
 					new Object[] { attribId } ), null);
 					return null;
 				}
-				launchDelegate = new ProgramLaunchDelegate(attribPluginId, attribClass);
+				return new ItemDescriptor(attribId, attribName, attribDescription,
+					attribIcon, null, attribClass, attribPluginId);
 			} else {
 				logError(getResourceString("error.IncompleteLaunchItem",
 					new Object[] { attribId } ), null);
 				return null;
 			}
 		}
-		return new ItemDescriptor(attribId, attribName, attribDescription, attribSourceZip,
-			attribIcon, launchDelegate);
 	}
 
 	/**
@@ -379,35 +376,5 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			} catch (IOException e) {
 			}
 		}
-	}
-
-	/**
-	 * Returns the path of the source code for an item.
-	 * 
-	 * @param ce the IConfigurationElement describing the item
-	 * @return a URL containing the source code path, or null if none is available
-	 */
-	private static URL getSourceCodePath(IConfigurationElement ce) {
-		String sourcePath = getItemAttribute(ce, LAUNCH_ITEMS_XML_SOURCE_ZIP, "");
-		if (sourcePath.length() != 0) {
-			try {
-				// Extract the URL
-				IPluginDescriptor pd = ce.getDeclaringExtension().getDeclaringPluginDescriptor();
-				URL sourceUrl = new URL(pd.getInstallURL(), sourcePath);
-				
-				// Test the URL to make sure there really is a resource here
-				// (this helps to prevent the user from seeing "Add to Workspace" if no
-				//  source bundle is available but one has been specified)
-				try {
-					InputStream is = sourceUrl.openStream();
-					is.close();
-				} catch (IOException e) {
-					return null;
-				}
-				return sourceUrl;
-			} catch (MalformedURLException e) {
-			}
-		}
-		return null;
 	}
 }

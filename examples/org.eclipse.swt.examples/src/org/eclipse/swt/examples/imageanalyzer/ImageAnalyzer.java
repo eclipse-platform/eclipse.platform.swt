@@ -1,7 +1,7 @@
 package org.eclipse.swt.examples.imageanalyzer;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -18,9 +18,8 @@ import java.text.MessageFormat;
 
 public class ImageAnalyzer {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
-	
-	Display display;
-	Shell shell;
+	public static Display display;
+	static Shell shell;
 	Canvas imageCanvas, paletteCanvas;
 	Label typeLabel, sizeLabel, depthLabel, transparentPixelLabel,
 		timeToLoadLabel, screenSizeLabel, backgroundPixelLabel,
@@ -126,12 +125,17 @@ public class ImageAnalyzer {
 		}
 	}
 	public static void main(String [] args) {
+		display = new Display();
 		ImageAnalyzer imageAnalyzer = new ImageAnalyzer();
 		imageAnalyzer.open();
+		
+		while (!shell.isDisposed())
+			if (!display.readAndDispatch()) display.sleep();
+		display.dispose();
 	}
-	void open() {
+	public void open() {
 		// Create a window and set its title.
-		shell = new Shell();
+		shell = new Shell(display);
 		shell.setText(bundle.getString("Image_analyzer"));
 		
 		// Hook resize and dispose listeners.
@@ -150,10 +154,19 @@ public class ImageAnalyzer {
 						if (!display.readAndDispatch()) display.sleep();
 					}
 				}
+				// Clean up.
+				if (image != null)
+					image.dispose();
+				whiteColor.dispose();
+				blackColor.dispose();
+				redColor.dispose();
+				greenColor.dispose();
+				blueColor.dispose();
+				fixedWidthFont.dispose();
+				crossCursor.dispose();
 			}
 		});
 		// Create colors and fonts.
-		display = shell.getDisplay();
 		whiteColor = new Color(display, 255, 255, 255);
 		blackColor = new Color(display, 0, 0, 0);
 		redColor = new Color(display, 255, 0, 0);
@@ -175,20 +188,8 @@ public class ImageAnalyzer {
 			}
 		});
 		
-		// Open the window, and run an event loop until the window is closed.
+		// Open the window
 		shell.open();
-		while (!shell.isDisposed())
-			if (!display.readAndDispatch()) display.sleep();
-		// Clean up.
-		if (image != null)
-			image.dispose();
-		whiteColor.dispose();
-		blackColor.dispose();
-		redColor.dispose();
-		greenColor.dispose();
-		blueColor.dispose();
-		fixedWidthFont.dispose();
-		crossCursor.dispose();
 	}
 	void createWidgets() {
 		// Add the widgets to the shell in a grid layout.

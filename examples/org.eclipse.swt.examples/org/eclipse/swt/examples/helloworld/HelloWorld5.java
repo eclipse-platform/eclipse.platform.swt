@@ -1,9 +1,9 @@
 package org.eclipse.swt.examples.helloworld;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
-*/
+ */
 
 
 import org.eclipse.swt.*;
@@ -13,17 +13,26 @@ import org.eclipse.swt.graphics.*;
 import java.util.ResourceBundle;
 
 /*
-* This example builds on HelloWorld1 and demonstrates how to draw directly
-* on an SWT Control.
-*/
-
+ * This example builds on HelloWorld1 and demonstrates how to draw directly
+ * on an SWT Control.
+ */
 public class HelloWorld5 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
+	public static Display display;
+	private static Shell shell;	
 
 public static void main (String [] args) {
-	Display display = new Display ();
+	display = new Display ();
+	new HelloWorld5 ().open ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	display.dispose ();
+}
+
+public void open () {
 	final Color red = new Color(display, 0xFF, 0, 0);
-	final Shell shell = new Shell (display);
+	shell = new Shell (display);
 	shell.addPaintListener(new PaintListener () {
 		public void paintControl(PaintEvent event){
 			GC gc = event.gc;
@@ -33,11 +42,11 @@ public static void main (String [] args) {
 			gc.drawString(resHello.getString("Hello_world"), rect.x + 20, rect.y + 20);
 		}
 	});
+	shell.addShellListener (new ShellAdapter () {
+		public void shellClosed (ShellEvent e) {
+			red.dispose();
+		}
+	});
 	shell.open ();
-	while (!shell.isDisposed ()) {
-		if (!display.readAndDispatch ()) display.sleep ();
-	}
-	red.dispose();
-	display.dispose ();
 }
 }

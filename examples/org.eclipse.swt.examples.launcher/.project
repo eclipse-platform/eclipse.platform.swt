@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>org.eclipse.swt</project>
+		<project>org.eclipse.swt.examples</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -1,7 +1,7 @@
 package org.eclipse.swt.examples.addressbook;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -24,8 +24,9 @@ import java.util.ResourceBundle;
 public class AddressBook {
 
 	private static ResourceBundle resAddressBook = ResourceBundle.getBundle("examples_addressbook");
-		
-	private Shell shell;
+	public static Display display;
+	private static Shell shell;
+	
 	private Table table;
 	private SearchDialog searchDialog;
 	
@@ -43,10 +44,62 @@ public class AddressBook {
 												 resAddressBook.getString("Fax")};
 	
 public static void main(String[] args) {
+	display = new Display();
 	AddressBook application = new AddressBook();
 	application.open();
-	application.run();
+	while(!shell.isDisposed()){
+		if(!display.readAndDispatch())
+			display.sleep();
+	}
+	display.dispose();
 }
+public void open() {
+	shell = new Shell(display);
+	shell.setLayout(new FillLayout());
+	shell.addShellListener(new ShellAdapter(){
+		public void shellClosed(ShellEvent e) {
+			e.doit = closeAddressBook();
+		}
+	});
+	
+	createMenuBar();
+
+	searchDialog = new SearchDialog(shell);
+	searchDialog.setSearchAreaNames(columnNames);
+	searchDialog.setSearchAreaLabel(resAddressBook.getString("Column"));
+	searchDialog.addFindListener(new FindListener () {
+		public boolean find() {
+			return findEntry();
+		}
+	});
+					
+	table = new Table(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+	table.setHeaderVisible(true);	
+	table.setMenu(createPopUpMenu());	
+	table.addSelectionListener(new SelectionAdapter() {
+		public void widgetDefaultSelected(SelectionEvent e) {
+			TableItem[] items = table.getSelection();
+			if (items.length > 0) editEntry(items[0]);
+		}
+	});
+	for(int i = 0; i < columnNames.length; i++) {
+		TableColumn column = new TableColumn(table, SWT.NONE);
+		column.setText(columnNames[i]);
+		column.setWidth(150);
+		final int columnIndex = i;
+		column.addSelectionListener(new SelectionAdapter() {		
+			public void widgetSelected(SelectionEvent e) {
+				sort(columnIndex);
+			}
+		});
+	}
+
+	newAddressBook();
+
+	shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+	shell.open();
+}
+
 private boolean closeAddressBook() {
 	if(isModified) {
 		//ask user if they want to save current address book
@@ -289,53 +342,7 @@ private void newEntry() {
 		isModified = true;
 	}
 }
-private void open() {
-	Display display = new Display();
-	shell = new Shell(display);
-	shell.setLayout(new FillLayout());
-	shell.addShellListener(new ShellAdapter(){
-		public void shellClosed(ShellEvent e) {
-			e.doit = closeAddressBook();
-		}
-	});
-	
-	createMenuBar();
 
-	searchDialog = new SearchDialog(shell);
-	searchDialog.setSearchAreaNames(columnNames);
-	searchDialog.setSearchAreaLabel(resAddressBook.getString("Column"));
-	searchDialog.addFindListener(new FindListener () {
-		public boolean find() {
-			return findEntry();
-		}
-	});
-					
-	table = new Table(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-	table.setHeaderVisible(true);	
-	table.setMenu(createPopUpMenu());	
-	table.addSelectionListener(new SelectionAdapter() {
-		public void widgetDefaultSelected(SelectionEvent e) {
-			TableItem[] items = table.getSelection();
-			if (items.length > 0) editEntry(items[0]);
-		}
-	});
-	for(int i = 0; i < columnNames.length; i++) {
-		TableColumn column = new TableColumn(table, SWT.NONE);
-		column.setText(columnNames[i]);
-		column.setWidth(150);
-		final int columnIndex = i;
-		column.addSelectionListener(new SelectionAdapter() {		
-			public void widgetSelected(SelectionEvent e) {
-				sort(columnIndex);
-			}
-		});
-	}
-
-	newAddressBook();
-
-	shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-	shell.open();
-}
 private void openAddressBook() {	
 	FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
 
@@ -403,14 +410,6 @@ private void openAddressBook() {
 	shell.setText(resAddressBook.getString("Title_bar")+fileDialog.getFileName());
 	isModified = false;
 	this.file = file;
-}
-private void run() {
-	//read and dispatch until termination
-	Display display = shell.getDisplay();
-	while(!shell.isDisposed()){
-		if(!display.readAndDispatch())
-			display.sleep();
-	}
 }
 private boolean save() {
 	if(file == null) return saveAs();
