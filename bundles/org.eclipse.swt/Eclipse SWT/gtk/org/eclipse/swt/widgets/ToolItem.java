@@ -645,14 +645,14 @@ public void setEnabled (boolean enabled) {
 
 void setFontDescription (int font) {
 	OS.gtk_widget_modify_font (handle, font);
-	OS.gtk_widget_modify_font (labelHandle, font);
-	OS.gtk_widget_modify_font (pixmapHandle, font);
+	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_font (pixmapHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (handle, 0, color);
-	OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 /**
