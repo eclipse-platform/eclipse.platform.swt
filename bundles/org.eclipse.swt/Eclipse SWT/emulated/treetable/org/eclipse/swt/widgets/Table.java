@@ -2603,7 +2603,7 @@ public void setFont(Font font) {
 	checkWidget();
 	int itemCount = getItemCount();
 
-	if (font == null || font.equals(getFont()) == true) {
+	if (font != null && font.equals(getFont()) == true) {
 		return;
 	}
 	setRedraw(false);						// disable redraw because itemChanged() triggers undesired redraw	

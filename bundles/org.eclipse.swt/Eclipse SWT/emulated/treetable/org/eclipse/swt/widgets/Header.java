@@ -310,7 +310,7 @@ void redraw(int itemIndex) {
 public void setFont(Font font) {
 	checkWidget();
 
-	if (font == null || font.equals(getFont()) == true) {
+	if (font != null && font.equals(getFont()) == true) {
 		return;
 	}
 	super.setFont(font);
