@@ -22,7 +22,7 @@
 
 /* define this to print out debug statements */
 /* #define DEBUG_CALL_PRINTS */
-#define DEBUG_CHECK_NULL_EXCEPTIONS
+/* #define DEBUG_CHECK_NULL_EXCEPTIONS */
 
 #ifdef DEBUG_CALL_PRINTS
 #define DEBUG_CALL(func) fprintf(stderr, func);
