@@ -201,6 +201,7 @@ public void dispose() {
 	if (layout == 0) return;
 	font = null;
 	text = null;
+	styles = null;
 	freeRuns();
 	if (layout != 0) OS.g_object_unref(layout);
 	layout = 0;
