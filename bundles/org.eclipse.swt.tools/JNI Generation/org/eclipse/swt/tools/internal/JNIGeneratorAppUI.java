@@ -696,13 +696,13 @@ void updateClasses() {
 void updateMembers() {
 	membersLt.removeAll();
 	MetaData metaData = app.getMetaData();
+	membersLt.setHeaderVisible(false);
 	TableColumn[] columns = membersLt.getColumns();
 	for (int i = 0; i < columns.length; i++) {
 		TableColumn column = columns[i];
 		column.dispose();
 	}
 	int[] indices = classesLt.getSelectionIndices();
-	membersLt.setHeaderVisible(false);
 	if (indices.length != 1) return;
 	TableItem classItem = classesLt.getItem(indices[0]);
 	ClassData classData = (ClassData)classItem.getData();;
@@ -786,9 +786,12 @@ void updateMembers() {
 void updateParameters() {
 	paramsLt.removeAll();
 	MetaData metaData = app.getMetaData();
-	paramsLt.setHeaderVisible(false);
 	int[] indices = membersLt.getSelectionIndices();
-	if (indices.length != 1) return;
+	if (indices.length != 1) {
+		paramsLt.setHeaderVisible(false);
+		return;
+	}
+	paramsLt.setRedraw(false);
 	TableItem memberItem = membersLt.getItem(indices[0]);
 	Object data = memberItem.getData();
 	if (!(data instanceof MethodData)) return;
@@ -810,6 +813,7 @@ void updateParameters() {
 		TableColumn column = columns[i];
 		column.pack();
 	}
+	paramsLt.setRedraw(true);
 	paramsLt.setHeaderVisible(true);
 }
 
