@@ -240,9 +240,7 @@ void createItem (TreeItem item, int index) {
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	int redrawIndex = index;
-	if (item.parentItem != null && item.parentItem.items.length == 1) {
-		redrawIndex--;
-	}
+	if (redrawIndex > 0) redrawIndex--;
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);
 }
 public void deselectAll () {
