@@ -91,7 +91,7 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
 				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, filterPath, true);
+				TCHAR buffer = new TCHAR (0, filterPath.replace ('/', '\\'), true);
 				OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, buffer);
 			}
 			if (title != null && title.length () != 0) {

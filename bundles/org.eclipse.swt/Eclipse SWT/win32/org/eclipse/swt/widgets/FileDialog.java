@@ -233,7 +233,7 @@ public String open () {
 	*/
 	if (filterPath == null) filterPath = "";
 	/* Use the character encoding for the default locale */
-	TCHAR path = new TCHAR (0, filterPath, true);
+	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
 	int lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
 	OS.MoveMemory (lpstrInitialDir, path, byteCountDir); 
