@@ -473,11 +473,13 @@ void deregister () {
 	WidgetTable.remove (theRoot [0]);
 }
 
-void destroyWidget () {
+void destroyWidget (Display display) {
 	int theWindow = shellHandle;
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();
-	if (theWindow != 0) OS.DisposeWindow (theWindow);
+	if (theWindow != 0) {
+		display.addDisposeWindow (theWindow);
+	} 
 }
 
 Cursor findCursor () {
@@ -724,8 +726,7 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//TEMPORARY CODE - should be a send, but GPs on dispose
-	postEvent (SWT.Deactivate);
+	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return result;
 	saveFocus ();
 	if (savedFocus != null) {
@@ -733,8 +734,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
 		* the control that has focus gets two kEventControlSetFocus
 		* events indicating that focus was lost.  The fix is to ignore
-		* both of these and send the focus lost event explicitly.
-		*/
+		* both of these and send the focus lost event explicitly.		*/
 		display.ignoreFocus = true;
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
@@ -1047,6 +1047,7 @@ void setWindowVisible (boolean visible) {
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
 		OS.SetControlVisibility (topHandle (), true, false);
+		display.runDisposeWidgets ();
 		OS.ShowWindow (shellHandle);
 	} else {
     	OS.HideWindow (shellHandle);

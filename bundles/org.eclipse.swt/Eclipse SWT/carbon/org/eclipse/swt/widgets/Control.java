@@ -499,11 +499,11 @@ void deregister () {
 	WidgetTable.remove (handle);
 }
 
-void destroyWidget () {
+void destroyWidget (Display display) {
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {
-		OS.DisposeControl (theControl);
+		display.addDisposeControl (theControl);
 	}
 }
 

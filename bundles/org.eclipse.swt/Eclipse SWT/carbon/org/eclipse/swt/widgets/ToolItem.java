@@ -270,11 +270,11 @@ void deregister () {
 	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 }
 
-void destroyWidget () {
+void destroyWidget (Display display) {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
-		OS.DisposeControl (theControl);
+		display.addDisposeControl (theControl);
 	}
 }
 

@@ -175,11 +175,11 @@ int actionProc (int theControl, int partCode) {
 	return 0;
 }
 
-void destroyWidget () {
+void destroyWidget (Display display) {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
-		OS.DisposeControl (theControl);
+		display.addDisposeControl (theControl);
 	}
 }
 

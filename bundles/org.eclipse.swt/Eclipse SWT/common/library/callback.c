@@ -29,6 +29,7 @@ static jfieldID isArrayBasedID = NULL;
 static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackIDsCached = 0;
 static int callbackEnabled = 1;
+static int callbackEntryCount = 0;
 static int initialized = 0;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -233,6 +234,12 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
 	return (jboolean)callbackEnabled;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_getEntryCount
+  (JNIEnv *env, jclass that)
+{
+	return (jint)callbackEntryCount;
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_setEnabled
   (JNIEnv *env, jclass that, jboolean enable)
 {
@@ -283,6 +290,7 @@ int callback(int index, ...)
 	isStatic = ((*env)->GetBooleanField(env,callback, isStaticID)) != 0;
 	isArrayBased = ((*env)->GetBooleanField(env,callback, isArrayBasedID)) != 0;
 
+	callbackEntryCount++;
 	va_start(vl, index);
 	if (isArrayBased) {
 		int i;
@@ -307,6 +315,7 @@ int callback(int index, ...)
 		}
 	}
 	va_end(vl);
+	callbackEntryCount--;
 	
 	/*
 	* This function may be called many times before we return to Java.

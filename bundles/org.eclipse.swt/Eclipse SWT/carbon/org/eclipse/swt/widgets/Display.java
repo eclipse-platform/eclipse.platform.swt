@@ -162,6 +162,9 @@ public class Display extends Device {
 	/* Focus */
 	boolean ignoreFocus;
 	
+	int [] disposeWindows;
+	int [] disposeControls;
+	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
@@ -293,6 +296,53 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 		if (aeEventID [0] == OS.kAEQuitApplication) close ();
 	}
 	return OS.eventNotHandledErr;
+}
+
+void addDisposeControl (int control) {
+	if (Callback.getEntryCount () == 0) {
+		OS.DisposeControl (control);
+		return;
+	}
+	OS.SetControlVisibility (control, false, false);
+	if (disposeControls == null) disposeControls = new int [4];
+	int length = disposeControls.length;
+	for (int i=0; i<length; i++) {
+		if (disposeControls [i] == control) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (disposeControls [index] == 0) break;
+		index++;
+	}
+	if (index == length) {
+		int [] newControls = new int [length + 4];
+		System.arraycopy (disposeControls, 0, newControls, 0, length);
+		disposeControls = newControls;
+	}
+	disposeControls [index] = control;
+}
+
+void addDisposeWindow (int window) {
+	if (Callback.getEntryCount () == 0) {
+		OS.DisposeWindow (window);
+		return;
+	}
+	if (disposeWindows == null) disposeWindows = new int [4];
+	int length = disposeWindows.length;
+	for (int i=0; i<length; i++) {
+		if (disposeWindows [i] == window) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (disposeWindows [index] == 0) break;
+		index++;
+	}
+	if (index == length) {
+		int [] newWindows = new int [length + 4];
+		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
+		disposeWindows = newWindows;
+	}
+	disposeWindows [index] = window;
 }
 
 void addFilter (int eventType, Listener listener) {
@@ -1561,6 +1611,7 @@ int mouseHoverProc (int id, int handle) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runDisposeWidgets ();
 	runEnterExit ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
@@ -1569,6 +1620,7 @@ public boolean readAndDispatch () {
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
+		runDisposeWidgets ();
 		runPopups ();
 		runDeferredEvents ();
 		runGrabs ();
@@ -1871,6 +1923,59 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
+	return true;
+}
+
+boolean runDisposeWidgets () {
+	if (disposeWindows == null && disposeControls == null) return false;
+	if (disposeControls != null) {
+		for (int i=0; i<disposeControls.length; i++) {
+			int control = disposeControls [i];
+			if (control != 0) {
+				if (disposeWindows != null) {
+					int owner = OS.GetControlOwner (control);
+					for (int j=0; j<disposeWindows.length; j++) {
+						int window = disposeWindows [j];
+						if (window == owner) {
+							disposeControls [i] = 0;
+							break;
+						}
+					}
+				}
+				if (disposeControls [i] != 0) {
+					for (int j=0; j<disposeControls.length; j++) {
+						int otherControl = disposeControls [j];
+						if (otherControl != 0) {
+							int [] theControl = new int [] {control};
+							do {
+								OS.GetSuperControl(theControl [0], theControl);
+							} while (theControl [0] != 0 && theControl [0] != otherControl);
+							if (theControl [0] == otherControl) {
+								disposeControls [i] = 0;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		for (int i=0; i<disposeControls.length; i++) {
+			int control = disposeControls [i];
+			if (control != 0) {
+				OS.DisposeControl (control);
+			}
+		}
+		disposeControls = null;
+	}
+	if (disposeWindows != null) {
+		for (int i=0; i<disposeWindows.length; i++) {
+			int window = disposeWindows [i];
+			if (window != 0) {
+				OS.DisposeWindow (window);
+			}
+		}
+		disposeWindows = null;		
+	}
 	return true;
 }
 
@@ -2375,7 +2480,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		OS.GetRootControl (theWindow [0], theRoot);
 		widget = WidgetTable.get (theRoot [0]);
 	}
-	if (widget != null)  return widget.windowProc (nextHandler, theEvent, userData); 
+	if (widget != null) return widget.windowProc (nextHandler, theEvent, userData); 
 	return OS.eventNotHandledErr;
 }
 

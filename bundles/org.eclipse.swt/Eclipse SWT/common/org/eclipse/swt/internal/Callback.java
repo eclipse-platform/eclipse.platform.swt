@@ -134,6 +134,19 @@ public int getAddress () {
 public static native String getPlatform ();
 
 /**
+ * Returns the number of times the system has been recursively entered
+ * through a callback.
+ * <p>
+ * Note: This should not be called by application code.
+ * </p>
+ * 
+ * @return the entry count
+ * 
+ * @since 2.1
+ */
+public static native int getEntryCount ();
+
+/**
  * Indicates whether or not callbacks which are triggered at the
  * native level should cause the messages described by the matching
  * <code>Callback</code> objects to be invoked. This method is used

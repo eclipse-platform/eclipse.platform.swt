@@ -416,9 +416,10 @@ void releaseChild () {
 }
 
 void releaseWidget () {
+	Display display = getDisplay ();
 	if (menu != null) {
 		menu.releaseWidget ();
-		menu.destroyWidget ();
+		menu.destroyWidget (display);
 	} else {
 		if ((parent.style & SWT.BAR) != 0) {
 //			short [] outIndex = new short [1];
@@ -436,7 +437,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	accelerator = 0;
 	if (this == parent.defaultItem) parent.defaultItem = null;
-	Display display = getDisplay ();
 	display.removeMenuItem (this);
 	parent = null;
 }

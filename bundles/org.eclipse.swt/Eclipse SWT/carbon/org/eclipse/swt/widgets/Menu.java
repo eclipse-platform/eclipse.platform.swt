@@ -298,7 +298,7 @@ void destroyItem (MenuItem item) {
 	OS.DeleteMenuItem (handle, outIndex [0]);
 }
 
-void destroyWidget () {
+void destroyWidget (Display display) {
 	int theMenu = handle;
 	releaseHandle ();
 	if (theMenu != 0) {
