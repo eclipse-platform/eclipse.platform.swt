@@ -1855,6 +1855,33 @@ public void setTopIndex (int index) {
 	OS.gtk_tree_path_free (path);
 }
 
+public void showColumn(TableColumn column) {
+	checkWidget();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (column.parent != this) return;
+	/*
+	* This code is intentionally commented. According to the
+	* documentation, gtk_tree_view_scroll_to_cell should scroll the
+	* minimum amount to show the column but instead it scrolls strangely.
+	*/
+	//OS.gtk_tree_view_scroll_to_cell (handle, 0, column.handle, false, 0, 0);
+	OS.gtk_widget_realize (handle);
+	GdkRectangle cellRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, 0, column.handle, cellRect);
+	GdkRectangle visibleRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+	if (cellRect.x < visibleRect.x) {
+		OS.gtk_tree_view_scroll_to_point (handle, cellRect.x, -1);
+	} else {
+		int width = Math.min (visibleRect.width, cellRect.width);
+		if (cellRect.x + width > visibleRect.x + visibleRect.width) {
+			int tree_x = cellRect.x + width - visibleRect.width;
+			OS.gtk_tree_view_scroll_to_point (handle, tree_x, -1);
+		}
+	}
+}
+
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until

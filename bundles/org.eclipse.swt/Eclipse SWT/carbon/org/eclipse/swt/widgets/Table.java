@@ -1917,6 +1917,38 @@ public void setTopIndex (int index) {
     top [0] = index * getItemHeight ();
     OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 }
+public void showColumn (TableColumn column) {
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	int index = indexOf (column);
+	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
+	// Get width and horizontal position of column
+	short [] w = new short [1];
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, w);
+	int width = w [0];
+	int x = 0;
+	for (int i = 0; i < index; i++) {
+		w = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, columns[i].id, w);
+		x += w [0];
+	}
+	// Get current scroll position
+	int [] top = new int [1], left = new int [1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);
+	// Scroll column into view
+	if (x < left[0]) {
+		OS.SetDataBrowserScrollPosition(handle, top [0], x);
+	} else {
+		Rectangle rect = getClientArea ();
+		int maxWidth = rect.width;
+		width = Math.min(width, maxWidth);
+		if (x + width > left [0] + maxWidth) {
+			left [0] = x + width - maxWidth;
+			OS.SetDataBrowserScrollPosition(handle, top [0], left [0]);
+		}
+	}
+}
 
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {

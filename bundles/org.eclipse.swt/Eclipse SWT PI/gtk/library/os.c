@@ -6178,6 +6178,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1scroll_1to_1cell)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1scroll_1to_1point
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1scroll_1to_1point)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1scroll_1to_1point\n")
+	gtk_tree_view_scroll_to_point((GtkTreeView *)arg0, (gint)arg1, (gint)arg2);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1scroll_1to_1point\n")
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1set_1cursor
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1set_1cursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
