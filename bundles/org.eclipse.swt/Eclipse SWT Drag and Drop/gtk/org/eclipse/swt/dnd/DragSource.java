@@ -242,7 +242,7 @@ public Control getControl () {
 }
 
 private void drag(Event dragEvent) {
-	if (transferAgents == null) return;
+	if (targetList == 0) return;
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
@@ -425,7 +425,7 @@ public void setTransfer(Transfer[] transferAgents){
 		targetList = 0;
 	}
 	this.transferAgents = transferAgents;
-	if (transferAgents == null) return;
+	if (transferAgents == null || transferAgents.length == 0) return;
 	
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {

@@ -300,7 +300,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	}
 }
 private void drag() {
-	if (transferAgents == null)
+	if (transferAgents == null || transferAgents.length == 0)
 		return;
 		
 	// Current event must be a Button Press event
