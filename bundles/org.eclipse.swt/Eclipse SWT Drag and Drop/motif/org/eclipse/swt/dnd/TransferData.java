@@ -28,16 +28,36 @@ public class TransferData {
 	 */
 	public int type;
 	
-	/* attributes specific to set/get */
-	int length;
-	int format;
-	int pValue;
-
 	/**
-	 * The result field contains the result of converting a java data type into a
-	 * stgmedium value.
+	 * Specifies the number of units in pValue.
+	 * (Warning: This field is platform dependent)
+	 * 
+	 * @see TransferData#format for the size of one unit
+	 */
+	public int length;
+	
+	/**
+	 * Specifies the size in bits of a single unit in pValue.
+ 	 * (Warning: This field is platform dependent)
+ 	 * 
+ 	 * This is most commonly 8 bits.
+	 */
+	public int format;
+	
+	/**
+	 * Pointer to the data being transferred.
 	 * (Warning: This field is platform dependent)
 	 */
-	int result;
+	public int pValue;
+
+	/**
+	 * The result field contains the result of converting a java data type
+	 * into a platform specific value.
+	 * (Warning: This field is platform dependent).
+	 * 
+	 * <p>The value of result is 1 if the conversion was successfully.  The value of 
+	 * result is 0 if the conversion failed.</p>
+	 */
+	public int result;
 	
 }
