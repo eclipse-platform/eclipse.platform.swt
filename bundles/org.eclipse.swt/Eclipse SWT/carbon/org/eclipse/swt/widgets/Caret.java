@@ -93,14 +93,10 @@ void createWidget () {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
-	if (!parent.isDrawing (parent.handle)) return false;
-	int nWidth = width, nHeight = height;
-	if (image != null) {
-		Rectangle rect = image.getBounds ();
-		nHeight = rect.height;
-	}
-	if (nWidth <= 0) nWidth = 1;
 	int parentHandle = parent.handle;
+	if (!parent.isDrawing (parentHandle)) return false;
+	int nWidth = width, nHeight = height;
+	if (nWidth <= 0) nWidth = 1;
 	int window = OS.GetControlOwner (parentHandle);
 	int port = OS.GetWindowPort (window);
 	int [] currentPort = new int [1];
@@ -114,13 +110,41 @@ boolean drawCaret () {
 	OS.GetControlBounds (parentHandle, rect);
 	int left = rect.left + x;
 	int top = rect.top + y;
-	OS.SetRect(rect, (short) left, (short) top, (short) (left + nWidth), (short) (top + nHeight));
-	RGBColor color = new RGBColor ();
-	color.red = (short) 0xFFFF;
-	color.green = (short) 0xFFFF;
-	color.blue = (short) 0xFFFF;
-	OS.RGBBackColor (color);
-	OS.InvertRect (rect);	
+	if (image == null) {
+		OS.SetRect(rect, (short) left, (short) top, (short) (left + nWidth), (short) (top + nHeight));
+		RGBColor color = new RGBColor ();
+		color.red = (short) 0xFFFF;
+		color.green = (short) 0xFFFF;
+		color.blue = (short) 0xFFFF;
+		OS.RGBBackColor (color);
+		OS.InvertRect (rect);
+	} else {
+		int imageHandle = image.handle;
+		nWidth = OS.CGImageGetWidth (imageHandle);
+		nHeight = OS.CGImageGetHeight (imageHandle);
+		int bpl = OS.CGImageGetBytesPerRow (imageHandle);
+		Rect bounds = new Rect ();
+		bounds.right = (short) nWidth;
+		bounds.bottom = (short) nHeight;
+		Rect portRect = new Rect ();
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, portRect);
+		left += portRect.left;
+		top += portRect.top;		
+		OS.SetRect(rect, (short) left, (short) top, (short) (left + nWidth), (short) (top + nHeight));
+		int [] gWorld = new int [1];
+		OS.NewGWorldFromPtr (gWorld, OS.k32ARGBPixelFormat, bounds, 0, 0, 0, image.data, bpl);
+		int [] curPort = new int [1];
+		int [] curGWorld = new int [1];
+		OS.GetGWorld (curPort, curGWorld);	
+		OS.SetGWorld (gWorld [0], curGWorld [0]);
+		int portBitMap = OS.GetPortBitMapForCopyBits (port);
+		int gworldBitMap = OS.GetPortBitMapForCopyBits (gWorld [0]);
+		OS.OffsetRgn(visibleRgn, portRect.left, portRect.top);
+		OS.CopyBits (gworldBitMap, portBitMap, bounds, rect, (short) OS.notSrcXor, visibleRgn);
+		OS.OffsetRgn(visibleRgn, (short) -portRect.left, (short) -portRect.top);
+		OS.SetGWorld (curPort [0], curGWorld [0]);
+		OS.DisposeGWorld (gWorld [0]);
+	}
 	OS.SetClip (oldClip);
 	OS.DisposeRgn (visibleRgn);
 	OS.DisposeRgn (oldClip);
