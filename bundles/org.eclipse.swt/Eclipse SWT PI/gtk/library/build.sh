@@ -36,7 +36,7 @@ case $OS in
 				KDE_LIB_PATH=/usr/lib64
 				KDE_INCLUDE_PATH=/usr/include/kde
 				if [ "${GECKO_SDK}" = "" ]; then
-					GECKO_SDK=/bluebird/teamswt/chrisx/gentoo/mozilla/dist/sdk
+					GECKO_SDK=/mozilla/mozilla/1.7/amd64/gtk2/mozilla/dist/sdk
 					GECKO_INCLUDES="-include ${GECKO_SDK}/include/mozilla-config.h -I${GECKO_SDK}/include"
 					GECKO_LIBS="-L${GECKO_SDK}/lib -L${GECKO_SDK}/bin -lembed_base_s -lxpcomglue_s -lxpcom -lnspr4 -lplds4 -lplc4"
 				fi
