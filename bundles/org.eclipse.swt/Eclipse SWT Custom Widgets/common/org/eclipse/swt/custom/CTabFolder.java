@@ -797,7 +797,7 @@ void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
 	Color chevronBorder = single ? getSelectionForeground() : getForeground();
-	int indent = 1;
+	int indent = 2;
 	int x = chevronRect.x + indent;
 	int y = chevronRect.y + indent;
 	int count;
