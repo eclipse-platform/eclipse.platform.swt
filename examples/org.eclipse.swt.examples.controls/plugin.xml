@@ -44,7 +44,7 @@
          description="%launchitem.ControlsExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
          source="controlssrc.zip"
-         id="org.eclipse.swt.examples.controls.launcher"
+         id="org.eclipse.swt.examples.controls.viewlauncher"
          icon="icons/controls_example.gif">
    </viewItem>
 </extension>

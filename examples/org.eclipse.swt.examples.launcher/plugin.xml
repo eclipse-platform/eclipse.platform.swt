@@ -63,7 +63,7 @@
          description="%launchitem.LauncherExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
          source="launchersrc.zip"
-         id="org.eclipse.swt.examples.launcher.launcher"
+         id="org.eclipse.swt.examples.launcher.viewlauncher"
          icon="icons/launcher_example.gif">
    </viewItem>
 </extension>
