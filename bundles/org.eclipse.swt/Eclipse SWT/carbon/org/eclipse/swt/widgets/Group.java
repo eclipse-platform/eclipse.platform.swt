@@ -102,7 +102,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	x -= client.left - bounds.left;
 	y -= client.top - bounds.top;
 	width += Math.max (8, (bounds.right - bounds.left) - (client.right - client.left));
-	height += Math.max (22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	height += Math.max (text.length () == 0 ? 8 : 22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
 	return new Rectangle (x, y, width, height);
 }
 
@@ -132,9 +132,9 @@ public Rectangle getClientArea () {
 	OS.GetRegionBounds (rgnHandle, client);
 	OS.DisposeRgn (rgnHandle);
 	int x = Math.max (0, client.left - bounds.left);
-	int y = text == null ? x : Math.max (0, client.top - bounds.top);
+	int y = text.length () == 0 ? x : Math.max (0, client.top - bounds.top);
 	int width = Math.max (0, client.right - client.left);
-	int height = Math.max (0, text == null ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
+	int height = Math.max (0, text.length () == 0 ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
 }
 
