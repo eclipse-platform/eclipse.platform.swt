@@ -105,24 +105,23 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
-/*
+/**
  * Returns a <code>PrinterData</code> object representing
- * the default printer.
+ * the default printer or <code>null</code> if there is no 
+ * printer available on the System.
  *
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
- * </ul>
- *
- * @return the default printer data
+ * @return the default printer data or null
+ * 
+ * @since 2.1
  */
-static PrinterData getDefaultPrinterData() {
+public static PrinterData getDefaultPrinterData() {
 	String deviceName = null;
 	int length = 1024;
 	/* Use the character encoding for the default locale */
 	TCHAR buf = new TCHAR(0, length);
 	TCHAR nullBuf = new TCHAR(0, 1);
 	int n = OS.GetProfileString(appName, keyName, nullBuf, buf, length);
-	if (n == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (n == 0) return null;
 	int commaIndex = 0;
 	while(buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
 	if (commaIndex < length) {
@@ -143,6 +142,7 @@ static DeviceData checkNull (PrinterData data) {
 	if (data == null) data = new PrinterData();
 	if (data.driver == null || data.name == null) {
 		PrinterData defaultPrinter = getDefaultPrinterData();
+		if (defaultPrinter == null) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.driver = defaultPrinter.driver;
 		data.name = defaultPrinter.name;		
 	}
