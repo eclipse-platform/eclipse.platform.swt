@@ -123,7 +123,6 @@ void extractValues() {
 		/* Use the character encoding for the default locale */
 		filterPath = new String (Converter.mbcsToWcs (null, buffer));
 	}
-	OS.XmStringFree (xmString1);
 	if (filterPath.endsWith("/")) {
 		filterPath = filterPath.substring (0, filterPath.length() - 1);
 	}
@@ -253,16 +252,43 @@ int itemSelected (int widget, int client, int call) {
 	/* this callback will only be hooked if the dialog style is MULTI */
 	int fileList = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
 	if (fileList == 0) return 0;
-	XmListCallbackStruct callback = new XmListCallbackStruct ();
-	OS.memmove (callback, call, XmListCallbackStruct.sizeof);
-	callback.reason = OS.XmCR_BROWSE_SELECT;
-	OS.memmove (call, callback, XmListCallbackStruct.sizeof);
-	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (null, "singleSelectionCallback", true);
-	OS.XtCallCallbacks(fileList, buffer, call);
+	int selectionText = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_TEXT);
+	if (selectionText == 0) return 0;
+	
+	int [] argList = {OS.XmNselectedItems, 0, OS.XmNselectedItemCount, 0};
+	OS.XtGetValues (fileList, argList, argList.length / 2);
+	int items = argList [1], itemCount = argList [3];
+	int ptr = 0;
+	if (itemCount == 0) {
+		int [] argList2 = {OS.XmNdirectory, 0};
+		OS.XtGetValues (dialog, argList2, argList2.length / 2);
+		ptr = argList2 [1];
+	} else {
+		int [] buffer = new int [1];
+		OS.memmove (buffer, items, 4);
+		ptr = buffer [0];
+	}
+	
+	int address = OS.XmStringUnparse (
+		ptr,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	
+	if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	int length = OS.strlen (address);
+	byte [] buffer = new byte [length + 1];
+	OS.memmove (buffer, address, length);
+	OS.XtFree (address);
+	
+	OS.XmTextSetString (selectionText, buffer);
+	OS.XmTextSetInsertionPosition (selectionText, OS.XmTextGetLastPosition (selectionText));
 	return 0;
 }
-	
+
 int okPressed (int widget, int client, int call) {
 	extractValues();
 	

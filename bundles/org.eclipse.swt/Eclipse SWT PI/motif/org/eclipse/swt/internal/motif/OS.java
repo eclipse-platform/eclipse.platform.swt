@@ -490,7 +490,7 @@ public class OS {
 //	public static final int XmCR_ACTIVATE = 0xA;
 //	public static final int XmCR_APPLY = 0x22;
 //	public static final int XmCR_ARM = 0xB;
-	public static final int XmCR_BROWSE_SELECT = 0x1A;
+//	public static final int XmCR_BROWSE_SELECT = 0x1A;
 //	public static final int XmCR_CANCEL = 0x20;
 //	public static final int XmCR_CASCADING = 0x1E;
 //	public static final int XmCR_CLIPBOARD_DATA_DELETE = 0x1D;
@@ -1210,7 +1210,6 @@ public static final synchronized native int XtAppSetErrorHandler (int app_contex
 public static final synchronized native int XtAppSetWarningHandler (int app_context, int msg_handler);
 public static final synchronized native int XtBuildEventMask (int widget);
 public static final synchronized native void XtCallActionProc (int widget, byte []  action, XAnyEvent event, int [] params, int num_params);
-public static final synchronized native void XtCallCallbacks (int widget, byte [] callbackName, int callData);
 public static final synchronized native int XtClass (int widget);
 public static final synchronized native void XtConfigureWidget (int widget, int x, int y, int width, int height, int borderWidth);
 public static final synchronized native int XtCreateApplicationContext ();
@@ -1284,7 +1283,6 @@ static int malloc (String name, int length) {
 
 public static final native void memmove (int dest, XImage src, int count);
 public static final native void memmove (int dest, XmDragProcCallback src, int count);
-public static final native void memmove (int dest, XmListCallbackStruct src, int count);
 public static final native void memmove (int dest, XmTextBlockRec src, int count);
 public static final native void memmove (int dest, XmTextVerifyCallbackStruct src, int count);
 public static final native void memmove (int dest, byte [] src, int count);
@@ -1307,7 +1305,6 @@ public static final native void memmove (XmAnyCallbackStruct dest, int src, int 
 public static final native void memmove (XmDragProcCallback dest, int src, int count);
 public static final native void memmove (XmDropFinishCallback dest, int src, int count);
 public static final native void memmove (XmDropProcCallback dest, int src, int count);
-public static final native void memmove (XmListCallbackStruct dest, int src, int count);
 public static final native void memmove (XmTextBlockRec dest, int src, int count);
 public static final native void memmove (XmTextVerifyCallbackStruct dest, int src, int count);
 public static final native void memmove (byte [] dest, int src, int count);

@@ -30,7 +30,6 @@ XMANYCALLBACKSTRUCT_FID_CACHE XmanycallbackstructFc;
 XMDRAGPROCCALLBACK_FID_CACHE XmdragproccallbackFc;
 XMDROPFINISHCALLBACK_FID_CACHE XmdropfinishcallbackFc;
 XMDROPPROCCALLBACK_FID_CACHE XmdropproccallbackFc;
-XMLISTPROCCALLBACK_FID_CACHE XmlistproccallbackFc;
 XMOTIONEVENT_FID_CACHE XmotioneventFc;
 XMTEXTBLOCKREC_FID_CACHE XmtextblockrecFc;
 XMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE XmtextverifycallbackstructFc;
@@ -451,24 +450,6 @@ void cacheXmdropfinishcallbackFids(JNIEnv *env, jobject lpXmdropfinishcallback, 
     lpCache->dropAction = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"dropAction","B");
     lpCache->completionStatus = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"completionStatus","B");
     lpCache->cached = 1;
-}
-
-void cacheXmlistproccallbackFids(JNIEnv *env, jobject lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmlistproccallbackClass = (*env)->GetObjectClass(env,lpXmlistproccallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"event","I");
-    lpCache->item = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"item","I");
-    lpCache->item_length = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"item_length","I");
-    lpCache->item_position = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"item_position","I");
-    lpCache->selected_items = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"selected_items","I");
-    lpCache->selected_item_count = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"selected_item_count","I");
-    lpCache->selected_item_positions = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"selected_item_positions","I");
-    lpCache->selection_type = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"selection_type","B");
-    lpCache->auto_selection_type = (*env)->GetFieldID(env,lpCache->xmlistproccallbackClass,"auto_selection_type","B");
 }
 
 void cacheXmtextblockrecFids(JNIEnv *env, jobject lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpCache)
@@ -1222,34 +1203,6 @@ void setXmdropfinishcallbackFields(JNIEnv *env, jobject lpObject, XmDropFinishCa
     (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropSiteStatus, lpXmdropfinishcallback->dropSiteStatus);
     (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropAction, lpXmdropfinishcallback->dropAction);    
     (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->completionStatus, lpXmdropfinishcallback->completionStatus);
-}
-
-void getXmlistproccallbackFields(JNIEnv *env, jobject lpObject, XmListCallbackStruct *lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpXmlistproccallbackFc)
-{
-    lpXmlistproccallback->reason = (*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->reason);
-    lpXmlistproccallback->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->event);
-    lpXmlistproccallback->item = (XmString) (*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->item);
-    lpXmlistproccallback->item_length = (*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->item_length);
-    lpXmlistproccallback->item_position = (*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->item_position);
-    lpXmlistproccallback->selected_items = (XmString *)(*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->selected_items);
-    lpXmlistproccallback->selected_item_count = (*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->selected_item_count);
-    lpXmlistproccallback->selected_item_positions = (int *)(*env)->GetIntField(env,lpObject,lpXmlistproccallbackFc->selected_item_positions);
-    lpXmlistproccallback->selection_type = (*env)->GetByteField(env,lpObject,lpXmlistproccallbackFc->selection_type);
-    lpXmlistproccallback->auto_selection_type = (*env)->GetByteField(env,lpObject,lpXmlistproccallbackFc->auto_selection_type);
-}
-
-void setXmlistproccallbackFields(JNIEnv *env, jobject lpObject, XmListCallbackStruct *lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpXmlistproccallbackFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->reason, lpXmlistproccallback->reason);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->event, (jint)lpXmlistproccallback->event);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->item, (jint)lpXmlistproccallback->item);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->item_length, lpXmlistproccallback->item_length);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->item_position, lpXmlistproccallback->item_position);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->selected_items, (jint)lpXmlistproccallback->selected_items);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->selected_item_count, lpXmlistproccallback->selected_item_count);
-    (*env)->SetIntField(env,lpObject,lpXmlistproccallbackFc->selected_item_positions, (jint)lpXmlistproccallback->selected_item_positions);
-    (*env)->SetByteField(env,lpObject,lpXmlistproccallbackFc->selection_type, lpXmlistproccallback->selection_type);
-    (*env)->SetByteField(env,lpObject,lpXmlistproccallbackFc->auto_selection_type, lpXmlistproccallback->auto_selection_type);
 }
 
 void getXmtextblockrecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpXmtextblockrecFc)

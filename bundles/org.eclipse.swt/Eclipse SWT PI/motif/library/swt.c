@@ -628,50 +628,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_ecli
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XmListCallbackStruct;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XmListCallbackStruct_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmListCallbackStruct xmlistproccallback, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XmListCallbackStruct_2I\n");
-#endif
-
-    if (src) {
-        src1=&xmlistproccallback;
-        cacheXmlistproccallbackFids(env, src, &PGLOB(XmlistproccallbackFc));
-        getXmlistproccallbackFields(env, src, src1, &PGLOB(XmlistproccallbackFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmListCallbackStruct;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmListCallbackStruct_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmListCallbackStruct xmlistproccallback, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmListCallbackStruct_2II\n");
-#endif
-
-    memmove((void *)&xmlistproccallback, (void *)src, count);
-    if (dest) {
-        dest1=&xmlistproccallback;
-        cacheXmlistproccallbackFids(env, dest, &PGLOB(XmlistproccallbackFc));
-        setXmlistproccallbackFields(env, dest, dest1, &PGLOB(XmlistproccallbackFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
  * Signature: (Lorg/eclipse/swt/internal/motif/XmDropProcCallback;II)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallback_2II
@@ -5764,27 +5720,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCallActionProc
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCallCallbacks
- * Signature: (I[BI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCallCallbacks
-  (JNIEnv *env, jclass that, jint widget, jbyteArray callbackName, jint callData)
-{
-	DECL_GLOB(pGlob)
-    jbyte *callbackName1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCallCallbacks\n");
-#endif
-    if (callbackName)
-        callbackName1 = (*env)->GetByteArrayElements(env, callbackName, NULL);
-    XtCallCallbacks((Widget)widget, (String)callbackName1, (XtPointer)callData);
-    if (callbackName)
-        (*env)->ReleaseByteArrayElements(env, callbackName, callbackName1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XtClass
  * Signature: (I)I
  */
@@ -8725,7 +8660,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_iconv_1open
         tocode1 = (*env)->GetByteArrayElements(env, tocode, NULL);
     if (fromcode) 
         fromcode1 = (*env)->GetByteArrayElements(env, fromcode, NULL);
-	result = (jint)iconv_open(tocode1,fromcode1);
+	result = (jint)iconv_open(tocode1, fromcode1);
     if (tocode)
     	(*env)->ReleaseByteArrayElements(env, tocode, tocode1, 0);
     if (fromcode)
