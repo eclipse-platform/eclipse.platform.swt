@@ -33,6 +33,8 @@ public class ScrolledComposite extends Composite {
 	private int minWidth = 0;
 	private boolean expandHorizontal = false;
 	private boolean expandVertical = false;
+	private boolean alwaysShowScroll = false;
+	private boolean inResize = false;
 	
 public ScrolledComposite(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -86,9 +88,73 @@ private void hScroll() {
 	int hSelection = hBar.getSelection ();
 	content.setLocation (-hSelection, location.y);
 }
+private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
+	//Rectangle hostRect = getClientArea();
+	Rectangle hostRect = getBounds();
+	int border = getBorderWidth();
+	hostRect.width -= 2*border;
+	ScrollBar vBar = getVerticalBar();
+	if (vVisible && vBar != null) hostRect.width -= vBar.getSize().x;
+	
+	if (!expandHorizontal && contentRect.width > hostRect.width) return true;
+	if (expandHorizontal && minWidth > hostRect.width) return true;
+	return false;
+}
+private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
+	//Rectangle hostRect = getClientArea();
+	Rectangle hostRect = getBounds();
+	int border = getBorderWidth();
+	hostRect.height -= 2*border;
+	ScrollBar hBar = getHorizontalBar();
+	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
+	
+	if (!expandHorizontal && contentRect.height > hostRect.height) return true;
+	if (expandHorizontal && minHeight > hostRect.height) return true;
+	return false;
+}
+
+/**
+ * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the composite needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ * 
+ * @return the Always Show Scrollbars flag value
+ */
+public boolean getAlwaysShowScrollBars() {
+	return alwaysShowScroll;
+}
+
+/**
+ * Set the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the composite needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ */
+public void setAlwaysShowScrollBars(boolean show) {
+	alwaysShowScroll = show;
+	resize();
+}
+
 private void resize() {
 	if (content == null) return;
+	if (inResize) return;
+	inResize = true;
+	ScrollBar hBar = getHorizontalBar ();
+	ScrollBar vBar = getVerticalBar ();
 	Rectangle contentRect = content.getBounds();
+	contentRect.x = contentRect.y = 0;
+	
+	if (!alwaysShowScroll) {
+		boolean hVisible = needHScroll(contentRect, false);
+		boolean vVisible = needVScroll(contentRect, hVisible);
+		if (!hVisible && vVisible) hVisible = needHScroll(contentRect, vVisible);
+		hBar.setVisible(hVisible);
+		vBar.setVisible(vVisible);
+	}
+
 	Rectangle hostRect = getClientArea();
 	if (expandHorizontal) {
 		contentRect.width = Math.max(minWidth, hostRect.width);	
@@ -96,8 +162,7 @@ private void resize() {
 	if (expandVertical) {
 		contentRect.height = Math.max(minHeight, hostRect.height);
 	}
-	
-	ScrollBar hBar = getHorizontalBar ();
+
 	if (hBar != null) {
 		hBar.setMaximum (contentRect.width);
 		hBar.setThumb (Math.min (contentRect.width, hostRect.width));
@@ -108,8 +173,7 @@ private void resize() {
 			contentRect.x = -hSelection;
 		}
 	}
-	
-	ScrollBar vBar = getVerticalBar ();
+
 	if (vBar != null) {
 		vBar.setMaximum (contentRect.height);
 		vBar.setThumb (Math.min (contentRect.height, hostRect.height));
@@ -122,7 +186,9 @@ private void resize() {
 	}
 	
 	content.setBounds (contentRect);
+	inResize = false;
 }
+
 /**
  * Set the content that will be scrolled.
  */
