@@ -72,6 +72,8 @@ public class ViewForm extends Composite {
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should be capitalized.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
@@ -79,6 +81,8 @@ public class ViewForm extends Composite {
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should be capitalized.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
@@ -86,6 +90,8 @@ public class ViewForm extends Composite {
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should be capitalized.
+	 * 
+	 * @deprecated
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
 	
@@ -104,13 +110,14 @@ public class ViewForm extends Composite {
 	private int borderBottom = 0;
 	private int borderLeft = 0;
 	private int borderRight = 0;
-	
-	private Color borderColor1;
-	private Color borderColor2;
-	private Color borderColor3;
-	
+	private int highlight = 0;
 	private Rectangle oldArea;
-	private static final int OFFSCREEN = -200;
+	
+	private Color selectionBackground;
+	
+	static final int OFFSCREEN = -200;
+	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
+	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -141,9 +148,6 @@ public class ViewForm extends Composite {
 public ViewForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
-	borderColor1 = new Color(getDisplay(), borderInsideRGB);
-	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
-	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
 	Listener listener = new Listener() {
@@ -222,8 +226,8 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		if (size.y > contentSize.y) size.y += verticalSpacing;
 	}
 	
-	size.x += 2 * marginWidth;
-	size.y += 2 * marginHeight;
+	size.x += 2*marginWidth;
+	size.y += 2*marginHeight;
 	
 	if (wHint != SWT.DEFAULT) size.x  = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
@@ -233,10 +237,10 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int trimX = x - borderLeft;
-	int trimY = y - borderTop;
-	int trimWidth = width + borderLeft + borderRight;
-	int trimHeight = height + borderTop + borderBottom;
+	int trimX = x - borderLeft - highlight;
+	int trimY = y - borderTop - highlight;
+	int trimWidth = width + borderLeft + borderRight + 2*highlight;
+	int trimHeight = height + borderTop + borderBottom + 2*highlight;
 	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
 }
 public Rectangle getClientArea() {
@@ -304,15 +308,15 @@ public void layout (boolean changed) {
 		 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 	
-	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth;
+	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth + 2*highlight;
 	int count = -1;
 	if (leftSize.x > 0) count++;
 	if (centerSize.x > 0) count++;
 	if (rightSize.x > 0) count++;
 	if (count > 0) minTopWidth += count * horizontalSpacing;
 		
-	int x = rect.x + rect.width - marginWidth;
-	int y = rect.y + marginHeight;
+	int x = rect.x + rect.width - marginWidth - highlight;
+	int y = rect.y + marginHeight + highlight;
 	
 	boolean top = false;
 	if (separateTopCenter || minTopWidth > rect.width) {
@@ -325,14 +329,14 @@ public void layout (boolean changed) {
 		}
 		if (topLeft != null && !topLeft.isDisposed()) {
 			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth, SWT.DEFAULT);
-			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			leftSize = topLeft.computeSize(x - rect.x - marginWidth - highlight, SWT.DEFAULT);
+			topLeft.setBounds(rect.x + marginWidth + highlight, y, leftSize.x, topHeight);
 		}
 		if (top)y += topHeight + verticalSpacing;
 		if (topCenter != null && !topCenter.isDisposed()) {
 			top = true;
-			centerSize = topCenter.computeSize(rect.width - 2 * marginWidth, SWT.DEFAULT);
-			topCenter.setBounds(rect.x + rect.width - marginWidth - centerSize.x, y, centerSize.x, centerSize.y);
+			centerSize = topCenter.computeSize(rect.width - 2*marginWidth - 2*highlight, SWT.DEFAULT);
+			topCenter.setBounds(rect.x + rect.width - marginWidth - highlight - centerSize.x, y, centerSize.x, centerSize.y);
 			y += centerSize.y + verticalSpacing;
 		}		
 	} else {
@@ -351,8 +355,8 @@ public void layout (boolean changed) {
 		}
 		if (topLeft != null && !topLeft.isDisposed()) {
 			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth, topHeight);
-			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			leftSize = topLeft.computeSize(x - rect.x - marginWidth - highlight, topHeight);
+			topLeft.setBounds(rect.x + marginWidth + highlight, y, leftSize.x, topHeight);
 		}
 		if (top)y += topHeight + verticalSpacing;
 	}
@@ -362,54 +366,40 @@ public void layout (boolean changed) {
 			separator = y;
 			y++;
 		}
-		 content.setBounds(rect.x + marginWidth, y, rect.width - 2 * marginWidth, rect.y + rect.height - y - marginHeight);
+		 content.setBounds(rect.x + marginWidth + highlight, y, rect.width - 2 * marginWidth - 2*highlight, rect.y + rect.height - y - marginHeight - highlight);
 	}
 }
 void onDispose() {
-	if (borderColor1 != null) {
-		borderColor1.dispose();
-	}
-	borderColor1 = null;
-	
-	if (borderColor2 != null) {
-		borderColor2.dispose();
-	}
-	borderColor2 = null;
-	
-	if (borderColor3 != null) {
-		borderColor3.dispose();
-	}
-	borderColor3 = null;
-	
 	topLeft = null;
 	topCenter = null;
 	topRight = null;
 	content = null;
 	oldArea = null;
+	selectionBackground = null;
 }
 void onPaint(GC gc) {
 	Color gcForeground = gc.getForeground();
 	Point size = getSize();
+	Color border = getDisplay().getSystemColor(BORDER1_COLOR);
 	if (showBorder) {
-		if ((getStyle() & SWT.FLAT) !=0) {
-			gc.setForeground(borderColor1);
-			gc.drawRectangle(0, 0, size.x - 1, size.y - 1);
-		} else {
-			gc.setForeground(borderColor1);
-			gc.drawRectangle(0, 0, size.x - 3, size.y - 3);
-		
-			gc.setForeground(borderColor2);
-			gc.drawLine(1, size.y - 2, size.x - 1, size.y - 2);
-			gc.drawLine(size.x - 2, 1, size.x - 2, size.y - 1);
-		
-			gc.setForeground(borderColor3);
-			gc.drawLine(2, size.y - 1, size.x - 2, size.y - 1);
-			gc.drawLine(size.x - 1, 2, size.x - 1, size.y - 2);
+		gc.setForeground(border);
+		gc.drawRectangle(0, 0, size.x - 1, size.y - 1);
+		if (highlight > 0) {
+			int x1 = 1;
+			int y1 = 1;
+			int x2 = size.x - 1;
+			int y2 = size.y - 1;
+			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2, x1,y1+highlight,
+					           x1+highlight,y1+highlight, x1+highlight,y2-highlight, 
+							   x2-highlight,y2-highlight, x2-highlight,y1+highlight, x1,y1+highlight};
+			Color highlightColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+			gc.setBackground(highlightColor);
+			gc.fillPolygon(shape);
 		}
 	}
 	if (separator > -1) {
-		gc.setForeground(borderColor1);
-		gc.drawLine(borderLeft, separator, size.x - borderLeft - borderRight, separator);
+		gc.setForeground(border);
+		gc.drawLine(borderLeft + highlight, separator, size.x - borderLeft - borderRight - highlight, separator);
 	}
 	gc.setForeground(gcForeground);
 }
@@ -422,18 +412,18 @@ void onResize() {
 	} else {
 		int width = 0;
 		if (oldArea.width < area.width) {
-			width = area.width - oldArea.width + borderRight;
+			width = area.width - oldArea.width + borderRight + highlight;
 		} else if (oldArea.width > area.width) {
-			width = borderRight;			
+			width = borderRight + highlight;			
 		}
 		redraw(area.x + area.width - width, area.y, width, area.height, false);
 		
 		int height = 0;
 		if (oldArea.height < area.height) {
-			height = area.height - oldArea.height + borderBottom;		
+			height = area.height - oldArea.height + borderBottom + highlight;		
 		}
 		if (oldArea.height > area.height) {
-			height = borderBottom;		
+			height = borderBottom + highlight;		
 		}
 		redraw(area.x, area.y + area.height - height, area.width, height, false);
 	}
@@ -489,6 +479,17 @@ public void setFont(Font f) {
 public void setLayout (Layout layout) {
 	checkWidget();
 	return;
+}
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public void setSelectionBackground (Color color) {
+	checkWidget();
+	if (selectionBackground == color) return;
+	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
+	selectionBackground = color;
+	redraw();
 }
 /**
 * Set the control that appears in the top center of the pane.
@@ -581,14 +582,11 @@ public void setBorderVisible(boolean show) {
 	
 	showBorder = show;
 	if (showBorder) {
-		if ((getStyle() & SWT.FLAT)!= 0) {
-			borderLeft = borderTop = borderRight = borderBottom = 1;
-		} else {
-			borderLeft = borderTop = 1;
-			borderRight = borderBottom = 3;
-		}
+		borderLeft = borderTop = borderRight = borderBottom = 1;
+		if ((getStyle() & SWT.FLAT)== 0) highlight = 2;
 	} else {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
+		highlight = 0;
 	}
 
 	layout();
