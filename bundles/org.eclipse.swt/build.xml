@@ -25,11 +25,16 @@
 	<target name="gather.bin.parts" depends="init" if="destination">
 		<ant antfile="${template}" target="includesExcludesCopy">
 			<property name="srcdir" value="${basedir}"/>
-			<property name="dest" value="${destination}/plugins/${plugin}"/>
+			<property name="dest" value="${destination}/plugins/${plugin}_${version}"/>
 			<property name="excludes" value="${bin.excludes}"/>
 			<property name="includes" value="${bin.includes}"/>
 		</ant>
 	</target>
+
+	<target name="build.jars" />
+	<target name="gather.sources" />
+	<target name="build.sources" />
+	<target name="gather.logs" />
 
 	<target name="clean" depends="init">
 	</target>
