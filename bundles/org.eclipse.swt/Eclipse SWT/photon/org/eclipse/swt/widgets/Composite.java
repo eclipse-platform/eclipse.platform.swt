@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Composite extends Scrollable {
 	Layout layout;
+	Control [] tabList;
 	
 Composite () {
 	/* Do nothing */
@@ -89,6 +90,25 @@ Control [] _getChildren () {
 	Control [] newChildren = new Control [j];
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
+}
+
+Control [] _getTabList () {
+	if (tabList == null) return tabList;
+	int index = 0, count = 0;
+	while (index < tabList.length) {
+		if (!tabList [index].isDisposed ()) count++;
+		index++;
+	}
+	if (index == count) return tabList;
+	Control [] newList = new Control [count];
+	index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [index].isDisposed ()) {
+			newList [index++] = tabList [i];
+		}
+	}
+	tabList = newList;
+	return tabList;
 }
 
 protected void checkSubclass () {
@@ -319,6 +339,38 @@ void hookEvents () {
 }
 
 /**
+ * Gets the last specified tabbing order for the control.
+ *
+ * @return tabList the ordered list of controls representing the tab order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setTabList
+ */
+public Control [] getTabList () {
+	checkWidget ();
+	Control [] tabList = _getTabList ();
+//	if (tabList == null) {
+//		int count = 0;
+//		Control [] list =_getChildren ();
+//		for (int i=0; i<list.length; i++) {
+//			if (list [i].isTabGroup ()) count++;
+//		}
+//		tabList = new Control [count];
+//		int index = 0;
+//		for (int i=0; i<list.length; i++) {
+//			if (list [i].isTabGroup ()) {
+//				tabList [index++] = list [i];
+//			}
+//		}
+//	}
+	return tabList;
+}
+
+/**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
  * If the receiver does not have a layout, do nothing.
@@ -467,6 +519,8 @@ void releaseChildren () {
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
+	layout = null;
+	tabList = null;
 }
 
 void resizeClientArea () {
@@ -564,6 +618,65 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 public void setLayout (Layout layout) {
 	checkWidget();
 	this.layout = layout;
+}
+
+/**
+ * Sets the tabbing order for the specified controls to
+ * match the order that they occur in the argument list.
+ *
+ * @param tabList the ordered list of controls representing the tab order; must not be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setTabList (Control [] tabList) {
+	checkWidget ();
+	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<tabList.length; i++) {
+		Control control = tabList [i];
+		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+//		Shell shell = control.getShell ();
+//		while (control != shell && control != this) {
+//			control = control.parent;
+//		}
+//		if (control != this) error (SWT.ERROR_INVALID_PARENT);
+		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+	}
+	/*
+	* This code is intentionally commented.  It is
+	* not yet clear whether setting the tab list 
+	* should force the widget to be a tab group
+	* instead of a tab item or non-traversable.
+	*/
+//	Control [] children = _getChildren ();
+//	for (int i=0; i<children.length; i++) {
+//		Control control = children [i];
+//		if (control != null) {
+//			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+//			int index = 0;
+//			while (index < tabList.length) {
+//				if (tabList [index] == control) break;
+//				index++;
+//			}
+//			int hwnd = control.handle;
+//			int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+//			if (index == tabList.length) {
+//				bits &= ~OS.WS_TABSTOP;
+//			} else {
+//				bits |= OS.WS_TABSTOP;
+//			}
+//			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
+//		}
+//	}
+	this.tabList = tabList;
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
