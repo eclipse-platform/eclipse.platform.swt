@@ -187,7 +187,7 @@ void createItem (TabItem item, int index) {
 	*/
 	if (count == 0) {
 		OS.SetControl32BitValue (handle, 1);
-		lastSelected = 1;
+		lastSelected = 0;
 		Event event = new Event ();
 		event.item = items [0];
 		sendEvent (SWT.Selection, event);
