@@ -236,7 +236,7 @@ public int getLevel(int offset) {
 	PangoLayoutRun run = new PangoLayoutRun();
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
 	int /*long*/ byteOffset = OS.g_utf8_offset_to_pointer(ptr, offset) - ptr;
-	while (OS.pango_layout_iter_next_run(iter)) {
+	do {
 		int /*long*/ runPtr = OS.pango_layout_iter_get_run(iter);
 		if (runPtr != 0) {
 			OS.memmove(run, runPtr, PangoLayoutRun.sizeof);
@@ -246,7 +246,7 @@ public int getLevel(int offset) {
 				break;
 			}
 		}
-	}
+	} while (OS.pango_layout_iter_next_run(iter));
 	OS.pango_layout_iter_free(iter);
 	return level;
 }
