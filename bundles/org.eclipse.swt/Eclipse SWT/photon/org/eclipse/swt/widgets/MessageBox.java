@@ -156,8 +156,9 @@ public int open () {
 //	if ((style & SWT.ICON_WORKING) != 0) iconBits = OS.MB_ICONINFORMATION;
 
 	int parentHandle = 0;
-	if (parent != null) parentHandle = parent.shellHandle;
-
+	if (parent != null && OS.PtWidgetIsRealized(parent.shellHandle)) {
+		parentHandle = parent.shellHandle;
+	}
 	byte [] title = null;
 	if (this.title != null) title = Converter.wcsToMbcs (null, this.title, true);
 	byte [] message = null;

@@ -162,7 +162,9 @@ public String getFilterPath () {
  */
 public String open () {
 	int parentHandle = 0;
-	if (parent != null) parentHandle = parent.shellHandle;
+	if (parent != null && OS.PtWidgetIsRealized(parent.shellHandle)) {
+		parentHandle = parent.shellHandle;
+	}
 	byte [] title = null;
 	if (this.title != null) title = Converter.wcsToMbcs (null, this.title, true);
 	byte [] root_dir = null;
