@@ -8015,7 +8015,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_read
 
     if (buf) 
         buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
-    rc = (jint) read(filedes, (char *)buf, nbyte);
+    rc = (jint) read(filedes, (char *)buf1, nbyte);
     if (buf)
     	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
 
@@ -8038,7 +8038,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
 
     if (buf) 
         buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
-    rc = (jint) write(filedes, (char *)buf, nbyte);
+    rc = (jint) write(filedes, (char *)buf1, nbyte);
     if (buf)
     	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
 
