@@ -92,7 +92,11 @@ public ToolBar (Composite parent, int style) {
 	* the bits using the original style supplied by the
 	* programmer.
 	*/
-	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	if ((style & SWT.VERTICAL) != 0) {
+		this.style |= SWT.VERTICAL;
+	} else {
+		this.style |= SWT.HORIZONTAL;
+	}
 }
 
 int callWindowProc (int msg, int wParam, int lParam) {
@@ -620,6 +624,19 @@ void setImageList (ImageList imageList) {
 		hImageList = imageList.getHandle ();
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+}
+
+boolean setTabItemFocus () {
+	int index = 0;
+	while (index < items.length) {
+		ToolItem item = items [index];
+		if (item != null && (item.style & SWT.SEPARATOR) == 0) {
+			if (item.getEnabled ()) break;
+		}
+		index++;
+	}
+	if (index == items.length) return false;
+	return super.setTabItemFocus ();
 }
 
 int toolTipHandle () {
