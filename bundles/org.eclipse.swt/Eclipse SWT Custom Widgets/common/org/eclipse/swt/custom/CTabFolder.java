@@ -247,6 +247,15 @@ private static int checkStyle (int style) {
 	style |= SWT.NO_REDRAW_RESIZE;
 	return style;
 }
+
+//protected void checkSubclass () {
+//	String name = getClass().getName ();
+//	String validName = CTabFolder.class.getName();
+//	if (!validName.equals(name)) {
+//		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
+//	}
+//}
+
 /**	 
 * Adds the listener to receive events.
 * <p>

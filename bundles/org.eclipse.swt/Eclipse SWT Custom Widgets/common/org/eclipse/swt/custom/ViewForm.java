@@ -150,6 +150,15 @@ private static int checkStyle (int style) {
 	int mask = SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask | SWT.NO_REDRAW_RESIZE;
 }
+
+//protected void checkSubclass () {
+//	String name = getClass().getName ();
+//	String validName = ViewForm.class.getName();
+//	if (!validName.equals(name)) {
+//		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
+//	}
+//}
+
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// size of title bar area

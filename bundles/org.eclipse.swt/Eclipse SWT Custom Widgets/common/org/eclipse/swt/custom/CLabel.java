@@ -35,6 +35,10 @@ import org.eclipse.swt.accessibility.*;
  * <dt><b>Events:</b>
  * <dd></dd>
  * </dl>
+ * 
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class CLabel extends Canvas {
 
@@ -136,6 +140,15 @@ private static int checkStyle (int style) {
 	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
 	return style | SWT.NO_BACKGROUND;
 }
+
+//protected void checkSubclass () {
+//	String name = getClass().getName ();
+//	String validName = CLabel.class.getName();
+//	if (!validName.equals(name)) {
+//		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
+//	}
+//}
+
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point e = getTotalSize(image, text);
