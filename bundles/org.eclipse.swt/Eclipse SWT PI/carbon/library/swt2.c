@@ -13,11 +13,6 @@
 
 static const Rect NULL_RECT;
 
-// forward declarations
-static Point point(JNIEnv *env, jshortArray a);
-static void copyEvent(JNIEnv *env, jintArray eData, EventRecord *event);
-static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData);
-
 #ifdef DEBUG
 #define RC(f) checkStatus(__LINE__, (f))
 
@@ -38,32 +33,6 @@ static int checkStatus(int line, int rc) {
 #define RC(f) f
 #endif
 
-static void copyEvent(JNIEnv *env, jintArray eData, EventRecord *event) {
-	if (eData != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, eData, 0);
-		sa[0]= (int) event->what;
-		sa[1]= (int) event->message;
-		sa[2]= (int) event->when;
-		sa[3]= (int) event->where.v;
-		sa[4]= (int) event->where.h;
-		sa[5]= (int) event->modifiers;
-		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);
-	}
-}
-
-static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
-	if (eData != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, eData, 0);
-		event->what= (short) sa[0];
-		event->message= sa[1];
-		event->when= sa[2];
-		event->where.v= (short) sa[3];
-		event->where.h= (short) sa[4];
-		event->modifiers= sa[5];
-		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);	
-	}
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHICommand(JNIEnv *env, jclass zz,
 			jint eRefHandle, jintArray outParamType) {
 	jint status;
@@ -82,19 +51,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHIComman
 	}
 
 	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_MenuEvent(JNIEnv *env, jclass zz,
-				jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	return (jint) MenuEvent(&event);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS2_IsShowContextualMenuClick(JNIEnv *env, jclass zz, jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	return (jboolean) IsShowContextualMenuClick(&event);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewCursor(JNIEnv *env, jclass zz,
