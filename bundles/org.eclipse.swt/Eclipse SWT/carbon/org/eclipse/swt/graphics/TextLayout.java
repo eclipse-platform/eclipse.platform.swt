@@ -1411,7 +1411,7 @@ public void setWidth (int width) {
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (width == getWidth()) return;
 	freeRuns();
-	setLayoutControl(OS.kATSULineWidthTag, OS.Long2Fix(width), 4);
+	setLayoutControl(OS.kATSULineWidthTag, OS.Long2Fix(Math.max(0, width)), 4);
 }
 
 int skipHardBreak(int lineBreak) {
