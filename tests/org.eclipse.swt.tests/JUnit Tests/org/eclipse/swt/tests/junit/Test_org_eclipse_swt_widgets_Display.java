@@ -1223,6 +1223,11 @@ protected void runTest() throws Throwable {
 /* custom */
 boolean disposeExecRan;
 
+public void test_dispose() {
+	// tested in virtually every method and in particular
+	//   test_disposeExecLjava_lang_Runnable
+}
+
 /* Overloaded tests from Test_org_eclipse_swt_graphics_Device */
 public void test_getDPI() {
 	Display display = new Display();
