@@ -1053,7 +1053,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	exceptionThrown = false;
 
 	try {
-		text.getOffsetAtLocation(new Point(0, 50));
+		text.getOffsetAtLocation(new Point(100, 50));
 	}
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
