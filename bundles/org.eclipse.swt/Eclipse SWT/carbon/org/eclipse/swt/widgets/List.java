@@ -216,12 +216,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
+	int border = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	border += outMetric [0];
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	border += outMetric [0];
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
-	x -= rect.left;
-	y -= rect.top;
-	width += (rect.left + rect.right) * 3;
-	height += rect.top + rect.bottom;
+	x -= rect.left + border;
+	y -= rect.top + border;
+	width += rect.left + rect.right + border + border;
+	height += rect.top + rect.bottom + border + border;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -390,13 +396,20 @@ public void deselectAll () {
 
 public Rectangle getClientArea () {
 	checkWidget();
+	int border = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	border += outMetric [0];
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	border += outMetric [0];
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	int width = Math.max (0, rect.right - rect.left - inset.right);
-	int height = Math.max (0, rect.bottom - rect.top - inset.bottom);
+	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
+	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
 	return new Rectangle (inset.left, inset.top, width, height);
 }
+
 /**
  * Returns the zero-relative index of the item which is currently
  * has the focus in the receiver, or -1 if no item is has focus.
