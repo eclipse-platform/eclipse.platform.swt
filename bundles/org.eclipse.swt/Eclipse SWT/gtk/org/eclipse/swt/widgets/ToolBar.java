@@ -234,6 +234,8 @@ public ToolItem [] getItems () {
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		Widget widget = WidgetTable.get (data);
+		//TEMORARY CODE
+		if (widget == null) return new ToolItem [0];
 		result [i] = (ToolItem) widget;
 	}
 	OS.g_list_free (list);
