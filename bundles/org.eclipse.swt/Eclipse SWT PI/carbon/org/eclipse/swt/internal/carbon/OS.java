@@ -972,6 +972,7 @@ public static final native int SetControlProperty(int control, int propertyCreat
 public static final native void SetControlReference(int cHandle, int data);
 public static final native int SetControlTitleWithCFString(int cHandle, int sHandle);
 public static final native void SetControlViewSize(int cHandle, int viewSize);
+public static final native int SetControlVisibility(int inControl, boolean inIsVisible, boolean inDoDraw);
 public static final native void SetCursor(int cursor);
 public static final native int SetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
 public static final native int SetDataBrowserCustomCallbacks(int browser, DataBrowserCustomCallbacks  callbacks);

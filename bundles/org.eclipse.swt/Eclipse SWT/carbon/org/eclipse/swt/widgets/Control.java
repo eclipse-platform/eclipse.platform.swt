@@ -260,9 +260,9 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
-int getDrawCount () {
-	if (drawCount > 0) return drawCount;
-	return parent.getDrawCount ();
+int getDrawCount (int control) {
+	if (!isTrimHandle (control) && drawCount > 0) return drawCount;
+	return parent.getDrawCount (control);
 }
 
 public boolean getEnabled () {
@@ -461,7 +461,11 @@ public int internal_new_GC (GCData data) {
 			OS.GetControlBounds (handle, rect);
 			Rect portRect = new Rect ();
 			OS.GetPortBounds (port, portRect);
-			visibleRgn = getVisibleRegion (handle);
+			if (getDrawCount (handle) > 0) {
+				visibleRgn = OS.NewRgn ();
+			} else {
+				visibleRgn = getVisibleRegion (handle, true);
+			}
 			if (paintRgn != 0) OS.SectRgn (paintRgn, visibleRgn, visibleRgn);
 			OS.ClipCGContextToRegion (context, portRect, visibleRgn);
 			int portHeight = portRect.bottom - portRect.top;
@@ -725,22 +729,18 @@ int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 
 public void moveAbove (Control control) {
 	checkWidget();
-	int inOther = 0;
 	if (control != null) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		inOther = control.topHandle ();
 	}
 	setZOrder (control, true);
 }
 
 public void moveBelow (Control control) {
 	checkWidget();
-	int inOther = 0;
 	if (control != null) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		inOther = control.topHandle ();
 	}
 	setZOrder (control, false);
 }
@@ -757,21 +757,12 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
-	//TEMPORARY CODE
-	redrawWidget (handle, true);
+	redrawWidget (handle, false);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	if (getDrawCount () > 0) return;
-	if (!OS.IsControlVisible (handle)) return;
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	x += rect.left;
-	y += rect.top;
-	OS.SetRect (rect, (short) x, (short) y, (short)(x + width), (short)(y + height));
-	int window = OS.GetControlOwner (handle);
-	OS.InvalWindowRect (window, rect);
+	redrawWidget (handle, x, y, width, height, all);
 }
 
 void register () {
@@ -946,7 +937,7 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color != null ? color.handle : null;
-	redrawWidget (handle);
+	redrawWidget (handle, false);
 }
 
 public void setBounds (int x, int y, int width, int height) {
@@ -1089,7 +1080,7 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color != null ? color.handle : null;
-	redrawWidget (handle);
+	redrawWidget (handle, false);
 }
 
 public void setLayoutData (Object layoutData) {
@@ -1194,7 +1185,7 @@ public void setVisible (boolean visible) {
 	*/
 	boolean fixFocus = false;
 	if (!visible) fixFocus = isFocusAncestor ();
-	OS.HIViewSetVisible (topHandle (), visible);
+	OS.SetControlVisibility (topHandle (), visible, true);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -1223,7 +1214,23 @@ void setZOrder () {
 void setZOrder (Control control, boolean above) {
 	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
 	int inOther = control == null ? 0 : control.topHandle ();
-	OS.HIViewSetZOrder (topHandle (), inOp, inOther);
+	int oldRgn = 0;
+	int topHandle = topHandle ();
+	boolean drawing = isDrawing (topHandle);
+	if (drawing) oldRgn = getVisibleRegion (topHandle, false);
+	OS.HIViewSetZOrder (topHandle, inOp, inOther);
+	if (drawing) {
+		int newRgn = getVisibleRegion (topHandle, false);
+		if (above) {
+			OS.DiffRgn (newRgn, oldRgn, newRgn);
+		} else {
+			OS.DiffRgn (oldRgn, newRgn, newRgn);
+		}
+		int window = OS.GetControlOwner (topHandle);
+		OS.InvalWindowRgn (window, newRgn);
+		OS.DisposeRgn (oldRgn);
+		OS.DisposeRgn (newRgn);
+	}
 }
 
 void sort (int [] items) {
@@ -1338,8 +1345,7 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
-	if (getDrawCount () > 0) return;
-	if (!OS.IsControlVisible (handle)) return;
+	if (!isDrawing (handle)) return;
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
 	int updateRgn = OS.NewRgn ();

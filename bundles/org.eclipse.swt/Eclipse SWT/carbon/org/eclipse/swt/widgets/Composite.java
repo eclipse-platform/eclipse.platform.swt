@@ -248,7 +248,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ())) {
-		if (scrolledHandle != 0) redrawWidget (scrolledHandle);
+		if (scrolledHandle != 0) redrawWidget (scrolledHandle, false);
 		return OS.noErr;
 	}
 	return result;

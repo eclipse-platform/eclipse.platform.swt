@@ -365,9 +365,8 @@ public int getStyle () {
 	return style;
 }
 
-int getVisibleRegion (int control) {
+int getVisibleRegion (int control, boolean clipChildren) {
 	int visibleRgn = OS.NewRgn ();
-	if (getDrawCount () > 0) return visibleRgn;
 	int childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
 	int window = OS.GetControlOwner (control);
 	int port = OS.GetWindowPort (window);
@@ -379,14 +378,16 @@ int getVisibleRegion (int control) {
 		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
 		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
 		if (OS.EmptyRgn (visibleRgn)) break;
-		OS.CountSubControls (tempControl, count);
-		for (int i = 0; i < count [0]; i++) {
-			OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
-			int child = outControl [0];
-			if (child == lastControl) break;
-			if (!OS.IsControlVisible (child)) continue;
-			OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-			OS.UnionRgn (tempRgn, childRgn, childRgn);
+		if (clipChildren || tempControl != control) {
+			OS.CountSubControls (tempControl, count);
+			for (int i = 0; i < count [0]; i++) {
+				OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+				int child = outControl [0];
+				if (child == lastControl) break;
+				if (!OS.IsControlVisible (child)) continue;
+				OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
+				OS.UnionRgn (tempRgn, childRgn, childRgn);
+			}
 		}
 		lastControl = tempControl;
 		OS.GetSuperControl (tempControl, outControl);
@@ -415,7 +416,7 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-int getDrawCount () {
+int getDrawCount (int control) {
 	return 0;
 }
 
@@ -425,6 +426,10 @@ Rect getInset () {
 
 public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
+}
+
+boolean isDrawing (int control) {
+	return OS.IsControlVisible (control) && getDrawCount (control) == 0;
 }
 
 boolean isEnabled () {
@@ -481,12 +486,12 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	if (getDrawCount () > 0) return -1;
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	if (getDrawCount (theControl [0]) > 0) return -1;
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	int visibleRgn = getVisibleRegion (theControl [0]);
+	int visibleRgn = getVisibleRegion (theControl [0], true);
 	int oldClip = OS.NewRgn ();
 	OS.GetClip (oldClip);
 	OS.SectRgn(region [0], visibleRgn, visibleRgn);
@@ -647,23 +652,29 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
-void redrawWidget (int control) {
-	redrawWidget (control, false);
+void redrawWidget (int control, boolean children) {
+	if (!isDrawing (control)) return;
+	int window = OS.GetControlOwner (control);
+	int visibleRgn = getVisibleRegion (control, !children);
+	OS.InvalWindowRgn (window, visibleRgn);
+	OS.DisposeRgn (visibleRgn);
 }
 
-void redrawWidget (int control, boolean children) {
-	if (getDrawCount () > 0) return;
-	if (!OS.IsControlVisible (control)) return;
+void redrawWidget (int control, int x, int y, int width, int height, boolean children) {
+	if (!isDrawing (control)) return;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	x += rect.left;
+	y += rect.top;
+	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
+	int rectRgn = OS.NewRgn();
+	OS.RectRgn (rectRgn, rect);
+	int visibleRgn = getVisibleRegion (control, !children);
+	OS.SectRgn (rectRgn, visibleRgn, visibleRgn);
 	int window = OS.GetControlOwner (control);
-	if (children) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		OS.InvalWindowRect (window, rect);
-	} else {
-		int visibleRgn = getVisibleRegion (control);
-		OS.InvalWindowRgn (window, visibleRgn);
-		OS.DisposeRgn (visibleRgn);
-	}
+	OS.InvalWindowRgn (window, visibleRgn);
+	OS.DisposeRgn (rectRgn);
+	OS.DisposeRgn (visibleRgn);
 }
 
 void register () {

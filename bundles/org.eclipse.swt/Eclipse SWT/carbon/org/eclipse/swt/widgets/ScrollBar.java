@@ -119,8 +119,8 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
-int getDrawCount () {
-	return parent.getDrawCount ();
+int getDrawCount (int control) {
+	return parent.getDrawCount (control);
 }
 
 public boolean getEnabled () {
@@ -326,7 +326,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	OS.HIViewSetVisible (handle, visible);
+	OS.SetControlVisibility (handle, visible, true);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 	parent.layoutControl();
 }

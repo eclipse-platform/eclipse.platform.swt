@@ -61,8 +61,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-	if (getDrawCount () > 0) return;
-	if (!isVisible ()) return;
+	if (!isDrawing (handle)) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	update ();

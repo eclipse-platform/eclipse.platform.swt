@@ -209,8 +209,8 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
-int getDrawCount () {
-	return parent.getDrawCount ();
+int getDrawCount (int control) {
+	return parent.getDrawCount (control);
 }
 
 public Image getHotImage () {
@@ -591,7 +591,7 @@ public void setSelection (boolean selected) {
 	int transform = selected ? OS.kTransformSelected : 0;
 	OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
 	OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-	redrawWidget (handle);
+	redrawWidget (handle, true);
 }
 
 void setSize (int width, int height, boolean layout) {
@@ -655,7 +655,7 @@ void updateImage () {
 		inContent.iconRef = cIcon;
 	}
 	OS.SetBevelButtonContentInfo (iconHandle, inContent);
-	redrawWidget (iconHandle);
+	redrawWidget (iconHandle, false);
 	Point size = computeSize ();
 	setSize (size.x, size.y, true);
 }
@@ -719,7 +719,7 @@ void updateText () {
 		inContent.iconRef = labelCIcon;
 	}
 	OS.SetBevelButtonContentInfo (labelHandle, inContent);	
-	redrawWidget (labelHandle);
+	redrawWidget (labelHandle, false);
 	Point size = computeSize ();
 	setSize (size.x, size.y, true);
 }

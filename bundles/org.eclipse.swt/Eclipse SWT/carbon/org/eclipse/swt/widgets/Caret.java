@@ -47,6 +47,7 @@ void createWidget () {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
+	if (parent.isDrawing (parent.handle)) return false;
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
@@ -61,7 +62,7 @@ boolean drawCaret () {
 	OS.GetPort (currentPort);
 	OS.SetPort (port);
 	int oldClip = OS.NewRgn ();
-	int visibleRgn = getVisibleRegion (parentHandle);
+	int visibleRgn = getVisibleRegion (parentHandle, true);
 	OS.GetClip (oldClip);
 	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();

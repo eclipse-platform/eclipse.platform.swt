@@ -6102,6 +6102,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlViewSiz
 }
 #endif /* NO_SetControlViewSize */
 
+#ifndef NO_SetControlVisibility
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlVisibility
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetControlVisibility\n")
+
+	return (jint)SetControlVisibility((ControlRef)arg0, arg1, arg2);
+}
+#endif
+
 #ifndef NO_SetCursor
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor
 	(JNIEnv *env, jclass that, jint arg0)

@@ -147,7 +147,7 @@ void createHandle () {
 	} else {
 		createHandle (theRoot [0]);
 	}
-	OS.HIViewSetVisible (topHandle (), false);
+	OS.SetControlVisibility (topHandle (), false, true);
 	int [] outGroup = new int [1];
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
@@ -212,8 +212,9 @@ public Display getDisplay () {
 	return display;
 }
 
-int getDrawCount () {
-	return drawCount;
+int getDrawCount (int control) {
+	if (!isTrimHandle (control)) return drawCount;
+	return 0;
 }
 
 public int getImeInputMode () {
@@ -621,11 +622,11 @@ void setWindowVisible (boolean visible) {
 			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
-		OS.HIViewSetVisible (topHandle (), true);
+		OS.SetControlVisibility (topHandle (), true, true);
 		OS.ShowWindow (shellHandle);
 	} else {
     	OS.HideWindow (shellHandle);
-		OS.HIViewSetVisible (topHandle (), false);
+		OS.SetControlVisibility (topHandle (), false, true);
 		sendEvent (SWT.Hide);
 	}
 }

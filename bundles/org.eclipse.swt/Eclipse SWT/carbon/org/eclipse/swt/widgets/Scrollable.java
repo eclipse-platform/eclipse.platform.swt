@@ -188,27 +188,26 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 }
 
 void layoutControl () {
-	if (scrolledHandle != 0) {
-		int vWidth = 0, hHeight = 0;
-		int [] outMetric = new int [1];
-		OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-		boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
-		boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
-		if (isVisibleHBar) hHeight = outMetric [0];
-		if (isVisibleVBar) vWidth = outMetric [0];
-		Rect rect = new Rect ();
-		OS.GetControlBounds (scrolledHandle, rect);
-		Rect inset = inset ();
-		int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
-		int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
-		if (isVisibleHBar) {
-			setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
-		}
-		if (isVisibleVBar) {
-			setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
-		}
-		setBounds (handle, inset.left, inset.top, width, height, true, true, false);
-	}	
+	if (scrolledHandle == 0) return;
+	int vWidth = 0, hHeight = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
+	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
+	if (isVisibleHBar) hHeight = outMetric [0];
+	if (isVisibleVBar) vWidth = outMetric [0];
+	Rect rect = new Rect ();
+	OS.GetControlBounds (scrolledHandle, rect);
+	Rect inset = inset ();
+	int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
+	int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
+	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
+	if (isVisibleHBar) {
+		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
+	}
+	if (isVisibleVBar) {
+		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
+	}
 }
 
 void register () {
