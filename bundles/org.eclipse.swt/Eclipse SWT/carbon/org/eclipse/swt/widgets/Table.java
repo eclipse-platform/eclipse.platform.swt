@@ -1616,8 +1616,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	display.ignoreFocus = false;
 	if (oldFocus != this) {
-		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut);
-		if (!isDisposed () && isEnabled ()) sendFocusEvent (SWT.FocusIn);
+		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
+		if (!isDisposed () && isEnabled ()) sendFocusEvent (SWT.FocusIn, false);
 	}
 	if (!wasSelected) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {

@@ -895,35 +895,25 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Bug in the Macintosh.  The default handler of kEventWindowDeactivated
-	* segment faults when DisposeWindow() is called in previous handlers.
-	* The fix is to use RetainWindow() so that the window does not get
-	* disposed until the handler returns.
-	*/
+	//TEMPORARY CODE - should be send, but causes a GP
 	Display display = this.display;
-	OS.RetainWindow (shellHandle);
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	sendEvent (SWT.Deactivate);
-	if (!isDisposed ()) {
-		saveFocus ();
-		if (savedFocus != null) {
-			/*
-			* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
-			* the control that has focus gets two kEventControlSetFocus
-			* events indicating that focus was lost.  The fix is to ignore
-			* both of these and send the focus lost event explicitly.
-			*/
-			display.ignoreFocus = true;
-			OS.ClearKeyboardFocus (shellHandle);
-			display.ignoreFocus = false;
-			if (!savedFocus.isDisposed ()) {
-				savedFocus.sendFocusEvent (SWT.FocusOut);
-			}
-		}
+	postEvent (SWT.Deactivate);
+	if (isDisposed ()) return result;
+	saveFocus ();
+	if (savedFocus != null) {
+		/*
+		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
+		* the control that has focus gets two kEventControlSetFocus
+		* events indicating that focus was lost.  The fix is to ignore
+		* both of these and send the focus lost event explicitly.
+		*/
+		display.ignoreFocus = true;
+		OS.ClearKeyboardFocus (shellHandle);
+		display.ignoreFocus = false;
+		//TEMPORARY CODE - should be send, but causes a GP
+		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
 	}
 	display.setMenuBar (null);
-	OS.ReleaseWindow (shellHandle);
 	return result;
 }
 
