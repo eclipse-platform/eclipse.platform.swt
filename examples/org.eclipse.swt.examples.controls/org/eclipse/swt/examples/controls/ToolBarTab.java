@@ -190,9 +190,11 @@ class ToolBarTab extends Tab {
 	}
 	
 	void disposeDropDownMenu () {
-		dropDownMenu.setVisible(false);
-		dropDownMenu.dispose();
-		dropDownMenu = null;
+		if (dropDownMenu != null) {
+			dropDownMenu.setVisible(false);
+			dropDownMenu.dispose();
+			dropDownMenu = null;
+		}
 	}
 	
 	void disposeExampleWidgets () {
