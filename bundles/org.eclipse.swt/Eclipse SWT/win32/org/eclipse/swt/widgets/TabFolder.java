@@ -221,7 +221,8 @@ void destroyItem (TabItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-			imageList.dispose ();
+			Display display = getDisplay ();
+			display.releaseImageList (imageList);
 		}
 		imageList = null;
 		items = new TabItem [4];
@@ -358,12 +359,13 @@ public int getSelectionIndex () {
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		imageList = new ImageList ();
-		imageList.setBackground (getBackgroundPixel ());
-		imageList.add (image);
+		Rectangle bounds = image.getBounds ();
+		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		int index = imageList.indexOf (image);
+		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
-		return 0;
+		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
@@ -404,12 +406,13 @@ void releaseWidget () {
 		if (!item.isDisposed ()) item.releaseWidget ();
 	}
 	items = null;
-	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
+	super.releaseWidget ();
 }
 
 /**
@@ -607,17 +610,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (control != null && !control.isDisposed ()) {
 			control.setBounds (getClientArea ());
 		}
-	}
-	return result;
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if (imageList != null && background == -1) {
-		imageList.setBackground (defaultBackground ());
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 	}
 	return result;
 }

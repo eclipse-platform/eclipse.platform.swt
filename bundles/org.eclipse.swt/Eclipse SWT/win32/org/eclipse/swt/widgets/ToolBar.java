@@ -272,17 +272,18 @@ void destroyItem (ToolItem item) {
 	item.id = -1;
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == 0) {
+		Display display = getDisplay ();
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-			imageList.dispose ();
+			display.releaseToolImageList (imageList);
 		}
 		if (hotImageList != null) {
 			OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
-			hotImageList.dispose ();
+			display.releaseToolHotImageList (hotImageList);
 		}
 		if (disabledImageList != null) {
 			OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
-			disabledImageList.dispose ();
+			display.releaseToolDisabledImageList (disabledImageList);
 		}
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
@@ -448,20 +449,21 @@ void releaseWidget () {
 		}
 	}
 	items = null;
-	super.releaseWidget ();
+	Display display = getDisplay ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-		imageList.dispose ();
+		display.releaseToolImageList (imageList);
 	}
 	if (hotImageList != null) {
 		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
-		hotImageList.dispose ();
+		display.releaseToolHotImageList (hotImageList);
 	}
 	if (disabledImageList != null) {
 		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
-		disabledImageList.dispose ();
+		display.releaseToolDisabledImageList (disabledImageList);
 	}
 	imageList = hotImageList = disabledImageList = null;
+	super.releaseWidget ();
 }
 
 void setDefaultFont () {
@@ -475,7 +477,6 @@ void setDisabledImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
 		hImageList = disabledImageList.getHandle ();
-		disabledImageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
 }
@@ -490,7 +491,6 @@ void setHotImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((hotImageList = imageList) != null) {
 		hImageList = hotImageList.getHandle ();
-		hotImageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
 }
@@ -500,7 +500,6 @@ void setImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((this.imageList = imageList) != null) {
 		hImageList = imageList.getHandle ();
-		imageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
 }
@@ -616,27 +615,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 				control.setLocation (rect.x, rect.y);
 			}
 		}
-	}
-	return result;
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if (imageList != null && background == -1) {
-		imageList.setBackground (defaultBackground ());
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
-	}
-	if (hotImageList != null && background == -1) {
-		hotImageList.setBackground (defaultBackground ());
-		int hImageList = hotImageList.getHandle ();
-		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
-	}
-	if (disabledImageList != null && background == -1) {
-		disabledImageList.setBackground (defaultBackground ());
-		int hImageList = disabledImageList.getHandle ();
-		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
 	}
 	return result;
 }
