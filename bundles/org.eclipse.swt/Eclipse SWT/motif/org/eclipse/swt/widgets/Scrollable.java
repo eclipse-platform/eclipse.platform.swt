@@ -88,23 +88,21 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int border = getBorderWidth ();
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
-	boolean hasHBar = (horizontalBar != null) && (horizontalBar.getVisible ());
-	boolean hasVBar = (verticalBar != null) && (verticalBar.getVisible ());
-	if (hasHBar) {
+	if (horizontalBar != null) {
 		Display display = getDisplay ();
 		trimY -= display.scrolledInsetY;
 		trimHeight += display.scrolledInsetY + display.scrolledMarginY;
-		if (!hasVBar) {
+		if (verticalBar == null) {
 			trimX -= display.scrolledInsetX;
 			trimWidth += display.scrolledInsetX * 2;
 			trimHeight -= display.scrolledInsetY * 2;
 		}
 	}
-	if (hasVBar) {
+	if (verticalBar != null) {
 		Display display = getDisplay ();
 		trimX -= display.scrolledInsetX;
 		trimWidth += display.scrolledInsetX + display.scrolledMarginX;
-		if (!hasHBar) {
+		if (horizontalBar == null) {
 			trimY -= display.scrolledInsetY;
 			trimHeight += display.scrolledInsetY * 2;
 			trimWidth -= display.scrolledInsetX * 2;
