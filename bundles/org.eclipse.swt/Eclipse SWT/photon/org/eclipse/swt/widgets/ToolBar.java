@@ -118,7 +118,7 @@ Control [] _getChildren () {
 	Control [] newChildren = new Control [children.length + count];
 	System.arraycopy (children, 0, newChildren, 0, children.length);
 	int index = children.length;
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
 		if (item.control != null) newChildren [index++] = item.control;
 	}
@@ -270,8 +270,7 @@ public ToolItem [] getItems () {
  */
 public ToolItem getItem (int index) {
 	checkWidget();
-	int count = itemCount;
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);	
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);	
 	return items [index];
 }
 
@@ -349,8 +348,7 @@ public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	int count = itemCount;
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
@@ -390,9 +388,9 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	itemCount = 0;
@@ -401,12 +399,9 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null && item.control == control) {
-			item.setControl (null);
-		}
+		if (item.control == control) item.setControl (null);
 	}
 }
 

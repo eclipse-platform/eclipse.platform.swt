@@ -515,14 +515,14 @@ void releaseWidget () {
 		TabItem item = items [i];
 		if (!item.isDisposed ()) item.releaseResources ();
 	}
+	itemCount = 0;
 	items = null;
 	super.releaseWidget ();
 }
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<itemCount; i++) {
 		TabItem item = items [i];
 		if (item.control == control) item.setControl (null);
 	}
