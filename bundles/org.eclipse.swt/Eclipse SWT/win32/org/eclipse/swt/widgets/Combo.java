@@ -612,7 +612,7 @@ public int getTextLimit () {
 	return OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0);
 }
 
-protected boolean hasFocus () {
+boolean hasFocus () {
 	int hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
 	if (hwndFocus == 0) return false;
