@@ -1619,7 +1619,7 @@ static final byte[] convertPad(byte[] data, int width, int height, int depth, in
 	byte[] newData = new byte[height * newBpl];
 	int srcIndex = 0, destIndex = 0;
 	for (int y = 0; y < height; y++) {
-		System.arraycopy(data, srcIndex, newData, destIndex, newBpl);
+		System.arraycopy(data, srcIndex, newData, destIndex, bpl);
 		srcIndex += bpl;
 		destIndex += newBpl;
 	}
