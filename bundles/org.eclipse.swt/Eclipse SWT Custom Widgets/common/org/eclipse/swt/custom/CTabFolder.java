@@ -673,6 +673,7 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 	gc.getClipping(clipping);
 	Region region = new Region();
 	region.add(shape);
+	region.intersect(clipping);
 	gc.setClipping(region);
 	
 	Color defaultBackground = selected ? selectionBackground : getBackground();
