@@ -427,7 +427,7 @@ private void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
-	event.time = (int)(long)time;
+	event.time = time;
 	event.detail = DND.DROP_NONE;
 	try {
 		notifyListeners(DND.DragLeave, event);
@@ -752,7 +752,7 @@ private boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEv
 	event.widget = this;
 	event.x = coordinates.x;
 	event.y = coordinates.y;
-	event.time = (int)(long)time;
+	event.time = time;
 	event.feedback = DND.FEEDBACK_SELECT;
 	event.dataTypes = dataTypes;
 	event.dataType = dataTypes[0];
