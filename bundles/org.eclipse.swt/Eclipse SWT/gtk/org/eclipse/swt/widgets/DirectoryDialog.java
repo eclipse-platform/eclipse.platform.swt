@@ -138,6 +138,8 @@ public String open () {
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		int /*long*/ labelHandle = OS.gtk_label_new (buffer);
+		OS.gtk_label_set_line_wrap (labelHandle, true);		
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_container_add (selection.main_vbox, labelHandle);
 		OS.gtk_widget_show (labelHandle);
 	}
