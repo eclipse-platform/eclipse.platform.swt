@@ -943,7 +943,7 @@ public void remove (int index) {
 	checkWidget();
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	/*
-	* Feature in Motif.  An index out of range handled
+	* Feature in Motif.  An index out of range is handled
 	* correctly by the list widget but causes an unwanted
 	* Xm Warning.  The fix is to check the range before
 	* deleting an item.
@@ -953,7 +953,11 @@ public void remove (int index) {
 	if (!(0 <= index && index < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	OS.XmComboBoxDeletePos (handle, index + 1);
+	if (argList [1] == 1) {
+		removeAll ();
+	} else {
+		OS.XmComboBoxDeletePos (handle, index + 1);
+	}
 }
 /**
  * Removes the items from the receiver's list which are
@@ -982,8 +986,12 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	for (int i = start; i <= end; i++) {
-		OS.XmComboBoxDeletePos (handle, start + 1);	
+	if (argList [1] == 1) {
+		removeAll ();
+	} else {
+		for (int i = start; i <= end; i++) {
+			OS.XmComboBoxDeletePos (handle, start + 1);	
+		}
 	}
 }
 void register () {
@@ -1015,18 +1023,19 @@ void register () {
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	
-	int [] argList = {OS.XmNlist, 0};
+	int [] argList = {OS.XmNlist, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int index = OS.XmListItemPos (argList[1], xmString);
-	
 	OS.XmStringFree (xmString);	
 	if (index == 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	OS.XmComboBoxDeletePos (handle, index);
+	if (argList [3] == 1) {
+		removeAll ();
+	} else {
+		OS.XmComboBoxDeletePos (handle, index);
+	}
 }
 /**
  * Removes all of the items from the receiver's list.
@@ -1040,13 +1049,11 @@ public void removeAll () {
 	checkWidget();
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList[1], new byte[1]);
 	display.setWarnings(warnings);	
 	OS.XmListDeselectAllItems (argList[3]);
-	
 	for (int i = 0; i < argList[5]; i++) {
 		OS.XmComboBoxDeletePos(handle, 1);
 	}
