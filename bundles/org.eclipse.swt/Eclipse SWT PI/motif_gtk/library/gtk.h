@@ -24,7 +24,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
-#include "gtk_stats.h"
 #include "gtk_custom.h"
 
 #endif /* INC_gtk_H */

@@ -15,6 +15,7 @@
 
 #include "swt.h"
 #include "gtk_structs.h"
+#include "gtk_stats.h"
 
 #define GTK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GTK_##func
 
