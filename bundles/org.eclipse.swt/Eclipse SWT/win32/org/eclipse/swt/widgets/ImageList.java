@@ -72,11 +72,10 @@ public int add (Image image) {
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = image.getBounds();
-		int [] cx = new int []{rect.width}, cy = new int []{rect.height};
-		OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
+		Rectangle rect = image.getBounds ();
+		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
-	set(index, image, count);
+	set (index, image, count);
 	if (index == images.length) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
@@ -333,7 +332,7 @@ int removeRef() {
 	return --refCount;
 }
 
-void set(int index, Image image, int count) {
+void set (int index, Image image, int count) {
 	int hImage = image.handle;
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
