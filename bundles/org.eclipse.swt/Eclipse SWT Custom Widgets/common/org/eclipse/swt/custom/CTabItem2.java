@@ -277,9 +277,9 @@ void drawSelected(GC gc ) {
 		shape = new int[left.length+right.length+8];
 		int index = 0;
 		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
-		shape[index++] = y + height;
+		shape[index++] = y + height + 1;
 		shape[index++] = x;
-		shape[index++] = y + height;
+		shape[index++] = y + height + 1;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++] = x + left[2*i];
 			shape[index++] = y + left[2*i+1];
