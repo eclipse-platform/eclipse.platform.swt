@@ -177,10 +177,9 @@ public Color getBackground (int index) {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its parent at a column in the table.
+ * relative to its parent.
  *
- * @param index the index that specifies the column
- * @return the receiver's bounding column rectangle
+ * @return the receiver's bounding rectangle
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
