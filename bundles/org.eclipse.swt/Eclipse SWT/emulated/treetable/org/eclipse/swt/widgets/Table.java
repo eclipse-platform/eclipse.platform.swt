@@ -2584,7 +2584,7 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int lastRemovedIndex = -1;
-	for (int i = newIndices.length - 1; i >= 0; i--) {
+	for (int i = 0; i < newIndices.length; i++) {
 		if (newIndices [i] != lastRemovedIndex) {
 			items [newIndices [i]].dispose ();
 			lastRemovedIndex = newIndices [i];
