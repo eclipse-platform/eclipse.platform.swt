@@ -194,7 +194,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (OS.ClearCurrentScrap() != OS.noErr) {
-		DND.error(SWT.ERROR_INVALID_ARGUMENT);
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
 	int[] scrap = new int[1];
 	if (OS.GetCurrentScrap(scrap) != OS.noErr) {
@@ -235,7 +235,7 @@ public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	int[] types = _getAvailableTypes();
-	String[] result = new String[types.length];
+	String[] names = new String[types.length];
 	for (int i = 0; i < types.length; i++) {
 		int type = types[i];
 		StringBuffer sb = new StringBuffer();
@@ -243,10 +243,11 @@ public String[] getAvailableTypeNames() {
 		sb.append((char)((type & 0x00ff0000) >> 16));
 		sb.append((char)((type & 0x0000ff00) >> 8));
 		sb.append((char)((type & 0x000000ff) >> 0));
-		result[i] = sb.toString();
+		names[i] = sb.toString();
 	}
-	return result;
+	return names;
 }
+
 /**
  * 
  * @return array of TransferData
@@ -266,16 +267,17 @@ public TransferData[] getAvailableTypes() {
 }
 
 int[] _getAvailableTypes() {
+	int[] types = new int[0];
 	int[] scrap = new int[1];
-	if (OS.GetCurrentScrap(scrap) != OS.noErr) return new int[0];
+	if (OS.GetCurrentScrap(scrap) != OS.noErr) return types;
 	int[] count = new int[1];
-	if (OS.GetScrapFlavorCount(scrap[0], count) != OS.noErr || count[0] == 0) return new int[0];
+	if (OS.GetScrapFlavorCount(scrap[0], count) != OS.noErr || count[0] == 0) return types;
 	int[] info = new int[count[0] * 2];
-	if (OS.GetScrapFlavorInfoList(scrap[0], count, info) != OS.noErr) return new int[0];
-	int[] result = new int[count[0]];
+	if (OS.GetScrapFlavorInfoList(scrap[0], count, info) != OS.noErr) return types;
+	types = new int[count[0]];
 	for (int i= 0; i < count [0]; i++) {
-		result[i] = info[i*2];
+		types[i] = info[i*2];
 	}
-	return result;
+	return types;
 }
 }
