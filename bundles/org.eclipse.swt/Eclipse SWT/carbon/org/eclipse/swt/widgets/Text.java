@@ -407,16 +407,7 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	int [] attributes = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		Rect inset = inset ();
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
-	}
+	if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) setTXNBounds ();
 	return result;
 }
 
@@ -579,6 +570,12 @@ boolean sendKeyEvent (int type, Event event) {
 	return newText == oldText;
 }
 
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(control, x, y, width, height, move, resize, events);
+	if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
+	return result;
+}
+
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
 	//NOT DONE
@@ -633,6 +630,17 @@ public void setText (String string) {
 	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
 	OS.TXNShowSelection (txnObject, false);
 	sendEvent (SWT.Modify);
+}
+
+void setTXNBounds () {
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	Rect inset = inset ();
+	rect.left += inset.left;
+	rect.top += inset.top;
+	rect.right -= inset.right;
+	rect.bottom -= inset.bottom;
+	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
