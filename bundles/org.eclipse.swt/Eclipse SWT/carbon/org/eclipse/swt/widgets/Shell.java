@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -485,6 +486,33 @@ void destroyWidget () {
 	if (theWindow != 0) {
 		display.addDisposeWindow (theWindow);
 	} 
+}
+
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	/*
+	* Bug in the Macintosh. In kEventWindowGetRegion, 
+	* Carbon assumes the origin of the Region is (0, 0)
+	* and ignores the actual origin.  This causes the 
+	* window to be shifted.  The fix is to modify the origin.
+	*/
+	if (clipRgn == 0) return;
+	Rect r = new Rect ();
+	OS.GetRegionBounds (clipRgn, r);
+	if (r.left == 0 && r.top == 0) return;
+	int[] context = new int [1];
+	int port = OS.GetWindowPort (shellHandle);
+	Rect portRect = new Rect ();
+	OS.GetPortBounds (port, portRect);
+	OS.QDBeginCGContext (port, context);
+	OS.CGContextScaleCTM (context [0], 1, -1);
+	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
+	CGRect cgRect = new CGRect ();
+	cgRect.width = 1;
+	cgRect.height = 1;
+	OS.CGContextClearRect (context [0], cgRect);
+	OS.CGContextSynchronize (context [0]);
+	OS.QDEndCGContext (port, context);
 }
 
 Cursor findCursor () {
