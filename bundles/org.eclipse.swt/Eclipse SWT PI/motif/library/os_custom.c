@@ -43,7 +43,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 	int i;
 
 	OS_NATIVE_ENTER(env, that, XtGetValues_FUNC)
-	if (argList) argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
+	if (argList) CHECK_NULL_VOID(argList1 = (*env)->GetIntArrayElements(env, argList, NULL));
 	if (numArgs > MAX_ARGS) {
 		values = (int *) XtMalloc (numArgs * sizeof(int));
 		zeros = (int *) XtMalloc (numArgs * sizeof(int));
