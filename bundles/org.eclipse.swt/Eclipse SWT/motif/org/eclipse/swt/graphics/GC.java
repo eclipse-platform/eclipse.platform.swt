@@ -2483,8 +2483,8 @@ public void setClipping (int x, int y, int width, int height) {
 	XRectangle rect = new XRectangle ();
 	rect.x = (short) x; 
 	rect.y = (short) y;
-	rect.width = (short) width; 
-	rect.height = (short) height;
+	rect.width = (short) Math.max (0, width); 
+	rect.height = (short) Math.max (0, height);
 	int clipRgn = OS.XCreateRegion();
 	OS.XUnionRectWithRegion(rect, clipRgn, clipRgn);
 	setClipping(clipRgn);
