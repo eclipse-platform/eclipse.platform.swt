@@ -17,8 +17,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 
-public class IconTest {
-
+public class IconTest {	
 	static String EXECUTABLE = "d:/eclipse.exe";
 	static ImageData[] src, dst, verify;
 	public static void main(String[] args) {
@@ -44,19 +43,22 @@ public class IconTest {
 		Shell shell = new Shell(display);
 		shell.addListener(SWT.Paint, new Listener() {
 			public void handleEvent(Event e) {
+				e.gc.drawString("Source Icons in original exe", 10, 0);
 				for (int i = 0; i < src.length; i++) {
 					Image img = new Image(display, src[i]);
-					e.gc.drawImage(img, 10, i * 50);
+					e.gc.drawImage(img, 10, i * 50 + 20);
 					img.dispose();
 				}
+				e.gc.drawString("New Icons", 200, 0);
 				for (int i = 0; i < dst.length; i++) {
 					Image img = new Image(display, dst[i]);
-					e.gc.drawImage(img, 100, i * 50);
+					e.gc.drawImage(img, 200, i * 50 + 20);
 					img.dispose();
 				}
+				e.gc.drawString("Final Icons in modified exe", 400, 0);
 				for (int i = 0; i < verify.length; i++) {
 					Image img = new Image(display, verify[i]);
-					e.gc.drawImage(img, 200, i * 50);
+					e.gc.drawImage(img, 400, i * 50 + 20);
 					img.dispose();
 				}
 			}

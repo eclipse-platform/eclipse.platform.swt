@@ -98,6 +98,8 @@ public class IconExe {
 	
 	/* Implementation */
 	
+	public static final String VERSION = "20050111";
+	
 	static final boolean DEBUG = true;
 	public static class IconResInfo {
 		ImageData data;
