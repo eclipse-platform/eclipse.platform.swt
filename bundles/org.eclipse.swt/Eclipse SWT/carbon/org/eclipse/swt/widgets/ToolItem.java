@@ -845,17 +845,7 @@ public void setEnabled (boolean enabled) {
 
 void setFontStyle (Font font) {
 	/* This code is intentionaly commented. */
-//	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-//	if (font != null) {
-//		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-//		fontStyle.font = font.id;
-//		fontStyle.style = font.style;
-//		fontStyle.size = font.size;
-//	} else {
-//		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
-//		fontStyle.font = (short) parent.defaultThemeFont ();
-//	}
-//	OS.SetControlFontStyle (labelHandle, fontStyle);
+//	parent.setFontStyle (labelHandle, font);
 	updateText ();
 }
 

@@ -738,18 +738,7 @@ void setBackground (float [] color) {
 
 void setFontStyle (Font font) {
 	super.setFontStyle (font);
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (textHandle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (font != null) {
-		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-		fontStyle.font = font.id;
-		fontStyle.style = font.style;
-		fontStyle.size = font.size;
-	} else {
-		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
-		fontStyle.font = (short) defaultThemeFont ();
-	}
-	OS.SetControlFontStyle (textHandle, fontStyle);
+	setFontStyle (textHandle, font);
 }
 
 void setForeground (float [] color) {

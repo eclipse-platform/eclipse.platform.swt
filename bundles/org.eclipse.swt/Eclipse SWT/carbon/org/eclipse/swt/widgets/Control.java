@@ -2275,23 +2275,25 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	setFontStyle (font);
+	setFontStyle (display.smallFonts ? (font != null ? font : defaultFont ()) : font);
 	redrawWidget (handle, false);
 }
 
 void setFontStyle (Font font) {
+	setFontStyle (handle, font);
+}
+
+void setFontStyle (int control, Font font) {
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+	fontStyle.flags &= ~(OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask | OS.kControlUseThemeFontIDMask);
 	if (font != null) {
 		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
 		fontStyle.font = font.id;
 		fontStyle.style = font.style;
 		fontStyle.size = font.size;
-	} else {
-		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
-		fontStyle.font = (short) defaultThemeFont ();
 	}
-	OS.SetControlFontStyle (handle, fontStyle);
+	OS.SetControlFontStyle (control, fontStyle);
 }
 
 /**
