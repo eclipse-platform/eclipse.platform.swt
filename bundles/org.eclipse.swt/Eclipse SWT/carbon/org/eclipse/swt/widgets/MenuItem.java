@@ -840,7 +840,7 @@ private static int parseShortcut(String text) {
 				accelerator |= '\t';
 			else {
 				if (t.length() > 1)
-					System.out.println("unknown: <" + t + ">");
+					System.err.println("MenuItem.parseShortcut: unknown: <" + t + ">");
 				else {
 					accelerator |= t.charAt(0);
 					break;	// must be last

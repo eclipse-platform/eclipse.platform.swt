@@ -421,19 +421,25 @@ public String getText () {
     OS.GetControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
-/* AW
 void hookEvents () {
 	super.hookEvents ();
+	/* AW
 	int callback = OS.XmNactivateCallback;
 	int windowProc = getDisplay ().windowProc;
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;
 	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
+	*/
+	if (MacUtil.HIVIEW) {
+		Display display= getDisplay();
+		OS.SetControlAction(handle, display.fControlActionProc);
+	}
 }
 boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
 	click ();
 	return true;
 }
+/* AW
 boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;

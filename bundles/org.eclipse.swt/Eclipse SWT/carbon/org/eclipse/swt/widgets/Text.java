@@ -956,10 +956,9 @@ int processFocusOut () {
     */
 	return 0;
 }
-int processMouseDown (Object callData) {
-	if (callData instanceof MacEvent && isEnabled()) {
-		MacEvent me= (MacEvent) callData;
-		int macEvent[]= me.toOldMacEvent();
+int processMouseDown (MacMouseEvent mmEvent) {
+	if (isEnabled()) {
+		int macEvent[]= mmEvent.toOldMacEvent();
 		if (macEvent != null)
 			OS.TXNClick(fTX, macEvent);
 	}

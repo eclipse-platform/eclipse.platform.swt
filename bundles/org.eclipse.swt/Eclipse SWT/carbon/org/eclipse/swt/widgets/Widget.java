@@ -511,29 +511,54 @@ int processDispose (Object callData) {
 int processDefaultSelection (Object callData) {
 	return 0;
 }
-int processEvent (int eventNumber, Object callData) {
+final int processEvent (int eventNumber) {
 	switch (eventNumber) {
-		case SWT.Arm:			return processArm (callData);
-		case SWT.Dispose:		return processDispose (callData);
-		case SWT.DefaultSelection:	return processDefaultSelection (callData);
-		case SWT.FocusIn:		return processSetFocus (callData);
-		case SWT.Help:			return processHelp (callData);
-		case SWT.Hide:			return processHide (callData);
-		case SWT.KeyDown:		return processKeyDown (callData);
-		case SWT.KeyUp:			return processKeyUp (callData);
-		case SWT.Modify:		return processModify (callData);
-		case SWT.MouseDown:		return processMouseDown (callData);
-		case SWT.MouseEnter:		return processMouseEnter (callData);
-		case SWT.MouseExit:		return processMouseExit (callData);
-		case SWT.MouseHover:		return processMouseHover (callData);
-		case SWT.MouseMove:		return processMouseMove (callData);
-		case SWT.MouseUp:		return processMouseUp (callData);
-		case SWT.Paint:			return processPaint (callData);
-		case SWT.Resize:		return processResize (callData);
-		case SWT.Show:			return processShow (callData);
-		case SWT.Selection:		return processSelection (callData);
-		case SWT.Verify:		return processVerify (callData);
-		case -1:			return processNonMaskable (callData);
+	case SWT.Dispose:		return processDispose (null);
+	case SWT.Help:			return processHelp (null);
+	default:
+		System.out.println("Widget.processEvent(): unexpected event");
+		break;
+	}
+	return 0;
+}
+final int processEvent (int eventNumber, MacControlEvent mcEvent) {
+	switch (eventNumber) {
+	case SWT.Selection:	return processSelection (mcEvent);
+	case SWT.Paint:		return processPaint (mcEvent);
+	default:
+		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
+		break;
+	}
+	return 0;
+}
+final int processEvent (int eventNumber, MacMouseEvent mmEvent) {
+	switch (eventNumber) {
+	case SWT.MouseDown:	return processMouseDown (mmEvent);
+	case SWT.MouseEnter:	return processMouseEnter (mmEvent);
+	case SWT.MouseExit:	return processMouseExit (mmEvent);
+	case SWT.MouseHover:	return processMouseHover (mmEvent);
+	case SWT.MouseMove:	return processMouseMove (mmEvent);
+	case SWT.MouseUp:		return processMouseUp (mmEvent);
+	default:
+		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
+		break;
+	}
+	return 0;
+}
+final int processEvent (int eventNumber, MacEvent me) {
+	switch (eventNumber) {
+	case SWT.Arm:			return processArm (me);
+	case SWT.DefaultSelection:	return processDefaultSelection (me);
+	case SWT.Hide:			return processHide (me);
+	case SWT.KeyDown:		return processKeyDown (me);
+	case SWT.KeyUp:		return processKeyUp (me);
+	case SWT.Modify:		return processModify (me);
+	case SWT.Show:			return processShow (me);
+	case SWT.Verify:		return processVerify (me);
+	case -1:				return processNonMaskable (me);
+	default:
+		System.out.println("Widget.processEvent(Object): unexpected event");
+		break;
 	}
 	return 0;
 }
@@ -552,22 +577,22 @@ int processKeyUp (Object callData) {
 int processModify (Object callData) {
 	return 0;
 }
-int processMouseDown (Object callData) {
+int processMouseDown (MacMouseEvent mme) {
 	return 0;
 }
-int processMouseEnter (Object callData) {
+int processMouseEnter (MacMouseEvent mme) {
 	return 0;
 }
-int processMouseExit (Object callData) {
+int processMouseExit (MacMouseEvent mme) {
 	return 0;
 }
-int processMouseHover (Object callData) {
+int processMouseHover (MacMouseEvent mme) {
 	return 0;
 }
-int processMouseMove (Object callData) {
+int processMouseMove (MacMouseEvent mme) {
 	return 0;
 }
-int processMouseUp (Object callData) {
+int processMouseUp (MacMouseEvent mme) {
 	return 0;
 }
 int processNonMaskable (Object callData) {
@@ -779,9 +804,11 @@ void sendEvent (int eventType) {
 	if (eventTable == null) return;
 	sendEvent (eventType, new Event ());
 }
-void setInputState (Event event, MacEvent mEvent) {
+/*
+final void setInputState (Event event, MacEvent mEvent) {
 	event.stateMask= mEvent.getStateMask();
 }
+*/
 void setKeyState (Event event, MacEvent mEvent) {
 	int kc= Display.translateKey(mEvent.getKeyCode());
 	if (kc != 0) {
@@ -790,7 +817,8 @@ void setKeyState (Event event, MacEvent mEvent) {
 		//event.keyCode = 0;
 		event.character = (char) mEvent.getMacCharCodes();
 	}	
-	setInputState (event, mEvent);
+	// AW setInputState (event, mEvent);
+	event.stateMask= mEvent.getStateMask();
 }
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;

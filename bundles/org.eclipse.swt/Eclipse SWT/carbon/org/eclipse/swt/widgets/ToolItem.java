@@ -195,7 +195,7 @@ void createHandle (int index) {
 	handle = MacUtil.createDrawingArea(parentHandle, index, false, width, height, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
-void click (boolean dropDown, MacEvent mEvent) {
+void click (boolean dropDown, MacMouseEvent mmEvent) {
 	if ((style & SWT.RADIO) != 0) {
 		selectRadio ();
 	} else {
@@ -205,7 +205,10 @@ void click (boolean dropDown, MacEvent mEvent) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (dropDown) event.detail = SWT.ARROW;
 	}
-	if (mEvent != null) setInputState (event, mEvent);
+	if (mmEvent != null) {
+		// AW setInputState (event, mEvent);
+		event.stateMask= mmEvent.getState();
+	}
 	postEvent (SWT.Selection, event);
 }
 Point computeSize () {
@@ -826,7 +829,7 @@ int processKeyUp (Object callData) {
 	parent.processKeyUp (callData);
 	return 0;
 }
-int processMouseDown (Object callData) {
+int processMouseDown (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 //	Shell shell = parent.getShell ();
 	display.hideToolTip ();
@@ -835,8 +838,7 @@ int processMouseDown (Object callData) {
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	*/
-	MacEvent mEvent= (MacEvent) callData;
-	if (mEvent.getButton() == 1) {
+	if (mmEvent.getButton() == 1) {
 		if (!set && (style & SWT.RADIO) == 0) {
 			setDrawPressed (!set);
 		}
@@ -857,7 +859,7 @@ int processMouseDown (Object callData) {
 	xEvent.x += argList [1];  xEvent.y += argList [3];
 	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 	*/
-	parent.processMouseDown (callData);
+	parent.processMouseDown (mmEvent);
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -869,18 +871,16 @@ int processMouseDown (Object callData) {
 //	}
 	return 0;
 }
-int processMouseEnter (Object callData) {
-	MacEvent me= (MacEvent) callData;
-	if (me.getButton() == 1) setDrawPressed (!set);
+int processMouseEnter (MacMouseEvent mme) {
+	if (mme.getButton() == 1) setDrawPressed (!set);
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
-int processMouseExit (Object callData) {
+int processMouseExit (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	MacEvent me= (MacEvent) callData;
-	if (me.getButton() == 1) setDrawPressed (set);
+	if (mme.getButton() == 1) setDrawPressed (set);
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
@@ -892,12 +892,12 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 */
-int processMouseHover (Object id) {
+int processMouseHover (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.showToolTip (handle, toolTipText);
 	return 0;
 }
-int processMouseMove (Object callData) {
+int processMouseMove (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
 
@@ -917,7 +917,6 @@ int processMouseMove (Object callData) {
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
 	*/
-	MacEvent mEvent= (MacEvent) callData;
 	/*
 	* This code is intentionally commented.
 	* Currently, the implementation of the
@@ -927,17 +926,15 @@ int processMouseMove (Object callData) {
 //	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 //	parent.processMouseMove (callData);
 
-	parent.sendMouseEvent (SWT.MouseMove, 0, mEvent);
+	parent.sendMouseEvent (SWT.MouseMove, 0, mmEvent);
 
 	return 0;
 }
-int processMouseUp (Object callData) {
+int processMouseUp (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.hideToolTip(); 
-	
-	MacEvent mEvent= (MacEvent) callData;
-	
-	if (mEvent.getButton() == 1) {
+		
+	if (mmEvent.getButton() == 1) {
 		/* AW
 		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
@@ -947,11 +944,11 @@ int processMouseUp (Object callData) {
 		OS.GetControlBounds(handle, bounds.getData());
 		int width = bounds.getWidth(), height = bounds.getHeight();
 				
-		Point mp= MacUtil.toControl(handle, mEvent.getWhere2());
+		Point mp= MacUtil.toControl(handle, mmEvent.getWhere());
 		//System.out.println("ToolItem.processMouseUp: " + mp);
 
 		if (0 <= mp.x && mp.x < width && 0 <= mp.y && mp.y < height) {
-			click (mp.x > width - 12, mEvent);
+			click (mp.x > width - 12, mmEvent);
 		}
 		setDrawPressed(set);
 	}
@@ -970,7 +967,7 @@ int processMouseUp (Object callData) {
 	xEvent.x += argList [1];  xEvent.y += argList [3];
 	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 	*/
-	parent.processMouseUp (callData);
+	parent.processMouseUp (mmEvent);
 
 	return 0;
 }

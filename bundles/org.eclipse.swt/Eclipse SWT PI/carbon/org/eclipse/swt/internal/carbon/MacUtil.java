@@ -285,9 +285,6 @@ public class MacUtil {
 
 	public static int findControlUnderMouse(MacPoint where, int wHandle, short[] cpart) {
 		
-		//if (HIVIEW)
-		//	return 0;
-			
 		int root;
 		if (true) {
 			int[] rootHandle= new int[1];
@@ -407,6 +404,7 @@ public class MacUtil {
 		int features= OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
 		int controlHandle;
 		if (HIVIEW) {
+			features |= OS.kControlHandlesTracking;
 			controlHandle= OS.NewControl(0, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
 			OS.SizeControl(controlHandle, (short)width, (short)height);
 			insertControl(controlHandle, parentControlHandle, pos);

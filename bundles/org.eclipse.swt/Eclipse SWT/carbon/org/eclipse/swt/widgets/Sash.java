@@ -196,11 +196,10 @@ void hookEvents () {
 	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
 }
 
-int processMouseDown (Object callData) {
-	super.processMouseDown (callData);
+int processMouseDown (MacMouseEvent mmEvent) {
+	super.processMouseDown (mmEvent);
 
-	MacEvent mEvent= (MacEvent) callData;
-	Point mp= MacUtil.toControl(parent.handle, mEvent.getWhere2());
+	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 	startX = mp.x;  startY = mp.y;
 
 	MacRect bounds= new MacRect();
@@ -225,15 +224,13 @@ int processMouseDown (Object callData) {
 	}
 	return 0;
 }
-int processMouseMove (Object callData) {
-	super.processMouseMove (callData);
+int processMouseMove (MacMouseEvent mmEvent) {
+	super.processMouseMove (mmEvent);
 	
 	getDisplay().setCursor((style & SWT.VERTICAL) != 0 ? H_ARROW : V_ARROW);
 
-	MacEvent mEvent= (MacEvent) callData;
-
-	if (!dragging || (mEvent.getButton() != 1)) return 0;
-	Point mp= MacUtil.toControl(parent.handle, mEvent.getWhere2());
+	if (!dragging || (mmEvent.getButton() != 1)) return 0;
+	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 
 	MacRect bounds= new MacRect();
 	OS.GetControlBounds(handle, bounds.getData());
@@ -264,12 +261,10 @@ int processMouseMove (Object callData) {
 	}
 	return 0;
 }
-int processMouseUp (Object callData) {
-	super.processMouseUp (callData);
+int processMouseUp (MacMouseEvent mmEvent) {
+	super.processMouseUp (mmEvent);
 
-	MacEvent mEvent= (MacEvent) callData;
-
-	if (mEvent.getButton() != 1) return 0;
+	if (mmEvent.getButton() != 1) return 0;
 	if (!dragging) return 0;
 	dragging = false;
 

@@ -357,6 +357,17 @@ void hookEvents () {
 		Display display= getDisplay();		
 		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
 		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
+
+
+		if (MacUtil.HIVIEW) {
+			// OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneTrackingProcTag, display.fUserPaneTrackingProc);
+			int ref= OS.GetControlEventTarget(handle);
+			int[] mask= new int[] {
+				OS.kEventClassMouse, OS.kEventMouseDown,
+				OS.kEventClassMouse, OS.kEventMouseWheelMoved,
+			};
+			OS.InstallEventHandler(ref, display.fMouseProc, mask, handle);
+		}
 	}
 }
 

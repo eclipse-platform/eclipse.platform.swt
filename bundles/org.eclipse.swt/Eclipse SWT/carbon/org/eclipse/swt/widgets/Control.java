@@ -1283,13 +1283,12 @@ int processModify (Object callData) {
 	sendEvent (SWT.Modify);
 	return 0;
 }
-int processMouseDown (Object callData) {
+int processMouseDown (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	Shell shell = getShell ();
 	display.hideToolTip ();
-	MacEvent xEvent= (MacEvent) callData;
-    int button= xEvent.getButton();
-	sendMouseEvent (SWT.MouseDown, button, xEvent);
+    int button= mmEvent.getButton();
+	sendMouseEvent (SWT.MouseDown, button, mmEvent);
 	if (button == 2 && hooks (SWT.DragDetect)) {
 		sendEvent (SWT.DragDetect);
 	}
@@ -1300,10 +1299,10 @@ int processMouseDown (Object callData) {
 		*/
 	}
 	int clickTime = display.getDoubleClickTime ();
-	int lastTime = display.lastTime, eventTime = xEvent.getWhen();
+	int lastTime = display.lastTime, eventTime = mmEvent.getWhen();
 	int lastButton = display.lastButton, eventButton = button;
 	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent);
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, mmEvent);
 	}
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
@@ -1319,28 +1318,27 @@ int processMouseDown (Object callData) {
 	}
 	return 0;
 }
-int processMouseEnter (Object callData) {
+int processMouseEnter (MacMouseEvent mme) {
     /* AW
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
     */
-	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	Point p= MacUtil.toControl(handle, me.getWhere2());
+	Point p= MacUtil.toControl(handle, mme.getWhere());
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseEnter, event);
 	return 0;
 }
-int processMouseMove (Object callData) {
+int processMouseMove (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
-	sendMouseEvent (SWT.MouseMove, 0, (MacEvent)callData);
+	sendMouseEvent (SWT.MouseMove, 0, mme);
 	return 0;
 }
-int processMouseExit (Object callData) {
+int processMouseExit (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
@@ -1350,15 +1348,14 @@ int processMouseExit (Object callData) {
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
 	*/
-	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	Point p= MacUtil.toControl(handle, me.getWhere2());
+	Point p= MacUtil.toControl(handle, mme.getWhere());
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseExit, event);
 	return 0;
 }
-int processMouseHover (Object callData) {
+int processMouseHover (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	Event event = new Event ();
 	Point local = toControl (display.getCursorLocation ());
@@ -1367,11 +1364,10 @@ int processMouseHover (Object callData) {
 	display.showToolTip (handle, toolTipText);
 	return 0;
 }
-int processMouseUp (Object callData) {
+int processMouseUp (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.hideToolTip ();
-	MacEvent xEvent = (MacEvent) callData;
-	sendMouseEvent (SWT.MouseUp, xEvent.getButton(), xEvent);
+	sendMouseEvent (SWT.MouseUp, mmEvent.getButton(), mmEvent);
 	return 0;
 }
 int processPaint (Object callData) {
@@ -1794,13 +1790,14 @@ int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 	postEvent (type, event);
 	return 0;
 }
-void sendMouseEvent (int type, int button, MacEvent xEvent) {
+final void sendMouseEvent (int type, int button, MacMouseEvent mme) {
 	Event event = new Event ();
-    event.time = xEvent.getWhen();
+    event.time = mme.getWhen();
 	event.button = button;
-	Point ml= MacUtil.toControl(handle, xEvent.getWhere2());
+	Point ml= MacUtil.toControl(handle, mme.getWhere());
 	event.x = ml.x;  event.y = ml.y;
-	setInputState (event, xEvent);
+	// AW setInputState (event, mEvent);
+	event.stateMask= mme.getState();
 	postEvent (type, event);
 }
 /**
