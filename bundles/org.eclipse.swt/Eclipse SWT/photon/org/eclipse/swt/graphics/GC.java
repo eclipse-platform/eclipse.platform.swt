@@ -52,8 +52,9 @@ public GC(Drawable drawable) {
 }
 
 public void copyArea(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (image.type != SWT.BITMAP) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		Rectangle bounds = image.getBounds();
@@ -111,6 +112,7 @@ public void copyArea(Image image, int x, int y) {
 }
 
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -276,6 +278,7 @@ public void dispose() {
 }
 
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -340,23 +343,26 @@ public void drawFocus (int x, int y, int width, int height) {
 }
 
 public void drawImage(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	int flags = OS.PtEnter(0);
 	try {
 		int drawImage = image.handle;
-		if (drawImage == 0) return;
 		PhImage_t phDrawImage = new PhImage_t();
 		OS.memmove(phDrawImage, drawImage, PhImage_t.sizeof);
 	 	int imgWidth = phDrawImage.size_w;
@@ -683,6 +689,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 }
 
 public void drawLine (int x1, int y1, int x2, int y2) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -695,6 +702,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 }
 
 public void drawOval (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
@@ -713,6 +721,7 @@ public void drawOval (int x, int y, int width, int height) {
 }
 
 public void drawPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
@@ -732,6 +741,7 @@ public void drawPolygon(int[] pointArray) {
 }
 
 public void drawPolyline(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
@@ -753,6 +763,7 @@ public void drawPolyline(int[] pointArray) {
 }
 
 public void drawRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
@@ -771,6 +782,7 @@ public void drawRectangle (Rectangle rect) {
 }
 
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhRect_t rect  = new PhRect_t();
 	rect.ul_x = (short)x; rect.ul_y = (short)y;
 	// Don't subtract one, so that the bottom/right edges are drawn
@@ -794,6 +806,7 @@ public void drawString (String string, int x, int y) {
 }
 
 public void drawString (String string, int x, int y, boolean isTransparent) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
@@ -824,6 +837,7 @@ public boolean equals (Object object) {
 }
 
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -884,6 +898,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 }
 
 public void fillOval (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
@@ -904,6 +919,7 @@ public void fillOval (int x, int y, int width, int height) {
 }
 
 public void fillPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
@@ -923,6 +939,7 @@ public void fillPolygon(int[] pointArray) {
 }
 
 public void fillRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
 	int flags = OS.PtEnter(0);
 	try {
@@ -941,6 +958,7 @@ public void fillRectangle (Rectangle rect) {
 }
 
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhRect_t rect  = new PhRect_t();
 	rect.ul_x = (short)x; rect.ul_y = (short)y;
 	rect.lr_x = (short)(x + width - 1); rect.lr_y = (short)(y + height - 1);
@@ -963,16 +981,19 @@ public int getAdvanceWidth(char ch) {
 }
 
 public Color getBackground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.photon_new(data.device, data.background);
 }
 
 public int getCharWidth(char ch) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	String string = new String(new char[] {ch});
 	Point point = stringExtent(string);
 	return point.x;
 }
 
 public Rectangle getClipping() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		PhRect_t rect = new PhRect_t();
@@ -1014,6 +1035,7 @@ public Rectangle getClipping() {
 }
 
 public void getClipping (Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
@@ -1047,35 +1069,40 @@ public void getClipping (Region region) {
 }
 
 public Font getFont () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Font.photon_new(data.device, data.font);
 }
 
 public FontMetrics getFontMetrics() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	FontQueryInfo info = new FontQueryInfo();
 	OS.PfQueryFontInfo(data.font, info);
 	return FontMetrics.photon_new(info);
 }
 
 public Color getForeground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.photon_new(data.device, data.foreground);
 }
 
 public int getLineStyle() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
 }
 
 public int getLineWidth() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineWidth;
 }
 
 public boolean getXORMode() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.xorMode;
 }
 
 public int hashCode () {
 	return handle;
 }
-
 
 void init(Drawable drawable, GCData data, int context) {
 	int prevContext;
@@ -1123,6 +1150,7 @@ void init(Drawable drawable, GCData data, int context) {
 }
 
 public boolean isClipped() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.clipRects != 0;
 }
 
@@ -1131,12 +1159,13 @@ public boolean isDisposed() {
 }
 
 public void setBackground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
-		int backColor = color == null ? DefaultBack : color.handle;
-		OS.PgSetFillColor(backColor);
-		data.background = backColor;
+		OS.PgSetFillColor(data.background = color.handle);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
@@ -1144,6 +1173,7 @@ public void setBackground (Color color) {
 }
 
 public void setClipping (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int clipRects = data.clipRects;
@@ -1168,6 +1198,7 @@ public void setClipping (int x, int y, int width, int height) {
 }
 
 public void setClipping (Rectangle rect) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		int flags = OS.PtEnter(0);
 		try {
@@ -1186,6 +1217,7 @@ public void setClipping (Rectangle rect) {
 }
 
 public void setClipping (Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int clipRects = data.clipRects;
@@ -1213,6 +1245,8 @@ public void setClipping (Region region) {
 }
 
 public void setFont (Font font) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1226,11 +1260,13 @@ public void setFont (Font font) {
 }
 
 public void setForeground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
-		int foreColor = color == null ? DefaultFore : color.handle;
-		data.foreground = foreColor;
+		int foreColor = data.foreground = color.handle;
 		OS.PgSetStrokeColor(foreColor);
 		OS.PgSetTextColor(foreColor);
 		unsetGC(prevContext);
@@ -1240,6 +1276,7 @@ public void setForeground (Color color) {
 }
 
 public void setLineStyle(int lineStyle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	byte[] dashList;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID: dashList = DashList[0]; break;
@@ -1263,6 +1300,7 @@ public void setLineStyle(int lineStyle) {
 }
 
 public void setLineWidth(int lineWidth) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1351,6 +1389,7 @@ void setGCClipping() {
 }
 
 public void setXORMode(boolean xor) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1364,6 +1403,7 @@ public void setXORMode(boolean xor) {
 }
 
 public Point stringExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	PhRect_t rect = new PhRect_t();
 	int size = string.length();
@@ -1386,6 +1426,11 @@ public Point stringExtent(String string) {
 
 public Point textExtent(String string) {
 	return stringExtent(string);
+}
+
+public String toString () {
+	if (isDisposed()) return "GC {*DISPOSED*}";
+	return "GC {" + handle + "}";
 }
 
 void unsetGC(int prevContext) {
