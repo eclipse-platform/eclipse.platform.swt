@@ -2114,9 +2114,14 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
+	int hCursor = 0;
+	if (cursor != null) {
+		if (cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		hCursor = cursor.handle;
+	}
 	int window = paintWindow ();
 	if (window != 0) {
-		OS.gdk_window_set_cursor (window, cursor != null ? cursor.handle : 0);
+		OS.gdk_window_set_cursor (window,hCursor);
 	}
 }
 /**
