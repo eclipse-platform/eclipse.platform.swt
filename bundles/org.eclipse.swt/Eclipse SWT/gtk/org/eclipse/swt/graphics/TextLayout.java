@@ -171,6 +171,22 @@ void computeRuns () {
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);
 		}
+		if (style.underline) {
+			int /*long*/ attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_SINGLE);
+			OS.memmove(attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove(attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
+		if (style.strikeout) {
+			int /*long*/ attr = OS.pango_attr_strikethrough_new(true);
+			OS.memmove(attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove(attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
 			GdkColor fg = foreground.handle;

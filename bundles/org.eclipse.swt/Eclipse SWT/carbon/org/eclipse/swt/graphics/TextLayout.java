@@ -50,6 +50,14 @@ public final class TextLayout {
 			if (style != null) {
 				font = style.font;
 				foreground = style.foreground;
+				if (style.underline) {
+					length += 1;
+					ptrLength += 1;
+				}
+				if (style.strikeout) {
+					length += 1;
+					ptrLength += 1;
+				}
 			}
 			if (font == null) font = defaultFont;
 			boolean synthesize = false;
@@ -61,13 +69,14 @@ public final class TextLayout {
 				synthesize = font.style != realStyle[0];
 				if (synthesize) {
 					length += 2;
-					ptrLength += 8;
+					ptrLength += 2;
 				}
 			}
 			if (foreground != null) {
 				length += 1;
 				ptrLength += RGBColor.sizeof;
 			}
+			byte[] buffer1 = new byte[1];
 			int[] tags = new int[length];
 			int[] sizes = new int[length];
 			int[] values = new int[length];
@@ -90,7 +99,6 @@ public final class TextLayout {
 				index++;
 
 				if (synthesize) {
-					byte[] buffer1 = new byte[1];
 					buffer1[0] = (font.style & OS.italic) != 0 ? (byte)1 : 0;
 					tags[index] = OS.kATSUQDItalicTag;
 					sizes[index] = 1;
@@ -107,6 +115,24 @@ public final class TextLayout {
 					ptr1 += sizes[index];
 					index++;
 				}
+			}
+			if (style != null && style.underline) {
+				buffer1[0] = (byte)1;
+				tags[index] = OS.kATSUQDUnderlineTag;
+				sizes[index] = 1;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer1, sizes[index]);
+				ptr1 += sizes[index];
+				index++;				
+			}
+			if (style != null && style.strikeout) {
+				buffer1[0] = (byte)1;
+				tags[index] = OS.kATSUStyleStrikeThroughTag;
+				sizes[index] = 1;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer1, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
 			}
 			if (foreground != null) {
 				RGBColor rgb = new RGBColor ();
