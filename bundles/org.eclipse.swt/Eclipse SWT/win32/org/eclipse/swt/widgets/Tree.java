@@ -979,6 +979,37 @@ public TreeColumn [] getColumns () {
 	System.arraycopy (columns, 0, result, 0, count);
 	return result;
 }
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TreeItem getItem (int index) {
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	while (index-- > 0 && hItem != 0) {
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = hItem;
+	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+	return items [tvItem.lParam];
+}
 
 /**
  * Returns the item at the given point in the receiver
@@ -1340,7 +1371,7 @@ int indexOf (int hItem, int hChild) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeColumn column) {
+public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1372,7 +1403,7 @@ int indexOf (int hItem, int hChild) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);

@@ -518,6 +518,22 @@ public boolean getGrayed () {
 	return (result != 0) && ((tvItem.state >> 12) > 2);
 }
 
+public TreeItem getItem (int index) {
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	while (index-- > 0 && hItem != 0) {
+		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = hItem;
+	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+	return parent.items [tvItem.lParam];
+}
+
 /**
  * Returns the number of items contained in the receiver
  * that are direct item children of the receiver.
@@ -690,8 +706,7 @@ public String getText (int index) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeItem item) {
-	//TODO - make public and add Tree.indexOf(TreeItem) and TreeItem.indexOf(TreeItem)?
+public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
