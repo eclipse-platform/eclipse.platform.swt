@@ -20,7 +20,7 @@ import java.util.Hashtable;
 /**
  * Instructions on how to use the NativeStats tool with a standlaone SWT example:
  * 
- * 1) Compile the SWT native libraries defining the NATIVE_STATS flag.
+ * 1) Compile the SWT native libraries defining the NATIVE_STATS flag (i.e. uncomment line in makefile).
  * 2) Add the following code around the sections of interest to dump the
  * native calls done in that section.
  * 
@@ -28,9 +28,9 @@ import java.util.Hashtable;
  * ...
  * <code section>
  * ...
- * starts.dumpDiff(System.out);
+ * stats.dumpDiff(System.out);
  * 
- * 3) Or add the following code at given points to dump a snapshot of
+ * 3) Or add the following code at a given point to dump a snapshot of
  * the native calls done until that point.
  * 
  * new NativeStats().dumpSnapshot(System.out); 
