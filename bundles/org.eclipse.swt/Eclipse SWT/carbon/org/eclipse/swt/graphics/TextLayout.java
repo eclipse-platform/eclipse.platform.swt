@@ -446,7 +446,7 @@ public Point getLocation(int offset, boolean trailing) {
 	if (offset != length && text.charAt(offset) != '\n' && trailing) offset++;
 	ATSUCaret caret = new ATSUCaret();
 	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
-	return new Point(OS.Fix2Long(caret.fX), lineY);
+	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
 }
 
 public int getNextOffset (int offset, int movement) {
