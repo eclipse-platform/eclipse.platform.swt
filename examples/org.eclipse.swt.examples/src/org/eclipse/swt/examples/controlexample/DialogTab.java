@@ -62,13 +62,16 @@ class DialogTab extends Tab {
 				retryButton.getSelection () || abortButton.getSelection () ||
 					ignoreButton.getSelection ()));
 		cancelButton.setEnabled (
-			!(abortButton.getSelection () || ignoreButton.getSelection ()));
+			!(abortButton.getSelection () || ignoreButton.getSelection () ||
+				(yesButton.getSelection () != noButton.getSelection ())));
 		yesButton.setEnabled (
 			!(okButton.getSelection () || retryButton.getSelection () ||
-				abortButton.getSelection () || ignoreButton.getSelection ()));
+				abortButton.getSelection () || ignoreButton.getSelection () ||
+					(cancelButton.getSelection () && !yesButton.getSelection () && !noButton.getSelection ())));
 		noButton.setEnabled (
 			!(okButton.getSelection () || retryButton.getSelection () ||
-				abortButton.getSelection () || ignoreButton.getSelection ()));
+				abortButton.getSelection () || ignoreButton.getSelection () ||
+					(cancelButton.getSelection () && !yesButton.getSelection () && !noButton.getSelection ())));
 		retryButton.setEnabled (
 			!(okButton.getSelection() || yesButton.getSelection() || noButton.getSelection ()));
 		abortButton.setEnabled (
