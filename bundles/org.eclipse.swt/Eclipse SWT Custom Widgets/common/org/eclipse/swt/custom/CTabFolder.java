@@ -821,7 +821,7 @@ private void initAccessible() {
 				if (text != null) {
 					char mnemonic = getMnemonic(text);	
 					if (mnemonic != '\0') {
-						shortcut = "Alt+"+mnemonic;
+						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
 					}
 				}
 			}
@@ -876,7 +876,7 @@ private void initAccessible() {
 			String action = null;
 			int childID = e.childID;
 			if (childID >= 0 && childID < items.length) {
-				action = "Switch";
+				action = "Switch"; //$NON-NLS-1$
 			}
 			e.result = action;
 		}

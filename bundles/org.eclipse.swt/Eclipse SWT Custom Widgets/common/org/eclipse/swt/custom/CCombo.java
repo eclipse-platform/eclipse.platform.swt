@@ -841,7 +841,7 @@ public void remove (String string) {
 */
 public void removeAll () {
 	checkWidget();
-	text.setText ("");
+	text.setText (""); //$NON-NLS-1$
 	list.removeAll ();
 }
 /**	 
@@ -899,7 +899,7 @@ public void select (int index) {
 	checkWidget();
 	if (index == -1) {
 		list.deselectAll ();
-		text.setText ("");
+		text.setText (""); //$NON-NLS-1$
 		return;
 	}
 	if (0 <= index && index < list.getItemCount()) {
@@ -977,7 +977,7 @@ public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int style = getStyle();
-	if ((style & SWT.READ_ONLY) != 0) text.setText ("");
+	if ((style & SWT.READ_ONLY) != 0) text.setText (""); //$NON-NLS-1$
 	list.setItems (items);
 }
 /**

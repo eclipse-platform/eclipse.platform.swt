@@ -33,6 +33,7 @@ public class SashForm extends Composite {
 	private Control[] controls = new Control[0];
 	private Control maxControl = null;
 	private Listener sashListener;
+	private final static String LAYOUT_RATIO = "layout ratio"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -152,7 +153,7 @@ public int[] getWeights() {
 	Control[] cArray = getControls(false);
 	float[] ratios = new float[cArray.length];
 	for (int i = 0; i < cArray.length; i++) {
-		Float ratio = (Float)cArray[i].getData("layout ratio");
+		Float ratio = (Float)cArray[i].getData(LAYOUT_RATIO);
 		if (ratio != null) {
 			ratios[i] = ratio.floatValue();
 		} else {
@@ -233,7 +234,7 @@ public void layout(boolean changed) {
 	float[] ratios = new float[controls.length];
 	float total = 0;
 	for (int i = 0; i < controls.length; i++) {
-		Float ratio = (Float)controls[i].getData("layout ratio");
+		Float ratio = (Float)controls[i].getData(LAYOUT_RATIO);
 		if (ratio != null) {
 			ratios[i] = ratio.floatValue();
 		} else {
@@ -324,8 +325,8 @@ private void onDragSash(Event event) {
 		if (b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM) {
 			return;
 		}
-		c1.setData("layout ratio", new Float((float)b1.width / (float)area.width));
-		c2.setData("layout ratio", new Float((float)b2.width / (float)area.width));
+		c1.setData(LAYOUT_RATIO, new Float((float)b1.width / (float)area.width));
+		c2.setData(LAYOUT_RATIO, new Float((float)b2.width / (float)area.width));
 	} else {
 		int shift = event.y - sashBounds.y;
 		b1.height += shift;
@@ -334,8 +335,8 @@ private void onDragSash(Event event) {
 		if (b1.height < DRAG_MINIMUM || b2.height < DRAG_MINIMUM) {
 			return;
 		}
-		c1.setData("layout ratio", new Float((float)b1.height / (float)area.height));
-		c2.setData("layout ratio", new Float((float)b2.height / (float)area.height));
+		c1.setData(LAYOUT_RATIO, new Float((float)b1.height / (float)area.height));
+		c2.setData(LAYOUT_RATIO, new Float((float)b2.height / (float)area.height));
 	}
 	
 	c1.setBounds(b1);
@@ -441,7 +442,7 @@ public void setWeights(int[] weights) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	for (int i = 0; i < cArray.length; i++) {
-		cArray[i].setData("layout ratio", new Float((float)weights[i] / (float)total));
+		cArray[i].setData(LAYOUT_RATIO, new Float((float)weights[i] / (float)total));
 	}
 	
 	layout();

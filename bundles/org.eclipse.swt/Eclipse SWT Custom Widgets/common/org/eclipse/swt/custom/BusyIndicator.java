@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 public class BusyIndicator {
 
 	static int nextBusyId = 1;
-	static final String BUSYID_NAME = "SWT BusyIndicator";
+	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
 
 /**
  * Runs the given <code>Runnable</code> while providing

@@ -39,7 +39,7 @@ public class CLabel extends Canvas {
 	/** Left and right margins */
 	private static final int INDENT = 3;
 	/** a string inserted in the middle of text that has been shortened */
-	private static final String ellipsis = "...";
+	private static final String ellipsis = "..."; //$NON-NLS-1$
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT*/
 	private int align = SWT.LEFT;
 	private int hIndent = INDENT;
@@ -128,7 +128,7 @@ private static int checkStyle (int style) {
 	 * that use double buffering which is true in both of these cases.
 	 */
 	String platform = SWT.getPlatform();
-	if ("carbon".equals(platform) || "gtk".equals(platform)) return style;
+	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
 	return style | SWT.NO_BACKGROUND;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -575,7 +575,7 @@ public void setImage(Image image) {
  */
 public void setText(String text) {
 	checkWidget();
-	if (text == null) text = "";
+	if (text == null) text = ""; //$NON-NLS-1$
 	if (! text.equals(this.text)) {
 		this.text = text;
 		redraw();

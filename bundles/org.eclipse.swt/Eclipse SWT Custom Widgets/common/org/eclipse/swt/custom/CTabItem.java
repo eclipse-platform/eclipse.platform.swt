@@ -26,7 +26,7 @@ public class CTabItem extends Item {
 	static final int BOTTOM_MARGIN = 3;
 	private static final int INTERNAL_SPACING = 2;
 	
-	private static final String ellipsis = "...";
+	private static final String ellipsis = "..."; //$NON-NLS-1$
 	
 	String shortenedText;
 	int shortenedTextWidth;
