@@ -224,7 +224,7 @@ protected void checkSubclass () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-protected final void checkWidget () {
+protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
@@ -485,7 +485,7 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-final boolean isValidThread () {
+boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 public boolean isValidWidget () {
@@ -494,7 +494,7 @@ public boolean isValidWidget () {
 	return (state & DISPOSED) == 0;
 }
 
-final boolean isValidSubclass() {
+boolean isValidSubclass() {
 	return Display.isValidClass(getClass());
 }
 
@@ -550,6 +550,7 @@ void postEvent (int eventType, Event event) {
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
+	System.out.println("event: "+eventNumber+" in "+this);
 	switch (eventNumber) {
 		case SWT.Arm:				return processArm           	(int0, int1, int2);
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
@@ -680,7 +681,6 @@ int processVerify (int int0, int int1, int int2) {
 }
 
 void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
 	int proc=0;
 	switch (numArgs) {
 		case 2: proc=getDisplay().windowProc2; break;
@@ -689,7 +689,9 @@ void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
 		case 5: proc=getDisplay().windowProc5; break;
 		default: error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	OS.gtk_signal_connect (handle, buffer, proc, swtEvent);
+	/*OS.g_signal_connect (handle, eventName, proc, swtEvent);*/
+	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
+	OS.gtk_signal_connect(handle, buffer, proc, swtEvent);
 }
 void signal_connect_after (int handle, String eventName, int swtEvent, int numArgs) {
 	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
@@ -910,7 +912,7 @@ char wcsToMbcs (char ch) {
 	return 0;
 }
 
-static byte[] string2bytesConvertMnemonic(String string) {
+byte[] string2bytesConvertMnemonic(String string) {
 	//FIXME need to double _'s
 	char [] t = new char [string.length ()];
 	string.getChars (0, t.length, t, 0);

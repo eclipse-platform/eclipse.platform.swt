@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkText extends GtkEditable {
+public class GtkText {
 	public int first_line_start_index;
 	public int first_onscreen_hor_pixel;
 	public int first_onscreen_ver_pixel;
@@ -21,5 +21,9 @@ public class GtkText extends GtkEditable {
 	public int cursor_pos_x;
 	public int cursor_pos_y;
 	public int cursor_virtual_x;
-	public static final int sizeof = 244;
+	
+	private GtkText() {}
+	public GtkText(int ptr) {
+//		OS.memmove(this, ptr);
+	}
 }

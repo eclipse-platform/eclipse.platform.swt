@@ -277,11 +277,8 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
-	return (widget.flags & OS.GTK_SENSITIVE) != 0;     
+	checkWidget();
+	return OS.GTK_WIDGET_SENSITIVE(handle);
 }
 /**
  * Returns the receiver's cascade menu if it has one or null
@@ -332,12 +329,9 @@ public Menu getParent () {
  * </ul>
  */
 public boolean getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	GtkCheckMenuItem menuItem = new GtkCheckMenuItem ();
-	OS.memmove (menuItem, handle, GtkCheckMenuItem.sizeof);
-	return menuItem.active != 0;
+	return OS.gtk_check_menu_item_get_active(handle);
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -586,16 +580,14 @@ public void setMenu (Menu menu) {
  * </ul>
  */
 public void setSelection (boolean selected) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_check_menu_item_set_active (handle, selected);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;

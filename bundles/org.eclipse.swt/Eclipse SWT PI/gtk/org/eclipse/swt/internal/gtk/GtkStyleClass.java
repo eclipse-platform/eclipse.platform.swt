@@ -16,5 +16,9 @@ package org.eclipse.swt.internal.gtk;
 public class GtkStyleClass {
 	public int xthickness;
 	public int ythickness;
-	public static final int sizeof = 8;
+
+	private GtkStyleClass() {}
+	public GtkStyleClass(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

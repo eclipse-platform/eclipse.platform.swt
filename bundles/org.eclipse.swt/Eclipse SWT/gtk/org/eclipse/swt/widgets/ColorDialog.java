@@ -97,10 +97,8 @@ public RGB getRGB () {
 	return rgb;
 }
 int okFunc (int widget, int callData) {
-	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-	OS.memmove (dialog, callData, GtkColorSelectionDialog.sizeof);
 	double [] color = new double [4];
-	OS.gtk_color_selection_get_color (dialog.colorsel, color);
+	OS.gtk_color_selection_get_color (OS.GTK_COLOR_SELECTION_COLORSEL(callData), color);
 	rgb = new RGB ((int)(color [0] * 256), (int)(color [1] * 256), (int)(color [2] * 256));
 	OS.gtk_widget_destroy (callData);
 	return 0;
@@ -123,15 +121,13 @@ public RGB open () {
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_color_selection_dialog_new (titleBytes);
-	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-	OS.memmove (dialog, handle, GtkColorSelectionDialog.sizeof);
-	OS.gtk_widget_hide (dialog.help_button);
+	OS.gtk_widget_hide (OS.GTK_COLOR_SELECTION_OK_BUTTON(handle));
 	if (rgb != null) {
 		double [] color = new double [4];
 		color [0] = (double)rgb.red / 256;
 		color [1] = (double)rgb.green / 256;
 		color [2] = (double)rgb.blue / 256;
-		OS.gtk_color_selection_set_color (dialog.colorsel, color);
+		OS.gtk_color_selection_set_color (OS.GTK_COLOR_SELECTION_COLORSEL(handle), color);
 	}
 	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
 	int destroyFunc = destroyCallback.getAddress ();
@@ -142,8 +138,8 @@ public RGB open () {
 	int okFunc = okCallback.getAddress ();
 	Callback cancelCallback = new Callback (this, "cancelFunc", 2);
 	int cancelFunc = cancelCallback.getAddress ();
-	OS.gtk_signal_connect (dialog.ok_button, clicked, okFunc, handle);
-	OS.gtk_signal_connect (dialog.cancel_button, clicked, cancelFunc, handle);
+	OS.gtk_signal_connect (OS.GTK_COLOR_SELECTION_OK_BUTTON(handle), clicked, okFunc, handle);
+	OS.gtk_signal_connect (OS.GTK_COLOR_SELECTION_CANCEL_BUTTON(handle), clicked, cancelFunc, handle);
 	rgb = null;
 	OS.gtk_widget_show_now (handle);
 	OS.gtk_main ();

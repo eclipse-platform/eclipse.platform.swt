@@ -50,15 +50,13 @@ Font() {
  */
 public Font(Device display, FontData fd) {
 	if (fd == null) error(SWT.ERROR_NULL_ARGUMENT);
-	
+	/* FIXME */
 	String xlfd = fd.getXlfd();
 	byte[] buffer = Converter.wcsToMbcs(null, xlfd, true);
 	handle = OS.gdk_font_load(buffer);
 	if (handle == 0) {
-		int hStyle = OS.gtk_widget_get_default_style();
-		GtkStyle gtkStyle = new GtkStyle();
-		OS.memmove(gtkStyle, hStyle, GtkStyle.sizeof);
-		handle = OS.gdk_font_ref(gtkStyle.font);
+		handle = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	}
 }
 /**	 
@@ -88,10 +86,10 @@ public Font(Device display, String fontFamily, int height, int style) {
 	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
 	handle = OS.gdk_font_load(buffer);
 	if (handle == 0) {
-		int hStyle = OS.gtk_widget_get_default_style();
-		GtkStyle gtkStyle = new GtkStyle();
-		OS.memmove(gtkStyle, hStyle, GtkStyle.sizeof);
-		handle = OS.gdk_font_ref(gtkStyle.font);
+		/* Temporary, FIXME */
+		buffer = Converter.wcsToMbcs(null, "fixed", true);
+		handle = OS.gdk_font_load(buffer);
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	}
 }
 /**
@@ -135,47 +133,25 @@ void error(int code) {
  * </ul>
  */
 public FontData[] getFontData() {
-	int index=0;
-	int fnames = getFontNameList(handle);
-	int nfonts = OS.g_slist_length(fnames);
-	FontData[] answer = new FontData[nfonts];
-	for (int i=0; i<nfonts; i++) {
-		FontData data = new FontData();
-		
-		int name = OS.g_slist_nth_data(fnames, index);
-		int length = OS.strlen(name);
-		byte [] buffer1 = new byte[length];
-		OS.memmove(buffer1, name, length);
-		char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
-		String fontname =  new String (buffer2, 0, buffer2.length);
-		data.setXlfd(fontname);
-		
-		// Wild guess, 'a' looks average enough
-		data.averageWidth = OS.gdk_char_width(handle, (byte)'a');
-		
-		// Wild guess, a progressive font should probably have A wider than l
-		int widthA = OS.gdk_char_width(handle, (byte)'A');
-		int widthl = OS.gdk_char_width(handle, (byte)'l');
-		if (widthA == widthl) data.spacing = "m";
-			else data.spacing = "p";
-		
-		answer[i] = data;
-	}
+	if (handle==0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	/* REWRITE ME.
+	 * THIS WILL NEVER WORK CORRECTLY.
+	 * WE USED TO REACH DOWN TO GDK INTERNAL MEMORY
+	 */
+	FontData[] answer = new FontData[1];
+	FontData data = new FontData();
+	data.fontFamily = "fixed";
+	data.weight = "normal";
+	data.points = 120;
+	answer[0] = data;
 	return answer;
 }
-static int getFontNameList(int handle) {
-	int[] mem = new int[7];
-	OS.memmove(mem, handle, 7*4);
-	int type = mem[0];
-	int ascent = mem[1];
-	int descent = mem[2];
-	int xfont =mem [3];
-	int xdisplay = mem[4];
-	int ref_count = mem[5];
-	int names = mem[6];
-	return names;
-}
+
 public static Font gtk_new(int handle) {
+	if (handle == 0) {
+		handle = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	}
 	Font font = new Font();
 	font.handle = handle;
 	return font;

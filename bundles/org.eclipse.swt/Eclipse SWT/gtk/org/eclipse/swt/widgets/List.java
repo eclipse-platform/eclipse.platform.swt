@@ -195,7 +195,7 @@ void setHandleStyle() {
 }
 
 void configure() {
-	_connectParent();
+	parent._connectChild(topHandle());
 	OS.gtk_container_add (scrolledHandle, handle);
 }
 
@@ -316,8 +316,7 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList();
-	OS.memmove(clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList(handle);
 	return clist.focus_row;
 }
 
@@ -365,8 +364,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	GtkCList widget = new GtkCList ();
-	OS.memmove (widget, handle, GtkCList.sizeof);
+	GtkCList widget = new GtkCList (handle);
 	return widget.rows;
 }
 
@@ -386,8 +384,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	GtkCList clist = new GtkCList ();
-	OS.memmove (clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	return clist.row_height;
 }
 
@@ -441,8 +438,7 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-	GtkCList widget = new GtkCList ();
-	OS.memmove (widget, handle, GtkCList.sizeof);
+	GtkCList widget = new GtkCList (handle);
 	int list = widget.selection;
 	if (list==0) return new String[0];
 	int length = OS.g_list_length (list);
@@ -475,8 +471,7 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList widget = new GtkCList ();
-	OS.memmove (widget, handle, GtkCList.sizeof);
+	GtkCList widget = new GtkCList (handle);
 	return OS.g_list_length (widget.selection);
 }
 
@@ -496,8 +491,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList ();
-	OS.memmove(clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	int list = clist.selection;
 	if (OS.g_list_length (list) == 0) return -1;
 	return OS.g_list_nth_data (list, 0);
@@ -523,8 +517,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	GtkCList widget = new GtkCList ();
-	OS.memmove (widget, handle, GtkCList.sizeof);
+	GtkCList widget = new GtkCList (handle);
 	int list = widget.selection;
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
@@ -548,8 +541,7 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList ();
-	OS.memmove(clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	return -clist.voffset / (clist.row_height + 1);
 }
 
@@ -624,8 +616,7 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	GtkCList clist = new GtkCList ();
-	OS.memmove (clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	int list = clist.selection;
 	if (list == 0) return false;
 	int length = OS.g_list_length (list);
@@ -650,14 +641,14 @@ int processMouseUp (int callData, int arg1, int int2) {
 		* no selection signal was set and issue a fake selection
 		* event.
 		*/
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-		int x = (int) gdkEvent.x, y = (int) gdkEvent.y;
+		double[] px = new double[1];
+		double[] py = new double[1];
+		OS.gdk_event_get_coords(callData, px, py);
+		int x = (int) (px[0]), y = (int) (py[0]);
 		int [] row = new int [1], column = new int [1];
 		int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
 		if (code != 0) {
-			GtkCList clist = new GtkCList ();
-			OS.memmove (clist, handle, GtkCList.sizeof);
+			GtkCList clist = new GtkCList (handle);
 			if (selected && clist.selection != 0) {
 				int list = clist.selection;
 				int length = OS.g_list_length (list);
@@ -674,21 +665,13 @@ int processMouseUp (int callData, int arg1, int int2) {
 }
 
 int processSelection (int int0, int int1, int int2) {
-	GtkCList clist = new GtkCList ();
-	OS.memmove (clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	if (int0 != clist.focus_row) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
-	boolean single = true;
-	if (int2 != 0) {
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, int2, GdkEventButton.sizeof);
-		single = gdkEvent.type != OS.GDK_2BUTTON_PRESS;
-	}
-	if (single) {
-		postEvent (SWT.Selection);
-	} else {
-		postEvent (SWT.DefaultSelection);
-	}
+	int type = SWT.Selection;
+	if (int2 != 0)
+	  if (OS.GDK_EVENT_TYPE(int2) == OS.GDK_2BUTTON_PRESS) type = SWT.DefaultSelection;
+	postEvent (type);
 	return 0;
 }
 
@@ -1124,8 +1107,7 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList ();
-	OS.memmove(clist, handle, GtkCList.sizeof);
+	GtkCList clist = new GtkCList (handle);
 	int list = clist.selection;
 	if (OS.g_list_length (list) == 0) return;
 	int index = OS.g_list_nth_data (list, 0);

@@ -28,5 +28,9 @@ public class GdkVisual {
 	public int blue_mask;
 	public int blue_shift;
 	public int blue_prec;
-	public static final int sizeof = 56;
+	
+	private GdkVisual () {}
+	public GdkVisual (int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

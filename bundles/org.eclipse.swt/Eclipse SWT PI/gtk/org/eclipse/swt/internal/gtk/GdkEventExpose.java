@@ -13,10 +13,16 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GdkEventExpose extends GdkEvent {
+public class GdkEventExpose {
 	public short x;
 	public short y;
 	public short width;
 	public short height;
+	public int region;
 	public int count;
+	
+	GdkEventExpose() {};
+	public  GdkEventExpose(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

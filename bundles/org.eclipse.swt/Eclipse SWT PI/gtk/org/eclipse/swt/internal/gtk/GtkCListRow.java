@@ -30,5 +30,9 @@ public class GtkCListRow {
 	public int fg_set; // bitfield: 1
 	public int bg_set; // bitfield: 1
 	public int selectable; // bitfield: 1
-	public static final int sizeof = 48;
+	
+	private GtkCListRow() {}
+	public GtkCListRow(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCList extends GtkContainer {
+public class GtkCList {
 	public short clist_flags;
 	public int row_mem_chunk;
 	public int cell_mem_chunk;
@@ -70,5 +70,9 @@ public class GtkCList extends GtkContainer {
 	public int sort_type;
 	public int compare;
 	public int sort_column;
-	public static final int sizeof = 252;
+	
+	private GtkCList() {}
+	public GtkCList(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

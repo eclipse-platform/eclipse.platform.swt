@@ -19,7 +19,7 @@ public class GDKPIXBUF extends OS {
 
 	/* GdkColorspace enumeration */
 	/* R/G/B additive color space */
-	public final static int GDK_COLORSPACE_RGB = 0;
+	public static final native int GDK_COLORSPACE_RGB();
 	
 	/* GIF-like animation overlay modes for frames */
 	public final static int GDK_PIXBUF_FRAME_RETAIN = 0;
@@ -215,11 +215,4 @@ public static final native int gdk_pixbuf_get_from_drawable (
 				int width,
 				int height);
 
-
-
-/* LOAD THE DLL */
-
-static {
-	Library.loadLibrary ("swt-pixbuf");
-}
 }

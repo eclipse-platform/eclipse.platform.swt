@@ -11,126 +11,133 @@
 #
 # Makefile for creating SWT libraries on Linux
 
+# User configuration
+
+# Define the installation directories for various products.
+# Your system may have these in a different place.
+
+# JAVA_JNI - Depending on your version of JDK, and where
+# it is installed, your jni.h may be located differently.
+#JAVA_JNI = /bluebird/teamswt/swt-builddir/ive/bin/include
+JAVA_JNI = /opt/IBMvame1.4/ive/bin/include
+
+# Whether we want GTK over X or FB
+GTKTARGET = gtk+-2.0
+#GTKTARGET = gtk+-linux-fb-2.0
+
+CC = gcc
+LD = ld
+
 include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-
-# Define the installation directories for various products.
-# Your system may have these in a different place.
-#    IVE_HOME   - IBM's version of Java (J9)
-IVE_HOME   = /bluebird/teamswt/swt-builddir/ive
-#IVE_HOME   = /opt/IBMvame1.4/ive
-
-JAVA_JNI=$(IVE_HOME)/bin/include
-JAVAH=$(IVE_HOME)/bin/javah
-LD_LIBRARY_PATH=$(IVE_HOME)/bin
-
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-WS_PREFIX    = gtk
-SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+OS_PREFIX    = linux
+SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(OS_PREFIX)-$(SWT_VERSION).so
 
-PI_PREFIX   = swt-pi
-SWTPI_DLL   = lib$(PI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+#GNOME_PREFIX = swt-gnome
+#GNOME_DLL    = lib$(GNOME_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+#GNOME_LIB    = -x -shared \
+#    -L/usr/lib \
+#    -lgnome -lglib \
+#    -lm -ldl
 
-GNOME_PREFIX = swt-gnome
-GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_LIB    = -x -shared \
-    -L/usr/lib \
-   -lgnome -lglib \
-    -lm -ldl
 
-PIXBUF_PREFIX = swt-pixbuf
-PIXBUF_DLL    = lib$(PIXBUF_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+# Compile and link options from pkg-config
+GTKCFLAGS = `pkg-config --cflags $(GTKTARGET)` `pkg-config --cflags pango`
+GTKLIBS = `pkg-config --libs $(GTKTARGET)`
 
 
 #
 #  Target Rules
 #
 
-all: make_swt  make_pixbuf  # make_gnome
+all: make_swt  # make_gnome
 
 make_swt: $(SWT_DLL) $(SWTPI_DLL)
 
 #make_gnome: $(GNOME_DLL)
 
-make_pixbuf: $(PIXBUF_DLL)
-
 
 # All about Linking
 
-LD=ld
+PI_OBJECTS = swt.o swt-gdk.o swt-gdkpixbuf.o \
+             swt-gtkcontainers.o swt-gtkcontrols.o swt-gtklists.o swt-gtkmenu.o \
+	     swt-gtkwidget.o swt-gtkwindow.o swt-pango.o swt-memmove.o \
+	     eclipsefixed.o
+
 $(SWT_DLL): callback.o
 	$(LD) -x -shared \
 	    -o $(SWT_DLL) callback.o
 	    
-# Note:  your setup may be different.  Consult `gtk-config --libs`
-$(SWTPI_DLL): swt.o structs.o
+$(SWTPI_DLL): $(PI_OBJECTS) structs.o
 	$(LD) -x -shared \
-	    -L/usr/lib -L/usr/X11R6/lib \
-	    -lgtk -lgdk -lgmodule -lglib \
-	    -ldl -lXi -lXext -lX11 -lm -lc \
-	    -o $(SWTPI_DLL) swt.o structs.o
+	    $(GTKLIBS) \
+	    -o $(SWTPI_DLL) $(PI_OBJECTS) structs.o
 
 #$(GNOME_DLL): gnome.o
 #	$(LD) -o $@ gnome.o $(GNOME_LIB)
 
-$(PIXBUF_DLL): pixbuf.o
-	$(LD) -x -shared \
-	    -L/usr/lib -L/usr/X11R6/lib \
-	    -lgdk_pixbuf \
-	    -lgtk -lgdk -lgmodule -lglib \
-	    -ldl -lXi -lXext -lX11 -lm -lc \
-	    -o $(PIXBUF_DLL) pixbuf.o
-
 
 # All about Compiling
 
-CC=gcc
-SWT_C_FLAGS = -c -O -s \
+CFLAGS = -c -O -s \
 	    -DSWT_VERSION=$(SWT_VERSION) \
 	    -DLINUX -DGTK \
-	    -fpic \
-	    -I$(JAVA_JNI) \
-	    `gtk-config --cflags`
-
-SWT_PIXBUF_FLAGS = -c -O -s \
-	    -DSWT_VERSION=$(SWT_VERSION) \
-	    -DLINUX -DGTK \
-	    -fpic \
-	    -I$(JAVA_JNI) \
-	    -I/usr/include/gdk-pixbuf \
-	    `gtk-config --cflags`
-
-SWT_GNOME_FLAGS = -c -O -s \
-	    -DSWT_VERSION=$(SWT_VERSION) \
-	    -DLINUX -DGTK \
-	    -fpic \
-	    -I$(JAVA_JNI) \
-	    `gnome-config --cflags gnome`
-
-swt.o: swt.c swt.h
-	$(CC) $(SWT_C_FLAGS) swt.c
-
-structs.o: structs.c
-	$(CC) $(SWT_C_FLAGS) structs.c
+	    -fpic -fPIC \
+	    $(GTKCFLAGS) \
+	    -I$(JAVA_JNI)
 
 callback.o: callback.c
-	$(CC) $(SWT_C_FLAGS) callback.c
-
-globals.o: globals.c
-	$(CC) $(SWT_C_FLAGS) globals.c
+	$(CC) $(CFLAGS) callback.c
 
 library.o: library.c
-	$(CC) $(SWT_C_FLAGS) library.c
+	$(CC) $(CFLAGS) library.c
 
-pixbuf.o: pixbuf.c
-	$(CC) $(SWT_PIXBUF_FLAGS) pixbuf.c
+swt.o: swt.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt.c
 
-#gnome.o: gnome.c
-#	$(CC) $(SWT_GNOME_FLAGS) gnome.c
+swt-gdk.o: swt-gdk.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gdk.c
+
+swt-gdkpixbuf.o: swt-gdkpixbuf.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gdkpixbuf.c
+
+swt-gtkcontainers.o: swt-gtkcontainers.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkcontainers.c
+
+swt-gtkcontrols.o: swt-gtkcontrols.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkcontrols.c
+
+swt-gtklists.o: swt-gtklists.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtklists.c
+
+swt-gtkmenu.o: swt-gtkmenu.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkmenu.c
+
+swt-gtkwidget.o: swt-gtkwidget.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkwidget.c
+
+swt-gtkwindow.o: swt-gtkwindow.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkwindow.c
+
+swt-memmove.o: swt-memmove.c swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-memmove.c
+
+eclipsefixed.o: eclipsefixed.c eclipsefixed.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) eclipsefixed.c
+
+structs.o: structs.c
+	$(CC) $(CFLAGS) $(GTKCFLAGS) structs.c
+
+globals.o: globals.c
+	g$(CC)cc $(CFLAGS) $(GTKCFLAGS) globals.c
+
+
 
 clean:
 	rm -f *.o *.so

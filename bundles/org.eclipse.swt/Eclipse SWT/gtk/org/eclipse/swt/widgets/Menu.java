@@ -164,11 +164,11 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
-	return (widget.flags & OS.GTK_SENSITIVE) != 0;     
+	checkWidget();
+	/* FIXME - this just checks for the SENSITIVE flag in the widget.
+	 * SN: Should we look at the effective sensitivity instead?
+	 */
+	return OS.GTK_WIDGET_SENSITIVE(handle);     
 }
 /**
  * Returns the item at the given, zero-relative index in the
@@ -325,11 +325,8 @@ public Shell getShell () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
-	return (widget.flags & OS.GTK_MAPPED) != 0;    
+	checkWidget();
+	return OS.GTK_WIDGET_MAPPED(handle);    
 }
 /**
  * Searches the receiver's list starting at the first item

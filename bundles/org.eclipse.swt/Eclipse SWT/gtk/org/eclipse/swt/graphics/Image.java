@@ -132,12 +132,6 @@ Image() {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
- * <p>
- * Note: Some platforms may have a limitation on the size
- * of image that can be created (size depends on width, height,
- * and depth). For example, Windows 95, 98, and ME do not allow
- * images larger than 16M.
- * </p>
  *
  * @param device the device on which to create the image
  * @param width the width of the new image
@@ -149,6 +143,8 @@ Image() {
  */
 public Image(Device display, int width, int height) {
 	init(display, width, height);
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -198,18 +194,18 @@ public Image(Device device, Image srcImage, int flag) {
 	this.alphaData = srcImage.alphaData;
 	this.alpha = srcImage.alpha;
 	this.transparentPixel = srcImage.transparentPixel;
-	// bogus - are we sure about memGC?
+	// FIXME - are we sure about memGC?
 
 	/* Special case:
 	 * If all we want is just a clone of the existing pixmap, it can
 	 * be done entirely in the X server, without copying across the net.
 	 */
 	if (flag == SWT.IMAGE_COPY) {
-		int[] unused = new int[1];
 		int[] width = new int[1]; int[] height = new int[1];
-		int[] depth = new int[1];		
-	 	OS.gdk_window_get_geometry(pixmap, unused, unused, width, height, depth);
-		pixmap = OS.gdk_pixmap_new (0, width[0], height[0], depth[0]);
+	 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
+	 	int depth = OS.gdk_drawable_get_depth(srcImage.pixmap);
+		pixmap = OS.gdk_pixmap_new (0, width[0], height[0], depth);
+
 		int gc = OS.gdk_gc_new (pixmap);
 		OS.gdk_draw_pixmap(pixmap, gc, srcImage.pixmap,
 			0,0,0,0, width[0], height[0]);
@@ -234,6 +230,8 @@ public Image(Device device, Image srcImage, int flag) {
 			if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 		}
 
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 		
 		return;
 	}
@@ -259,12 +257,6 @@ public Image(Device device, Image srcImage, int flag) {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
- * <p>
- * Note: Some platforms may have a limitation on the size
- * of image that can be created (size depends on width, height,
- * and depth). For example, Windows 95, 98, and ME do not allow
- * images larger than 16M.
- * </p>
  *
  * @param device the device on which to create the image
  * @param bounds a rectangle specifying the image's width and height (must not be null)
@@ -277,6 +269,8 @@ public Image(Device device, Image srcImage, int flag) {
 public Image(Device display, Rectangle bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(display, bounds.width, bounds.height);
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -294,6 +288,8 @@ public Image(Device display, ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (display == null) display = Display.getDefault();
 	init(display, image);
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -343,6 +339,8 @@ public Image(Device display, ImageData source, ImageData mask) {
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
 	init(display, image);
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -374,6 +372,8 @@ public Image(Device display, InputStream stream) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (display == null) display = Display.getDefault();
 	init(display, new ImageData(stream));
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -398,6 +398,8 @@ public Image(Device display, String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (display == null) display = Display.getDefault();
 	init(display, new ImageData(filename));
+	
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**
@@ -510,8 +512,8 @@ public void setBackground(Color color) {
  * </ul>
  */
 public Rectangle getBounds() {
-	int[] unused = new int[1]; int[] width = new int[1]; int[] height = new int[1];
- 	OS.gdk_window_get_geometry(pixmap, unused, unused, width, height, unused);
+	int[] width = new int[1]; int[] height = new int[1];
+ 	OS.gdk_drawable_get_size(pixmap, width, height);
 	return new Rectangle(0, 0, width[0], height[0]);
 
 }
@@ -535,6 +537,7 @@ public ImageData getImageData() {
 
 public static Image gtk_new(int type, int pixmap, int mask) {
 	Image image = new Image();
+	if (pixmap==0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);  // FIXME remove this, this is for debugging only
 	image.type = type;
 	image.pixmap = pixmap;
 	image.mask = mask;
@@ -601,8 +604,7 @@ public void internal_dispose_GC (int gc, GCData data) {
 
 void init(Device display, int width, int height) {
 	device = display;
-	GdkVisual visual = new GdkVisual ();
-	OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+	GdkVisual visual = new GdkVisual (OS.gdk_visual_get_system());
 	this.pixmap = OS.gdk_pixmap_new(0, width, height, visual.depth);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	/* Fill the bitmap with white */

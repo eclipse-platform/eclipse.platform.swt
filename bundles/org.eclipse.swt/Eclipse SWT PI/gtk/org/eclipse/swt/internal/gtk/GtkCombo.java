@@ -13,20 +13,12 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCombo extends GtkHBox {
+public class GtkCombo {
 	public int entry;
-	public int button;
-	public int popup;
-	public int popwin;
 	public int list;
-	public int entry_change_id;
-	public int list_change_id;
-	public int value_in_list; // bitfield : 1
-	public int ok_if_empty; // bitfield : 1
-	public int case_sensitive; // bitfield : 1
-	public int use_arrows; // bitfield : 1
-	public int use_arrows_always; // bitfield : 1
-	public short current_button;
-	public int activate_id;
-	public static final int sizeof = 104;
+	
+	private GtkCombo () {}
+	public  GtkCombo (int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

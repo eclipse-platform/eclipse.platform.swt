@@ -142,7 +142,7 @@ void createHandle (int index) {
 void setHandleStyle() {}
 
 void configure() {
-	_connectParent();
+	parent._connectChild(topHandle());
 	OS.gtk_container_add (boxHandle, handle);
 }
 
@@ -461,10 +461,10 @@ public void setText (String string) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget != 0) OS.gtk_widget_destroy (widget);
 	}
-	byte [] buffer1 = Converter.wcsToMbcs (null, text);
-	int label = OS.gtk_label_new (buffer1);
-	byte [] buffer2 = Converter.wcsToMbcs (null, pattern);
-	OS.gtk_label_set_pattern (label, buffer2);	
+	/* FIXME - accels */
+	int label = OS.gtk_label_new (string);
+/*	byte [] buffer2 = Converter.wcsToMbcs (null, pattern);
+	OS.gtk_label_set_pattern (label, buffer2);*/	
 	OS.gtk_container_add (handle, label);
 	OS.gtk_widget_show (label);	
 }

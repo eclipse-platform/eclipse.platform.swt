@@ -34,9 +34,9 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TabFolder extends Composite {
-	int notebookHandle;
+	
+	int topHandle;
 	TabItem [] items;
-
 
 /*
  *   ==  CONSTRUCTORS  ==
@@ -75,42 +75,40 @@ public TabFolder (Composite parent, int style) {
 }
 
 /*
- *   ==  HANDLE DANCES, FIRST SPECIES  ==
+ *   ==  Handle code  ==
  */
 
 void createHandle (int index) {
 	state |= HANDLE;
-	eventBoxHandle = OS.gtk_event_box_new();
-	fixedHandle = OS.gtk_fixed_new ();
-	notebookHandle = OS.gtk_notebook_new ();
-	handle = OS.gtk_fixed_new(); 
+	topHandle = OS.eclipse_fixed_new();
+	handle = OS.gtk_notebook_new ();
+	boxHandle = OS.gtk_event_box_new();
+	fixedHandle = OS.eclipse_fixed_new ();
 }
 
 void configure () {
-	_connectParent();
-	OS.gtk_container_add(eventBoxHandle, fixedHandle);
-	OS.gtk_fixed_put (fixedHandle, notebookHandle, (short)0, (short)0);
-	OS.gtk_fixed_put (fixedHandle, handle, (short)2, (short)33);
+	parent._connectChild(topHandle);
+	OS.gtk_container_add(topHandle, handle);
+	OS.gtk_container_add(topHandle, boxHandle);
+	OS.gtk_container_add(boxHandle, fixedHandle);	
+	OS.eclipse_fixed_set_location(topHandle, boxHandle, 2, 33); /* FIXME */
 }
 
 void showHandle() {
-	OS.gtk_widget_show(eventBoxHandle);
-	OS.gtk_widget_show(fixedHandle);
-	OS.gtk_widget_show(notebookHandle);
+	OS.gtk_widget_show(topHandle);
 	OS.gtk_widget_show(handle);
-	OS.gtk_widget_realize (notebookHandle);
-	OS.gtk_widget_realize (handle);
+	OS.gtk_widget_show(boxHandle);
+	OS.gtk_widget_show(fixedHandle);
 }
 
 void register () {
 	super.register ();
-	WidgetTable.put (notebookHandle, this);
+	WidgetTable.put (topHandle, this);
 }
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect (notebookHandle, "size_allocate", SWT.Resize, 3);
-	signal_connect (notebookHandle, "switch_page", SWT.Selection, 4);
+	signal_connect (handle, "switch_page", SWT.Selection, 4);
 }
 
 void createWidget (int index) {
@@ -118,21 +116,18 @@ void createWidget (int index) {
 	items = new TabItem [4];
 }
 
-int topHandle () { return eventBoxHandle; }
-int paintHandle () { return notebookHandle; }
-int parentingHandle () { return handle; }
+int topHandle () { return topHandle; }
+public int paintHandle () { return boxHandle; } /* can't do much :-( */
+int parentingHandle () { return fixedHandle; }
 boolean isMyHandle(int h) {
-	if (h==eventBoxHandle) return true;
-	if (h==notebookHandle) return true;
-	if (h==fixedHandle)  return true;
-	if (h==handle)       return true;
-	return false;
+	if (h==topHandle) return true;
+	return super.isMyHandle(h);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	//notebookHandle
-	int width = _computeSize(wHint, hHint, changed).x;
+/*	int width = _computeSize(wHint, hHint, changed).x;
 	int height = 0;
 	Point size;
 	if (layout != null) {
@@ -148,35 +143,37 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = Math.max (height, size.y);
 	Rectangle trim = computeTrim (0, 0, width, height);
 	width = trim.width;  height = trim.height;
-	return new Point (width, height);
+	return new Point (width, height);*/
+	/* FIXME */
+	return new Point(300,300);
 }
 
 /**
-* Computes the widget trim.
-*/
+ * Computes the widget trim.
+ */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	return new Rectangle(x-2, y-33, width+4, height+35);
 }
 
 /*
-    **** Layout code ****
+ *   === Layout code ===
  */
 
-boolean _setSize(int width, int height) {
-	boolean differentExtent = UtilFuncs.setSize(eventBoxHandle, width,height);
-	UtilFuncs.setSize (fixedHandle, width,height);
-	UtilFuncs.setSize (notebookHandle, width,height);
-	UtilFuncs.setSize (handle, width-4, height-35);
+void _setSize(int width, int height) {
+	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
+	/* FIXME */
+	int w = Math.max(width - 4, 1);
+	int h = Math.max(height - 35, 1);
+	OS.eclipse_fixed_set_size(topHandle, handle, w, h);
 	layoutCurrent();
-	return differentExtent;
 }
 
-public Rectangle _getClientArea () {
-	org.eclipse.swt.graphics.Point size = _getSize();
-	int x = Math.max(size.x-4, 3);
-	int y = Math.max(size.y-35, 3);
-	return new Rectangle(0,0, x, y);
+public Rectangle getClientArea () {
+	checkWidget();
+	int[] sz = new int[2];
+	OS.eclipse_fixed_get_size(topHandle, boxHandle, sz);
+	return new Rectangle(0,0, sz[0], sz[1]);
 }
 
 void layoutCurrent() {
@@ -189,7 +186,7 @@ void layoutCurrent() {
 }
 
 void createItem (TabItem item, int index) {
-	int list = OS.gtk_container_children (notebookHandle);
+	int list = OS.gtk_container_children (handle);
 	int itemCount = OS.g_list_length (list);
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (itemCount == items.length) {
@@ -199,16 +196,15 @@ void createItem (TabItem item, int index) {
 	}
 	
 	// create a new label	
-	byte [] buffer = new byte [] {0};
-	int labelHandle = OS.gtk_label_new (buffer);
+	int labelHandle = OS.gtk_label_new ("");
 
 	// create a new fake page
-	int stubPage = OS.gtk_fixed_new();
+	int stubPage = OS.eclipse_fixed_new();
 	
 	// put the label and the fake page inside the notebook
-	OS.gtk_signal_handler_block_by_data (notebookHandle, SWT.Selection);
-	OS.gtk_notebook_append_page(notebookHandle, stubPage, labelHandle);
-	OS.gtk_signal_handler_unblock_by_data (notebookHandle, SWT.Selection);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	OS.gtk_notebook_append_page(handle, stubPage, labelHandle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	
 	OS.gtk_widget_show(labelHandle);
 	OS.gtk_widget_show(stubPage);
@@ -217,7 +213,7 @@ void createItem (TabItem item, int index) {
 	item.handle = labelHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	OS.gtk_notebook_set_show_tabs (notebookHandle, true);
+	OS.gtk_notebook_set_show_tabs (handle, true);
 }
 
 /**
@@ -261,7 +257,7 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	OS.gtk_notebook_remove_page (notebookHandle, index);
+	OS.gtk_notebook_remove_page (handle, index);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.handle = 0;
@@ -283,9 +279,8 @@ void destroyItem (TabItem item) {
  */
 
 public TabItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int list = OS.gtk_container_children (notebookHandle);
+	checkWidget();
+	int list = OS.gtk_container_children (handle);
 	int itemCount = OS.g_list_length (list);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return items [index];
@@ -301,10 +296,9 @@ public TabItem getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	//return itemCount;
-	int list = OS.gtk_container_children (notebookHandle);
+	int list = OS.gtk_container_children (handle);
 	return OS.g_list_length (list);
 }
 /**
@@ -324,9 +318,8 @@ public int getItemCount () {
  * </ul>
  */
 public TabItem [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int list = OS.gtk_container_children (notebookHandle);
+	checkWidget();
+	int list = OS.gtk_container_children (handle);
 	int itemCount = OS.g_list_length (list);
 	TabItem [] result = new TabItem [itemCount];
 	System.arraycopy (items, 0, result, 0, itemCount);
@@ -349,9 +342,8 @@ public TabItem [] getItems () {
  * </ul>
  */
 public TabItem [] getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int index = OS.gtk_notebook_get_current_page (notebookHandle);
+	checkWidget();
+	int index = OS.gtk_notebook_get_current_page (handle);
 	if (index == -1) return new TabItem [0];
 	return new TabItem [] {items [index]};
 }
@@ -367,9 +359,8 @@ public TabItem [] getSelection () {
  * </ul>
  */
 public int getSelectionIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return OS.gtk_notebook_get_current_page (notebookHandle);
+	checkWidget();
+	return OS.gtk_notebook_get_current_page (handle);
 }
 
 /**
@@ -390,10 +381,9 @@ public int getSelectionIndex () {
  * </ul>
  */
 public int indexOf (TabItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int list = OS.gtk_container_children (notebookHandle);
+	int list = OS.gtk_container_children (handle);
 	int itemCount = OS.g_list_length (list);
 	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
@@ -402,7 +392,7 @@ public int indexOf (TabItem item) {
 }
 
 int processSelection (int int0, int int1, int int2) {
-	int index = OS.gtk_notebook_get_current_page (notebookHandle);
+	int index = OS.gtk_notebook_get_current_page (handle);
 	if (index != -1) {
 		Control control = items [index].getControl ();
 		if (control != null && !control.isDisposed ()) {
@@ -461,9 +451,9 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setSelection (int index) {
 	checkWidget();
 	if (index == -1) return;
-	OS.gtk_signal_handler_block_by_data (notebookHandle, SWT.Selection);
-	OS.gtk_notebook_set_page (notebookHandle, index);
-	OS.gtk_signal_handler_unblock_by_data (notebookHandle, SWT.Selection);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	OS.gtk_notebook_set_page (handle, index);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
 /**
@@ -479,8 +469,7 @@ public void setSelection (int index) {
  * </ul>
  */
 public void setSelection (TabItem [] items) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
 		setSelection (-1);
@@ -498,11 +487,11 @@ public void setSelection (TabItem [] items) {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (notebookHandle);
+	WidgetTable.remove (topHandle);
 }
 
 void releaseChildren() {
-	int list = OS.gtk_container_children (notebookHandle);
+	int list = OS.gtk_container_children (handle);
 	int itemCount = OS.g_list_length (list);
 	for (int i=0; i<itemCount; i++) {
 		TabItem item = items [i];
@@ -529,7 +518,7 @@ void releaseChildren() {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	notebookHandle = 0;
+	boxHandle = 0;
 }
 
 void releaseWidget () {

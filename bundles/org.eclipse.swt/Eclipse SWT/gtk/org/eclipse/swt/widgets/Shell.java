@@ -92,10 +92,9 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Display display;
-	int vboxHandle;
+	int shellHandle, vboxHandle;
 	int modal;
 	int accelGroup;
-	Rectangle lastClientArea;
 	boolean hasFocus;
 
 /*
@@ -294,9 +293,7 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Activate, typedListener);
 	addListener (SWT.Deactivate, typedListener);
 }
-void bringToTop () {
-//	OS.gtk_window_activate_focus (shellHandle);
-}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -315,7 +312,7 @@ public void close () {
 }
 void closeWidget () {
 	Event event = new Event ();
-	event.time = OS.gdk_time_get ();
+	event.time = OS.GDK_CURRENT_TIME();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
 }
@@ -327,58 +324,60 @@ void closeWidget () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	topHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
-	if (topHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	if (parent!=null) OS.gtk_window_set_transient_for(topHandle, parent.topHandle());
+	shellHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
+	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (parent!=null) OS.gtk_window_set_transient_for(shellHandle, parent.topHandle());
 	
 	vboxHandle = OS.gtk_vbox_new(false,0);
 	if (vboxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	eventBoxHandle = OS.gtk_event_box_new ();
-	if (eventBoxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	fixedHandle = OS.gtk_fixed_new ();
+
+	boxHandle = OS.gtk_event_box_new();
+	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	fixedHandle = OS.eclipse_fixed_new();
 	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	
 	handle = OS.gtk_drawing_area_new();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+
 	accelGroup = OS.gtk_accel_group_new ();
-	OS.gtk_window_add_accel_group (topHandle, accelGroup);
-	OS.gtk_window_set_title (topHandle, new byte [1]);
+	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
+	OS.gtk_window_set_title (shellHandle, new byte [1]);
 }
 
 void configure () {
-	OS.gtk_container_add (topHandle, vboxHandle);
-	OS.gtk_box_pack_end(vboxHandle, eventBoxHandle, true,true,0);
-	OS.gtk_container_add (eventBoxHandle, fixedHandle);
-	OS.gtk_fixed_put(fixedHandle, handle, (short)0,(short)0);
+	OS.gtk_container_add (shellHandle, vboxHandle);
+	OS.gtk_box_pack_end(vboxHandle, boxHandle, true,true,0);
+	OS.gtk_container_add(boxHandle, fixedHandle);
+	OS.gtk_container_add(fixedHandle, handle);
 }
 
 void showHandle() {
-	OS.gtk_widget_realize (topHandle);  // careful: NOT show
+	OS.gtk_widget_realize (shellHandle);  // careful: NOT show
 	_setStyle();
 	
 	OS.gtk_widget_realize (vboxHandle);
 	OS.gtk_widget_show_now (vboxHandle);
-
-	OS.gtk_widget_realize (eventBoxHandle);
-	OS.gtk_widget_show_now (eventBoxHandle);
-	
-	OS.gtk_widget_realize  (fixedHandle);
+	OS.gtk_widget_realize (boxHandle);
+	OS.gtk_widget_show_now (boxHandle);
+	OS.gtk_widget_realize (fixedHandle);
 	OS.gtk_widget_show_now (fixedHandle);
-
 	OS.gtk_widget_realize (handle);
 	OS.gtk_widget_show_now (handle);
 }
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect(topHandle, "map_event",     SWT.Deiconify, 3);
-	signal_connect(topHandle, "unmap_event",   SWT.Iconify, 3);
-	signal_connect(topHandle, "size_allocate", SWT.Resize, 3);
-	signal_connect(topHandle, "delete_event",  SWT.Dispose, 3);
+	signal_connect_after(shellHandle, "map-event",     SWT.Deiconify, 3);
+	signal_connect_after(shellHandle, "unmap-event",   SWT.Iconify, 3);
+	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
+	signal_connect(shellHandle, "delete-event",  SWT.Dispose, 3);
 }
 
 void register () {
 	super.register ();
 	WidgetTable.put (vboxHandle, this);
+	WidgetTable.put (shellHandle, this);
 }
 
 private void _setStyle() {
@@ -386,7 +385,7 @@ private void _setStyle() {
 	   ((style&SWT.PRIMARY_MODAL)     != 0) ||
 	   ((style&SWT.APPLICATION_MODAL) != 0) ||
 	   ((style&SWT.SYSTEM_MODAL)      != 0));
-	OS.gtk_window_set_modal(topHandle, modal);
+	OS.gtk_window_set_modal(shellHandle, modal);
 	
 	int decorations = 0;
 	if ((style & SWT.NO_TRIM) == 0) {
@@ -404,33 +403,15 @@ private void _setStyle() {
 		 */
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
 	}
-	GtkWidget widget = new GtkWidget();
-	OS.memmove(widget, topHandle, GtkWidget.sizeof);
-	int w = widget.window;
-	// PANIC - this must absolutely never happen, so it's not NO_HANDLES actually
-	if (w == 0) error(SWT.ERROR_NO_HANDLES);
-	OS.gdk_window_set_decorations(w, decorations);
+	OS.gdk_window_set_decorations(OS.GTK_WIDGET_WINDOW(shellHandle), decorations);
 }
 
-void _connectChild (int h) {
-	OS.gtk_fixed_put (fixedHandle, h, (short)0, (short)0);
-}
-
-int topHandle () {
-	return topHandle;
-}
-
-int parentingHandle() {
-	return fixedHandle;
-}
-
+int topHandle () { return shellHandle; }
+int parentingHandle() {	return fixedHandle; }
 boolean isMyHandle(int h) {
-	if (h == topHandle)    return true;
+	if (h == shellHandle)    return true;
 	if (h == vboxHandle)     return true;
-	if (h == eventBoxHandle) return true;
-	if (h == fixedHandle)    return true;
-	if (h == handle)         return true;
-	return false;
+	return super.isMyHandle(h);
 }
 
 
@@ -438,56 +419,46 @@ boolean isMyHandle(int h) {
  *   ===  GEOMETRY  ===
  */
 
-public Point _getLocation() {
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, topHandle, GtkWidget.sizeof);
+Point _getLocation() {
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_origin(widget.window, x,y);
+	OS.gtk_window_get_position(shellHandle, x,y);
 	return new Point(x[0], y[0]);
 }
 
-public Point _getSize() {
-	return UtilFuncs.getSize(vboxHandle);
+Point _getSize() {
+	int[] x = new int[1]; int[] y = new int[1];
+	OS.gtk_window_get_size(shellHandle, x, y);
+	return new Point(x[0], y[0]);
 }
 
-public Rectangle _getClientArea () {
-	Point clientSize = UtilFuncs.getSize(eventBoxHandle);
-	return new Rectangle (0, 0, clientSize.x, clientSize.y);
+public Rectangle getClientArea () {
+	checkWidget();
+	Point totalSize = _getSize();
+	/* FIXME - subtract trim */
+	return new Rectangle (0, 0, totalSize.x, totalSize.y);
 }
 
-boolean _setSize(int width, int height) {
-	/*
-	 * API deficiency in GTK 1.2 - lacking gtk_window_resize.
-	 * We work around this by directly resizing the X window.
-	 * 
-	 * First, we find out the GDK handle.
-	 */
-	GtkWidget gtkWidget = new GtkWidget();
-	OS.memmove(gtkWidget, topHandle, GtkWidget.sizeof);
-
-	OS.gtk_signal_handler_block_by_data (topHandle, SWT.Resize);
-	OS.gdk_window_resize(gtkWidget.window, width, height);
-	UtilFuncs.setSize(vboxHandle, width, height);
-	Point sz = UtilFuncs.getSize(eventBoxHandle);
-	UtilFuncs.setSize(fixedHandle, sz.x, sz.y);
-	UtilFuncs.setSize(handle, sz.x, sz.y);
-	OS.gtk_signal_handler_unblock_by_data (topHandle, SWT.Resize);
-
-	return true;
+void _setSize(int width, int height) {
+	OS.gtk_signal_handler_block_by_data (shellHandle, SWT.Resize);
+	OS.gtk_window_resize(shellHandle, width, height);
+	boolean done = false;
+	Point s = _getSize();
+	while ((s.x!=width) || (s.y!=height)) {
+		OS.gtk_main_iteration();
+		s = _getSize();
+	}
+	OS.gtk_signal_handler_unblock_by_data (shellHandle, SWT.Resize);
 }
 
-boolean _setLocation (int x, int y) {
-	GtkWidget gtkWidget = new GtkWidget();
-	OS.memmove(gtkWidget, topHandle, GtkWidget.sizeof);
-	OS.gdk_window_move(gtkWidget.window, x, y);
-	return true;
+void _setLocation (int x, int y) {
+	OS.gtk_window_move(shellHandle, x, y);
 }
 
 void setInitialSize() {
 	int width  = OS.gdk_screen_width () * 5 / 8;
 	int height = OS.gdk_screen_height () * 5 / 8;
 	_setSize(width, height);
-	OS.gtk_window_set_policy (topHandle, 1,1,0);
+	OS.gtk_window_set_policy (shellHandle, 1,1,0);
 }
 
 /*
@@ -518,11 +489,9 @@ public Display getDisplay () {
  * but the user clicked in a no-entry widget (like Label).
  */
 Control getFocusControl() {
-	GtkWindow shell = new GtkWindow();
-	OS.memmove(shell, topHandle, GtkWindow.sizeof);
-	int focusHandle = shell.focus_widget;
-	if (focusHandle==0) return null;
-	return (Control)this.getDisplay().findWidget(focusHandle);
+	checkWidget();
+	int answer = OS.gtk_window_get_focus(shellHandle);
+	return (Control)this.getDisplay().findWidget(answer);
 }
 
 /**
@@ -602,17 +571,8 @@ public Shell [] getShells () {
 
 public void layout (boolean changed) {
 	checkWidget();
-//	if (!resizedSinceLastLayout()) return;
-	lastClientArea=getClientArea();
 	if (layout == null) return;
 	layout.layout (this, changed);
-}
-
-/*
- * Returns whether the shell has been resized since the last layout()
- */
-boolean resizedSinceLastLayout() {
-	return !getClientArea().equals(lastClientArea);
 }
 
 /**
@@ -637,7 +597,7 @@ public void open () {
 
 int processDispose (int int0, int int1, int int2) {
 	closeWidget ();
-	return 1;
+	return 0;
 }
 
 int processFocusIn(int int0, int int1, int int2) {
@@ -653,10 +613,7 @@ int processFocusOut(int int0, int int1, int int2) {
 }
 
 int processPaint (int callData, int int2, int int3) {
-	//if (!hooks (SWT.Paint)) return 1;
-	
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove (gdkEvent, callData, GdkEventExpose.sizeof);
+/*	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
 	event.x = gdkEvent.x;  event.y = gdkEvent.y;
@@ -669,22 +626,14 @@ int processPaint (int callData, int int2, int int3) {
 	gc.fillRectangle(rect.x, rect.y, rect.width, rect.height);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
-	event.gc = null;
-	return 1;
-/*}else{
-	GdkRectangle gdkEvent = new GdkRectangle ();
-	OS.memmove (gdkEvent, callData, GdkRectangle.sizeof);
-	Event event = new Event ();
-//	event.count = gdkEvent.count;
-	event.x = gdkEvent.x;  event.y = gdkEvent.y;
-	event.width = gdkEvent.width;  event.height = gdkEvent.height;
-	GC gc = event.gc = new GC (this);
-	OS.gdk_gc_set_clip_rectangle (gc.handle, gdkEvent);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
-	return 1;
-}	*/
+	event.gc = null;*/
+	return 0;
+}
+
+int processResize (int int0, int int1, int int2) {
+	sendEvent (SWT.Resize);
+	layout();
+	return 0;
 }
 
 /**
@@ -737,10 +686,8 @@ public void setImeInputMode (int mode) {
 
 public void setMaximized (boolean maximized) {
 	checkWidget();
-	
-	/*
-	 * Out of luck on curent GDK.
-	 */
+	if (maximized) OS.gtk_window_maximize(shellHandle);
+		else OS.gtk_window_unmaximize(shellHandle);
 }
 
 public void setMenuBar (Menu menu) {
@@ -766,20 +713,8 @@ public void setMenuBar (Menu menu) {
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
-	
-	/*
-	 * In GDK, there is no way to iconify a shell.
-	 * If we wanted it really badly, on pure X this is done
-	 * by sending a client message - see ICCCM L.4.1.4.
-	 */
-	if (minimized) return;
-	
-	/*
-	 * At least we can force a deiconify
-	 */
-	GtkWidget w = new GtkWidget();
-	OS.memmove(w, topHandle, w.sizeof);
-	OS.gdk_window_show(w.window);
+	if (minimized) OS.gtk_window_iconify(shellHandle);
+		else OS.gtk_window_deiconify(shellHandle);
 }
 
 /**
@@ -798,21 +733,20 @@ public void setModal (int modal) {
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_window_set_title (topHandle, buffer);
+	OS.gtk_window_set_title (shellHandle, buffer);
 }
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible) {
-		OS.gtk_widget_show_now (topHandle);
+		OS.gtk_widget_show_now (shellHandle);
 		display.update();
 		sendEvent (SWT.Show);
 	} else {	
-		OS.gtk_widget_hide (topHandle);
+		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
 }

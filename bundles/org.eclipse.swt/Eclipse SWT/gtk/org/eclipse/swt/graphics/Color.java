@@ -29,8 +29,6 @@ public final class Color {
 	 */
 	public GdkColor handle;
 	Device display;
-	boolean isSystem;
-
 Color() {
 }
 /**	 
@@ -90,7 +88,6 @@ public Color(Device display, RGB rgb) {
  * they allocate.
  */
 public void dispose() {
-	if (isSystem) return;
 	/**
 	 * If this is a palette-based display,
 	 * Decrease the reference count for this color.
@@ -235,20 +232,13 @@ public static Color gtk_new(GdkColor gdkColor) {
 	Color color = new Color(null, gtk_getRGBIntensities(gdkColor));
 	return color;
 }
-public static Color gtk_new_system(GdkColor gdkColor) {
-	Color color = new Color(null, gtk_getRGBIntensities(gdkColor));
-	color.isSystem = true;
-	return color;
-}
 
 static RGB gtk_getRGBIntensities(GdkColor gdkColor) {
 	boolean intensitiesAreZero = (gdkColor.red==0) && (gdkColor.green==0) && (gdkColor.blue==0);
 	if (!intensitiesAreZero) return new RGB ((gdkColor.red&0xFF00)>>8,
 	                                        (gdkColor.green&0xFF00)>>8,
 	                                        (gdkColor.blue&0xFF00)>>8 );
-	GdkVisual visual = new GdkVisual();
-	OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
-
+	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
 	int r = (gdkColor.pixel&visual.red_mask) >> visual.red_shift;
 	if (visual.red_prec<8) r = r << (8 - visual.red_prec);
 		else r = r >> (visual.red_prec - 8);

@@ -254,48 +254,31 @@ public Point getDPI () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public FontData [] getFontList (String faceName, boolean scalable) {	
+public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
-	String xlfd;
-	if (faceName == null) {
-		xlfd = "-*";
-	} else {
-		int dashIndex = faceName.indexOf('-');
-		if (dashIndex < 0) {
-			xlfd = "-*-" + faceName + "-*";
-		} else {
-			xlfd = "-" + faceName + "-*";
-		}
-	}
-	/* Use the character encoding for the default locale */
-	byte [] buffer1 = Converter.wcsToMbcs (null, xlfd, true);
-	int [] ret = new int [1];
-	int listPtr = OS.XListFonts (buffer1, 65535, ret);
-	int ptr = listPtr;
-	int [] intBuf = new int [1];
-	FontData [] fd = new FontData [ret [0]];
-	int fdIndex = 0;
-	for (int i = 0; i < ret [0]; i++) {
-		OS.memmove (intBuf, ptr, 4);
-		int charPtr = intBuf [0];
-		int length = OS.strlen (charPtr);
-		byte [] buffer2 = new byte [length];
-		OS.memmove (buffer2, charPtr, length);
-		/* Use the character encoding for the default locale */
-		char [] chars = Converter.mbcsToWcs (null, buffer2);
-		FontData data = FontData.gtk_new (new String (chars));
-		boolean isScalable = data.averageWidth == 0 && data.pixels == 0 && data.points == 0;
-		if (isScalable == scalable) {
-			fd [fdIndex++] = data;
-		}
-		ptr += 4;
-	}
-	// FIXME, leaking font list
-//	OS.XFreeFontNames (listPtr);
-	if (fdIndex == ret [0]) return fd;
-	FontData [] result = new FontData [fdIndex];
-	System.arraycopy (fd, 0, result, 0, fdIndex);
-	return result;
+	
+	/* Temporary code.
+	 * For now, we know that on Pango at least three font families are guaranteed
+	 * to be present: Sans, Serif, and Monspace.
+	 */
+	if (scalable) return getScalableFontList(faceName);
+	return getNonScalableFontList(faceName);
+}
+FontData[] getScalableFontList(String faceName) {
+	FontData[] answer;
+//	if (faceName==null) {
+		answer = new FontData[2];
+		answer[0] = new FontData("helvetica", 12, SWT.ROMAN);
+//	}
+	return answer;
+}
+FontData[] getNonScalableFontList(String faceName) {
+	FontData[] answer;
+//	if (faceName==null) {
+		answer = new FontData[1];
+		answer[0] = new FontData("fixed", 12, SWT.ROMAN);
+//	}
+	return answer;
 }
 
 /**

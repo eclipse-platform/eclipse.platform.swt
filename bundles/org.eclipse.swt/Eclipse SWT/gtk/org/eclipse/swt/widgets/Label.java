@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Label extends Control {
-	int boxHandle, frameHandle;
+	int frameHandle;
 	Image image;
 	String text;
 
@@ -72,16 +72,13 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	
-	boxHandle = OS.gtk_event_box_new ();
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
+
 	frameHandle = OS.gtk_frame_new(null);
 	if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	
 	handle = ((style&SWT.SEPARATOR) != 0)? (((style&SWT.HORIZONTAL)!= 0)?
 		OS.gtk_hseparator_new() : OS.gtk_vseparator_new()):
-		OS.gtk_label_new (new byte [1]);
+		OS.gtk_label_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
@@ -113,13 +110,11 @@ void setHandleStyle () {
 }
 
 void configure() {
-	_connectParent();
-	OS.gtk_container_add(boxHandle, frameHandle);
+	parent._connectChild(topHandle());
 	OS.gtk_container_add(frameHandle, handle);
 }
 
 void showHandle() {
-	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (frameHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_realize (handle);
@@ -127,18 +122,12 @@ void showHandle() {
 
 void register () {
 	super.register ();
-	WidgetTable.put (boxHandle, this);
 	WidgetTable.put (frameHandle, this);
 }
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (boxHandle);
 	WidgetTable.remove (frameHandle);
-}
-
-int eventHandle () {
-	return boxHandle;
 }
 
 void releaseWidget () {
@@ -149,16 +138,10 @@ void releaseWidget () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	boxHandle = frameHandle = 0;
+	frameHandle = 0;
 }
 
-int topHandle () {
-	return boxHandle;
-}
-
-int computeHandle () {
-	return frameHandle;
-}
+int topHandle () { return frameHandle; }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -298,7 +281,7 @@ public void setImage (Image image) {
 	WidgetTable.remove (handle);
 	OS.gtk_widget_destroy (handle);
 	if (image == null) {
-		handle = OS.gtk_label_new (new byte [1]);
+		handle = OS.gtk_label_new (null);
 	} else {
 		handle = OS.gtk_pixmap_new (image.pixmap, image.mask);
 	}
@@ -340,7 +323,7 @@ public void setText (String string) {
 		//NOT IMPLEMENTED - events and state of handle lost
 		WidgetTable.remove (handle);
 		OS.gtk_widget_destroy (handle);
-		handle = OS.gtk_label_new (new byte [1]);
+		handle = OS.gtk_label_new (null);
 		OS.gtk_container_add (frameHandle, handle);
 		WidgetTable.put (handle, this);
 		int alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);

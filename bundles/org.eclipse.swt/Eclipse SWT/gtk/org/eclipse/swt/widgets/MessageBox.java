@@ -171,11 +171,9 @@ private void createHandle() {
 	}
 }
 private void createMessage() {
-	byte[] bytes = Converter.wcsToMbcs (null, getMessage(), true);
-	label = OS.gtk_label_new (bytes);
-	GtkDialog dialog = new GtkDialog();
-	OS.memmove (dialog, handle, GtkDialog.sizeof);
-	OS.gtk_box_pack_start (dialog.vbox, label, true, true, 5); // FIXME should we use container_add??
+	label = OS.gtk_label_new (message);
+	if (label==0) error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_box_pack_start (OS.GTK_DIALOG_VBOX(handle), label, true, true, 5); // FIXME should we use container_add??
 }
 private void createActionButtons() {	
 	if ((style & SWT.OK) != 0) buttonOK = createButton("OK");
@@ -197,9 +195,7 @@ private void showHandle() {
 	
 	int decor = 0;
 	if (hasTitle) decor |= OS.GDK_DECOR_TITLE;
-	GtkWidget widget = new GtkWidget();
-	OS.memmove(widget, handle, GtkWidget.sizeof);
-	int gdkWindow = widget.window;
+	int gdkWindow = OS.GTK_WIDGET_WINDOW(handle);
 	OS.gdk_window_set_decorations(gdkWindow, decor);
 	if (hasTitle) {
 		byte[] bytes = Converter.wcsToMbcs (null, title, true);
@@ -207,12 +203,9 @@ private void showHandle() {
 	}
 }
 int createButton(String buttonName) {
-	System.out.println("Creating button "+buttonName);
 	byte[] bytes = Converter.wcsToMbcs (null, buttonName, true);
 	int buttonHandle = OS.gtk_button_new_with_label(bytes);
-	GtkDialog dialog = new GtkDialog();
-	OS.memmove (dialog, handle, GtkDialog.sizeof);
-	OS.gtk_box_pack_start (dialog.action_area, buttonHandle, true, true, 0);
+	OS.gtk_box_pack_start (OS.GTK_DIALOG_ACTION_AREA(handle), buttonHandle, true, true, 0);
 	hookSelection(buttonHandle);
 	return buttonHandle;
 }
@@ -222,7 +215,6 @@ private void hookSelection(int h) {
 	Callback okCallback = new Callback (this, "activateFunc", 2);
 	int okFunc = okCallback.getAddress ();
 	OS.gtk_signal_connect (h, clicked, okFunc, h);
-
 }
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);

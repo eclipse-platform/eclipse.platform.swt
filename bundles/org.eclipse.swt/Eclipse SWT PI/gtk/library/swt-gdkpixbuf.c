@@ -233,3 +233,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
 	dest_x, dest_y,
 	width, height);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_GDK_1COLORSPACE_1RGB
+  (JNIEnv *env, jclass cl)
+{
+   return (jint)GDK_COLORSPACE_RGB;
+}

@@ -182,25 +182,6 @@ static TreeItem checkNull (TreeItem item) {
 }
 
 /**
- * Returns the receiver's background color.
- *
- * @return the background color
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public Color getBackground () {
-	checkWidget ();
-	Tree parent = getParent();
-	return parent.getBackground();
-}
-
-/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -213,16 +194,12 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	int ctree = parent.handle;
-	GtkCTree tree = new GtkCTree();
-	OS.memmove(tree, ctree, GtkCTree.sizeof);
-
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, tree.vadjustment, GtkAdjustment.sizeof);
-	float vaj = adjustment.value;
-	OS.memmove (adjustment, tree.hadjustment, GtkAdjustment.sizeof);
-	float haj = adjustment.value;
+	GtkCTree tree = new GtkCTree(ctree);
+/*
+	double haj = OS.gtk_adjustment_get_value(tree.hadjustment);
+	double vaj = OS.gtk_adjustment_get_value(tree.vadjustment);
+	
 	int columnHandle = tree.column;
-
 	int height=parent.getItemHeight();
 
 	int row_list = tree.row_list; int level=0;
@@ -251,14 +228,14 @@ public Rectangle getBounds () {
 	int styleHandle = OS.gtk_ctree_node_get_row_style(ctree, handle);
 	if (styleHandle == 0)
 		styleHandle = OS.gtk_widget_get_style(ctree);
-	GtkStyle style = new GtkStyle();
-	OS.memmove(style, styleHandle, GtkStyle.sizeof);	
-	int width = OS.gdk_string_width(style.font, buffer1);
+	GtkStyle style = new GtkStyle(styleHandle);*/
+	/* FIXME */	
+	int width = 50; /*OS.gdk_string_width(style.font, buffer1);*/
 
 //	x = (short)column.area_x+tree.tree_indent*(level-1)+spacing[0]+tree.hoffset;
-	int x = 33+tree.tree_indent*(level-1)+spacing[0]+tree.hoffset;
+/*	int x = 33+tree.tree_indent*(level-1)+spacing[0]+tree.hoffset;*/
 
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (0, 0, 40, 10);
 }	
 
 /**
@@ -306,25 +283,6 @@ public boolean getExpanded () {
 	boolean [] buffer = new boolean [1];
 	OS.gtk_ctree_get_node_info (ctree, handle, null, null, null, null, null, null, null, buffer);
 	return buffer [0];
-}
-
-/**
- * Returns the foreground color that the receiver will use to draw.
- *
- * @return the receiver's foreground color
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public Color getForeground () {
-	checkWidget ();
-	Tree parent = getParent();
-	return parent.getForeground();
 }
 
 /**
@@ -412,8 +370,7 @@ public Tree getParent () {
 public TreeItem getParentItem () {
 	checkWidget();
 	int data = OS.g_list_nth_data (handle, 0);
-	GtkCTreeRow row = new GtkCTreeRow ();
-	OS.memmove (row, data, GtkCTreeRow.sizeof);
+	GtkCTreeRow row = new GtkCTreeRow (data);
 	if (row.parent == 0) return null;
 	int ctree = parent.handle;
 	int index = OS.gtk_ctree_node_get_row_data (ctree, row.parent) - 1;
@@ -428,30 +385,6 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
-}
-
-/**
- * Sets the receiver's background color to the color specified
- * by the argument, or to the default system color for the item
- * if the argument is null.
- *
- * @param color the new color (or null)
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public void setBackground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ())
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
@@ -478,32 +411,6 @@ public void setChecked (boolean checked) {
 	if (!checked && pixmap [0] == parent.uncheck) return;
 	pixmap [0] = checked ? parent.check : parent.uncheck;
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
-}
-
-/**
- * Sets the receiver's foreground color to the color specified
- * by the argument, or to the default system color for the item
- * if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @since 2.0
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public void setForeground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ())
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**

@@ -94,14 +94,11 @@ public int getHeight() {
 public int getLeading() {
 	return leading;
 }
-public static FontMetrics gtk_new(int fontHandle) {
-	GdkFont f = new GdkFont();
-	OS.memmove (f, fontHandle, GdkFont.sizeof);
-	
+public static FontMetrics gtk_new(int gdk_font) {
 	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = f.ascent;
-	fontMetrics.descent = f.descent;
-	fontMetrics.averageCharWidth = OS.gdk_char_width(fontHandle, (byte)'a');
+	fontMetrics.ascent = OS.GDK_FONT_ASCENT(gdk_font);
+	fontMetrics.descent = OS.GDK_FONT_DESCENT(gdk_font);
+	fontMetrics.averageCharWidth = OS.gdk_char_width(gdk_font, (byte)'a');
 	fontMetrics.leading = 3;
 	fontMetrics.height = fontMetrics.ascent+fontMetrics.descent+3;
 	return fontMetrics;

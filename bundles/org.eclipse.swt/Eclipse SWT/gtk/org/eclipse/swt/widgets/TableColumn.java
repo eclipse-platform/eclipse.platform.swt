@@ -220,11 +220,9 @@ public boolean getResizable () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int index = parent.indexOf (this);
 	if (index == -1) return false;
-	GtkCList gtkclist = new GtkCList();
-	OS.memmove(gtkclist, parent.handle, GtkCList.sizeof);
+	GtkCList gtkclist = new GtkCList(parent.handle);
 	int chandle=gtkclist.column;
-	GtkCListColumn gtkcolumn = new GtkCListColumn();
-	OS.memmove(gtkcolumn, chandle+index*GtkCListColumn.sizeof, GtkCListColumn.sizeof);
+	GtkCListColumn gtkcolumn = new GtkCListColumn(chandle+index*GtkCListColumn.sizeof);
 	return (gtkcolumn.resizeable == 1) ? true : false;
 }
 /**
@@ -242,11 +240,9 @@ public int getWidth () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-	GtkCList gtkclist = new GtkCList();
-	OS.memmove(gtkclist, parent.handle, GtkCList.sizeof);
+	GtkCList gtkclist = new GtkCList(parent.handle);
 	int chandle=gtkclist.column;
-	GtkCListColumn gtkcolumn = new GtkCListColumn();
-	OS.memmove(gtkcolumn, chandle+index*GtkCListColumn.sizeof, GtkCListColumn.sizeof);
+	GtkCListColumn gtkcolumn = new GtkCListColumn(chandle+index*GtkCListColumn.sizeof);
 	return gtkcolumn.width;
 }
 /**

@@ -31,9 +31,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class ToolBar extends Composite {
-	int boxHandle, tempHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -67,80 +65,59 @@ public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+/*
+ *  === Handle code ===
+ */
 void createHandle (int index) {
 	state |= HANDLE;
 	
-	/* FIXME
-	 * We do not need an event box here, as event boxes
-	 * have real X windows.
-	 */
-	boxHandle = OS.gtk_event_box_new ();
+	boxHandle = OS.gtk_event_box_new();
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	fixedHandle = OS.eclipse_fixed_new();
+	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	
 	int orientation = ((style&SWT.VERTICAL)!=0)?
 		OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
-	handle = OS.gtk_toolbar_new (orientation, OS.GTK_TOOLBAR_BOTH);
+	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	tempHandle = OS.gtk_fixed_new();
-	if (tempHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_toolbar_set_orientation(handle, orientation);
 }	
 
 void setHandleStyle() {
-	int relief = ((style&SWT.FLAT)!=0)? OS.GTK_RELIEF_NONE : OS.GTK_RELIEF_NORMAL;
-	OS.gtk_toolbar_set_button_relief(handle, relief);
+/*	int relief = ((style&SWT.FLAT)!=0)? OS.GTK_RELIEF_NONE : OS.GTK_RELIEF_NORMAL;
+	OS.gtk_toolbar_set_button_relief(handle, relief);*/
 }
 
 void configure() {
-	_connectParent();
-	OS.gtk_container_add (boxHandle, handle);
-	// invisible handle to temporarily hold control (non-item) items
-	OS.gtk_toolbar_insert_widget (handle,tempHandle,new byte[1], new byte[1],0);
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	if (layout != null) super.computeSize(wHint, hHint, changed);
-	return _computeSize (wHint, hHint, changed);
-}
-
-int eventHandle () {
-	return boxHandle;
+	parent._connectChild(boxHandle);
+	OS.gtk_container_add(boxHandle, fixedHandle);	
+	OS.gtk_container_add(fixedHandle, handle);
 }
 
 void showHandle() {
 	OS.gtk_widget_show (boxHandle);
+	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_realize (handle);
-	// don't show the temp fixed
 }
 
 void register() {
 	super.register ();
-	WidgetTable.put (boxHandle, this);
 }
 
 void deregister() {
 	super.deregister ();
-	WidgetTable.remove (boxHandle);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
 }
 
 int topHandle() { return boxHandle; }
-int parentingHandle() { return tempHandle; } 
-
-/**
- * Returns whether the argument points to an OS widget that is
- * implementing the receiver, i.e., one of my own handles
- */
+int parentingHandle() { return fixedHandle; } 
 boolean isMyHandle(int h) {
-	if (h==handle)       return true;
-	if (h==tempHandle)  return true;
-	if (h==boxHandle)       return true;
-	return false;
-}
-void _connectChild (int h) {
-	// When we put a widget as a tool item, we don't know which item it is, yet.
-	OS.gtk_fixed_put(tempHandle, h, (short)0, (short)0);
+	return super.isMyHandle(h);
 }
 
 
@@ -148,8 +125,16 @@ void _connectChild (int h) {
  *   ===  GEOMETRY  ===
  */
 
-boolean _setSize (int width, int height) { UtilFuncs.setSize(boxHandle, width, height); return true; }
+void _setSize (int width, int height) {
+	OS.eclipse_fixed_set_size(parent.parentingHandle(), boxHandle, width, height);
+	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
+}
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	if (layout != null) super.computeSize(wHint, hHint, changed);
+	return new Point(300,30);
+}
 
 
 /**
@@ -168,8 +153,7 @@ boolean _setSize (int width, int height) { UtilFuncs.setSize(boxHandle, width, h
  * </ul>
  */
 public ToolItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getItems()[index];
 }
 
@@ -194,6 +178,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	return null;
 }
+
 /**
  * Returns the number of items contained in the receiver.
  *
@@ -205,17 +190,11 @@ public ToolItem getItem (Point point) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	/* FIXME
-	 * This code will return the wrong count for items,
-	 * as list includes Window children
-	 */
-//	int list = OS.gtk_container_children (handle);
-//	return OS.g_list_length (list);
-	// TEMPORARY CODE
-	return getItems ().length;
+	checkWidget();
+	int list = OS.gtk_container_children (handle);
+	return OS.g_list_length (list);
 }
+
 /**
  * Returns an array of <code>TabItem</code>s which are the items
  * in the receiver. 
@@ -233,8 +212,7 @@ public int getItemCount () {
  * </ul>
  */
 public ToolItem [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = 0;
 	int list = OS.gtk_container_children (handle);
 	int length = OS.g_list_length (list);
@@ -242,15 +220,11 @@ public ToolItem [] getItems () {
 	for (int i=0; i<length; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		Widget widget = WidgetTable.get (data);
-		if (widget instanceof ToolItem) {
-			result [count++] = (ToolItem) widget;
-		}
+		result [count++] = (ToolItem) widget;
 	}
-	if (length == count) return result;
-	ToolItem [] newResult = new ToolItem [count];
-	System.arraycopy (result, 0, newResult, 0, count);
-	return newResult;
+	return result;
 }
+
 /**
  * Returns the number of rows in the receiver. When
  * the receiver has the <code>WRAP</code> style, the
@@ -264,11 +238,9 @@ public ToolItem [] getItems () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int getRowCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return 1;
+	checkWidget();
+	return 1; /* On GTK, toolbars never wrap */
 }
 
 Control _childFromHandle(int h) {
@@ -297,8 +269,7 @@ Control _childFromHandle(int h) {
  * </ul>
  */
 public int indexOf (ToolItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	// TEMPORARY CODE
@@ -307,21 +278,6 @@ public int indexOf (ToolItem item) {
 		if (item == items[i]) return i;
 	}
 	return -1;
-}
-int processResize (int int0, int int1, int int2) {
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		Control control = items [i].control;
-		if (control != null && !control.isDisposed ()) {
-			control.setBounds (items [i].getBounds ());
-		}
-	}
-	return 0;
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	boxHandle = tempHandle = 0;
 }
 
 void releaseWidget () {
@@ -345,7 +301,7 @@ static int checkStyle (int style) {
 	* widget's client area.  The fix is to clear
 	* the SWT style.
 	*/
-	return style;   // & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
 }

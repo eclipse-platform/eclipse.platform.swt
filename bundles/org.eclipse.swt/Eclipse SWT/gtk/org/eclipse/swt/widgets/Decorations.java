@@ -344,9 +344,8 @@ public void setImage (Image image) {
 		pixmap = image.pixmap;
 		mask = image.mask;
 	}
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove(widget, topHandle(), GtkWidget.sizeof);
-	OS.gdk_window_set_icon (widget.window, 0, pixmap, mask);
+	int window = OS.GTK_WIDGET_WINDOW(topHandle());
+	OS.gdk_window_set_icon (window, 0, pixmap, mask);
 }
 /**
  * Sets the maximized state of the receiver.

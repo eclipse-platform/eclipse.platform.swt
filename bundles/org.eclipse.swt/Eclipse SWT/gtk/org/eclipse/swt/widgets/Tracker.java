@@ -172,8 +172,7 @@ public Display getDisplay () {
 }
 
 /**
- * Returns the bounds that are being drawn, expressed relative to the parent
- * widget.  If the parent is a Display then these are screen coordinates.
+ * Returns the bounds of the Rectangles being drawn.
  *
  * @return the bounds of the Rectangles being drawn
  * 
@@ -203,8 +202,7 @@ public boolean getStippled () {
 }
 
 /**
- * Specify the rectangles that should be drawn, expressed relative to the parent
- * widget.  If the parent is a Display then these are screen coordinates.
+ * Specify the rectangles that should be drawn.
  *
  * @param rectangles the bounds of the rectangles to be drawn
  *
@@ -379,7 +377,7 @@ private int calculateWindow() {
 	if (parent == null) {
 		answer = OS.GDK_ROOT_PARENT();
 	} else {
-		answer = parent._gdkWindow();
+		answer = /*parent._gdkWindow();*/ 0;
 	}
 	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
 	return answer;

@@ -20,43 +20,16 @@
 
 /* Globals */
 GdkColor_FID_CACHE GdkColorFc;
-GdkEventKey_FID_CACHE GdkEventKeyFc;
-GdkEventButton_FID_CACHE GdkEventButtonFc;
-GdkEventMotion_FID_CACHE GdkEventMotionFc;
 GdkEventExpose_FID_CACHE GdkEventExposeFc;
 GdkFont_FID_CACHE GdkFontFc;
 GdkGCValues_FID_CACHE GdkGCValuesFc;
-GdkImage_FID_CACHE GdkImageFc;
-GdkPoint_FID_CACHE GdkPointFc;
 GdkRectangle_FID_CACHE GdkRectangleFc;
 GdkVisual_FID_CACHE GdkVisualFc;
-GtkObject_FID_CACHE GtkObjectFc;
-GtkData_FID_CACHE GtkDataFc;
+
 GtkAdjustment_FID_CACHE GtkAdjustmentFc;
 GtkAllocation_FID_CACHE GtkAllocationFc;
-GtkWidget_FID_CACHE GtkWidgetFc;
-GtkContainer_FID_CACHE GtkContainerFc;
-GtkBin_FID_CACHE GtkBinFc;
-GtkMenu_FID_CACHE GtkMenuFc;
-GtkItem_FID_CACHE GtkItemFc;
-GtkMenuShell_FID_CACHE GtkMenuShellFc;
-GtkMenuItem_FID_CACHE GtkMenuItemFc;
-GtkCheckMenuItem_FID_CACHE GtkCheckMenuItemFc;
-GtkWindow_FID_CACHE GtkWindowFc;
-GtkDialog_FID_CACHE GtkDialogFc;
-GtkColorSelectionDialog_FID_CACHE GtkColorSelectionDialogFc;\
-GtkBox_FID_CACHE GtkBoxFc;
-GtkHBox_FID_CACHE GtkHBoxFc;
 GtkCombo_FID_CACHE GtkComboFc;
-GtkFileSelection_FID_CACHE GtkFileSelectionFc;
-GtkFrame_FID_CACHE GtkFrameFc;
-GtkFontSelectionDialog_FID_CACHE GtkFontSelectionDialogFc;
 GtkCList_FID_CACHE GtkCListFc;
-GtkEditable_FID_CACHE GtkEditableFc;
-GtkText_FID_CACHE GtkTextFc;
-GtkProgress_FID_CACHE GtkProgressFc;
-GtkProgressBar_FID_CACHE GtkProgressBarFc;
-GtkArg_FID_CACHE GtkArgFc;
 GtkRequisition_FID_CACHE GtkRequisitionFc;
 GtkStyle_FID_CACHE GtkStyleFc;
 GtkStyleClass_FID_CACHE GtkStyleClassFc;
@@ -91,83 +64,16 @@ void cacheGdkColorFids(JNIEnv *env, jobject lpGdkColor, PGdkColor_FID_CACHE lpCa
 	lpCache->cached = 1;
 };
 
-void cacheGdkEventKeyFids(JNIEnv *env, jobject lpGdkEventKey, PGdkEventKey_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkEventKeyClass = (*env)->GetObjectClass(env, lpGdkEventKey);
-
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "type", "I");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "window", "I");
-	lpCache->send_event = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "send_event", "B");
-	lpCache->time = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "time", "I");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "state", "I");
-	lpCache->keyval = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "keyval", "I");
-	lpCache->length = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "length", "I");
-	lpCache->string = (*env)->GetFieldID(env, lpCache->GdkEventKeyClass, "string", "I");
-	lpCache->cached = 1;
-};
-
-void cacheGdkEventButtonFids(JNIEnv *env, jobject lpGdkEventButton, PGdkEventButton_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkEventButtonClass = (*env)->GetObjectClass(env, lpGdkEventButton);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "type", "I");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "window", "I");
-	lpCache->send_event = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "send_event", "B");
-	lpCache->time = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "time", "I");
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "x", "J");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "y", "J");
-	lpCache->pressure = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "pressure", "J");
-	lpCache->xtilt = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "xtilt", "J");
-	lpCache->ytilt = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "ytilt", "J");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "state", "I");
-	lpCache->button = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "button", "I");
-	lpCache->source = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "source", "I");
-	lpCache->deviceid = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "deviceid", "I");
-	lpCache->x_root = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "x_root", "J");
-	lpCache->y_root = (*env)->GetFieldID(env, lpCache->GdkEventButtonClass, "y_root", "J");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkEventMotionFids(JNIEnv *env, jobject lpGdkEventMotion, PGdkEventMotion_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkEventMotionClass = (*env)->GetObjectClass(env, lpGdkEventMotion);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "type", "I");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "window", "I");
-	lpCache->send_event = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "send_event", "B");
-	lpCache->time = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "time", "I");
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "x", "J");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "y", "J");
-	lpCache->pressure = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "pressure", "J");
-	lpCache->xtilt = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "xtilt", "J");
-	lpCache->ytilt = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "ytilt", "J");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "state", "I");
-	lpCache->is_hint = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "is_hint", "I");
-	lpCache->source = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "source", "I");
-	lpCache->deviceid = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "deviceid", "I");
-	lpCache->x_root = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "x_root", "J");
-	lpCache->y_root = (*env)->GetFieldID(env, lpCache->GdkEventMotionClass, "y_root", "J");
-
-	lpCache->cached = 1;
-};
-
 void cacheGdkEventExposeFids(JNIEnv *env, jobject lpGdkEventExpose, PGdkEventExpose_FID_CACHE lpCache)
 {
 	if (lpCache->cached) return;
 
 	lpCache->GdkEventExposeClass = (*env)->GetObjectClass(env, lpGdkEventExpose);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "type", "I");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "window", "I");
-	lpCache->send_event = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "send_event", "B");
 	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "x", "S");
 	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "y", "S");
 	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "width", "S");
 	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "height", "S");
+	lpCache->region = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "region", "I");
 	lpCache->count = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "count", "I");
 
 	lpCache->cached = 1;
@@ -215,35 +121,6 @@ void cacheGdkGCValuesFids(JNIEnv *env, jobject lpGdkGCValues, PGdkGCValues_FID_C
 	lpCache->line_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "line_style", "I");
 	lpCache->cap_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "cap_style", "I");
 	lpCache->join_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "join_style", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkImageFids(JNIEnv *env, jobject lpGdkImage, PGdkImage_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkImageClass = (*env)->GetObjectClass(env, lpGdkImage);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkImageClass, "type", "I");
-	lpCache->visual = (*env)->GetFieldID(env, lpCache->GdkImageClass, "visual", "I");
-	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->GdkImageClass, "byte_order", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkImageClass, "width", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkImageClass, "height", "S");
-	lpCache->depth = (*env)->GetFieldID(env, lpCache->GdkImageClass, "depth", "S");
-	lpCache->bpp = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpp", "S");
-	lpCache->bpl = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpl", "S");
-	lpCache->mem = (*env)->GetFieldID(env, lpCache->GdkImageClass, "mem", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkPointFids(JNIEnv *env, jobject lpGdkPoint, PGdkPoint_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkPointClass = (*env)->GetObjectClass(env, lpGdkPoint);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkPointClass, "x", "S");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkPointClass, "y", "S");
 
 	lpCache->cached = 1;
 };
@@ -297,35 +174,12 @@ void cacheGtkAllocationFids(JNIEnv *env, jobject lpGtkAllocation, PGtkAllocation
 	lpCache->cached = 1;
 };
 
-void cacheGtkArgFids(JNIEnv *env, jobject lpGtkArg, PGtkArg_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkArgClass = (*env)->GetObjectClass(env, lpGtkArg);
-
-	fprintf(stderr, "WARNING: Unimplemented method cacheGtkArgFids.\n");
-	lpCache->cached = 1;
-};
-
-void cacheGtkBinFids(JNIEnv *env, jobject lpGtkBin, PGtkBin_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkBinClass = (*env)->GetObjectClass(env, lpGtkBin);
-	cacheGtkContainerFids(env, lpGtkBin, &PGLOB(GtkContainerFc));
-	lpCache->child = (*env)->GetFieldID(env, lpCache->GtkBinClass, "child", "I");
-
-	lpCache->cached = 1;
-};
-
 void cacheGtkCListFids(JNIEnv *env, jobject lpGtkCList, PGtkCList_FID_CACHE lpCache)
 {
 	DECL_GLOB(pGlob)
 	if (lpCache->cached) return;
 
 	lpCache->GtkCListClass = (*env)->GetObjectClass(env, lpGtkCList);
-	cacheGtkContainerFids(env, lpGtkCList, &PGLOB(GtkContainerFc));
 	lpCache->clist_flags = (*env)->GetFieldID(env, lpCache->GtkCListClass, "clist_flags", "S");
 	lpCache->row_mem_chunk = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_mem_chunk", "I");
 	lpCache->cell_mem_chunk = (*env)->GetFieldID(env, lpCache->GtkCListClass, "cell_mem_chunk", "I");
@@ -335,7 +189,6 @@ void cacheGtkCListFids(JNIEnv *env, jobject lpGtkCList, PGtkCList_FID_CACHE lpCa
 	lpCache->internal_allocation_width = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_width", "S");
 	lpCache->internal_allocation_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_height", "S");
 	lpCache->rows = (*env)->GetFieldID(env, lpCache->GtkCListClass, "rows", "I");
-	lpCache->row_center_offset = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_center_offset", "I");
 	lpCache->row_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_height", "I");
 	lpCache->row_list = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_list", "I");
 	lpCache->row_list_end = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_list_end", "I");
@@ -386,203 +239,14 @@ void cacheGtkCListFids(JNIEnv *env, jobject lpGtkCList, PGtkCList_FID_CACHE lpCa
 	lpCache->cached = 1;
 };
 
-
-void cacheGtkColorSelectionDialogFids(JNIEnv *env, jobject lpGtkColorSelectionDialog, PGtkColorSelectionDialog_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkColorSelectionDialogClass = (*env)->GetObjectClass(env, lpGtkColorSelectionDialog);
-	cacheGtkWindowFids(env, lpGtkColorSelectionDialog, &PGLOB(GtkWindowFc));
-	lpCache->colorsel = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "colorsel", "I");
-	lpCache->main_vbox = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "main_vbox", "I");
-	lpCache->ok_button = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "ok_button", "I");
-	lpCache->reset_button = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "reset_button", "I");
-	lpCache->cancel_button = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "cancel_button", "I");
-	lpCache->help_button = (*env)->GetFieldID(env, lpCache->GtkColorSelectionDialogClass, "help_button", "I");
-
-	lpCache->cached = 1;
-};
-
 void cacheGtkComboFids(JNIEnv *env, jobject lpGtkCombo, PGtkCombo_FID_CACHE lpCache)
 {
 	DECL_GLOB(pGlob)
 	if (lpCache->cached) return;
 
 	lpCache->GtkComboClass = (*env)->GetObjectClass(env, lpGtkCombo);
-	cacheGtkHBoxFids(env, lpGtkCombo, &PGLOB(GtkHBoxFc));
 	lpCache->entry = (*env)->GetFieldID(env, lpCache->GtkComboClass, "entry", "I");
-	lpCache->button = (*env)->GetFieldID(env, lpCache->GtkComboClass, "button", "I");
-	lpCache->popup = (*env)->GetFieldID(env, lpCache->GtkComboClass, "popup", "I");
-	lpCache->popwin = (*env)->GetFieldID(env, lpCache->GtkComboClass, "popwin", "I");
 	lpCache->list = (*env)->GetFieldID(env, lpCache->GtkComboClass, "list", "I");
-	lpCache->entry_change_id = (*env)->GetFieldID(env, lpCache->GtkComboClass, "entry_change_id", "I");
-	lpCache->list_change_id = (*env)->GetFieldID(env, lpCache->GtkComboClass, "list_change_id", "I");
-	lpCache->value_in_list = (*env)->GetFieldID(env, lpCache->GtkComboClass, "value_in_list", "I");
-	lpCache->ok_if_empty = (*env)->GetFieldID(env, lpCache->GtkComboClass, "ok_if_empty", "I");
-	lpCache->case_sensitive = (*env)->GetFieldID(env, lpCache->GtkComboClass, "case_sensitive", "I");
-	lpCache->use_arrows = (*env)->GetFieldID(env, lpCache->GtkComboClass, "use_arrows", "I");
-	lpCache->use_arrows_always = (*env)->GetFieldID(env, lpCache->GtkComboClass, "use_arrows_always", "I");
-	lpCache->current_button = (*env)->GetFieldID(env, lpCache->GtkComboClass, "current_button", "S");
-	lpCache->activate_id = (*env)->GetFieldID(env, lpCache->GtkComboClass, "activate_id", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkContainerFids(JNIEnv *env, jobject lpGtkContainer, PGtkContainer_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkContainerClass = (*env)->GetObjectClass(env, lpGtkContainer);
-	cacheGtkWidgetFids(env, lpGtkContainer, &PGLOB(GtkWidgetFc));
-	lpCache->focus_child = (*env)->GetFieldID(env, lpCache->GtkContainerClass, "focus_child", "I");
-	lpCache->border_width = (*env)->GetFieldID(env, lpCache->GtkContainerClass, "border_width", "I");
-	lpCache->need_resize = (*env)->GetFieldID(env, lpCache->GtkContainerClass, "need_resize", "I");
-	lpCache->resize_mode = (*env)->GetFieldID(env, lpCache->GtkContainerClass, "resize_mode", "I");
-	lpCache->resize_widgets = (*env)->GetFieldID(env, lpCache->GtkContainerClass, "resize_widgets", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkDataFids(JNIEnv *env, jobject lpGtkData, PGtkData_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkDataClass = (*env)->GetObjectClass(env, lpGtkData);
-	cacheGtkObjectFids(env, lpGtkData, &PGLOB(GtkObjectFc));
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkEditableFids(JNIEnv *env, jobject lpGtkEditable, PGtkEditable_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkEditableClass = (*env)->GetObjectClass(env, lpGtkEditable);
-	cacheGtkWidgetFids(env, lpGtkEditable, &PGLOB(GtkWidgetFc));
-	lpCache->current_pos = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "current_pos", "I");
-	lpCache->selection_start_pos = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "selection_start_pos", "I");
-	lpCache->selection_end_pos = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "selection_end_pos", "I");
-	lpCache->has_selection = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "has_selection", "I");
-	lpCache->editable = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "editable", "I");
-	lpCache->visible = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "visible", "I");
-	lpCache->ic = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "ic", "I");
-	lpCache->ic_attr = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "ic_attr", "I");
-	lpCache->clipboard_text = (*env)->GetFieldID(env, lpCache->GtkEditableClass, "clipboard_text", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkTextFids(JNIEnv *env, jobject lpGtkText, PGtkText_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkTextClass = (*env)->GetObjectClass(env, lpGtkText);
-	cacheGtkEditableFids(env, lpGtkText, &PGLOB(GtkEditableFc));
-
-	lpCache->first_line_start_index = (*env)->GetFieldID(env, lpCache->GtkTextClass, "first_line_start_index", "I");
-	lpCache->first_onscreen_hor_pixel = (*env)->GetFieldID(env, lpCache->GtkTextClass, "first_onscreen_hor_pixel", "I");
-	lpCache->first_onscreen_ver_pixel = (*env)->GetFieldID(env, lpCache->GtkTextClass, "first_onscreen_ver_pixel", "I");
-	lpCache->default_tab_width = (*env)->GetFieldID(env, lpCache->GtkTextClass, "default_tab_width", "I");
-	lpCache->cursor_pos_x = (*env)->GetFieldID(env, lpCache->GtkTextClass, "cursor_pos_x", "I");
-	lpCache->cursor_pos_y = (*env)->GetFieldID(env, lpCache->GtkTextClass, "cursor_pos_y", "I");
-	lpCache->cursor_virtual_x = (*env)->GetFieldID(env, lpCache->GtkTextClass, "cursor_virtual_x", "I");
-	
-	lpCache->cached = 1;
-};
-
-void cacheGtkFileSelectionFids(JNIEnv *env, jobject lpGtkFileSelection, PGtkFileSelection_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkFileSelectionClass = (*env)->GetObjectClass(env, lpGtkFileSelection);
-	cacheGtkWindowFids(env, lpGtkFileSelection, &PGLOB(GtkWindowFc));
-	lpCache->dir_list = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "dir_list", "I");
-	lpCache->file_list = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "file_list", "I");
-	lpCache->selection_entry = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "selection_entry", "I");
-	lpCache->selection_text = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "selection_text", "I");
-	lpCache->main_vbox = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "main_vbox", "I");
-	lpCache->ok_button = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "ok_button", "I");
-	lpCache->cancel_button = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "cancel_button", "I");
-	lpCache->help_button = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "help_button", "I");
-	lpCache->history_pulldown = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "history_pulldown", "I");
-	lpCache->history_menu = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "history_menu", "I");
-	lpCache->history_list = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "history_list", "I");
-	lpCache->fileop_dialog = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_dialog", "I");
-	lpCache->fileop_entry = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_entry", "I");
-	lpCache->fileop_file = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_file", "I");
-	lpCache->cmpl_state = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "cmpl_state", "I");
-	lpCache->fileop_c_dir = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_c_dir", "I");
-	lpCache->fileop_del_file = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_del_file", "I");
-	lpCache->fileop_ren_file = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "fileop_ren_file", "I");
-	lpCache->button_area = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "button_area", "I");
-	lpCache->action_area = (*env)->GetFieldID(env, lpCache->GtkFileSelectionClass, "action_area", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkFontSelectionDialogFids(JNIEnv *env, jobject lpGtkFontSelectionDialog, PGtkFontSelectionDialog_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkFontSelectionDialogClass = (*env)->GetObjectClass(env, lpGtkFontSelectionDialog);
-	cacheGtkWindowFids(env, lpGtkFontSelectionDialog, &PGLOB(GtkWindowFc));
-	lpCache->fontsel = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "fontsel", "I");
-	lpCache->main_vbox = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "main_vbox", "I");
-	lpCache->action_area = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "action_area", "I");
-	lpCache->ok_button = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "ok_button", "I");
-	lpCache->apply_button = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "apply_button", "I");
-	lpCache->cancel_button = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "cancel_button", "I");
-	lpCache->dialog_width = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "dialog_width", "I");
-	lpCache->auto_resize = (*env)->GetFieldID(env, lpCache->GtkFontSelectionDialogClass, "auto_resize", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkObjectFids(JNIEnv *env, jobject lpGtkObject, PGtkObject_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkObjectClass = (*env)->GetObjectClass(env, lpGtkObject);
-	lpCache->klass = (*env)->GetFieldID(env, lpCache->GtkObjectClass, "klass", "I");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->GtkObjectClass, "flags", "I");
-	lpCache->ref_count = (*env)->GetFieldID(env, lpCache->GtkObjectClass, "ref_count", "I");
-	lpCache->object_data = (*env)->GetFieldID(env, lpCache->GtkObjectClass, "object_data", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkProgressFids(JNIEnv *env, jobject lpGtkProgress, PGtkProgress_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkProgressClass = (*env)->GetObjectClass(env, lpGtkProgress);
-
-	fprintf(stderr, "WARNING: Unimplemented method cacheGtkProgressFids.\n");
-	lpCache->cached = 1;
-};
-
-void cacheGtkProgressBarFids(JNIEnv *env, jobject lpGtkProgressBar, PGtkProgressBar_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkProgressBarClass = (*env)->GetObjectClass(env, lpGtkProgressBar);
-	cacheGtkProgressFids(env, lpGtkProgressBar, &PGLOB(GtkProgressFc));
-	lpCache->bar_style = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "bar_style", "I");
-	lpCache->orientation = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "orientation", "I");
-	lpCache->blocks = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "blocks", "I");
-	lpCache->in_block = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "in_block", "I");
-	lpCache->activity_pos = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "activity_pos", "I");
-	lpCache->activity_step = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "activity_step", "I");
-	lpCache->activity_blocks = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "activity_blocks", "I");
-	lpCache->activity_dir = (*env)->GetFieldID(env, lpCache->GtkProgressBarClass, "activity_dir", "I");
 
 	lpCache->cached = 1;
 };
@@ -603,7 +267,6 @@ void cacheGtkStyleFids(JNIEnv *env, jobject lpGtkStyle, PGtkStyle_FID_CACHE lpCa
 	if (lpCache->cached) return;
 
 	lpCache->GtkStyleClazz = (*env)->GetObjectClass(env, lpGtkStyle);
-	lpCache->klass = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "klass", "I");
 	lpCache->fg0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_pixel", "I");
 	lpCache->fg0_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_red", "S");
 	lpCache->fg0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_green", "S");
@@ -744,6 +407,7 @@ void cacheGtkStyleFids(JNIEnv *env, jobject lpGtkStyle, PGtkStyle_FID_CACHE lpCa
 	lpCache->base4_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_red", "S");
 	lpCache->base4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_green", "S");
 	lpCache->base4_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_blue", "S");
+
 	lpCache->black_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_pixel", "I");
 	lpCache->black_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_red", "S");
 	lpCache->black_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_green", "S");
@@ -752,7 +416,9 @@ void cacheGtkStyleFids(JNIEnv *env, jobject lpGtkStyle, PGtkStyle_FID_CACHE lpCa
 	lpCache->white_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_red", "S");
 	lpCache->white_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_green", "S");
 	lpCache->white_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_blue", "S");
-	lpCache->font = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "font", "I");
+
+	lpCache->font_desc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "font_desc", "I");
+
 	lpCache->fg_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc0", "I");
 	lpCache->fg_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc1", "I");
 	lpCache->fg_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc2", "I");
@@ -788,21 +454,15 @@ void cacheGtkStyleFids(JNIEnv *env, jobject lpGtkStyle, PGtkStyle_FID_CACHE lpCa
 	lpCache->base_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc2", "I");
 	lpCache->base_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc3", "I");
 	lpCache->base_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc4", "I");
+
 	lpCache->black_gc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_gc", "I");
 	lpCache->white_gc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_gc", "I");
+
 	lpCache->bg_pixmap0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap0", "I");
 	lpCache->bg_pixmap1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap1", "I");
 	lpCache->bg_pixmap2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap2", "I");
 	lpCache->bg_pixmap3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap3", "I");
 	lpCache->bg_pixmap4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap4", "I");
-	lpCache->ref_count = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "ref_count", "I");
-	lpCache->attach_count = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "attach_count", "I");
-	lpCache->depth = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "depth", "I");
-	lpCache->colormap = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "colormap", "I");
-	lpCache->engine = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "engine", "I");
-	lpCache->engine_data = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "engine_data", "I");
-	lpCache->rc_style = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "rc_style", "I");
-	lpCache->styles = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "styles", "I");
 
 	lpCache->cached = 1;
 };
@@ -818,200 +478,18 @@ void cacheGtkStyleClassFids(JNIEnv *env, jobject lpGtkStyleClass, PGtkStyleClass
 	lpCache->cached = 1;
 };
 
-void cacheGtkWidgetFids(JNIEnv *env, jobject lpGtkWidget, PGtkWidget_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkWidgetClass = (*env)->GetObjectClass(env, lpGtkWidget);
-	cacheGtkObjectFids(env, lpGtkWidget, &PGLOB(GtkObjectFc));
-	lpCache->private_flags = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "private_flags", "S");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "state", "B");
-	lpCache->saved_state = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "saved_state", "B");
-	lpCache->name = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "name", "I");
-	lpCache->style = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "style", "I");
-	lpCache->req_width = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "req_width", "S");
-	lpCache->req_height = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "req_height", "S");
-	lpCache->alloc_x = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "alloc_x", "S");
-	lpCache->alloc_y = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "alloc_y", "S");
-	lpCache->alloc_width = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "alloc_width", "S");
-	lpCache->alloc_height = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "alloc_height", "S");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "window", "I");
-	lpCache->parent = (*env)->GetFieldID(env, lpCache->GtkWidgetClass, "parent", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkFrameFids(JNIEnv *env, jobject lpGtkFrame, PGtkFrame_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkFrameClass = (*env)->GetObjectClass(env, lpGtkFrame);
-	cacheGtkBinFids(env, lpGtkFrame, &PGLOB(GtkBinFc));
-	lpCache->label = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "label", "I");
-	lpCache->shadow_type = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "shadow_type", "S");
-	lpCache->label_width = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "label_width", "S");
-	lpCache->label_height = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "label_height", "S");
-	lpCache->label_xalign = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "label_xalign", "F");
-	lpCache->label_yalign = (*env)->GetFieldID(env, lpCache->GtkFrameClass, "label_yalign", "F");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkWindowFids(JNIEnv *env, jobject lpGtkWindow, PGtkWindow_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkWindowClass = (*env)->GetObjectClass(env, lpGtkWindow);
-	cacheGtkBinFids(env, lpGtkWindow, &PGLOB(GtkBinFc));
-	lpCache->title = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "title", "I");
-	lpCache->wmclass_name = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "wmclass_name", "I");
-	lpCache->wmclass_class = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "wmclass_class", "I");
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "type", "I");
-	lpCache->focus_widget = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "focus_widget", "I");
-	lpCache->default_widget = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "default_widget", "I");
-	lpCache->transient_parent = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "transient_parent", "I");
-	lpCache->resize_count = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "resize_count", "S");
-	lpCache->allow_shrink = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "allow_shrink", "I");
-	lpCache->allow_grow = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "allow_grow", "I");
-	lpCache->auto_shrink = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "auto_shrink", "I");
-	lpCache->handling_resize = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "handling_resize", "I");
-	lpCache->position = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "position", "I");
-	lpCache->use_uposition = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "use_uposition", "I");
-	lpCache->modal = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "modal", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkDialogFids(JNIEnv *env, jobject lpGtkDialog, PGtkDialog_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkDialogClass = (*env)->GetObjectClass(env, lpGtkDialog);
-	cacheGtkWindowFids(env, lpGtkDialog, &PGLOB(GtkWindowFc));
-	lpCache->vbox = (*env)->GetFieldID(env, lpCache->GtkDialogClass, "vbox", "I");
-	lpCache->action_area = (*env)->GetFieldID(env, lpCache->GtkDialogClass, "action_area", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkCheckMenuItemFids(JNIEnv *env, jobject lpGtkCheckMenuItem, PGtkCheckMenuItem_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkCheckMenuItemClass = (*env)->GetObjectClass(env, lpGtkCheckMenuItem);
-	cacheGtkMenuItemFids(env, lpGtkCheckMenuItem, &PGLOB(GtkMenuItemFc));
-	lpCache->active = (*env)->GetFieldID(env, lpCache->GtkCheckMenuItemClass, "active", "I");
-	lpCache->always_show_toggle = (*env)->GetFieldID(env, lpCache->GtkCheckMenuItemClass, "always_show_toggle", "I");
-
-	lpCache->cached = 1;
-};
-
 void cacheGtkAdjustmentFids(JNIEnv *env, jobject lpGtkAdjustment, PGtkAdjustment_FID_CACHE lpCache)
 {
 	DECL_GLOB(pGlob)
 	if (lpCache->cached) return;
 
 	lpCache->GtkAdjustmentClass = (*env)->GetObjectClass(env, lpGtkAdjustment);
-	cacheGtkDataFids(env, lpGtkAdjustment, &PGLOB(GtkDataFc));
-	lpCache->lower = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "lower", "F");
-	lpCache->upper = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "upper", "F");
-	lpCache->value = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "value", "F");
-	lpCache->step_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "step_increment", "F");
-	lpCache->page_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_increment", "F");
-	lpCache->page_size = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_size", "F");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkBoxFids(JNIEnv *env, jobject lpGtkBox, PGtkBox_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkBoxClass = (*env)->GetObjectClass(env, lpGtkBox);
-	cacheGtkContainerFids(env, lpGtkBox, &PGLOB(GtkContainerFc));
-	lpCache->children = (*env)->GetFieldID(env, lpCache->GtkBoxClass, "children", "I");
-	lpCache->spacing = (*env)->GetFieldID(env, lpCache->GtkBoxClass, "spacing", "S");
-	lpCache->homogeneous = (*env)->GetFieldID(env, lpCache->GtkBoxClass, "homogeneous", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkHBoxFids(JNIEnv *env, jobject lpGtkHBox, PGtkHBox_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkHBoxClass = (*env)->GetObjectClass(env, lpGtkHBox);
-	cacheGtkBoxFids(env, lpGtkHBox, &PGLOB(GtkBoxFc));
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkMenuFids(JNIEnv *env, jobject lpGtkMenu, PGtkMenu_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkMenuClass = (*env)->GetObjectClass(env, lpGtkMenu);
-	cacheGtkMenuShellFids(env, lpGtkMenu, &PGLOB(GtkMenuShellFc));
-	lpCache->parent_menu_item = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "parent_menu_item", "I");
-	lpCache->old_active_menu_item = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "old_active_menu_item", "I");
-	lpCache->accel_group = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "accel_group", "I");
-	lpCache->position_func = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "position_func", "I");
-	lpCache->position_func_data = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "position_func_data", "I");
-	lpCache->toplevel = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "toplevel", "I");
-	lpCache->tearoff_window = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "tearoff_window", "I");
-	lpCache->torn_off = (*env)->GetFieldID(env, lpCache->GtkMenuClass, "torn_off", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkMenuShellFids(JNIEnv *env, jobject lpGtkMenuShell, PGtkMenuShell_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkMenuShellClass = (*env)->GetObjectClass(env, lpGtkMenuShell);
-	cacheGtkContainerFids(env, lpGtkMenuShell, &PGLOB(GtkContainerFc));
-	lpCache->active = (*env)->GetFieldID(env, lpCache->GtkMenuShellClass, "active", "I");	
-	lpCache->cached = 1;
-	
-};
-
-void cacheGtkItemFids(JNIEnv *env, jobject lpGtkItem, PGtkItem_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkItemClass = (*env)->GetObjectClass(env, lpGtkItem);
-	cacheGtkBinFids(env, lpGtkItem, &PGLOB(GtkBinFc));
-
-	lpCache->cached = 1;
-}
-
-void cacheGtkMenuItemFids(JNIEnv *env, jobject lpGtkMenuItem, PGtkMenuItem_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkMenuItemClass = (*env)->GetObjectClass(env, lpGtkMenuItem);
-	cacheGtkItemFids(env, lpGtkMenuItem, &PGLOB(GtkItemFc));
-	lpCache->submenu = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "submenu", "I");
-	lpCache->accelerator_signal = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "accelerator_signal", "I");
-	lpCache->toggle_size = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "toggle_size", "I");
-	lpCache->accelerator_width = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "accelerator_width", "I");
-	lpCache->show_toggle_indicator = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "show_toggle_indicator", "I");
-	lpCache->show_submenu_indicator = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "show_submenu_indicator", "I");
-	lpCache->submenu_placement = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "submenu_placement", "I");
-	lpCache->submenu_direction = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "submenu_direction", "I");
-	lpCache->right_justify = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "right_justify", "I");
-	lpCache->timer = (*env)->GetFieldID(env, lpCache->GtkMenuItemClass, "timer", "I");
+	lpCache->lower = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "lower", "D");
+	lpCache->upper = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "upper", "D");
+	lpCache->value = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "value", "D");
+	lpCache->step_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "step_increment", "D");
+	lpCache->page_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_increment", "D");
+	lpCache->page_size = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_size", "D");
 
 	lpCache->cached = 1;
 };
@@ -1122,112 +600,6 @@ void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpGdkColor, GdkC
 	(*env)->SetShortField(env, lpObject, lpGdkColorFc->blue, (jshort)lpGdkColor->blue);
 }
 
-void getGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventKey_FID_CACHE *lpGdkEventKeyFc)
-{
-	GdkEventKey *lpGdkEventKey = (GdkEventKey*)lpGdkEvent;
-	lpGdkEventKey->type = (*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->type);
-	lpGdkEventKey->window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->window);
-	lpGdkEventKey->send_event = (*env)->GetByteField(env, lpObject, lpGdkEventKeyFc->send_event);
-	lpGdkEventKey->time = (*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->time);
-	lpGdkEventKey->state = (*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->state);
-	lpGdkEventKey->keyval = (*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->keyval);
-	lpGdkEventKey->length = (*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->length);
-	lpGdkEventKey->string = (char*)(*env)->GetIntField(env, lpObject, lpGdkEventKeyFc->string);
-}
-
-void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventKey_FID_CACHE *lpGdkEventKeyFc)
-{
-	GdkEventKey *lpGdkEventKey = (GdkEventKey*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->type, (jint)lpGdkEventKey->type);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->window, (jint)lpGdkEventKey->window);
-	(*env)->SetByteField(env, lpObject, lpGdkEventKeyFc->send_event, (jbyte)lpGdkEventKey->send_event);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->time, (jint)lpGdkEventKey->time);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->state, (jint)lpGdkEventKey->state);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->keyval, (jint)lpGdkEventKey->keyval);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->length, (jint)lpGdkEventKey->length);
-	(*env)->SetIntField(env, lpObject, lpGdkEventKeyFc->string, (jint)lpGdkEventKey->string);
-}
-
-void getGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventButton_FID_CACHE *lpGdkEventButtonFc)
-{
-	GdkEventButton *lpGdkEventButton = (GdkEventButton*)lpGdkEvent;
-	lpGdkEventButton->type = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->type);
-	lpGdkEventButton->window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->window);
-	lpGdkEventButton->send_event = (*env)->GetByteField(env, lpObject, lpGdkEventButtonFc->send_event);
-	lpGdkEventButton->time = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->time);
-	lpGdkEventButton->x = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->x);
-	lpGdkEventButton->y = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->y);
-	lpGdkEventButton->pressure = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->pressure);
-	lpGdkEventButton->xtilt = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->xtilt);
-	lpGdkEventButton->ytilt = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->ytilt);
-	lpGdkEventButton->state = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->state);
-	lpGdkEventButton->button = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->button);
-	lpGdkEventButton->source = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->source);
-	lpGdkEventButton->deviceid = (*env)->GetIntField(env, lpObject, lpGdkEventButtonFc->deviceid);
-	lpGdkEventButton->x_root = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->x_root);
-	lpGdkEventButton->y_root = (*env)->GetLongField(env, lpObject, lpGdkEventButtonFc->y_root);
-}
-
-void setGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventButton_FID_CACHE *lpGdkEventButtonFc)
-{
-	GdkEventButton *lpGdkEventButton = (GdkEventButton*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->type, (jint)lpGdkEventButton->type);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->window, (jint)lpGdkEventButton->window);
-	(*env)->SetByteField(env, lpObject, lpGdkEventButtonFc->send_event, (jbyte)lpGdkEventButton->send_event);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->time, (jint)lpGdkEventButton->time);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->x, (jlong)lpGdkEventButton->x);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->y, (jlong)lpGdkEventButton->y);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->pressure, (jlong)lpGdkEventButton->pressure);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->xtilt, (jlong)lpGdkEventButton->xtilt);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->ytilt, (jlong)lpGdkEventButton->ytilt);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->state, (jint)lpGdkEventButton->state);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->button, (jint)lpGdkEventButton->button);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->source, (jint)lpGdkEventButton->source);
-	(*env)->SetIntField(env, lpObject, lpGdkEventButtonFc->deviceid, (jint)lpGdkEventButton->deviceid);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->x_root, (jlong)lpGdkEventButton->x_root);
-	(*env)->SetLongField(env, lpObject, lpGdkEventButtonFc->y_root, (jlong)lpGdkEventButton->y_root);
-}
-
-void getGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventMotion_FID_CACHE *lpGdkEventMotionFc)
-{
-	GdkEventMotion *lpGdkEventMotion = (GdkEventMotion*)lpGdkEvent;
-	lpGdkEventMotion->type = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->type);
-	lpGdkEventMotion->window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->window);
-	lpGdkEventMotion->send_event = (*env)->GetByteField(env, lpObject, lpGdkEventMotionFc->send_event);
-	lpGdkEventMotion->time = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->time);
-	lpGdkEventMotion->x = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->x);
-	lpGdkEventMotion->y = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->y);
-	lpGdkEventMotion->pressure = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->pressure);
-	lpGdkEventMotion->xtilt = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->xtilt);
-	lpGdkEventMotion->ytilt = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->ytilt);
-	lpGdkEventMotion->state = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->state);
-	lpGdkEventMotion->is_hint = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->is_hint);
-	lpGdkEventMotion->source = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->source);
-	lpGdkEventMotion->deviceid = (*env)->GetIntField(env, lpObject, lpGdkEventMotionFc->deviceid);
-	lpGdkEventMotion->x_root = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->x_root);
-	lpGdkEventMotion->y_root = (*env)->GetLongField(env, lpObject, lpGdkEventMotionFc->y_root);
-}
-
-void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventMotion_FID_CACHE *lpGdkEventMotionFc)
-{
-	GdkEventMotion *lpGdkEventMotion = (GdkEventMotion*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->type, lpGdkEventMotion->type);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->window, (jint)lpGdkEventMotion->window);
-	(*env)->SetByteField(env, lpObject, lpGdkEventMotionFc->send_event, lpGdkEventMotion->send_event);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->time, (jint)lpGdkEventMotion->time);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->x, (jlong)lpGdkEventMotion->x);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->y, (jlong)lpGdkEventMotion->y);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->pressure, (jlong)lpGdkEventMotion->pressure);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->xtilt, (jlong)lpGdkEventMotion->xtilt);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->ytilt, (jlong)lpGdkEventMotion->ytilt);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->state, (jint)lpGdkEventMotion->state);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->is_hint, (jint)lpGdkEventMotion->is_hint);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->source, (jint)lpGdkEventMotion->source);
-	(*env)->SetIntField(env, lpObject, lpGdkEventMotionFc->deviceid, (jint)lpGdkEventMotion->deviceid);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->x_root, (jlong)lpGdkEventMotion->x_root);
-	(*env)->SetLongField(env, lpObject, lpGdkEventMotionFc->y_root, (jlong)lpGdkEventMotion->y_root);
-}
-
 void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
 {
 	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
@@ -1235,6 +607,7 @@ void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent
 	lpGdkEventExpose->area.y = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->y);
 	lpGdkEventExpose->area.width = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->width);
 	lpGdkEventExpose->area.height = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->height);
+	lpGdkEventExpose->region = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->region);
 	lpGdkEventExpose->count = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->count);
 }
 
@@ -1318,44 +691,6 @@ void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpGdkGCVal
 	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->join_style, (jint)lpGdkGCValues->join_style);
 }
 
-void getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
-{
-	lpGdkImage->type = (*env)->GetIntField(env, lpObject, lpGdkImageFc->type);
-	lpGdkImage->visual = (GdkVisual*)(*env)->GetIntField(env, lpObject, lpGdkImageFc->visual);
-	lpGdkImage->byte_order = (*env)->GetIntField(env, lpObject, lpGdkImageFc->byte_order);
-	lpGdkImage->width = (*env)->GetShortField(env, lpObject, lpGdkImageFc->width);
-	lpGdkImage->height = (*env)->GetShortField(env, lpObject, lpGdkImageFc->height);
-	lpGdkImage->depth = (*env)->GetShortField(env, lpObject, lpGdkImageFc->depth);
-	lpGdkImage->bpp = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpp);
-	lpGdkImage->bpl = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpl);
-	lpGdkImage->mem = (gpointer)(*env)->GetIntField(env, lpObject, lpGdkImageFc->mem);
-}
-
-void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->type, (jint)lpGdkImage->type);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->visual, (jint)lpGdkImage->visual);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->byte_order, (jint)lpGdkImage->byte_order);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->width, (jshort)lpGdkImage->width);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->height, (jshort)lpGdkImage->height);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->depth, (jshort)lpGdkImage->depth);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpp, (jshort)lpGdkImage->bpp);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpl, (jshort)lpGdkImage->bpl);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->mem, (jint)lpGdkImage->mem);
-}
-
-void getGdkPointFields(JNIEnv *env, jobject lpObject, GdkPoint *lpGdkPoint, GdkPoint_FID_CACHE *lpGdkPointFc)
-{
-	lpGdkPoint->x = (*env)->GetShortField(env, lpObject, lpGdkPointFc->x);
-	lpGdkPoint->y = (*env)->GetShortField(env, lpObject, lpGdkPointFc->y);
-}
-
-void setGdkPointFields(JNIEnv *env, jobject lpObject, GdkPoint *lpGdkPoint, GdkPoint_FID_CACHE *lpGdkPointFc)
-{
-	(*env)->SetShortField(env, lpObject, lpGdkPointFc->x, (jshort)lpGdkPoint->x);
-	(*env)->SetShortField(env, lpObject, lpGdkPointFc->y, (jshort)lpGdkPoint->y);
-}
-
 void getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc)
 {
 	lpGdkRectangle->x = (*env)->GetShortField(env, lpObject, lpGdkRectangleFc->x);
@@ -1424,52 +759,9 @@ void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkA
 	(*env)->SetShortField(env, lpObject, lpGtkAllocationFc->height, lpGtkAllocation->height);
 }
 
-void getGtkArgFields(JNIEnv *env, jobject lpObject, GtkArg *lpGtkArg, GtkArg_FID_CACHE *lpGtkArgFc)
-{
-	fprintf(stderr, "WARNING: Unimplemented method getGtkArgFields.\n");
-}
-
-void setGtkArgFields(JNIEnv *env, jobject lpObject, GtkArg *lpGtkArg, GtkArg_FID_CACHE *lpGtkArgFc)
-{
-	fprintf(stderr, "WARNING: Unimplemented method setGtkArgFields.\n");
-}
-
-void getGtkBinFields(JNIEnv *env, jobject lpObject, GtkBin *lpGtkBin, GtkBin_FID_CACHE *lpGtkBinFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkContainerFields(env, lpObject, &lpGtkBin->container, &PGLOB(GtkContainerFc));
-	lpGtkBin->child = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkBinFc->child);
-}
-
-void setGtkBinFields(JNIEnv *env, jobject lpObject, GtkBin *lpGtkBin, GtkBin_FID_CACHE *lpGtkBinFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkContainerFields(env, lpObject, &lpGtkBin->container, &PGLOB(GtkContainerFc));
-	(*env)->SetIntField(env, lpObject, lpGtkBinFc->child, (jint)lpGtkBin->child);
-}
-
-void getGtkBoxFields(JNIEnv *env, jobject lpObject, GtkBox *lpGtkBox, GtkBox_FID_CACHE *lpGtkBoxFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkContainerFields(env, lpObject, &lpGtkBox->container, &PGLOB(GtkContainerFc));
-	lpGtkBox->children = (GList*)(*env)->GetIntField(env, lpObject, lpGtkBoxFc->children);
-	lpGtkBox->spacing = (*env)->GetShortField(env, lpObject, lpGtkBoxFc->spacing);
-	lpGtkBox->homogeneous = (*env)->GetIntField(env, lpObject, lpGtkBoxFc->homogeneous);
-}
-
-void setGtkBoxFields(JNIEnv *env, jobject lpObject, GtkBox *lpGtkBox, GtkBox_FID_CACHE *lpGtkBoxFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkContainerFields(env, lpObject, &lpGtkBox->container, &PGLOB(GtkContainerFc));
-	(*env)->SetIntField(env, lpObject, lpGtkBoxFc->children, (jint)lpGtkBox->children);
-	(*env)->SetShortField(env, lpObject, lpGtkBoxFc->spacing, (jshort)lpGtkBox->spacing);
-	(*env)->SetIntField(env, lpObject, lpGtkBoxFc->homogeneous, (jint)lpGtkBox->homogeneous);
-}
-
 void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc)
 {
 	DECL_GLOB(pGlob)
-	getGtkContainerFields(env, lpObject, &lpGtkCList->container, &PGLOB(GtkContainerFc));
 	lpGtkCList->flags = (*env)->GetShortField(env, lpObject, lpGtkCListFc->clist_flags);
 	lpGtkCList->row_mem_chunk = (GMemChunk*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_mem_chunk);
 	lpGtkCList->cell_mem_chunk = (GMemChunk*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->cell_mem_chunk);
@@ -1479,7 +771,6 @@ void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkC
 	lpGtkCList->internal_allocation.width = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_width);
 	lpGtkCList->internal_allocation.height = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_height);
 	lpGtkCList->rows = (*env)->GetIntField(env, lpObject, lpGtkCListFc->rows);
-	lpGtkCList->row_center_offset = (*env)->GetIntField(env, lpObject, lpGtkCListFc->row_center_offset);
 	lpGtkCList->row_height = (*env)->GetIntField(env, lpObject, lpGtkCListFc->row_height);
 	lpGtkCList->row_list = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_list);
 	lpGtkCList->row_list_end = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_list_end);
@@ -1531,7 +822,6 @@ void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkC
 void setGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc)
 {
 	DECL_GLOB(pGlob)
-	setGtkContainerFields(env, lpObject, &lpGtkCList->container, &PGLOB(GtkContainerFc));
 	(*env)->SetShortField(env, lpObject, lpGtkCListFc->clist_flags, (jshort)lpGtkCList->flags);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_mem_chunk, (jint)lpGtkCList->row_mem_chunk);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->cell_mem_chunk, (jint)lpGtkCList->cell_mem_chunk);
@@ -1541,7 +831,6 @@ void setGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkC
 	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_width, (jshort)lpGtkCList->internal_allocation.width);
 	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_height, (jshort)lpGtkCList->internal_allocation.height);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->rows, (jint)lpGtkCList->rows);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_center_offset, (jint)lpGtkCList->row_center_offset);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_height, (jint)lpGtkCList->row_height);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_list, (jint)lpGtkCList->row_list);
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_list_end, (jint)lpGtkCList->row_list_end);
@@ -1590,309 +879,18 @@ void setGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkC
 	(*env)->SetIntField(env, lpObject, lpGtkCListFc->sort_column, (jint)lpGtkCList->sort_column);
 }
 
-void getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpGtkColorSelectionDialog, GtkColorSelectionDialog_FID_CACHE *lpGtkColorSelectionDialogFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWindowFields(env, lpObject, &lpGtkColorSelectionDialog->window, &PGLOB(GtkWindowFc));
-	lpGtkColorSelectionDialog->colorsel = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->colorsel);
-	lpGtkColorSelectionDialog->main_vbox = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->main_vbox);
-	lpGtkColorSelectionDialog->ok_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->ok_button);
-	lpGtkColorSelectionDialog->reset_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->reset_button);
-	lpGtkColorSelectionDialog->cancel_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->cancel_button);
-	lpGtkColorSelectionDialog->help_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkColorSelectionDialogFc->help_button);
-}
-
-void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpGtkColorSelectionDialog, GtkColorSelectionDialog_FID_CACHE *lpGtkColorSelectionDialogFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWindowFields(env, lpObject, &lpGtkColorSelectionDialog->window, &PGLOB(GtkWindowFc));
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->colorsel, (jint)lpGtkColorSelectionDialog->colorsel);
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->main_vbox, (jint)lpGtkColorSelectionDialog->main_vbox);
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->ok_button, (jint)lpGtkColorSelectionDialog->ok_button);
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->reset_button, (jint)lpGtkColorSelectionDialog->reset_button);
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->cancel_button, (jint)lpGtkColorSelectionDialog->cancel_button);
-	(*env)->SetIntField(env, lpObject, lpGtkColorSelectionDialogFc->help_button, (jint)lpGtkColorSelectionDialog->help_button);
-}
-
 void getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpGtkCombo, GtkCombo_FID_CACHE *lpGtkComboFc)
 {
 	DECL_GLOB(pGlob)
-	getGtkHBoxFields(env, lpObject, &lpGtkCombo->hbox, &PGLOB(GtkHBoxFc));
 	lpGtkCombo->entry = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->entry);
-	lpGtkCombo->button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->button);
-	lpGtkCombo->popup = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->popup);
-	lpGtkCombo->popwin = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->popwin);
 	lpGtkCombo->list = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->list);
-	lpGtkCombo->entry_change_id = (*env)->GetIntField(env, lpObject, lpGtkComboFc->entry_change_id);
-	lpGtkCombo->list_change_id = (*env)->GetIntField(env, lpObject, lpGtkComboFc->list_change_id);
-	lpGtkCombo->value_in_list = (*env)->GetIntField(env, lpObject, lpGtkComboFc->value_in_list);
-	lpGtkCombo->ok_if_empty = (*env)->GetIntField(env, lpObject, lpGtkComboFc->ok_if_empty);
-	lpGtkCombo->case_sensitive = (*env)->GetIntField(env, lpObject, lpGtkComboFc->case_sensitive);
-	lpGtkCombo->use_arrows = (*env)->GetIntField(env, lpObject, lpGtkComboFc->use_arrows);
-	lpGtkCombo->use_arrows_always = (*env)->GetIntField(env, lpObject, lpGtkComboFc->use_arrows_always);
-	lpGtkCombo->current_button = (*env)->GetShortField(env, lpObject, lpGtkComboFc->current_button);
-	lpGtkCombo->activate_id = (*env)->GetIntField(env, lpObject, lpGtkComboFc->activate_id);
 }
 
 void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpGtkCombo, GtkCombo_FID_CACHE *lpGtkComboFc)
 {
 	DECL_GLOB(pGlob)
-	setGtkHBoxFields(env, lpObject, &lpGtkCombo->hbox, &PGLOB(GtkHBoxFc));
 	(*env)->SetIntField(env, lpObject, lpGtkComboFc->entry, (jint)lpGtkCombo->entry);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->button, (jint)lpGtkCombo->button);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->popup, (jint)lpGtkCombo->popup);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->popwin, (jint)lpGtkCombo->popwin);
 	(*env)->SetIntField(env, lpObject, lpGtkComboFc->list, (jint)lpGtkCombo->list);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->entry_change_id, (jint)lpGtkCombo->entry_change_id);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->list_change_id, (jint)lpGtkCombo->list_change_id);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->value_in_list, (jint)lpGtkCombo->value_in_list);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->ok_if_empty, (jint)lpGtkCombo->ok_if_empty);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->case_sensitive, (jint)lpGtkCombo->case_sensitive);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->use_arrows, (jint)lpGtkCombo->use_arrows);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->use_arrows_always, (jint)lpGtkCombo->use_arrows_always);
-	(*env)->SetShortField(env, lpObject, lpGtkComboFc->current_button, (jshort)lpGtkCombo->current_button);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->activate_id, (jint)lpGtkCombo->activate_id);
-}
-
-void getGtkContainerFields(JNIEnv *env, jobject lpObject, GtkContainer *lpGtkContainer, GtkContainer_FID_CACHE *lpGtkContainerFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWidgetFields(env, lpObject, &lpGtkContainer->widget, &PGLOB(GtkWidgetFc));
-	lpGtkContainer->focus_child = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkContainerFc->focus_child);
-	lpGtkContainer->border_width = (*env)->GetIntField(env, lpObject, lpGtkContainerFc->border_width);
-	lpGtkContainer->need_resize = (*env)->GetIntField(env, lpObject, lpGtkContainerFc->need_resize);
-	lpGtkContainer->resize_mode = (*env)->GetIntField(env, lpObject, lpGtkContainerFc->resize_mode);
-	lpGtkContainer->resize_widgets = (GSList*)(*env)->GetIntField(env, lpObject, lpGtkContainerFc->resize_widgets);
-}
-
-void setGtkContainerFields(JNIEnv *env, jobject lpObject, GtkContainer *lpGtkContainer, GtkContainer_FID_CACHE *lpGtkContainerFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWidgetFields(env, lpObject, &lpGtkContainer->widget, &PGLOB(GtkWidgetFc));
-	(*env)->SetIntField(env, lpObject, lpGtkContainerFc->focus_child, (jint)lpGtkContainer->focus_child);
-	(*env)->SetIntField(env, lpObject, lpGtkContainerFc->border_width, (jint)lpGtkContainer->border_width);
-	(*env)->SetIntField(env, lpObject, lpGtkContainerFc->need_resize, (jint)lpGtkContainer->need_resize);
-	(*env)->SetIntField(env, lpObject, lpGtkContainerFc->resize_mode, (jint)lpGtkContainer->resize_mode);
-	(*env)->SetIntField(env, lpObject, lpGtkContainerFc->resize_widgets, (jint)lpGtkContainer->resize_widgets);
-}
-
-void getGtkEditableFields(JNIEnv *env, jobject lpObject, GtkEditable *lpGtkEditable, GtkEditable_FID_CACHE *lpGtkEditableFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWidgetFields(env, lpObject, &lpGtkEditable->widget, &PGLOB(GtkWidgetFc));
-	lpGtkEditable->current_pos = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->current_pos);
-	lpGtkEditable->selection_start_pos = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->selection_start_pos);
-	lpGtkEditable->selection_end_pos = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->selection_end_pos);
-	lpGtkEditable->has_selection = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->has_selection);
-	lpGtkEditable->editable = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->editable);
-	lpGtkEditable->visible = (*env)->GetIntField(env, lpObject, lpGtkEditableFc->visible);
-	lpGtkEditable->ic = (GdkIC*)(*env)->GetIntField(env, lpObject, lpGtkEditableFc->ic);
-	lpGtkEditable->ic_attr = (GdkICAttr*)(*env)->GetIntField(env, lpObject, lpGtkEditableFc->ic_attr);
-	lpGtkEditable->clipboard_text = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkEditableFc->clipboard_text);
-}
-
-void setGtkEditableFields(JNIEnv *env, jobject lpObject, GtkEditable *lpGtkEditable, GtkEditable_FID_CACHE *lpGtkEditableFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWidgetFields(env, lpObject, &lpGtkEditable->widget, &PGLOB(GtkWidgetFc));
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->current_pos, (jint)lpGtkEditable->current_pos);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->selection_start_pos, (jint)lpGtkEditable->selection_start_pos);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->selection_end_pos, (jint)lpGtkEditable->selection_end_pos);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->has_selection, (jint)lpGtkEditable->has_selection);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->editable, (jint)lpGtkEditable->editable);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->visible, (jint)lpGtkEditable->visible);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->ic, (jint)lpGtkEditable->ic);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->ic_attr, (jint)lpGtkEditable->ic_attr);
-	(*env)->SetIntField(env, lpObject, lpGtkEditableFc->clipboard_text, (jint)lpGtkEditable->clipboard_text);
-}
-
-void getGtkTextFields(JNIEnv *env, jobject lpObject, GtkText *lpGtkText, GtkText_FID_CACHE *lpGtkTextFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkEditableFields(env, lpObject, &lpGtkText->editable, &PGLOB(GtkEditableFc));
-
-	lpGtkText->first_line_start_index = (*env)->GetIntField(env, lpObject, lpGtkTextFc->first_line_start_index);
-	lpGtkText->first_onscreen_hor_pixel = (*env)->GetIntField(env, lpObject, lpGtkTextFc->first_onscreen_hor_pixel);
-	lpGtkText->first_onscreen_ver_pixel = (*env)->GetIntField(env, lpObject, lpGtkTextFc->first_onscreen_ver_pixel);
-	lpGtkText->default_tab_width = (*env)->GetIntField(env, lpObject, lpGtkTextFc->default_tab_width);
-	lpGtkText->cursor_pos_x = (*env)->GetIntField(env, lpObject, lpGtkTextFc->cursor_pos_x);
-	lpGtkText->cursor_pos_y = (*env)->GetIntField(env, lpObject, lpGtkTextFc->cursor_pos_y);
-	lpGtkText->cursor_virtual_x = (*env)->GetIntField(env, lpObject, lpGtkTextFc->cursor_virtual_x);
-}
-
-void setGtkTextFields(JNIEnv *env, jobject lpObject, GtkText *lpGtkText, GtkText_FID_CACHE *lpGtkTextFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkEditableFields(env, lpObject, &lpGtkText->editable, &PGLOB(GtkEditableFc));
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->first_line_start_index, (jint)lpGtkText->first_line_start_index);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->first_onscreen_hor_pixel, (jint)lpGtkText->first_onscreen_hor_pixel);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->first_onscreen_ver_pixel, (jint)lpGtkText->first_onscreen_ver_pixel);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->default_tab_width, (jint)lpGtkText->default_tab_width);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->cursor_pos_x, (jint)lpGtkText->cursor_pos_x);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->cursor_pos_y, (jint)lpGtkText->cursor_pos_y);
-	(*env)->SetIntField(env, lpObject, lpGtkTextFc->cursor_virtual_x, (jint)lpGtkText->cursor_virtual_x);
-}
-
-void getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpGtkFileSelection, GtkFileSelection_FID_CACHE *lpGtkFileSelectionFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWindowFields(env, lpObject, &lpGtkFileSelection->window, &PGLOB(GtkWindowFc));
-	lpGtkFileSelection->dir_list = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->dir_list);
-	lpGtkFileSelection->file_list = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->file_list);
-	lpGtkFileSelection->selection_entry = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->selection_entry);
-	lpGtkFileSelection->selection_text = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->selection_text);
-	lpGtkFileSelection->main_vbox = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->main_vbox);
-	lpGtkFileSelection->ok_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->ok_button);
-	lpGtkFileSelection->cancel_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->cancel_button);
-	lpGtkFileSelection->help_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->help_button);
-	lpGtkFileSelection->history_pulldown = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->history_pulldown);
-	lpGtkFileSelection->history_menu = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->history_menu);
-	lpGtkFileSelection->history_list = (GList*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->history_list);
-	lpGtkFileSelection->fileop_dialog = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_dialog);
-	lpGtkFileSelection->fileop_entry = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_entry);
-	lpGtkFileSelection->fileop_file = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_file);
-	lpGtkFileSelection->cmpl_state = (gpointer)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->cmpl_state);
-	lpGtkFileSelection->fileop_c_dir = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_c_dir);
-	lpGtkFileSelection->fileop_del_file = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_del_file);
-	lpGtkFileSelection->fileop_ren_file = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_ren_file);
-	lpGtkFileSelection->button_area = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->button_area);
-	lpGtkFileSelection->action_area = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFileSelectionFc->action_area);
-}
-
-void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpGtkFileSelection, GtkFileSelection_FID_CACHE *lpGtkFileSelectionFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWindowFields(env, lpObject, &lpGtkFileSelection->window, &PGLOB(GtkWindowFc));
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->dir_list, (jint)lpGtkFileSelection->dir_list);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->file_list, (jint)lpGtkFileSelection->file_list);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->selection_entry, (jint)lpGtkFileSelection->selection_entry);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->selection_text, (jint)lpGtkFileSelection->selection_text);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->main_vbox, (jint)lpGtkFileSelection->main_vbox);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->ok_button, (jint)lpGtkFileSelection->ok_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->cancel_button, (jint)lpGtkFileSelection->cancel_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->help_button, (jint)lpGtkFileSelection->help_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->history_pulldown, (jint)lpGtkFileSelection->history_pulldown);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->history_menu, (jint)lpGtkFileSelection->history_menu);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->history_list, (jint)lpGtkFileSelection->history_list);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_dialog, (jint)lpGtkFileSelection->fileop_dialog);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_entry, (jint)lpGtkFileSelection->fileop_entry);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_file, (jint)lpGtkFileSelection->fileop_file);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->cmpl_state, (jint)lpGtkFileSelection->cmpl_state);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_c_dir, (jint)lpGtkFileSelection->fileop_c_dir);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_del_file, (jint)lpGtkFileSelection->fileop_del_file);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->fileop_ren_file, (jint)lpGtkFileSelection->fileop_ren_file);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->button_area, (jint)lpGtkFileSelection->button_area);
-	(*env)->SetIntField(env, lpObject, lpGtkFileSelectionFc->action_area, (jint)lpGtkFileSelection->action_area);
-}
-
-void getGtkFontSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkFontSelectionDialog *lpGtkFontSelectionDialog, GtkFontSelectionDialog_FID_CACHE *lpGtkFontSelectionDialogFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWindowFields(env, lpObject, &lpGtkFontSelectionDialog->window, &PGLOB(GtkWindowFc));
-	lpGtkFontSelectionDialog->fontsel = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->fontsel);
-	lpGtkFontSelectionDialog->main_vbox = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->main_vbox);
-	lpGtkFontSelectionDialog->action_area = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->action_area);
-	lpGtkFontSelectionDialog->ok_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->ok_button);
-	lpGtkFontSelectionDialog->apply_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->apply_button);
-	lpGtkFontSelectionDialog->cancel_button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->cancel_button);
-	lpGtkFontSelectionDialog->dialog_width = (*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->dialog_width);
-	lpGtkFontSelectionDialog->auto_resize = (*env)->GetIntField(env, lpObject, lpGtkFontSelectionDialogFc->auto_resize);
-}
-
-void setGtkFontSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkFontSelectionDialog *lpGtkFontSelectionDialog, GtkFontSelectionDialog_FID_CACHE *lpGtkFontSelectionDialogFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWindowFields(env, lpObject, &lpGtkFontSelectionDialog->window, &PGLOB(GtkWindowFc));
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->fontsel, (jint)lpGtkFontSelectionDialog->fontsel);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->main_vbox, (jint)lpGtkFontSelectionDialog->main_vbox);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->action_area, (jint)lpGtkFontSelectionDialog->action_area);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->ok_button, (jint)lpGtkFontSelectionDialog->ok_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->apply_button, (jint)lpGtkFontSelectionDialog->apply_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->cancel_button, (jint)lpGtkFontSelectionDialog->cancel_button);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->dialog_width, (jint)lpGtkFontSelectionDialog->dialog_width);
-	(*env)->SetIntField(env, lpObject, lpGtkFontSelectionDialogFc->auto_resize, (jint)lpGtkFontSelectionDialog->auto_resize);
-}
-
-void getGtkHBoxFields(JNIEnv *env, jobject lpObject, GtkHBox *lpGtkHBox, GtkHBox_FID_CACHE *lpGtkHBoxFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkBoxFields(env, lpObject, &lpGtkHBox->box, &PGLOB(GtkBoxFc));
-}
-
-void setGtkHBoxFields(JNIEnv *env, jobject lpObject, GtkHBox *lpGtkHBox, GtkHBox_FID_CACHE *lpGtkHBoxFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkBoxFields(env, lpObject, &lpGtkHBox->box, &PGLOB(GtkBoxFc));
-}
-
-void getGtkObjectFields(JNIEnv *env, jobject lpObject, GtkObject *lpGtkObject, GtkObject_FID_CACHE *lpGtkObjectFc)
-{
-	lpGtkObject->klass = (GtkObjectClass*)(*env)->GetIntField(env, lpObject, lpGtkObjectFc->klass);
-	lpGtkObject->flags = (*env)->GetIntField(env, lpObject, lpGtkObjectFc->flags);
-	lpGtkObject->ref_count = (*env)->GetIntField(env, lpObject, lpGtkObjectFc->ref_count);
-	lpGtkObject->object_data = (GData*)(*env)->GetIntField(env, lpObject, lpGtkObjectFc->object_data);
-}
-
-void setGtkObjectFields(JNIEnv *env, jobject lpObject, GtkObject *lpGtkObject, GtkObject_FID_CACHE *lpGtkObjectFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGtkObjectFc->klass, (jint)lpGtkObject->klass);
-	(*env)->SetIntField(env, lpObject, lpGtkObjectFc->flags, (jint)lpGtkObject->flags);
-	(*env)->SetIntField(env, lpObject, lpGtkObjectFc->ref_count, (jint)lpGtkObject->ref_count);
-	(*env)->SetIntField(env, lpObject, lpGtkObjectFc->object_data, (jint)lpGtkObject->object_data);
-}
-
-void getGtkProgressFields(JNIEnv *env, jobject lpObject, GtkProgress *lpGtkProgress, GtkProgress_FID_CACHE *lpGtkProgressFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWidgetFields(env, lpObject, &lpGtkProgress->widget, &PGLOB(GtkWidgetFc));
-	lpGtkProgress->adjustment = (GtkAdjustment*)(*env)->GetIntField(env, lpObject, lpGtkProgressFc->adjustment);
-	lpGtkProgress->offscreen_pixmap = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkProgressFc->offscreen_pixmap);
-	lpGtkProgress->format = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkProgressFc->format);
-	lpGtkProgress->x_align = (*env)->GetFloatField(env, lpObject, lpGtkProgressFc->x_align);
-	lpGtkProgress->y_align = (*env)->GetFloatField(env, lpObject, lpGtkProgressFc->y_align);
-	lpGtkProgress->show_text = (*env)->GetIntField(env, lpObject, lpGtkProgressFc->show_text);
-	lpGtkProgress->activity_mode = (*env)->GetIntField(env, lpObject, lpGtkProgressFc->activity_mode);
-}
-
-void setGtkProgressFields(JNIEnv *env, jobject lpObject, GtkProgress *lpGtkProgress, GtkProgress_FID_CACHE *lpGtkProgressFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWidgetFields(env, lpObject, &lpGtkProgress->widget, &PGLOB(GtkWidgetFc));
-	(*env)->SetIntField(env, lpObject, lpGtkProgressFc->adjustment, (jint)lpGtkProgress->adjustment);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressFc->offscreen_pixmap, (jint)lpGtkProgress->offscreen_pixmap);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressFc->format, (jint)lpGtkProgress->format);
-	(*env)->SetFloatField(env, lpObject, lpGtkProgressFc->x_align, (jfloat)lpGtkProgress->x_align);
-	(*env)->SetFloatField(env, lpObject, lpGtkProgressFc->y_align, (jfloat)lpGtkProgress->y_align);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressFc->show_text, (jint)lpGtkProgress->show_text);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressFc->activity_mode, (jint)lpGtkProgress->activity_mode);
-}
-
-void getGtkProgressBarFields(JNIEnv *env, jobject lpObject, GtkProgressBar *lpGtkProgressBar, GtkProgressBar_FID_CACHE *lpGtkProgressBarFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkProgressFields(env, lpObject, &lpGtkProgressBar->progress, &PGLOB(GtkProgressFc));
-	lpGtkProgressBar->bar_style = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->bar_style);
-	lpGtkProgressBar->orientation = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->orientation);
-	lpGtkProgressBar->blocks = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->blocks);
-	lpGtkProgressBar->in_block = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->in_block);
-	lpGtkProgressBar->activity_pos = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->activity_pos);
-	lpGtkProgressBar->activity_step = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->activity_step);
-	lpGtkProgressBar->activity_blocks = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->activity_blocks);
-	lpGtkProgressBar->activity_dir = (*env)->GetIntField(env, lpObject, lpGtkProgressBarFc->activity_dir);
-}
-
-void setGtkProgressBarFields(JNIEnv *env, jobject lpObject, GtkProgressBar *lpGtkProgressBar, GtkProgressBar_FID_CACHE *lpGtkProgressBarFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkProgressFields(env, lpObject, &lpGtkProgressBar->progress, &PGLOB(GtkProgressFc));
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->bar_style, (jint)lpGtkProgressBar->bar_style);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->orientation, (jint)lpGtkProgressBar->orientation);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->blocks, (jint)lpGtkProgressBar->blocks);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->in_block, (jint)lpGtkProgressBar->in_block);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->activity_pos, (jint)lpGtkProgressBar->activity_pos);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->activity_step, (jint)lpGtkProgressBar->activity_step);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->activity_blocks, (jint)lpGtkProgressBar->activity_blocks);
-	(*env)->SetIntField(env, lpObject, lpGtkProgressBarFc->activity_dir, (jint)lpGtkProgressBar->activity_dir);
 }
 
 void getGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpGtkRequisition, GtkRequisition_FID_CACHE *lpGtkRequisitionFc)
@@ -1909,7 +907,6 @@ void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpGt
 
 void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkStyle_FID_CACHE *lpGtkStyleFc)
 {
-	lpGtkStyle->klass = (GtkStyleClass*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->klass);
 	lpGtkStyle->fg[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg0_pixel);
 	lpGtkStyle->fg[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg0_red);
 	lpGtkStyle->fg[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg0_green);
@@ -2058,7 +1055,6 @@ void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	lpGtkStyle->white.red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_red);
 	lpGtkStyle->white.green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_green);
 	lpGtkStyle->white.blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_blue);
-	lpGtkStyle->font = (GdkFont*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->font);
 	lpGtkStyle->fg_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc0);
 	lpGtkStyle->fg_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc1);
 	lpGtkStyle->fg_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc2);
@@ -2101,19 +1097,10 @@ void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	lpGtkStyle->bg_pixmap[2] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap2);
 	lpGtkStyle->bg_pixmap[3] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap3);
 	lpGtkStyle->bg_pixmap[4] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap4);
-	lpGtkStyle->ref_count = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->ref_count);
-	lpGtkStyle->attach_count = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->attach_count);
-	lpGtkStyle->depth = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->depth);
-	lpGtkStyle->colormap = (GdkColormap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->colormap);
-	lpGtkStyle->engine = (GtkThemeEngine*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->engine);
-	lpGtkStyle->engine_data = (gpointer)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->engine_data);
-	lpGtkStyle->rc_style = (GtkRcStyle*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->rc_style);
-	lpGtkStyle->styles = (GSList*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->styles);
 }
 
 void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkStyle_FID_CACHE *lpGtkStyleFc)
 {
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->klass, (jint)lpGtkStyle->klass);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg0_pixel, (jint)lpGtkStyle->fg[0].pixel);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg0_red, (jshort)lpGtkStyle->fg[0].red);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg0_green, (jshort)lpGtkStyle->fg[0].green);
@@ -2254,6 +1241,7 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_red, (jshort)lpGtkStyle->base[4].red);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_green, (jshort)lpGtkStyle->base[4].green);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_blue, (jshort)lpGtkStyle->base[4].blue);
+
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->black_pixel, (jint)lpGtkStyle->black.pixel);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->black_red, (jshort)lpGtkStyle->black.red);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->black_green, (jshort)lpGtkStyle->black.green);
@@ -2262,7 +1250,7 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_red, (jshort)lpGtkStyle->white.red);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_green, (jshort)lpGtkStyle->white.green);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_blue, (jshort)lpGtkStyle->white.blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->font, (jint)lpGtkStyle->font);
+
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc0, (jint)lpGtkStyle->fg_gc[0]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc1, (jint)lpGtkStyle->fg_gc[1]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc2, (jint)lpGtkStyle->fg_gc[2]);
@@ -2298,252 +1286,28 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc2, (jint)lpGtkStyle->base_gc[2]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc3, (jint)lpGtkStyle->base_gc[3]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc4, (jint)lpGtkStyle->base_gc[4]);
+	
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->black_gc, (jint)lpGtkStyle->black_gc);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->white_gc, (jint)lpGtkStyle->white_gc);
+	
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap0, (jint)lpGtkStyle->bg_pixmap[0]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap1, (jint)lpGtkStyle->bg_pixmap[1]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap2, (jint)lpGtkStyle->bg_pixmap[2]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap3, (jint)lpGtkStyle->bg_pixmap[3]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap4, (jint)lpGtkStyle->bg_pixmap[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->ref_count, (jint)lpGtkStyle->ref_count);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->attach_count, (jint)lpGtkStyle->attach_count);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->depth, (jint)lpGtkStyle->depth);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->colormap, (jint)lpGtkStyle->colormap);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->engine, (jint)lpGtkStyle->engine);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->engine_data, (jint)lpGtkStyle->engine_data);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->rc_style, (jint)lpGtkStyle->rc_style);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->styles, (jint)lpGtkStyle->styles);
 }
 
 void getGtkStyleClassFields(JNIEnv *env, jobject lpObject, GtkStyleClass *lpGtkStyleClass, GtkStyleClass_FID_CACHE *lpGtkStyleClassFc)
 {
-	lpGtkStyleClass->xthickness = (*env)->GetIntField(env, lpObject, lpGtkStyleClassFc->xthickness);
-	lpGtkStyleClass->ythickness = (*env)->GetIntField(env, lpObject, lpGtkStyleClassFc->ythickness);
 }
 
 void setGtkStyleClassFields(JNIEnv *env, jobject lpObject, GtkStyleClass *lpGtkStyleClass, GtkStyleClass_FID_CACHE *lpGtkStyleClassFc)
 {
-	(*env)->SetIntField(env, lpObject, lpGtkStyleClassFc->xthickness, (jint)lpGtkStyleClass->xthickness);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleClassFc->ythickness, (jint)lpGtkStyleClass->ythickness);
-}
-
-void getGtkWidgetFields(JNIEnv *env, jobject lpObject, GtkWidget *lpGtkWidget, GtkWidget_FID_CACHE *lpGtkWidgetFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkObjectFields(env, lpObject, &lpGtkWidget->object, &PGLOB(GtkObjectFc));
-	lpGtkWidget->private_flags = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->private_flags);
-	lpGtkWidget->state = (*env)->GetByteField(env, lpObject, lpGtkWidgetFc->state);
-	lpGtkWidget->saved_state = (*env)->GetByteField(env, lpObject, lpGtkWidgetFc->saved_state);
-	lpGtkWidget->name = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkWidgetFc->name);
-	lpGtkWidget->style = (GtkStyle*)(*env)->GetIntField(env, lpObject, lpGtkWidgetFc->style);
-	lpGtkWidget->requisition.width = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->req_width);
-	lpGtkWidget->requisition.height = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->req_height);
-	lpGtkWidget->allocation.x = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->alloc_x);
-	lpGtkWidget->allocation.y = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->alloc_y);
-	lpGtkWidget->allocation.width = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->alloc_width);
-	lpGtkWidget->allocation.height = (*env)->GetShortField(env, lpObject, lpGtkWidgetFc->alloc_height);
-	lpGtkWidget->window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGtkWidgetFc->window);
-	lpGtkWidget->parent = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkWidgetFc->parent);
-}
-
-void getGtkFrameFields(JNIEnv *env, jobject lpObject, GtkFrame *lpGtkFrame, GtkFrame_FID_CACHE *lpGtkFrameFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkBinFields(env, lpObject, &lpGtkFrame->bin, &PGLOB(GtkBinFc));
-	lpGtkFrame->label = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkFrameFc->label);
-	lpGtkFrame->shadow_type = (*env)->GetShortField(env, lpObject, lpGtkFrameFc->shadow_type);
-	lpGtkFrame->label_width = (*env)->GetShortField(env, lpObject, lpGtkFrameFc->label_width);
-	lpGtkFrame->label_height = (*env)->GetShortField(env, lpObject, lpGtkFrameFc->label_height);
-	lpGtkFrame->label_xalign = (*env)->GetFloatField(env, lpObject, lpGtkFrameFc->label_xalign);
-	lpGtkFrame->label_yalign = (*env)->GetFloatField(env, lpObject, lpGtkFrameFc->label_yalign);
-}
-
-void setGtkWidgetFields(JNIEnv *env, jobject lpObject, GtkWidget *lpGtkWidget, GtkWidget_FID_CACHE *lpGtkWidgetFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkObjectFields(env, lpObject, &lpGtkWidget->object, &PGLOB(GtkObjectFc));
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->private_flags, (jshort)lpGtkWidget->private_flags);
-	(*env)->SetByteField(env, lpObject, lpGtkWidgetFc->state, (jbyte)lpGtkWidget->state);
-	(*env)->SetByteField(env, lpObject, lpGtkWidgetFc->saved_state, (jbyte)lpGtkWidget->saved_state);
-	(*env)->SetIntField(env, lpObject, lpGtkWidgetFc->name, (jint)lpGtkWidget->name);
-	(*env)->SetIntField(env, lpObject, lpGtkWidgetFc->style, (jint)lpGtkWidget->style);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->req_width, (jshort)lpGtkWidget->requisition.width);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->req_height, (jshort)lpGtkWidget->requisition.height);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->alloc_x, (jshort)lpGtkWidget->allocation.x);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->alloc_y, (jshort)lpGtkWidget->allocation.y);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->alloc_width, (jshort)lpGtkWidget->allocation.width);
-	(*env)->SetShortField(env, lpObject, lpGtkWidgetFc->alloc_height, (jshort)lpGtkWidget->allocation.height);
-	(*env)->SetIntField(env, lpObject, lpGtkWidgetFc->window, (jint)lpGtkWidget->window);
-	(*env)->SetIntField(env, lpObject, lpGtkWidgetFc->parent, (jint)lpGtkWidget->parent);
-}
-
-void setGtkFrameFields(JNIEnv *env, jobject lpObject, GtkFrame *lpGtkFrame, GtkFrame_FID_CACHE *lpGtkFrameFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkBinFields(env, lpObject, &lpGtkFrame->bin, &PGLOB(GtkBinFc));
-	(*env)->SetIntField  (env, lpObject, lpGtkFrameFc->label, (jint)lpGtkFrame->label);
-	(*env)->SetShortField(env, lpObject, lpGtkFrameFc->label_width, (jshort)lpGtkFrame->label_width);
-	(*env)->SetShortField(env, lpObject, lpGtkFrameFc->label_height, (jshort)lpGtkFrame->label_height);
-	(*env)->SetFloatField(env, lpObject, lpGtkFrameFc->label_xalign, (jfloat)lpGtkFrame->label_xalign);
-	(*env)->SetFloatField(env, lpObject, lpGtkFrameFc->label_yalign, (jfloat)lpGtkFrame->label_yalign);
-}
-
-void getGtkWindowFields(JNIEnv *env, jobject lpObject, GtkWindow *lpGtkWindow, GtkWindow_FID_CACHE *lpGtkWindowFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkBinFields(env, lpObject, &lpGtkWindow->bin, &PGLOB(GtkBinFc));
-	lpGtkWindow->title = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->title);
-	lpGtkWindow->wmclass_name = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->wmclass_name);
-	lpGtkWindow->wmclass_class = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->wmclass_class);
-	lpGtkWindow->type = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->type);
-	lpGtkWindow->focus_widget = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->focus_widget);
-	lpGtkWindow->default_widget = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->default_widget);
-	lpGtkWindow->transient_parent = (GtkWindow*)(*env)->GetIntField(env, lpObject, lpGtkWindowFc->transient_parent);
-	lpGtkWindow->resize_count = (*env)->GetShortField(env, lpObject, lpGtkWindowFc->resize_count);
-	lpGtkWindow->allow_shrink = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->allow_shrink);
-	lpGtkWindow->allow_grow = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->allow_grow);
-	lpGtkWindow->auto_shrink = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->auto_shrink);
-	lpGtkWindow->handling_resize = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->handling_resize);
-	lpGtkWindow->position = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->position);
-	lpGtkWindow->use_uposition = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->use_uposition);
-	lpGtkWindow->modal = (*env)->GetIntField(env, lpObject, lpGtkWindowFc->title);
-}
-
-void setGtkWindowFields(JNIEnv *env, jobject lpObject, GtkWindow *lpGtkWindow, GtkWindow_FID_CACHE *lpGtkWindowFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkBinFields(env, lpObject, &lpGtkWindow->bin, &PGLOB(GtkBinFc));
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->title, (jint)lpGtkWindow->title);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->wmclass_name, (jint)lpGtkWindow->wmclass_name);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->wmclass_class, (jint)lpGtkWindow->wmclass_class);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->type, (jint)lpGtkWindow->type);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->focus_widget, (jint)lpGtkWindow->focus_widget);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->default_widget, (jint)lpGtkWindow->default_widget);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->transient_parent, (jint)lpGtkWindow->title);
-	(*env)->SetShortField(env, lpObject, lpGtkWindowFc->resize_count, (jshort)lpGtkWindow->resize_count);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->allow_shrink, (jint)lpGtkWindow->allow_shrink);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->allow_grow, (jint)lpGtkWindow->allow_grow);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->auto_shrink, (jint)lpGtkWindow->auto_shrink);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->handling_resize, (jint)lpGtkWindow->handling_resize);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->position, (jint)lpGtkWindow->position);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->use_uposition, (jint)lpGtkWindow->use_uposition);
-	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->modal, (jint)lpGtkWindow->modal);
-}
-
-void getGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, GtkDialog_FID_CACHE *lpGtkDialogFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkWindowFields(env, lpObject, &lpGtkDialog->window, &PGLOB(GtkWindowFc));
-	lpGtkDialog->vbox = (GtkWidget*) (*env)->GetIntField(env, lpObject, lpGtkDialogFc->vbox);
-	lpGtkDialog->action_area = (GtkWidget*) (*env)->GetIntField(env, lpObject, lpGtkDialogFc->action_area);
-}
-
-void setGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, GtkDialog_FID_CACHE *lpGtkDialogFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkWindowFields(env, lpObject, &lpGtkDialog->window, &PGLOB(GtkWindowFc));
-	(*env)->SetIntField(env, lpObject, lpGtkDialogFc->vbox, (jint)lpGtkDialog->vbox);
-	(*env)->SetIntField(env, lpObject, lpGtkDialogFc->action_area, (jint)lpGtkDialog->action_area);
-}
-
-void getGtkMenuFields(JNIEnv *env, jobject lpObject, GtkMenu *lpGtkMenu, GtkMenu_FID_CACHE *lpGtkMenuFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkMenuShellFields(env, lpObject, &lpGtkMenu->menu_shell, &PGLOB(GtkMenuShellFc));
-	lpGtkMenu->parent_menu_item = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->parent_menu_item);
-	lpGtkMenu->old_active_menu_item = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->old_active_menu_item);
-	lpGtkMenu->accel_group = (GtkAccelGroup*)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->accel_group);
-	lpGtkMenu->position_func = (GtkMenuPositionFunc)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->position_func);
-	lpGtkMenu->position_func_data = (gpointer)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->position_func_data);
-	lpGtkMenu->toplevel = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->toplevel);
-	lpGtkMenu->tearoff_window = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkMenuFc->tearoff_window);
-	lpGtkMenu->torn_off = (*env)->GetIntField(env, lpObject, lpGtkMenuFc->torn_off);
-}
-
-void setGtkMenuFields(JNIEnv *env, jobject lpObject, GtkMenu *lpGtkMenu, GtkMenu_FID_CACHE *lpGtkMenuFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkMenuShellFields(env, lpObject, &lpGtkMenu->menu_shell, &PGLOB(GtkMenuShellFc));
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->parent_menu_item, (jint)lpGtkMenu->parent_menu_item);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->old_active_menu_item, (jint)lpGtkMenu->old_active_menu_item);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->accel_group, (jint)lpGtkMenu->accel_group);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->position_func, (jint)lpGtkMenu->position_func);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->position_func_data, (jint)lpGtkMenu->position_func_data);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->toplevel, (jint)lpGtkMenu->toplevel);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->tearoff_window, (jint)lpGtkMenu->tearoff_window);
-	(*env)->SetIntField(env, lpObject, lpGtkMenuFc->torn_off, (jint)lpGtkMenu->torn_off);
-}
-
-void getGtkMenuShellFields(JNIEnv *env, jobject lpObject, GtkMenuShell *lpGtkMenuShell, GtkMenuShell_FID_CACHE *lpGtkMenuShellFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkContainerFields(env, lpObject, &lpGtkMenuShell->container, &PGLOB(GtkContainerFc));
-	lpGtkMenuShell->active = (*env)->GetIntField(env, lpObject, lpGtkMenuShellFc->active);
-}
-
-void setGtkMenuShellFields(JNIEnv *env, jobject lpObject, GtkMenuShell *lpGtkMenuShell, GtkMenuShell_FID_CACHE *lpGtkMenuShellFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkContainerFields(env, lpObject, &lpGtkMenuShell->container, &PGLOB(GtkContainerFc));
-	(*env)->SetIntField(env, lpObject, lpGtkMenuShellFc->active, (jint)lpGtkMenuShell->active);
-}
-
-void getGtkItemFields(JNIEnv *env, jobject lpObject, GtkItem *lpGtkItem, GtkItem_FID_CACHE *lpGtkItemFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkBinFields(env, lpObject, &lpGtkItem->bin, &PGLOB(GtkBinFc));
-}
-
-void setGtkItemFields(JNIEnv *env, jobject lpObject, GtkItem *lpGtkItem, GtkItem_FID_CACHE *lpGtkItemFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkBinFields(env, lpObject, &lpGtkItem->bin, &PGLOB(GtkBinFc));
-}
-
-void getGtkMenuItemFields(JNIEnv *env, jobject lpObject, GtkMenuItem *lpGtkMenuItem, GtkMenuItem_FID_CACHE *lpGtkMenuItemFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkItemFields(env, lpObject, &lpGtkMenuItem->item, &PGLOB(GtkItemFc));
-}
-
-void setGtkMenuItemFields(JNIEnv *env, jobject lpObject, GtkMenuItem *lpGtkMenuItem, GtkMenuItem_FID_CACHE *lpGtkMenuItemFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkItemFields(env, lpObject, &lpGtkMenuItem->item, &PGLOB(GtkItemFc));
-}
-
-void getGtkCheckMenuItemFields(JNIEnv *env, jobject lpObject, GtkCheckMenuItem *lpGtkCheckMenuItem, GtkCheckMenuItem_FID_CACHE *lpGtkCheckMenuItemFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkMenuItemFields(env, lpObject, &lpGtkCheckMenuItem->menu_item, &PGLOB(GtkMenuItemFc));
-	lpGtkCheckMenuItem->active = (*env)->GetIntField(env, lpObject, lpGtkCheckMenuItemFc->active);
-	lpGtkCheckMenuItem->always_show_toggle = (*env)->GetIntField(env, lpObject, lpGtkCheckMenuItemFc->always_show_toggle);
-}
-
-void setGtkCheckMenuItemFields(JNIEnv *env, jobject lpObject, GtkCheckMenuItem *lpGtkCheckMenuItem, GtkCheckMenuItem_FID_CACHE *lpGtkCheckMenuItemFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkMenuItemFields(env, lpObject, &lpGtkCheckMenuItem->menu_item, &PGLOB(GtkMenuItemFc));
-	(*env)->SetIntField(env, lpObject, lpGtkCheckMenuItemFc->active, (jint)lpGtkCheckMenuItem->active);
-	(*env)->SetIntField(env, lpObject, lpGtkCheckMenuItemFc->always_show_toggle, (jint)lpGtkCheckMenuItem->always_show_toggle);
-}
-
-void getGtkDataFields(JNIEnv *env, jobject lpObject, GtkData *lpGtkData, GtkData_FID_CACHE *lpGtkDataFc)
-{
-	DECL_GLOB(pGlob)
-	getGtkObjectFields(env, lpObject, &lpGtkData->object, &PGLOB(GtkObjectFc));
-}
-
-void setGtkDataFields(JNIEnv *env, jobject lpObject, GtkData *lpGtkData, GtkData_FID_CACHE *lpGtkDataFc)
-{
-	DECL_GLOB(pGlob)
-	setGtkObjectFields(env, lpObject, &lpGtkData->object, &PGLOB(GtkObjectFc));
 }
 
 void getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
 {
 	DECL_GLOB(pGlob)
-	getGtkDataFields(env, lpObject, &lpGtkAdjustment->data, &PGLOB(GtkDataFc));
 	lpGtkAdjustment->lower = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->lower);
 	lpGtkAdjustment->upper = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->upper);
 	lpGtkAdjustment->value = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->value);
@@ -2555,7 +1319,6 @@ void getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkA
 void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
 {
 	DECL_GLOB(pGlob)
-	setGtkDataFields(env, lpObject, &lpGtkAdjustment->data, &PGLOB(GtkDataFc));
 	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->lower, (jfloat)lpGtkAdjustment->lower);
 	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->upper, (jfloat)lpGtkAdjustment->upper);
 	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->value, (jfloat)lpGtkAdjustment->value);

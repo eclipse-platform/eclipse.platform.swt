@@ -10,9 +10,6 @@ import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-/* Start ACCESSIBILITY */
-import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -35,11 +32,6 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
-	static private final int aux_info_quark = OS.g_quark_from_string (Converter.wcsToMbcs (null, "gtk-aux-info", true));
-/* Start ACCESSIBILITY */
-	Accessible accessible;
-/* End ACCESSIBILITY */
-
 
 /*
  *   ===  CONSTRUCTORS  ===
@@ -82,6 +74,10 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
+/*
+ *   === HANDLE CODE ===
+ */
+
 abstract void createHandle(int index);
 
 int eventHandle () {
@@ -116,39 +112,36 @@ int eventHandle () {
  * </ul>
  */
 void hookEvents () {
-	signal_connect (handle, "expose_event", SWT.Paint, 3);
+	signal_connect_after (handle, "expose_event", SWT.Paint, 3);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
 		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
-	int eventHandle = eventHandle ();
-	if (!OS.GTK_WIDGET_NO_WINDOW (eventHandle)) {
-		OS.gtk_widget_add_events (eventHandle, mask);
+	if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
+		OS.gtk_widget_add_events (handle, mask);
 	}
-	signal_connect_after (eventHandle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (eventHandle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (eventHandle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (eventHandle, "enter_notify_event", SWT.MouseEnter, 3);
-	signal_connect_after (eventHandle, "leave_notify_event", SWT.MouseExit, 3);
-	signal_connect_after (eventHandle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (eventHandle, "key_release_event", SWT.KeyUp, 3);
-	signal_connect_after (eventHandle, "focus_in_event", SWT.FocusIn, 3);
-	signal_connect_after (eventHandle, "focus_out_event", SWT.FocusOut, 3);
+	signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
+	signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
+	signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
+	signal_connect_after (handle, "enter_notify_event", SWT.MouseEnter, 3);
+	signal_connect_after (handle, "leave_notify_event", SWT.MouseExit, 3);
+	signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
+	signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+	signal_connect_after (handle, "focus_in_event", SWT.FocusIn, 3);
+	signal_connect_after (handle, "focus_out_event", SWT.FocusOut, 3);
 }
 
 abstract void setHandleStyle  ();
-void setInitialSize() { UtilFuncs.setZeroSize(topHandle()); }
+void setInitialSize() { _setSize(5,5); }
 void configure () {
-	// Do NOT directly use gtk_fixed_put in configure(),
-	// because not all composites have GtkFixed as their
-	// parenting (bottom) handle.
-	_connectParent();
-}
-void _connectParent() {
+	// Do NOT directly use fixed_put in configure():
+	// surprisingly, not all composites have Fixed as their
+	// parenting (bottom) handle.  Should investigate further.
 	parent._connectChild(topHandle());
 }
+
 /**
  * Every Control must implement this to map the gtk widgets,
  * and also realize those that have to be realized - this means
@@ -160,35 +153,24 @@ void _connectParent() {
  * An exception to this is the Shell, which we do NOT realize
  * at this point.
  */
-abstract void showHandle();
-
-int topHandle() {
-	return handle;
+void showHandle() {
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_realize (handle);
 }
-
-int paintHandle() {
-	return handle;
-}
+/**
+ * This is the handle by which our parent holds us
+ */
+int topHandle() { return handle; }
+/**
+ * This is where we draw.  Every widget must guarantee
+ * that its paint handle has a Gdk window associated with it.
+ */
+public int paintHandle() { return handle; }  /* REALLY BROKEN, PENDING PANGO */
+boolean isMyHandle(int h) { return h==handle; }
 
 /*
  *   ===  GEOMETRY  ===
  */
-
-int computeHandle () {
-	return handle;
-}
-
-Point _computeSize (int wHint, int hHint, boolean changed) {
-	int handle = computeHandle ();
-	int aux_info = OS.gtk_object_get_data_by_id (handle, aux_info_quark);
-	OS.gtk_object_set_data_by_id (handle, aux_info_quark, 0);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_object_set_data_by_id (handle, aux_info_quark, aux_info);
-	int width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-	int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	return new Point (width, height);	
-}
 
 /**
  * Returns the preferred size of the receiver.
@@ -247,33 +229,16 @@ public Point computeSize (int wHint, int hHint) {
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	return _computeSize (wHint, hHint, changed);	
+	return computeNativeSize (handle, wHint, hHint, changed);	
 }
 
-/* Start ACCESSIBILITY */
-/**
- * Returns the accessible object for the receiver.
- * If this is the first time this object is requested,
- * then the object is created and returned.
- *
- * @return the accessible object
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see addAccessibleListener
- * @see addAccessibleControlListener
- */
-public Accessible getAccessible () {
-	checkWidget ();
-	if (accessible == null) {
-		accessible = Accessible.internal_new_Accessible (this);
-	}
-	return accessible;
+Point computeNativeSize (int h, int wHint, int hHint, boolean changed) {
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (h, requisition);
+	int width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);	
 }
-/* End ACCESSIBILITY */
 
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -288,18 +253,10 @@ public Accessible getAccessible () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return _getBounds();
-}
-
-/**
- * The actual implementation for getBounds().
- * Concrete controls implement their means to answer the location
- * and size by overriding _getLocation() and _getSize().
- */
-final Rectangle _getBounds() {
 	Point location = _getLocation();
 	Point size = _getSize();
 	return new Rectangle(location.x, location.y, size.x, size.y);
+
 }
 
 /**
@@ -348,10 +305,12 @@ public void setBounds (Rectangle rect) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	boolean differentOrigin = _setLocation(x,y);
-	boolean differentExtent = _setSize (width,height);
-	if (differentOrigin) sendEvent (SWT.Move);
-	if (differentExtent) sendEvent (SWT.Resize);
+	Point old_location = _getLocation();
+	Point old_size = _getSize();
+	_setLocation (x, y);
+	_setSize (width, height);
+	if ((x!=old_location.x) || (y!=old_location.y)) sendEvent (SWT.Move);
+	if ((width!=old_size.x) || (height!=old_size.y)) sendEvent (SWT.Resize);
 }
 
 /**
@@ -369,9 +328,10 @@ public Point getLocation () {
 	checkWidget();
 	return _getLocation();
 }
-
 Point _getLocation () {
-	return UtilFuncs.getLocation(topHandle());
+	int[] loc = new int[2];
+	OS.eclipse_fixed_get_location(parent.parentingHandle(), topHandle(), loc);
+	return new Point(loc[0], loc[1]);
 }
 
 /**
@@ -406,15 +366,13 @@ public void setLocation (Point location) {
  */
 public void setLocation(int x, int y) {
 	checkWidget();
-	if (_setLocation(x,y)) sendEvent(SWT.Move);
+	Point old_location = _getLocation();
+	if ((x==old_location.x) && (y==old_location.y)) return;
+	_setLocation(x,y);
+	sendEvent(SWT.Move);
 }
-
-boolean _setLocation(int x, int y) {
-	Point old_loc = _getLocation();
-	if ( (x != old_loc.x) || (y != old_loc.y) ) {
-		UtilFuncs.setLocation(parent.parentingHandle(), topHandle(), x,y);
-		return true;
-	} else return false;
+void _setLocation(int x, int y) {
+	OS.eclipse_fixed_set_location(parent.parentingHandle(), topHandle(), x,y);
 }
 
 /**
@@ -435,7 +393,9 @@ public Point getSize () {
 	return _getSize();
 }
 Point _getSize() {
-	return UtilFuncs.getSize(topHandle());
+	int[] sz = new int[2];
+	OS.eclipse_fixed_get_size(parent.parentingHandle(), topHandle(), sz);
+	return new Point(sz[0], sz[1]);
 }
 
 /**
@@ -480,17 +440,15 @@ public void setSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	// Even though GTK+ will not let any widget be smaller
-	// than 3@3, we don't care about it here, as this kind
-	// of platform weirdness is handled in UtilFuncs.
 	width  = Math.max(width,  0);
 	height = Math.max(height, 0);
-	if (_setSize(width, height)) sendEvent(SWT.Resize);
-}
-boolean _setSize(int width, int height) {
 	Point old_size = _getSize();
-	if ( (width==old_size.x) && (height==old_size.y) ) return false;
-	return UtilFuncs.setSize(topHandle(), width, height);
+	if ( (width==old_size.x) && (height==old_size.y) ) return;
+	_setSize(width, height);
+	sendEvent(SWT.Resize);
+}
+void _setSize(int width, int height) {
+	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
 }
 
 /**
@@ -512,10 +470,9 @@ boolean _setSize(int width, int height) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, topHandle(), GtkWidget.sizeof);
-	int topGdkWindow = widget.window;
-	if (topGdkWindow!=0) OS.gdk_window_raise (topGdkWindow);
+	int siblingHandle = 0;
+	if (control != null) siblingHandle = control.topHandle();
+	OS.eclipse_fixed_move_above(parent.parentingHandle(), topHandle(), siblingHandle);
 }
 
 /**
@@ -537,10 +494,9 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, topHandle(), GtkWidget.sizeof);
-	int topGdkWindow = widget.window;
-	if (topGdkWindow!=0) OS.gdk_window_lower (topGdkWindow);
+	int siblingHandle = 0;
+	if (control != null) siblingHandle = control.topHandle();
+	OS.eclipse_fixed_move_below(parent.parentingHandle(), topHandle(), siblingHandle);
 }
 
 /**
@@ -579,7 +535,6 @@ public void pack () {
  * @see #computeSize
  */
 public void pack (boolean changed) {
-	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
@@ -615,11 +570,12 @@ public void setLayoutData (Object layoutData) {
  */
 public Point toControl (Point point) {
 	checkWidget();
-	int[] x = new int[1], y = new int[1];
+/*	int[] x = new int[1], y = new int[1];
 	OS.gdk_window_get_origin(_gdkWindow(), x,y);
 	int ctlX = point.x - x[0];
-	int ctlY = point.y - y[0];
-	return new Point (ctlX, ctlY);
+	int ctlY = point.y - y[0];*/
+	/* FIXME */
+	return new Point (0, 0);
 }
 /**
  * Returns a point which is the result of converting the
@@ -637,11 +593,14 @@ public Point toControl (Point point) {
  * </ul>
  */
 public Point toDisplay (Point point) {
-	checkWidget();
+	checkWidget();/*
 	int[] x = new int[1], y = new int[1];
 	OS.gdk_window_get_origin(_gdkWindow(), x,y);
-	return new Point (x[0]+point.x, y[0]+point.y);
+	return new Point (x[0]+point.x, y[0]+point.y);*/
+	/* FIXME */
+	return new Point (0,0);
 }
+
 //   ===  End of GEOMETRY Category  ===
 
 
@@ -908,8 +867,7 @@ public void addTraverseListener (TraverseListener listener) {
  * @see #addControlListener
  */
 public void removeControlListener (ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
@@ -933,8 +891,7 @@ public void removeControlListener (ControlListener listener) {
  * @see #addFocusListener
  */
 public void removeFocusListener(FocusListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.FocusIn, listener);
@@ -958,8 +915,7 @@ public void removeFocusListener(FocusListener listener) {
  * @see #addHelpListener
  */
 public void removeHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
@@ -982,8 +938,7 @@ public void removeHelpListener (HelpListener listener) {
  * @see #addKeyListener
  */
 public void removeKeyListener(KeyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.KeyUp, listener);
@@ -1007,8 +962,7 @@ public void removeKeyListener(KeyListener listener) {
  * @see #addMouseListener
  */
 public void removeMouseListener (MouseListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseDown, listener);
@@ -1033,8 +987,7 @@ public void removeMouseListener (MouseListener listener) {
  * @see #addMouseMoveListener
  */
 public void removeMouseMoveListener(MouseMoveListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseMove, listener);
@@ -1058,8 +1011,7 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
  * @see #addMouseTrackListener
  */
 public void removeMouseTrackListener(MouseTrackListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseEnter, listener);
@@ -1085,8 +1037,7 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
  * @see #addPaintListener
  */
 public void removePaintListener(PaintListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
@@ -1117,27 +1068,6 @@ public void removeTraverseListener(TraverseListener listener) {
 }
 
 
-/*
- * Return (GTKWIDGET)h->window.
- */
-final int _gdkWindow(int h) {
-	/* Temporary code.
-	 * This check is not necessary as the (internal) callers
-	 * always make sure h!=0.
-	 */
-	if (h==0) error(SWT.ERROR_CANNOT_BE_ZERO);
-	
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, h, GtkWidget.sizeof);
-	return widget.window;
-}
-
-int _gdkWindow() {
-	int windowHandle = _gdkWindow(handle);
-	if (windowHandle==0) error(SWT.ERROR_NO_HANDLES);
-	return windowHandle;
-}
-
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -1152,8 +1082,7 @@ int _gdkWindow() {
  * @see #setFocus
  */
 public boolean forceFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_widget_grab_focus (handle);
 	return true;
 }
@@ -1181,8 +1110,7 @@ GdkColor _getBackgroundGdkColor() {
 	int h = paintHandle();
 	
 	int hStyle = OS.gtk_widget_get_style (handle);
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, hStyle, GtkStyle.sizeof);
+	GtkStyle style = new GtkStyle (hStyle);
 	GdkColor color = new GdkColor ();
 	color.pixel = style.bg0_pixel;
 	color.red = style.bg0_red;
@@ -1202,8 +1130,7 @@ GdkColor _getBackgroundGdkColor() {
  * </ul>
  */
 public int getBorderWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return (style & SWT.BORDER) == 0 ? 0 : 1;
 }
 
@@ -1238,8 +1165,7 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	int topHandle = topHandle ();
-	return OS.GTK_WIDGET_SENSITIVE (topHandle);
+	return OS.GTK_WIDGET_SENSITIVE (handle);
 }
 
 /**
@@ -1286,8 +1212,7 @@ GdkColor _getForegroundGdkColor() {
 	int h = paintHandle();
 	
 	int hStyle = OS.gtk_widget_get_style (handle);
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, hStyle, GtkStyle.sizeof);
+	GtkStyle style = new GtkStyle (hStyle);
 	GdkColor color = new GdkColor ();
 	color.pixel = style.fg0_pixel;
 	color.red = style.fg0_red;
@@ -1307,8 +1232,7 @@ GdkColor _getForegroundGdkColor() {
  * </ul>
  */
 public Object getLayoutData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return layoutData;
 }
 
@@ -1328,8 +1252,7 @@ public Object getLayoutData () {
  * </ul>
  */
 public Menu getMenu () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return menu;
 }
 /**
@@ -1345,8 +1268,7 @@ public Menu getMenu () {
  * </ul>
  */
 public Composite getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
@@ -1366,8 +1288,7 @@ public Composite getParent () {
  * @see #getParent
  */
 public Shell getShell() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return _getShell();
 }
 Shell _getShell() {
@@ -1386,8 +1307,7 @@ Shell _getShell() {
  * </ul>
  */
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return toolTipText;
 }
 /**
@@ -1409,13 +1329,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return _getVisible(); 
-}
-boolean _getVisible() {
-	return _getVisible(topHandle());
-}
-boolean _getVisible(int h) {
-	return (OS.GTK_WIDGET_FLAGS(h) & OS.GTK_VISIBLE) != 0;
+	return OS.GTK_WIDGET_VISIBLE(topHandle()); 
 }
 
 /**	 
@@ -1438,17 +1352,15 @@ public int internal_new_GC (GCData data) {
 	if (paintHandle() == 0) error(SWT.ERROR_UNSPECIFIED);
 	
 	// Create the GC with default values for this control
-	GtkWidget w = new GtkWidget();
-	OS.memmove (w, paintHandle(), GtkWidget.sizeof);
 
-	if (w.window == 0) error(SWT.ERROR_UNSPECIFIED);
-	int gc = OS.gdk_gc_new(w.window);
+	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
+	int gc = OS.gdk_gc_new(window);
 	
 	OS.gdk_gc_set_font(gc, _getFontHandle());
 	OS.gdk_gc_set_background(gc, _getBackgroundGdkColor());
 	OS.gdk_gc_set_foreground(gc, _getForegroundGdkColor());
 	
-	data.drawable = w.window;
+	data.drawable = window;
 	return gc;
 }
 
@@ -1503,8 +1415,7 @@ public boolean isReparentable () {
  */
 public boolean isEnabled () {
 	checkWidget ();
-	int topHandle = topHandle ();
-	return OS.GTK_WIDGET_IS_SENSITIVE (topHandle);
+	return OS.GTK_WIDGET_IS_SENSITIVE (handle);
 }
 
 /**
@@ -1519,10 +1430,10 @@ public boolean isEnabled () {
  * </ul>
  */
 public boolean isFocusControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return (OS.GTK_WIDGET_FLAGS(handle)&OS.GTK_HAS_FOCUS)!=0;
+	checkWidget();
+	return OS.GTK_WIDGET_HAS_FOCUS(handle);
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -1541,42 +1452,45 @@ public boolean isFocusControl () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean result = getVisible ();
-	if (parent != null) 
-		result = result && parent.isVisible();
+	if (parent != null) result = result && parent.isVisible();
 	return result;
 }
+
 Decorations menuShell () {
 	return parent.menuShell ();
 }
 
 int processKeyDown (int callData, int arg1, int int2) {
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, callData, GdkEventKey.sizeof);
-	boolean accelResult = OS.gtk_accel_groups_activate(_getShell().topHandle, gdkEvent.keyval, gdkEvent.state);
-	if (!accelResult) sendKeyEvent (SWT.KeyDown, gdkEvent);
+	int keyval = OS.gdk_event_key_get_keyval(callData);
+	int[] pMods = new int[1];
+	OS.gdk_event_get_state(callData, pMods);
+	boolean accelResult = OS.gtk_accel_groups_activate(_getShell().topHandle(),
+		keyval,
+		pMods[0]);
+	if (!accelResult) sendKeyEvent (SWT.KeyDown, callData);
 	return 1;
 }
 
 int processKeyUp (int callData, int arg1, int int2) {
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, callData, GdkEventKey.sizeof);
-	sendKeyEvent (SWT.KeyUp, gdkEvent);
+	sendKeyEvent (SWT.KeyUp, callData);
 	return 1;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
 	OS.gtk_widget_grab_focus(handle);
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
 	int eventType = SWT.MouseDown;
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) eventType = SWT.MouseDoubleClick;
-	sendMouseEvent (eventType, gdkEvent.button, gdkEvent.state, gdkEvent.time, (int)gdkEvent.x, (int)gdkEvent.y);
-	if (gdkEvent.button == 3 && menu != null) {
-		menu.setVisible (true);
-	}
+	if (OS.GDK_EVENT_TYPE(callData) == OS.GDK_2BUTTON_PRESS) eventType = SWT.MouseDoubleClick;
+	int[] pMod = new int[1];
+	OS.gdk_event_get_state(callData, pMod);
+	int time = OS.gdk_event_get_time(callData);
+	double[] px = new double[1];
+	double[] py = new double[1];
+	OS.gdk_event_get_coords(callData, px, py);
+	int button = OS.gdk_event_button_get_button(callData);
+	sendMouseEvent (eventType, button, pMod[0], time, (int)(px[0]), (int)(py[0]));
+	if (button == 3 && menu != null) menu.setVisible (true);
 	return 1;
 }
 
@@ -1592,24 +1506,29 @@ int processMouseExit (int arg0, int arg1, int int2) {
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof); 
-	sendMouseEvent (SWT.MouseUp, gdkEvent.button, gdkEvent.state, gdkEvent.time, (int)gdkEvent.x, (int)gdkEvent.y);
+	int[] pMod = new int[1];
+	OS.gdk_event_get_state(callData, pMod);
+	int time = OS.gdk_event_get_time(callData);
+	double[] px = new double[1];
+	double[] py = new double[1];
+	OS.gdk_event_get_coords(callData, px, py);
+	int button = OS.gdk_event_button_get_button(callData);
+	sendMouseEvent (SWT.MouseUp, button, pMod[0], time, (int)(px[0]), (int)(py[0]));
 	return 1;
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
-	GdkEventMotion gdkEvent = new GdkEventMotion ();
-	OS.memmove (gdkEvent, callData, GdkEventMotion.sizeof); 
-	Point where = _gdkWindowGetPointer();
-	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.state, gdkEvent.time, where.x, where.y);
+	/*
+	GdkEvent gdkEvent = new GdkEvent (callData);
+	int[] px = new int[1], py = new int[1];
+	OS.gdk_window_get_pointer(_gdkWindow(), px, py, 0);	
+	int time = OS.gdk_event_get_time(callData);
+	int[] pMods = new int[1];
+	OS.gdk_event_get_state(callData, pMods);
+	sendMouseEvent (SWT.MouseMove, 0, pMods[0], time, px[0], py[0]);*/
 	return 1;
 }
-Point _gdkWindowGetPointer() {
-	int[] px = new int[1], py = new int[1];
-	OS.gdk_window_get_pointer(_gdkWindow(), px, py, 0);
-	return new Point(px[0], py[0]);
-}
+
 int processFocusIn(int int0, int int1, int int2) {
 	postEvent(SWT.FocusIn);
 	return 0;
@@ -1622,8 +1541,7 @@ int processFocusOut(int int0, int int1, int int2) {
 int processPaint (int callData, int int2, int int3) {
 	if (!hooks (SWT.Paint)) return 1;
 	
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove (gdkEvent, callData, GdkEventExpose.sizeof);
+	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
 	event.x = gdkEvent.x;  event.y = gdkEvent.y;
@@ -1653,11 +1571,9 @@ int processPaint (int callData, int int2, int int3) {
  * @see #update
  */
 public void redraw () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Point size = _getSize();
 	_redraw(0, 0, size.x, size.y, true);
-//OS.gtk_widget_queue_draw(handle);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -1683,11 +1599,12 @@ public void redraw () {
  * @see #update
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	_redraw(x, y, width, height, all);
 }
 protected void _redraw(int x, int y, int width, int height, boolean all) {
+	/* FIXME */
+	/*
 	OS.gdk_window_clear_area_e (_gdkWindow(), x, y, width, height);			
 
 GdkRectangle rect = new GdkRectangle();
@@ -1695,10 +1612,8 @@ rect.x = (short)x;
 rect.y = (short)y;
 rect.width = (short)width;
 rect.height =(short) height;
-//OS.gtk_widget_draw(handle, rect);
-OS.gtk_widget_queue_draw(handle);
+OS.gtk_widget_queue_draw(handle);*/
 
-//	OS.gtk_widget_queue_draw_area (handle, x, y, width, height);
 }
 
 void releaseWidget () {
@@ -1708,46 +1623,53 @@ void releaseWidget () {
 	menu = null;
 	layoutData = null;
 }
-void sendKeyEvent (int type, GdkEventKey gdkEvent) {
-	/* Look up the keysym and character(s) */
-	int size = gdkEvent.length;
-	if (gdkEvent.keyval == 0 && size == 0) return;
 
-	/* If there is no composed string input by keypress, only send the keyvalue */ 
-	if (size == 0 ) {
-		Event event = new Event ();
-		event.time = gdkEvent.time;
-//		event.character = (char) 0;  //no character sent
-		event.keyCode = Display.translateKey (gdkEvent.keyval);
+void sendKeyEvent (int type, int pEventKey) {
+	Event event = new Event();
+	event.time = OS.gdk_event_get_time(pEventKey);
+	
+	int size = OS.gdk_event_key_get_length(pEventKey);
+	if (size==0) {  /* No composed string - send the keyvalue */
+		int keyval = OS.gdk_event_key_get_keyval(pEventKey)	;
+		if (keyval==0) return;
+		event.keyCode = Display.translateKey (keyval);
 		event.character = (char) event.keyCode;  //no character sent
-		if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
-		if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;
-		if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
-		if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
-		if ((gdkEvent.state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
-		if ((gdkEvent.state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
+		int[] pModifier = new int[1];
+		OS.gdk_event_get_state(pEventKey, pModifier);
+		int state = pModifier[0];
+		if ((state & OS.GDK_MOD1_MASK)    != 0) event.stateMask |= SWT.ALT;
+		if ((state & OS.GDK_SHIFT_MASK)   != 0) event.stateMask |= SWT.SHIFT;
+		if ((state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
+		if ((state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
+		if ((state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
+		if ((state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
 		postEvent (type, event);
+		return;
 	}
-	else {	
-		byte [] buffer = new byte [size];
-		OS.memmove (buffer, gdkEvent.string, size);
-		/* Convert from MBCS to UNICODE and send the event */
-		char [] result = Converter.mbcsToWcs (null, buffer);
-		for (int i=0; i<result.length; i++) {
-			Event event = new Event ();
-			event.time = gdkEvent.time;
-			event.character = result [i];
-			event.keyCode = result [i]; //0; //no keyCode sent
-			if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
-			if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;
-			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
-			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
-			if ((gdkEvent.state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
-			if ((gdkEvent.state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
-			postEvent (type, event);
-		}
-	}	
+
+	if (size==1) {
+		int keyval = OS.gdk_event_key_get_keyval(pEventKey)	;
+		if (keyval==0) return;
+		event.keyCode = keyval;
+		event.character = (char) event.keyCode;  //no character sent
+		int[] pModifier = new int[1];
+		OS.gdk_event_get_state(pEventKey, pModifier);
+		int state = pModifier[0];
+		if ((state & OS.GDK_MOD1_MASK)    != 0) event.stateMask |= SWT.ALT;
+		if ((state & OS.GDK_SHIFT_MASK)   != 0) event.stateMask |= SWT.SHIFT;
+		if ((state & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
+		if ((state & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
+		if ((state & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
+		if ((state & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
+		postEvent (type, event);
+		return;
+	}
+
+	/* Multi-byte key */
+	/* The implementation in the GTK1.2 stream, is not correct here. */
+	error(SWT.ERROR_NOT_IMPLEMENTED);
 }
+
 void sendMouseEvent (int type, int button, int mask, int time, int x, int y) {
 	Event event = new Event ();
 	event.time = time;
@@ -1784,11 +1706,9 @@ public void setBackground (Color color) {
 	int hStyle = OS.gtk_widget_get_style (handle);
 	boolean makeCopy = hStyle == hDefaultStyle;
 	hStyle = OS.gtk_style_copy (makeCopy ? hDefaultStyle : hStyle);	
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, hStyle, GtkStyle.sizeof);
+	GtkStyle style = new GtkStyle (hStyle);
 	if (color == null) {
-		GtkStyle defaultStyle = new GtkStyle ();
-		OS.memmove (defaultStyle, hDefaultStyle, GtkStyle.sizeof);
+		GtkStyle defaultStyle = new GtkStyle (hDefaultStyle);
 		style.bg0_pixel = defaultStyle.bg0_pixel;
 		style.bg0_red = defaultStyle.bg0_red;
 		style.bg0_green = defaultStyle.bg0_green;
@@ -1831,8 +1751,10 @@ public void setBackground (Color color) {
 		style.bg4_green = color.handle.green;
 		style.bg4_blue = color.handle.blue;
 	}
-	OS.memmove (hStyle, style, GtkStyle.sizeof);
-	OS.gtk_widget_set_style (handle, hStyle);
+	/* FIXME */
+	/* I believe there is now something like set_color? */
+	/*OS.memmove (hStyle, style, GtkStyle.sizeof);
+	OS.gtk_widget_set_style (handle, hStyle);*/
 	if (makeCopy) {
 		OS.gtk_style_unref (hStyle);
 	}
@@ -1851,8 +1773,8 @@ public void setBackground (Color color) {
  * </ul>
  */
 public void setCapture (boolean capture) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	/* FIXME !!!!! */
 	/*
 	if (capture) {
 		OS.gtk_widget_grab_focus (handle);
@@ -1882,9 +1804,7 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, paintHandle(), GtkWidget.sizeof);
-	int window = widget.window;
+	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
 	if (window == 0) return;
 	int hCursor = 0;
 	if (cursor != null) hCursor = cursor.handle;
@@ -1904,8 +1824,7 @@ public void setCursor (Cursor cursor) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
 	/*
@@ -1932,8 +1851,7 @@ public void setEnabled (boolean enabled) {
  * @see #forceFocus
  */
 public boolean setFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return forceFocus ();
 }
 
@@ -1964,18 +1882,13 @@ public void setFont (Font font) {
 	}
 	
 	/* The font argument is null, revert to default font */
-	GtkStyle style = new GtkStyle();
+	/* FIXME */
+/*	GtkStyle style = new GtkStyle();
 	OS.memmove (style, OS.gtk_widget_get_default_style(), GtkStyle.sizeof);
 	int fontHandle = OS.gdk_font_ref(style.font);
 	if (fontHandle==0) error(SWT.ERROR_NO_HANDLES);
-	_setFontHandle(fontHandle);
+	_setFontHandle(fontHandle);*/
 }
-
-/**
- * Actually set the receiver's font in the OS.
- * Concrete subclasses may override this method to operate
- * on a different handle.
- */
 void _setFontHandle (int f) {
 	UtilFuncs.setFont(handle, f);
 }
@@ -1996,16 +1909,13 @@ void _setFontHandle (int f) {
  * </ul>
  */
 public void setForeground (Color color) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int hStyle = OS.gtk_widget_get_style (handle);
 	hStyle = OS.gtk_style_copy (hStyle);	
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, hStyle, GtkStyle.sizeof);
+	GtkStyle style = new GtkStyle (hStyle);
 	if (color == null) {
 		int hDefaultStyle = OS.gtk_widget_get_default_style ();
-		GtkStyle defaultStyle = new GtkStyle ();
-		OS.memmove (defaultStyle, hDefaultStyle, GtkStyle.sizeof);
+		GtkStyle defaultStyle = new GtkStyle (hDefaultStyle);
 		style.fg0_pixel = defaultStyle.fg0_pixel;
 		style.fg0_red = defaultStyle.fg0_red;
 		style.fg0_green = defaultStyle.fg0_green;
@@ -2048,8 +1958,10 @@ public void setForeground (Color color) {
 		style.fg4_green = color.handle.green;
 		style.fg4_blue = color.handle.blue;
 	}
-	OS.memmove (hStyle, style, GtkStyle.sizeof);
-	OS.gtk_widget_set_style (handle, hStyle);
+	/* FIXME */
+	/* I believe there is now something like set_color? */
+	/*OS.memmove (hStyle, style, GtkStyle.sizeof);
+	OS.gtk_widget_set_style (handle, hStyle);*/
 }
 
 /**
@@ -2073,8 +1985,7 @@ public void setForeground (Color color) {
  * </ul>
  */
 public void setMenu (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (menu != null) {
 		if ((menu.style & SWT.POP_UP) == 0) {
 		error (SWT.ERROR_MENU_NOT_POP_UP);

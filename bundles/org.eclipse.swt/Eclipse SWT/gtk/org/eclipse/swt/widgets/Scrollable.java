@@ -28,7 +28,6 @@ public abstract class Scrollable extends Control {
 
 	int scrolledHandle;
 	ScrollBar horizontalBar, verticalBar;
-	static Trim trim;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -91,27 +90,23 @@ public Scrollable (Composite parent, int style) {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
-	Trim t = _getTrim();
-	return new Rectangle (x-t.left, y-t.top, width+t.left+t.right, height+t.top+t.bottom);
+	checkWidget();
+	int hs=0, vs=0;
+	/* FIXME - just measured the width on one particular theme */
+	if ((style&SWT.H_SCROLL)!=0) hs=18;
+	if ((style&SWT.V_SCROLL)!=0) vs=18;	
+	return new Rectangle (x, y, width+vs, height+hs);
 }
-
-Trim _getTrim() {
-	if (trim==null) initializeTrim();
-	return trim;
-}
-
-void initializeTrim() { trim = new Trim(); }
 
 void _fillBin(int binHandle, int childHandle) {
+	/*
 	GtkBin bin = new GtkBin();
 	OS.memmove(bin, binHandle, GtkBin.sizeof);
 	bin.child = childHandle;
 	OS.memmove(binHandle, bin, GtkBin.sizeof);
 	OS.gtk_widget_set_parent(childHandle, binHandle);
-}
+	*/
+	OS.gtk_container_add(binHandle, childHandle);}
 
 /*
  * Subclasses must only use super.configure()
@@ -162,11 +157,9 @@ void deregister () {
  * @see #computeTrim
  */
 public Rectangle getClientArea () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
-	return new Rectangle (0, 0, widget.alloc_width, widget.alloc_height);
+	checkWidget();
+	/* FIXME.  Why do we do it here, in the first place?  Scrollable is abstract... */
+	return new Rectangle (0, 0, 10, 10);
 }
 /**
  * Returns the receiver's horizontal scroll bar if it has

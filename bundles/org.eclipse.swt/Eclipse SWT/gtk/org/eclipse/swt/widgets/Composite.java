@@ -28,7 +28,8 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	int topHandle, eventBoxHandle, fixedHandle, radioHandle;
+	/* boxHandle is temporarily here, until eclipsefixed gets fixed */
+	int boxHandle, fixedHandle, radioHandle;
 	Layout layout;
 
 /*
@@ -71,19 +72,19 @@ public Composite (Composite parent, int style) {
 	super (parent, style);
 }
 
+/*
+ * === Handle code begins ===
+ */
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	
-	topHandle = OS.gtk_event_box_new();
-	if (topHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	
 	scrolledHandle = OS.gtk_scrolled_window_new(0,0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	eventBoxHandle = OS.gtk_event_box_new();
-	if (eventBoxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	
-	fixedHandle = OS.gtk_fixed_new ();
+	boxHandle = OS.gtk_event_box_new();
+	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	fixedHandle = OS.eclipse_fixed_new();
 	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	
 	handle = OS.gtk_drawing_area_new();
@@ -92,11 +93,10 @@ void createHandle (int index) {
 }
 
 void configure() {
-	_connectParent();
-	OS.gtk_container_add(topHandle, scrolledHandle);
-	_fillBin(scrolledHandle, eventBoxHandle);
-	OS.gtk_container_add(eventBoxHandle, fixedHandle);
-	OS.gtk_fixed_put(fixedHandle, handle, (short)0,(short)0);
+	parent._connectChild(scrolledHandle);
+	OS.gtk_container_add(scrolledHandle, boxHandle);
+	OS.gtk_container_add(boxHandle, fixedHandle);
+	OS.gtk_container_add(fixedHandle, handle);
 }
 
 void setHandleStyle() {
@@ -104,58 +104,40 @@ void setHandleStyle() {
 }
 
 void showHandle() {
-	OS.gtk_widget_realize (topHandle);
-	OS.gtk_widget_show_now(topHandle);
-	
-	OS.gtk_widget_show (scrolledHandle);
-	
-	OS.gtk_widget_realize (eventBoxHandle);
-	OS.gtk_widget_show_now(eventBoxHandle);
-		
-	OS.gtk_widget_realize (fixedHandle);
-	OS.gtk_widget_show_now(fixedHandle);
-		
+	OS.gtk_widget_show_now (scrolledHandle);
+	OS.gtk_widget_show_now (boxHandle);
+	OS.gtk_widget_show_now (fixedHandle);
 	OS.gtk_widget_realize (handle);
 	OS.gtk_widget_show_now (handle);
 }
 
-void register () {
-	super.register ();
-	if (topHandle != 0) WidgetTable.put (topHandle, this);		
-	if (eventBoxHandle != 0) WidgetTable.put (eventBoxHandle, this);
-	if (fixedHandle != 0) WidgetTable.put (fixedHandle, this);
+void hookEvents () {
+	signal_connect_after (handle, "expose_event", SWT.Paint, 3);
+	int mask =
+		OS.GDK_POINTER_MOTION_MASK | 
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+		OS.GDK_FOCUS_CHANGE_MASK;
+	OS.gtk_widget_add_events (handle, mask);
+	signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
+	signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
+	signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
+	signal_connect_after (handle, "enter_notify_event", SWT.MouseEnter, 3);
+	signal_connect_after (handle, "leave_notify_event", SWT.MouseExit, 3);
+	signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
+	signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+	signal_connect_after (handle, "focus_in_event", SWT.FocusIn, 3);
+	signal_connect_after (handle, "focus_out_event", SWT.FocusOut, 3);
 }
 
-void deregister () {
-	super.deregister ();
-	if (topHandle != 0) WidgetTable.remove (topHandle);
-	if (eventBoxHandle != 0) WidgetTable.remove (eventBoxHandle);
-	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
-}
-
-int topHandle() {
-	return topHandle;
-}
-
-int parentingHandle() {
-	return fixedHandle;
-}
-
-/**
- * Answer whether the argument points to an OS widget that is
- * implementing the receiver, i.e., one of my own handles
- */
+int topHandle() { return scrolledHandle; }
+int parentingHandle() { return fixedHandle; }
 boolean isMyHandle(int h) {
-	if (h==topHandle) return true;
-	if (h==eventBoxHandle) return true;
-	if (h==scrolledHandle) return true;
-	if (h==fixedHandle)  return true;
-	if (h==handle)       return true;
-	if (h==radioHandle)       return true;
-	return false;
+	if (h==boxHandle) return true;
+	if (h==fixedHandle) return true;
+	return super.isMyHandle(h);
 }
-
-
 
 
 /*
@@ -164,27 +146,20 @@ boolean isMyHandle(int h) {
 
 
 public void setBounds (int x, int y, int width, int height) {
-	Rectangle old_bounds = _getBounds();
-	if ( (x != old_bounds.x) ||
-	     (y != old_bounds.y) ||
-	     (width != old_bounds.width) ||
-	     (height != old_bounds.height) ) {
-		super.setBounds (x, y, width, height);
-		layout();
-	} else checkWidget();
+	super.setBounds (x, y, width, height);
+	layout();
 }
 
 public void setSize (int width, int height) {
 	super.setSize(width, height);
 	layout();
 }
-
-boolean _setSize(int width, int height) {
-	boolean differentExtent = UtilFuncs.setSize (topHandle(), width,height);
-	Point clientSize = UtilFuncs.getSize(fixedHandle);
-	OS.gtk_drawing_area_size(handle, width, height);
-	UtilFuncs.setSize (handle, clientSize.x, clientSize.y);
-	return differentExtent;
+void _setSize(int width, int height) {
+	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
+	/* FIXME */
+	if ((style&SWT.V_SCROLL) != 0) width  -= 18;  width  = Math.max(width, 0);
+	if ((style&SWT.H_SCROLL) != 0) height -= 18;  height = Math.max(height, 0);
+	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -205,16 +180,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	return new Point (trim.width, trim.height);
-}
-
-void initializeTrim() {
-	/* Temporary implementation - I just measured the scrollbars
-	 * with one particular theme.  The fair thing to do is get
-	 * the real dimensions from gtk.
-	 */
-	trim = new Trim();
-	if ((style&SWT.H_SCROLL)!=0) trim.bottom=18;
-	if ((style&SWT.V_SCROLL)!=0) trim.right=18;	
 }
 
 
@@ -266,15 +231,8 @@ public Control [] getTabList () {
  * </ul>
  */
 public void setLayout (Layout layout) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.layout = layout;
-}
-
-int _gdkWindow() {
-	int windowHandle = _gdkWindow(handle);
-	if (windowHandle==0) error(SWT.ERROR_UNSPECIFIED);
-	return windowHandle;
 }
 
 /**
@@ -294,10 +252,6 @@ int _gdkWindow() {
  */
 public Control [] getChildren () {
 	checkWidget();
-	return _getChildren();
-}
-
-Control [] _getChildren () {
 	return _getChildren(parentingHandle());
 }
 
@@ -336,19 +290,16 @@ Control _childFromHandle(int h) {
 }
 
 public Rectangle getClientArea () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
-	return _getClientArea ();
-}
-
-public Rectangle _getClientArea () {
-	Point size = _getClientAreaSize ();
-	return new Rectangle (0, 0, size.x, size.y);
-}
-
-Point _getClientAreaSize () {
-	return UtilFuncs.getSize(handle);
+	checkWidget();
+	/* We can not measure the actual size of the client area,
+	 * because it may not have propagated down yet.
+	 */
+	Point size = _getSize();
+	/* FIXME - this code assumes the scrollbars are to the right */
+	/* FIXME - I just measured the size on one particular theme. */
+	if ((style & SWT.V_SCROLL) != 0) size.x -= 18;
+	if ((style & SWT.H_SCROLL) != 0) size.y -= 18;
+	return new Rectangle(0,0, size.x, size.y);
 }
 
 
@@ -386,14 +337,13 @@ public void layout () {
  * </ul>
  */
 public void layout (boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (layout == null) return;
 	layout.layout (this, changed);
 }
 
 Point minimumSize () {
-	Control [] children = _getChildren ();
+	Control [] children = _getChildren (parentingHandle());
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Rectangle rect = children [i].getBounds ();
@@ -402,23 +352,14 @@ Point minimumSize () {
 	}
 	return new Point (width, height);
 }
-int processResize (int int0, int int1, int int2) {
-	sendEvent (SWT.Resize);
-	layout();
-	return 0;
-}
 int radioGroup() {
 	if (radioHandle==0) _initializeRadioGroup();
 	return OS.gtk_radio_button_group(radioHandle);
 }
 
 public void redraw () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	Point size = _getSize();
-//	GtkWidget widget = new GtkWidget(handle);
-//	_redraw(0, 0, size.x, size.y, true);
-OS.gtk_widget_queue_draw(handle);
+	checkWidget();
+	OS.gtk_widget_queue_draw(paintHandle());
 }
 
 void _initializeRadioGroup() {
@@ -429,11 +370,11 @@ void _initializeRadioGroup() {
  * Adopt the widget h as our child.
  */
 void _connectChild (int h) {
-	OS.gtk_fixed_put (parentingHandle(), h, (short)0, (short)0);
+	OS.gtk_container_add (parentingHandle(), h);
 }
 
 void releaseChildren () {
-	Control [] children = _getChildren ();
+	Control [] children = _getChildren (parentingHandle());
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child != null && !child.isDisposed ()) {
@@ -449,7 +390,7 @@ void releaseWidget () {
 }
 void releaseHandle () {
 	super.releaseHandle ();
-	topHandle =  eventBoxHandle =  fixedHandle = radioHandle = 0;
+	boxHandle = radioHandle = 0;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
@@ -474,9 +415,8 @@ int processFocusOut(int int0, int int1, int int2) {
 }
 
 public boolean setFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	Control [] children = _getChildren ();
+	checkWidget();
+	Control [] children = _getChildren (parentingHandle());
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.getVisible () && child.setFocus ()) return true;

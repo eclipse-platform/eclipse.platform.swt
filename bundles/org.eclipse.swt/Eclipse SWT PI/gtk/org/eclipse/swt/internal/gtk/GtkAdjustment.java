@@ -13,12 +13,16 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkAdjustment extends GtkObject {
-	public float lower;
-	public float upper;
-	public float value;
-	public float step_increment;
-	public float page_increment;
-	public float page_size;
-	public static final int sizeof = 40;
+public class GtkAdjustment {
+	public double lower;
+	public double upper;
+	public double value;
+	public double step_increment;
+	public double page_increment;
+	public double page_size;
+	
+	private GtkAdjustment() {}
+	public GtkAdjustment (int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

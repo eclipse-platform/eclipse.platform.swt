@@ -86,19 +86,17 @@ void createHandle (int index) {
 }
 
 void setHandleStyle() {
-	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
+	/*OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	if ((style & SWT.SINGLE) == 0)
 	OS.gtk_text_set_word_wrap (handle, (style & SWT.WRAP) != 0 ? 1 : 0);
 	if (scrolledHandle!=0) setScrollingPolicy();
-	// When 2.0 arrives, we'll be able to set the flat appearance
+	// When 2.0 arrives, we'll be able to set the flat appearance*/
 	
 }
 
 void configure() {
-	_connectParent();
-	if (scrolledHandle != 0) {
-		OS.gtk_container_add (scrolledHandle, handle);
-	}
+	parent._connectChild(topHandle());
+	if (scrolledHandle != 0) OS.gtk_container_add (scrolledHandle, handle);
 }
 
 void showHandle() {
@@ -109,11 +107,11 @@ void showHandle() {
 
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
-	super.hookEvents();
+/*	super.hookEvents();
 	signal_connect_after (handle, "changed", SWT.Modify, 2);
-	signal_connect (handle, "insert_text", SWT.Verify, 5);
-	signal_connect (handle, "delete_text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.Selection, 2);
+	signal_connect (handle, "insert-text", SWT.Verify, 5);
+	signal_connect (handle, "delete-text", SWT.Verify, 4);
+	signal_connect (handle, "activate", SWT.Selection, 2);*/
 }
 
 /**
@@ -192,8 +190,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeVerifyListener
  */
 public void addVerifyListener (VerifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
@@ -218,7 +215,7 @@ public void addVerifyListener (VerifyListener listener) {
  */
 public void append (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string);	
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_entry_append_text(handle, buffer);
@@ -227,17 +224,9 @@ public void append (String string) {
 		int [] position = new int [] {length};
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
 		OS.gtk_editable_set_position (handle, position [0]);
-	}
+	}*/
 }
 
-static int checkStyle (int style) {
-	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
-	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		return style | SWT.MULTI;
-	}
-	return style | SWT.SINGLE;
-}
 /**
  * Clears the selection.
  *
@@ -248,9 +237,9 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget ();
-	int position = OS.gtk_editable_get_position (handle);
+	/*int position = OS.gtk_editable_get_position (handle);
 	OS.gtk_editable_delete_selection(handle);
-	OS.gtk_editable_set_position (handle, position);
+	OS.gtk_editable_set_position (handle, position);*/
 }
 
 /**
@@ -266,14 +255,14 @@ public void clearSelection () {
  */
 public void copy () {
 	checkWidget ();
-	byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
+	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
 	OS.gtk_selection_owner_set(handle, OS.gdk_atom_intern(clipboard, 0), 0);
 	GtkEditable widget = new GtkEditable ();
 	OS.memmove(widget, handle, GtkEditable.sizeof);
 	int start = Math.min(widget.selection_start_pos, widget.selection_end_pos);
 	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
 	widget.clipboard_text = OS.gtk_editable_get_chars(handle, start, end);
-	OS.memmove (handle, widget, GtkEditable.sizeof);
+	OS.memmove (handle, widget, GtkEditable.sizeof);*/
 }
 /**
  * Cuts the selected text.
@@ -292,7 +281,7 @@ public void copy () {
  */
 public void cut () {
 	checkWidget ();
-	byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
+	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
 	OS.gtk_selection_owner_set(handle, OS.gdk_atom_intern(clipboard, 0), 0);
 	GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
@@ -300,7 +289,7 @@ public void cut () {
 	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
 	widget.clipboard_text = OS.gtk_editable_get_chars(handle, start, end);
 	OS.memmove (handle, widget, GtkEditable.sizeof);
-	OS.gtk_editable_delete_text(handle, start, end);
+	OS.gtk_editable_delete_text(handle, start, end);*/
 }
 
 /**
@@ -321,9 +310,10 @@ public void cut () {
  */
 public int getCaretLineNumber () {
 	checkWidget ();
-	int addr_index=getCaretPosition();
+	/*int addr_index=getCaretPosition();
 	String tmpString= new String(getText(0,addr_index));
-	return getLineNumberInString(tmpString,'\n');
+	return getLineNumberInString(tmpString,'\n');*/
+	return 0;
 }
 
 /**
@@ -341,9 +331,10 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	GtkText gtktext = new GtkText ();
+	/*GtkText gtktext = new GtkText ();
 	OS.memmove (gtktext, handle, GtkText.sizeof);
-	return new Point (gtktext.cursor_pos_x, gtktext.cursor_pos_y);
+	return new Point (gtktext.cursor_pos_x, gtktext.cursor_pos_y);*/
+	return new Point (0,0);
 }
 
 /**
@@ -361,8 +352,8 @@ public Point getCaretLocation () {
  */
 public int getCaretPosition () {
 	checkWidget ();
-	//return OS.gtk_text_get_point (handle);
-	return OS.gtk_editable_get_position (handle);
+//	return OS.gtk_editable_get_position (handle);
+return 0;
 }
 
 
@@ -378,13 +369,14 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) {
+	/*if ((style & SWT.SINGLE) != 0) {
 		int address = OS.gtk_editable_get_chars (handle, 0, -1);
 		int length = OS.strlen (address);
 		OS.g_free (address);
 		return length;
 	}
-	return OS.gtk_text_get_length (handle);
+	return OS.gtk_text_get_length (handle);*/
+	return 0;
 }
 
 /**
@@ -446,9 +438,10 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-	GtkEditable widget = new GtkEditable ();
+	/*GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
-	return widget.editable!=0;
+	return widget.editable!=0;*/
+	return true;
 }
 
 /**
@@ -463,7 +456,8 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget ();
-	return getLineNumberInString(new String(getText()),'\n') + 1;
+	/*return getLineNumberInString(new String(getText()),'\n') + 1;*/
+	return 0;
 }
 /**
  * Gets the height of a line.
@@ -476,12 +470,13 @@ public int getLineCount () {
  * </ul>
  */
 public int getLineHeight () {
-	checkWidget ();
+	checkWidget ();/*
 	Font font = getFont();
 	GdkFont gdkfont = new GdkFont();
 	int fontHandle = font.handle;
 	OS.memmove(gdkfont, fontHandle, GdkFont.sizeof);
-	return gdkfont.ascent + gdkfont.descent;
+	return gdkfont.ascent + gdkfont.descent;*/
+	return 10;
 	
 }
 /**
@@ -501,9 +496,10 @@ public int getLineHeight () {
  */
 public Point getSelection () {
 	checkWidget ();
-	GtkEditable widget = new GtkEditable ();
+	/*GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
-	return new Point (widget.selection_start_pos, widget.selection_end_pos);
+	return new Point (widget.selection_start_pos, widget.selection_end_pos);*/
+	return new Point(0,0);
 }
 /**
  * Gets the number of selected characters.
@@ -517,11 +513,12 @@ public Point getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	GtkEditable widget = new GtkEditable ();
+	/*GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
 	int start = Math.min(widget.selection_start_pos, widget.selection_end_pos);
 	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
-	return  end - start;
+	return  end - start;*/
+	return 0;
 }
 /**
  * Gets the selected text.
@@ -535,7 +532,7 @@ public int getSelectionCount () {
  */
 public String getSelectionText () {
 	checkWidget ();
-	GtkEditable widget = new GtkEditable ();
+	/*GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
 	int start = Math.min(widget.selection_start_pos,widget.selection_end_pos);
 	int end = Math.max(widget.selection_start_pos,widget.selection_end_pos);
@@ -545,7 +542,8 @@ public String getSelectionText () {
 	OS.memmove (buffer1, address, length);
 	OS.g_free (address);
 	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
-	return new String (buffer2, 0, buffer2.length);
+	return new String (buffer2, 0, buffer2.length);*/
+	return "";
 }
 
 /**
@@ -565,9 +563,10 @@ public String getSelectionText () {
  */
 public int getTabs () {
 	checkWidget ();
-	GtkText widget= new GtkText();
+	/*GtkText widget= new GtkText();
 	OS.memmove(widget, handle, GtkText.sizeof);
-	return widget.default_tab_width;
+	return widget.default_tab_width;*/
+	return 8;
 }
 
 /**
@@ -585,13 +584,17 @@ public int getTabs () {
  */
 public String getText () {
 	checkWidget ();
-	int address = OS.gtk_editable_get_chars (handle, 0, -1);
-	int length = OS.strlen (address);
-	byte [] buffer1 = new byte [length];
-	OS.memmove (buffer1, address, length);
-	OS.g_free (address);
-	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
-	return new String (buffer2, 0, buffer2.length);
+	if ((style & SWT.SINGLE) != 0) {
+		/* FIXME - MIXING LENGTH WITH SIZE! */
+		int address = OS.gtk_entry_get_text (handle);
+		int length = OS.strlen (address);
+		byte [] buffer1 = new byte [length];
+		OS.memmove (buffer1, address, length);
+		OS.g_free (address);
+		char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
+		return new String (buffer2, 0, buffer2.length);
+	}
+	return "";
 }
 
 /**
@@ -659,12 +662,13 @@ public int getTextLimit () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return 0;
+	/*if ((style & SWT.SINGLE) != 0) return 0;
 	GtkText widget = new GtkText ();
 	OS.memmove (widget, handle, GtkText.sizeof);
 	int topCharIndex=widget.first_line_start_index;
 	return (getLineNumberInString(getText(0,topCharIndex), '\n'));
-	//Since getText uses substring (start, end + 1),so topCharIndex-1
+	//Since getText uses substring (start, end + 1),so topCharIndex-1*/
+	return 0;
 }
 
 /**
@@ -689,10 +693,11 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return 0;
+	/*if ((style & SWT.SINGLE) != 0) return 0;
 	GtkText widget= new GtkText();
 	OS.memmove(widget, handle, GtkText.sizeof);
-	return widget.first_onscreen_ver_pixel;
+	return widget.first_onscreen_ver_pixel;*/
+	return 0;
 }
 
 boolean getWrap () {
@@ -715,7 +720,7 @@ boolean getWrap () {
  */
 public void insert (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
@@ -723,7 +728,7 @@ public void insert (String string) {
 	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);	
 	OS.gtk_editable_delete_text (handle, start, end);
 	int [] position = new int [] {start};
-	OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
+	OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);*/
 }
 
 /**
@@ -740,11 +745,11 @@ public void insert (String string) {
  */
 public void paste () {
 	checkWidget ();
-	byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
+	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
 	byte [] compound = Converter.wcsToMbcs (null, "COMPOUND_TEXT", true);
 	int clipboard_atom = OS.gdk_atom_intern (clipboard, 0);
 	int compound_atom = OS.gdk_atom_intern (compound, 0);
-	OS.gtk_selection_convert(handle, clipboard_atom, compound_atom, 0);
+	OS.gtk_selection_convert(handle, clipboard_atom, compound_atom, 0);*/
 }
 
 int processModify (int arg0, int arg1, int int2) {
@@ -753,7 +758,7 @@ int processModify (int arg0, int arg1, int int2) {
 }
 
 int processVerify (int int0, int int1, int int2) {
-	if (!hooks (SWT.Verify)) return 0;
+	/*if (!hooks (SWT.Verify)) return 0;
 	if (int2 != 0) {
 		// Insert 
 		if (int0 == 0 || int1==0){
@@ -798,7 +803,7 @@ int processVerify (int int0, int int1, int int2) {
 			OS.gtk_signal_emit_stop_by_name (handle, delete_text);
 			return 0;
 		}
-	}
+	}*/
 	return 0;
 }
 
@@ -890,7 +895,7 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget ();
-	OS.gtk_editable_select_region (handle, 0, -1);
+	/*OS.gtk_editable_select_region (handle, 0, -1);*/
 }
 
 /**
@@ -929,9 +934,9 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  */
 public void setEchoChar (char echo) {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) {
+	/*if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_entry_set_visibility (handle, visibility = echo == '\0');
-	}
+	}*/
 }
 
 /**
@@ -946,7 +951,7 @@ public void setEchoChar (char echo) {
  */
 public void setEditable (boolean editable) {
 	checkWidget ();
-	OS.gtk_editable_set_editable (handle, editable);
+	/*OS.gtk_editable_set_editable (handle, editable);*/
 }
 
 /**
@@ -977,7 +982,7 @@ public void setEditable (boolean editable) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	OS.gtk_editable_set_position (handle, start);
+	/*OS.gtk_editable_set_position (handle, start);*/
 }
 
 /**
@@ -1009,8 +1014,8 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	OS.gtk_editable_set_position (handle, start);
-	OS.gtk_editable_select_region (handle, start, end);
+	/*OS.gtk_editable_set_position (handle, start);
+	OS.gtk_editable_select_region (handle, start, end);*/
 }
 
 /**
@@ -1042,8 +1047,8 @@ public void setSelection (int start, int end) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_editable_set_position (handle, selection.x);
-	OS.gtk_editable_select_region (handle, selection.x, selection.y);
+	/*OS.gtk_editable_set_position (handle, selection.x);
+	OS.gtk_editable_select_region (handle, selection.x, selection.y);*/
 }
 
  /**
@@ -1064,9 +1069,9 @@ public void setSelection (Point selection) {
 */
 public void setTabs (int tabs) {
 	checkWidget ();
-	GtkText widget= new GtkText();
+	/*GtkText widget= new GtkText();
 	widget.default_tab_width=tabs;
-	OS.memmove(handle, widget, GtkText.sizeof);
+	OS.memmove(handle, widget, GtkText.sizeof);*/
 }
 
 /**
@@ -1084,12 +1089,12 @@ public void setTabs (int tabs) {
  */
 public void setText (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_delete_text (handle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
-	OS.gtk_editable_set_position (handle, 0);
+	OS.gtk_editable_set_position (handle, 0);*/
 }
 
 /**
@@ -1108,11 +1113,11 @@ public void setText (String string) {
  */
 public void setTextLimit (int limit) {
 	checkWidget ();
-	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	/*if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	if ((style & SWT.SINGLE) != 0) {
 		textLimit = (short) limit;
 		OS.gtk_entry_set_max_length (handle, (short) limit);
-	}
+	}*/
 }
 
 /**
@@ -1129,11 +1134,10 @@ public void setTextLimit (int limit) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return;
+	/*if ((style & SWT.SINGLE) != 0) return;
 	if (index > getLineCount()) return;
-	GtkAdjustment adjustment = new GtkAdjustment();
 	int adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment(scrolledHandle);
-      	OS.memmove(adjustment, adjustmentHandle, GtkAdjustment.sizeof);
+	GtkAdjustment adjustment = new GtkAdjustment(adjustmentHandle);
 	int adjust = (int)(index*adjustment.upper/getLineCount());
 	if (adjust <= 0) {
 		adjust = 0;
@@ -1149,12 +1153,12 @@ public void setTopIndex (int index) {
 		verticalBar.setSelection(adjust+lineheight);
 		OS.gtk_adjustment_value_changed(verticalBar.handle);
 		topindex=getTopIndex();
-	}		
+	}		*/
 }
 
 void setWrap (boolean wrap) {
 	checkWidget ();
-	OS.gtk_text_set_word_wrap(handle, wrap ? 1 : 0);
+	/*OS.gtk_text_set_word_wrap(handle, wrap ? 1 : 0);*/
 }
 
 /**
@@ -1175,7 +1179,7 @@ void setWrap (boolean wrap) {
  */
 public void showSelection () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return;
+	/*if ((style & SWT.SINGLE) != 0) return;
 	int start_pos, end_pos, pos;
 	pos = OS.gtk_editable_get_position (handle);
 	GtkEditable widget = new GtkEditable ();
@@ -1188,9 +1192,8 @@ public void showSelection () {
 	if ( (topCharIndex > start_pos && topCharIndex < end_pos) || topCharIndex==start_pos ||
 		topCharIndex == end_pos) return;
 	if (pos < start_pos || pos > end_pos) {
-		GtkAdjustment adjustment = new GtkAdjustment();
 		int adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment(scrolledHandle);
-	       	OS.memmove(adjustment, adjustmentHandle, GtkAdjustment.sizeof);
+		GtkAdjustment adjustment = new GtkAdjustment(adjustmentHandle);
 		String tmpString= new String(getText(0,start_pos));
 		int currentln=getLineNumberInString(tmpString, '\n');
 		int adjust = (int)(currentln*adjustment.upper/getLineCount()-adjustment.page_increment);
@@ -1202,17 +1205,18 @@ public void showSelection () {
 		OS.gtk_editable_set_position (handle, widget.selection_end_pos);
 		OS.gtk_editable_select_region (handle, widget.selection_start_pos, widget.selection_end_pos);
 	}
-
+*/
 }
 
 String verifyText (String string, int start, int end) {
-	Event event = new Event ();
+	/*Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
 	sendEvent (SWT.Verify, event);
 	if (!event.doit) return null;
-	return event.text;
+	return event.text;*/
+	return "";
 }
 
 int getLineNumberInString( String string,char delimiter) {
@@ -1223,4 +1227,12 @@ int getLineNumberInString( String string,char delimiter) {
 	return count;			
 }
 
+static int checkStyle (int style) {
+	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		return style | SWT.MULTI;
+	}
+	return style | SWT.SINGLE;
+}
 }

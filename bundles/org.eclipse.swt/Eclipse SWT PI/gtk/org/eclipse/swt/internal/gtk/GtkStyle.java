@@ -14,7 +14,6 @@ package org.eclipse.swt.internal.gtk;
  */
 
 public class GtkStyle {
-	public int klass;
 	public int fg0_pixel;
 	public short fg0_red, fg0_green, fg0_blue;
 	public int fg1_pixel;
@@ -85,11 +84,16 @@ public class GtkStyle {
 	public short base3_red, base3_green, base3_blue;
 	public int base4_pixel;
 	public short base4_red, base4_green, base4_blue;
+	
 	public int black_pixel;
 	public short black_red, black_green, black_blue;
 	public int white_pixel;
 	public short white_red, white_green, white_blue;
-	public int font;
+	
+	public int font_desc;
+	
+	public int xthickness, ythickness;
+	
 	public int fg_gc0, fg_gc1, fg_gc2, fg_gc3, fg_gc4;
 	public int bg_gc0, bg_gc1, bg_gc2, bg_gc3, bg_gc4;
 	public int light_gc0, light_gc1, light_gc2, light_gc3, light_gc4;
@@ -100,13 +104,9 @@ public class GtkStyle {
 	public int black_gc;
 	public int white_gc;
 	public int bg_pixmap0, bg_pixmap1, bg_pixmap2, bg_pixmap3, bg_pixmap4, bg_pixmap5;
-	public int ref_count;
-	public int attach_count;
-	public int depth;
-	public int colormap;
-	public int engine;
-	public int engine_data;
-	public int rc_style;
-	public int styles;
-	public static final int sizeof = 652;
+	
+	private GtkStyle() {}
+	public GtkStyle(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

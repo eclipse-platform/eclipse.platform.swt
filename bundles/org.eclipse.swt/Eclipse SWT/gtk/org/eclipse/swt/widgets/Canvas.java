@@ -117,8 +117,7 @@ public Caret getCaret () {
  * </ul>
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
@@ -129,10 +128,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	boolean isVisible = (caret != null) && (caret.isVisible ());
 	if (isVisible) caret.hideCaret ();
 	
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, paintHandle(), GtkWidget.sizeof);
-	int window = widget.window;
-	if (window == 0) return;
+	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
 
 	/* Emit a NoExpose Event */
 	int gc = OS.gdk_gc_new (window);
@@ -243,8 +239,7 @@ int processMouseUp (int callData, int arg1, int int2) {
 int processPaint (int callData, int arg1, int int2) {
 	//if (!hooks (SWT.Paint)) return 0;
 
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove (gdkEvent, callData, GdkEventExpose.sizeof);
+	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
 	event.x = gdkEvent.x;  event.y = gdkEvent.y;

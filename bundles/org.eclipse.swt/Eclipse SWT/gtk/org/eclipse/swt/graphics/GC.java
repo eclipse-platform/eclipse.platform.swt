@@ -68,9 +68,9 @@ public GC(Drawable drawable) {
 	
 	// The colors we get from the widget are not always right.
 	// Get the default GTK_STATE_NORMAL colors
-	setBackground( DefaultGtkStyle.instance().backgroundColorNORMAL() );
+/*	setBackground( DefaultGtkStyle.instance().backgroundColorNORMAL() );
 	setForeground( DefaultGtkStyle.instance().foregroundColorNORMAL() );
-
+*/
 
 	// Feature in GDK.
 	// Sometimes, gdk_gc_new() doesn't get the font from the control,
@@ -80,7 +80,7 @@ public GC(Drawable drawable) {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	if (values.font == 0) {
-		OS.gdk_gc_set_font(handle,  DefaultGtkStyle.instance().loadDefaultFont() );
+/*		OS.gdk_gc_set_font(handle,  DefaultGtkStyle.instance().loadDefaultFont() );*/
 	}
 	
 	if (data.image != null) {
@@ -241,8 +241,7 @@ public int getCharWidth(char ch) {
 public Rectangle getClipping() {
 	if (data.clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
-		OS.gdk_window_get_geometry(data.drawable, unused, unused, width, height, unused);
+		OS.gdk_drawable_get_size(data.drawable, width, height);
 		return new Rectangle(0, 0, width[0], height[0]);
 	}
 	GdkRectangle rect = new GdkRectangle();
@@ -267,8 +266,7 @@ public void getClipping(Region region) {
 	int hRegion = region.handle;
 	if (data.clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
-		OS.gdk_window_get_geometry(data.drawable, unused, unused, width, height, unused);
+		OS.gdk_drawable_get_size(data.drawable, width, height);
 		hRegion = OS.gdk_region_new();
 		GdkRectangle rect = new GdkRectangle();
 		rect.x = 0; rect.y = 0;
@@ -309,9 +307,6 @@ public FontMetrics getFontMetrics() {
 	if (fontHandle==0) {
 		error(SWT.ERROR_UNSPECIFIED);
 	}
-	GdkFont gdkFont = new GdkFont();
-	OS.memmove(gdkFont, fontHandle, GdkFont.sizeof);
-	byte [] w = Converter.wcsToMbcs (null, "w", true);
 	return FontMetrics.gtk_new(fontHandle);
 }
 
@@ -400,13 +395,13 @@ public boolean isClipped() {
  * </ul>
  */
 public void setClipping(int x, int y, int width, int height) {
-	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
+/*	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
 	GdkRectangle rect = new GdkRectangle();
 	rect.x = (short)x;  rect.y = (short)y;
 	rect.width = (short)width;  rect.height = (short)height;
 	OS.gdk_gc_set_clip_rectangle(handle, rect);
 	data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
-	data.clipRgn = OS.gdk_region_union_with_rect(data.clipRgn, rect);
+	data.clipRgn = OS.gdk_region_union_with_rect(data.clipRgn, rect);*/
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -435,7 +430,7 @@ public void setClipping(Rectangle rect) {
  * </ul>
  */
 public void setClipping(Region region) {	
-	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
+/*	if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
 	if (region == null) {
 		data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
 		OS.gdk_gc_set_clip_mask(handle, OS.GDK_NONE);
@@ -443,7 +438,7 @@ public void setClipping(Region region) {
 		data.clipRgn = OS.gdk_regions_subtract(data.clipRgn, data.clipRgn);
 		data.clipRgn = OS.gdk_regions_union(region.handle, data.clipRgn);
 		OS.gdk_gc_set_clip_region(handle, region.handle);
-	}
+	}*/
 }
 /** 
  * Sets the font which will be used by the receiver
@@ -461,7 +456,7 @@ public void setClipping(Region region) {
  * </ul>
  */
 public void setFont(Font font) {	
-	int fontHandle = 0;
+/*	int fontHandle = 0;
 	if (font == null) {
 		GtkStyle gtkStyle = new GtkStyle();
 		int style = OS.gtk_widget_get_default_style();
@@ -470,7 +465,7 @@ public void setFont(Font font) {
 	} else {
 		fontHandle = font.handle;
 	}
-	OS.gdk_gc_set_font(handle, fontHandle);
+	OS.gdk_gc_set_font(handle, fontHandle);*/
 }
 
 /** 
@@ -634,7 +629,8 @@ private GdkColor _getBackgroundGdkColor() {
 private int _getGCFont() {
 	GdkGCValues values = _getGCValues();
 	if (values.font==0) {
-		SWT.error(SWT.ERROR_UNSPECIFIED);
+		values.font = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
+		if (values.font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	return values.font;
 }
@@ -778,9 +774,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  * @see #drawRectangle
  */
 public void drawFocus(int x, int y, int width, int height) {
-	GtkStyle style = new GtkStyle();
-	int hStyle = OS.gtk_widget_get_default_style();
-	OS.memmove(style, hStyle, GtkStyle.sizeof);
+	GtkStyle style = new GtkStyle(OS.gtk_widget_get_default_style());
 	GdkColor color = new GdkColor();
 	color.pixel = style.fg0_pixel;
 	color.red = style.fg0_red;
@@ -818,8 +812,8 @@ public void drawFocus(int x, int y, int width, int height) {
 public void drawImage(Image image, int x, int y) {
 	if (image == null) error(SWT.ERROR_NULL_ARGUMENT);
 	int pixmap = image.pixmap;
-	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
- 	OS.gdk_window_get_geometry(pixmap, unused, unused, width, height, unused);
+	int [] width = new int [1];  int [] height = new int [1];
+ 	OS.gdk_drawable_get_size(pixmap, width, height);
  	drawImage(image, 0, 0, width[0], height[0], x, y, width[0], height[0]);
 }
 
@@ -866,8 +860,7 @@ public void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 	/* source image properties */
 	int[] width = new int[1];
 	int[] height = new int[1];
-	int[] unused = new int[1];
- 	OS.gdk_window_get_geometry(srcImage.pixmap, unused, unused, width, height, unused);
+ 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
 	if ((srcY + srcWidth > width[0]) ||
 		(srcY + srcHeight > height[0])) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
@@ -899,7 +892,7 @@ public void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 		double offset_y = - srcY * scale_y;
 
 		int destSizePixbuf = GDKPIXBUF.gdk_pixbuf_new (
-			GDKPIXBUF.GDK_COLORSPACE_RGB,
+			GDKPIXBUF.GDK_COLORSPACE_RGB(),
 			true, 8, destWidth, destHeight);
 		GDKPIXBUF.gdk_pixbuf_scale(
 			pixbuf.handle, // src,
@@ -1390,6 +1383,8 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
+	
+	/* Rewrite this to use GdkPixbuf */
 
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);

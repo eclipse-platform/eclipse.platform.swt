@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkEditable extends GtkWidget {
+public class GtkEditable {
 	public int current_pos;
 	public int selection_start_pos;
 	public int selection_end_pos;
@@ -23,5 +23,9 @@ public class GtkEditable extends GtkWidget {
 	public int ic;
 	public int ic_attr;
 	public int clipboard_text;
-	public static final int sizeof = 76;
+	
+	private GtkEditable() {}
+	public GtkEditable(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

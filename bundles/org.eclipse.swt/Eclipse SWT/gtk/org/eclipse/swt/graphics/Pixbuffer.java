@@ -47,12 +47,9 @@ final class Pixbuffer {
 	Pixbuffer (Image src) {
 		if (src == null || src.pixmap == 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
-		// get the geometry
-		int[] unused = new int[1];
 		int[] w = new int[1];
 		int[] h = new int[1];
-		int[] d = new int[1];
-		OS.gdk_window_get_geometry(src.pixmap, unused, unused, w, h, unused);
+		OS.gdk_drawable_get_size(src.pixmap, w, h);
 	 	int width = w[0];
 	 	int height = h[0];
 
@@ -178,8 +175,7 @@ final class Pixbuffer {
 		if (dest==null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		int w = getWidth();
 		int h = getHeight();
-		GdkVisual visual = new GdkVisual();
-		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+		GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
 		dest.pixmap = OS.gdk_pixmap_new (0, w, h, visual.depth);
 		dest.mask = 0;  // for now; we fill it later in this method
 		GDKPIXBUF.gdk_pixbuf_render_to_drawable_alpha(handle,  // src
@@ -274,24 +270,22 @@ final class Pixbuffer {
 	 * an alpha channel.
 	 */
 	private void createHandle(int width, int height) {
-		handle = GDKPIXBUF.gdk_pixbuf_new(GDKPIXBUF.GDK_COLORSPACE_RGB,
+		handle = GDKPIXBUF.gdk_pixbuf_new(GDKPIXBUF.GDK_COLORSPACE_RGB(),
 		    true,
 		    8,
 	 	   width, height);
-		if (this.handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (this.handle == 0) {
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
 		data = GDKPIXBUF.gdk_pixbuf_get_pixels(handle);
 	}
 
 	private void fillAlphaFromPixmapMask(int mask) {
 		hasMask = true;
 		
-		/* pull the mask data from the X Server */	
-		// get the geometry
-		int[] unused = new int[1];
 		int[] w = new int[1];
 		int[] h = new int[1];
-		int[] d = new int[1];
-		OS.gdk_window_get_geometry(mask, unused, unused, w, h, unused);
+	 	OS.gdk_drawable_get_size(mask, w, h);
 	 	int width =  Math.min(w[0], getWidth());
 	 	int height = Math.min(h[0], getHeight());
 		/* Get the data */
@@ -315,13 +309,9 @@ final class Pixbuffer {
 	private void fillAlphaFromTransparentPixel(int pm, int pixel) {
 		transparentPixel = pixel;
 	
-		/* pull the data from the X Server */	
-		// get the geometry
-		int[] unused = new int[1];
 		int[] w = new int[1];
 		int[] h = new int[1];
-		int[] d = new int[1];
-		OS.gdk_window_get_geometry(pm, unused, unused, w, h, unused);
+		OS.gdk_drawable_get_size(pm, w, h);
 	 	int width =  Math.min(w[0], getWidth());
 	 	int height = Math.min(h[0], getHeight());
 		/* Get the data */

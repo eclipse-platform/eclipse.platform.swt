@@ -103,7 +103,7 @@ int okFunc (int widget, int callData) {
 	byte [] buffer = new byte [fontSize];
 	OS.memmove (buffer, hFontName, fontSize);
 	char [] fontName = Converter.mbcsToWcs (null, buffer);
-	fontData = FontData.gtk_new(new String (fontName));
+	//fontData = FontData.gtk_new(new String (fontName));
 	OS.gtk_widget_destroy (callData);
 	return 0;
 }
@@ -124,15 +124,13 @@ public FontData open () {
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
-	GtkFontSelectionDialog dialog = new GtkFontSelectionDialog ();
-	OS.memmove (dialog, handle, GtkFontSelectionDialog.sizeof);
 	if (parent!=null) {
 		OS.gtk_window_set_modal(handle, true);
-		OS.gtk_window_set_transient_for(handle, parent.topHandle);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
 	if (fontData != null) {
 		byte[] buffer = Converter.wcsToMbcs(null, fontData.gtk_getXlfd(), true);
-		OS.gtk_font_selection_set_font_name(dialog.fontsel, buffer);
+		OS.gtk_font_selection_dialog_set_font_name(handle, buffer);
 	}
 	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
 	int destroyFunc = destroyCallback.getAddress ();
@@ -143,8 +141,8 @@ public FontData open () {
 	int okFunc = okCallback.getAddress ();
 	Callback cancelCallback = new Callback (this, "cancelFunc", 2);
 	int cancelFunc = cancelCallback.getAddress ();
-	OS.gtk_signal_connect (dialog.ok_button, clicked, okFunc, handle);
-	OS.gtk_signal_connect (dialog.cancel_button, clicked, cancelFunc, handle);
+	OS.gtk_signal_connect (OS.GTK_FONT_SELECTION_DIALOG_OK_BUTTON(handle), clicked, okFunc, handle);
+	OS.gtk_signal_connect (OS.GTK_FONT_SELECTION_DIALOG_CANCEL_BUTTON(handle), clicked, cancelFunc, handle);
 	fontData = null;
 	OS.gtk_widget_show_now (handle);
 	OS.gtk_main ();	

@@ -286,9 +286,10 @@ public String getName() {
  */
 public int getStyle() {
 	int style = 0;
-	if (weight.equals("bold"))
-		style |= SWT.BOLD;
-	if (slant.equals("i"))
+	if (weight!=null)
+		if (weight.equals("bold")) style |= SWT.BOLD;
+	if (slant!=null)
+		if (slant.equals("i"))
 		style |= SWT.ITALIC;
 	return style;
 }

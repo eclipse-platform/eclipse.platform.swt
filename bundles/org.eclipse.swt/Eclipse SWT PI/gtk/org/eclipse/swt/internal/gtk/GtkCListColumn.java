@@ -31,4 +31,9 @@ public class GtkCListColumn {
 	public int auto_resize;
 	public int button_passive;
 	public static final int sizeof = 40;
+	
+	private GtkCListColumn() {}
+	public GtkCListColumn(int ptr) {
+		OS.memmove(this, ptr);
+	}
 }

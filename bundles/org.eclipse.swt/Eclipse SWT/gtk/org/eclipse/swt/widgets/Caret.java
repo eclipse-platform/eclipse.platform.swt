@@ -88,9 +88,7 @@ boolean drawCaret () {
 	/* The parent is a Canvas; its handle is a GtkDrawingArea.
 	 * Get the DA's GDK window to draw on.
 	 */
-	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, parent.handle, GtkWidget.sizeof);
-	int window = widget.window;
+	int window = OS.GTK_WIDGET_WINDOW(parent.handle);
 
 	/* Create the GC, and set the working color and rop. */
 	int gc = OS.gdk_gc_new(window);
