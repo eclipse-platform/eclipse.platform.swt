@@ -1617,6 +1617,10 @@ public StyledText(Composite parent, int style) {
 		};
 		StyledTextBidi.addLanguageListener(this, runnable);
 	}
+	
+	String platform= SWT.getPlatform();
+	isCarbon = "carbon".equals(platform);	
+	
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
 	createKeyBindings();
@@ -1624,9 +1628,6 @@ public StyledText(Composite parent, int style) {
 	setCursor(ibeamCursor);
 	installListeners();
 	installDefaultLineStyler();
-	
-	String platform= SWT.getPlatform();
-	isCarbon = "carbon".equals(platform);	
 }
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
@@ -2220,15 +2221,21 @@ void createKeyBindings() {
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
 	// Modification
 	// Cut, Copy, Paste
-	// CUA style
-	setKeyBinding('\u0018' | SWT.MOD1, ST.CUT);
-	setKeyBinding('\u0003' | SWT.MOD1, ST.COPY);
-	setKeyBinding('\u0016' | SWT.MOD1, ST.PASTE);
-	// Wordstar style
+	if (isCarbon) {
+		setKeyBinding('x' | SWT.MOD1, ST.CUT);
+		setKeyBinding('c' | SWT.MOD1, ST.COPY);
+		setKeyBinding('v' | SWT.MOD1, ST.PASTE);
+	} else {
+		setKeyBinding('\u0018' | SWT.MOD1, ST.CUT);
+		setKeyBinding('\u0003' | SWT.MOD1, ST.COPY);
+		setKeyBinding('\u0016' | SWT.MOD1, ST.PASTE);
+	}
+	// Cut, Copy, Paste Wordstar style
 	setKeyBinding(SWT.DEL | SWT.MOD2, ST.CUT);
 	setKeyBinding(SWT.INSERT | SWT.MOD1, ST.COPY);
 	setKeyBinding(SWT.INSERT | SWT.MOD2, ST.PASTE);
 	setKeyBinding(SWT.BS | SWT.MOD2, ST.DELETE_PREVIOUS);
+	
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
 	
@@ -5021,21 +5028,28 @@ void handleKey(Event event) {
 		action = getKeyBinding(event.character | event.stateMask);
 	}
 	if (action == SWT.NULL) {
-		// -ignore any ALT, SHIFT+ALT, CTRL, SHIFT+CTRL key combination; 
-		//  Don't ignore CTRL+ALT combinations since that is the Alt Gr 
-		//	key on some keyboards. Never filter characters on Mac OSX. 
-		//  See bug 20953.
+		boolean ignore = false;
+		
+		if (isCarbon) {
+			// Ignore acclerator key combinations (we do not want to 
+			// insert a character in the text in this instance). Do not  
+			// ignore COMMAND+ALT combinations since that key sequence
+			// produces characters on the mac.
+			ignore = (event.stateMask ^ SWT.COMMAND) == 0 ||
+					(event.stateMask ^ (SWT.COMMAND | SWT.SHIFT)) == 0;
+		} else {
+			// Ignore acclerator key combinations (we do not want to 
+			// insert a character in the text in this instance). Don't  
+			// ignore CTRL+ALT combinations since that is the Alt Gr 
+			// key on some keyboards.  See bug 20953. 
+			ignore = (event.stateMask ^ SWT.ALT) == 0 || 
+					(event.stateMask ^ SWT.CTRL) == 0 ||
+					(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
+					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
+		}
 		// -ignore anything below SPACE except for line delimiter keys and tab.
 		// -ignore DEL 
-		boolean isCtrlAlt = false;
-		
-		if (isCarbon == false) {
-			isCtrlAlt = (event.stateMask ^ SWT.ALT) == 0 || 
-						(event.stateMask ^ SWT.CTRL) == 0 ||
-						(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
-						(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
-		}
-		if (isCtrlAlt == false && event.character > 31 && event.character != SWT.DEL || 
+		if (!ignore && event.character > 31 && event.character != SWT.DEL || 
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
 			doContent(event.character);
