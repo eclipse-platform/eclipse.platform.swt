@@ -804,24 +804,22 @@ public void setText (String string) {
 			j--;
 		}
 	}
-	byte [] buffer2;
+	int xmString2 = 0;
 	if (accel && ++i < text.length) {
 		char [] accelText = new char [text.length - i];
 		System.arraycopy (text, i, accelText, 0, accelText.length);
 		/* Use the character encoding for the default locale */
-		buffer2 = Converter.wcsToMbcs (null, accelText, true);
-	} else {
-		buffer2 = new byte [1];
+		byte [] buffer2 = Converter.wcsToMbcs (null, accelText, true);
+		xmString2 = OS.XmStringParseText (
+			buffer2,
+			0,
+			OS.XmFONTLIST_DEFAULT_TAG, 
+			OS.XmCHARSET_TEXT, 
+			null,
+			0,
+			0);
+		if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	}
-	int xmString2 = OS.XmStringParseText (
-		buffer2,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		null,
-		0,
-		0);
-	if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	while (j < text.length) text [j++] = 0;
 	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, text, true);
@@ -836,7 +834,6 @@ public void setText (String string) {
 	if (xmString1 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
-		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString1,
 		OS.XmNmnemonic, mnemonic,
 		OS.XmNacceleratorText, xmString2,
