@@ -34,8 +34,6 @@ import org.eclipse.swt.accessibility.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
- * 
- * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  */
 
 public abstract class Control extends Widget implements Drawable {
