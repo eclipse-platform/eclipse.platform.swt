@@ -379,6 +379,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 				width += itemImage.getBounds().width;
 			}
 			if (itemText != null) {
+				gc.setFont(item.getFont());
 				width += gc.stringExtent(itemText).x;
 			}
 			newItemWidth = Math.max(newItemWidth, width);

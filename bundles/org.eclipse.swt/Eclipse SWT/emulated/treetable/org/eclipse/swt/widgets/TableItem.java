@@ -133,7 +133,8 @@ public TableItem(Table parent, int style, int index) {
 void calculateSelectionExtent() {
 	Table parent = getParent();
 	TableColumn column = parent.internalGetColumn(TableColumn.FIRST);
-	GC gc = new GC(parent);	
+	GC gc = new GC(parent);
+	gc.setFont(getFont());
 	String trimmedText = getText(gc, column);
 	int gridLineWidth = parent.getGridLineWidth();
 	
@@ -417,12 +418,14 @@ int getDotStartX(int columnIndex, int columnWidth) {
 
 	if (label != null) {
 		gc = new GC(parent);
+		gc.setFont (getFont());
 		dotStartX = getAlignmentOffset(columnIndex, columnWidth, gc);
 		if ((alignment & SWT.LEFT) != 0) {
 			maxWidth = getMaxTextWidth(columnIndex, columnWidth);
 			label = parent.trimItemText(label, maxWidth, gc);
 			if (label.endsWith(Table.DOT_STRING)) {
-				dotStartX = gc.stringExtent(label).x - parent.getDotsWidth(gc);
+				int dotsWidth = gc.stringExtent(Table.DOT_STRING).x;
+				dotStartX = gc.stringExtent(label).x - dotsWidth;
 				// add indents, margins and image width
 				dotStartX += getImageStopX(columnIndex);
 				dotStartX += getTextIndent(columnIndex);
@@ -676,7 +679,8 @@ Point getItemExtent(TableColumn column) {
 	Table parent = getParent();
 	int columnIndex = column.getIndex();
 	Point extent = new Point(getImageStopX(columnIndex), parent.getItemHeight() - parent.getGridLineWidth());
-	GC gc = new GC(parent);	
+	GC gc = new GC(parent);
+	gc.setFont(getFont());
 	String trimmedText = getText(gc, column);
 
 	if (trimmedText != null && trimmedText.length() > 0) {
@@ -720,7 +724,7 @@ int getPreferredWidth(int index) {
 	int size = getImageStopX(index);
 	String text = getText(index);
 	if (text != null) {
-		size += getParent().getTextWidth(text) + getTextIndent(index) * 2 + 1;
+		size += getTextWidth(text) + getTextIndent(index) * 2 + 1;
 	}
 	return size;
 }
@@ -803,6 +807,7 @@ String getText(GC gc, TableColumn column) {
 	int maxWidth;
 
 	if (label == null) {
+		gc.setFont(getFont());
 		maxWidth = getMaxTextWidth(columnIndex, column.getWidth());
 		label = getParent().trimItemText(getText(columnIndex), maxWidth, gc);
 	}
@@ -850,6 +855,20 @@ String getTrimmedText(int columnIndex) {
  */
 String [] getTrimmedTexts() {
 	return trimmedLabels;
+}
+/**
+ * Answer the width of 'text' in pixel.
+ * Answer 0 if 'text' is null.
+ */
+int getTextWidth(String text) {
+	int textWidth = 0;
+	if (text != null) {
+		GC gc = new GC(getParent());
+		gc.setFont(getFont());
+		textWidth = gc.stringExtent(text).x;
+		gc.dispose();
+	}
+	return textWidth;
 }
 /**
  * Ensure that the image and label vectors have at least 

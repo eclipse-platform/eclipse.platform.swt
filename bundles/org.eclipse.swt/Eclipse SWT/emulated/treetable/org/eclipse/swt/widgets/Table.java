@@ -61,7 +61,6 @@ public class Table extends SelectableItemWidget {
 														// by user defined columns
 	private TableColumn defaultColumn;					// Default column that is created as soon as the table is created.
 														// Fix for 1FUSJY5
-	private int dotsWidth;								// width of the static String dots (see above)
 	private int fontHeight;								// font height, avoid use GC.stringExtend for each pain
 
 /**
@@ -358,6 +357,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 				width += itemImage.getBounds().width;
 			}
 			if (itemText != null) {
+				gc.setFont(item.getFont());
 				width += gc.stringExtent(itemText).x;
 			}
 			newItemWidth = Math.max(newItemWidth, width);
@@ -740,16 +740,6 @@ Vector getColumnVector() {
  */
 TableColumn getDefaultColumn() {
 	return defaultColumn;
-}
-/**
- * Answer the width of the replacement String used to indicate 
- * truncated items.
- * Cached to speed up calculation of truncated items.
- * @param gc - GC used to measure the width of the replacement 
- *	String
- */
-int getDotsWidth(GC gc) {
-	return dotsWidth;
 }
 /**
  * Answer the column used to occupy any space left to the 
@@ -1429,8 +1419,7 @@ void initialize() {
 	columns = new Vector();
 	setItemVector(new Vector());
 	GC gc = new GC(this);
-	Point extent = gc.stringExtent(DOT_STRING);
-	dotsWidth = extent.x;
+	Point extent = gc.stringExtent("String");
 	fontHeight = extent.y;
 	gc.dispose();
 	tableHeader = new Header(this);
@@ -2454,8 +2443,7 @@ public void setFont(Font font) {
 	super.setFont(font);
 	
 	GC gc = new GC(this);
-	Point extent = gc.stringExtent(DOT_STRING);
-	dotsWidth = extent.x;
+	Point extent = gc.stringExtent("String");
 	fontHeight = extent.y;
 	gc.dispose();
 	
@@ -2716,6 +2704,7 @@ public void showColumn (TableColumn column) {
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.getParent() != this) return;
+	if (columns == null || columns.size() <= 1) return;
 }
 
 /**
@@ -2811,7 +2800,7 @@ String trimItemText(String text, int maxWidth, GC gc) {
 	if (text != null && text.length() > 1) {
 		textWidth = gc.stringExtent(text).x;
 		if (textWidth > maxWidth) {
-			dotsWidth = getDotsWidth(gc);
+			dotsWidth = gc.stringExtent(Table.DOT_STRING).x;
 			while (textWidth + dotsWidth > maxWidth && text.length() > 1) {
 				text = text.substring(0, text.length() - 1);		// chop off one character at the end
 				textWidth = gc.stringExtent(text).x;

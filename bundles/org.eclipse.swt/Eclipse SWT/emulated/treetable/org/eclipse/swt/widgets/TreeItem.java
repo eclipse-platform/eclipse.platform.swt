@@ -98,6 +98,7 @@ public class TreeItem extends AbstractTreeItem {
 	private boolean isExpanding = false;
 	Color background = null;
 	Color foreground = null;
+	Font font = null;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -535,6 +536,24 @@ int getDecorationsWidth() {
 	return width;
 }
 /**
+ * Returns the font that the receiver will use to paint textual information for this item.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont () {
+	checkWidget ();
+	if (font != null) return font;
+	Tree parent = getParent ();
+	return parent.getFont ();
+}
+/**
  * Returns the foreground color that the receiver will use to draw.
  *
  * @return the receiver's foreground color
@@ -643,7 +662,7 @@ Point getItemExtent() {
 		text = getText();
 		itemWidth = SELECTION_PADDING;
 		if (text != null) {
-			itemWidth += parent.getTextWidth(text) + TEXT_INDENT;
+			itemWidth += getTextWidth(text) + TEXT_INDENT;
 		}
 		if (imageExtent != null) {
 			itemWidth += imageExtent.x + IMAGE_PADDING;
@@ -829,6 +848,20 @@ int getTextYPosition(GC gc) {
 		}
 	}
 	return textYPosition;
+}
+/**
+ * Answer the width of 'text' in pixel.
+ * Answer 0 if 'text' is null.
+ */
+int getTextWidth(String text) {
+	int textWidth = 0;
+	if (text != null) {
+		GC gc = new GC(getParent());
+		gc.setFont(getFont());
+		textWidth = gc.stringExtent(text).x;
+		gc.dispose();
+	}
+	return textWidth;
 }
 /**
  * Answer the index of the receiver relative to the first root 
@@ -1024,8 +1057,9 @@ void paint(GC gc, int yPosition) {
 	if (isVisible() == false) {
 		return;
 	}
-	
 	Tree parent = getParent();
+	Font font = getFont();
+	gc.setFont(font);
 	Point paintPosition = new Point(getPaintStartX(), yPosition);
 	Point extent = getSelectionExtent();
 	gc.setForeground(parent.CONNECTOR_LINE_COLOR);
@@ -1312,6 +1346,30 @@ public void setChecked(boolean checked) {
 }
 void setExpanding(boolean expanding){
 	isExpanding = expanding;
+}
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font){
+	checkWidget ();
+	if (font != null && font.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	this.font = font;
+	redraw ();
 }
 /**
  * Sets the receiver's foreground color to the color specified

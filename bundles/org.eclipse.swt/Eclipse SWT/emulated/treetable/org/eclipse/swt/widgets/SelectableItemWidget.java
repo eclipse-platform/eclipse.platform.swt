@@ -130,6 +130,7 @@ void calculateItemHeight(SelectableItem item) {
 	itemText = item.getText();
 	if (itemText != null && textHeight == -1) {
 		gc = new GC(this);
+		gc.setFont(item.getFont());
 		itemHeight = gc.stringExtent(itemText).y;
 		textHeight = itemHeight;
 		gc.dispose();
@@ -1055,21 +1056,6 @@ public int getSelectionCount() {
  */
 Vector getSelectionVector() {
 	return selectedItems;
-}
-/**
- * Answer the width of 'text' in pixel.
- * Answer 0 if 'text' is null.
- */
-int getTextWidth(String text) {
-	int textWidth = 0;
-	GC gc;
-
-	if (text != null) {
-		gc = new GC(this);
-		textWidth = gc.stringExtent(text).x;
-		gc.dispose();
-	}
-	return textWidth;
 }
 /**
  * Answer the index of the first visible item in the receiver's 

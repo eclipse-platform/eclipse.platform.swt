@@ -137,6 +137,10 @@ public boolean getChecked() {
 	return checked;
 }
 
+public Font getFont() {
+	return parent.getFont();
+}
+
 /**
  * Gets the grayed state.
  * <p>
