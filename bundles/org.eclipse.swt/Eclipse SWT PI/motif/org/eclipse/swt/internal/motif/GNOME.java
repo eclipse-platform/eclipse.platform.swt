@@ -14,6 +14,7 @@ package org.eclipse.swt.internal.motif;
 public class GNOME extends OS {
 
 public static final int GNOME_FILE_DOMAIN_PIXMAP = 4;
+public static final int GNOME_ICON_LOOKUP_FLAGS_NONE = 0;
 public static final int GNOME_PARAM_NONE = 0;
 public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
 
@@ -21,6 +22,10 @@ public static final synchronized native int LIBGNOME_MODULE();
 public static final synchronized native void g_free(int mem);
 public static final synchronized native int g_list_next(int list);
 public static final synchronized native int g_malloc(int size);
+public static final synchronized native void g_object_unref(int object);
+public static final synchronized native int gnome_icon_lookup(int icon_theme, int thumbnail_factory, byte[] file_uri, byte[] custom_icon, int file_info, byte[] mime_type, int flags, int[] result);
+public static final synchronized native int gnome_icon_theme_lookup_icon(int theme, int icon_name, int size, int[] icon_data, int[] base_size);
+public static final synchronized native int gnome_icon_theme_new();
 public static final synchronized native int gnome_program_init(byte[] app_id, byte[] app_version, int module_info, int argc, int[] argv, int first_property_name);
 public static final synchronized native int gnome_program_locate_file(int program, int domain, int file_name, boolean only_if_exists, int ret_location);
 public static final synchronized native int gnome_vfs_get_registered_mime_types();

@@ -347,23 +347,17 @@ private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExp
 }
 
 private static ImageData gnome_getMimeIcon(String mimeType) {
-	byte[] app_id = Converter.wcsToMbcs(null, "swt", true);
-	int ptr = GNOME.g_malloc(app_id.length);
-	OS.memmove(ptr, app_id, app_id.length);
-	int[] argv =  {ptr, 0};
-	/* 
-	* Note.  gnome_program_locate_file requires gnome_program_init to have been called at least
-	* once otherwise it outputs an error message.  The workaround is to call gnome_program_init
-	* with the minimal amount of arguments required to register as a Gnome application. 
-	*/
-	int program = GNOME.gnome_program_init(app_id, app_id, GNOME.LIBGNOME_MODULE(), 1, argv, GNOME.GNOME_PARAM_NONE);
-	GNOME.g_free(ptr);
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
-	ptr = GNOME.gnome_vfs_mime_get_icon(mimeTypeBuffer);
-	if (ptr == 0) return null;
-	int path = GNOME.gnome_program_locate_file(program, GNOME.GNOME_FILE_DOMAIN_PIXMAP, ptr, true, 0);
-	GNOME.g_free(ptr);
-	GNOME.g_free(program);
+	/* 
+	* Note.  gnome_icon_theme_new uses g_object_new to allocate the data it returns.
+	* Use g_object_unref to free the pointer it returns.
+	*/
+	int icon_theme = GNOME.gnome_icon_theme_new();
+	int icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, null, 0, mimeTypeBuffer, 
+			GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
+	int path = 0;
+	if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(icon_theme, icon_name, -1, null, null);
+	GNOME.g_object_unref(icon_theme);
 	if (path == 0) return null;
 	int length = OS.strlen(path);
 	if (length == 0) return null;

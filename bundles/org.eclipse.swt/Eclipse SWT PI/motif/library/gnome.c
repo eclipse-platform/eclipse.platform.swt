@@ -22,8 +22,10 @@
 #include <assert.h>
 #include <libgnome/libgnome.h>
 #include <libgnome/gnome-program.h>
+#include <libgnomeui/libgnomeui.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <libgnomevfs/gnome-vfs-mime-info.h>
 
 #ifndef NO_GnomeVFSMimeApplication
 typedef struct GnomeVFSMimeApplication_FID_CACHE {
@@ -113,6 +115,65 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_GNOME_g_1malloc
 }
 #endif
 
+#ifndef NO_g_1object_1unref
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_GNOME_g_1object_1unref
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1object_1unref\n")
+	g_object_unref((gpointer)arg0);
+}
+#endif
+
+#ifndef NO_gnome_1icon_1lookup
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1icon_1lookup
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintArray arg7)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg5=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+	DEBUG_CALL("gnome_1icon_1lookup\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)gnome_icon_lookup((GnomeIconTheme *)arg0, (GnomeThumbnailFactory *)arg1, (const char *)lparg2, (const char *)lparg3, (GnomeVFSFileInfo *)arg4, (const char *)lparg5, arg6, (GnomeIconLookupResultFlags *)lparg7);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_gnome_1icon_1theme_1lookup_1icon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1icon_1theme_1lookup_1icon
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	DEBUG_CALL("gnome_1icon_1theme_1lookup_1icon\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)gnome_icon_theme_lookup_icon((GnomeIconTheme *)arg0, (const char *)arg1, arg2, (const GnomeIconData **)lparg3, lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_gnome_1icon_1theme_1new
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1icon_1theme_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gnome_1icon_1theme_1new\n")
+
+	return (jint)gnome_icon_theme_new();
+}
+#endif
+
 #ifndef NO_gnome_1vfs_1get_1registered_1mime_1types
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1vfs_1get_1registered_1mime_1types
 	(JNIEnv *env, jclass that)
@@ -149,7 +210,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1vfs_1mim
 {
 	DEBUG_CALL("gnome_1vfs_1mime_1extensions_1list_1free\n")
 
-	gnome_vfs_mime_extensions_list_free(arg0);
+	gnome_vfs_mime_extensions_list_free((GList*)arg0);
 }
 #endif
 
@@ -159,7 +220,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_GNOME_gnome_1vfs_1mim
 {
 	DEBUG_CALL("gnome_1vfs_1mime_1registered_1mime_1type_1list_1free\n")
 
-	gnome_vfs_mime_registered_mime_type_list_free(arg0);
+	gnome_vfs_mime_registered_mime_type_list_free((GList*)arg0);
 }
 #endif
 
