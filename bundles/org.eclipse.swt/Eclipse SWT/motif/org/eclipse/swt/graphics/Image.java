@@ -188,7 +188,7 @@ public Image(Device device, Image srcImage, int flag) {
  	int height = h[0];
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	/* Don't create the mask here if flag is SWT.IMAGE_GRAY. See below.*/
-	if (flag != SWT.IMAGE_GRAY && srcImage.mask != 0) {
+	if (flag != SWT.IMAGE_GRAY && (srcImage.mask != 0 || srcImage.transparentPixel != -1)) {
 		/* Generate the mask if necessary. */
 		if (srcImage.transparentPixel != -1) srcImage.createMask();
 		int mask = OS.XCreatePixmap(xDisplay, drawable, width, height, 1);
