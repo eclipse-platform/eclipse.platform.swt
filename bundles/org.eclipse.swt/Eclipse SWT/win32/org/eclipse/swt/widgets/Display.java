@@ -430,7 +430,17 @@ void addControl (int handle, Control control) {
  * be notifed when an event of the given type occurs anywhere
  * in a widget. When the event does occur, the listener is
  * notified by sending it the <code>handleEvent()</code> message.
- *
+ * <p>
+ * Setting the type of an event to <code>SWT.None</code> from
+ * within the <code>handleEvent()</code> method can be used to
+ * change the event type and stop subsequent Java listeners
+ * from running. Because event filters run before other listeners,
+ * event filters can both block other listeners and set arbitrary
+ * fields within an event. For this reason, event filters are both
+ * powerful and dangerous. They should generally be avoided for
+ * performance, debugging and code maintenance reasons.
+ * </p>
+ * 
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
  *
