@@ -55,22 +55,7 @@ public static void showWhile(Display display, Runnable runnable) {
 	
 	Integer busyId = new Integer(nextBusyId);
 	nextBusyId++;
-	Cursor cursor = (Cursor)display.getData(BUSY_CURSOR);
-	if (cursor == null || cursor.isDisposed()) {
-		cursor = new Cursor(display, SWT.CURSOR_WAIT);
-		display.setData(BUSY_CURSOR, cursor);
-		display.disposeExec(new Runnable() {
-			public void run() {
-				Display display = Display.getCurrent();
-				Cursor cursor =  (Cursor)display.getData(BUSY_CURSOR);
-				if (cursor != null) {
-					if (!cursor.isDisposed()) cursor.dispose();
-					display.setData(BUSY_CURSOR, null);
-				}
-			}
-		});
-	}
-	
+	Cursor cursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 	Shell[] shells = display.getShells();
 	for (int i = 0; i < shells.length; i++) {
 		Integer id = (Integer)shells[i].getData(BUSYID_NAME);
