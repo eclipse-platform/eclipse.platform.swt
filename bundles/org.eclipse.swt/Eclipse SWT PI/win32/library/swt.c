@@ -224,6 +224,10 @@
 #define NO_ChooseColorW
 #endif /* WIN32_PLATFORM_WFSP */
 
+#ifndef WIN32_PLATFORM_PSPC
+#define NO_SHHandleWMSettingChange
+#endif /* WIN32_PLATFORM_PSPC */
+
 #ifndef WIN32_PLATFORM_WFSP
 #define NO_SHSendBackToFocusWindow
 #endif /* WIN32_PLATFORM_WFSP */
@@ -5522,6 +5526,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SHGetPathFromIDListW)
 	return rc;
 }
 #endif /* NO_SHGetPathFromIDListW */
+
+#ifndef NO_SHHandleWMSettingChange
+JNIEXPORT jboolean JNICALL OS_NATIVE(SHHandleWMSettingChange)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	SHACTIVATEINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SHHandleWMSettingChange\n")
+
+	if (arg3) lparg3 = getSHACTIVATEINFOFields(env, arg3, &_arg3);
+	rc = (jboolean)SHHandleWMSettingChange((HWND)arg0, arg1, arg2, lparg3);
+	if (arg3) setSHACTIVATEINFOFields(env, arg3, lparg3);
+	return rc;
+}
+#endif /* NO_SHHandleWMSettingChange */
 
 #ifndef NO_SHSendBackToFocusWindow
 JNIEXPORT void JNICALL OS_NATIVE(SHSendBackToFocusWindow)

@@ -93,6 +93,10 @@
 #define NO_SHMENUBARINFO
 #endif /* WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP */
 
+#ifndef WIN32_PLATFORM_PSPC
+#define NO_SHACTIVATEINFO
+#endif /* WIN32_PLATFORM_PSPC */
+
 /** Structs */
 #ifndef NO_ACCEL
 ACCEL *getACCELFields(JNIEnv *env, jobject lpObject, ACCEL *lpStruct);
@@ -521,6 +525,14 @@ void setSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);
 #define getSCROLLINFOFields(a,b,c) NULL
 #define setSCROLLINFOFields(a,b,c)
 #endif /* NO_SCROLLINFO */
+
+#ifndef NO_SHACTIVATEINFO
+SHACTIVATEINFO *getSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct);
+void setSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct);
+#else
+#define getSHACTIVATEINFOFields(a,b,c) NULL
+#define setSHACTIVATEINFOFields(a,b,c)
+#endif /* NO_SHACTIVATEINFO */
 
 #ifndef NO_SHELLEXECUTEINFO
 SHELLEXECUTEINFO *getSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct);

@@ -794,6 +794,7 @@ public class OS {
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
+	public static final int SPI_SETSIPINFO = 224;
 	public static final int SRCAND = 0x8800c6;
 	public static final int SRCCOPY = 0xcc0020;
 	public static final int SRCINVERT = 0x660046;
@@ -2358,6 +2359,7 @@ public static final native int SetWindowsHookExA (int idHook, int lpfn,  int hMo
 public static final native int SHBrowseForFolderW (BROWSEINFO lpbi);
 public static final native int SHBrowseForFolderA (BROWSEINFO lpbi);
 public static final native boolean SHCreateMenuBar(SHMENUBARINFO pmb);
+public static final native boolean SHHandleWMSettingChange (int hwnd, int wParam, int lParam, SHACTIVATEINFO psai);
 public static final native void SHSendBackToFocusWindow (int uMsg, int wp, int lp);
 public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo);

@@ -1191,7 +1191,11 @@ int widgetStyle () {
 	
 	/* Set the resize, dialog border or border bits */
 	if ((style & SWT.RESIZE) != 0) {
-		bits |= OS.WS_THICKFRAME;	
+		/*
+		* Note on WinCE PPC.  SWT.RESIZE is used to resize
+		* the Shell according to the state of the IME.
+		* It does not set the WS_THICKFRAME style.		*/
+		if (!OS.IsPPC) bits |= OS.WS_THICKFRAME;	
 	} else {
 		if ((style & SWT.BORDER) == 0) bits |= OS.WS_BORDER;
 	}

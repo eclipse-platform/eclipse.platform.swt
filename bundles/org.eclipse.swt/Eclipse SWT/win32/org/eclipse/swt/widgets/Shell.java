@@ -1107,6 +1107,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
 			}
 		}
+		if ((style & SWT.RESIZE) != 0) {
+			SHACTIVATEINFO psai = new SHACTIVATEINFO ();
+			OS.SHHandleWMSettingChange (handle, -1, 0, psai);
+		}
 	}
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
@@ -1285,6 +1289,21 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 		}
 	}
 	return super.WM_SETCURSOR (wParam, lParam);
+}
+
+LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SETTINGCHANGE (wParam, lParam);
+	if (result != null) return result;
+	if (OS.IsPPC) {
+		if (wParam == OS.SPI_SETSIPINFO) {
+			if ((style & SWT.RESIZE) != 0) {
+				SHACTIVATEINFO psai = new SHACTIVATEINFO ();
+				OS.SHHandleWMSettingChange (handle, -1, 0, psai);
+				return LRESULT.ZERO;
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT WM_SHOWWINDOW (int wParam, int lParam) {

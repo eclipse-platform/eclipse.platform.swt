@@ -2859,6 +2859,52 @@ void setSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct)
 }
 #endif /* NO_SCROLLINFO */
 
+#ifndef NO_SHACTIVATEINFO
+typedef struct SHACTIVATEINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, hwndLastFocus, fSipUp, fSipOnDeactivation, fActive, fReserved;
+} SHACTIVATEINFO_FID_CACHE;
+
+SHACTIVATEINFO_FID_CACHE SHACTIVATEINFOFc;
+
+void cacheSHACTIVATEINFOFids(JNIEnv *env, jobject lpObject)
+{
+	if (SHACTIVATEINFOFc.cached) return;
+	SHACTIVATEINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHACTIVATEINFOFc.cbSize = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "cbSize", "I");
+	SHACTIVATEINFOFc.hwndLastFocus = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "hwndLastFocus", "I");
+	SHACTIVATEINFOFc.fSipUp = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "fSipUp", "I");
+	SHACTIVATEINFOFc.fSipOnDeactivation = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "fSipOnDeactivation", "I");
+	SHACTIVATEINFOFc.fActive = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "fActive", "I");
+	SHACTIVATEINFOFc.fReserved = (*env)->GetFieldID(env, SHACTIVATEINFOFc.clazz, "fReserved", "I");
+	SHACTIVATEINFOFc.cached = 1;
+}
+
+SHACTIVATEINFO *getSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct)
+{
+	if (!SHACTIVATEINFOFc.cached) cacheSHACTIVATEINFOFids(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.cbSize);
+	lpStruct->hwndLastFocus = (HWND)(*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.hwndLastFocus);
+	lpStruct->fSipUp = (*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.fSipUp);
+	lpStruct->fSipOnDeactivation = (*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.fSipOnDeactivation);
+	lpStruct->fActive = (*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.fActive);
+	lpStruct->fReserved = (*env)->GetIntField(env, lpObject, SHACTIVATEINFOFc.fReserved);
+	return lpStruct;
+}
+
+void setSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct)
+{
+	if (!SHACTIVATEINFOFc.cached) cacheSHACTIVATEINFOFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.hwndLastFocus, (jint)lpStruct->hwndLastFocus);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.fSipUp, (jint)lpStruct->fSipUp);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.fSipOnDeactivation, (jint)lpStruct->fSipOnDeactivation);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.fActive, (jint)lpStruct->fActive);
+	(*env)->SetIntField(env, lpObject, SHACTIVATEINFOFc.fReserved, (jint)lpStruct->fReserved);
+}
+#endif /* NO_SHACTIVATEINFO */
+
 #ifndef NO_SHELLEXECUTEINFO
 typedef struct SHELLEXECUTEINFO_FID_CACHE {
 	int cached;
