@@ -18,6 +18,7 @@ package org.eclipse.swt.graphics;
  */
 public final class FontMetrics {
 	int ascent, descent, averageCharWidth, leading, height;
+	
 FontMetrics() {
 }
 /**
@@ -110,7 +111,7 @@ public static FontMetrics carbon_new(int ascent, int descent, int averageCharWid
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.ascent = ascent;
 	fontMetrics.descent = descent;
-	fontMetrics.averageCharWidth = 8; // averageCharWidth;
+	fontMetrics.averageCharWidth = averageCharWidth;
 	fontMetrics.leading = leading;
 	fontMetrics.height = height;
 	return fontMetrics;
