@@ -76,8 +76,8 @@ public class TableTreeEditor extends ControlEditor {
 	TableTree tableTree;
 	TableTreeItem item;
 	int column = -1;
-	Listener columnListener;
-	TreeAdapter treeListener;
+	ControlListener columnListener;
+	TreeListener treeListener;
 /**
 * Creates a TableEditor for the specified Table.
 *
@@ -88,7 +88,7 @@ public TableTreeEditor (TableTree tableTree) {
 	super(tableTree.getTable());
 	this.tableTree = tableTree;
 
-	treeListener = new TreeAdapter () {
+	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				if (TableTreeEditor.this.tableTree.isDisposed() || editor == null) return;
@@ -111,8 +111,11 @@ public TableTreeEditor (TableTree tableTree) {
 	};
 	tableTree.addTreeListener(treeListener);
 	
-	columnListener = new Listener() {
-		public void handleEvent(Event e) {
+	columnListener = new ControlListener() {
+		public void controlMoved(ControlEvent e){
+			resize ();
+		}
+		public void controlResized(ControlEvent e){
 			resize ();
 		}
 	};
@@ -155,8 +158,7 @@ public void dispose () {
 	Table table = tableTree.getTable();
 	if (this.column > -1 && this.column < table.getColumnCount()){
 		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeListener(SWT.Resize, columnListener);
-		tableColumn.removeListener(SWT.Move, columnListener);
+		tableColumn.removeControlListener(columnListener);
 	}
 
 	tableTree = null;
@@ -177,8 +179,7 @@ public void setColumn(int column) {
 	Table table = tableTree.getTable();
 	if (this.column > -1 && this.column < table.getColumnCount()){
 		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeListener(SWT.Resize, columnListener);
-		tableColumn.removeListener(SWT.Move, columnListener);
+		tableColumn.removeControlListener(columnListener);
 		this.column = -1;
 	}
 
@@ -186,8 +187,7 @@ public void setColumn(int column) {
 		
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
-	tableColumn.addListener(SWT.Resize, columnListener);
-	tableColumn.addListener(SWT.Move, columnListener);
+	tableColumn.addControlListener(columnListener);
 }
 /**
 * Returns the TableItem for the row of the cell being tracked by this editor.
