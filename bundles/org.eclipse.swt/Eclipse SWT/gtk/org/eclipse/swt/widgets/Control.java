@@ -1229,7 +1229,7 @@ public void removeTraverseListener(TraverseListener listener) {
 public boolean forceFocus () {
 	checkWidget();
 	OS.gtk_widget_grab_focus (handle);
-	return hasFocus ();
+	return OS.gtk_widget_is_focus (handle);
 }
 
 /**

@@ -745,6 +745,7 @@ public static final native int gtk_widget_get_parent(int widget);
 public static final native int gtk_widget_get_style(int widget);
 public static final native void gtk_widget_grab_focus(int widget);
 public static final native void gtk_widget_hide(int widget);
+public static final native boolean gtk_widget_is_focus(int widget);
 public static final native void gtk_widget_modify_base(int widget, int state, GdkColor color);
 public static final native void gtk_widget_modify_bg(int widget, int state, GdkColor color);
 public static final native void gtk_widget_modify_fg(int widget, int state, GdkColor color);

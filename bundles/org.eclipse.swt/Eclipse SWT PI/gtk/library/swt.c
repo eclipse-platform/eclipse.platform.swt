@@ -5332,6 +5332,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1hide
 }
 #endif
 
+#ifndef NO_gtk_1widget_1is_1focus
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1is_1focus
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1is_1focus\n")
+
+	return (jboolean)gtk_widget_is_focus((GtkWidget *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1modify_1base
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_1base
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
