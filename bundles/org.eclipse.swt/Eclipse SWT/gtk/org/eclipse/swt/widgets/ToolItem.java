@@ -563,6 +563,9 @@ void releaseWidget () {
 	if (control != null) setControl (null);
 	super.releaseWidget ();
 	parent = null;
+	control = null;
+	hotImage = disabledImage = null;
+	toolTipText = null;
 }
 
 /**
