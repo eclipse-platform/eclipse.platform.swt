@@ -645,9 +645,13 @@ void init(Device device, ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	
-	/* Photon does not support 1 & 2-bit images. Convert to 4-bit image. */
-	if (i.depth == 1 || i.depth == 2) {
-		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
+	/*
+	* Feature in Photon. Photon does not support 2-bit depth images and
+	* memory contexts can not be created on 1 & 4-bit depth images.  The
+	* fix is to create 8-bit depth images instead.
+	*/
+	if (i.depth == 1 || i.depth == 2 || i.depth == 4) {
+		ImageData img = new ImageData(i.width, i.height, 8, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
 			i.data, i.depth, i.bytesPerLine, img.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0,
