@@ -471,7 +471,10 @@ public void close () {
 	closeWidget ();
 }
 void closeWidget () {
-	//System.out.println("Shell.closeWidget: nyi");
+	
+	// remove focus
+	getDisplay().setMacFocusHandle(shellHandle, 0);
+	
 	if (!isEnabled ()) return;
 	Control widget = parent;
 	while (widget != null && !(widget.getShell ().isModal ())) {
