@@ -62,4 +62,12 @@ public class TransferData {
 	 */
 	public int pIDataObject;
 	
+	static boolean sameType(TransferData data1, TransferData data2) {
+		if (data1 == data2) return true;
+		return (data1.type == data2.type &&
+				data1.formatetc.cfFormat == data2.formatetc.cfFormat &&
+		    	data1.formatetc.dwAspect == data2.formatetc.dwAspect && 
+		    	data1.formatetc.tymed == data2.formatetc.tymed);
+	}
+	
 }
