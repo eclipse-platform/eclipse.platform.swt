@@ -2194,7 +2194,8 @@ public void setItemCount (int count) {
 	setRedraw (false);
 	removeAll ();
 	if (isVirtual) {
-		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
+		int flags = 0;
+//		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		/*
@@ -3148,6 +3149,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.LVN_GETDISPINFOA:
 		case OS.LVN_GETDISPINFOW: {
+//			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 			lastIndexOf = plvfi.iItem;
