@@ -4741,38 +4741,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringCreateLoca
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringCreateLtoR
- * Signature: ([B[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringCreateLtoR
-  (JNIEnv *env, jclass that, jbyteArray string, jbyteArray charset)
-{
-    jbyte *string1=NULL, *charset1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringCreateLtoR\n");
-#endif
-
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-    if (charset)
-        charset1 = (*env)->GetByteArrayElements(env, charset, NULL);    
-    rc = (jint) XmStringCreateLtoR((char *)string1, (char *)charset1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmStringCreateLtoR: call failed rc = %d\n", rc);
-#endif
-
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-    if (charset)
-        (*env)->ReleaseByteArrayElements(env, charset, charset1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XmStringDraw
  * Signature: (IIIIIIIIIILorg/eclipse/swt/internal/motif/XRectangle;)V
  */
@@ -4844,40 +4812,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringFree
 	fprintf(stderr, "XmStringFree\n");
 #endif
     XmStringFree((XmString)xmString);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringGetLtoR
- * Signature: (I[B[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringGetLtoR
-  (JNIEnv *env, jclass that, jint xmString, jbyteArray charset, jintArray text)
-{
-    jbyte *charset1=NULL;
-    jint *text1=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringGetLtoR\n");
-#endif
-
-    if (charset)
-        charset1 = (*env)->GetByteArrayElements(env, charset, NULL);
-    if (text)
-        text1 = (*env)->GetIntArrayElements(env, text, NULL);    
-
-    rc = (jboolean) XmStringGetLtoR((XmString)xmString, (char *)charset1, (char **)text1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmStringGetLtoR: call failed rc = %d\n", rc);
-#endif
-
-    if (charset)
-        (*env)->ReleaseByteArrayElements(env, charset, charset1, 0);
-    if (text)
-        (*env)->ReleaseIntArrayElements(env, text, text1, 0);
-    return rc;
 }
 
 /*
