@@ -91,15 +91,21 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	//NOT DONE
-	return new Point (100, 100);
-}
-
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-	Rectangle trim = super.computeTrim (x, y, width, height);
-	//NOT DONE
-	return trim;
+	TXNLongRect oTextRect = new TXNLongRect ();
+	OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
+	int width = oTextRect.right - oTextRect.left;
+	int height = oTextRect.bottom - oTextRect.top;
+	if (width <= 0) width = DEFAULT_WIDTH;
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int [] size = new int [1];
+	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
+	//if (horizontalBar != null) height += size [0];
+	if ((style & SWT.H_SCROLL) != 0) height += size [0];
+	//if (verticalBar != null) width += size [0];
+	if ((style & SWT.V_SCROLL) != 0) width += size [0];
+	return new Point(width, height);
 }
 
 public void copy () {
