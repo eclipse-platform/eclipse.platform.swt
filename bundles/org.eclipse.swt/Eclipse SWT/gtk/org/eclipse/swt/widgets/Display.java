@@ -95,6 +95,8 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
+	int gdkEventCount;
+	int /*long*/ [] gdkEvents;
 	Callback eventCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	int /*long*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
@@ -384,6 +386,16 @@ public void addFilter (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
 	filterTable.hook (eventType, listener);
+}
+
+void addGdkEvent (int /*long*/ event) {
+	if (gdkEvents == null) gdkEvents = new /*long*/ int [4];
+	if (gdkEventCount == gdkEvents.length) {
+		int /*long*/ [] newEvents = new int /*long*/ [gdkEventCount + 4];
+		System.arraycopy (gdkEvents, 0, newEvents, 0, gdkEventCount);
+		gdkEvents = newEvents;
+	}
+	gdkEvents [gdkEventCount++] = event;
 }
 
 /**
@@ -784,23 +796,11 @@ void flushExposes () {
 	* Feature in GTK.  Calling gdk_event_get() accumulates
 	* the outstanding damage for pending GTK expose events.
 	* In order to flush all paint events, get all of the
-	* events from the queue and then put them back.
+	* events from the queue.
 	*/
-	int count = 0;
 	int /*long*/ event = 0;
-	int /*long*/ [] events = new int /*long*/ [4];
 	while ((event = OS.gdk_event_get ()) != 0) {
-		if (count == events.length) {
-			int /*long*/ [] newEvents = new int /*long*/ [count + 4];
-			System.arraycopy (events, 0, newEvents, 0, count);
-			events = newEvents;
-		}
-		events [count++] = event;
-	}
-	for (int i=count - 1; i>=0; i--) {
-		event = events [i];
-		OS.gdk_event_put (event);
-		OS.gdk_event_free (event);
+		addGdkEvent (event);
 	}
 }
 
@@ -1770,7 +1770,12 @@ public boolean readAndDispatch () {
 	runPopups ();
 	int status = OS.gtk_events_pending ();
 	if (status != 0) {
-		OS.gtk_main_iteration ();
+		int /*long*/ event = removeGdkEvent ();
+		if (event != 0) {
+			eventProc (event, 0);
+		} else {
+			OS.gtk_main_iteration ();
+		}
 		runDeferredEvents ();
 		return true;
 	}
@@ -1914,6 +1919,15 @@ public void removeFilter (int eventType, Listener listener) {
 	if (filterTable == null) return;
 	filterTable.unhook (eventType, listener);
 	if (filterTable.size () == 0) filterTable = null;
+}
+
+int /*long*/ removeGdkEvent () {
+	if (gdkEventCount == 0) return 0;
+	int /*long*/ event = gdkEvents [0];
+	System.arraycopy (gdkEvents, 1, gdkEvents, 0, --gdkEventCount);
+	gdkEvents [gdkEventCount] = 0;
+	if (gdkEventCount == 0) gdkEvents = null;
+	return event;
 }
 
 /**
