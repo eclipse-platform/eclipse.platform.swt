@@ -44,6 +44,7 @@ class SashTab extends Tab {
 
 	/* Constants */
 	static final int SASH_WIDTH = 3;
+	static final int SASH_LIMIT = 20;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -76,6 +77,8 @@ class SashTab extends Tab {
 		/* Add the listeners */
 		hSash.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
+				Rectangle rect = vSash.getParent().getClientArea();
+				event.y = Math.min (Math.max (event.y, SASH_LIMIT), rect.height - SASH_LIMIT);
 				if (event.detail != SWT.DRAG) {
 					hSash.setBounds (event.x, event.y, event.width, event.height);
 					layout ();
@@ -84,8 +87,10 @@ class SashTab extends Tab {
 		});
 		vSash.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
+				Rectangle rect = vSash.getParent().getClientArea();
+				event.x = Math.min (Math.max (event.x, SASH_LIMIT), rect.width - SASH_LIMIT);
 				if (event.detail != SWT.DRAG) {
-					vSash.setBounds(event.x, event.y, event.width, event.height);
+					vSash.setBounds (event.x, event.y, event.width, event.height);
 					layout ();
 				}
 			}
