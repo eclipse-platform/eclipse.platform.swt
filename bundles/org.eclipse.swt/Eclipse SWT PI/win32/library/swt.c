@@ -334,6 +334,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CombineRgn
 }
 
 #ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1AddAdornments
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("CommandBar_AddAdornments\n")
+
+	return (jboolean)CommandBar_AddAdornments((HWND)arg0, arg1, arg2);
+}
+#endif // WIN32_PLATFORM_HPC2000
+
+#ifdef WIN32_PLATFORM_HPC2000 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Create
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {

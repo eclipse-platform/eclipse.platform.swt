@@ -1833,6 +1833,7 @@ public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
 public static final native int CombineRgn (int hrgnDest, int hrgnSrc1, int hrgnSrc2, int fnCombineMode);
+public static final native boolean CommandBar_AddAdornments (int hwndCB, int dwFlags, int dwReserved);
 public static final native int CommandBar_Create (int hInst, int hwndParent, int idCmdBar);
 public static final native void CommandBar_Destroy (int hwndCB);
 public static final native boolean CommandBar_DrawMenuBar (int hwndCB, int iButton);

@@ -1076,6 +1076,13 @@ public void setMenuBar (Menu menu) {
 		if (menuBar != null) {		
 			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
 			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
+			/*
+			* The command bar hosts the 'close' button when the window does not
+			* have a caption.
+			*/
+			if ((style & SWT.CLOSE) != 0 && (style & SWT.TITLE) == 0) {
+				OS.CommandBar_AddAdornments(hwndCB, 0, 0);
+			}
 		}
 		if (resize) {
 			sendEvent (SWT.Resize);
