@@ -506,7 +506,7 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
-public Point getSize () {
+/*public*/ Point getSize () {
 	checkWidget();
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);

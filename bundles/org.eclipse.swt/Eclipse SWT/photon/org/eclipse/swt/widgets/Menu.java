@@ -458,7 +458,7 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
-public Point getSize () {
+/*public*/ Point getSize () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (handle, area);

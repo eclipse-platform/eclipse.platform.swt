@@ -502,7 +502,7 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
-public Point getSize () {
+/*public*/ Point getSize () {
 	if ((style & SWT.BAR) != 0) {
 		int height = OS.GetMBarHeight ();
 		int gdevice = OS.GetMainDevice ();

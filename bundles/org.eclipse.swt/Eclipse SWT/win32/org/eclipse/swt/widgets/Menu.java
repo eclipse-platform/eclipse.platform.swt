@@ -849,7 +849,7 @@ public Shell getShell () {
  * 
  * @since 3.0
  */
-public Point getSize () {
+/*public*/ Point getSize () {
 	checkWidget ();
 	if (OS.IsWinCE) return new Point (0, 0);
 	if ((style & SWT.BAR) != 0) {

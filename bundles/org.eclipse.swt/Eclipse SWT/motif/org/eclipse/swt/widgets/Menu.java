@@ -494,7 +494,7 @@ public Shell getShell () {
 	checkWidget();
 	return parent.getShell ();
 }
-public Point getSize () {
+/*public*/ Point getSize () {
 	checkWidget();
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
