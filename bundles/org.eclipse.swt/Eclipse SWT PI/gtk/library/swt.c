@@ -5862,6 +5862,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get
 	return (jint)gtk_tree_view_get_bin_window((GtkTreeView*)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1from_1string__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1new_1from_1string__I\n")
+
+	return (jint)gtk_tree_path_new_from_string((const gchar*)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1from_1string___3B
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
@@ -5871,7 +5879,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new
 	DEBUG_CALL("gtk_1tree_1path_1new_1from_1string___3B\n")
 
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)gtk_tree_path_new_from_string((const gchar *)lparg0);
+	rc = (jint)gtk_tree_path_new_from_string((const gchar*)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
 }
@@ -6016,3 +6024,40 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_
 	return (jboolean)gtk_tree_view_row_expanded((GtkTreeView*)arg0, (GtkTreePath*)arg1);
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1get_1selected
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("gtk_1tree_1selection_1get_1selected\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jboolean)gtk_tree_selection_get_selected((GtkTreeSelection*)arg0, (GtkTreeModel**)lparg1, (GtkTreeIter*)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1collapse_1row
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1collapse_1row\n")
+
+	return (jboolean)gtk_tree_view_collapse_row((GtkTreeView*)arg0, (GtkTreePath*)arg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1up
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1up\n")
+
+	return (jboolean)gtk_tree_path_up((GtkTreePath*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1get_1depth
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1get_1depth\n")
+
+	return (jint)gtk_tree_path_get_depth((GtkTreePath*)arg0);
+}

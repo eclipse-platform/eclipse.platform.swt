@@ -243,6 +243,7 @@ public class OS {
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] popup_menu = signal("popup_menu");
+	public static final byte[] row_activated = signal("row_activated");
 	public static final byte[] row_collapsed = signal("row_collapsed");
 	public static final byte[] row_expanded = signal("row_expanded");
 	public static final byte[] select = signal("select");
@@ -884,8 +885,12 @@ public static final native boolean gtk_tree_model_iter_next (int model, int iter
 public static final native int  gtk_tree_model_get_path(int tree_model, int iter);
 public static final native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
 public static final native void gtk_tree_path_free(int path);
+public static final native int  gtk_tree_path_get_depth(int path);
 public static final native int  gtk_tree_path_get_indices(int path);
-public static final native int gtk_tree_path_new_from_string(byte[] path);
+public static final native int  gtk_tree_path_new_from_string(byte[] path);
+public static final native int  gtk_tree_path_new_from_string(int path);
+public static final native boolean gtk_tree_path_up(int path);
+public static final native boolean gtk_tree_selection_get_selected(int selection, int[] model, int iter);
 public static final native void    gtk_tree_selection_set_mode(int selection, int mode);
 public static final native void    gtk_tree_selection_select_iter(int selection, int iter);
 public static final native void    gtk_tree_selection_unselect_iter(int selection, int iter);
@@ -909,6 +914,7 @@ public static final native void    gtk_tree_view_column_pack_end(int tree_column
 public static final native void    gtk_tree_view_column_add_attribute (int treeColumn, int cellRenderer, String attribute, int column);
 public static final native void    gtk_tree_view_columns_autosize(int tree_view);
 public static final native boolean gtk_tree_view_expand_row(int view, int path, boolean open_all);
+public static final native boolean gtk_tree_view_collapse_row(int view, int path);
 public static final native boolean gtk_tree_view_row_expanded(int view, int path);
 public static final native int     gtk_tree_view_get_bin_window(int tree_view);
 public static final native int     gtk_tree_view_get_model(int view);
