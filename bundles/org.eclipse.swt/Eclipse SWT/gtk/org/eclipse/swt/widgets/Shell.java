@@ -1002,11 +1002,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	if (getMaximized ()) {
 		Rectangle rect = getBounds ();
-		if (!move || (rect.x == x && rect.y == y)) {
-			if (!resize || (rect.width == width && rect.height == height)) {
-				return 0;
-			}
-		}
+		boolean sameOrigin = !move || (rect.x == x && rect.y == y);
+		boolean sameExtent = !resize || (rect.width == width && rect.height == height);
+		if (sameOrigin && sameExtent) return 0;
 		setMaximized (false);
 	}
 	int result = 0;
