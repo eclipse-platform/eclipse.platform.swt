@@ -192,23 +192,7 @@ void columnAdded (TreeColumn column) {
 }
 void columnRemoved (TreeColumn column, int index) {
 	int columnCount = parent.getColumnCount ();
-	if (columnCount == 0) {
-		/*
-		 * The texts, textWidths and images arrays always maintain at least one index, representing
-		 * the free column that a Tree with no specified TreeColumns gets.
-		 */
-		texts [0] = null;
-		textWidths [0] = 0;
-		images [0] = null;
-		cellBackgrounds = cellForegrounds = null;
-		cellFonts = null;
-		fontHeights = null;
-		/* notify all child items as well */
-		for (int i = 0; i < items.length; i++) {
-			items[i].columnRemoved (column, index);
-		}
-		return;
-	}
+	if (columnCount == 0) return;	/* reverts to normal tree when last column disposed */
 
 	String[] newTexts = new String [columnCount];
 	System.arraycopy (texts, 0, newTexts, 0, index);
