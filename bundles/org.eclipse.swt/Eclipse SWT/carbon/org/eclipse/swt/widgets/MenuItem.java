@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -735,7 +734,7 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 		//System.out.println("  virtual key: " + macKey);
 		char c= (char)macKey;
 		OS.SetMenuItemCommandKey(menu, index, true, c);
-		OS.SetMenuItemKeyGlyph(menu, index, Display.keyGlyph(key));
+		OS.SetMenuItemKeyGlyph(menu, index, keyGlyph(key));
 	}
 	
 	byte modifiers= 0;
@@ -758,6 +757,87 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	
 	if (modifiers != 0)
 		OS.SetMenuItemModifiers(menu, index, modifiers);
+}
+
+private static short keyGlyph(int key) {
+	switch (key) {
+	case ' ':
+		return OS.kMenuBlankGlyph;
+	case '\t':
+		return OS.kMenuTabRightGlyph;
+	case SWT.SHIFT:
+		return OS.kMenuShiftGlyph;
+	case SWT.CONTROL:
+		return OS.kMenuControlISOGlyph;
+		//return OS.kMenuControlGlyph;
+	case SWT.ALT:
+		return OS.kMenuOptionGlyph;
+	case SWT.ARROW_UP:
+		//return OS.kMenuUpArrowDashedGlyph;
+		return OS.kMenuUpArrowGlyph;
+	case SWT.ARROW_DOWN:
+		//return OS.kMenuDownwardArrowDashedGlyph;
+		return OS.kMenuDownArrowGlyph;
+	case SWT.ARROW_LEFT:
+		//return OS.kMenuLeftArrowDashedGlyph;
+		return OS.kMenuLeftArrowGlyph;
+	case SWT.ARROW_RIGHT:
+		//return OS.kMenuRightArrowDashedGlyph;
+		return OS.kMenuRightArrowGlyph;
+	case SWT.PAGE_UP:
+		return OS.kMenuPageUpGlyph;
+	case SWT.PAGE_DOWN:
+		return OS.kMenuPageDownGlyph;
+	case SWT.ESC:
+		return OS.kMenuEscapeGlyph;
+	case SWT.CR:
+		//return OS.kMenuEnterGlyph;
+		//return OS.kMenuNonmarkingReturnGlyph;
+		//return OS.kMenuReturnR2LGlyph;
+		//return OS.kMenuNonmarkingReturnGlyph;
+		return OS.kMenuReturnGlyph;
+	case SWT.BS:
+		return OS.kMenuDeleteLeftGlyph;
+	case SWT.DEL:
+		return OS.kMenuDeleteRightGlyph;
+	case SWT.F1:
+		return OS.kMenuF1Glyph;
+	case SWT.F2:
+		return OS.kMenuF2Glyph;
+	case SWT.F3:
+		return OS.kMenuF3Glyph;
+	case SWT.F4:
+		return OS.kMenuF4Glyph;
+	case SWT.F5:
+		return OS.kMenuF5Glyph;
+	case SWT.F6:
+		return OS.kMenuF6Glyph;
+	case SWT.F7:
+		return OS.kMenuF7Glyph;
+	case SWT.F8:
+		return OS.kMenuF8Glyph;
+	case SWT.F9:
+		return OS.kMenuF9Glyph;
+	case SWT.F10:
+		return OS.kMenuF10Glyph;
+	case SWT.F11:
+		return OS.kMenuF11Glyph;
+	case SWT.F12:
+		return OS.kMenuF12Glyph;
+	default:
+		/*
+		public static final short kMenuPencilGlyph = 15;
+		public static final short kMenuCommandGlyph = 17;
+		public static final short kMenuCheckmarkGlyph = 18;
+		public static final short kMenuDiamondGlyph = 19;
+		public static final short kMenuClearGlyph = 28;
+		public static final short kMenuCapsLockGlyph = 99;
+		public static final short kMenuHelpGlyph = 103;
+		public static final short kMenuContextualMenuGlyph = 109;
+		public static final short kMenuPowerGlyph = 110;
+		*/
+		return OS.kMenuNullGlyph;
+	}
 }
 
 }
