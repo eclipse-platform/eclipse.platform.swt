@@ -34,17 +34,17 @@ import org.eclipse.swt.internal.CloneableCompatibility;
 public final class ImageData implements CloneableCompatibility {
 	
 	/**
-	 * the width of the image, in pixels
+	 * The width of the image, in pixels.
 	 */
 	public int width;
 
 	/**
-	 * the height of the image, in pixels
+	 * The height of the image, in pixels.
 	 */
 	public int height;
 
 	/**
-	 * the color depth of the image, in bits per pixel
+	 * The color depth of the image, in bits per pixel.
 	 * <p>
 	 * Note that a depth of 8 or less does not necessary
 	 * mean that the image is palette indexed, or
@@ -55,7 +55,7 @@ public final class ImageData implements CloneableCompatibility {
 	public int depth;
 
 	/**
-	 * the scanline padding
+	 * The scanline padding.
 	 * <p>
 	 * If one scanline of the image is not a multiple of
 	 * this number, it will be padded with zeros until it is.
@@ -64,7 +64,7 @@ public final class ImageData implements CloneableCompatibility {
 	public int scanlinePad;
 
 	/**
-	 * the number of bytes per scanline
+	 * The number of bytes per scanline.
 	 * <p>
 	 * This is a multiple of the scanline padding.
 	 * </p>
@@ -72,7 +72,7 @@ public final class ImageData implements CloneableCompatibility {
 	public int bytesPerLine;
 
 	/**
-	 * the pixel data of the image
+	 * The pixel data of the image.
 	 * <p>
 	 * Note that for 16 bit depth images the pixel data is stored
 	 * in least significant byte order; however, for 24bit and
@@ -83,12 +83,12 @@ public final class ImageData implements CloneableCompatibility {
 	public byte[] data;
 
 	/**
-	 * the color table for the image
+	 * The color table for the image.
 	 */
 	public PaletteData palette;
 
 	/**
-	 * the transparent pixel
+	 * The transparent pixel.
 	 * <p>
 	 * Pixels with this value are transparent.
 	 * </p><p>
@@ -98,7 +98,7 @@ public final class ImageData implements CloneableCompatibility {
 	public int transparentPixel;
 
 	/**
-	 * icon-specific field containing the data from the icon mask
+	 * An icon-specific field containing the data from the icon mask.
 	 * <p>
 	 * This is a 1 bit bitmap stored with the most significant
 	 * bit first.  The number of bytes per scanline is
@@ -110,7 +110,7 @@ public final class ImageData implements CloneableCompatibility {
 	public byte[] maskData;
 
 	/**
-	 * icon-specific field containing the scanline pad of the mask
+	 * An icon-specific field containing the scanline pad of the mask.
 	 * <p>
 	 * If one scanline of the transparency mask is not a
 	 * multiple of this number, it will be padded with zeros until
@@ -120,7 +120,7 @@ public final class ImageData implements CloneableCompatibility {
 	public int maskPad;
 	
 	/**
-	 * the alpha data of the image
+	 * The alpha data of the image.
 	 * <p>
 	 * Every pixel can have an <em>alpha blending</em> value that
 	 * varies from 0, meaning fully transparent, to 255 meaning
@@ -131,7 +131,7 @@ public final class ImageData implements CloneableCompatibility {
 	public byte[] alphaData;
 	
 	/**
-	 * the global alpha value to be used for every pixel
+	 * The global alpha value to be used for every pixel.
 	 * <p>
 	 * If this value is set, the <code>alphaData</code> field
 	 * is ignored and when the image is rendered each pixel
@@ -144,8 +144,9 @@ public final class ImageData implements CloneableCompatibility {
 	public int alpha;
 
 	/**
-	 * the type of file that the image was read in from,
-	 * expressed as one of the following values:
+	 * The type of file from which the image was read.
+	 * 
+	 * It is expressed as one of the following values:
 	 * <dl>
 	 * <dt><code>IMAGE_BMP</code></dt>
 	 * <dd>Windows BMP file format, no compression</dd>
@@ -164,23 +165,24 @@ public final class ImageData implements CloneableCompatibility {
 	public int type;
 
 	/**
-	 * the x coordinate of the top left corner of the image
+	 * The x coordinate of the top left corner of the image
 	 * within the logical screen (this field corresponds to
-	 * the GIF89a Image Left Position value)
+	 * the GIF89a Image Left Position value).
 	 */
 	public int x;
 
 	/**
 	 * The y coordinate of the top left corner of the image
 	 * within the logical screen (this field corresponds to
-	 * the GIF89a Image Top Position value)
+	 * the GIF89a Image Top Position value).
 	 */
 	public int y;
 
 	/**
-	 * a description of how to dispose of the current image
-	 * before displaying the next, expressed as one of the
-	 * following values:
+	 * A description of how to dispose of the current image
+	 * before displaying the next.
+	 * 
+	 * It is expressed as one of the following values:
 	 * <dl>
 	 * <dt><code>DM_UNSPECIFIED</code></dt>
 	 * <dd>disposal method not specified</dd>
@@ -196,14 +198,14 @@ public final class ImageData implements CloneableCompatibility {
 	public int disposalMethod;
 
 	/**
-	 * the time to delay before displaying the next image
+	 * The time to delay before displaying the next image
 	 * in an animation (this field corresponds to the GIF89a
-	 * Delay Time value)
+	 * Delay Time value).
 	 */
 	public int delayTime;
 
 	/**
-	 * Arbitrary channel width data to 8-bit conversion table
+	 * Arbitrary channel width data to 8-bit conversion table.
 	 */
 	static final byte[][] ANY_TO_EIGHT = new byte[9][];
 	static {
@@ -218,7 +220,7 @@ public final class ImageData implements CloneableCompatibility {
 	static final byte[] ONE_TO_ONE_MAPPING = ANY_TO_EIGHT[8];
 
 	/**
-	 * Scaled 8x8 Bayer dither matrix
+	 * Scaled 8x8 Bayer dither matrix.
 	 */
 	static final int[][] DITHER_MATRIX = {
 		{ 0xfc0000, 0x7c0000, 0xdc0000, 0x5c0000, 0xf40000, 0x740000, 0xd40000, 0x540000 },
