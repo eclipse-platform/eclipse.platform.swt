@@ -2002,6 +2002,17 @@ public int getLineCap() {
 	return data.lineCap;
 }
 
+public int[] getLineDash() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	byte[] dashList = data.dashes;
+	if (dashList == null) return null;
+	int[] dashes = new int[dashList.length];
+	for (int i = 0; i < dashes.length; i++) {
+		dashes[i] = dashList[i] & 0xFF;
+	}
+	return dashes;
+}
+
 public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineJoin;
@@ -2346,6 +2357,22 @@ public void setLineCap(int cap) {
 	dirtyBits |= DIRTY_LINECAP;
 }
 
+public void setLineDash(int[] dashes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (dashes != null && dashes.length != 0) {
+		byte[] dashList = new byte[dashes.length];
+		for (int i = 0; i < dashes.length; i++) {
+			dashList[i] = (byte)dashes[i];
+		}
+		data.dashes = dashList;
+		data.lineStyle = SWT.LINE_CUSTOM;
+	} else {
+		data.dashes = null;
+		data.lineStyle = SWT.LINE_SOLID;
+	}
+	dirtyBits |= DIRTY_LINESTYLE;
+}
+
 public void setLineJoin(int join) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (join) {
@@ -2380,6 +2407,9 @@ public void setLineStyle(int lineStyle) {
 		case SWT.LINE_DOT:
 		case SWT.LINE_DASHDOT:
 		case SWT.LINE_DASHDOTDOT:
+			break;
+		case SWT.LINE_CUSTOM:
+			if (data.dashes == null) lineStyle = SWT.LINE_SOLID;
 			break;
 		default:
 			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -2455,6 +2485,7 @@ int setGC() {
 				case SWT.LINE_DOT: dashList = DashList[2]; break;
 				case SWT.LINE_DASHDOT: dashList = DashList[3]; break;
 				case SWT.LINE_DASHDOTDOT: dashList = DashList[4]; break;
+				case SWT.LINE_CUSTOM: dashList = data.dashes; break;
 			}
 			OS.PgSetStrokeDash(dashList, dashList.length, 0x10000);
 		}

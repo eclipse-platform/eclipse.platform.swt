@@ -37,6 +37,7 @@ public final class GCData {
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
 	public int lineWidth = 1;
+	public byte[] dashes;
 	public int clipRectsCount;
 	public int clipRects;
 	public boolean paint;
