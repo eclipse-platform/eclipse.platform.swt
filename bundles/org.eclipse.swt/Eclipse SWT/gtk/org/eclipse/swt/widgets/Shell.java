@@ -471,8 +471,16 @@ public Display getDisplay () {
  */
 Control getFocusControl() {
 	checkWidget();
-	int answer = OS.gtk_window_get_focus(shellHandle);
-	return (Control)this.getDisplay().findWidget(answer);
+	int h = OS.gtk_window_get_focus(shellHandle);
+	if (h==0) return null;
+	do {
+		Widget widget = WidgetTable.get (h);
+		if (widget != null && widget instanceof Control) {
+			Control window = (Control) widget;
+			if (window.getEnabled ()) return window;
+		}
+	} while ((h = OS.gtk_widget_get_parent(h)) != 0);
+	return null;
 }
 
 /**
