@@ -43,6 +43,8 @@ public class Tracker extends Widget {
 	int xWindow;
 	int ptrGrabResult;
 	int cursorOrientation = SWT.NONE;
+	final static int STEPSIZE_SMALL = 1;
+	final static int STEPSIZE_LARGE = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -394,6 +396,16 @@ public boolean open () {
 						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
 					}
+					/*
+					 * It is possible (but unlikely) that application code
+					 * could have disposed the widget in the move/resize
+					 * event.  If this happens then return false to indicate
+					 * that the move failed.
+					 */
+					if (isDisposed ()) {
+						ungrab ();
+						return false;
+					}
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
@@ -402,6 +414,8 @@ public boolean open () {
 			case OS.GDK_KEY_PRESS:
 				GdkEventKey gdkEvent = new GdkEventKey ();
 				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+				int stepSize = ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+				int xChange = 0, yChange = 0;	
 				switch (gdkEvent.keyval) {
 					case OS.GDK_Escape: 
 						cancelled = true;
@@ -409,6 +423,58 @@ public boolean open () {
 					case OS.GDK_Return:
 						tracking = false;
 						break;
+					case OS.GDK_Left:
+						xChange = -stepSize;
+						break;
+					case OS.GDK_Right:
+						xChange = stepSize;
+						break;
+					case OS.GDK_Up:
+						yChange = -stepSize;
+						break;
+					case OS.GDK_Down:
+						yChange = stepSize;
+						break;
+				}
+				if (xChange != 0 || yChange != 0) {
+					drawRectangles ();
+					Event event = new Event ();
+					event.x = oldX[0] + xChange;
+					event.y = oldY[0] + yChange;
+					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles (xChange, yChange);
+						sendEvent (SWT.Resize, event);
+						/*
+						 * The following is intentionally commented.  Since gtk does not currently
+						 * support pointer warping, the resize cursor cannot be adjusted.  If this
+						 * capability is added in the future then the following should be uncommented,
+						 * and the #adjustResizeCursor method can be copied from another platform.
+						 */
+//						cursorPos = adjustResizeCursor (xDisplay, xWindow);
+//						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
+					} else {
+						moveRectangles (xChange, yChange);
+						sendEvent (SWT.Move, event);
+						/*
+						 * The following is intentionally commented.  Since gtk does not currently
+						 * support pointer warping, the move cursor cannot be adjusted.  If this
+						 * capability is added in the future then the following should be uncommented,
+						 * and the #adjustMoveCursor method can be copied from another platform.
+						 */
+//						cursorPos = adjustMoveCursor (xDisplay, xWindow);
+//						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
+					}
+					/*
+					 * It is possible (but unlikely) that application code
+					 * could have disposed the widget in the move/resize
+					 * event.  If this happens then return false to indicate
+					 * that the move failed.
+					 */
+					if (isDisposed ()) {
+						ungrab ();
+						return false;
+					}
+					drawRectangles ();
 				}
 				break;
 			}  // switch
