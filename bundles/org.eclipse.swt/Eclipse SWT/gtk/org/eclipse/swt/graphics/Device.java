@@ -320,8 +320,7 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
-
-	//FIXME - check scalable flag
+	if (!scalable) return new FontData[0];
 	int[] family = new int[1];
 	int[] face = new int[1];
 	int[] families = new int[1];
@@ -354,7 +353,6 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	}
 	OS.g_free(families[0]);
 	OS.g_object_unref(context);
-
 	if (nFds == fds.length) return fds;
 	FontData[] result = new FontData[nFds];
 	System.arraycopy(fds, 0, result, 0, nFds);
