@@ -5161,7 +5161,7 @@ void handleTextChanged(TextChangedEvent event) {
 			}
 			gc.dispose();
 		} else {
-			redraw(startY, 0, getClientArea().width, lineHeight, false);
+			redraw(0, startY, getClientArea().width, lineHeight, false);
 			update();
 		}
 	}
