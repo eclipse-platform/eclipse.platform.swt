@@ -101,6 +101,8 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
+	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
+	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1486,6 +1488,17 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_MOVE (int wParam, int lParam) {
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	if (rect.left == oldX && rect.top == oldY) {
+		return null;
+	}
+	oldX = rect.left;
+	oldY = rect.top;
+	return super.WM_MOVE (wParam, lParam);
+}
+
 LRESULT WM_NCACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
@@ -1527,6 +1540,11 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
+	if ((lParam & 0xFFFF) == oldWidth && (lParam >> 16) == oldHeight) {
+		return null;
+	}
+	oldWidth = lParam & 0xFFFF;
+	oldHeight = lParam >> 16;
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
 	* It is possible (but unlikely), that application
@@ -1544,7 +1562,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOMMAND (wParam,lParam);
+	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
 	if (!(this instanceof Shell)) {
 		int cmd = wParam & 0xFFF0;
@@ -1563,7 +1581,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
-	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	if (display.lockActiveWindow) {
 		WINDOWPOS lpwp = new WINDOWPOS ();
