@@ -1253,6 +1253,59 @@ public void test_getStyleRanges() {
 	assertTrue(":1:", styles[2].equals(getStyle(47,5,BLUE,null)));
 }
 
+public void test_getStyleRangesII() {
+	text.setText("0123456789");
+//	0
+//	 1234
+//	 56
+//	 78
+//	9
+	text.setStyleRange(getStyle(1,4,BLUE,null));
+	text.setStyleRange(getStyle(5,2,RED,null));
+	text.setStyleRange(getStyle(7,2,YELLOW,null));
+
+	StyleRange[] styles = text.getStyleRanges(0,1);
+	assertTrue(":1:", styles.length == 0);
+	styles = text.getStyleRanges(0,5);
+	assertTrue(":2:", styles.length == 1);
+	assertTrue(":2:", styles[0].equals(getStyle(1,4,BLUE,null)));
+	styles = text.getStyleRanges(7,3);
+	assertTrue(":3:", styles.length == 1);
+	assertTrue(":3:", styles[0].equals(getStyle(7,2,YELLOW,null)));
+	styles = text.getStyleRanges(0,10);
+	assertTrue(":4:", styles.length == 3);
+	assertTrue(":4:", styles[0].equals(getStyle(1,4,BLUE,null)));
+	assertTrue(":4:", styles[1].equals(getStyle(5,2,RED,null)));
+	assertTrue(":4:", styles[2].equals(getStyle(7,2,YELLOW,null)));
+	styles = text.getStyleRanges(0,4);
+	assertTrue(":5:", styles.length == 1);
+	assertTrue(":5:", styles[0].equals(getStyle(1,3,BLUE,null)));
+	styles = text.getStyleRanges(2,6);
+	assertTrue(":6:", styles.length == 3);
+	assertTrue(":6:", styles[0].equals(getStyle(2,3,BLUE,null)));
+	assertTrue(":6:", styles[1].equals(getStyle(5,2,RED,null)));
+	assertTrue(":6:", styles[2].equals(getStyle(7,1,YELLOW,null)));
+
+	text.setText("0123456789\r\nABCDEFGHIJKL");
+	text.setStyleRange(getStyle(4,3,BLUE,null));
+	text.setStyleRange(getStyle(7,5,RED,null));
+	text.setStyleRange(getStyle(15,1,YELLOW,null));
+	styles = text.getStyleRanges(15,1);
+	assertTrue(":1a:", styles.length == 1);
+	assertTrue(":1a:", styles[0].equals(getStyle(15,1,YELLOW,null)));
+	styles = text.getStyleRanges(15,0);
+	assertTrue(":2a:", styles.length == 0);
+	styles = text.getStyleRanges(0,20);
+	assertTrue(":3a:", styles.length == 3);
+	assertTrue(":3a:", styles[0].equals(getStyle(4,3,BLUE,null)));
+	assertTrue(":3a:", styles[1].equals(getStyle(7,5,RED,null)));
+	assertTrue(":3a:", styles[2].equals(getStyle(15,1,YELLOW,null)));
+	styles = text.getStyleRanges(8,2);
+	assertTrue(":4a:", styles.length == 1);
+	assertTrue(":4a:", styles[0].equals(getStyle(8,2,RED,null)));
+
+}
+
 public void test_getTabs() {
 	text.setTabs(1);
 	assertTrue(":a:", text.getTabs() == 1);
@@ -4056,6 +4109,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getSelectionText");
 	methodNames.addElement("test_getStyleRangeAtOffsetI");
 	methodNames.addElement("test_getStyleRanges");
+	methodNames.addElement("test_getStyleRangesII");
 	methodNames.addElement("test_getTabs");
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_getTextII");
@@ -4151,6 +4205,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
 	else if (getName().equals("test_getStyleRangeAtOffsetI")) test_getStyleRangeAtOffsetI();
 	else if (getName().equals("test_getStyleRanges")) test_getStyleRanges();
+	else if (getName().equals("test_getStyleRangesII")) test_getStyleRangesII();
 	else if (getName().equals("test_getTabs")) test_getTabs();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_getTextII")) test_getTextII();

@@ -4455,7 +4455,8 @@ public StyleRange getStyleRangeAtOffset(int offset) {
  * listener maintains the styles.
  * <p>
  *
- * @return the styles or null if a LineStyleListener has been set.
+ * @return the styles or an empty array if a LineStyleListener has been set.
+  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4467,6 +4468,78 @@ public StyleRange [] getStyleRanges() {
 	
 	if (userLineStyle == false) {
 		styles = defaultLineStyler.getStyleRanges();
+	}
+	else {
+		styles = new StyleRange[0];
+	}
+	return styles;
+}
+/**
+ * Returns the styles for the given text range.
+ * Returns an empty array if a LineStyleListener has been set. 
+ * Should not be called if a LineStyleListener has been set since the 
+ * listener maintains the styles.
+ * <p>
+ *
+ * @return the styles or an empty array if a LineStyleListener has 
+ *  been set.  The returned styles will reflect the given range.  The first 
+ *  returned <code>StyleRange</code> will have a starting offset >= start 
+ *  and the last returned <code>StyleRange</code> will have an ending 
+ *  offset <= start + length - 1
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE when start and/or end are outside the widget content</li> 
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public StyleRange [] getStyleRanges(int start, int length) {
+	checkWidget();
+	int contentLength = getCharCount();
+	int end = start + length;
+	if (start > end || start < 0 || end > contentLength) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}	
+	StyleRange styles[];
+	
+	if (userLineStyle == false) {
+		styles = defaultLineStyler.getStyleRangesFor(start, length);
+		if (styles == null) return new StyleRange[0];;
+		// adjust the first and last style to reflect the specified 
+		// range, clone these styles since the returned styles are the
+		// styles cached by the widget
+		if (styles.length == 1) {
+			StyleRange style = styles[0];
+			if (style.start < start) {
+				StyleRange newStyle = (StyleRange)styles[0].clone();
+				newStyle.length = newStyle.length - (start - newStyle.start);
+				newStyle.start = start;
+				styles[0] = newStyle;
+			}
+			if (style.start + style.length > (start + length)) {
+				StyleRange newStyle = (StyleRange)styles[0].clone();
+				newStyle.length = start + length - newStyle.start;
+				styles[0] = newStyle;
+			}
+		} else if (styles.length > 1) {
+			StyleRange style = styles[0];
+			if (style.start < start) {
+				StyleRange newStyle = (StyleRange)styles[0].clone();
+				newStyle.length = newStyle.length - (start - newStyle.start);
+				newStyle.start = start;
+				styles[0] = newStyle;
+			}
+			style = styles[styles.length - 1];
+			if (style.start + style.length > (start + length)) {
+				StyleRange newStyle = (StyleRange)styles[styles.length - 1].clone();
+				newStyle.length = start + length - newStyle.start;
+				styles[styles.length - 1] = newStyle;
+			}
+		}
 	}
 	else {
 		styles = new StyleRange[0];
