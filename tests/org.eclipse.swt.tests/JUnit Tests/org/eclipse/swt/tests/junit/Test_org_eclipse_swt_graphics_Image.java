@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.io.*;
+import java.net.*;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -726,8 +727,15 @@ String getPath(String fileName) {
 	
 	String pluginPath = System.getProperty("PLUGIN_PATH");
 	System.out.println("PLUGIN_PATH <"+pluginPath+">");
-	if (pluginPath == null) urlPath = getClass().getClassLoader().getResource(fileName).getFile();
-	else urlPath = pluginPath + "/data/" + fileName;
+	if (pluginPath == null) {
+		URL url = getClass().getClassLoader().getResource(fileName);
+		if (url == null) {
+			fail("URL == null for file " + fileName);
+		}
+		urlPath = url.getFile();
+	} else {
+		urlPath = pluginPath + "/data/" + fileName;
+	}
 	
 	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);	
 	if (urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
