@@ -29,6 +29,7 @@ public class Caret extends Widget {
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible;
+	Image image;
 	Font font;
 	LOGFONT oldFont;
 
@@ -93,6 +94,10 @@ int defaultFont () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -116,6 +121,21 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) return Font.win32_new (getDisplay (), defaultFont ());
 	return font;
+}
+
+/**
+ * Returns the image that the receiver will use to paint the caret.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Image getImage () {
+	checkWidget();
+	return image;
 }
 
 /**
@@ -161,6 +181,10 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
 
@@ -242,6 +266,7 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
+	image = null;
 	font = null;
 	oldFont = null;
 }
@@ -250,7 +275,9 @@ void resize () {
 	resized = false;
 	int hwnd = parent.handle;
 	OS.DestroyCaret ();		
-	OS.CreateCaret (hwnd, 0, width, height);
+	int hBitmap = 0;
+	if (image != null) hBitmap = image.handle;
+	OS.CreateCaret (hwnd, hBitmap, width, height);
 	OS.SetCaretPos (x, y);
 	OS.ShowCaret (hwnd);
 	move ();
@@ -328,7 +355,9 @@ public void setBounds (Rectangle rect) {
 
 void setFocus () {
 	int hwnd = parent.handle;
-	OS.CreateCaret (hwnd, 0, width, height);
+	int hBitmap = 0;
+	if (image != null) hBitmap = image.handle;
+	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
 	if (font != null) {
 		int hFont = font.handle;
@@ -360,6 +389,24 @@ public void setFont (Font font) {
 		saveIMEFont ();
 		setIMEFont (hFont);
 	}
+}
+
+/**
+ * Sets the image that the receiver will use to paint the caret
+ * to the image specified by the argument, or to the default
+ * which is a filled rectangle if the argument is null
+ *
+ * @param font the new font (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImage (Image image) {
+	checkWidget();
+	this.image = image;
+	if (isVisible && parent.hasFocus ()) resize ();
 }
 
 void setIMEFont (int hFont) {
