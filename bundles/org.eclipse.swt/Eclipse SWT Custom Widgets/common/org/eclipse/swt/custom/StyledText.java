@@ -5606,25 +5606,6 @@ void initializeAccessible() {
 			accessible.setFocus(ACC.CHILDID_SELF);
 		}
 	});
-	addListener(SWT.Modify, new Listener() {
-		public void handleEvent(Event event) {
-			if (event.text.length() == 0) {
-				accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
-			} else {
-				if (event.start == event.end) {
-					accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());
-				} else {
-					accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
-					accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());	
-				}
-			}
-		}
-	});
-	addListener(SWT.Selection, new Listener () {
-		public void handleEvent(Event event) {
-			accessible.textSelectionChanged();
-		}
-	});
 }
 /** 
  * Initializes the fonts used to render font styles.
@@ -6016,7 +5997,7 @@ void modifyContent(Event event, boolean updateCaret) {
 				showCaret();
 			}
 		}	
-		notifyListeners(SWT.Modify, event);		
+		sendModifyEvent(event);		
 		if (isListening(ExtendedModify)) {
 			notifyListeners(ExtendedModify, styledTextEvent);
 		}
@@ -6930,10 +6911,25 @@ void sendKeyEvent(Event event) {
 	}
 	modifyContent(event, true);
 }
+void sendModifyEvent(Event event) {
+	Accessible accessible = getAccessible();
+	if (event.text.length() == 0) {
+		accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
+	} else {
+		if (event.start == event.end) {
+			accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());
+		} else {
+			accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
+			accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());	
+		}
+	}
+	notifyListeners(SWT.Modify, event);
+}
 /**
  * Sends the specified selection event.
  */
 void sendSelectionEvent() {
+	getAccessible().textSelectionChanged();
 	Event event = new Event();
 	event.x = selection.x;
 	event.y = selection.y;
@@ -8085,7 +8081,7 @@ public void setText(String text) {
 			styledTextEvent.text = content.getTextRange(event.start, event.end - event.start);
 		}
 		content.setText(event.text);
-		notifyListeners(SWT.Modify, event);	
+		sendModifyEvent(event);	
 		if (styledTextEvent != null) {
 			notifyListeners(ExtendedModify, styledTextEvent);
 		}
