@@ -35,7 +35,6 @@ import org.eclipse.swt.internal.gtk.*;
 public class TrayItem extends Item {
 	Tray parent;
 	String toolTipText;
-	int /*long*/ id;
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
 
@@ -121,7 +120,7 @@ void createHandle (int index) {
 	OS.gtk_container_add (handle, imageHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_show (imageHandle);
-	id = OS.gtk_plug_get_id (handle);
+	int /*long*/ id = OS.gtk_plug_get_id (handle);
 	int monitor = 0;
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
@@ -143,8 +142,6 @@ void createHandle (int index) {
 	event.data [0] = OS.GDK_CURRENT_TIME;
 	event.data [1] = OS.SYSTEM_TRAY_REQUEST_DOCK;
 	event.data [2] = id;
-	event.data [3] = 0;
-	event.data [4] = 0;
 	int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
 	OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
 	OS.XSendEvent (OS.GDK_DISPLAY (), trayWindow, false, OS.NoEventMask, clientEvent);
