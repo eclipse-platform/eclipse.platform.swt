@@ -108,12 +108,11 @@ public class CTabFolder extends Composite {
 	
 	// close button
 	boolean showClose = false;
+	private Image closeImage;
 	ToolBar closeBar;
 	private ToolItem closeItem;
-	private Image closeImage;
 	private ToolBar inactiveCloseBar;
 	private ToolItem inactiveCloseItem;
-	private Image inactiveCloseImage;
 	private CTabItem inactiveItem;	
 
 	private boolean shortenedTabs = false;
@@ -156,28 +155,27 @@ public CTabFolder(Composite parent, int style) {
 	borderColor1 = new Color(getDisplay(), borderInsideRGB);
 	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
 	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
-	Color foreground = getForeground();
 	Color background = getBackground();
 	
 	// create scrolling arrow buttons
 	scrollBar = new ToolBar(this, SWT.FLAT);
 	scrollBar.setVisible(false);
+	scrollBar.setBackground(background);
 	scrollLeft = new ToolItem(scrollBar, SWT.PUSH);
 	scrollLeft.setEnabled(false);
 	scrollRight = new ToolItem(scrollBar, SWT.PUSH);
 	scrollRight.setEnabled(false);
-	initScrollButtons(foreground, background);
 	
 	// create close buttons
 	closeBar = new ToolBar(this, SWT.FLAT);
 	closeBar.setVisible(false);
+	closeBar.setBackground(background);
 	closeItem = new ToolItem(closeBar, SWT.PUSH);
-	initCloseButton(foreground, background);
 	
 	inactiveCloseBar = new ToolBar(this, SWT.FLAT);
 	inactiveCloseBar.setVisible(false);
+	inactiveCloseBar.setBackground(background);
 	inactiveCloseItem = new ToolItem(inactiveCloseBar, SWT.PUSH);
-	initInactiveCloseButton(foreground, background);
 
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
@@ -283,6 +281,7 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	tabListeners = newTabListeners;
 	tabListeners[tabListeners.length - 1] = listener;
 	showClose = true;
+	initCloseButtonImages();
 }
 private void closeNotify(CTabItem item, int time) {
 	CTabFolderEvent event = new CTabFolderEvent(this);
@@ -470,11 +469,6 @@ private void onDispose() {
 	if (closeImage != null) {
 		closeImage.dispose();
 		closeImage = null;
-	}
-	
-	if (inactiveCloseImage != null) {
-		inactiveCloseImage.dispose();
-		inactiveCloseImage = null;
 	}
 	
 	if (borderColor1 != null) {
@@ -718,6 +712,7 @@ private void layoutButtons() {
 	boolean rightVisible = scroll_rightVisible();
 
 	if (leftVisible || rightVisible) {
+		initScrollBarImages();
 		Point size = scrollBar.getSize();
 		Rectangle area = super.getClientArea();
 		int x = area.x + area.width - size.x - BORDER_RIGHT;
@@ -1057,17 +1052,14 @@ public void setBackground (Color color) {
 	Color foreground = getForeground();
 	
 	// init inactive close button
-	initInactiveCloseButton(foreground, color);
+	inactiveCloseBar.setBackground(color);
 	
 	// init scroll buttons
-	initScrollButtons(foreground, color);
+	scrollBar.setBackground(color);
 	
 	// init close button
 	if (gradientColors == null) {
-		if (selectionForeground != null) {
-			foreground = selectionForeground;
-		}
-		initCloseButton(foreground, color);
+		closeBar.setBackground(color);
 	}
 }
 /**
@@ -1194,12 +1186,9 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 		if (closeBackground == null || display.getDepth() < 15){
 			closeBackground = background;
 		}
-		Color closeForeground = getForeground();
-		initCloseButton(closeForeground, closeBackground);
+		closeBar.setBackground(closeBackground);
 	} else {
-		Color closeBackground = getBackground();
-		Color closeForeground = getForeground();
-		initCloseButton(closeForeground, closeBackground);
+		closeBar.setBackground(getBackground());
 	}
 	if (selectedIndex > -1) redrawTabArea(selectedIndex);
 }
@@ -1236,19 +1225,6 @@ public void setFont(Font font) {
 	super.setFont(font);	
 	layoutItems();
 	redrawTabArea(-1);
-}
-public void setForeground (Color color) {
-	super.setForeground(color);
-	color = getForeground();
-	Color background = getBackground();
-	
-	initInactiveCloseButton(color, background);
-	initScrollButtons(color, background);
-	
-	if (gradientColors != null) {
-		background = gradientColors[gradientColors.length - 1];
-	}
-	initCloseButton(color, background);	
 }
 public void setSelectionForeground (Color color) {
 	if (selectionForeground == color) return;
@@ -1364,98 +1340,90 @@ private void setSelectionNotify(int index) {
 	}
 }
 
-private void initCloseButton(Color foreground, Color background) {
-	if (closeImage != null) {
-		closeImage.dispose();
+private void initCloseButtonImages() {
+	if (closeImage != null) return;
+
+	try {
+		Display display = getDisplay();
+		Image image = new Image(display, CTabFolder.class.getResourceAsStream("close.gif"));
+		ImageData source = image.getImageData();
+		ImageData mask = source.getTransparencyMask();
+		image.dispose();
+		closeImage = new Image(display, source, mask);
+	} catch (Error e) {
 		closeImage = null;
+		return;
 	}
-	closeImage = drawCloseImage(foreground, background);
-	closeBar.setBackground(background);
-	closeBar.setForeground(foreground);
+	
+	closeItem.setDisabledImage(closeImage);
 	closeItem.setImage(closeImage);
-}
-private void initInactiveCloseButton(Color foreground, Color background) {
-	if (inactiveCloseImage != null) {
-		inactiveCloseImage.dispose();
-		inactiveCloseImage = null;
-	}
-	inactiveCloseImage = drawCloseImage(foreground, background);
-	inactiveCloseBar.setBackground(background);
-	inactiveCloseBar.setForeground(foreground);
-	inactiveCloseItem.setImage(inactiveCloseImage);
-}
-private Image drawCloseImage(Color foreground, Color background) {
-	Image image = new Image(getDisplay(), 9, 9);
-	GC gc = new GC(image);
-	gc.setBackground(background);
-	gc.fillRectangle(0, 0, 9, 9);
-	gc.setForeground(foreground);
-	for (int i = 0; i < 8; i++) {
-		gc.drawLine(i, i, i + 1, i);
-		gc.drawLine(7 - i, i, 8 - i, i);
-	}
-	gc.dispose();
-	return image;
-}
-private void initScrollButtons(Color foreground, Color background) {
-
-	scrollBar.setBackground(background);
+	inactiveCloseItem.setDisabledImage(closeImage);
+	inactiveCloseItem.setImage(closeImage);
 	
-	Display display = getDisplay();
-	Color shadow = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-	if (arrowLeftImage != null) {
-		arrowLeftImage.dispose();
-		arrowLeftImage = null;
+	int height = getTabHeight();
+	Point size = closeBar.computeSize(SWT.DEFAULT, height);
+	closeBar.setSize(size);
+	inactiveCloseBar.setSize(size);
+}
+private void initScrollBarImages() {
+	if (arrowLeftImage != null) return;
+
+	try {
+		Display display = getDisplay();
+		Image image = new Image(display, CTabFolder.class.getResourceAsStream("leftDisabled.gif"));
+		ImageData source = image.getImageData();
+		ImageData mask = source.getTransparencyMask();
+		image.dispose();
+		arrowLeftDisabledImage = new Image(display, source, mask);
+	
+		image = new Image(display, CTabFolder.class.getResourceAsStream("left.gif"));
+		source = image.getImageData();
+		mask = source.getTransparencyMask();
+		image.dispose();
+		arrowLeftImage = new Image(display, source, mask);
+	
+		image = new Image(display, CTabFolder.class.getResourceAsStream("rightDisabled.gif"));
+		source = image.getImageData();
+		mask = source.getTransparencyMask();
+		image.dispose();
+		arrowRightDisabledImage = new Image(display, source, mask);
+	
+		image = new Image(display, CTabFolder.class.getResourceAsStream("right.gif"));
+		source = image.getImageData();
+		mask = source.getTransparencyMask();
+		image.dispose();
+		arrowRightImage = new Image(display, source, mask);
+	} catch (Error e) {
+		if (arrowLeftDisabledImage != null){
+			arrowLeftDisabledImage.dispose();
+			arrowLeftDisabledImage = null;
+		}
+		if (arrowLeftImage != null){
+			arrowLeftImage.dispose();
+			arrowLeftImage = null;
+		}
+		if (arrowRightDisabledImage != null){
+			arrowRightDisabledImage.dispose();
+			arrowRightDisabledImage = null;
+		}
+		if (arrowRightImage != null){
+			arrowRightImage.dispose();
+			arrowRightImage = null;
+		}
+		return;
 	}
-	if (arrowLeftDisabledImage != null) {
-		arrowLeftDisabledImage.dispose();
-		arrowLeftDisabledImage = null;
-	}
-	arrowLeftImage = drawArrowImage(foreground, background, true);
-	arrowLeftDisabledImage = drawArrowImage(shadow, background, true);
-	scrollLeft.setImage(arrowLeftImage);
+	
 	scrollLeft.setDisabledImage(arrowLeftDisabledImage);
-	scrollLeft.setHotImage(arrowLeftImage);
+	scrollLeft.setImage(arrowLeftImage);
 	
-	if (arrowRightImage != null) {
-		arrowRightImage.dispose();
-		arrowRightImage = null;
-	}
-	if (arrowRightDisabledImage != null) {
-		arrowRightDisabledImage.dispose();
-		arrowRightDisabledImage = null;
-	}
-	arrowRightImage = drawArrowImage(foreground, background, false);		
-	arrowRightDisabledImage = drawArrowImage(shadow, background, false);
-	scrollRight.setImage(arrowRightImage);
 	scrollRight.setDisabledImage(arrowRightDisabledImage);
-	scrollRight.setHotImage(arrowRightImage);
+	scrollRight.setImage(arrowRightImage);
+	
+	int height = getTabHeight();
+	Point size = scrollBar.computeSize(SWT.DEFAULT, height);
+	scrollBar.setSize(size);
 }
 
-private Image drawArrowImage (Color foreground, Color background, boolean left) {
-	// create image for left button
-	int arrow[] = new int[6];
-	if (left) {
-		arrow[0] = 4; arrow[1] = 0;
-		arrow[2] = 0; arrow[3] = 4;
-		arrow[4] = 4; arrow[5] = 8;				
-	} else {
-		arrow[0] = 0; arrow[1] = 0;
-		arrow[2] = 4; arrow[3] = 4;
-		arrow[4] = 0; arrow[5] = 8;	
-	}
-	
-	Image image = new Image(getDisplay(), 5, 9);
-	GC gc = new GC(image);	
-	gc.setBackground(background);
-	gc.fillRectangle(0, 0, 5, 9);
-	gc.setBackground(foreground);
-	gc.fillPolygon(arrow);
-	gc.setBackground(background);
-	gc.dispose();
-	
-	return image;
-}
 /** 
  * A mouse button was pressed down. 
  * If one of the tab scroll buttons was hit, scroll in the appropriate 
