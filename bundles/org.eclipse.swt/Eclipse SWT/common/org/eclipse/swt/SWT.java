@@ -219,7 +219,14 @@ public class SWT {
 	 * The hardware key up event type (value is 34).
 	 */
 	public static final int HardKeyUp = 34;
-	
+
+	/**
+	 * The menu detect event type (value is 35).
+	 * 
+	 * @since 2.2
+	 */
+	public static final int MenuDetect = 35;
+		
 	/* Event Details */
 	
 	/**
