@@ -573,8 +573,8 @@ protected void release () {
 	/* Free the parsing tables */
 	OS.XtFree(tabPointer);
 	OS.XtFree(crPointer);
-	int[] parseTable = {tabMapping, crMapping};
-	OS.XmParseTableFree(parseTable, parseTable.length);
+	OS.XmParseMappingFree(tabMapping);
+	OS.XmParseMappingFree(crMapping);
 	tabPointer = crPointer = tabMapping = crMapping = 0;
 
 	/*
