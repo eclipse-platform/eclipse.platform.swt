@@ -137,6 +137,7 @@ public Tree (Composite parent, int style) {
 	header.addListener (SWT.Paint, listener);
 	header.addListener (SWT.MouseDown, listener);
 	header.addListener (SWT.MouseUp, listener);
+	header.addListener (SWT.MouseDoubleClick, listener);
 	header.addListener (SWT.MouseMove, listener);
 	header.addListener (SWT.MouseExit, listener);
 
@@ -854,7 +855,12 @@ void handleEvents (Event event) {
 		case SWT.MouseMove:
 			headerOnMouseMove (event); break;
 		case SWT.MouseDoubleClick:
-			onMouseDoubleClick (event); break;
+			if (event.widget == header) {
+				headerOnMouseDoubleClick (event);
+			} else {
+				onMouseDoubleClick (event);
+			}
+			break;
 		case SWT.MouseExit:
 			headerOnMouseExit (); break;
 		case SWT.Dispose:
@@ -888,19 +894,34 @@ void handleEvents (Event event) {
 			break;			
 	}
 }
+void headerOnMouseDoubleClick (Event event) {
+	if (!isFocusControl ()) setFocus ();
+	if (columns.length == 0) return;
+	int x = -horizontalOffset;
+	for (int i = 0; i < columns.length; i++) {
+		TreeColumn column = columns [i];
+		x += column.width;
+		if (event.x < x) {
+			Event newEvent = new Event ();
+			newEvent.widget = column;
+			column.postEvent (SWT.DefaultSelection, newEvent);
+			return;
+		}
+	}
+}
 void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
+	int x = -horizontalOffset;
 	for (int i = 0; i < columns.length; i++) {
 		TreeColumn column = columns [i]; 
-		int x = column.getX () + column.width;
-		/* if close to a column separator line then begin column resize */
-		if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
-			if (!column.resizable) return;
+		x += column.width;
+		/* if close to a resizable column separator line then begin column resize */
+		if (column.resizable && Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 			resizeColumn = column;
 			resizeColumnX = x;
 			return;
 		}
-		/* if within column but not near separator line then fire column Selection */
+		/* if within column but not near resizable separator line then fire column Selection */
 		if (event.x < x) {
 			Event newEvent = new Event ();
 			newEvent.widget = column;
