@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.win32.*;
 
 class WebSite extends OleControlSite {
 	COMObject iDocHostUIHandler;
+	COMObject iDocHostShowUI;
 	COMObject iServiceProvider;
 	COMObject iInternetSecurityManager;
 
@@ -46,6 +47,13 @@ protected void createCOMInterfaces () {
 		public int method16(int[] args) {return TranslateUrl(args[0], args[1], args[2]);}		
 		public int method17(int[] args) {return FilterDataObject(args[0], args[1]);}
 	};
+	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, 6}){
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}
+		public int method3(int[] args) {return ShowMessage(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		public int method4(int[] args) {return ShowHelp(args[0], args[1], args[2], args[3], args[4], args[5]);}
+	};
 	iServiceProvider = new COMObject(new int[]{2, 0, 0, 3}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
@@ -73,6 +81,10 @@ protected void disposeCOMInterfaces() {
 		iDocHostUIHandler.dispose();
 		iDocHostUIHandler = null;
 	}
+	if (iDocHostShowUI != null) {
+		iDocHostShowUI.dispose();
+		iDocHostShowUI = null;
+	}
 	if (iServiceProvider != null) {
 		iServiceProvider.dispose();
 		iServiceProvider = null;
@@ -91,6 +103,11 @@ protected int QueryInterface(int riid, int ppvObject) {
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) {
 		COM.MoveMemory(ppvObject, new int[] {iDocHostUIHandler.getAddress()}, 4);
+		AddRef();
+		return COM.S_OK;
+	}
+	if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) {
+		COM.MoveMemory(ppvObject, new int[] {iDocHostShowUI.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
 	}
@@ -180,6 +197,48 @@ int TranslateUrl(int dwTranslate, int pchURLIn, int ppchURLOut) {
 }
 
 int UpdateUI() {
+	return COM.E_NOTIMPL;
+}
+
+/* IDocHostShowUI */
+
+int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstrHelpFile, int dwHelpContext, int plResult) {
+	/*
+	* Feature on IE.  Executing certain ActiveX controls such as the Java or Flash plugin from within
+	* a java VM can cause the application to crash.  The workaround is to disallow all ActiveX controls.
+	* 
+	* Feature on IE.  When IE navigates to a website that contains an ActiveX that is prevented from
+	* being executed, IE displays a message "Your current security settings prohibit running ActiveX 
+	* controls on this page ...".  The workaround is to selectively block this alert as indicated
+	* in the MSDN article "WebBrowser customization".
+	*/
+	/* resource identifier in shdoclc.dll for window caption "Your current security settings prohibit 
+	 * running ActiveX controls on this page ..." 
+	 */
+	int IDS_MESSAGE_BOX_CAPTION = 8033;
+		if (lpstrText != 0) {
+		TCHAR lpLibFileName = new TCHAR (0, "SHDOCLC.DLL", true); //$NON-NLS-1$
+		int hModule = OS.LoadLibrary(lpLibFileName);
+		if (hModule != 0) {
+			/* 
+			* Note.  lpstrText is a LPOLESTR, i.e. a null terminated unicode string LPWSTR, i.e. a WCHAR*.
+			* It is not a BSTR.  A BSTR is a null terminated unicode string that contains its length
+			* at the beginning. 
+			*/
+			int cnt = OS.wcslen(lpstrText) + 1;
+			char[] buffer = new char[cnt];
+			OS.MoveMemory(buffer, lpstrText, cnt * TCHAR.sizeof);
+			String text = new String(buffer);
+			TCHAR lpBuffer = new TCHAR(0, cnt);
+			OS.LoadString(hModule, IDS_MESSAGE_BOX_CAPTION, lpBuffer, cnt);
+			OS.FreeLibrary(hModule);
+			return text.equals(lpBuffer.toString()) ? COM.S_OK : COM.S_FALSE;
+		}
+	}
+	return COM.S_FALSE;
+}
+
+int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse, int pDispatchObjectHit) {
 	return COM.E_NOTIMPL;
 }
 

@@ -238,6 +238,7 @@
 #define NO_LoadIconA
 #define NO_LoadImageA
 #define NO_LoadLibraryA
+#define NO_LoadStringA
 #define NO_MapVirtualKeyA
 #define NO_MessageBoxA
 #define NO_MonitorFromWindow

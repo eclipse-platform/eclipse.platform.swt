@@ -1786,6 +1786,15 @@ public static final int LoadLibrary (TCHAR lpLibFileName) {
 	return LoadLibraryA (lpLibFileName1);
 }
 
+public static final int LoadString (int hinst, int uID, TCHAR lpBuffer, int nBufferMax) {
+	if (IsUnicode) {
+		char [] lpBuffer1 = lpBuffer == null ? null : lpBuffer.chars;
+		return LoadStringW (hinst, uID, lpBuffer1, nBufferMax);
+	}
+	byte [] lpBuffer1 = lpBuffer == null ? null : lpBuffer.bytes;
+	return LoadStringA (hinst, uID, lpBuffer1, nBufferMax);
+}
+
 public static final int MapVirtualKey (int uCode, int uMapType) {
 	if (IsUnicode) return MapVirtualKeyW (uCode, uMapType);
 	return MapVirtualKeyA (uCode, uMapType);
@@ -2420,6 +2429,8 @@ public static final native int LoadIconW (int hInstance, int lpIconName);
 public static final native int LoadIconA (int hInstance, int lpIconName);
 public static final native int LoadImageW (int hinst, char [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadImageA (int hinst, byte [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+public static final native int LoadStringW (int hinst, int uID, char [] lpBuffer, int nBufferMax);
+public static final native int LoadStringA (int hinst, int uID, byte [] lpBuffer, int nBufferMax);
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
 public static final native int LocalFree(int hMem);
@@ -2682,4 +2693,5 @@ public static final native int WideCharToMultiByte (int CodePage, int dwFlags, c
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, int lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WindowFromDC (int hDC);
 public static final native int WindowFromPoint (POINT lpPoint);
+public static final native int wcslen (int string);
 }

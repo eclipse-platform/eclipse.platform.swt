@@ -4331,6 +4331,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(LoadLibraryW)
 }
 #endif
 
+#ifndef NO_LoadStringA
+JNIEXPORT jint JNICALL OS_NATIVE(LoadStringA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "LoadStringA\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)LoadStringA((HINSTANCE)arg0, arg1, (LPSTR)lparg2, arg3);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "LoadStringA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_LoadStringW
+JNIEXPORT jint JNICALL OS_NATIVE(LoadStringW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
+{
+	jchar *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "LoadStringW\n")
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	rc = (jint)LoadStringW((HINSTANCE)arg0, arg1, (LPWSTR)lparg2, arg3);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "LoadStringW\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_LocalFree
 JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8081,6 +8111,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(WindowFromPoint)
 	rc = (jint)WindowFromPoint(*lparg0);
 	if (arg0) setPOINTFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "WindowFromPoint\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_wcslen
+JNIEXPORT jint JNICALL OS_NATIVE(wcslen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "wcslen\n")
+	rc = (jint)wcslen((const wchar_t *)arg0);
+	NATIVE_EXIT(env, that, "wcslen\n")
 	return rc;
 }
 #endif

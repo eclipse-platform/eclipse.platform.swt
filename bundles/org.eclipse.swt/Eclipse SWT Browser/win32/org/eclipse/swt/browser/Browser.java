@@ -72,8 +72,25 @@ public class Browser extends Composite {
 	static final short CSC_NAVIGATEBACK = 2;
 	static final int INET_E_DEFAULT_ACTION = 0x800C0011;
 	static final int URLPOLICY_ALLOW = 0;
+	static final int URLPOLICY_DISALLOW = 3;
 	static final int URLZONE_INTRANET = 1;
 
+	static final int DISPID_AMBIENT_DLCONTROL = -5512;
+	static final int DLCTL_DLIMAGES = 0x00000010;
+	static final int DLCTL_VIDEOS = 0x00000020;
+	static final int DLCTL_BGSOUNDS = 0x00000040;
+	static final int DLCTL_NO_SCRIPTS = 0x00000080;
+	static final int DLCTL_NO_JAVA = 0x00000100;
+	static final int DLCTL_NO_RUNACTIVEXCTLS = 0x00000200;
+	static final int DLCTL_NO_DLACTIVEXCTLS = 0x00000400;
+	static final int DLCTL_DOWNLOADONLY = 0x00000800;
+	static final int DLCTL_NO_FRAMEDOWNLOAD = 0x00001000;
+	static final int DLCTL_RESYNCHRONIZE = 0x00002000;
+	static final int DLCTL_PRAGMA_NO_CACHE = 0x00004000;
+	static final int DLCTL_FORCEOFFLINE = 0x10000000;
+	static final int DLCTL_NO_CLIENTPULL = 0x20000000;
+	static final int DLCTL_SILENT = 0x40000000;
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
@@ -116,6 +133,13 @@ public Browser(Composite parent, int style) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
+	/*
+	* Feature on IE.  Executing certain ActiveX controls such as the Java or Flash plugin from within
+	* a java VM can cause the application to crash.  The workaround is to disallow all ActiveX controls.
+	*/
+	Variant download = new Variant(DLCTL_NO_RUNACTIVEXCTLS | DLCTL_DLIMAGES | DLCTL_VIDEOS | DLCTL_BGSOUNDS);
+	site.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
+	
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 	addListener(SWT.Dispose, new Listener() {
