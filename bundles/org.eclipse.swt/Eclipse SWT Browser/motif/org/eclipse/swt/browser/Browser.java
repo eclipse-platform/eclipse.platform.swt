@@ -17,6 +17,24 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
 
+/**
+ * Instances of this class implement the browser user interface
+ * metaphor.  It allows the user to visualize and navigate through
+ * HTML documents.
+ * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to set a layout on it.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p><p>
+ * NOTE: The API in the browser package is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
+ * </p>
+ * 
+ * @since 3.0
+ */
 public class Browser extends Composite {
 	nsIWebBrowser webBrowser;
 	int gtkHandle;
@@ -52,7 +70,37 @@ static {
 	String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 	IsLinux = osName.startsWith("linux");
 }
-		
+
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
+ * </ul>
+ * 
+ * @see #getStyle
+ * 
+ * @since 3.0
+ */	
 public Browser(Composite parent, int style) {
 	super(parent, style | SWT.EMBEDDED);
 	
@@ -197,11 +245,14 @@ public Browser(Composite parent, int style) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -220,11 +271,14 @@ public void addLocationListener(LocationListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -243,11 +297,14 @@ public void addProgressListener(ProgressListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -266,9 +323,9 @@ public void addStatusTextListener(StatusTextListener listener) {
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @see #forward
  * 
@@ -445,9 +502,9 @@ void disposeCOMInterfaces() {
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  * 
  * @see #back
  * 
@@ -474,9 +531,9 @@ public boolean forward() {
  * @return the current URL or an empty <code>String</code> if there is no current URL
  *
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @see #setUrl
  * 
@@ -601,9 +658,9 @@ void onResize() {
  * Refresh the current page.
  *
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -631,10 +688,14 @@ public void refresh() {
  *
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
- * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  * 
  * @since 3.0
  */
@@ -665,10 +726,14 @@ public void removeLocationListener(LocationListener listener) {
  *
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
- * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  * 
  * @since 3.0
  */
@@ -699,10 +764,14 @@ public void removeProgressListener(ProgressListener listener) {
  *
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
- * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  * 
  * @since 3.0
  */
@@ -740,9 +809,9 @@ public void removeStatusTextListener(StatusTextListener listener) {
  * </ul>
  * 
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *  
  * @see #getUrl
  * 
@@ -773,9 +842,9 @@ public boolean setUrl(String url) {
  * Stop any loading and rendering activity.
  *
  * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
  *
  * @since 3.0
  */
