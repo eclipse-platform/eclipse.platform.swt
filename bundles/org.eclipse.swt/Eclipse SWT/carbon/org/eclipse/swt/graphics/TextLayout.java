@@ -1292,14 +1292,14 @@ public void setTabs(int[] tabs) {
 		int length = Math.max(TAB_COUNT, tabs.length);
 		int ptr = tabsPtr = OS.NewPtr(ATSUTab.sizeof * length), i, offset;
 		for (i=0, offset=ptr; i<tabs.length; i++, offset += ATSUTab.sizeof) {
-			tab.tabType = OS.kATSULeftTab;
+			tab.tabType = (short)OS.kATSULeftTab;
 			tab.tabPosition += OS.Long2Fix(tabs[i]);
 			OS.memcpy(offset, tab, ATSUTab.sizeof);
 		}
 		int width = i - 2 >= 0 ? tabs[i - 1] - tabs[i - 2] : tabs[i - 1];
 		if (width > 0) {
 			for (; i<length; i++, offset += ATSUTab.sizeof) {
-				tab.tabType = OS.kATSULeftTab;
+				tab.tabType = (short)OS.kATSULeftTab;
 				tab.tabPosition += OS.Long2Fix(width);
 				OS.memcpy(offset, tab, ATSUTab.sizeof);
 			}

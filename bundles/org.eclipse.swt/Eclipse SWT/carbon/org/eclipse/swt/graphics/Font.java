@@ -177,25 +177,25 @@ int createStyle () {
 	OS.DisposePtr(ptr);
 	
 	short[] types = {
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
-		OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
+		(short)OS.kLigaturesType,
 	};
 	short[] selectors = {
-		OS.kRequiredLigaturesOffSelector,
-		OS.kCommonLigaturesOffSelector,
-		OS.kRareLigaturesOffSelector,
-		OS.kLogosOffSelector,
-		OS.kRebusPicturesOffSelector,
-		OS.kDiphthongLigaturesOffSelector,
-		OS.kSquaredLigaturesOffSelector,
-		OS.kAbbrevSquaredLigaturesOffSelector,
-		OS.kSymbolLigaturesOffSelector,
+		(short)OS.kRequiredLigaturesOffSelector,
+		(short)OS.kCommonLigaturesOffSelector,
+		(short)OS.kRareLigaturesOffSelector,
+		(short)OS.kLogosOffSelector,
+		(short)OS.kRebusPicturesOffSelector,
+		(short)OS.kDiphthongLigaturesOffSelector,
+		(short)OS.kSquaredLigaturesOffSelector,
+		(short)OS.kAbbrevSquaredLigaturesOffSelector,
+		(short)OS.kSymbolLigaturesOffSelector,
 	};
 	OS.ATSUSetFontFeatures(buffer[0], types.length, types, selectors);
 	return buffer [0];

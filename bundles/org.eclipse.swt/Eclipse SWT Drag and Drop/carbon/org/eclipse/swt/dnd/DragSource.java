@@ -240,7 +240,7 @@ private void drag(Event dragEvent) {
 	EventRecord theEvent = new EventRecord();
 	theEvent.message = OS.kEventMouseMoved;
 	theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
-	theEvent.what = OS.osEvt;
+	theEvent.what = (short)OS.osEvt;
 	theEvent.where_h = (short)pt.h;
 	theEvent.where_v = (short)pt.v;
 	

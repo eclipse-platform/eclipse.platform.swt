@@ -125,7 +125,7 @@ public String getMessage () {
  * </ul>
  */
 public int open () {
-	short alertType = OS.kAlertPlainAlert;
+	int alertType = OS.kAlertPlainAlert;
 	if ((style & SWT.ICON_ERROR) != 0) alertType = OS.kAlertStopAlert;
 	if ((style & SWT.ICON_INFORMATION) != 0) alertType = OS.kAlertNoteAlert;
 	if ((style & SWT.ICON_QUESTION) != 0) alertType = OS.kAlertNoteAlert;
@@ -205,7 +205,7 @@ public int open () {
 	}
 	
 	int [] dialogRef= new int [1];
-	OS.CreateStandardAlert (alertType, error, explanation, param, dialogRef);
+	OS.CreateStandardAlert ((short) alertType, error, explanation, param, dialogRef);
 	if (error != 0) OS.CFRelease(error);
 	if (explanation != 0) OS.CFRelease(explanation);
 	if (defaultStr != 0) OS.CFRelease(defaultStr);

@@ -422,7 +422,7 @@ void createHandle () {
 		//TODO - CHECK column size
 		checkColumn.headerBtnDesc_minimumWidth = CHECK_COLUMN_WIDTH;
 		checkColumn.headerBtnDesc_maximumWidth = CHECK_COLUMN_WIDTH;
-		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
+		checkColumn.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
@@ -431,7 +431,7 @@ void createHandle () {
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	column.headerBtnDesc_maximumWidth = 0x7fff;
-	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
+	column.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) 0);
 
