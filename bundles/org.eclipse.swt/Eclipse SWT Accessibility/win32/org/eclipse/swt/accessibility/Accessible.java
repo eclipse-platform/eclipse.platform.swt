@@ -219,11 +219,8 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
-		if (childID == ACC.CHILDID_SELF) {
-			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_WINDOW, COM.CHILDID_SELF);
-		} else {
-			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, (childID + 1));
-		}
+		int id = (childID == ACC.CHILDID_SELF) ? COM.CHILDID_SELF : childID + 1;
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
 	}
 
 	/**	 
