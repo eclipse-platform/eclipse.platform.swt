@@ -299,6 +299,14 @@ void createItem (TableColumn column, int index) {
 				temp [index] = -1;
 				items [i].cellForeground = temp;
 			}
+			if (items [i].cellFont != null) {
+				int [] cellFont = items [i].cellFont;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				items [i].cellFont = temp;
+			}
 		}
 	}
 	/*
@@ -367,7 +375,7 @@ void createItem (TableColumn column, int index) {
 }
 
 void createItem (TableItem item, int index) {
-	item.foreground = item.background = -1;
+	item.foreground = item.background = item.font = -1;
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
@@ -614,6 +622,13 @@ void destroyItem (TableColumn column) {
 				System.arraycopy (cellForeground, 0, temp, 0, index);
 				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
 				items [i].cellForeground = temp;
+			}
+			if (items [i].cellFont != null) {
+				int [] cellFont = items [i].cellFont;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
+				items [i].cellFont = temp;
 			}
 		}
 	}
@@ -2647,14 +2662,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
 					TableItem item = items [nmcd.dwItemSpec];
+					int font = (item.cellFont != null) ? item.cellFont [nmcd.iSubItem] : -1;
+					if (font == -1) font = item.font;
 					int clrText = (item.cellForeground != null) ? item.cellForeground [nmcd.iSubItem] : -1;
 					if (clrText == -1) clrText = item.foreground;
 					int clrTextBk = (item.cellBackground != null) ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null) break;
+					if (font == -1 && clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null && item.cellFont == null) break;
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+					if (font == -1) font = getFont ().handle;
+					OS.SelectObject(nmcd.hdc, font);
 					return new LRESULT (OS.CDRF_NEWFONT);
 				}
 			}

@@ -31,8 +31,8 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-	int background, foreground;
-	int [] cellBackground, cellForeground; 
+	int background, foreground, font;
+	int [] cellBackground, cellForeground, cellFont;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -221,6 +221,43 @@ public boolean getChecked () {
 	lvItem.iItem = index;
 	int result = OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
 	return (result != 0) && (((lvItem.state >> 12) & 1) == 0);
+}
+
+/**
+ * Returns the font that the receiver will use to paint textual information for this item.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont () {
+	checkWidget ();
+	return (font == -1) ? parent.getFont () : Font.win32_new (display, font);
+}
+
+/**
+ * Returns the font that the receiver will use to paint textual information
+ * for the specified cell in this item.
+ *
+ * @param index the column index
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont (int index) {
+	checkWidget ();
+	int hFont = (cellFont != null) ? cellFont [index] : font;
+	return (hFont == -1) ? parent.getFont () : Font.win32_new (display, font);
 }
 
 /**
@@ -581,6 +618,79 @@ public void setChecked (boolean checked) {
 	parent.ignoreSelect = false;
 }
 
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font){
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int newFont = -1;
+	if (font != null) {
+		parent.customDraw = true;
+		newFont = font.handle;
+	}
+	this.font = newFont;
+	redraw ();
+}
+
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for the specified cell in this item to the font specified by the 
+ * argument, or to the default font for that kind of control if the 
+ * argument is null.
+ *
+ * @param index the column index
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (int index, Font font) {
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return;
+	int newFont = -1;
+	if (font != null) {
+		parent.customDraw = true;
+		newFont = font.handle;
+	}
+	if (cellFont == null) {
+		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
+		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		cellFont = new int [itemCount];
+		for (int i = 0; i < itemCount; i++) {
+			cellFont [i] = -1;
+		}
+	}
+	cellFont [index] = newFont;
+	redraw ();
+}
 /**
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the item
