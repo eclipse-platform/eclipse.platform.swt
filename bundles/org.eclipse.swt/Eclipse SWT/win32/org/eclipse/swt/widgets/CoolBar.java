@@ -126,7 +126,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
-		height = Math.max (height, rect.bottom - rect.top);
+		height = Math.max (height, rect.bottom);
 		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -142,7 +142,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
 		}
 		width = Math.max(width, rowWidth);
-		
 		if (redraw) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.ValidateRect (handle, null);
