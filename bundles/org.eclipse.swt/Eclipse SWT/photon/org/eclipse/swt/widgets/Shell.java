@@ -15,7 +15,7 @@ public class Shell extends Decorations {
 	int shellHandle;
 	Display display;
 	int modal, blockedList;
-	
+
 public Shell () {
 	this ((Display) null);
 }
@@ -323,14 +323,43 @@ public Point getSize () {
 	return new Point (width, height);
 }
 
-void releaseHandle () {
-	super.releaseHandle ();
-	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
-	blockedList = shellHandle = 0;
-}
-
 void realizeWidget() {
 	/* Do nothing */
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	shellHandle = 0;
+}
+
+void releaseShells () {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			/*
+			* Feature in Photon.  A shell may have child shells that have been
+			* temporarily reparented to NULL because they were shown without
+			* showing the parent.  In this case, Photon will not destroy the
+			* child shells because they are not in the widget hierarchy.
+			* The fix is to detect this case and destroy the shells.
+			*/
+			if (shell.parent != null && OS.PtWidgetParent (shell.shellHandle) == 0) {
+				shell.dispose ();
+			} else {
+				shell.releaseWidget ();
+				shell.releaseHandle ();
+			}
+		}
+	}
+}
+
+void releaseWidget () {
+	releaseShells ();
+	super.releaseWidget ();
+	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
+	blockedList = 0;
+	display = null;
 }
 
 public void removeShellListener (ShellListener listener) {
@@ -517,6 +546,19 @@ public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (visible == OS.PtWidgetIsRealized (shellHandle)) return;
+	/*
+	* Feature in Photon.  It is not possible to show a PtWindow
+	* whose parent is not realized.  The fix is to temporarily
+	* reparent the child shell to NULL and then realize the child
+	* shell.
+	*/
+	if (parent != null) {
+		Shell shell = parent.getShell ();
+		int parentHandle = shell.shellHandle;
+		if (!OS.PtWidgetIsRealized (parentHandle)) {
+			OS.PtReParentWidget (shellHandle, visible ? 0 : parentHandle);
+		}
+	}
 	switch (modal) {
 		case SWT.PRIMARY_MODAL:
 			//NOT DONE: should not disable all windows
@@ -530,6 +572,21 @@ public void setVisible (boolean visible) {
 			}
 	}
 	super.setVisible (visible);
+	/*
+	* Feature in Photon.  When a shell is shown, it may have child
+	* shells that have been temporarily reparented to NULL because
+	* the child was shown before the parent.  The fix is to reparent
+	* the child shells back to the correct parent.
+	*/
+	if (visible) {
+		Shell [] shells = getShells ();
+		for (int i=0; i<shells.length; i++) {
+			int childHandle = shells [i].shellHandle;
+			if (OS.PtWidgetParent (childHandle) == 0) {
+				OS.PtReParentWidget (childHandle, shellHandle);
+			}
+		}
+	}
 	OS.PtSyncWidget (shellHandle);
 	OS.PtFlush ();
 }
