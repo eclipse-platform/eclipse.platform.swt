@@ -274,7 +274,7 @@ void destroyItem (TabItem item) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.handle = 0;
+	item.handle = item.pageHandle = item.imageHandle = item.labelHandle = 0;
 	if (index == oldIndex) {
 		fixPage ();
 		int newIndex = OS.gtk_notebook_get_current_page (handle);
