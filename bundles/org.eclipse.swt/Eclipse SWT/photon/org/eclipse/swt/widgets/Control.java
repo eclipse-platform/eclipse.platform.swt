@@ -1004,7 +1004,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-public boolean isFocusAncestor () {
+boolean isFocusAncestor () {
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
