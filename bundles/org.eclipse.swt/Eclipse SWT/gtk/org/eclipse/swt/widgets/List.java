@@ -1484,7 +1484,7 @@ public void showSelection () {
 	OS.g_free (iter);
 }
 
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int /*long*/length) {
+int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int length) {
 	if (selection != null) { 
 		int /*long*/ indices = OS.gtk_tree_path_get_indices (path);
 		if (indices != 0) {
