@@ -288,6 +288,7 @@ public class OS {
 	public static final int DLGC_STATIC = 0x100;
 	public static final int DLGC_WANTALLKEYS = 0x4;
 	public static final int DLGC_WANTARROWS = 0x1;
+	public static final int DLGC_WANTCHARS = 0x80;
 	public static final int DLGC_WANTTAB = 0x2;
 	public static final int DM_SETDEFID = OS.WM_USER + 1;
 	public static final int DSS_DISABLED = 0x20;
