@@ -119,12 +119,14 @@ private static int checkStyle (int style) {
 	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE;
 	style = style & mask;
 	style |= SWT.NO_FOCUS;
-	// The default background on carbon and some gtk themes is not a solid color 
-	// but a texture.  To show the correct default background, we must
-	// allow the OS to draw it and therefore, we can not use the 
-	// NO_BACKGROUND style.  The NO_BACKGROUND style is not
-	// required on platforms that use double buffering which is true
-	// in both of these cases.
+	//TEMPORARY CODE
+	/*
+	 * The default background on carbon and some GTK themes is not a solid color 
+	 * but a texture.  To show the correct default background, we must allow
+	 * the operating system to draw it and therefore, we can not use the 
+	 * NO_BACKGROUND style.  The NO_BACKGROUND style is not required on platforms
+	 * that use double buffering which is true in both of these cases.
+	 */
 	String platform = SWT.getPlatform();
 	if ("carbon".equals(platform) || "gtk".equals(platform)) return style;
 	return style | SWT.NO_BACKGROUND;
