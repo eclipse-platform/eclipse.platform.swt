@@ -6490,15 +6490,6 @@ void setCaretImage(int direction) {
 	if (caretImage != null) {
 		updateImage = caretImage.equals(leftCaretBitmap) || caretImage.equals(rightCaretBitmap);
 	}
-	
-	//workaround bug#54922 
-	if (updateImage) {
-		if ((leftCaretBitmap != null && leftCaretBitmap.isDisposed()) ||
-			(rightCaretBitmap != null && rightCaretBitmap.isDisposed())) {
-			createCaretBitmaps();
-		}
-	}
-	
 	caretDirection = direction;
 	if (direction == SWT.DEFAULT) {
 		if (updateImage) caret.setImage(null);
@@ -6507,13 +6498,11 @@ void setCaretImage(int direction) {
 	else
 	if (caretDirection == SWT.LEFT) {
 		if (updateImage) caret.setImage(leftCaretBitmap);
-		//TODO API needed
 		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
 	}
 	else
 	if (caretDirection == SWT.RIGHT) {
 		if (updateImage) caret.setImage(rightCaretBitmap);
-		//TODO API needed
 		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 	}
 }
