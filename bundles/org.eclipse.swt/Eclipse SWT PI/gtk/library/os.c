@@ -1487,6 +1487,30 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1keyboard_1ungrab)
 }
 #endif
 
+#ifndef NO_gdk_1keymap_1translate_1keyboard_1state
+JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gdk_1keymap_1translate_1keyboard_1state\n")
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType)lparg7);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "gdk_1keymap_1translate_1keyboard_1state\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1keyval_1to_1unicode
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1keyval_1to_1unicode)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -1100,6 +1100,10 @@ void setKeyState (Event event, GdkEventKey keyEvent) {
 //			case OS.GDK_Scroll_Lock:	event.character = 0x14; break;
 			default: {
 				if (event.keyCode == 0) {
+					int [] keyval = new int [1], effective_group= new int [1], level = new int [1], consumed_modifiers = new int [1];
+					if (OS.gdk_keymap_translate_keyboard_state(0, keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
+						event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
+					}
 					int key = keyEvent.keyval;
 					if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
 						if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
