@@ -32,7 +32,6 @@ public class TextEditor {
 	boolean isBold = false;
 	
 	ExtendedModifyListener extendedModifyListener;
-	VerifyKeyListener verifyKeyListener;
 	static ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");
 
 Menu createEditMenu() {
@@ -41,22 +40,27 @@ Menu createEditMenu() {
 	
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Cut_menuitem"));
+	item.setAccelerator(SWT.MOD1 + 'X');
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
+			handleCutCopy();
 			text.cut();
 		}
 	});
 
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Copy_menuitem"));
+	item.setAccelerator(SWT.MOD1 + 'C');
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
+			handleCutCopy();
 			text.copy();
 		}
 	});
 
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Paste_menuitem"));
+	item.setAccelerator(SWT.MOD1 + 'V');
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			text.paste();
@@ -169,12 +173,6 @@ void createStyledText() {
 		}
 	};
 	text.addExtendedModifyListener(extendedModifyListener);
-	verifyKeyListener = new VerifyKeyListener() {
-		public void verifyKey(VerifyEvent e) {
-			handleVerifyKey(e);
-		}
-	};
-	text.addVerifyKeyListener(verifyKeyListener);
 }
 
 void createToolBar() {
@@ -277,7 +275,8 @@ void handleExtendedModify(ExtendedModifyEvent event) {
 			text.setStyleRange(newStyle);
 		}
 	} else {
-		// paste occurring
+		// paste occurring, have text take on the styles it had when it was
+		// cut/copied
 		for (int i=0; i<cachedStyles.size(); i++) {
 			style = (StyleRange)cachedStyles.elementAt(i);
 			StyleRange newStyle = (StyleRange)style.clone();
@@ -285,18 +284,6 @@ void handleExtendedModify(ExtendedModifyEvent event) {
 			text.setStyleRange(newStyle);
 		}
 	}
-} 
-/*
- * Intercept the cut and copy keys so that during paste we can maintain
- * style information.
- */
-void handleVerifyKey(VerifyEvent event) {
-	int input;
-	if (event.keyCode != 0) input = event.keyCode | event.stateMask;
-	else input = event.character | event.stateMask;
-	if (isCut(input) || isCopy(input)) {
-		handleCutCopy();
-	} 
 }
 
 public static void main (String [] args) {
@@ -336,24 +323,4 @@ void initializeColors() {
 	BLUE = new Color (display, new RGB(0,0,255));
 	GREEN = new Color (display, new RGB(0,255,0));
 }
-boolean isCopy(int input) {
-
-	if (input == (SWT.INSERT | SWT.MOD1)) return true;
-
-	if (input == ('\u0003' | SWT.MOD1)) return true;
-
-	return false;
-
-}
-boolean isCut(int input) {
-
-	if (input == (SWT.DEL | SWT.MOD2)) return true;
-
-	if (input == ('\u0018' | SWT.MOD1)) return true;
-
-	return false;
-
-}
-
-
 }
