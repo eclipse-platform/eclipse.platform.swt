@@ -4031,26 +4031,30 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	GC gc = GC.win32_new (this, data);
 	
 	/* Send the paint event */
-	Event event = new Event ();
-	event.gc = gc;
-	event.x = ps.left;
-	event.y = ps.top;
-	event.width = ps.right - ps.left;
-	event.height = ps.bottom - ps.top;
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the paint
-	* event.  If this happens, attempt to give back the
-	* paint GC anyways because this is a scarce Windows
-	* resource.
-	*/
-	sendEvent (SWT.Paint, event);
-	// widget could be disposed at this point	
-
-	/* Dispose the paint GC	*/
-	event.gc = null;
-	gc.dispose ();
+	int width = ps.right - ps.left;
+	int height = ps.bottom - ps.top;
+	if (width != 0 && height != 0) {
+		Event event = new Event ();
+		event.gc = gc;
+		event.x = ps.left;
+		event.y = ps.top;
+		event.width = width;
+		event.height = height;
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the paint
+		* event.  If this happens, attempt to give back the
+		* paint GC anyways because this is a scarce Windows
+		* resource.
+		*/
+		sendEvent (SWT.Paint, event);
+		// widget could be disposed at this point
+		
+		event.gc = null;
+	}
 	
+	/* Dispose the paint GC	*/
+	gc.dispose ();
 	if (result == 0) return LRESULT.ZERO;
 	return new LRESULT (result);
 }

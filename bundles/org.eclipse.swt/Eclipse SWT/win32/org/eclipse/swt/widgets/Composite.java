@@ -758,54 +758,57 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		GCData data = new GCData ();
 		data.ps = ps;
 		GC gc = GC.win32_new (this, data);
-		int hDC = gc.handle;
 		
 		/* Send the paint event */
-		Event event = new Event ();
-		event.gc = gc;
-		if (isComplex && exposeRegion) {
-			RECT rect = new RECT ();
-			int count = lpRgnData [2];
-			for (int i=0; i<count; i++) {
-				OS.SetRect (rect,
-					lpRgnData [8 + (i << 2)],
-					lpRgnData [8 + (i << 2) + 1],
-					lpRgnData [8 + (i << 2) + 2],
-					lpRgnData [8 + (i << 2) + 3]);
-				if ((style & SWT.NO_BACKGROUND) == 0) {
-					drawBackground (hDC, rect);
-				}
-				event.x = rect.left;
-				event.y = rect.top;
-				event.width = rect.right - rect.left;
-				event.height = rect.bottom - rect.top;
-				event.count = count - 1 - i;
-				/*
-				* It is possible (but unlikely), that application
-				* code could have disposed the widget in the paint
-				* event.  If this happens, attempt to give back the
-				* paint GC anyways because this is a scarce Windows
-				* resource.
-				*/
-				sendEvent (SWT.Paint, event);
-				if (isDisposed ()) break;
-			}
-		} else {
-			if ((style & SWT.NO_BACKGROUND) == 0) {
+		int width = ps.right - ps.left;
+		int height = ps.bottom - ps.top;
+		if (width != 0 && height != 0) {
+			Event event = new Event ();
+			event.gc = gc;
+			if (isComplex && exposeRegion) {
 				RECT rect = new RECT ();
-				OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-				drawBackground (hDC, rect);
+				int count = lpRgnData [2];
+				for (int i=0; i<count; i++) {
+					OS.SetRect (rect,
+						lpRgnData [8 + (i << 2)],
+						lpRgnData [8 + (i << 2) + 1],
+						lpRgnData [8 + (i << 2) + 2],
+						lpRgnData [8 + (i << 2) + 3]);
+					if ((style & SWT.NO_BACKGROUND) == 0) {
+						drawBackground (gc.handle, rect);
+					}
+					event.x = rect.left;
+					event.y = rect.top;
+					event.width = rect.right - rect.left;
+					event.height = rect.bottom - rect.top;
+					event.count = count - 1 - i;
+					/*
+					* It is possible (but unlikely), that application
+					* code could have disposed the widget in the paint
+					* event.  If this happens, attempt to give back the
+					* paint GC anyways because this is a scarce Windows
+					* resource.
+					*/
+					sendEvent (SWT.Paint, event);
+					if (isDisposed ()) break;
+				}
+			} else {
+				if ((style & SWT.NO_BACKGROUND) == 0) {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+					drawBackground (gc.handle, rect);
+				}
+				event.x = ps.left;
+				event.y = ps.top;
+				event.width = width;
+				event.height = height;
+				sendEvent (SWT.Paint, event);
 			}
-			event.x = ps.left;
-			event.y = ps.top;
-			event.width = ps.right - ps.left;
-			event.height = ps.bottom - ps.top;
-			sendEvent (SWT.Paint, event);
+			// widget could be disposed at this point
+			event.gc = null;
 		}
-		// widget could be disposed at this point
-	
+		
 		/* Dispose the paint GC */
-		event.gc = null;
 		gc.dispose ();
 	} else {
 		int hDC = OS.BeginPaint (handle, ps);
