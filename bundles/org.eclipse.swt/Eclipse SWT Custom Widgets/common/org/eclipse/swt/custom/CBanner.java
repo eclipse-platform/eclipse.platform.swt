@@ -330,10 +330,17 @@ void onPaint(GC gc) {
 //	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //	gc.fillRectangle(-10, -10, size.x+20, size.y+20);
 //	}
-	
-	if (left == null || right == null) return;
 	Point size = getSize();
 	
+	if (bottom != null && (left != null || right != null)) {
+		Color border1 = new Color(getDisplay(), BORDER1);
+		gc.setForeground(border1);
+		int y = bottom.getBounds().y - BORDER_BOTTOM - BORDER_STRIPE;
+		gc.drawLine(0, y, size.x, y);
+		border1.dispose();
+	}
+	
+	if (left == null || right == null) return;
 	int[] line1 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
