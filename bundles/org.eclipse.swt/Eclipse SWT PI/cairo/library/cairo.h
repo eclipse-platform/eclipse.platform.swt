@@ -1,18 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
- * The contents of this file are made available under the terms
- * of the GNU Lesser General Public License (LGPL) Version 2.1 that
- * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
- * available at http://www.gnu.org/licenses/lgpl.html.  If the version
- * of the LGPL at http://www.gnu.org is different to the version of
- * the LGPL accompanying this distribution and there is any conflict
- * between the two license versions, the terms of the LGPL accompanying
- * this distribution shall govern.
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-  
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * Contributor(s):
+ *
+ * IBM
+ * -  Binding to permit interfacing between Cairo and SWT
+ * -  Copyright (C) 2005 IBM Corp.  All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 #ifndef INC_cairo_H
 #define INC_cairo_H
 
