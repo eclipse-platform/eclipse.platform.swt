@@ -113,30 +113,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count != 0) {
 		ignoreResize = true;
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-		if (redraw) {
-			OS.UpdateWindow (handle);	
-			if (COMCTL32_MAJOR < 6) {
-				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-			} else if (drawCount > 0) {
+		boolean redraw = false;
+		if (OS.IsWindowVisible (handle)) {
+			if (COMCTL32_MAJOR >= 6) {
+				redraw = true;
+				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			}	
-		} else {
-			/*
-			* Feature in Windows.  In version 6.00 of COMCTL32.DLL,
-			* the rebar control uses WM_SETREDRAW as a flag to stop
-			* layout of the items.  This is a problem because we rely
-			* on the rebar to position the items to the determine the
-			* preferred height.  The fix is to temporarily turn redraw
-			* back on using WM_SETREDRAW so the control will layuout,
-			* then turn it off using the DefaultWindowProc () so that
-			* nothing will draw and then turn it back on.
-			*/
-			if (drawCount > 0 && COMCTL32_MAJOR >= 6) {	
-				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			} else {
+				redraw = drawCount == 0;
+				if (redraw) {
+					OS.UpdateWindow (handle);
+					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+				}
 			}
-		}
+		}	
 		RECT oldRect = new RECT ();
 		OS.GetWindowRect (handle, oldRect);
 		int oldWidth = oldRect.right - oldRect.left;
@@ -162,17 +152,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		width = Math.max(width, rowWidth);
 		if (redraw) {
-			if (COMCTL32_MAJOR < 6) {
+			if (COMCTL32_MAJOR >= 6) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			} else {
 				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			} else if (drawCount > 0) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-			}	
-			OS.ValidateRect (handle, null);			
-		} else {
-			/* Feature in Windows.  Turn redraw back on. */
-			if (drawCount > 0 && COMCTL32_MAJOR >= 6) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 		}
 		ignoreResize = false;
@@ -950,14 +933,21 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	* that the rebar will redraw and children of the rebar will
 	* also redraw.  The fix is to call both the rebar window proc
 	* and the default window proc.
-	* 
+	*
 	* NOTE: The rebar control can resize itself in WM_SETREDRAW.
 	* When redraw is turned off by the default window proc, this
 	* can leave pixel corruption in the parent.  The fix is to
 	* detect the size change and damage the previous area in the
 	* parent.
+	* 
+	* NOTE:  In version 6.00 of COMCTL32.DLL, when WM_SETREDRAW
+	* is off, we cannot detect that the size has changed causing
+	* pixel corruption.  The fix is to disallow WM_SETREDRAW by
+	* by not running the default window proc or the rebar window
+	* proc.
 	*/
-	Rectangle rect = getBounds ();
+	if (COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
+	Rectangle rect = getBounds ();		
 	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (!rect.equals (getBounds ())) {
