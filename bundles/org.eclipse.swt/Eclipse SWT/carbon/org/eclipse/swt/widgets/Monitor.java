@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * @since 2.2
  */
 public final class Monitor {
-	int id;
+	int handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
 	
@@ -33,8 +33,8 @@ Monitor () {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Monitor)) return false;
-	Monitor monitor = (Monitor)object;
-	return id == monitor.id;
+	Monitor monitor = (Monitor) object;
+	return handle == monitor.handle;
 }
 
 /**
@@ -58,8 +58,7 @@ public Rectangle getClientArea () {
 }
 	
 public int hashCode () {
-	return id;
+	return handle;
 }
 
 }
-
