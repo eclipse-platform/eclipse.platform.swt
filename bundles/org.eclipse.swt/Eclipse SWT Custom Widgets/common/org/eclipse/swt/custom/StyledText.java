@@ -6963,6 +6963,20 @@ public void setContent(StyledTextContent newContent) {
 	content.addTextChangeListener(textChangeListener);
 	reset();
 }
+/**
+ * Sets the receiver's cursor to the cursor specified by the
+ * argument.  Overridden to handle the null case since the 
+ * StyledText widget uses an ibeam as its default cursor.
+ *
+ * @see org.eclipse.swt.widgets.Control#setCursor
+ */
+public void setCursor (Cursor cursor) {
+	if (cursor == null) {
+		super.setCursor(ibeamCursor);
+	} else {
+		super.setCursor(cursor);
+	}
+}
 /** 
  * Sets whether the widget implements double click mouse behavior.
  * </p>
