@@ -510,10 +510,10 @@ public void setMinimized (boolean minimized) {
  * window manager will typically display as the receiver's
  * <em>title</em>, to the argument, which may not be null. 
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -470,7 +470,7 @@ void onSelection(Event e) {
  * @return the item at the given point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -606,10 +606,12 @@ void removeItem(TableTreeItem item) {
  *
  * @param listener the listener
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- * 	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when listener is null
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void removeSelectionListener (SelectionListener listener) {
