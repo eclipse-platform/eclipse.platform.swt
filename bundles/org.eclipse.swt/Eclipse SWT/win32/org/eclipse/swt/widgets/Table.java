@@ -191,7 +191,12 @@ void createHandle () {
 //	OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, 1024 * 2, 0);
 
 	/* Set the checkbox image list */
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
+	if ((style & SWT.CHECK) != 0) {
+		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+		int width = (oneItem >> 16) - (empty >> 16), height = width;
+		setCheckboxImageList (width, height);
+	}
 
 	/*
 	* Feature in Windows.  When the control is created,
@@ -533,6 +538,26 @@ void destroyItem (TableItem item) {
 		customDraw = false;
 		items = new TableItem [4];
 	}
+}
+
+void fixCheckboxImageList () {
+	/*
+	* Bug in Windows.  When the state image list is larger than the
+	* image list, Windows incorrectly positions the state images.  When
+	* the table is scrolled, Windows draws garbage.  The fix is to force
+	* the state image list to be the same size as the image list.
+	*/
+	if ((style & SWT.CHECK) == 0) return;
+	int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (hImageList == 0) return;
+	int [] cx = new int [1], cy = new int [1];
+	OS.ImageList_GetIconSize (hImageList, cx, cy);
+	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (hOldStateList == 0) return;
+	int [] stateCx = new int [1], stateCy = new int [1];
+	OS.ImageList_GetIconSize (hOldStateList, stateCx, stateCy);
+	if (cx [0] == stateCx [0] && cy [0] == stateCy [0]) return;
+	setCheckboxImageList (cx [0], cy [0]);
 }
 
 int getBackgroundPixel () {
@@ -1521,7 +1546,7 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
+	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
 	
 	/*
 	* Feature in Windows.  When the background color is
@@ -1531,25 +1556,17 @@ void setBackgroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-void setCheckboxImageList (boolean force) {
+void setCheckboxImageListColor () {
 	if ((style & SWT.CHECK) == 0) return;
-	int height = 0, width = 0;
-	int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-	if (hImageList != 0) {
-		int [] cx = new int [1], cy = new int [1];
-		OS.ImageList_GetIconSize (hImageList, cx, cy);
-		height = width = cy [0];
-	} else {
-		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
-		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-		height = width = (oneItem >> 16) - (empty >> 16);
-	}
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (!force && hOldStateList != 0) {
-		int [] cx = new int [1], cy = new int [1];
-		OS.ImageList_GetIconSize (hOldStateList, cx, cy);
-		if (height == cx [0] && width == cy [0]) return;
-	}
+	if (hOldStateList == 0) return;
+	int [] cx = new int [1], cy = new int [1];
+	OS.ImageList_GetIconSize (hOldStateList, cx, cy);
+	setCheckboxImageList (cx [0], cy [0]);
+}
+
+void setCheckboxImageList (int width, int height) {
+	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
 	int hStateList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
 	int hDC = OS.GetDC (handle);
@@ -1581,6 +1598,7 @@ void setCheckboxImageList (boolean force) {
 	OS.ReleaseDC (handle, hDC);
 	OS.ImageList_AddMasked (hStateList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
+	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
@@ -2341,7 +2359,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
+	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
 	return result;
 }
 

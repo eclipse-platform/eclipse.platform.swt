@@ -604,7 +604,7 @@ public void setImage (int index, Image image) {
 	lvItem.iImage = parent.imageIndex (image);
 	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
 		if (index == 0) parent.setScrollWidth ();
-		parent.setCheckboxImageList (false);
+		parent.fixCheckboxImageList ();
 	}
 }
 
