@@ -2082,11 +2082,14 @@ void setCheckboxImageListColor () {
 void setCheckboxImageList (int width, int height) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
-	int hStateList = OS.ImageList_Create (width, height, ImageList.CREATE_FLAGS, count, count);
-	int hDC = OS.GetDC (handle);
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-		OS.SetLayout (hDC, 0);
+	int flags = ImageList.CREATE_FLAGS;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+			flags |= OS.ILC_MIRROR;
+		}
 	}
+	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
+	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
@@ -2125,10 +2128,10 @@ void setCheckboxImageList (int width, int height) {
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_Add (hStateList, hBitmap, 0);
+	OS.ImageList_Add (hImageList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
