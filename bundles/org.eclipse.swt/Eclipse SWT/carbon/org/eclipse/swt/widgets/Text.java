@@ -1103,9 +1103,6 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
-	if ((event.stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL | SWT.COMMAND)) != 0) {
-		return true;
-	}
 	String oldText = "";
 	int charCount = getCharCount ();
 	Point selection = getSelection ();
