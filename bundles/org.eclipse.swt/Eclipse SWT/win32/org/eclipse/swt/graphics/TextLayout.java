@@ -115,6 +115,8 @@ public final class TextLayout {
 			OS.DeleteObject(fallbackFont);
 			fallbackFont = 0;
 		}
+		analysis = null;
+		style = null;
 		width = ascent = descent = 0;
 		lineBreak = softBreak = false;		
 	}
