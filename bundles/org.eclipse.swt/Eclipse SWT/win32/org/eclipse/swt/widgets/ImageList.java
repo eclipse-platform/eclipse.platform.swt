@@ -93,9 +93,13 @@ public int add (Image image) {
 			break;
 		}
 		case SWT.ICON: {
-			int hIcon = copyIcon (hImage, cx [0], cy [0]);
-			OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
-			OS.DestroyIcon (hIcon);
+			if (OS.IsWinCE) {	
+				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hImage);
+			} else {
+				int hIcon = copyIcon (hImage, cx [0], cy [0]);
+				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
+				OS.DestroyIcon (hIcon);
+			}
 			break;
 		}
 	}
@@ -195,7 +199,7 @@ public void put (int index, Image image) {
 		OS.ImageList_GetIconSize (handle, cx, cy);
 		int hImage = image.handle;
 		switch (image.type) {
-			case SWT.BITMAP:
+			case SWT.BITMAP: {
 				int background = -1;
 				Color color = image.getBackground ();
 				if (color != null) background = color.handle;
@@ -205,11 +209,17 @@ public void put (int index, Image image) {
 				OS.DeleteObject (hBitmap);
 				OS.DeleteObject (hMask);
 				break;
-			case SWT.ICON:
-				int hIcon = copyIcon (hImage, cx [0], cy [0]);
-				OS.ImageList_ReplaceIcon (handle, index, hIcon);
-				OS.DestroyIcon (hIcon);
+			}
+			case SWT.ICON: {
+				if (OS.IsWinCE) {
+					OS.ImageList_ReplaceIcon (handle, index, hImage);
+				} else {
+					int hIcon = copyIcon (hImage, cx [0], cy [0]);
+					OS.ImageList_ReplaceIcon (handle, index, hIcon);
+					OS.DestroyIcon (hIcon);
+				}
 				break;
+			}
 		}
 	}
 	images [index] = image;
