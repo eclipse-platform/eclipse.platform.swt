@@ -106,6 +106,11 @@ class MenuTab extends Tab {
 		/* Set the size, title and open the shell. */
 		shell.setSize (300, 100);
 		shell.setText (ControlExample.getResourceString("Title") + shellCount);
+		shell.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				e.gc.drawString(ControlExample.getResourceString("PopupMenuHere"), 20, 20);
+			}
+		});
 		shell.open ();
 		shellCount++;
 	}
