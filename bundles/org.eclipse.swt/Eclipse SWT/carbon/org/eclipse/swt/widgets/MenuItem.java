@@ -712,7 +712,18 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	}
 	
 	int key= accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT);
-	int macKey= Display.untranslateKey(key);
+	int macKey= 0;
+	switch (key) {
+	case ' ':
+		macKey= 49;
+		break;
+	case SWT.CR:
+		macKey= 36;
+		break;
+	default:
+		macKey= Display.untranslateKey(key);
+		break;
+	}
 
 	// use SetMenuItemData instead!
 
@@ -738,7 +749,7 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 		// but we have to remove it here...
 		modifiers |= OS.kMenuNoCommandModifier;
 	}
-				
+	
 	if ((accelerator & SWT.ALT) != 0) {
 		modifiers |= OS.kMenuOptionModifier;
 		// force 'Alt' to have a 'Command' (by removing the NoCommand :-)
