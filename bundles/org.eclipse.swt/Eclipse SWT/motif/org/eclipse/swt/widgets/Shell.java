@@ -402,7 +402,7 @@ void adjustTrim () {
 	
 	/* Query the trim-adjusted position of the inner window */
 	short [] inner_x = new short [1], inner_y = new short [1];
-	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, inner_x, inner_y);
+	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, inner_x, inner_y);
 
 	/* Calculate the trim */
 	int width = (trimWidth [0] + (trimBorder [0] * 2)) - (shellWidth [0] + (shellBorder [0] * 2));
@@ -494,9 +494,23 @@ void closeWidget () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
-	int trimWidth = trimWidth (), trimHeight = trimHeight ();
-	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
-	trim.width += trimWidth; trim.height += trimHeight + imeHeight ();
+	/*
+	* Feature in Motif.  There is no way to get the single pixel border
+	* surrounding a TopLevelShell or a TransientShell. Attempts to set a
+	* border on either the shell handle or the main window handle fail.
+	* The fix is to set the border on the client area.  Therefore, the
+	* border must be added back into the trim.
+	*/
+	int border = 0;
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		int [] argList = {OS.XmNborderWidth, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		border = argList [1];
+	}
+	trim.x -= trimLeft ();
+	trim.y -= trimTop ();
+	trim.width += trimWidth () + (border * 2);
+	trim.height += trimHeight () + imeHeight () + (border * 2);
 	return trim;
 }
 void createHandle (int index) {
@@ -567,7 +581,7 @@ void createHandle (int index) {
 	/*
 	* Feature in Motif.  There is no way to get the single pixel
 	* border surrounding a TopLevelShell or a TransientShell.
-	* Also, attempts to set a border on either the shell handle
+	* Attempts to set a border on either the shell handle
 	* or the main window handle fail.  The fix is to set the border
 	* on the client area.
 	*/
@@ -698,13 +712,13 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
 	if (reparented) {
-		root_x [0] -= trimLeftInset ();
-		root_y [0] -= trimTopInset ();
+		root_x [0] -= trimLeft ();
+		root_y [0] -= trimTop ();
 	}
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	int border = argList [5];
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int width = argList [1] + trimWidth + (border * 2);
@@ -739,10 +753,10 @@ public int getImeInputMode () {
 public Point getLocation () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
 	if (reparented) {
-		root_x [0] -= trimLeftInset ();
-		root_y [0] -= trimTopInset ();
+		root_x [0] -= trimLeft ();
+		root_y [0] -= trimTop ();
 	}
 	return new Point (root_x [0], root_y [0]);
 }
@@ -788,7 +802,7 @@ public Shell [] getShells () {
 public Point getSize () {
 	checkWidget();
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	int border = argList [5];
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int width = argList [1] + trimWidth + (border * 2);
@@ -826,7 +840,6 @@ void hookEvents () {
 }
 int imeHeight () {
 	if (!OS.IsDBLocale) return 0;
-//	realizeWidget ();
 	int [] argList1 = {OS.XmNheight, 0};
 	OS.XtGetValues (shellHandle, argList1, argList1.length / 2);
 	int [] argList2 = {OS.XmNheight, 0};
@@ -895,9 +908,9 @@ int processResize (int callData) {
 			if (reparented) return 0;
 			reparented = true;
 			short [] root_x = new short [1], root_y = new short [1];
-			OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+			OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
 			int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-			OS.XtGetValues (scrolledHandle, argList, argList.length / 2);	
+			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
 			xEvent.x = root_x [0];  xEvent.y = root_y [0];
 			xEvent.width = argList [1];  xEvent.height = argList [3];
 			// FALL THROUGH
@@ -1023,16 +1036,13 @@ public void removeShellListener(ShellListener listener) {
 }
 void saveBounds () {
 	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
-	if (reparented) {
-		root_x [0] -= trimLeftInset ();
-		root_y [0] -= trimTopInset ();
-	}
+	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-	int trimWidth = trimWidth (), trimHeight = trimHeight ();
-	oldX = root_x [0] - trimWidth; oldY = root_y [0] - trimHeight;
-	oldWidth = argList [1];  oldHeight = argList [3];
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
+	oldX = root_x [0];
+	oldY = root_y [0];
+	oldWidth = argList [1];
+	oldHeight = argList [3];
 }
 
 /**
@@ -1133,6 +1143,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (!reparented || !OS.XtIsRealized (shellHandle)) {
 		return super.setBounds (x, y, width, height, move, resize);
 	}
+	if (move) {
+		x += trimLeft ();
+		y += trimTop ();
+	}		
 	if (!configured) saveBounds ();
 	configured = true;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -1267,21 +1281,6 @@ boolean traverseEscape () {
 	close ();
 	return true;
 }
-int trimLeftInset () {
-	if ((style & SWT.NO_TRIM) != 0) return 0;
-	boolean hasTitle = false, hasResize = false, hasBorder = false;
-	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
-	hasResize = (style & SWT.RESIZE) != 0;
-	hasBorder = (style & SWT.BORDER) != 0;
-	if (hasTitle) {
-		if (hasResize) return display.leftTitleResizeWidth;
-		if (hasBorder) return display.leftTitleBorderWidth;
-		return display.leftTitleWidth;
-	}
-	if (hasResize) return display.leftResizeWidth;
-	if (hasBorder) return display.leftBorderWidth;
-	return 0;
-}
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
@@ -1305,7 +1304,22 @@ int trimHeight () {
 	}
 	return 0;
 }
-int trimTopInset () {
+int trimLeft () {
+	if ((style & SWT.NO_TRIM) != 0) return 0;
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+	hasResize = (style & SWT.RESIZE) != 0;
+	hasBorder = (style & SWT.BORDER) != 0;
+	if (hasTitle) {
+		if (hasResize) return display.leftTitleResizeWidth;
+		if (hasBorder) return display.leftTitleBorderWidth;
+		return display.leftTitleWidth;
+	}
+	if (hasResize) return display.leftResizeWidth;
+	if (hasBorder) return display.leftBorderWidth;
+	return 0;
+}
+int trimTop () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
