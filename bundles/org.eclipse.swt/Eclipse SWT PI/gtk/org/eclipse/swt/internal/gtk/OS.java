@@ -716,6 +716,7 @@ public static final native int gtk_tree_view_new_with_model(int model);
 public static final native void gtk_tree_view_remove_column(int tree_view, int column);
 public static final native boolean gtk_tree_view_row_expanded(int view, int path);
 public static final native void gtk_tree_view_scroll_to_cell(int tree_view, int path, int column, boolean use_align, float row_aligh, float column_align);
+public static final native void gtk_tree_view_set_cursor(int tree_view, int path, int focus_column, boolean start_editing); 
 public static final native void gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final native void gtk_tree_view_set_model(int tree_view, int model);
 public static final native int gtk_vbox_new(boolean homogeneous, int spacing);

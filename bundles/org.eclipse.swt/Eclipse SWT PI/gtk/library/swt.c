@@ -5028,6 +5028,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1scr
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1set_1cursor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set_1cursor
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	DEBUG_CALL("gtk_1tree_1view_1set_1cursor\n")
+
+	gtk_tree_view_set_cursor((GtkTreeView *)arg0, (GtkTreePath *)arg1, (GtkTreeViewColumn *)arg2, (gboolean)arg3);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1set_1headers_1visible
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set_1headers_1visible
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
