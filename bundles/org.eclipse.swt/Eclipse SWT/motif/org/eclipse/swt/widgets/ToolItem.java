@@ -30,6 +30,10 @@ public /*final*/ class ToolItem extends Item {
 	String toolTipText;
 	Control control;
 	boolean set;
+	
+	static final int DEFAULT_WIDTH = 24;
+	static final int DEFAULT_HEIGHT = 22;
+	static final int DEFAULT_SEPARATOR_WIDTH = 8;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -148,25 +152,22 @@ void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.handle;
 	if ((style & SWT.SEPARATOR) != 0) {
-		int separatorOrientation =
-			(parent.style & SWT.HORIZONTAL) != 0 ? OS.XmVERTICAL : OS.XmHORIZONTAL;
+		int orientation = (parent.style & SWT.HORIZONTAL) != 0 ? OS.XmVERTICAL : OS.XmHORIZONTAL;
 		int [] argList = {
-			OS.XmNheight, separatorOrientation == OS.XmVERTICAL ? 22 : 2,
-			OS.XmNwidth, separatorOrientation == OS.XmHORIZONTAL ? 24 : 2,
+			OS.XmNheight, orientation == OS.XmVERTICAL ? DEFAULT_HEIGHT : DEFAULT_SEPARATOR_WIDTH,
+			OS.XmNwidth, orientation == OS.XmHORIZONTAL ? DEFAULT_WIDTH : DEFAULT_SEPARATOR_WIDTH,
 			OS.XmNancestorSensitive, 1,
-			OS.XmNborderWidth, 0,
-			OS.XmNorientation, separatorOrientation,
-			OS.XmNrecomputeSize, 0,
-			OS.XmNhighlightThickness, 0,
-			OS.XmNseparatorType, (parent.getStyle() & SWT.FLAT) != 0 ? OS.XmSHADOW_ETCHED_IN : OS.XmSHADOW_ETCHED_OUT,
+			OS.XmNpositionIndex, index,			
+			OS.XmNorientation, orientation,
+			OS.XmNseparatorType, (parent.style & SWT.FLAT) != 0 ? OS.XmSHADOW_ETCHED_IN : OS.XmSHADOW_ETCHED_OUT,
 		};
 		handle = OS.XmCreateSeparator (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
 	int [] argList = {
-		OS.XmNwidth, 24,
-		OS.XmNheight, 22,
+		OS.XmNwidth, DEFAULT_WIDTH,
+		OS.XmNheight, DEFAULT_HEIGHT,
 		OS.XmNrecomputeSize, 0,
 		OS.XmNhighlightThickness, 0,
 		OS.XmNmarginWidth, 2,
@@ -232,16 +233,15 @@ Point computeSize () {
 	}
 	if ((style & SWT.DROP_DOWN) != 0) width += 12;
 	
-	/* The 24 and 22 values come from Windows */
 	if (width != 0) {
 		width += (marginWidth + shadowThickness) * 2 + 2;
 	} else {
-		width = 24;
+		width = DEFAULT_WIDTH;
 	}
 	if (height != 0) {
 		height += (marginHeight + shadowThickness) * 2 + 2;
 	} else {
-		height = 22;
+		height = DEFAULT_HEIGHT;
 	}
 	return new Point (width, height);
 }
