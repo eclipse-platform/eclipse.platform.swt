@@ -1912,59 +1912,10 @@ public void setFont (Font font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
-	int hStyle = OS.gtk_widget_get_style (handle);
-	hStyle = OS.gtk_style_copy (hStyle);	
-	GtkStyle style = new GtkStyle (hStyle);
-	if (color == null) {
-		int hDefaultStyle = OS.gtk_widget_get_default_style ();
-		GtkStyle defaultStyle = new GtkStyle (hDefaultStyle);
-		style.fg0_pixel = defaultStyle.fg0_pixel;
-		style.fg0_red = defaultStyle.fg0_red;
-		style.fg0_green = defaultStyle.fg0_green;
-		style.fg0_blue = defaultStyle.fg0_blue;
-		style.fg1_pixel = defaultStyle.fg1_pixel;
-		style.fg1_red = defaultStyle.fg1_red;
-		style.fg1_green = defaultStyle.fg1_green;
-		style.fg1_blue = defaultStyle.fg1_blue;
-		style.fg2_pixel = defaultStyle.fg2_pixel;
-		style.fg2_red = defaultStyle.fg2_red;
-		style.fg2_green = defaultStyle.fg2_green;
-		style.fg2_blue = defaultStyle.fg2_blue;
-		style.fg3_pixel = defaultStyle.fg3_pixel;
-		style.fg3_red = defaultStyle.fg3_red;
-		style.fg3_green = defaultStyle.fg3_green;
-		style.fg3_blue = defaultStyle.fg3_blue;
-		style.fg4_pixel = defaultStyle.fg4_pixel;
-		style.fg4_red = defaultStyle.fg4_red;
-		style.fg4_green = defaultStyle.fg4_green;
-		style.fg4_blue = defaultStyle.fg4_blue;
-	} else {
-		style.fg0_pixel = color.handle.pixel;
-		style.fg0_red = color.handle.red;
-		style.fg0_green = color.handle.green;
-		style.fg0_blue = color.handle.blue;
-		style.fg1_pixel = color.handle.pixel;
-		style.fg1_red = color.handle.red;
-		style.fg1_green = color.handle.green;
-		style.fg1_blue = color.handle.blue;
-		style.fg2_pixel = color.handle.pixel;
-		style.fg2_red = color.handle.red;
-		style.fg2_green = color.handle.green;
-		style.fg2_blue = color.handle.blue;
-		style.fg3_pixel = color.handle.pixel;
-		style.fg3_red = color.handle.red;
-		style.fg3_green = color.handle.green;
-		style.fg3_blue = color.handle.blue;
-		style.fg4_pixel = color.handle.pixel;
-		style.fg4_red = color.handle.red;
-		style.fg4_green = color.handle.green;
-		style.fg4_blue = color.handle.blue;
-	}
-	/* FIXME */
-	/* I believe there is now something like set_color? */
-	/*OS.memmove (hStyle, style, GtkStyle.sizeof);
-	OS.gtk_widget_set_style (handle, hStyle);*/
-}
+	//TEMPORARY CODE - should fix setBackground()/setForeground() everywhere
+	//NULL CHECK
+	if (color == null) return;
+	OS.gtk_widget_modify_fg (handle, 0, color.handle);}
 
 void setInitialSize () {
 	resizeHandle (1, 1);

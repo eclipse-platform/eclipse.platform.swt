@@ -256,8 +256,7 @@ public class OS {
 	public static final int GTK_VISIBILITY_PARTIAL = 1;
 	public static final int GTK_VISIBILITY_FULL = 2;
 	public static final int GTK_WINDOW_TOPLEVEL = 0;
-	public static final int GTK_WINDOW_DIALOG = 1;
-	public static final int GTK_WINDOW_POPUP = 2;
+	public static final int GTK_WINDOW_POPUP = 1;
 	public static final int GTK_ACCEL_VISIBLE = 1 << 0;
 	public static final int GTK_NO_WINDOW = 1 << 5;
 	public static final int GTK_MAPPED = 1 << 7;
@@ -923,6 +922,7 @@ public static final native void gtk_fixed_move(int fixed, int widget, int x, int
 public static final native void gtk_fixed_set_has_window(int fixed, boolean has_window);
 public static final native void gtk_scrolled_window_add_with_viewport (int scrolled_window, int child);
 public static final native void gtk_widget_modify_bg (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_fg (int widget, int state, GdkColor color);
 public static final native void GTK_BIN_SET_CHILD (int bin, int child);
 public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final native void gtk_widget_queue_resize(int widget);
