@@ -326,8 +326,7 @@ void resizeBounds (int width, int height) {
 		}
 		OS.PtWidgetPreferredSize (menuHandle, dim);
 		menuHeight = dim.h;
-		int [] args = {OS.Pt_ARG_HEIGHT, menuHeight, 0};
-		OS.PtSetResources (menuHandle, args.length / 3, args);
+		OS.PtSetResource (menuHandle, OS.Pt_ARG_HEIGHT, menuHeight, 0);
 		height = height - menuHeight;
 	}
 	PhArea_t area = new PhArea_t ();
@@ -336,8 +335,7 @@ void resizeBounds (int width, int height) {
 	area.size_h = (short) Math.max (height ,0);
 	int ptr = OS.malloc (PhArea_t.sizeof);
 	OS.memmove (ptr, area, PhArea_t.sizeof);
-	int [] args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
-	OS.PtSetResources (scrolledHandle, args.length / 3, args);
+	OS.PtSetResource (scrolledHandle, OS.Pt_ARG_AREA, ptr, 0);
 	OS.free (ptr);
 	resizeClientArea (width, height);
 }

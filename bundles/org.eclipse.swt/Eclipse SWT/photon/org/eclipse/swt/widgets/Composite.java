@@ -181,11 +181,9 @@ public boolean forceFocus () {
 	* is not set. This does not happen when the widget is a
 	* PtContainer. The fix is to set the flag before calling it.
 	*/
-	int [] args = {OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS);
 	boolean result = super.forceFocus ();
-	args [1] = 0;
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS);
 	return result;
 }
 
@@ -617,8 +615,7 @@ void resizeClientArea (int width, int height) {
 	pt.y = (short) clientHeight;
 	int ptr = OS.malloc (PhPoint_t.sizeof);
 	OS.memmove (ptr, pt, PhPoint_t.sizeof);
-	args = new int [] {OS.Pt_ARG_POS, ptr, 0};
-	OS.PtSetResources (OS.PtWidgetChildBack (scrolledHandle), args.length / 3, args);
+	OS.PtSetResource (OS.PtWidgetChildBack (scrolledHandle), OS.Pt_ARG_POS, ptr, 0);
 	OS.free (ptr);
 }
 

@@ -1686,8 +1686,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		area.size_h = (short) height;
 		int ptr = OS.malloc (PhArea_t.sizeof);
 		OS.memmove (ptr, area, PhArea_t.sizeof);
-		int [] args = {OS.Pt_ARG_AREA, ptr, 0};
-		OS.PtSetResources (topHandle, args.length / 3, args);
+		OS.PtSetResource (topHandle, OS.Pt_ARG_AREA, ptr, 0);
 		OS.free (ptr);
 	} else {
 		if (move) {
@@ -1697,8 +1696,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			pt.y = (short) y;
 			int ptr = OS.malloc (PhPoint_t.sizeof);
 			OS.memmove (ptr, pt, PhPoint_t.sizeof);
-			int [] args = {OS.Pt_ARG_POS, ptr, 0};
-			OS.PtSetResources (topHandle, args.length / 3, args);
+			OS.PtSetResource (topHandle, OS.Pt_ARG_POS, ptr, 0);
 			OS.free (ptr);
 		} else if (resize) {
 			if (sameExtent) return false;
@@ -1824,8 +1822,7 @@ public void setCursor (Cursor cursor) {
 	*/
 	if (type == OS.Ph_CURSOR_BITMAP) {
 		type &= ~OS.Ph_CURSOR_NO_INHERIT;
-		args = new int []{OS.Pt_ARG_CURSOR_TYPE, type, 0};
-		OS.PtSetResources (handle, args.length / 3, args);
+		OS.PtSetResource (handle, OS.Pt_ARG_CURSOR_TYPE, type, 0);
 	}
 }
 
@@ -1846,8 +1843,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	int [] args = {OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 
 /**
@@ -1932,8 +1928,7 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
-	int [] args = {OS.Pt_ARG_FILL_COLOR, pixel, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FILL_COLOR, pixel, 0);
 }
 
 /**
@@ -1995,8 +1990,7 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
-	int [] args = {OS.Pt_ARG_COLOR, pixel, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_COLOR, pixel, 0);
 }
 
 /**
@@ -2077,10 +2071,7 @@ public void setMenu (Menu menu) {
 		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		flags = OS.Pt_MENUABLE;
 	}
-	int [] args = {
-		OS.Pt_ARG_FLAGS, flags, OS.Pt_ALL_BUTTONS | OS.Pt_MENUABLE,
-	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_ALL_BUTTONS | OS.Pt_MENUABLE);
 	this.menu = menu;
 }
 
@@ -2210,10 +2201,7 @@ public void setSize (int width, int height) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
-	int [] args = {
-		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
-	};
-	OS.PtSetResources (topHandle, args.length / 3, args);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
 	if (visible) {
 		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (topHandle);

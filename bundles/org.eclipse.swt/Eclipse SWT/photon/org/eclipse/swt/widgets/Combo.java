@@ -897,8 +897,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (index < 0) return;
-	int [] args = new int [] {OS.Pt_ARG_CBOX_SELECTION_ITEM, index + 1, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_CBOX_SELECTION_ITEM, index + 1, 0);
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -971,8 +970,7 @@ public void setItems (String [] items) {
 	for (int i=0; i<itemsPtr.length; i++) {
 		OS.free (itemsPtr [i]);
 	}
-	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
 }
 
 /**
@@ -1025,16 +1023,14 @@ public void setText (String string) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.PtListItemPos(handle, buffer);
 		if (index > 0) {
-			int [] args = new int [] {OS.Pt_ARG_CBOX_SELECTION_ITEM, index, 0};
-			OS.PtSetResources (handle, args.length / 3, args);
+			OS.PtSetResource (handle, OS.Pt_ARG_CBOX_SELECTION_ITEM, index, 0);
 //			sendEvent (SWT.Modify);
 		}
 		return;
 	}
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int [] args = {OS.Pt_ARG_TEXT_STRING, ptr, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, ptr, 0);
 	OS.free (ptr);
 }
 
@@ -1055,8 +1051,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, limit, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_MAX_LENGTH, limit, 0);
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {

@@ -497,17 +497,16 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int [] args = {OS.Pt_ARG_HORIZONTAL_ALIGNMENT, OS.Pt_LEFT, 0};
-	if ((style & SWT.CENTER) != 0) args [1] = OS.Pt_CENTER;
-	if ((style & SWT.RIGHT) != 0) args [1] = OS.Pt_RIGHT;
-	OS.PtSetResources (handle, args.length / 3, args);
+	int align = OS.Pt_LEFT;
+	if ((style & SWT.CENTER) != 0) align = OS.Pt_CENTER;
+	if ((style & SWT.RIGHT) != 0) align = OS.Pt_RIGHT;
+	OS.PtSetResource (handle, OS.Pt_ARG_HORIZONTAL_ALIGNMENT, align, 0);
 }
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (getShell ().parent == null) return;
-	int [] args = {OS.Pt_ARG_BEVEL_CONTRAST, value ? 100 : 20, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_BEVEL_CONTRAST, value ? 100 : 20, 0);
 }
 
 /**
@@ -529,8 +528,7 @@ void setDefault (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET);
 }
 
 /**
