@@ -392,12 +392,8 @@ private void createDragTypes(Composite parent) {
 		}
 	});
 	
-	Composite c = new Composite(parent, SWT.NONE);
-	c.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	GridLayout layout = new GridLayout(3, false);
-	layout.marginHeight = layout.marginWidth = 0;
-	c.setLayout(layout);
-	b = new Button(c, SWT.CHECK);
+	
+	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
 	b.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 	b.addSelectionListener(new SelectionAdapter() {
@@ -410,7 +406,7 @@ private void createDragTypes(Composite parent) {
 			}
 		}
 	});
-	b = new Button(c, SWT.PUSH);
+	b = new Button(parent, SWT.PUSH);
 	b.setText("Select File(s)");
 	b.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 	b.addSelectionListener(new SelectionAdapter() {
@@ -428,7 +424,7 @@ private void createDragTypes(Composite parent) {
 			}
 		}
 	});
-	fileList = new List(c, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	fileList = new List(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	GridData data = new GridData();
 	data.grabExcessHorizontalSpace = true;
 	data.horizontalAlignment = GridData.FILL;
@@ -483,13 +479,13 @@ private void createDragWidget(Composite parent) {
 	dragControl.setLayoutData(data);
 	
 	data = new FormData();
-	data.bottom = new FormAttachment(b, -10);
+	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(0, 10);
 	combo.setLayoutData(data);
 	
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
-	data.left = new FormAttachment(0, 10);
+	data.left = new FormAttachment(combo, 10);
 	b.setLayoutData(data);
 }
 
@@ -659,6 +655,7 @@ private void createDropTarget() {
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = dropDefaultOperation;
 			}
+			event.feedback = dropFeedback;
 		}
 		public void dragLeave(DropTargetEvent event) {
 			dropConsole.append(">>dragLeave\n");
@@ -670,11 +667,12 @@ private void createDropTarget() {
 			if (event.detail == DND.DROP_DEFAULT) {
 				event.detail = dropDefaultOperation;
 			}
+			event.feedback = dropFeedback;
 		}
 		public void dragOver(DropTargetEvent event) {
 			dropConsole.append(">>dragOver\n");
-			event.feedback = dropFeedback;
 			printEvent(event);
+			event.feedback = dropFeedback;
 		}
 		public void drop(DropTargetEvent event) {
 			dropConsole.append(">>drop\n");
@@ -796,7 +794,7 @@ private void createFeedbackTypes(Group parent) {
 			if (b.getSelection()) {
 				dropFeedback |= DND.FEEDBACK_SELECT;			
 			} else {
-				dropFeedback &= DND.FEEDBACK_SELECT;
+				dropFeedback &= ~DND.FEEDBACK_SELECT;
 			}
 		}
 	});
@@ -809,7 +807,7 @@ private void createFeedbackTypes(Group parent) {
 			if (b.getSelection()) {
 				dropFeedback |= DND.FEEDBACK_SCROLL;			
 			} else {
-				dropFeedback &= DND.FEEDBACK_SCROLL;
+				dropFeedback &= ~DND.FEEDBACK_SCROLL;
 			}
 		}
 	});
@@ -823,7 +821,7 @@ private void createFeedbackTypes(Group parent) {
 			if (b.getSelection()) {
 				dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;			
 			} else {
-				dropFeedback &= DND.FEEDBACK_INSERT_BEFORE;
+				dropFeedback &= ~DND.FEEDBACK_INSERT_BEFORE;
 			}
 		}
 	});
@@ -836,7 +834,7 @@ private void createFeedbackTypes(Group parent) {
 			if (b.getSelection()) {
 				dropFeedback |= DND.FEEDBACK_INSERT_AFTER;
 			} else {
-				dropFeedback &= DND.FEEDBACK_INSERT_AFTER;
+				dropFeedback &= ~DND.FEEDBACK_INSERT_AFTER;
 			}
 		}
 	});
@@ -849,7 +847,7 @@ private void createFeedbackTypes(Group parent) {
 			if (b.getSelection()) {
 				dropFeedback |= DND.FEEDBACK_EXPAND;			
 			} else {
-				dropFeedback &= DND.FEEDBACK_EXPAND;
+				dropFeedback &= ~DND.FEEDBACK_EXPAND;
 			}
 		}
 	});
@@ -957,14 +955,14 @@ private void createDropWidget(Composite parent) {
 	dropControl.setLayoutData(data);
 	
 	data = new FormData();
-	data.bottom = new FormAttachment(b, -10);
+	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(0, 10);
 	combo.setLayoutData(data);
 	
 	data = new FormData();
 	data.bottom = new FormAttachment(100, -10);
-	data.left = new FormAttachment(0, 10);
-	b.setLayoutData(data);	
+	data.left = new FormAttachment(combo, 10);
+	b.setLayoutData(data);
 }
 
 private Control createWidget(int type, Composite parent, String prefix){
@@ -1075,15 +1073,21 @@ public void open(Display display) {
 	dragWidgetGroup.setText("Widget");
 	createDragWidget(dragWidgetGroup);
 	
-	Group dragOperationsGroup = new Group(parent, SWT.NONE);
+	Composite cLeft = new Composite(parent, SWT.NONE);
+	cLeft.setLayout(new GridLayout(2, false));
+	
+	Group dragOperationsGroup = new Group(cLeft, SWT.NONE);
+	dragOperationsGroup.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 	dragOperationsGroup.setText("Allowed Operation(s):");
 	createDragOperations(dragOperationsGroup);
 	
-	Group dragTypesGroup = new Group(parent, SWT.NONE);
+	Group dragTypesGroup = new Group(cLeft, SWT.NONE);
+	dragTypesGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	dragTypesGroup.setText("Transfer Type(s):");
 	createDragTypes(dragTypesGroup);
 	
-	dragConsole = new Text(parent, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dragConsole = new Text(cLeft, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dragConsole.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
@@ -1109,19 +1113,24 @@ public void open(Display display) {
 	dropWidgetGroup.setText("Widget");
 	createDropWidget(dropWidgetGroup);
 	
-	Group dropOperationsGroup = new Group(parent, SWT.NONE);
+	Composite cRight = new Composite(parent, SWT.NONE);
+	cRight.setLayout(new GridLayout(2, false));
+	
+	Group dropOperationsGroup = new Group(cRight, SWT.NONE);
+	dropOperationsGroup.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 2));
 	dropOperationsGroup.setText("Allowed Operation(s):");
 	createDropOperations(dropOperationsGroup);
 	
-	Group dropTypesGroup = new Group(parent, SWT.NONE);
+	Group dropTypesGroup = new Group(cRight, SWT.NONE);
 	dropTypesGroup.setText("Transfer Type(s):");
 	createDropTypes(dropTypesGroup);
 	
-	Group feedbackTypesGroup = new Group(parent, SWT.NONE);
+	Group feedbackTypesGroup = new Group(cRight, SWT.NONE);
 	feedbackTypesGroup.setText("Feedback Type(s):");
 	createFeedbackTypes(feedbackTypesGroup);
 	
-	dropConsole = new Text(parent, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dropConsole = new Text(cRight, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dropConsole.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	menu = new Menu (shell, SWT.POP_UP);
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
@@ -1140,7 +1149,7 @@ public void open(Display display) {
 	});
 	dropConsole.setMenu(menu);
 	
-	int height = 300;
+	int height = 200;
 	FormData data = new FormData();
 	data.top = new FormAttachment(0, 10);
 	data.left = new FormAttachment(0, 10);
@@ -1157,57 +1166,27 @@ public void open(Display display) {
 	data.top = new FormAttachment(dragWidgetGroup, 10);
 	data.left = new FormAttachment(0, 10);
 	data.right = new FormAttachment(50, -10);
-	dragOperationsGroup.setLayoutData(data);
-	
-	data = new FormData();
-	data.top = new FormAttachment(dragOperationsGroup, 10);
-	data.left = new FormAttachment(0, 10);
-	data.right = new FormAttachment(50, -10);
-	dragTypesGroup.setLayoutData(data);
-	
-	data = new FormData();
-	data.top = new FormAttachment(dragTypesGroup, 10);
 	data.bottom = new FormAttachment(100, -10);
-	data.left = new FormAttachment(0, 10);
-	data.right = new FormAttachment(50, -10);
-	dragConsole.setLayoutData(data);
-	
+	cLeft.setLayoutData(data);
+
 	data = new FormData();
 	data.top = new FormAttachment(0, 10);
-	data.left = new FormAttachment(dragTypesGroup, 10);
+	data.left = new FormAttachment(cLeft, 10);
 	dropLabel.setLayoutData(data);
 	
 	data = new FormData();
 	data.top = new FormAttachment(dropLabel, 10);
-	data.left = new FormAttachment(dragTypesGroup, 10);
+	data.left = new FormAttachment(cLeft, 10);
 	data.right = new FormAttachment(100, -10);
 	data.height = height;
 	dropWidgetGroup.setLayoutData(data);
 	
 	data = new FormData();
 	data.top = new FormAttachment(dropWidgetGroup, 10);
-	data.left = new FormAttachment(dragTypesGroup, 10);
+	data.left = new FormAttachment(cLeft, 10);
 	data.right = new FormAttachment(100, -10);
-	dropOperationsGroup.setLayoutData(data);
-	
-	data = new FormData();
-	data.top = new FormAttachment(dropOperationsGroup, 10);
-	data.left = new FormAttachment(dragTypesGroup, 10);
-	data.right = new FormAttachment(100, -10);
-	dropTypesGroup.setLayoutData(data);
-	
-	data = new FormData();
-	data.top = new FormAttachment(dropTypesGroup, 10);
-	data.left = new FormAttachment(dragTypesGroup, 10);
-	data.right = new FormAttachment(100, -10);
-	feedbackTypesGroup.setLayoutData(data);
-	
-	data = new FormData();
-	data.top = new FormAttachment(feedbackTypesGroup, 10);
 	data.bottom = new FormAttachment(100, -10);
-	data.left = new FormAttachment(50, 10);
-	data.right = new FormAttachment(100, -10);
-	dropConsole.setLayoutData(data);
+	cRight.setLayoutData(data);
 		
 	sc.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	sc.setExpandHorizontal(true);
