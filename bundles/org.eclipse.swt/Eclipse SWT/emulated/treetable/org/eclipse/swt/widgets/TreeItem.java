@@ -956,6 +956,7 @@ void removeItem (TreeItem item, int index) {
 	/* second condition below handles creation of item within Expand callback */
 	if (items.length == 0 && !parent.inExpand) {
 		expanded = false;
+		if (availableIndex == -1) return;
 		Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
 		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 	}
@@ -983,6 +984,7 @@ public void setBackground (int columnIndex, Color value) {
 	if (cellBackgrounds [columnIndex] == value) return;
 	if (cellBackgrounds [columnIndex] != null && cellBackgrounds [columnIndex].equals (value)) return;
 	cellBackgrounds [columnIndex] = value;
+	if (availableIndex == -1) return;
 	Rectangle bounds = getCellBounds (columnIndex);
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
@@ -991,6 +993,7 @@ public void setChecked (boolean value) {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return;
 	if (checked == value) return;
 	checked = value;
+	if (availableIndex == -1) return;
 	Rectangle bounds = getCheckboxBounds ();
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
@@ -1146,6 +1149,7 @@ public void setFont (int columnIndex, Font value) {
 	}
 	gc.dispose ();
 
+	if (availableIndex == -1) return;
 	Rectangle bounds = getCellBounds (columnIndex);
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
@@ -1172,6 +1176,7 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForegrounds [columnIndex] == value) return;
 	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
 	cellForegrounds [columnIndex] = value;
+	if (availableIndex == -1) return;
 	Rectangle bounds = getCellBounds (columnIndex);
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
@@ -1180,6 +1185,7 @@ public void setGrayed (boolean value) {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return;
 	if (grayed == value) return;
 	grayed = value;
+	if (availableIndex == -1) return;
 	Rectangle bounds = getCheckboxBounds ();
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }
@@ -1288,6 +1294,7 @@ public void setText (int columnIndex, String value) {
 	gc.setFont (getFont (columnIndex));
 	textWidths [columnIndex] = gc.textExtent (value).x;
 	gc.dispose ();
+	if (availableIndex == -1) return;
 	parent.redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
