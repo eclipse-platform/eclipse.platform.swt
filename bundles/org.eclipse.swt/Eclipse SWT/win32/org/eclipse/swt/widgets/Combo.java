@@ -770,6 +770,10 @@ public int getTextLimit () {
 /**
  * Gets the number of items that are visible in the drop
  * down portion of the receiver's list.
+ * <p>
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
+ * </p>
  *
  * @return the number of items that are visible
  *
@@ -1524,6 +1528,10 @@ public void setTextLimit (int limit) {
 /**
  * Sets the number of items that are visible in the drop
  * down portion of the receiver's list.
+ * <p>
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
+ * </p>
  *
  * @param count the new number of items to be visible
  *
