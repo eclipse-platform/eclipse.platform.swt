@@ -115,11 +115,11 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		src = Browser.findBrowser(shells[i], aParentNativeWindow[0]);
 		if (src != null) break;
 	}
-	NewWindowEvent event = new NewWindowEvent(src);
+	OpenWindowEvent event = new OpenWindowEvent(src);
 	event.display = display;
 	event.widget = src;
-	for (int i = 0; i < src.newWindowListeners.length; i++)
-		src.newWindowListeners[i].newWindow(event);
+	for (int i = 0; i < src.openWindowListeners.length; i++)
+		src.openWindowListeners[i].open(event);
 	Browser browser = event.browser;
 	boolean doit = browser != null && !browser.isDisposed();
 	if (doit) {
