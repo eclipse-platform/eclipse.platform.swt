@@ -106,13 +106,21 @@ void computeRuns () {
 		chars = new char[segementsLength + lineCount * 2];
 		int oldPos = 0, count = 0;
 		do {
+			int bytePos = OS.pango_layout_iter_get_index(iter);
+			/* Note: The length in bytes of ZWS and ZWNBS are both equals to 3 */
+			int offset = count * 6;
 			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
-			int bytePos = OS.pango_layout_iter_get_index(iter);
-			attribute.start_index = bytePos + (count * (3 + 3));
-			attribute.end_index = bytePos+ 3 + 3 + (count * (3 + 3));
+			attribute.start_index = bytePos + offset;
+			attribute.end_index = bytePos + offset + 3;
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);
+			attr = OS.pango_attr_shape_new (rect, rect);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = bytePos + offset + 3;
+			attribute.end_index = bytePos + offset + 6;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);			
 			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
 			chars[pos + count * 2] = ZWS;
 			chars[pos + count * 2 + 1] = ZWNBS;
