@@ -263,10 +263,14 @@ class TableTab extends ScrollableTab {
 	 */
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
+		Color oldColor = itemForegroundColor;
 		itemForegroundColor = null;
 		setItemForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = itemBackgroundColor;
 		itemBackgroundColor = null;
 		setItemBackground ();
+		if (oldColor != null) oldColor.dispose();
 	}
 	
 	/**
