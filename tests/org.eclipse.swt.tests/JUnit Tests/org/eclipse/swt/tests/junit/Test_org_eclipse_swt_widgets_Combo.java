@@ -79,6 +79,29 @@ public void test_addLjava_lang_String() {
 }
 
 public void test_addLjava_lang_StringI() {
+	try {
+		combo.add(null, 0);
+		fail("No exception thrown for item == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+//	try {
+//		combo.add("string", -1);
+//		fail("No exception thrown for index < 0");
+//	}
+//	catch (IllegalArgumentException e) {
+//	}
+
+	combo.add("string0", 0);
+	try {
+		combo.add("string1", 2);
+		fail("No exception thrown for index > size");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	combo.removeAll();
+	
 	combo.add("fred", 0);
 	assertEquals("fred", new String[]{"fred"}, combo.getItems());
 	combo.add("fred", 0);
@@ -212,6 +235,14 @@ public void test_deselectAll() {
 	assertTrue(":a:", combo.getSelectionIndex()== -1);
 }
 public void test_deselectI() {
+	// indices out of range are ignored
+	String[] items = {"item0", "item1", "item2"};
+	combo.setItems(items);
+	combo.select(1);
+	combo.deselect(10);
+	assertEquals(1, combo.getSelectionIndex());
+	combo.removeAll();
+	
 	combo.deselect(2);
 
 	int number = 10;
@@ -329,10 +360,19 @@ public void test_getTextLimit() {
 }
 
 public void test_hasFocus() {
-	warnUnimpl("Test test_hasFocus not written");
+	// not public api
 }
 
 public void test_indexOfLjava_lang_String() {
+	combo.add("string0");
+	try {
+		combo.indexOf(null);
+		fail("No exception thrown for string == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	combo.removeAll();
+	
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -366,6 +406,16 @@ public void test_indexOfLjava_lang_String() {
 }
 
 public void test_indexOfLjava_lang_StringI() {
+	combo.add("string0");
+	try {
+		combo.indexOf(null);
+		fail("No exception thrown for string == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	assertEquals(-1, combo.indexOf("string0", -1));
+	combo.removeAll();
+	
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -414,6 +464,15 @@ public void test_removeI() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+
+	combo.add("string0");
+	try {
+		combo.remove(-1);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	combo.removeAll();
 
 	int number = 5;
 	for (int i = 0; i < number; i++) {
@@ -505,6 +564,14 @@ public void test_removeII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+
+	try {
+		combo.remove(-1, number-1);
+		fail("No exception thrown for start index < 0");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
 }
 
 public void test_removeLjava_lang_String() {
@@ -558,6 +625,10 @@ public void test_selectI() {
 	combo.add("789");
 	combo.select(1);
 	assertTrue(":a:", combo.getSelectionIndex()== 1);
+	
+	// indices out of range are ignored
+	combo.select(10);
+	assertEquals(1, combo.getSelectionIndex());
 }
 
 public void test_setItemILjava_lang_String() {
@@ -581,6 +652,22 @@ public void test_setItemILjava_lang_String() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+	
+	combo.add("string0");
+	try {
+		combo.setItem(0, null);
+		fail("No exception thrown for item == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	try {
+		combo.setItem(-1, "new value");
+		fail("No exception thrown for index < 0");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	combo.add("joe");
 	combo.setItem(0, "fred");	
 	assertTrue("fred", combo.getItem(0).equals("fred"));
@@ -626,6 +713,13 @@ public void test_setOrientationI() {
 }
 
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
+	try {
+		combo.setSelection(null);
+		fail("No exception thrown for point == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
@@ -637,10 +731,25 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setTextLimitI() {
-	// tested in getTextLimit
+	try {
+		combo.setTextLimit(0);
+		fail("No exception thrown for limit == 0");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	combo.setTextLimit(3);
+	assertTrue(":a:", combo.getTextLimit()==3);
 }
 
 public void test_setTextLjava_lang_String() {
+	try {
+		combo.setText(null);
+		fail("No exception thrown for text == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	String[] cases = {"", "fred", "fred0"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
