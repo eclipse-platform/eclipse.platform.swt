@@ -1371,22 +1371,7 @@ public void setData (String key, Object value) {
 	}
 }
 
-boolean setInputState (Event event, int theEvent) {
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int [] chord = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	return setInputState (event, button [0], chord [0], modifiers [0]);
-}
-
-boolean setInputState (Event event, short button, int chord, int modifiers) {
-	switch (button) {
-		case 1: event.button = 1; break;
-		case 2: event.button = 3; break;
-		case 3: event.button = 2; break;
-	}
+boolean setInputState (Event event, int type, int chord, int modifiers) {
 	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
 	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
@@ -1394,7 +1379,7 @@ boolean setInputState (Event event, short button, int chord, int modifiers) {
 	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
 	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
 	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
-	switch (event.type) {
+	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseDoubleClick:
 			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
@@ -1469,7 +1454,7 @@ boolean setInputState (Event event, short button, int chord, int modifiers) {
 	return true; 
 }
 
-boolean setKeyState (Event event, int theEvent) {
+boolean setKeyState (Event event, int type, int theEvent) {
 	boolean isNull = false;
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
@@ -1527,7 +1512,11 @@ boolean setKeyState (Event event, int theEvent) {
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}
-	return setInputState (event, theEvent);
+	int [] chord = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	return setInputState (event, type, chord [0], modifiers [0]);
 }
 
 void setVisible (int control, boolean visible) {

@@ -1352,10 +1352,12 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	sendMouseEvent (SWT.MouseDown, theEvent);
-	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
+	sendMouseEvent (SWT.MouseDown, button [0], theEvent);
+	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, button [0], theEvent);
 	if ((state & GRAB) != 0) display.grabControl = this;
 	/*
 	* It is possible that the shell may be
@@ -1377,18 +1379,20 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
+	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
 	display.dragDetect (this);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
+	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseUp, theEvent);
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+	sendMouseEvent (SWT.MouseUp, button [0], theEvent);
 	return OS.eventNotHandledErr;
 }
 
@@ -1404,6 +1408,7 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
 	int lastModifiers = display.lastModifiers;
+	int chord = OS.GetCurrentEventButtonState ();
 	int type = SWT.KeyUp;
 	if ((modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
@@ -1412,21 +1417,18 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
 	if (type == SWT.KeyUp && (modifiers [0] & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
 		Event event = new Event ();
-		event.type = SWT.KeyDown;
 		event.keyCode = SWT.CAPS_LOCK;
-		setInputState (event, (short) 0, 0, modifiers [0]);
+		setInputState (event, SWT.KeyDown, chord, modifiers [0]);
 		sendKeyEvent (SWT.KeyDown, event);
 	}
 	Event event = new Event ();
-	event.type = type;
-	setInputState (event, (short) 0, 0, modifiers [0]);
+	setInputState (event, type, chord, modifiers [0]);
 	if (event.keyCode == 0 && event.character == 0) return OS.eventNotHandledErr;
 	boolean result = sendKeyEvent (type, event);
 	if (type == SWT.KeyDown && (modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
 		event = new Event ();
-		event.type = SWT.KeyUp;
 		event.keyCode = SWT.CAPS_LOCK;
-		setInputState (event, (short) 0, 0, modifiers [0]);
+		setInputState (event, SWT.KeyUp, chord, modifiers [0]);
 		sendKeyEvent (SWT.KeyUp, event);
 	}
 	display.lastModifiers = modifiers [0];
@@ -1895,13 +1897,16 @@ boolean sendKeyEvent (int type, int theEvent) {
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {
 		int count = 0;
+		int [] chord = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 		char [] chars = new char [length [0] / 2];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
 		for (int i=0; i<chars.length; i++) {
 			Event event = new Event ();
-			event.type = type;
 			event.character = chars [i];
-			setInputState(event, theEvent);
+			setInputState (event, type, chord [0], modifiers [0]);
 			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
 		}
 		if (count == 0) return false;
@@ -1911,8 +1916,7 @@ boolean sendKeyEvent (int type, int theEvent) {
 		return true;
 	} else {
 		Event event = new Event ();
-		event.type = type;
-		if (!setKeyState (event, theEvent)) return true;
+		if (!setKeyState (event, type, theEvent)) return true;
 		return sendKeyEvent (type, event);
 	}
 }
@@ -1931,38 +1935,36 @@ boolean sendKeyEvent (int type, Event event) {
 	return event.doit;
 }
 
-boolean sendMouseEvent (int type, int theEvent) {
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	return sendMouseEvent (type, button [0], theEvent);
-}
-
 boolean sendMouseEvent (int type, short button, int theEvent) {
-	Event event = new Event ();
-	event.type = type;
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	event.x = pt.h - rect.left;
-	event.y = pt.v - rect.top;
+	int x = pt.h - rect.left;
+	int y = pt.v - rect.top;
 	OS.GetControlBounds (handle, rect);
-	event.x -= rect.left;
-	event.y -= rect.top;
-	setInputState (event, theEvent);
-	postEvent (type, event);
-	return true;
+	x -= rect.left;
+	y -= rect.top;
+	int [] chord = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	return sendMouseEvent (type, button, chord [0], (short) x, (short) y, modifiers [0], false);
 }
 
-boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers) {
+boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers, boolean send) {
 	Event event = new Event ();
-	event.type = type;
+	switch (button) {
+		case 1: event.button = 1; break;
+		case 2: event.button = 3; break;
+		case 3: event.button = 2; break;
+	}
 	event.x = x;
 	event.y = y;
-	setInputState (event, button, chord, modifiers);
-	sendEvent (type, event);
+	setInputState (event, type, chord, modifiers);
+	sendEvent (type, event, send);
 	return true;
 }
 
@@ -2732,7 +2734,7 @@ boolean translateTraversal (int key, int theEvent) {
 	Event event = new Event ();
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
-	if (!setKeyState (event, theEvent)) return false;
+	if (!setKeyState (event, SWT.Traverse, theEvent)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {

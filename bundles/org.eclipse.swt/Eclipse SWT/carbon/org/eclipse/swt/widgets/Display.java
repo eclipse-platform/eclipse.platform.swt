@@ -1815,6 +1815,14 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 
 int mouseProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
+	if (mouseUpControl != null && eventKind == OS.kEventMouseUp) {
+		if (!mouseUpControl.isDisposed ()) {
+			mouseUpControl.mouseProc (nextHandler, theEvent, userData);
+			mouseUpControl = null;
+			return OS.noErr;
+		}
+		mouseUpControl = null;
+	}
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, where);
@@ -1858,13 +1866,6 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			} while (theControl [0] != 0);
 			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
-				if (mouseUpControl != null && OS.GetEventKind(theEvent) == OS.kEventMouseUp) {
-					if (!mouseUpControl.isDisposed ()) {
-						widget = mouseUpControl;
-						consume = true;
-					}
-					mouseUpControl = null;
-				}
 				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
 				return consume ? OS.noErr : result;
 			}
@@ -1885,7 +1886,7 @@ int mouseHoverProc (int id, int handle) {
 		int chord = OS.GetCurrentEventButtonState ();
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		Point pt = currentControl.toControl (getCursorLocation ());
-		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
 	}
 	return 0;
 }
@@ -2173,7 +2174,7 @@ boolean runEnterExit () {
 			int chord = OS.GetCurrentEventButtonState ();
 			int modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (where.h, where.v);
-			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
 		}
@@ -2182,7 +2183,7 @@ boolean runEnterExit () {
 			int chord = OS.GetCurrentEventButtonState ();
 			int modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (where.h, where.v);
-			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			int [] id = new int [1], outDelay = new int [1];
 			OS.HMGetTagDelay (outDelay);
@@ -2323,7 +2324,7 @@ void runGrabs () {
 			int port = OS.GetWindowPort (window);
 			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, OS.kEventDurationForever, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
-			switch ((int)outResult [0]) {
+			switch ((int) outResult [0]) {
 				case OS.kMouseTrackingMouseDown: {
 					type = SWT.MouseDown;
 					int newState = OS.GetCurrentEventButtonState ();
@@ -2350,8 +2351,12 @@ void runGrabs () {
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:			break;
 				case OS.kMouseTrackingTimedOut: 				break;
-				case OS.kMouseTrackingMouseMoved: 				type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseMoved: {
+					type = SWT.MouseMove;
+					break;
+				}
 			}
+			runEnterExit ();
 			if (type != 0) {
 				OS.GetControlBounds (handle, rect);
 				int x = outPt.h - rect.left;
@@ -2361,7 +2366,7 @@ void runGrabs () {
 					if (type == SWT.MouseUp) {
 						mouseUpControl = grabControl;
 					} else {
-						grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+						grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0], true);
 					}
 				}
 				//TEMPORARY CODE
