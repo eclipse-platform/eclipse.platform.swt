@@ -331,6 +331,10 @@ protected static byte [] signal (String name) {
 	return buffer;
 }
 
+/** 64 bit */
+public static final int PTR_SIZEOF = PTR_sizeof();
+public static final synchronized native int PTR_sizeof();
+
 /** Object private fields accessors */
 public static final synchronized native int GTK_WIDGET_HEIGHT(int widget);
 public static final synchronized native int GTK_WIDGET_WIDTH(int widget);

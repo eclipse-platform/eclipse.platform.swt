@@ -178,6 +178,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1Y)
 }
 #endif
 
+#ifndef NO_PTR_1sizeof
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PTR_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PTR_1sizeof\n")
+	rc = (jint)sizeof(SWT_PTR);
+	NATIVE_EXIT(env, that, "PTR_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GtkTreeIter_1sizeof
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GtkTreeIter_1sizeof
 	(JNIEnv *env, jclass that)

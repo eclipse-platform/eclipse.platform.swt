@@ -38,7 +38,7 @@ static int counter = 0;
 
 /* --------------- callback functions --------------- */
 
-int callback(int index, ...);
+SWT_PTR callback(int index, ...);
 
 /* Function name from index and number of arguments */
 #define FN(index, args) fn##index##_##args
@@ -54,40 +54,40 @@ int callback(int index, ...);
 #define FN_0(index) RETURN_TYPE FN(index, 0)() { return RETURN_CAST callback(index); }
 
 /* Function template with 1 argument */
-#define FN_1(index) RETURN_TYPE FN(index, 1)(int p1) { return RETURN_CAST callback(index, p1); }
+#define FN_1(index) RETURN_TYPE FN(index, 1)(SWT_PTR p1) { return RETURN_CAST callback(index, p1); }
 
 /* Function template with 2 arguments */
-#define FN_2(index) RETURN_TYPE FN(index, 2)(int p1, int p2) { return RETURN_CAST callback(index, p1, p2); }
+#define FN_2(index) RETURN_TYPE FN(index, 2)(SWT_PTR p1, SWT_PTR p2) { return RETURN_CAST callback(index, p1, p2); }
 
 /* Function template with 3 arguments */
-#define FN_3(index) RETURN_TYPE FN(index, 3)(int p1, int p2, int p3) { return RETURN_CAST callback(index, p1, p2, p3); }
+#define FN_3(index) RETURN_TYPE FN(index, 3)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3) { return RETURN_CAST callback(index, p1, p2, p3); }
 
 /* Function template with 4 arguments */
-#define FN_4(index) RETURN_TYPE FN(index, 4)(int p1, int p2, int p3, int p4) { return RETURN_CAST callback(index, p1, p2, p3, p4); }
+#define FN_4(index) RETURN_TYPE FN(index, 4)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4) { return RETURN_CAST callback(index, p1, p2, p3, p4); }
 
 /* Function template with 5 arguments */
-#define FN_5(index) RETURN_TYPE FN(index, 5)(int p1, int p2, int p3, int p4, int p5) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5); }
+#define FN_5(index) RETURN_TYPE FN(index, 5)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5); }
 
 /* Function template with 6 arguments */
-#define FN_6(index) RETURN_TYPE FN(index, 6)(int p1, int p2, int p3, int p4, int p5, int p6) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6); }
+#define FN_6(index) RETURN_TYPE FN(index, 6)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6); }
 
 /* Function template with 7 arguments */
-#define FN_7(index) RETURN_TYPE FN(index, 7)(int p1, int p2, int p3, int p4, int p5, int p6, int p7) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7); }
+#define FN_7(index) RETURN_TYPE FN(index, 7)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7); }
 
 /* Function template with 8 arguments */
-#define FN_8(index) RETURN_TYPE FN(index, 8)(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8); }
+#define FN_8(index) RETURN_TYPE FN(index, 8)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7, SWT_PTR p8) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8); }
 
 /* Function template with 9 arguments */
-#define FN_9(index) RETURN_TYPE FN(index, 9)(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+#define FN_9(index) RETURN_TYPE FN(index, 9)(SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7, SWT_PTR p8, SWT_PTR p9) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9); }
 
 /* Function template with 10 arguments */
-#define FN_10(index) RETURN_TYPE FN(index, 10) (int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+#define FN_10(index) RETURN_TYPE FN(index, 10) (SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7, SWT_PTR p8, SWT_PTR p9, SWT_PTR p10) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
 
 /* Function template with 11 arguments */
-#define FN_11(index) RETURN_TYPE FN(index, 11) (int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10, int p11) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+#define FN_11(index) RETURN_TYPE FN(index, 11) (SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7, SWT_PTR p8, SWT_PTR p9, SWT_PTR p10, SWT_PTR p11) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
 
 /* Function template with 12 arguments */
-#define FN_12(index) RETURN_TYPE FN(index, 12) (int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10, int p11, int p12) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
+#define FN_12(index) RETURN_TYPE FN(index, 12) (SWT_PTR p1, SWT_PTR p2, SWT_PTR p3, SWT_PTR p4, SWT_PTR p5, SWT_PTR p6, SWT_PTR p7, SWT_PTR p8, SWT_PTR p9, SWT_PTR p10, SWT_PTR p11, SWT_PTR p12) { return RETURN_CAST callback(index, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
 
 /**
  * Define all functions with the specified number of arguments.
@@ -127,12 +127,12 @@ FN_BLOCK(12)
  * NOTE: If MAX_ARGS or MAX_CALLBACKS changes, the following has to be updated.
  */
 #ifdef REDUCED_CALLBACKS
-#define FN_A_BLOCK(args) {(int *)FN(0, args),(int *)FN(1, args),(int *)FN(2, args),(int *)FN(3, args),(int *)FN(4, args),(int *)FN(5, args),(int *)FN(6, args),(int *)FN(7, args),(int *)FN(8, args),(int *)FN(9, args),(int *)FN(10, args),(int *)FN(11, args),(int *)FN(12, args),(int *)FN(13, args),(int *)FN(14, args),(int *)FN(15, args)},
+#define FN_A_BLOCK(args) {(SWT_PTR *)FN(0, args),(SWT_PTR *)FN(1, args),(SWT_PTR *)FN(2, args),(SWT_PTR *)FN(3, args),(SWT_PTR *)FN(4, args),(SWT_PTR *)FN(5, args),(SWT_PTR *)FN(6, args),(SWT_PTR *)FN(7, args),(SWT_PTR *)FN(8, args),(SWT_PTR *)FN(9, args),(SWT_PTR *)FN(10, args),(SWT_PTR *)FN(11, args),(SWT_PTR *)FN(12, args),(SWT_PTR *)FN(13, args),(SWT_PTR *)FN(14, args),(SWT_PTR *)FN(15, args)},
 #else
-#define FN_A_BLOCK(args) {(int *)FN(0, args),(int *)FN(1, args),(int *)FN(2, args),(int *)FN(3, args),(int *)FN(4, args),(int *)FN(5, args),(int *)FN(6, args),(int *)FN(7, args),(int *)FN(8, args),(int *)FN(9, args),(int *)FN(10, args),(int *)FN(11, args),(int *)FN(12, args),(int *)FN(13, args),(int *)FN(14, args),(int *)FN(15, args),(int *)FN(16, args),(int *)FN(17, args),(int *)FN(18, args),(int *)FN(19, args),(int *)FN(20, args),(int *)FN(21, args),(int *)FN(22, args),(int *)FN(23, args),(int *)FN(24, args),(int *)FN(25, args),(int *)FN(26, args),(int *)FN(27, args),(int *)FN(28, args),(int *)FN(29, args),(int *)FN(30, args),(int *)FN(31, args),(int *)FN(32, args),(int *)FN(33, args),(int *)FN(34, args),(int *)FN(35, args),(int *)FN(36, args),(int *)FN(37, args),(int *)FN(38, args),(int *)FN(39, args),(int *)FN(40, args),(int *)FN(41, args),(int *)FN(42, args),(int *)FN(43, args),(int *)FN(44, args),(int *)FN(45, args),(int *)FN(46, args),(int *)FN(47, args),(int *)FN(48, args),(int *)FN(49, args),(int *)FN(50, args),(int *)FN(51, args),(int *)FN(52, args),(int *)FN(53, args),(int *)FN(54, args),(int *)FN(55, args),(int *)FN(56, args),(int *)FN(57, args),(int *)FN(58, args),(int *)FN(59, args),(int *)FN(60, args),(int *)FN(61, args),(int *)FN(62, args),(int *)FN(63, args),(int *)FN(64, args),(int *)FN(65, args),(int *)FN(66, args),(int *)FN(67, args),(int *)FN(68, args),(int *)FN(69, args),(int *)FN(70, args),(int *)FN(71, args),(int *)FN(72, args),(int *)FN(73, args),(int *)FN(74, args),(int *)FN(75, args),(int *)FN(76, args),(int *)FN(77, args),(int *)FN(78, args),(int *)FN(79, args),(int *)FN(80, args),(int *)FN(81, args),(int *)FN(82, args),(int *)FN(83, args),(int *)FN(84, args),(int *)FN(85, args),(int *)FN(86, args),(int *)FN(87, args),(int *)FN(88, args),(int *)FN(89, args),(int *)FN(90, args),(int *)FN(91, args),(int *)FN(92, args),(int *)FN(93, args),(int *)FN(94, args),(int *)FN(95, args),(int *)FN(96, args),(int *)FN(97, args),(int *)FN(98, args),(int *)FN(99, args),(int *)FN(100, args),(int *)FN(101, args),(int *)FN(102, args),(int *)FN(103, args),(int *)FN(104, args),(int *)FN(105, args),(int *)FN(106, args),(int *)FN(107, args),(int *)FN(108, args),(int *)FN(109, args),(int *)FN(110, args),(int *)FN(111, args),(int *)FN(112, args),(int *)FN(113, args),(int *)FN(114, args),(int *)FN(115, args),(int *)FN(116, args),(int *)FN(117, args),(int *)FN(118, args),(int *)FN(119, args),(int *)FN(120, args),(int *)FN(121, args),(int *)FN(122, args),(int *)FN(123, args),(int *)FN(124, args),(int *)FN(125, args),(int *)FN(126, args),(int *)FN(127, args)},
+#define FN_A_BLOCK(args) {(SWT_PTR *)FN(0, args),(SWT_PTR *)FN(1, args),(SWT_PTR *)FN(2, args),(SWT_PTR *)FN(3, args),(SWT_PTR *)FN(4, args),(SWT_PTR *)FN(5, args),(SWT_PTR *)FN(6, args),(SWT_PTR *)FN(7, args),(SWT_PTR *)FN(8, args),(SWT_PTR *)FN(9, args),(SWT_PTR *)FN(10, args),(SWT_PTR *)FN(11, args),(SWT_PTR *)FN(12, args),(SWT_PTR *)FN(13, args),(SWT_PTR *)FN(14, args),(SWT_PTR *)FN(15, args),(SWT_PTR *)FN(16, args),(SWT_PTR *)FN(17, args),(SWT_PTR *)FN(18, args),(SWT_PTR *)FN(19, args),(SWT_PTR *)FN(20, args),(SWT_PTR *)FN(21, args),(SWT_PTR *)FN(22, args),(SWT_PTR *)FN(23, args),(SWT_PTR *)FN(24, args),(SWT_PTR *)FN(25, args),(SWT_PTR *)FN(26, args),(SWT_PTR *)FN(27, args),(SWT_PTR *)FN(28, args),(SWT_PTR *)FN(29, args),(SWT_PTR *)FN(30, args),(SWT_PTR *)FN(31, args),(SWT_PTR *)FN(32, args),(SWT_PTR *)FN(33, args),(SWT_PTR *)FN(34, args),(SWT_PTR *)FN(35, args),(SWT_PTR *)FN(36, args),(SWT_PTR *)FN(37, args),(SWT_PTR *)FN(38, args),(SWT_PTR *)FN(39, args),(SWT_PTR *)FN(40, args),(SWT_PTR *)FN(41, args),(SWT_PTR *)FN(42, args),(SWT_PTR *)FN(43, args),(SWT_PTR *)FN(44, args),(SWT_PTR *)FN(45, args),(SWT_PTR *)FN(46, args),(SWT_PTR *)FN(47, args),(SWT_PTR *)FN(48, args),(SWT_PTR *)FN(49, args),(SWT_PTR *)FN(50, args),(SWT_PTR *)FN(51, args),(SWT_PTR *)FN(52, args),(SWT_PTR *)FN(53, args),(SWT_PTR *)FN(54, args),(SWT_PTR *)FN(55, args),(SWT_PTR *)FN(56, args),(SWT_PTR *)FN(57, args),(SWT_PTR *)FN(58, args),(SWT_PTR *)FN(59, args),(SWT_PTR *)FN(60, args),(SWT_PTR *)FN(61, args),(SWT_PTR *)FN(62, args),(SWT_PTR *)FN(63, args),(SWT_PTR *)FN(64, args),(SWT_PTR *)FN(65, args),(SWT_PTR *)FN(66, args),(SWT_PTR *)FN(67, args),(SWT_PTR *)FN(68, args),(SWT_PTR *)FN(69, args),(SWT_PTR *)FN(70, args),(SWT_PTR *)FN(71, args),(SWT_PTR *)FN(72, args),(SWT_PTR *)FN(73, args),(SWT_PTR *)FN(74, args),(SWT_PTR *)FN(75, args),(SWT_PTR *)FN(76, args),(SWT_PTR *)FN(77, args),(SWT_PTR *)FN(78, args),(SWT_PTR *)FN(79, args),(SWT_PTR *)FN(80, args),(SWT_PTR *)FN(81, args),(SWT_PTR *)FN(82, args),(SWT_PTR *)FN(83, args),(SWT_PTR *)FN(84, args),(SWT_PTR *)FN(85, args),(SWT_PTR *)FN(86, args),(SWT_PTR *)FN(87, args),(SWT_PTR *)FN(88, args),(SWT_PTR *)FN(89, args),(SWT_PTR *)FN(90, args),(SWT_PTR *)FN(91, args),(SWT_PTR *)FN(92, args),(SWT_PTR *)FN(93, args),(SWT_PTR *)FN(94, args),(SWT_PTR *)FN(95, args),(SWT_PTR *)FN(96, args),(SWT_PTR *)FN(97, args),(SWT_PTR *)FN(98, args),(SWT_PTR *)FN(99, args),(SWT_PTR *)FN(100, args),(SWT_PTR *)FN(101, args),(SWT_PTR *)FN(102, args),(SWT_PTR *)FN(103, args),(SWT_PTR *)FN(104, args),(SWT_PTR *)FN(105, args),(SWT_PTR *)FN(106, args),(SWT_PTR *)FN(107, args),(SWT_PTR *)FN(108, args),(SWT_PTR *)FN(109, args),(SWT_PTR *)FN(110, args),(SWT_PTR *)FN(111, args),(SWT_PTR *)FN(112, args),(SWT_PTR *)FN(113, args),(SWT_PTR *)FN(114, args),(SWT_PTR *)FN(115, args),(SWT_PTR *)FN(116, args),(SWT_PTR *)FN(117, args),(SWT_PTR *)FN(118, args),(SWT_PTR *)FN(119, args),(SWT_PTR *)FN(120, args),(SWT_PTR *)FN(121, args),(SWT_PTR *)FN(122, args),(SWT_PTR *)FN(123, args),(SWT_PTR *)FN(124, args),(SWT_PTR *)FN(125, args),(SWT_PTR *)FN(126, args),(SWT_PTR *)FN(127, args)},
 #endif /* REDUCED_CALLBACKS */
 
-int * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = { 
+SWT_PTR * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = { 
 	FN_A_BLOCK(0)    
 	FN_A_BLOCK(1)    
 	FN_A_BLOCK(2)    
@@ -151,7 +151,13 @@ int * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = {
 
 /* --------------- callback class calls --------------- */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_PTR_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	return sizeof(SWT_PTR);
+}
+
+JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
   (JNIEnv *env, jclass that, jobject lpCallback)
 {
 	int i;
@@ -171,7 +177,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
     javaClass = that;
     if (!callbackIDsCached) {
         objectID = (*env)->GetFieldID(env, javaClass, "object", "Ljava/lang/Object;");
-        addressID = (*env)->GetFieldID(env, javaClass, "address", "I");
+        addressID = (*env)->GetFieldID(env, javaClass, "address", SWT_PTR_SIGNATURE);
         methodID = (*env)->GetFieldID(env, javaClass, "method", "Ljava/lang/String;");
         signatureID = (*env)->GetFieldID(env, javaClass, "signature", "Ljava/lang/String;");
         isStaticID = (*env)->GetFieldID(env, javaClass, "isStatic", "Z");
@@ -203,7 +209,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
         if (!callbackData[i].callin) {
             callbackData[i].callin = (*env)->NewGlobalRef(env, lpCallback);
             callbackData[i].methodID = mid;
-            return (jint) fnx_array[argCount][i];
+            return (SWT_PTR) fnx_array[argCount][i];
         }
     }
     fprintf(stderr, "bind fail, no free callback slot ******* \n");
@@ -213,14 +219,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
   (JNIEnv *env, jclass that, jobject lpCallback)
 {
-	int i, address, argCount;
+	int i, argCount;
+	SWT_PTR address;
 	if (!callbackIDsCached) return;
 
-    address = (*env)->GetIntField(env, lpCallback, addressID);
+    address = (*env)->GetSWT_PTRField(env, lpCallback, addressID);
     argCount = (*env)->GetIntField(env, lpCallback, argCountID);
     
     for (i=0; i<MAX_CALLBACKS; i++) {        
-        if ((int)fnx_array[argCount][i] == address) {
+        if ((SWT_PTR)fnx_array[argCount][i] == address) {
             (*env)->DeleteGlobalRef(env, callbackData[i].callin);
             callbackData[i].callin = 0;      
             callbackData[i].methodID = 0;
@@ -252,7 +259,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_reset
     memset((void *)&callbackData, 0, sizeof(callbackData));
 }
 
-int callback(int index, ...)
+SWT_PTR callback(int index, ...)
 {
 	if (!callbackEnabled) return 0;
 
@@ -291,7 +298,7 @@ int callback(int index, ...)
 		jintArray javaArray = (*env)->NewIntArray(env, argCount);
 		jint *elements = (*env)->GetIntArrayElements(env, javaArray, NULL);
 		for (i=0; i<argCount; i++) {
-			elements[i] = va_arg(vl, jint); 
+			elements[i] = va_arg(vl, SWT_PTR); 
 		}
 		(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
 		if (isStatic) {
@@ -302,9 +309,9 @@ int callback(int index, ...)
 		(*env)->DeleteLocalRef(env, javaArray);
 	} else {
 		if (isStatic) {
-			result = (*env)->CallStaticIntMethodV(env, javaObject, mid, vl);
+			result = (*env)->CallStaticSWT_PTRMethodV(env, javaObject, mid, vl);
 		} else {
-			result = (*env)->CallIntMethodV(env, javaObject, mid, vl);
+			result = (*env)->CallSWT_PTRMethodV(env, javaObject, mid, vl);
 		}
 	}
 	va_end(vl);
