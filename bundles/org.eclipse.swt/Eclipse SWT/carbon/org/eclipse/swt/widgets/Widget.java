@@ -1262,13 +1262,22 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	boolean sameOrigin = newBounds.left == oldBounds.left && newBounds.top == oldBounds.top;
 	boolean sameExtent = (newBounds.right - newBounds.left) == (oldBounds.right - oldBounds.left) && (newBounds.bottom - newBounds.top) == (oldBounds.bottom - oldBounds.top);
 	if (sameOrigin && sameExtent) return 0;
-	
+
 	/* Apply changes and invalidate appropriate rectangles */
+	int tempRgn = 0;
 	boolean visible = OS.IsControlVisible (control);
-	if (visible) OS.InvalWindowRect (window, oldBounds);
+	if (visible) {
+		tempRgn = OS.NewRgn ();
+		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+		OS.InvalWindowRgn (window, tempRgn);
+	}
 	OS.SetControlBounds (control, newBounds);
 	invalidateVisibleRegion (control);
-	if (visible) OS.InvalWindowRect (window, newBounds);
+	if (visible) {
+		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+		OS.InvalWindowRgn (window, tempRgn);
+		OS.DisposeRgn(tempRgn);
+	}
 	
 	/* Send events */
 	int result = 0;
