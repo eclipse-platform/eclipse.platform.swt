@@ -156,6 +156,11 @@ public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
 
+Control computeTabGroup () {
+	if (isTabGroup()) return this;
+	return parent.computeTabGroup ();
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	setInitialSize ();

@@ -145,6 +145,10 @@ void add (Menu menu) {
 	menus = newMenus;
 }
 
+Control computeTabGroup () {
+	return this;
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
