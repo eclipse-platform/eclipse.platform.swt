@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>FLAT, WRAP, RIGHT</dd>
+ * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
