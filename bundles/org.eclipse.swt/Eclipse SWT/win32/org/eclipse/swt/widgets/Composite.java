@@ -873,7 +873,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 					display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
 				}
 			}
-			OS.PostThreadMessage (threadId, OS.WM_APP + 4, hwndChild, lParam);
+			OS.PostThreadMessage (threadId, Display.SWT_RESIZE, hwndChild, lParam);
 		}
 	}
 	return result;

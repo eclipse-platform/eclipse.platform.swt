@@ -259,6 +259,13 @@ public class Display extends Device {
 	Shell [] modalShells;
 	static boolean TrimEnabled = false;
 
+	/* Private SWT Window Messages */
+	static final int SWT_GETACCELCOUNT	= OS.WM_APP;
+	static final int SWT_GETACCEL 		= OS.WM_APP + 1;
+	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
+	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
+	static final int SWT_RESIZE			= OS.WM_APP + 4;
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
 	/*
@@ -650,7 +657,7 @@ void drawMenuBars () {
 
 int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
-		case OS.WM_APP + 2: {
+		case SWT_KEYMSG: {
 			MSG keyMsg = new MSG ();
 			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
 			OS.TranslateMessage (keyMsg);
@@ -659,7 +666,7 @@ int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
 			OS.HeapFree (hHeap, 0, lParam);
 			break;
 		}
-		case OS.WM_APP + 3: {
+		case SWT_DESTROY: {
 			OS.DestroyWindow (hwnd);
 			if (embeddedCallback != null) embeddedCallback.dispose ();
 			if (getMsgCallback != null) getMsgCallback.dispose ();
@@ -667,7 +674,7 @@ int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
 			embeddedProc = getMsgProc = 0;
 			break;
 		}
-		case OS.WM_APP + 4: {
+		case SWT_RESIZE: {
 			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 			OS.SetWindowPos (wParam, 0, 0, 0, lParam & 0xFFFF, lParam >> 16, flags);
 			break;
@@ -1282,9 +1289,9 @@ int getMsgProc (int code, int wParam, int lParam) {
 		MSG msg = new MSG ();
 		OS.MoveMemory (msg, lParam, MSG.sizeof);
 		switch (msg.message) {
-			case OS.WM_APP + 4: {
+			case SWT_RESIZE: {
 				if (msg.hwnd == 0 && msg.wParam != 0) {
-					OS.PostMessage (embeddedHwnd, OS.WM_APP + 4, msg.wParam, msg.lParam);
+					OS.PostMessage (embeddedHwnd, SWT_RESIZE, msg.wParam, msg.lParam);
 					msg.message = OS.WM_NULL;
 					OS.MoveMemory (lParam, msg, MSG.sizeof);
 				}
@@ -1297,7 +1304,7 @@ int getMsgProc (int code, int wParam, int lParam) {
 				int hHeap = OS.GetProcessHeap ();
 				int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
 				OS.MoveMemory (keyMsg, msg, MSG.sizeof);
-				OS.PostMessage (hwndMessage, OS.WM_APP + 2, wParam, keyMsg);
+				OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
 				msg.message = OS.WM_NULL;
 				OS.MoveMemory (lParam, msg, MSG.sizeof);
 			}
@@ -1817,7 +1824,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
-		case OS.WM_APP + 2:
+		case SWT_KEYMSG:
 			boolean consumed = false;
 			MSG keyMsg = new MSG ();
 			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
@@ -1835,7 +1842,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				int hHeap = OS.GetProcessHeap ();
 				OS.HeapFree (hHeap, 0, lParam);
 			} else {
-				OS.PostMessage (embeddedHwnd, OS.WM_APP + 2, wParam, lParam);
+				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
 			}
 			return 0;
 		case OS.WM_ACTIVATEAPP:
@@ -2055,7 +2062,7 @@ protected void release () {
 
 void releaseDisplay () {
 	if (embeddedHwnd != 0) {
-		OS.PostMessage (embeddedHwnd, OS.WM_APP + 3, 0, 0);
+		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
 
 	/* Unhook the message hook */

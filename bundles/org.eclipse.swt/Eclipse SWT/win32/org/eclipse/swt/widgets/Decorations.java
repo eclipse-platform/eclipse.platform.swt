@@ -1432,10 +1432,10 @@ int widgetStyle () {
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
-		case OS.WM_APP:
-		case OS.WM_APP+1:
+		case Display.SWT_GETACCEL:
+		case Display.SWT_GETACCELCOUNT:
 			if (hAccel == -1) createAccelerators ();
-			return msg == OS.WM_APP ? nAccel : hAccel;
+			return msg == Display.SWT_GETACCELCOUNT ? nAccel : hAccel;
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
