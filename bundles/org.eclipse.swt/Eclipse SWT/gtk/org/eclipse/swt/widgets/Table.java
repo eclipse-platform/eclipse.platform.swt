@@ -543,7 +543,9 @@ public int getHeaderHeight () {
 	if ( !OS.GTK_CLIST_SHOW_TITLES (handle) ) return 0;
 	int header = OS.gtk_clist_get_column_widget (handle, 0);
 	if (header == 0) return 0;
-	return OS.GTK_WIDGET_HEIGHT (header);
+	GtkRequisition req = new GtkRequisition();
+	OS.gtk_widget_size_request(header, req);
+	return req.height;
 }
 
 /**
