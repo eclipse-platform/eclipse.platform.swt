@@ -85,9 +85,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_gnome make_awt make_kde make_mozilla
-
-all64: make_swt make_atk make_gnome make_kde make_awt
+all: make_swt make_atk make_gnome make_awt make_kde
 
 #
 # SWT libs
@@ -189,6 +187,12 @@ xpcom_custom.o: xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+
+#
+# Install
+#
+install: all
+	cp *.so $(OUTPUT_DIR)
 
 #
 # Clean

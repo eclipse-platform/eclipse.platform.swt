@@ -27,14 +27,16 @@ case $MODEL in
 		AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
 		XTEST_LIB_PATH=/usr/X11R6/lib64
 		SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
+		OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
 		;;
 	*)
 		JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
 		AWT_LIB_PATH=$JAVA_HOME/jre/bin
 		XTEST_LIB_PATH=/usr/X11R6/lib
+		OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/linux/x86
 		;;
 esac
 
-export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS OUTPUT_DIR
 
 make -f $makefile ${1} ${2} ${3} ${4}

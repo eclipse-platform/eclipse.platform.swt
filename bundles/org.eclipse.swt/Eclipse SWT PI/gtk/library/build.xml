@@ -1,41 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_gtk_linux_lib" basedir="../../..">
-
-<target name="init">
-	<tstamp/>
-    <property name="lib_destdir" value="${basedir}/../org.eclipse.swt.gtk/os/linux/x86" />
-    <property name="lib_destdir64" value="${basedir}/../org.eclipse.swt.gtk64/os/linux/amd64" />
-</target>
+<project default="build_gtk_lib" basedir="../../..">
 
 <!-- Build swt.so for GTK -->
-<!-- Output .so for this platform into the org.eclipse.swt.gtk/os directory -->
-<target name="build_gtk_linux_lib" depends="init">
-	<mkdir dir="${lib_destdir}" />
+<target name="build_gtk_lib">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="make_mozilla"/>
+		<arg line="install"/>		
 	</exec>
-	<copy todir="${lib_destdir}">
-		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
-	</copy>
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk" depth="infinite" />	
 </target>
 
-<!-- Output .so for this platform into the org.eclipse.swt.gtk64/os directory -->
-<target name="build_gtk_64_linux_lib" depends="init">
-	<mkdir dir="${lib_destdir64}" />
+<!-- Build swt.so for GTK 64 -->
+<target name="build_gtk64_lib">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
-		<arg line="all64"/>
+		<arg line="install"/>		
 	</exec>
-	<copy todir="${lib_destdir64}">
-		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
-	</copy>
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk64" depth="infinite" />	
 </target>
 
-<target name="clean"  depends="init">
-	<tstamp/>
+<target name="clean">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
