@@ -29,7 +29,8 @@ public class FileDialog extends Dialog {
 	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
-	String [] fileNames = {""};
+	String [] fileNames;
+	String fileName = "";
 	String filterPath = "";
 	String fullPath = "";
 	boolean cancel = false;
@@ -178,17 +179,20 @@ void extractValues() {
 			items += 4;
 			if (fullFilename.equals(fullPath)) match = true;
 		}
-		if (!match) {
+		if (match) {
+			fileName = fileNames [0];
+		} else {
 			/* The user has modified the text field such that it doesn't match any
 			 * of the selected files, so use this value instead
 			 */
-			fileNames = new String [1];
 			int index = fullPath.lastIndexOf ('/');
-			fileNames [0] = fullPath.substring (index + 1, fullPath.length ());
+			fileName = fullPath.substring (index + 1, fullPath.length ());
+			fileNames = new String [1];
+			fileNames [0] = fileName;
 		}
 	} else {
 		int index = fullPath.lastIndexOf ('/');
-		fileNames [0] = fullPath.substring (index + 1, fullPath.length ());
+		fileName = fullPath.substring (index + 1, fullPath.length ());
 	}
 }
 /**
@@ -212,7 +216,10 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
-	return fileNames;
+	if ((style & SWT.MULTI) != 0) return fileNames;
+	String [] result = new String [1];
+	result [0] = fileName;
+	return result;
 }
 
 /**
@@ -293,7 +300,7 @@ int okPressed (int widget, int client, int call) {
 	extractValues();
 	
 	// preferred case, a file is selected
-	if (!fileNames [0].equals("")) {
+	if (!fileName.equals("")) {
 		OS.XtUnmanageChild (widget);
 		return 0;
 	}
@@ -460,7 +467,7 @@ public String open () {
  * @param string the file name
  */
 public void setFileName (String string) {
-	fileNames [0] = string;
+	fileName = string;
 }
 
 /**
