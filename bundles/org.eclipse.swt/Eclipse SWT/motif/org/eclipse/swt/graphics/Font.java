@@ -46,6 +46,7 @@ public final class Font {
 
 Font () {
 }
+
 /**	 
  * Constructs a new font given a device and font data
  * which describes the desired font's appearance.
@@ -66,8 +67,18 @@ Font () {
  */
 public Font (Device device, FontData fd) {
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, new FontData[] {fd});
+}
+
+public Font (Device device, FontData[] fd) {
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (fd.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < fd.length; i++) {
+		if (fd [i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	init(device, fd);
 }
+
 /**	 
  * Constructs a new font given a device, a font name,
  * the height of the desired font in points, and a font
@@ -92,8 +103,9 @@ public Font (Device device, FontData fd) {
  */
 public Font (Device device, String name, int height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData(name, height, style));
+	init(device, new FontData[]{new FontData(name, height, style)});
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the font. Applications must dispose of all fonts which
@@ -126,6 +138,7 @@ public void dispose () {
 	device = null;
 	handle = 0;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -142,6 +155,7 @@ public boolean equals (Object object) {
 	Font font = (Font)object;
 	return device == font.device && handle == font.handle;
 }
+
 /**
  * Returns the code page for the specified font list.
  *
@@ -217,6 +231,7 @@ static String getCodePage (int xDisplay, int fontList) {
 	OS.XmFontListFreeFontContext(context);
 	return codePage;
 }
+
 /**
  * Returns an array of <code>FontData</code>s representing the receiver.
  * On Windows, only one FontData will be returned per font. On X however, 
@@ -324,6 +339,7 @@ public FontData[] getFontData() {
 	}
 	return fontData;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -337,85 +353,52 @@ public FontData[] getFontData() {
 public int hashCode () {
 	return handle;
 }
-int loadFont(int xDisplay, FontData fd) {
-	/* Use the character encoding for the default locale */
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	return OS.XLoadQueryFont(xDisplay, buffer);
-}
-int loadFontSet(int xDisplay, FontData fd) {
-	/* Use the character encoding for the default locale */
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	int[] missing_charset = new int[1];
-	int[] missing_charset_count = new int[1];
-	int[] def_string = new int[1];
-	return OS.XCreateFontSet(xDisplay, buffer, missing_charset, missing_charset_count, def_string);
-}
-int matchFont(int xDisplay, FontData fd, boolean fontSet) {	
-	int font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-	if (font != 0) return font;
-	if (fd.slant != null) {
-		fd.slant = null;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
+
+String getXlfds(int fontSet) {
+	if (fontSet == 0) return "";
+	int[] fontStructPtr = new int[1];
+	int[] fontNamePtr = new int[1];
+	XFontStruct fontStruct = new XFontStruct();  
+	int nFonts = OS.XFontsOfFontSet(fontSet, fontStructPtr, fontNamePtr);
+	int [] fontStructs = new int[nFonts];
+	OS.memmove(fontStructs,fontStructPtr[0], nFonts * 4);
+	StringBuffer stringBuffer = new StringBuffer();
+	for (int i = 0; i < nFonts; i++) { // Go through each fontStruct in the font set.
+		OS.memmove(fontStruct,fontStructs[i],20 * 4);
+		int propPtr = fontStruct.properties;
+		for (int j = 0; j < fontStruct.n_properties; j++) {
+			// Reef through properties looking for XAFONT
+			int[] prop = new int[2];
+			OS.memmove(prop, propPtr, 8);
+			if (prop[0] == OS.XA_FONT) {
+				/* Found it, prop[1] points to the string */
+				int ptr = OS.XmGetAtomName(device.xDisplay, prop[1]);
+				int length = OS.strlen(ptr);
+				byte[] nameBuf = new byte[length];
+				OS.memmove(nameBuf, ptr, length);
+				if (stringBuffer.length() != 0) stringBuffer.append(','); 
+				stringBuffer.append(new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase());
+				OS.XFree(ptr);
+				break;
+			}
+			propPtr += 8;
+		}
 	}
-	if (fd.weight != null) {
-		fd.weight = null;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
-	}
-	if (fd.points != 0) {
-		fd.points = 0;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
-	}
-	return 0;
+	return stringBuffer.toString();
 }
-void init (Device device, FontData fd) {
+
+void init (Device device, FontData[] fds) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	int xDisplay = device.xDisplay;
-	int fontListEntry;
-//	int fontStruct = loadFont(xDisplay, fd);
-//	if (fontStruct == 0) {
-//		/*
-//		* If the desired font can not be loaded, the XLFD fields are wildcard
-//		* in order to preserve the font style and height. If there is no
-//		* font with the desired style and height, the slant, weight and points
-//		* are wildcard in that order, until a font can be loaded.
-//		*/
-//		FontData newFD = new FontData();
-//		newFD.slant = fd.slant;
-//		newFD.weight = fd.weight;
-//		newFD.points = fd.points;
-//		newFD.characterSetName = fd.characterSetName;
-//		if (newFD.characterSetName == null) {
-//			newFD.characterSetName = device.characterSetName;
-//		}
-//		newFD.characterSetRegistry = fd.characterSetRegistry;
-//		if (newFD.characterSetRegistry == null) {
-//			newFD.characterSetRegistry = device.characterSetRegistry;
-//		}
-//		fontStruct = matchFont(xDisplay, newFD, false);
-//
-//		/* Failed to load any font. Use the system font. */
-//		if (fontStruct == 0) {
-//			handle = device.systemFont;
-//			if (handle != 0) return;
-//		}
-//	}
-//	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
-	int horizontalResolution = fd.horizontalResolution;
-	int verticalResolution = fd.verticalResolution;
-	if (device.setDPI) {
-		Point dpi = device.getDPI();
-		if (fd.horizontalResolution == 0) fd.horizontalResolution  = dpi.x;
-		if (fd.verticalResolution == 0)	fd.verticalResolution = dpi.y;
-	}
-	if (fd.lang != null) {
-		String lang = fd.lang;
-		String country = fd.country;
-		String variant = fd.variant;
+	
+	/* A alternative locale have to be set in the first font data */
+	FontData firstFd = fds[0];
+	if (firstFd.lang != null) {
+		String lang = firstFd.lang;
+		String country = firstFd.country;
+		String variant = firstFd.variant;
 		String osLocale = lang;
 		if (country != null) osLocale += "_" + country;
 		if (variant != null) osLocale += "." + variant;
@@ -426,47 +409,100 @@ void init (Device device, FontData fd) {
 		}
 		OS.setlocale (OS.LC_CTYPE, buffer);
 	}		
-	int fontSet = loadFontSet(xDisplay, fd);
-	if (fontSet == 0) {
-		/*
-		* If the desired font can not be loaded, the XLFD fields are wildcard
-		* in order to preserve the font style and height. If there is no
-		* font with the desired style and height, the slant, weight and points
-		* are wildcard in that order, until a font can be loaded.
-		*/
-		FontData newFD = new FontData();
-		newFD.slant = fd.slant;
-		newFD.weight = fd.weight;
-		newFD.points = fd.points;
-		newFD.horizontalResolution = fd.horizontalResolution;
-		newFD.verticalResolution = fd.verticalResolution;
-		newFD.characterSetName = fd.characterSetName;
-		if (newFD.characterSetName == null) {
-			newFD.characterSetName = device.characterSetName;
-		}
-		newFD.characterSetRegistry = fd.characterSetRegistry;
-		if (newFD.characterSetRegistry == null) {
-			newFD.characterSetRegistry = device.characterSetRegistry;
-		}
-		fontSet = matchFont(xDisplay, newFD, true);
-	}
-	if (fd.lang != null) OS.setlocale (OS.LC_CTYPE, new byte [0]);
 	
-	/* Failed to load any font. Use the system font. */
+	/* Copy font datas since they might be simplified. */
+	Point dpi = null;
+	if (device.setDPI) dpi = device.getDPI();
+	FontData[] newFds = new FontData [fds.length];
+	for (int i = 0; i < fds.length; i++) {
+		FontData newFd = newFds[i] = new FontData();
+		FontData fd = fds[i];
+		newFd.foundry = fd.foundry;
+		newFd.fontFamily = fd.fontFamily;
+		newFd.weight = fd.weight;
+		newFd.slant = fd.slant;
+		newFd.setWidth = fd.setWidth;
+		newFd.addStyle = fd.addStyle;
+		newFd.pixels = fd.pixels;
+		newFd.points = fd.points;
+		if (dpi != null) {
+			newFd.horizontalResolution = dpi.x;
+			newFd.verticalResolution = dpi.y;
+		} else {
+			newFd.horizontalResolution = fd.horizontalResolution;
+			newFd.verticalResolution = fd.verticalResolution;
+		}
+		newFd.spacing = fd.spacing;
+		newFd.averageWidth = fd.averageWidth;
+		newFd.characterSetRegistry = fd.characterSetRegistry;
+		newFd.characterSetName = fd.characterSetName;
+	}
+	
+	/* Load desired font. */
+	int[] missingCharset = new int[1];
+	int[] missingCharsetCount = new int[1];
+	int[] defString = new int[1];
+	StringBuffer stringBuffer = new StringBuffer(newFds[0].getXlfd());	
+	for (int i = 1; i < newFds.length; i++) {
+		stringBuffer.append (',');
+		stringBuffer.append (newFds[i].getXlfd());
+	}
+	byte[] buffer = Converter.wcsToMbcs (null, stringBuffer.toString() , true);
+	int fontSet = OS.XCreateFontSet (xDisplay, buffer, missingCharset, missingCharsetCount, defString);
+	
+	/*
+	* If failed to load desired font or there are missing character
+	* sets, simplify XLFDs and try again.
+	*/
+	if (fontSet == 0 || missingCharsetCount[0] != 0) {
+		int index = 0;
+		int lastMissingCharsetCount = 0xFFFF;
+		String loadedXlfds = getXlfds(fontSet);
+		while ((index = wildcardXfld(newFds, index)) < fds.length) {
+			stringBuffer.setLength(0);
+			stringBuffer.append(loadedXlfds);
+			if (stringBuffer.length() != 0) stringBuffer.append(",");
+			stringBuffer.append(newFds[index].getXlfd());
+			buffer = Converter.wcsToMbcs(null, stringBuffer.toString(), true);
+			if (fontSet != 0) OS.XFreeFontSet(xDisplay, fontSet);
+			fontSet = OS.XCreateFontSet(xDisplay, buffer, missingCharset, missingCharsetCount, defString);
+	  		if (fontSet != 0) {
+	  			if (missingCharsetCount[0] == 0) {
+	  				break;
+	  			} else {
+	  				if (lastMissingCharsetCount > missingCharsetCount[0]) {
+		  				lastMissingCharsetCount = missingCharsetCount[0];
+		  				loadedXlfds = getXlfds(fontSet);
+	  				}				
+	  			}
+	  		}
+		}
+	}
+	
+	/* If no font could be loaded, use system font. */
 	if (fontSet == 0) {
-		handle = device.systemFont.handle;
+		Font systemFont = device.systemFont;
+		handle = systemFont.handle;
+		codePage = systemFont.codePage;
 	} else {
-		fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
-		if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		handle = OS.XmFontListAppendEntry(0, fontListEntry);
-		OS.XmFontListEntryFree(new int[]{fontListEntry});
+		int fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
+		if (fontListEntry != 0) {
+			handle = OS.XmFontListAppendEntry(0, fontListEntry);
+			OS.XmFontListEntryFree(new int[]{fontListEntry});
+			int codesetPtr = OS.nl_langinfo(OS.CODESET);
+			int length = OS.strlen(codesetPtr);
+			byte[] codeset = new byte[length];
+			OS.memmove(codeset, codesetPtr, length);
+			codePage = new String(codeset);
+		}
 	}
-	fd.horizontalResolution = horizontalResolution;
-	fd.verticalResolution = verticalResolution;
+
+	/* Reset locale */
+	if (firstFd.lang != null) OS.setlocale(OS.LC_CTYPE, new byte[0]);
+
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
-	codePage = getCodePage(xDisplay, handle);
 }
+
 /**
  * Returns <code>true</code> if the font has been disposed,
  * and <code>false</code> otherwise.
@@ -480,6 +516,7 @@ void init (Device device, FontData fd) {
 public boolean isDisposed() {
 	return handle == 0;
 }
+
 public static Font motif_new(Device device, int handle) {
 	if (device == null) device = Device.getDevice();
 	Font font = new Font();
@@ -488,6 +525,43 @@ public static Font motif_new(Device device, int handle) {
 	font.codePage = getCodePage(device.xDisplay, handle);
 	return font;
 }
+
+int wildcardXfld(FontData[] fds, int index) {
+	while (index < fds.length) {
+		FontData fd = fds[index];
+		if (fd.characterSetName != null	|| fd.characterSetRegistry != null || fd.foundry != null) {
+			fd.characterSetName = null;
+			fd.characterSetRegistry = null;
+			fd.foundry = null;
+			return index;		
+		}
+		if (fd.fontFamily != null || fd.addStyle != null || fd.horizontalResolution != 0 ||
+			fd.verticalResolution != 0 || fd.pixels != 0 || fd.spacing != null || fd.averageWidth != 0) 
+		{
+			fd.fontFamily = null;
+			fd.addStyle = null;		
+			fd.horizontalResolution = 0;
+			fd.verticalResolution = 0;
+			fd.pixels = 0;		
+			fd.spacing = null;
+			fd.averageWidth = 0;
+			return index;
+		}
+		if (fd.slant != null || fd.setWidth != null || fd.weight != null) {
+			fd.slant = null;
+			fd.setWidth = null;					
+			fd.weight = null;
+			return index;
+		}
+		if (fd.points != 0) {
+			fd.points = 0;
+			return index;
+		}
+		index++;
+	}
+	return index;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
