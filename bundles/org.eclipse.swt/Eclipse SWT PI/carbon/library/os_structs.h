@@ -23,6 +23,18 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
 #define AEDesc_sizeof() 0
 #endif
 
+#ifndef NO_ATSLayoutRecord
+void cacheATSLayoutRecordFields(JNIEnv *env, jobject lpObject);
+ATSLayoutRecord *getATSLayoutRecordFields(JNIEnv *env, jobject lpObject, ATSLayoutRecord *lpStruct);
+void setATSLayoutRecordFields(JNIEnv *env, jobject lpObject, ATSLayoutRecord *lpStruct);
+#define ATSLayoutRecord_sizeof() sizeof(ATSLayoutRecord)
+#else
+#define cacheATSLayoutRecordFields(a,b)
+#define getATSLayoutRecordFields(a,b,c) NULL
+#define setATSLayoutRecordFields(a,b,c)
+#define ATSLayoutRecord_sizeof() 0
+#endif
+
 #ifndef NO_ATSTrapezoid
 void cacheATSTrapezoidFields(JNIEnv *env, jobject lpObject);
 ATSTrapezoid *getATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct);

@@ -161,6 +161,37 @@ fail:
 }
 #endif
 
+#ifndef NO_ATSUDirectGetLayoutDataArrayPtrFromTextLayout
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUDirectGetLayoutDataArrayPtrFromTextLayout)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSUDirectGetLayoutDataArrayPtrFromTextLayout_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)ATSUDirectGetLayoutDataArrayPtrFromTextLayout((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (ATSUDirectDataSelector)arg2, (void *)lparg3, (ItemCount *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, ATSUDirectGetLayoutDataArrayPtrFromTextLayout_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUDirectReleaseLayoutDataArrayPtr
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUDirectReleaseLayoutDataArrayPtr)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSUDirectReleaseLayoutDataArrayPtr_FUNC);
+	rc = (jint)ATSUDirectReleaseLayoutDataArrayPtr((ATSULineRef)arg0, (ATSUDirectDataSelector)arg1, (void *)arg2);
+	OS_NATIVE_EXIT(env, that, ATSUDirectReleaseLayoutDataArrayPtr_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUDisposeStyle
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUDisposeStyle)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -382,6 +413,22 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, ATSUGetUnjustifiedBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUGlyphGetQuadraticPaths
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGlyphGetQuadraticPaths)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jintArray arg7)
+{
+	jint *lparg7=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSUGlyphGetQuadraticPaths_FUNC);
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	rc = (jint)ATSUGlyphGetQuadraticPaths((ATSUStyle)arg0, (GlyphID)arg1, (ATSQuadraticNewPathUPP)arg2, (ATSQuadraticLineUPP)arg3, (ATSQuadraticCurveUPP)arg4, (ATSQuadraticClosePathUPP)arg5, (void *)arg6, (OSStatus *)lparg7);
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	OS_NATIVE_EXIT(env, that, ATSUGlyphGetQuadraticPaths_FUNC);
 	return rc;
 }
 #endif
@@ -1088,6 +1135,16 @@ fail:
 }
 #endif
 
+#ifndef NO_CGContextAddPath
+JNIEXPORT void JNICALL OS_NATIVE(CGContextAddPath)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextAddPath_FUNC);
+	CGContextAddPath((CGContextRef)arg0, (CGPathRef)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextAddPath_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextBeginPath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextBeginPath)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1129,6 +1186,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextClosePath)
 	OS_NATIVE_ENTER(env, that, CGContextClosePath_FUNC);
 	CGContextClosePath((CGContextRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGContextClosePath_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextConcatCTM
+JNIEXPORT void JNICALL OS_NATIVE(CGContextConcatCTM)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextConcatCTM_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGContextConcatCTM((CGContextRef)arg0, *(CGAffineTransform *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGContextConcatCTM_FUNC);
 }
 #endif
 
@@ -1251,6 +1322,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSelectFont)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, CGContextSelectFont_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetAlpha
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetAlpha)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetAlpha_FUNC);
+	CGContextSetAlpha((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetAlpha_FUNC);
 }
 #endif
 
@@ -1761,6 +1842,151 @@ JNIEXPORT void JNICALL OS_NATIVE(CGImageRelease)
 	OS_NATIVE_ENTER(env, that, CGImageRelease_FUNC);
 	CGImageRelease((CGImageRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGImageRelease_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddArc
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddArc)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6, jboolean arg7)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddArc_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathAddArc((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddArc_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddCurveToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddCurveToPoint)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6, jfloat arg7)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddCurveToPoint_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathAddCurveToPoint((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddCurveToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddLineToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddLineToPoint)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jfloat arg2, jfloat arg3)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddLineToPoint_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathAddLineToPoint((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, arg2, arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddLineToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddPath
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddPath)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddPath_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathAddPath((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, (CGPathRef)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddPath_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddQuadCurveToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddQuadCurveToPoint)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddQuadCurveToPoint_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathAddQuadCurveToPoint((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, arg2, arg3, arg4, arg5);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddQuadCurveToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddRect
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddRect)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jobject arg2)
+{
+	jfloat *lparg1=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddRect_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	CGPathAddRect((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathAddRect_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathCloseSubpath
+JNIEXPORT void JNICALL OS_NATIVE(CGPathCloseSubpath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGPathCloseSubpath_FUNC);
+	CGPathCloseSubpath((CGMutablePathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathCloseSubpath_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathCreateMutable
+JNIEXPORT jint JNICALL OS_NATIVE(CGPathCreateMutable)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathCreateMutable_FUNC);
+	rc = (jint)CGPathCreateMutable();
+	OS_NATIVE_EXIT(env, that, CGPathCreateMutable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPathIsEmpty
+JNIEXPORT jboolean JNICALL OS_NATIVE(CGPathIsEmpty)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathIsEmpty_FUNC);
+	rc = (jboolean)CGPathIsEmpty((CGPathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathIsEmpty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPathMoveToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathMoveToPoint)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jfloat arg2, jfloat arg3)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathMoveToPoint_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGPathMoveToPoint((CGMutablePathRef)arg0, (const CGAffineTransform *)lparg1, arg2, arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGPathMoveToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGPathRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGPathRelease_FUNC);
+	CGPathRelease((CGPathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathRelease_FUNC);
 }
 #endif
 
@@ -3454,6 +3680,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(Fix2Long)
 	OS_NATIVE_ENTER(env, that, Fix2Long_FUNC);
 	rc = (jint)Fix2Long(arg0);
 	OS_NATIVE_EXIT(env, that, Fix2Long_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Fix2X
+JNIEXPORT jdouble JNICALL OS_NATIVE(Fix2X)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Fix2X_FUNC);
+	rc = (jdouble)Fix2X((Fixed)arg0);
+	OS_NATIVE_EXIT(env, that, Fix2X_FUNC);
 	return rc;
 }
 #endif
@@ -7936,6 +8174,18 @@ fail:
 }
 #endif
 
+#ifndef NO_QDRegionToRects
+JNIEXPORT jint JNICALL OS_NATIVE(QDRegionToRects)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, QDRegionToRects_FUNC);
+	rc = (jint)QDRegionToRects((RgnHandle)arg0, (QDRegionParseDirection)arg1, (RegionToRectsUPP)arg2, (void *)arg3);
+	OS_NATIVE_EXIT(env, that, QDRegionToRects_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_QDSetDirtyRegion
 JNIEXPORT jint JNICALL OS_NATIVE(QDSetDirtyRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -10531,6 +10781,20 @@ fail:
 		if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, memcpy__I_3II_FUNC);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	ATSLayoutRecord _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setATSLayoutRecordFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II_FUNC);
 }
 #endif
 

@@ -46,6 +46,46 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 }
 #endif
 
+#ifndef NO_ATSLayoutRecord
+typedef struct ATSLayoutRecord_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID glyphID, flags, originalOffset, realPos;
+} ATSLayoutRecord_FID_CACHE;
+
+ATSLayoutRecord_FID_CACHE ATSLayoutRecordFc;
+
+void cacheATSLayoutRecordFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSLayoutRecordFc.cached) return;
+	ATSLayoutRecordFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSLayoutRecordFc.glyphID = (*env)->GetFieldID(env, ATSLayoutRecordFc.clazz, "glyphID", "S");
+	ATSLayoutRecordFc.flags = (*env)->GetFieldID(env, ATSLayoutRecordFc.clazz, "flags", "I");
+	ATSLayoutRecordFc.originalOffset = (*env)->GetFieldID(env, ATSLayoutRecordFc.clazz, "originalOffset", "I");
+	ATSLayoutRecordFc.realPos = (*env)->GetFieldID(env, ATSLayoutRecordFc.clazz, "realPos", "I");
+	ATSLayoutRecordFc.cached = 1;
+}
+
+ATSLayoutRecord *getATSLayoutRecordFields(JNIEnv *env, jobject lpObject, ATSLayoutRecord *lpStruct)
+{
+	if (!ATSLayoutRecordFc.cached) cacheATSLayoutRecordFields(env, lpObject);
+	lpStruct->glyphID = (*env)->GetShortField(env, lpObject, ATSLayoutRecordFc.glyphID);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, ATSLayoutRecordFc.flags);
+	lpStruct->originalOffset = (*env)->GetIntField(env, lpObject, ATSLayoutRecordFc.originalOffset);
+	lpStruct->realPos = (*env)->GetIntField(env, lpObject, ATSLayoutRecordFc.realPos);
+	return lpStruct;
+}
+
+void setATSLayoutRecordFields(JNIEnv *env, jobject lpObject, ATSLayoutRecord *lpStruct)
+{
+	if (!ATSLayoutRecordFc.cached) cacheATSLayoutRecordFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, ATSLayoutRecordFc.glyphID, (jshort)lpStruct->glyphID);
+	(*env)->SetIntField(env, lpObject, ATSLayoutRecordFc.flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, ATSLayoutRecordFc.originalOffset, (jint)lpStruct->originalOffset);
+	(*env)->SetIntField(env, lpObject, ATSLayoutRecordFc.realPos, (jint)lpStruct->realPos);
+}
+#endif
+
 #ifndef NO_ATSTrapezoid
 typedef struct ATSTrapezoid_FID_CACHE {
 	int cached;
