@@ -619,7 +619,7 @@ void createDisplay (DeviceData data) {
 	/* Create the AppContext */
 	int [] argc = new int [] {0};
 	int xtContext = OS.XtCreateApplicationContext ();
-	if (OS.IsSunOS && XtContext == 0) XtContext = xtContext;
+	if ((OS.IsSunOS || OS.IsHPUX) && XtContext == 0) XtContext = xtContext;
 	OS.XtSetLanguageProc (xtContext, 0, 0);
 	
 	xEvent = OS.XtMalloc (XEvent.sizeof);
