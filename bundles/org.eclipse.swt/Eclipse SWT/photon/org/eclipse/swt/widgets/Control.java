@@ -1020,6 +1020,7 @@ public void moveAbove (Control control) {
 		return;
 	}
 	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (parent != control.parent) return;
 	int topHandle2 = control.topHandle ();
 	OS.PtWidgetInsert (topHandle1, topHandle2, 0);
 }
@@ -1050,6 +1051,7 @@ public void moveBelow (Control control) {
 		return;
 	}
 	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (parent != control.parent) return;
 	int topHandle2 = control.topHandle ();
 	OS.PtWidgetInsert (topHandle1, topHandle2, 1);
 }
