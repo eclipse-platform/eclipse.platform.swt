@@ -144,6 +144,15 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getFocus(AccessibleControlEvent e);
 	
 	/**
+	 * Sent when an accessibility client requests the role
+	 * of the control, or the role of a child of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return a role constant (constant defined in ACC beginning with ROLE_)
+	 * that describes the role of the specified control or child in the
+	 * <code>code</code> field of the event object.
+	 * </p>
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
 	 *    <li>code [OUT] - a role constant describing the role of the control or child</li>
@@ -160,6 +169,15 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getSelection(AccessibleControlEvent e);
 	
 	/**
+	 * Sent when an accessibility client requests the state
+	 * of the control, or the state of a child of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return a state constant (constant defined in ACC beginning with STATE_)
+	 * that describes the current state of the specified control or child in the
+	 * <code>code</code> field of the event object.
+	 * </p>
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
 	 *    <li>code [OUT] - a state constant describing the current state of the control or child</li>
@@ -168,6 +186,16 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getState(AccessibleControlEvent e);
 	
 	/**
+	 * Sent when an accessibility client requests the value
+	 * of the control, or the value of a child of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return a string describing the value of the specified control
+	 * or child in the <code>result</code> field of the event object.
+	 * This string is typically... ***************
+	 * Return null if ********
+	 * </p>
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
 	 *    <li>result [OUT] - the requested value string, or null</li>
