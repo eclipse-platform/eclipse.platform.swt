@@ -316,6 +316,7 @@ public class OS {
 	public static final int kNavAllowMultipleFiles = 0x00000080;
 	public static final int kNavAllowOpenPackages = 0x00002000;
 	public static final int kNavCBNewLocation = 5;
+	public static final int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
 	public static final int kNavSupportPackages = 0x00001000;
 	public static final int kNavUserActionCancel = 1;
 	public static final int kNavUserActionChoose = 4;

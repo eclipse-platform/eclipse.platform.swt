@@ -9,14 +9,12 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.internal.Callback;
 
 public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
-	static final String FILTER = "*";
 
 public FileDialog (Shell parent) {
 	this (parent, SWT.APPLICATION_MODAL);
@@ -65,23 +63,22 @@ public String open () {
 	}
 		
 	NavDialogCreationOptions options = new NavDialogCreationOptions ();
-	OS.NavGetDefaultDialogCreationOptions (options);
-	options.windowTitle = titlePtr;
+	options.windowTitle = options.clientName = titlePtr;
 	options.parentWindow = OS.GetControlOwner (parent.handle);
-	
-//int TEXT = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
-//int KAHL = ('K'<<24) + ('A'<<16) + ('H'<<8) + 'L';
-int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
-//kNavSelectDefaultLocation     = 0x00000400
+	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
+	options.location_h = -1;
+	options.location_v = -1;
+	options.saveFileName = fileNamePtr;
 
 	int [] outDialog = new int [1];
 	if ((style & SWT.SAVE) != 0) {
-		OS.NavCreatePutFileDialog(options, kNavGenericSignature, 0, 0, 0, outDialog);
-		if (outDialog [0] != 0) OS.NavDialogSetSaveFileName(outDialog [0], fileNamePtr);		
+		// NEEDS WORK - filter extensions, start in filter path, allow user
+		// to select existing files.
+		OS.NavCreatePutFileDialog (options, 0, 0, 0, 0, outDialog);		
 	} else {
-		options.optionFlags |= OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
-		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;		
-		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 12345, outDialog);
+		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
+		// NEEDS WORK - filter extensions, start in filter path, select file name if it exists
+		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
 		OS.NavDialogRun (outDialog [0]);
@@ -117,8 +114,8 @@ int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
 							pathString = OS.CFURLCopyFileSystemPath(pathUrl, OS.kCFURLPOSIXPathStyle);
 							fullString = OS.CFURLCopyFileSystemPath(fullUrl, OS.kCFURLPOSIXPathStyle);
 							fileString = record.saveFileName;
-							OS.CFRelease (fullUrl);
 							OS.CFRelease (pathUrl);
+							OS.CFRelease (fullUrl);
 						}
 					} else {
 						for (int i = 0; i < count [0]; i++) {
@@ -126,18 +123,14 @@ int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
 								byte[] fsRef = new byte[actualSize[0]];
 								OS.memcpy (fsRef, dataPtr, actualSize [0]);
 								int url = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
-								if (pathString == 0) {
+								if (i == 0) {
 									int pathUrl = OS.CFURLCreateCopyDeletingLastPathComponent(OS.kCFAllocatorDefault, url);
 									pathString = OS.CFURLCopyFileSystemPath (pathUrl, OS.kCFURLPOSIXPathStyle);
-									OS.CFRelease (pathUrl);
-								}
-								if (fullString == 0) {
 									fullString = OS.CFURLCopyFileSystemPath (url, OS.kCFURLPOSIXPathStyle);
-								}
-								int lastString = OS.CFURLCopyLastPathComponent (url);
-								if (i == 0) {
-									fileString = lastString;
+									fileString = OS.CFURLCopyLastPathComponent (url);
+									OS.CFRelease (pathUrl);
 								} else {
+									int lastString = OS.CFURLCopyLastPathComponent (url);
 									int length = OS.CFStringGetLength (lastString);
 									char [] buffer= new char [length];
 									CFRange range = new CFRange ();
