@@ -5346,6 +5346,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseMenu
 }
 #endif /* NO_ReleaseMenu */
 
+#ifndef NO_RemoveControlProperty
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveControlProperty
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("RemoveControlProperty\n")
+
+	return (jint)RemoveControlProperty((ControlRef)arg0, arg1, arg2);
+}
+#endif
+
 #ifndef NO_RemoveDataBrowserItems
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowserItems
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)

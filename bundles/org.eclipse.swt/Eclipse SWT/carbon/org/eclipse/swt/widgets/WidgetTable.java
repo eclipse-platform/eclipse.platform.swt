@@ -64,8 +64,7 @@ public static synchronized Widget remove (int handle) {
 		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
-		Property [0] = 0;
-		OS.SetControlProperty (handle, SWT0, SWT0, 4, Property);
+		OS.RemoveControlProperty (handle, SWT0, SWT0);
 
 	}
 	return widget;

@@ -881,6 +881,7 @@ public static final native void RectRgn(int rgnHandle, Rect left);
 public static final native int RegisterAppearanceClient();
 public static final native void ReleaseEvent(int theEvent);
 public static final native int ReleaseMenu(int mHandle);
+public static final native int RemoveControlProperty(int control, int propertyCreator, int propertyTag);
 public static final native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
 public static final native int RemoveDataBrowserTableViewColumn(int browser, int column);
 public static final native int RemoveEventHandler(int inHandlerRef);
