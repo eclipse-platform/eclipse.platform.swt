@@ -124,9 +124,9 @@ public void setMessage (String string) {
  * </ul>
  */
 public int open () {
-	int /*long*/ parentHandle = (parent != null)? parent.topHandle() : 0;
+	int /*long*/ parentHandle = (parent != null) ? parent.topHandle() : 0;
 	int dialogFlags = OS.GTK_DIALOG_DESTROY_WITH_PARENT;
-	if ((style & (SWT.PRIMARY_MODAL|SWT.APPLICATION_MODAL|SWT.SYSTEM_MODAL)) != 0) {
+	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		dialogFlags |= OS.GTK_DIALOG_MODAL;
 	}
 	int messageType = OS.GTK_MESSAGE_INFO;
@@ -136,8 +136,10 @@ public int open () {
 	
 	byte [] buffer = Converter.wcsToMbcs (null, message, true);
 	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
-	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	createButtons();
+	buffer = Converter.wcsToMbcs(null, title, true);
+	OS.gtk_window_set_title(handle,buffer);
 	int result = OS.gtk_dialog_run(handle);
 	OS.gtk_widget_destroy(handle);
 	return result;
