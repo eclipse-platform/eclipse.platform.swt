@@ -28,8 +28,8 @@ class StyledTextTab extends ScrollableTab {
 	Button wrapButton, readOnlyButton, fullSelectionButton;
 	
 	/* Buttons for adding StyleRanges to StyledText */
-	Button boldButton, italicButton, redButton, yellowButton;
-	Image boldImage, italicImage, redImage, yellowImage;
+	Button boldButton, italicButton, redButton, yellowButton, underlineButton, strikeoutButton;
+	Image boldImage, italicImage, redImage, yellowImage, underlineImage, strikeoutImage;
 	
 	/* Variables for saving state. */
 	StyleRange[] styleRanges;
@@ -132,7 +132,7 @@ class StyledTextTab extends ScrollableTab {
 		final Display display = controlGroup.getDisplay ();
 		styledTextStyleGroup = new Group (controlGroup, SWT.NONE);
 		styledTextStyleGroup.setText (ControlExample.getResourceString ("StyledText_Styles"));
-		styledTextStyleGroup.setLayout (new GridLayout(5, false));
+		styledTextStyleGroup.setLayout (new GridLayout(7, false));
 		GridData data = new GridData (GridData.HORIZONTAL_ALIGN_FILL);
 		data.horizontalSpan = 2;
 		styledTextStyleGroup.setLayoutData (data);
@@ -142,30 +142,21 @@ class StyledTextTab extends ScrollableTab {
 		italicImage = createBitmapImage (display, "italic");
 		redImage = createBitmapImage (display, "red");
 		yellowImage = createBitmapImage (display, "yellow");
+		underlineImage = createBitmapImage (display, "underline");
+		strikeoutImage = createBitmapImage (display, "strikeout");
 		
 		/* Create controls to modify the StyledText */
 		Label label = new Label (styledTextStyleGroup, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("StyledText_Style_Instructions"));
 		data = new GridData(GridData.FILL_HORIZONTAL);
-		data.horizontalSpan = 5;
+		data.horizontalSpan = 7;
 		label.setLayoutData(data);
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Bold"));
 		boldButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		boldButton.setImage (boldImage);
-		boldButton.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				Point sel = styledText.getSelectionRange();
-				if ((sel == null) || (sel.y == 0)) return;
-				StyleRange style;
-				for (int i = sel.x; i<sel.x+sel.y; i++) {
-					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.BOLD);}
-					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.BOLD);}
-					styledText.setStyleRange(style);
-				}
-				styledText.setSelectionRange(sel.x + sel.y, 0);
-			}
-		});
+		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Underline"));
+		underlineButton = new Button (styledTextStyleGroup, SWT.PUSH);
+		underlineButton.setImage (underlineImage);
 		new Label (styledTextStyleGroup, SWT.NONE).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Style"));
 		redButton = new Button (styledTextStyleGroup, SWT.PUSH);
@@ -173,54 +164,72 @@ class StyledTextTab extends ScrollableTab {
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Italic"));
 		italicButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		italicButton.setImage (italicImage);
-		italicButton.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				Point sel = styledText.getSelectionRange();
-				if ((sel == null) || (sel.y == 0)) return;
-				StyleRange style;
-				for (int i = sel.x; i<sel.x+sel.y; i++) {
-					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.ITALIC);}
-					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.ITALIC);}
-					styledText.setStyleRange(style);
-				}
-				styledText.setSelectionRange(sel.x + sel.y, 0);
-			}
-		});
+		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Strikeout"));
+		strikeoutButton = new Button (styledTextStyleGroup, SWT.PUSH);
+		strikeoutButton.setImage (strikeoutImage);
 		new Label (styledTextStyleGroup, SWT.NONE).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Style"));
 		yellowButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		yellowButton.setImage (yellowImage);
+		SelectionListener styleListener = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				Point sel = styledText.getSelectionRange();
+				if ((sel == null) || (sel.y == 0)) return;
+				StyleRange style;
+				for (int i = sel.x; i<sel.x+sel.y; i++) {
+					StyleRange range = styledText.getStyleRangeAtOffset(i);
+					if (range != null) {
+						style = (StyleRange)range.clone();
+						style.start = i;
+						style.length = 1;
+					} else {
+						style = new StyleRange(i, 1, null, null, SWT.NORMAL);
+					}
+					if (e.widget == boldButton) {
+						style.fontStyle ^= SWT.BOLD;
+					} else if (e.widget == italicButton) {
+						style.fontStyle ^= SWT.ITALIC;						
+					} else if (e.widget == underlineButton) {
+						style.underline = !style.underline;
+					} else if (e.widget == strikeoutButton) {
+						style.strikeout = !style.strikeout;
+					}
+					styledText.setStyleRange(style);
+				}
+				styledText.setSelectionRange(sel.x + sel.y, 0);			
+			}
+		};
 		SelectionListener colorListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				Point sel = styledText.getSelectionRange();
 				if ((sel == null) || (sel.y == 0)) return;
-				Color fg, bg;
+				Color fg = null, bg = null;
 				if (e.widget == redButton) {
 					fg = display.getSystemColor (SWT.COLOR_RED);
-					bg = null;
 				} else if (e.widget == yellowButton) {
-					fg = null;
 					bg = display.getSystemColor (SWT.COLOR_YELLOW);
-				} else {
-					fg = bg = null;
 				}
 				StyleRange style;
 				for (int i = sel.x; i<sel.x+sel.y; i++) {
 					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range == null) {
-						style = new StyleRange(i, 1, fg, bg, SWT.NORMAL);
-					}
-					else {
-						if (range.foreground != null) fg = range.foreground;
-						if (range.background != null) bg = range.background;
-						style = new StyleRange(i, 1, fg, bg, range.fontStyle);
+					if (range != null) {
+						style = (StyleRange)range.clone();
+						style.start = i;
+						style.length = 1;
+						style.foreground = style.foreground != null ? null : fg;
+						style.background = style.background != null ? null : bg;
+					} else {
+						style = new StyleRange (i, 1, fg, bg, SWT.NORMAL);
 					}
 					styledText.setStyleRange(style);
 				}
 				styledText.setSelectionRange(sel.x + sel.y, 0);
 			}
 		};
+		boldButton.addSelectionListener(styleListener);
+		italicButton.addSelectionListener(styleListener);
+		underlineButton.addSelectionListener(styleListener);
+		strikeoutButton.addSelectionListener(styleListener);
 		redButton.addSelectionListener(colorListener);
 		yellowButton.addSelectionListener(colorListener);
 		yellowButton.addDisposeListener(new DisposeListener () {
@@ -229,6 +238,8 @@ class StyledTextTab extends ScrollableTab {
 				italicImage.dispose();
 				redImage.dispose();
 				yellowImage.dispose();
+				underlineImage.dispose();
+				strikeoutImage.dispose();
 			}
 		});
 	}
