@@ -673,6 +673,7 @@ public static final native int TXNEchoMode(int txHandle, char echoCharacter, int
 public static final native void TXNFocus(int txHandle, boolean becomingFocused);
 public static final native int TXNGetData(int txHandle, int startOffset, int endOffset, int[] dataHandle);
 public static final native int TXNGetLineCount(int txHandle, int[] lineTotal);
+public static final native int TXNGetRectBounds(int iTXNObject, Rect oViewRect, TXNLongRect oDestinationRect, TXNLongRect oTextRect);
 public static final native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
 public static final native int TXNInitTextension(int iDefaultFonts, int iCountDefaultFonts, int iUsageFlags);
 public static final native int TXNNewObject(int fileSpec, int wHandle, Rect bounds, int frameOptions, int frameType, int fileType, int iPermanentEncoding, int[] handle, int[] frameID, int refcon);

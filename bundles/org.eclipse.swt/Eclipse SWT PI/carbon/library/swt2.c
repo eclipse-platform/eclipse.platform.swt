@@ -376,28 +376,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getHandleData__I
 	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_TXNGetRectBounds(JNIEnv *env, jclass zz,
-			jint txHandle, jshortArray viewRect, jintArray destRect, jintArray textRect) {
-        jshort *sa= NULL;
-        jint *sb= NULL;
-        jint *sc= NULL;
-	jint status;
-	if (viewRect != NULL)
-		sa= (*env)->GetShortArrayElements(env, viewRect, 0);
-	if (destRect != NULL)
-		sb= (*env)->GetIntArrayElements(env, destRect, 0);
-	if (textRect != NULL)
-		sc= (*env)->GetIntArrayElements(env, textRect, 0);
-	status= (jint) RC(TXNGetRectBounds((TXNObject)txHandle, (Rect*)sa, (TXNLongRect*)sb, (TXNLongRect*)sc));
-	if (sa != NULL)
-		(*env)->ReleaseShortArrayElements(env, viewRect, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, destRect, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseIntArrayElements(env, textRect, sc, 0);
-	return status;
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setTXNMargins(JNIEnv *env, jclass zz,
 				jint txHandle, jshort margin) {
     TXNControlTag controlTag[1];

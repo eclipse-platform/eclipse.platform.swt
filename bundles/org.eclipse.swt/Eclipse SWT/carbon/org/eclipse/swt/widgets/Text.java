@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.TXNLongRect;
 
 /**
  * Instances of this class are selectable user interface
@@ -230,21 +231,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (size == 0) {
 			if (hHint == SWT.DEFAULT) {
 				if ((style & SWT.SINGLE) != 0) {
-					int[] textBounds= new int[4];
-					OS.TXNGetRectBounds(fTX, null, null, textBounds);
-					height= textBounds[2]-textBounds[0];
-				} else
+					TXNLongRect oTextRect= new TXNLongRect();
+					OS.TXNGetRectBounds(fTX, null, null, oTextRect);
+					height= oTextRect.bottom - oTextRect.top;
+				} else {
 					height= DEFAULT_HEIGHT;
+				}
 			}
 			if (wHint == SWT.DEFAULT)
 				width= DEFAULT_WIDTH;
 		} else {
-			int[] textBounds= new int[4];
-			OS.TXNGetRectBounds(fTX, null, null, textBounds);
+			TXNLongRect oTextRect = new TXNLongRect();
+			OS.TXNGetRectBounds(fTX, null, null, oTextRect);
 			if (hHint == SWT.DEFAULT)
-				height= textBounds[2]-textBounds[0];					
+				height= oTextRect.bottom - oTextRect.top;					
 			if (wHint == SWT.DEFAULT)
-				width= textBounds[3]-textBounds[1];
+				width= oTextRect.right - oTextRect.left;
 		}
 	}
 	if (horizontalBar != null) {

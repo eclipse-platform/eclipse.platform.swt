@@ -146,3 +146,11 @@ void setThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDraw
 #define getThemeButtonDrawInfoFields(a,b,c) NULL
 #define setThemeButtonDrawInfoFields(a,b,c)
 #endif /* NO_ThemeButtonDrawInfo */
+
+#ifndef NO_TXNLongRect
+TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
+void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
+#else
+#define getTXNLongRectFields(a,b,c) NULL
+#define setTXNLongRectFields(a,b,c)
+#endif /* NO_TXNLongRect */

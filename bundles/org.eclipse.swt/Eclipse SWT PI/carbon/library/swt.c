@@ -4774,4 +4774,24 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
 }
 #endif /* NO_memset */
 
+#ifndef NO_TXNGetRectBounds
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetRectBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jobject arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	TXNLongRect _arg2, *lparg2=NULL;
+	TXNLongRect _arg3, *lparg3=NULL;
+	jint rc;
 
+	DEBUG_CALL("TXNGetRectBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getTXNLongRectFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getTXNLongRectFields(env, arg3, &_arg3);
+	rc = (jint)TXNGetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (TXNLongRect *)lparg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) setTXNLongRectFields(env, arg2, lparg2);
+	if (arg3) setTXNLongRectFields(env, arg3, lparg3);
+	return rc;
+}
+#endif /* NO_TXNGetRectBounds */
