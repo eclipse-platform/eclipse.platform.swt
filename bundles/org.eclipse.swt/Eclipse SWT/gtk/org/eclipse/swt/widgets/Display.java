@@ -181,12 +181,15 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Package name */
-	static final String PACKAGE_NAME;
-	static {
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
+	/* This code is intentionally commented.
+	 * ".class" can not be used on CLDC.
+	 */
+	/*static {
 		String name = Display.class.getName ();
 		int index = name.lastIndexOf ('.');
 		PACKAGE_NAME = name.substring (0, index + 1);
-	}
+	}*/
 
 	/* #define in gdkevents.h */
 	static final int DOUBLE_CLICK_TIME = 250;
