@@ -1262,7 +1262,11 @@ public void fillPath(Path path) {
 	if (data.updateClip) setCGClipping();
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddPath(handle, path.handle);
-	OS.CGContextEOFillPath(handle);
+	if (data.fillRule == SWT.FILL_WINDING) {
+		OS.CGContextFillPath(handle);
+	} else {
+		OS.CGContextEOFillPath(handle);
+	}
 	flush();
 }
 
@@ -1296,7 +1300,11 @@ public void fillPolygon(int[] pointArray) {
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
-	OS.CGContextEOFillPath(handle);
+	if (data.fillRule == SWT.FILL_WINDING) {
+		OS.CGContextFillPath(handle);
+	} else {
+		OS.CGContextEOFillPath(handle);
+	}
 	flush();
 }
 
@@ -1555,6 +1563,11 @@ public void getClipping(Region region) {
 		OS.SectRgn(data.visibleRgn, clipping, clipping);
 		OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
 	}
+}
+
+public int getFillRule() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.fillRule;
 }
 
 /** 
@@ -1952,6 +1965,17 @@ void setCGClipping () {
 	}
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, rect.left, -(portRect.bottom - portRect.top) + rect.top);
+}
+
+public void setFillRule(int rule) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (rule) {
+		case SWT.FILL_WINDING:
+		case SWT.FILL_EVEN_ODD: break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.fillRule = rule;
 }
 
 /** 

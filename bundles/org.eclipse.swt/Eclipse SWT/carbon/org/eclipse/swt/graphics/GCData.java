@@ -40,6 +40,7 @@ public final class GCData {
 	public int lineJoin = SWT.JOIN_MITER;
 	public float[] dashes;
 	public boolean xorMode;
+	public int fillRule = SWT.FILL_EVEN_ODD;
 	
 	public Font font;
 	public int fontAscent;

@@ -173,6 +173,42 @@ public void close() {
 	OS.CGPathCloseSubpath(handle);
 }
 
+public boolean contains(float x, float y, GC gc, boolean outline) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	//TODO - see windows
+	int pixel = OS.NewPtr(4);
+	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int[] buffer = new int[]{0xFFFFFFFF};
+	OS.memcpy(pixel, buffer, 4);
+	int provider = OS.CGDataProviderCreateWithData(0, pixel, 4, 0);
+	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
+	if (context == 0) {
+		OS.DisposePtr(pixel);
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	GCData data = gc.data;
+	OS.CGContextSetLineCap(context, data.lineCap);
+	OS.CGContextSetLineJoin(context, data.lineJoin);
+	OS.CGContextSetLineWidth(context, data.lineWidth);
+	OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
+	OS.CGContextAddPath(context, handle);
+	if (outline) {
+		OS.CGContextStrokePath(context);
+	} else {
+		if (data.fillRule == SWT.FILL_WINDING) {
+			OS.CGContextFillPath(handle);
+		} else {
+			OS.CGContextEOFillPath(handle);
+		}
+	}
+	OS.CGContextRelease(context);
+	OS.memcpy(buffer, pixel, 4);
+	OS.DisposePtr(pixel);	
+	return buffer[0] != 0xFFFFFFFF;
+}
+
 public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
