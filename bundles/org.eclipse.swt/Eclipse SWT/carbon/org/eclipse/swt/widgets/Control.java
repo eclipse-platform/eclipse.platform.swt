@@ -2225,8 +2225,11 @@ public boolean setParent (Composite parent) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
-		if (--drawCount == 0)
-			OS.HIViewSetDrawingEnabled(topHandle(), true);
+		if (--drawCount == 0) {
+			int topHandle= topHandle();
+			OS.HIViewSetDrawingEnabled(topHandle, true);
+			OS.HIViewSetNeedsDisplay(topHandle, true);
+		}
 	} else {
 		if (drawCount++ == 0)
 			OS.HIViewSetDrawingEnabled(topHandle(), false);
