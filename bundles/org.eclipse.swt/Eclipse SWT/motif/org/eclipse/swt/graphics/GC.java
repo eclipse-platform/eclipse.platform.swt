@@ -1238,7 +1238,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
 	final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
 	Visual visual = new Visual();
-	OS.memmove(visual, xVisual, visual.sizeof);
+	OS.memmove(visual, xVisual, Visual.sizeof);
 	final int depth = OS.XDefaultDepthOfScreen(xScreen);
 	final boolean directColor = (depth > 8);
 
