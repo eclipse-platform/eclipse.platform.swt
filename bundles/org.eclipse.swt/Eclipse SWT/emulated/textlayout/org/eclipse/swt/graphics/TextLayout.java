@@ -246,7 +246,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (drawX + lineWidth[line] < clip.x) continue;
 		FontMetrics metrics = getLineMetrics(line);
 		int baseline = metrics.getAscent() + metrics.getLeading();
-		int lineHeight = metrics.getHeight();		
+		int lineHeight = metrics.getHeight();
 		Font lastFont = null, currentFont = null;
 		int drawRunY = 0;
 		for (int i = 0; i < lineRuns.length; i++) {
