@@ -14,7 +14,13 @@ public IOleInPlaceObject(int address) {
 public int InPlaceDeactivate() {
 	return COM.VtblCall(5, address);
 }
+public int UIDeactivate() {
+	return COM.VtblCall(6, address);
+}
 public int SetObjectRects(RECT lprcPosRect, RECT lprcClipRect) {
 	return COM.VtblCall(7, address, lprcPosRect, lprcClipRect);
+}
+public int ReactivateAndUndo() {
+	return COM.VtblCall(8, address);
 }
 }

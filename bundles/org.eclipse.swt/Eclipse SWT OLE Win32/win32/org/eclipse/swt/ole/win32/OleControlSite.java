@@ -525,6 +525,20 @@ private int OnControlInfoChanged() {
 	}
 	return COM.S_OK;
 }
+void onFocusIn(Event e) {
+	if (objIOleInPlaceObject == null) return;
+	doVerb(OLE.OLEIVERB_UIACTIVATE);
+	if (isFocusControl()) return;
+	int[] phwnd = new int[1];
+	objIOleInPlaceObject.GetWindow(phwnd);
+	if (phwnd[0] == 0) return;
+	OS.SetFocus(phwnd[0]);
+}
+void onFocusOut(Event e) {
+	if (objIOleInPlaceObject != null) {
+		objIOleInPlaceObject.UIDeactivate();
+	}
+}
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
