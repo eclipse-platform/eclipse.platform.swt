@@ -337,10 +337,10 @@ void dropDown (boolean drop) {
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Rectangle listRect = list.getBounds ();
-	int borderWidth = getBorderWidth();
-	Point point = toDisplay (new Point (0 - borderWidth, 0 - borderWidth));
+	Point point = getParent().toDisplay (getLocation ());
 	Point comboSize = getSize();
-	popup.setBounds (point.x, point.y + comboSize.y, comboSize.x, listRect.height + 2);
+	int width = Math.max (comboSize.x, listRect.width + 2);
+	popup.setBounds (point.x, point.y + comboSize.y, width, listRect.height + 2);
 	popup.setVisible (true);
 	list.setFocus();
 }
@@ -622,9 +622,9 @@ void internalLayout () {
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 	
 	Point size = getSize();
-	int listHeight = list.getItemHeight () * ITEMS_SHOWING;
-	Rectangle trim = list.computeTrim (0, 0, size.x - 2, listHeight);
-	list.setBounds (1, 1, size.x - 2, trim.height);
+	int itemHeight = list.getItemHeight () * ITEMS_SHOWING;
+	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
+	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
 }
 void listEvent (Event event) {
 	switch (event.type) {
