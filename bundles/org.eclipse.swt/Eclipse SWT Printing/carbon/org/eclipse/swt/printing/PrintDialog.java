@@ -296,5 +296,10 @@ public void setPrintToFile(boolean printToFile) {
 }
 
 protected void checkSubclass() {
+	String name = getClass().getName();
+	String validName = PrintDialog.class.getName();
+	if (!validName.equals(name)) {
+		SWT.error(SWT.ERROR_INVALID_SUBCLASS);
+	}
 }
 }
