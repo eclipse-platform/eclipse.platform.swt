@@ -429,9 +429,10 @@ void hookEvents () {
 }
 boolean isAccelActive () {
 	Menu menu = parent;
-	while (menu.cascade != null) {
+	while (menu != null && menu.cascade != null) {
 		menu = menu.cascade.parent;
 	}
+	if (menu == null) return false;
 	Decorations shell = menu.parent;
 	return shell.menuBar == menu;
 }

@@ -285,9 +285,10 @@ public int getAccelerator () {
 
 int /*long*/ getAccelGroup () {
 	Menu menu = parent;
-	while (menu.cascade != null) {
+	while (menu != null && menu.cascade != null) {
 		menu = menu.cascade.parent;
 	}
+	if (menu == null) return 0;
 	Decorations shell = menu.parent;
 	return shell.menuBar == menu ? shell.accelGroup : 0;
 }
