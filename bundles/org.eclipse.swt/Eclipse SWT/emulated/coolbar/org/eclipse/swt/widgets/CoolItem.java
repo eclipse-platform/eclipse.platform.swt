@@ -5,9 +5,9 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
  
 /**
  * Instances of this class are selectable user interface
@@ -33,7 +33,12 @@ public class CoolItem extends Item {
 	static final int MARGIN_WIDTH = 4;
 	static final int MARGIN_HEIGHT = 2;
 	static final int GRABBER_WIDTH = 2;
-	static final int CHEVRON_WIDTH = (3 * MARGIN_WIDTH) + 2; //wider enough for drawing the double arrow
+	
+	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform depended values
+	private int CHEVRON_VERTICAL_TRIM = -1;	
+	private static final int CHEVRON_LEFT_MARGIN = 2;
+	private static final int CHEVRON_IMAGE_WIDTH = 8;	//Width to draw the double arrow
+	
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 
 	ToolBar chevron;
@@ -70,9 +75,7 @@ public class CoolItem extends Item {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style) {
-	super(parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount());
+	this (parent, style, parent.getItemCount());
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -109,6 +112,7 @@ public CoolItem (CoolBar parent, int style, int index) {
 	super(parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
+	calculatedBorders();
 }
 /**
  * Adds the listener to the collection of listeners that will
@@ -149,6 +153,22 @@ public void addSelectionListener(SelectionListener listener) {
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+/* (Non-javadoc)
+ *  Find the trim size of the Toolbar widget in the current plataform.
+ */
+void calculatedBorders() {
+	ToolBar tb = new ToolBar (parent, SWT.FLAT);
+	ToolItem ti = new ToolItem (tb, SWT.PUSH);
+	Image image = new Image (getDisplay(), 1, 1);
+	ti.setImage (image);
+	Point size = tb.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	CHEVRON_HORIZONTAL_TRIM = size.x - 1;
+	CHEVRON_VERTICAL_TRIM = size.y - 1;
+	tb.dispose ();
+	ti.dispose ();
+	image.dispose ();
 }
 /**
  * Returns the preferred size of the receiver.
@@ -193,8 +213,9 @@ public void dispose () {
 	parent = null;
 	control = null;
 	
-	/* The parent for the chevron is the coolbar (coolItem can not be the parent)
-	 * but it has to be disposed with the item 
+	/* 
+	 * Although The parent for the chevron is the Coolbar (CoolItem can not be the parent)
+	 * it has to be disposed with the item 
 	 */
 	if (chevron != null && !chevron.isDisposed()) chevron.dispose();
 	chevron = null;
@@ -203,15 +224,21 @@ public void dispose () {
 }
 
 Image getArrowImage () {
-	
-	if (arrowImage != null) return arrowImage;
-	int height = itemBounds.height - 10; //remove the border space
-	int width = CHEVRON_WIDTH - 7;
-	
+
+	int height = Math.min (control.getSize ().y, itemBounds.height) - CHEVRON_VERTICAL_TRIM;
+	if (arrowImage != null) {
+		if (arrowImage.getBounds().height == height) {
+			return arrowImage;
+		} else {
+			arrowImage.dispose();
+			arrowImage = null;
+		}
+	}
+	int width = CHEVRON_IMAGE_WIDTH; 
 	Display display = getDisplay ();
-	Color foreground = control.getForeground ();
+	Color foreground = parent.getForeground ();
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
-	Color background = control.getBackground ();
+	Color background = parent.getBackground ();
 	
 	PaletteData palette = new PaletteData (new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
 	ImageData imageData = new ImageData (width, height, 4, palette);
@@ -225,13 +252,13 @@ Image getArrowImage () {
 	
 	int startX = 0 ;
 	int startY = height / 6; 
-	int step = MARGIN_WIDTH / 2;	
+	int step = 2;	
 	gc.drawLine (startX, startY, startX + step, startY + step);
 	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
 	startX++;
 	gc.drawLine (startX, startY, startX + step, startY + step);
 	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
-	startX += 2;
+	startX += 3;
 	gc.drawLine (startX, startY, startX + step, startY + step);
 	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
 	startX++;
@@ -320,11 +347,11 @@ public Point getSize () {
 	checkWidget();
 	return new Point (itemBounds.width, itemBounds.height);
 }
-int internalGetMinimumWidth(){
+int internalGetMinimumWidth () {
 	int width = minimumSize.x;
 	width += MINIMUM_WIDTH + MARGIN_WIDTH;
 	if (width < preferredWidth) {
-		width += CHEVRON_WIDTH;
+		width += CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 	}
 	return width;
 }
@@ -373,7 +400,9 @@ void setBounds (int x, int y, int width, int height) {
 	if (control != null) {
 		int controlHeight = Math.min (height, control.getSize().y);
 		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
-		if (width < preferredWidth) controlWidth -= CHEVRON_WIDTH;
+		if (width < preferredWidth) {
+			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
+		}
 		control.setBounds (
 			x + MINIMUM_WIDTH, 
 			y + MARGIN_HEIGHT, 
@@ -506,6 +535,7 @@ void updateChevron() {
 				if (height > 6) {
 					toolItem.setImage (getArrowImage ());
 				}	
+				chevron.setBackground(parent.getBackground());
 				toolItem.addListener (SWT.Selection, new Listener() {
 					public void handleEvent (Event event) {
 						CoolItem.this.onSelection (event);
@@ -513,15 +543,14 @@ void updateChevron() {
 				});
 			}
 			chevron.setBounds (
-				itemBounds.x + width - MARGIN_WIDTH - CHEVRON_WIDTH,
+				itemBounds.x + width - CHEVRON_LEFT_MARGIN - CHEVRON_IMAGE_WIDTH - CHEVRON_HORIZONTAL_TRIM,
 				itemBounds.y + MARGIN_HEIGHT,
-				CHEVRON_WIDTH,
+				CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM,
 				height);
-			
+			chevron.setVisible(true);
 		} else {
 			if (chevron != null) {
-				chevron.dispose ();
-				chevron = null;
+				chevron.setVisible(false);
 			}
 		}
 	}
