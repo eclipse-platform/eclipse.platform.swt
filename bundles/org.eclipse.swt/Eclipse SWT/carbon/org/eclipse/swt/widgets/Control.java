@@ -392,7 +392,10 @@ public int internal_new_GC (GCData data) {
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
 	if (data.paintEvent == 0) {
-		if (data.damageRgn != 0) OS.DisposeRgn (data.damageRgn);
+		if (data.damageRgn != 0) {
+			OS.DisposeRgn (data.damageRgn);
+			data.damageRgn = 0;
+		}
 		OS.CGContextFlush (context);
 		OS.CGContextRelease (context);
 	}
