@@ -574,7 +574,17 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	setChecked (checked, false);
+}
+
+void setChecked (boolean checked, boolean notify) {
 	this.checked = checked;
+	if (notify) {
+		Event event = new Event();
+		event.item = this;
+		event.detail = SWT.CHECK;
+		postEvent (SWT.Selection, event);
+	}
 	redraw ();
 }
 

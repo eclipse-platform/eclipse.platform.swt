@@ -2560,7 +2560,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 		if (index != -1) {
 			TableItem item = items [index];
-			item.setChecked (!item.getChecked ());
+			item.setChecked (!item.getChecked (), true);
 		}
 	}
 	return result;
@@ -2613,7 +2613,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 		if (index != -1 && pinfo.flags == OS.LVHT_ONITEMSTATEICON) {
 			TableItem item = items [index];
-			item.setChecked (!item.getChecked ());
+			item.setChecked (!item.getChecked (), true);
 		}	
 	}
 	
@@ -2964,45 +2964,32 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				NMLISTVIEW pnmlv = new NMLISTVIEW ();
 				OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);
 				if (pnmlv.iItem != -1 && (pnmlv.uChanged & OS.LVIF_STATE) != 0) {
-					int oldBits = pnmlv.uOldState & OS.LVIS_STATEIMAGEMASK;
-					int newBits = pnmlv.uNewState & OS.LVIS_STATEIMAGEMASK;
-					if (oldBits != newBits) {
-						Event event = new Event();
-						event.item = items [pnmlv.iItem];
-						event.detail = SWT.CHECK;
-						/*
-						* This code is intentionally commented.
-						*/
-//						OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, pnmlv.iItem, 0);
-						postEvent (SWT.Selection, event);
-					} else {
-						boolean isFocus = (pnmlv.uNewState & OS.LVIS_FOCUSED) != 0;
-						int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-						if ((style & SWT.MULTI) != 0) {
-							if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-								if (!isFocus) {
-									if (index == pnmlv.iItem) {
-										boolean isSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
-										boolean wasSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
-										isFocus = isSelected != wasSelected;
-									}
-								} else {
-									isFocus = mouseDown;
+					boolean isFocus = (pnmlv.uNewState & OS.LVIS_FOCUSED) != 0;
+					int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+					if ((style & SWT.MULTI) != 0) {
+						if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+							if (!isFocus) {
+								if (index == pnmlv.iItem) {
+									boolean isSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
+									boolean wasSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
+									isFocus = isSelected != wasSelected;
 								}
+							} else {
+								isFocus = mouseDown;
 							}
 						}
-						if (OS.GetKeyState (OS.VK_SPACE) < 0) isFocus = true;
-						if (isFocus) {
-							Event event = new Event();
-							if (index != -1) {
-								/*
-								* This code is intentionally commented.
-								*/
+					}
+					if (OS.GetKeyState (OS.VK_SPACE) < 0) isFocus = true;
+					if (isFocus) {
+						Event event = new Event();
+						if (index != -1) {
+							/*
+							* This code is intentionally commented.
+							*/
 //								OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-								event.item = items [index];
-							}
-							postEvent (SWT.Selection, event);
+							event.item = items [index];
 						}
+						postEvent (SWT.Selection, event);
 					}
 				}
 			}
