@@ -18,7 +18,9 @@ import org.eclipse.swt.internal.SWTEventObject;
 public class TypedEvent extends SWTEventObject {
 	
 	/**
-	 * the display that the event occurred in
+	 * the display where the event occurred
+	 * 
+	 * @since 2.0 
 	 */	
 	public Display display;
 		

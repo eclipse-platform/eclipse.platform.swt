@@ -33,7 +33,9 @@ public class Event {
 	public int type;
 	
 	/**
-	 * the display that the event occurred on
+	 * the display where the event occurred
+	 * 
+	 * @since 2.0 
 	 */	
 	public Display display;
 	
