@@ -1167,7 +1167,8 @@ public void setItem (int index, String string) {
  * @exception SWTError <ul>
  *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
  * </ul>
- */public void setItems (String [] items) {
+ */
+public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
@@ -1201,15 +1202,16 @@ public void setItem (int index, String string) {
 			mbcs = new byte [unicode.length * 2];
 		}
 		string.getChars (0, nUnicode, unicode, 0);
-		unicode [nUnicode] = 0;
+		unicode [nUnicode++] = 0;
 		int nMbcs = nUnicode, i = 0;
-		while (i <= nUnicode) {
+		while (i < nUnicode) {
 			if (unicode [i] > 0x7F) break;
 			mbcs [i] = (byte) unicode [i];
 			i++;
 		}
 		if (i < nUnicode) {
-			nMbcs = OS.WideCharToMultiByte (OS.CP_ACP, 0, unicode, nUnicode, mbcs, nUnicode * 2, null, null);
+			int cp = getCodePage ();
+			nMbcs = OS.WideCharToMultiByte (cp, 0, unicode, nUnicode, mbcs, nUnicode * 2, null, null);
 		}
 		int result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, mbcs);
 		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) break;
