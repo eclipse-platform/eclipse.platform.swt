@@ -76,7 +76,7 @@ public class TableItem extends Item {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style) {
-	this (parent, style, checkNull (parent).items.length);
+	this (parent, style, checkNull (parent).itemsCount);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -114,7 +114,7 @@ public TableItem (Table parent, int style, int index) {
 }
 TableItem (Table parent, int style, int index, boolean notifyParent) {
 	super (parent, style);
-	int validItemIndex = parent.items.length;
+	int validItemIndex = parent.itemsCount;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	this.index = index;
@@ -335,7 +335,7 @@ public void dispose () {
 	if (isDisposed ()) return;
 	Table parent = this.parent;
 	int startIndex = index;
-	int endIndex = parent.items.length - 1;
+	int endIndex = parent.itemsCount - 1;
 	dispose (true);
 	parent.redrawItems (startIndex, endIndex, false);
 }
@@ -1492,7 +1492,7 @@ public void setImage (int columnIndex, Image value) {
 					 */
 					GC gc = new GC (parent);
 					TableItem[] rootItems = parent.items;
-					for (int i = 0; i < rootItems.length; i++) {
+					for (int i = 0; i < parent.itemsCount; i++) {
 						rootItems [i].updateColumnWidth (columns [0], gc);
 					}
 					gc.dispose ();
@@ -1519,7 +1519,7 @@ public void setImage (int columnIndex, Image value) {
 			 */
 			GC gc = new GC (parent);
 			TableItem[] rootItems = parent.items;
-			for (int i = 0; i < rootItems.length; i++) {
+			for (int i = 0; i < parent.itemsCount; i++) {
 				rootItems [i].updateColumnWidth (columns [0], gc);
 			}
 			gc.dispose ();

@@ -406,12 +406,12 @@ int getX () {
  */
 public void pack () {
 	checkWidget ();
-	TableItem[] availableItems = parent.items;
-	if (availableItems.length == 0) return;
+	if (parent.itemsCount == 0) return;
+	TableItem[] items = parent.items;
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();
-	for (int i = 0; i < availableItems.length; i++) {
-		newWidth = Math.max (newWidth, availableItems [i].getPreferredWidth (index));
+	for (int i = 0; i < parent.itemsCount; i++) {
+		newWidth = Math.max (newWidth, items [i].getPreferredWidth (index));
 	}
 	if (newWidth != width) parent.updateColumnWidth (this, newWidth);
 }
