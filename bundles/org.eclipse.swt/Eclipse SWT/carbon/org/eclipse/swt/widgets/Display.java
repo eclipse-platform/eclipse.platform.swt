@@ -1028,6 +1028,7 @@ public static synchronized Display getCurrent () {
 }
 
 int getCaretBlinkTime () {
+//	checkDevice ();
 	return OS.GetCaretTime () * 1000 / 60;
 }
 
