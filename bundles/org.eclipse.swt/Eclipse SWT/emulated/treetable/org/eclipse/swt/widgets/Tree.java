@@ -45,9 +45,7 @@ public class Tree extends Composite {
 	TreeItem[] items = new TreeItem [0];
 	TreeItem[] availableItems = new TreeItem [0];
 	TreeItem[] selectedItems = new TreeItem [0];
-	TreeItem focusItem;
-	TreeItem anchorItem;
-	TreeItem insertMarkItem;
+	TreeItem focusItem, anchorItem, insertMarkItem;
 	TreeItem lastClickedItem;
 	boolean insertMarkPrecedes = false;
 	boolean linesVisible;
@@ -1229,7 +1227,7 @@ void onArrowDown (int stateMask) {
 		redrawItem (newFocusIndex, true);
 		showItem (availableItems [newFocusIndex]);
 		Event newEvent = new Event ();
-		newEvent.item = this;
+		newEvent.item = availableItems [newFocusIndex];
 		postEvent (SWT.Selection, newEvent);
 		return;
 	}
@@ -1258,7 +1256,7 @@ void onArrowDown (int stateMask) {
 		redrawItem (newFocusIndex, true);
 		showItem (availableItems [newFocusIndex]);
 		Event newEvent = new Event ();
-		newEvent.item = this;
+		newEvent.item = availableItems [newFocusIndex];
 		postEvent (SWT.Selection, newEvent);
 		return;
 	}
@@ -1298,7 +1296,7 @@ void onArrowDown (int stateMask) {
 	redrawItem (newFocusIndex, true);
 	showItem (availableItems [newFocusIndex]);
 	Event newEvent = new Event ();
-	newEvent.item = this;
+	newEvent.item = availableItems [newFocusIndex];
 	postEvent (SWT.Selection, newEvent);
 }
 void onArrowLeft (int stateMask) {
@@ -1344,7 +1342,7 @@ void onArrowLeft (int stateMask) {
 	redrawItem (parentItem.availableIndex, true);
 	showItem (parentItem);
 	Event newEvent = new Event ();
-	newEvent.item = this;
+	newEvent.item = parentItem;
 	postEvent (SWT.Selection, newEvent);
 }
 void onArrowRight (int stateMask) {
@@ -1354,7 +1352,8 @@ void onArrowRight (int stateMask) {
 		int maximum = hBar.getMaximum ();
 		int clientWidth = getClientArea ().width;
 		if ((horizontalOffset + getClientArea ().width) == maximum) return;
-		int newSelection = Math.min (maximum - clientWidth, horizontalOffset + SIZE_HORIZONTALSCROLL);
+		if (maximum <= clientWidth) return;
+		int newSelection = Math.min (horizontalOffset + SIZE_HORIZONTALSCROLL, maximum - clientWidth);
 		Rectangle clientArea = getClientArea ();
 		update ();
 		GC gc = new GC (this);
@@ -1581,9 +1580,18 @@ void onFocusIn () {
 		return;
 	}
 	/* an initial focus item must be selected */
-	TreeItem initialFocus;
+	TreeItem initialFocus = null;
 	if (selectedItems.length > 0) {
-		initialFocus = selectedItems [0];
+		for (int i = 0; i < selectedItems.length && initialFocus == null; i++) {
+			if (selectedItems [i].isAvailable ()) {
+				initialFocus = selectedItems [i];
+			}
+		}
+		if (initialFocus == null) {
+			/* none of the selected items are available */
+			initialFocus = availableItems [topIndex];
+			selectItem (initialFocus, false);
+		}
 	} else {
 		initialFocus = availableItems [topIndex];
 		selectItem (initialFocus, false);
@@ -1720,7 +1728,7 @@ void onKeyDown (Event event) {
 				redrawItem (i, true);
 				showItem (item);
 				Event newEvent = new Event ();
-				newEvent.item = this;
+				newEvent.item = item;
 				postEvent (SWT.Selection, newEvent);
 				return;
 			}
@@ -1737,7 +1745,7 @@ void onKeyDown (Event event) {
 				redrawItem (i, true);
 				showItem (item);
 				Event newEvent = new Event ();
-				newEvent.item = this;
+				newEvent.item = item;
 				postEvent (SWT.Selection, newEvent);
 				return;
 			}
@@ -2653,7 +2661,7 @@ public void setSelection (TreeItem[] items) {
 	
 	/* remove null and duplicate items */
 	int index = 0;
-	selectedItems = new TreeItem [items.length];	/* assume all valid items */
+	selectedItems = new TreeItem [items.length];	/* initially assume all valid items */
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isSelected ()) {
@@ -2675,6 +2683,7 @@ public void setSelection (TreeItem[] items) {
 			}
 		}
 	}
+	if (selectedItems.length > 0) showSelection ();
 	for (int i = 0; i < selectedItems.length; i++) {
 		int availableIndex = selectedItems [i].availableIndex;
 		if (availableIndex != -1) {
