@@ -323,6 +323,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetTextPointerLocation)
 }
 #endif
 
+#ifndef NO_ATSUSetTransientFontMatching
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetTransientFontMatching)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUSetTransientFontMatching\n")
+	rc = (jint)ATSUSetTransientFontMatching((ATSUTextLayout)arg0, arg1);
+	NATIVE_EXIT(env, that, "ATSUSetTransientFontMatching\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUTextDeleted
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUTextDeleted)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

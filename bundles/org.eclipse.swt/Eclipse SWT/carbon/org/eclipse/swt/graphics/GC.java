@@ -819,6 +819,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 			OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 			data.string = string;
 			data.stringPtr = ptr;
+			OS.ATSUSetTransientFontMatching(data.layout, true);
 		}
 		OS.ATSUDrawText(data.layout, 0, length, OS.X2Fix(x), OS.X2Fix(-(y + data.fontAscent)));
 	} else {
@@ -1871,6 +1872,7 @@ public Point stringExtent(String string) {
 			OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 			data.string = string;
 			data.stringPtr = ptr;
+			OS.ATSUSetTransientFontMatching(data.layout, true);
 		}	
 		ATSTrapezoid trapezoid = new ATSTrapezoid();
 		OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
