@@ -62,7 +62,7 @@ class StyledTextBidi {
 		}
 	}
 	
-public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont) {
+public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont, int [] offsets) {
 	int length = text.length();
 		
 	setGC(gc);
@@ -74,8 +74,8 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 	if (text.length() == 0) {
 		glyphBuffer = new byte[0];
 	}
-	else {	
-		glyphBuffer = BidiText.getRenderInfo(gc, text, order, classBuffer, dx, 0);
+	else {
+		glyphBuffer = BidiText.getRenderInfo(gc, text, order, classBuffer, dx, 0, offsets);
 		if (boldRanges != null) {
 			Font normalFont = gc.getFont();
 			gc.setFont(boldFont);

@@ -103,6 +103,7 @@ public class StyledText extends Canvas {
 	int lastTextChangeReplaceLineCount;			// text changed handler
 	int lastTextChangeReplaceCharCount;	
 
+	boolean bidiColoring = false;	// apply the BIDI algorithm on text segments of the same color
 	static final int BIDI_CARET_WIDTH = 4;		
 	static int xInset = 0;
 	Image leftCaretBitmap = null;
@@ -623,6 +624,86 @@ public StyledText(Composite parent, int style) {
 	installListeners();
 	installDefaultLineStyler();
 }
+
+/**
+ * Sets the BIDI coloring mode.  When true the BIDI text display
+ * algorithm is applied to segments of text that are the same
+ * color.
+ *
+ * @param mode the new coloring mode
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setBidiColoring(boolean mode) {
+	checkWidget();
+	bidiColoring = mode;
+}
+
+/**
+ * Gets the BIDI coloring mode.  When true the BIDI text display
+ * algorithm is applied to segments of text that are the same
+ * color.
+ *
+ * @return the current coloring mode
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getBidiColoring() {
+	checkWidget();
+	return bidiColoring;
+}
+
+int [] getStyleOffsets (String line, int lineOffset) {
+	StyledTextEvent event = getLineStyleData(lineOffset, line);
+	StyleRange [] styles = new StyleRange [0];
+	if (event != null) {
+		styles = event.styles;
+	}
+	if (styles.length == 0 || !bidiColoring) {
+		return new int[] {0, line.length()};
+	}
+
+	int k=0, count = 1;
+	while (k < styles.length && styles[k].start == 0 && styles[k].length == line.length()) {
+		k++;
+	}
+	int[] offsets = new int[(styles.length - k) * 2 + 2];
+	for (int i = k; i < styles.length; i++) {
+		StyleRange style = styles[i];
+		int styleLineStart = Math.max(style.start - lineOffset, 0);
+		int styleLineEnd = Math.max(style.start + style.length - lineOffset, styleLineStart);
+		styleLineEnd = Math.min (styleLineEnd, line.length ());
+		if (i > 0 && count > 1 &&
+			((styleLineStart >= offsets[count-2] && styleLineStart <= offsets[count-1]) ||
+			 (styleLineEnd >= offsets[count-2] && styleLineEnd <= offsets[count-1])) &&
+			 style.similarTo(styles[i-1])) {
+			offsets[count-2] = Math.min(offsets[count-2], styleLineStart);
+			offsets[count-1] = Math.max(offsets[count-1], styleLineEnd);
+		} else {
+			if (styleLineStart > offsets[count - 1]) {
+				offsets[count] = styleLineStart;
+				count++;
+			}
+			offsets[count] = styleLineEnd;
+			count++;
+		}
+	}
+	// add offset for last non-colored segment in line, if any
+	if (line.length() > offsets[count-1]) {
+		offsets [count] = line.length();
+		count++;
+	}
+	if (count == offsets.length)
+		return offsets;
+	int [] result = new int [count];
+	System.arraycopy (offsets, 0, result, 0, count);
+	return result;
+}
+
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
  * widget when the widget text has changed.
@@ -864,7 +945,8 @@ void calculateContentWidth(int startLine, int lineCount) {
 	for (int i = startLine; i < stopLine; i++) {
 		line = content.getLine(i);
 		if (isBidi) {
-			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null);
+            int lineOffset = content.getOffsetAtLine (i);
+            StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, getStyleOffsets (line, lineOffset));
 			contentWidth = Math.max(bidi.getTextWidth() + getCaretWidth(), contentWidth);
 		}
 		else {
@@ -1429,7 +1511,7 @@ void doBidiMouseLocationChange(int x, int y, boolean select) {
 		}
 		lastCaretDirection = SWT.NULL;
 		int[] boldStyles = getBoldRanges(styles, lineOffset, lineText.length());
-		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineOffset));
 		int[] values = bidi.getCaretOffsetAndDirectionAtX(x);
 		int offsetInLine = values[0];
 		lastCaretDirection = values[1];
@@ -1520,7 +1602,7 @@ void doColumnLeft() {
 		if (event != null) {
 			boldStyles = getBoldRanges(event.styles, lineOffset, lineLength);
 		}
-		bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+		bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineOffset));
 		if (horizontalScrollOffset > 0 || offsetInLine > 0) {
 			if (offsetInLine < lineLength && bidi.isRightToLeft(offsetInLine)) {
 				// advance caret logically if in R2L segment (move visually left)
@@ -1603,7 +1685,7 @@ void doColumnRight() {
 		if (event != null) {
 			boldStyles = getBoldRanges(event.styles, lineOffset, lineLength);
 		}
-		bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+		bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineOffset));
 		if (bidi.getTextWidth() > horizontalScrollOffset + getClientArea().width || offsetInLine < lineLength) {
 			if (bidi.isRightToLeft(offsetInLine) == false && offsetInLine < lineLength) {
 				// advance caret logically if in L2R segment (move visually right)
@@ -2254,7 +2336,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 	if (isBidi()) {
 		int[] boldStyles = getBoldRanges(styles, lineOffset, lineLength);
 		setLineFont(gc, gc.getFont().getFontData()[0], SWT.NORMAL);
-		bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);		
+		bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getStyleOffsets (line, lineOffset));		
 	}
 	event = getLineBackgroundData(lineOffset, line);
 	if (event != null) {
@@ -3047,7 +3129,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	lineXOffset += horizontalScrollOffset;
 	if (isBidi()) {
 		int[] boldStyles = getBoldRanges(styles, lineOffset, line.length());
-		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);
+		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getStyleOffsets (line, lineOffset));
 		offset = bidi.getOffsetAtX(lineXOffset);
 	}		
 	else {
@@ -4622,7 +4704,7 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 		styles = event.styles;
 	}	
 	boldStyles = getBoldRanges(styles, firstLineOffset, line.length());
-	bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);
+	bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getStyleOffsets (line, firstLineOffset));
 	bidi.redrawRange(this, offsetInFirstLine, Math.min(line.length(), endOffset) - offsetInFirstLine, -horizontalScrollOffset, redrawY, lineHeight);
 	// redraw line break marker (either space or full client area width)
 	// if redraw range extends over more than one line and background should be redrawn
@@ -4656,7 +4738,7 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 				styles = null;
 			}
 			boldStyles = getBoldRanges(styles, lastLineOffset, line.length());
-			bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);
+			bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getStyleOffsets (line, lastLineOffset));
 			bidi.redrawRange(this, 0, offsetInLastLine, -horizontalScrollOffset, redrawY, lineHeight);
 		}
 	}
@@ -5131,7 +5213,7 @@ void setBidiCaret(boolean setKeyboard) {
 	if (event != null) {
 		boldStyles = getBoldRanges(event.styles, lineStartOffset, lineText.length());
 	}
-	bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+	bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineStartOffset));
 	if (setKeyboard) {
 		if (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine - 1) != bidi.isRightToLeft(offsetInLine)) {
 			// continue with previous character type
@@ -6162,7 +6244,7 @@ int textWidth(String line, int lineIndex, int length, GC gc) {
 	}
 	if (isBidi()) {
 		int[] boldStyles = getBoldRanges(styles, lineOffset, line.length());
-		bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);
+		bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getStyleOffsets (line, lineOffset));
 	}	
 	return textWidth(line, lineOffset, 0, length, styles, 0, gc, bidi);
 }

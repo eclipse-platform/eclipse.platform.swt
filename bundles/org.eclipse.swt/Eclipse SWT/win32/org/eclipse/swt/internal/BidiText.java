@@ -85,7 +85,7 @@ public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x,
  *  classBuffer is input/output parameter
  *	order & dx are output parameters
  */
-public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
+public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	int hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
@@ -99,12 +99,11 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
 	result.nGlyphs = byteCount;
+	int lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	int lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	int lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 2);
 
-	result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 2);
-				
 	// set required dwFlags
 	int dwFlags = 0;
 	int glyphFlags = 0;
@@ -119,43 +118,88 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		dwFlags |= GCP_GLYPHSHAPE;
 		if (linkBefore) {
 			glyphFlags |= GCPGLYPH_LINKBEFORE;
-		}		
+		}
 		if (linkAfter) {
 			glyphFlags |= GCPGLYPH_LINKAFTER;
 		}
 	}
-	byte[] lpGlyphs;
+	byte[] lpGlyphs2;
 	if (linkBefore || linkAfter) {
-		lpGlyphs = new byte[2];
-		lpGlyphs[0]=(byte)glyphFlags;
-		lpGlyphs[1]=(byte)(glyphFlags >> 8);
+		lpGlyphs2 = new byte[2];
+		lpGlyphs2[0]=(byte)glyphFlags;
+		lpGlyphs2[1]=(byte)(glyphFlags >> 8);
 	}
 	else {
-		lpGlyphs = new byte[] {(byte) glyphFlags};
+		lpGlyphs2 = new byte[] {(byte) glyphFlags};
 	}
-	OS.MoveMemory(result.lpGlyphs, lpGlyphs, lpGlyphs.length);
-	
+	OS.MoveMemory(result.lpGlyphs, lpGlyphs2, lpGlyphs2.length);
+
 	if ((flags & CLASSIN) == CLASSIN) {
 		// set classification values for the substring
 		dwFlags |= GCP_CLASSIN;
 		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
-	}	
-	OS.GetCharacterPlacement(gc.handle, textBuffer, byteCount, 0, result, dwFlags);
-	
-	if (dx != null) OS.MoveMemory(dx, result.lpDx, dx.length * 4);
-	if (order != null) OS.MoveMemory(order, result.lpOrder, order.length * 4);
-	if (classBuffer != null) OS.MoveMemory(classBuffer, result.lpClass, classBuffer.length);
+	}
 
 	byte[] glyphBuffer = new byte[result.nGlyphs * 2];
-	OS.MoveMemory(glyphBuffer, result.lpGlyphs, glyphBuffer.length);	
+	int glyphCount = 0;
+	for (int i=0; i<offsets.length-1; i++) {
+		int offset = offsets [i];
+		int length = offsets [i+1] - offsets [i];
+
+		// The number of glyphs expected is <= length (segment length);
+		// the actual number returned may be less in case of Arabic ligatures.
+		result.nGlyphs = length;
+		byte [] textBuffer2 = new byte [length];
+		System.arraycopy (textBuffer, offset, textBuffer2, 0, length);
+		OS.GetCharacterPlacement(gc.handle, textBuffer2, textBuffer2.length, 0, result, dwFlags);
+
+		if (dx != null) {
+			int [] dx2 = new int [result.nGlyphs];
+			OS.MoveMemory(dx2, result.lpDx, dx2.length * 4);
+			System.arraycopy (dx2, 0, dx, glyphCount / 2, dx2.length);
+		}
+		if (order != null) {
+			int [] order2 = new int [length];
+			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
+			for (int j=0; j<length; j++) {
+				order2 [j] += glyphCount / 2;
+			}
+			System.arraycopy (order2, 0, order, offset, length);
+		}
+		if (classBuffer != null) {
+			byte [] classBuffer2 = new byte [length];
+			OS.MoveMemory(classBuffer2, result.lpClass, classBuffer2.length);
+			System.arraycopy (classBuffer2, 0, classBuffer, offset, length);
+		}
+		byte[] glyphBuffer2 = new byte[result.nGlyphs * 2];
+		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length);
+		System.arraycopy (glyphBuffer2, 0, glyphBuffer, glyphCount, glyphBuffer2.length);
+		glyphCount += glyphBuffer2.length;
+
+		// We concatenate successive results of calls to GCP.
+		// For Arabic, it is the only good method since the number of output
+		// glyphs might be less than the number of input characters.
+		// This assumes that the whole line is built by successive adjacent
+		// segments without overlapping.
+		result.lpOrder += length * 4;
+		result.lpDx += length * 4;
+		result.lpClass += length;
+		result.lpGlyphs += glyphBuffer2.length;
+	}
 
 	/* Free the memory that was allocated. */
-	OS.HeapFree(hHeap, 0, result.lpGlyphs);
-	OS.HeapFree(hHeap, 0, result.lpClass);
-	OS.HeapFree(hHeap, 0, result.lpDx);	
-	OS.HeapFree(hHeap, 0, result.lpOrder);	
+	OS.HeapFree(hHeap, 0, lpGlyphs);
+	OS.HeapFree(hHeap, 0, lpClass);
+	OS.HeapFree(hHeap, 0, lpDx);
+	OS.HeapFree(hHeap, 0, lpOrder);
 	return glyphBuffer;
 }
+
+public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
+	int[] offsets = new int[] {0, text.length()};
+	return getRenderInfo(gc, text, order, classBuffer, dx, flags, offsets);
+}
+
 /*
  * 
  */
