@@ -55,7 +55,15 @@ static native final int /*long*/ getAWTHandle (Canvas canvas);
 static synchronized void loadLibrary () {
 	if (loaded) return;
 	loaded = true;
-	System.loadLibrary("jawt");
+	/*
+	* Note that the jawt library is loaded explicitily
+	* because it cannot be found by the library loader.
+	* All exceptions are caught because the library may
+	* have been loaded already.
+	*/
+	try {
+		System.loadLibrary("jawt");
+	} catch (Throwable e) {}
 	Library.loadLibrary("swt-awt");
 }
 
