@@ -15,11 +15,20 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-
 /**
-* UNDER CONSTRUCTION
-*/
-
+ * Instances of this class represent a selectable user interface object
+ * that represent a page in a notebook widget.
+ * 
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public class CTabItem extends Item {
 	CTabFolder parent;
 	int x,y,width,height = 0;
@@ -551,9 +560,9 @@ public String getToolTipText () {
 	return toolTipText;
 }
 /**
-* Returns true if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
+* Returns <code>true</code> if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
 * 
-*  @return true if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
+*  @return <code>true</code> if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
 * 
 *  @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -644,7 +653,7 @@ int preferredWidth(GC gc, boolean isSelected, boolean minimum) {
 /**
  * Sets the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.
- * <p>
+ *
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
