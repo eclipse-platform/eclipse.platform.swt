@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Hide, MenuDetect, Selection, Show</dd>
+ * <dd>DefaultSelection, MenuDetect, Selection</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
