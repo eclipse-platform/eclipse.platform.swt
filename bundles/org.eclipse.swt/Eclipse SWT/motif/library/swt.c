@@ -2636,6 +2636,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUnionRegion
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XWarpPointer
+ * Signature: (IIIIIIIII)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XWarpPointer
+  (JNIEnv *env, jclass that, jint display, jint src_w, jint dest_w, jint src_x, jint src_y, jint src_width, jint src_height, jint dest_x, jint dest_y)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XWarpPointer\n");
+#endif
+	XWarpPointer((Display *)display, src_w, dest_w, src_x, src_y, src_width, src_height, dest_x, dest_y);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XWhitePixel
  * Signature: (II)I
  */
