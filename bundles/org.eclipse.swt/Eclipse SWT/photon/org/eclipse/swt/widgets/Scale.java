@@ -10,7 +10,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-public /*final*/ class Scale extends Control {
+public class Scale extends Control {
 
 
 public Scale (Composite parent, int style) {

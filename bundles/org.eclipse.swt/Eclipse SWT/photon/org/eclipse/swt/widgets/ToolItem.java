@@ -11,7 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-public /*final*/ class ToolItem extends Item {
+public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
 	String toolTipText;

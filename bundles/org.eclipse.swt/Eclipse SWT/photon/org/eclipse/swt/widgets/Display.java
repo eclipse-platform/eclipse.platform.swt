@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class Display extends Device {
+public class Display extends Device {
 
 	/**** TEMPORARY CODE FOR MOTIF TABLE ***/
 	static int textHighlightThickness = 0;

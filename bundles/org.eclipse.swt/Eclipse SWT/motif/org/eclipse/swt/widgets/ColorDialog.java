@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.*;
  * within the SWT implementation.
  * </p>
  */
-public /*final*/ class ColorDialog extends Dialog {
+public class ColorDialog extends Dialog {
 	private static final int DEPTH_4 = 0;				// index for COLOR_SWATCH_EXTENTS
 	private static final int DEPTH_8 = 1;				// index for COLOR_SWATCH_EXTENTS
 	private static final int COLOR_SWATCH_EXTENTS[] = {40, 10};	// extents of the squares drawn to display a 

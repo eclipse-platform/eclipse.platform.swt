@@ -25,8 +25,7 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-
-public /*final*/ class Sash extends Control {
+public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
 	int cursor;

@@ -18,7 +18,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 
-public /*final*/ class DirectoryDialog extends Dialog {
+public class DirectoryDialog extends Dialog {
 	String filterPath = "";
 	boolean cancel = true;
 	String message = "";

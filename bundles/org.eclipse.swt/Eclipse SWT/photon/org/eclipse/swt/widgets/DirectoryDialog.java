@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
-public /*final*/ class DirectoryDialog extends Dialog {
+public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
 	
 public DirectoryDialog (Shell parent) {

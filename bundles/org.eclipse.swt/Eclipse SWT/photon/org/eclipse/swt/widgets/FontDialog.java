@@ -11,7 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public /*final*/ class FontDialog extends Dialog {
+public class FontDialog extends Dialog {
 	FontData fontData;	
 public FontDialog (Shell parent) {
 	this (parent, SWT.PRIMARY_MODAL);

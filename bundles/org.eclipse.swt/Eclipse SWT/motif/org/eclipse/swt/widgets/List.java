@@ -27,8 +27,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
-public /*final*/ class List extends Scrollable {
+public class List extends Scrollable {
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

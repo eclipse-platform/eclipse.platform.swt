@@ -25,8 +25,7 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
-public /*final*/ class Scale extends Control {
+public class Scale extends Control {
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

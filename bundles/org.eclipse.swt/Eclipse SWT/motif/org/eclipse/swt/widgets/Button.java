@@ -27,7 +27,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 
-public /*final*/ class Button extends Control {
+public class Button extends Control {
 	Image image, bitmap, disabled;
 	static final byte [] ARM_AND_ACTIVATE;
 	static {

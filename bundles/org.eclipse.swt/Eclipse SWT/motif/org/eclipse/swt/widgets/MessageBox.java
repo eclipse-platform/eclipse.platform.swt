@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.*;
  * within the SWT implementation.
  * </p>
  */
-public /*final*/ class MessageBox extends Dialog {
+public class MessageBox extends Dialog {
 	int button;
 	String message = "";
 

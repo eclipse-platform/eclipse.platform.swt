@@ -28,8 +28,7 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
-public /*final*/ class Group extends Composite {
+public class Group extends Composite {
 	int labelHandle;
 
 /**

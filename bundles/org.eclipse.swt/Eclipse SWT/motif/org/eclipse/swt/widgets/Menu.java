@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class Menu extends Widget {
+public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, defaultItem;
 	Decorations parent;

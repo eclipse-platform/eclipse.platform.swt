@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-public /*final*/ class Tracker extends Widget {
+public class Tracker extends Widget {
 	Composite parent;
 	Display display;
 	boolean tracking, stippled;

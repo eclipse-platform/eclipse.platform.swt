@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class Group extends Composite {
+public class Group extends Composite {
 
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));

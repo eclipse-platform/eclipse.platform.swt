@@ -44,7 +44,7 @@ import org.eclipse.swt.events.*;
  *
  * @see List
  */
-public /*final*/ class Combo extends Composite {
+public class Combo extends Composite {
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold

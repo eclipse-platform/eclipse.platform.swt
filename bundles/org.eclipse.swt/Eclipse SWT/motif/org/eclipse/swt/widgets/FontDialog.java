@@ -21,7 +21,7 @@ import java.util.Vector;
  * within the SWT implementation.
  * </p>
  */
-public /*final*/ class FontDialog extends Dialog {
+public class FontDialog extends Dialog {
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
 	private static final String TEXT_FONT_NOT_LOADED = "Could not load selected font";	// text used in place of sample text when the selected font could not be loaded
 	private static final String SCALABLE_SIZES[] = new String[] {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};

@@ -55,7 +55,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @see ScrollBar
  */
-public /*final*/ class Slider extends Control {
+public class Slider extends Control {
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

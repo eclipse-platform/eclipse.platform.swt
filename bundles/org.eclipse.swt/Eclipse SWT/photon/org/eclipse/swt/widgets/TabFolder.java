@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 
-public /*final*/ class TabFolder extends Composite {
+public class TabFolder extends Composite {
 	TabItem [] items;
 
 public TabFolder (Composite parent, int style) {

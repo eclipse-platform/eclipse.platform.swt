@@ -11,7 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-public /*final*/ class Button extends Control {
+public class Button extends Control {
 	Image image;
 
 public Button (Composite parent, int style) {

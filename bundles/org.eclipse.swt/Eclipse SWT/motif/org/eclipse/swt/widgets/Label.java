@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-public /*final*/ class Label extends Control {
+public class Label extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
 

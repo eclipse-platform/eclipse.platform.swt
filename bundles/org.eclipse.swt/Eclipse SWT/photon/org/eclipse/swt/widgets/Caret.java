@@ -9,7 +9,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class Caret extends Widget {
+public class Caret extends Widget {
 	Canvas parent;
 	Image image;
 	int x, y, width, height;

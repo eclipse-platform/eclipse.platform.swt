@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 
-public /*final*/ class ProgressBar extends Control {
+public class ProgressBar extends Control {
 
 /**
  * Constructs a new instance of this class given its parent

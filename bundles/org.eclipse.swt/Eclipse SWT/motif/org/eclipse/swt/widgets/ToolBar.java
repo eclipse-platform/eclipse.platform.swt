@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class ToolBar extends Composite {
+public class ToolBar extends Composite {
 	int drawCount, itemCount;
 	ToolItem [] items;
 /**

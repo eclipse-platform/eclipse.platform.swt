@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class TabItem extends Item {
+public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;

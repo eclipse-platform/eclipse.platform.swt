@@ -9,7 +9,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class ToolBar extends Composite {
+public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
 

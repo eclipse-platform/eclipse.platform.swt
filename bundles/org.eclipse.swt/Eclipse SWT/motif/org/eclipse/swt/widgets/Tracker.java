@@ -23,7 +23,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class Tracker extends Widget {
+public class Tracker extends Widget {
 	Composite parent;
 	Display display;
 	boolean tracking, stippled;

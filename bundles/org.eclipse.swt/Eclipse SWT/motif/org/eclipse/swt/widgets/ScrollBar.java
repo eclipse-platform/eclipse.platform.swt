@@ -70,8 +70,7 @@ import org.eclipse.swt.events.*;
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
  */
-
-public /*final*/ class ScrollBar extends Widget {
+public class ScrollBar extends Widget {
 	Scrollable parent;
 ScrollBar () {
 	/* Do Nothing */

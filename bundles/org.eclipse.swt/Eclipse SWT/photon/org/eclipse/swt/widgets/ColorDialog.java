@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public /*final*/ class ColorDialog extends Dialog {
+public class ColorDialog extends Dialog {
 	RGB rgb;
 
 public ColorDialog (Shell parent) {

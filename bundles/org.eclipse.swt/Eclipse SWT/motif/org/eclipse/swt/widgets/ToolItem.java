@@ -24,7 +24,7 @@ import org.eclipse.swt.events.*;
  * </p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
-public /*final*/ class ToolItem extends Item {
+public class ToolItem extends Item {
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;

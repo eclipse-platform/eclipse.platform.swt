@@ -83,7 +83,7 @@ import org.eclipse.swt.events.*;
  * @see Decorations
  * @see SWT
  */
-public /*final*/ class Shell extends Decorations {
+public class Shell extends Decorations {
 	Display display;
 	int shellHandle;
 	boolean reparented, realized;

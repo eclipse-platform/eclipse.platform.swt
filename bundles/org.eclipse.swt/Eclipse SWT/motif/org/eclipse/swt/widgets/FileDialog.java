@@ -23,7 +23,7 @@ import org.eclipse.swt.*;
  * within the SWT implementation.
  * </p>
  */
-public /*final*/ class FileDialog extends Dialog {
+public class FileDialog extends Dialog {
 	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];

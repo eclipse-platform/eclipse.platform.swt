@@ -11,7 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-public /*final*/ class List extends Scrollable {
+public class List extends Scrollable {
 
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));

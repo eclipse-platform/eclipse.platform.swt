@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
-public /*final*/ class FileDialog extends Dialog {
+public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String filterPath = "", fileName = "";

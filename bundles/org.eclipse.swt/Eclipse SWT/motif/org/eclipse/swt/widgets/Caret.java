@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 
-public /*final*/ class Caret extends Widget {
+public class Caret extends Widget {
 	Canvas parent;
 	Image image;
 	int x, y, width, height;

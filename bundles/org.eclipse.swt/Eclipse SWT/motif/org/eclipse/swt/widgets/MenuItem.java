@@ -24,7 +24,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class MenuItem extends Item {
+public class MenuItem extends Item {
 	int accelerator;
 	Menu parent, menu;
 

@@ -10,7 +10,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
-public /*final*/ class MessageBox extends Dialog {
+public class MessageBox extends Dialog {
 	String message = "";
 public MessageBox (Shell parent) {
 	this (parent, SWT.OK | SWT.ICON_INFORMATION | SWT.APPLICATION_MODAL);
