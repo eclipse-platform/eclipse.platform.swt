@@ -88,7 +88,7 @@ void createWidget (int index) {
 
 boolean drawCaret () {
 	if (parent == null) return false;
-	if (parent.isDisposed ()) return false;	
+	if (parent.isDisposed ()) return false;
 	int /*long*/ window = parent.paintWindow ();
 	int /*long*/ gc = OS.gdk_gc_new (window);
 	GdkColor color = new GdkColor ();
@@ -99,14 +99,15 @@ boolean drawCaret () {
 	OS.gdk_colormap_alloc_color (colormap, color, true, true);
 	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	int nWidth = width, nHeight = height;
-	if (image != null) {
-		Rectangle rect = image.getBounds ();
-		nWidth = rect.width;
-		nHeight = rect.height;
+	if (image != null && !image.isDisposed() && image.mask == 0) {
+		int[] width = new int[1]; int[] height = new int[1];
+	 	OS.gdk_drawable_get_size(image.pixmap, width, height);
+		OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, x, y, width[0], height[0]);
+	} else {
+		int nWidth = width, nHeight = height;
+		if (nWidth <= 0) nWidth = 1;
+		OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
 	}
-	if (nWidth <= 0) nWidth = 2;
-	OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
 	OS.g_object_unref (gc);
 	OS.gdk_colormap_free_colors (colormap, color, 1);
 	return true;

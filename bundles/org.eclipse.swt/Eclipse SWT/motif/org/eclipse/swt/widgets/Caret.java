@@ -103,14 +103,15 @@ boolean drawCaret () {
 	}
 	OS.XSetForeground (xDisplay, gc, color);
 	OS.XSetFunction (xDisplay, gc, OS.GXxor);
-	int nWidth = width, nHeight = height;
-	if (image != null) {
-		Rectangle rect = image.getBounds ();
-		nWidth = rect.width;
-		nHeight = rect.height;
+	if (image != null && !image.isDisposed() && image.mask == 0) {
+		int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
+		OS.XGetGeometry (xDisplay, image.pixmap, unused, unused, unused, width, height, unused, unused);
+		OS.XCopyArea(xDisplay, image.pixmap, window, gc, 0, 0, width[0], height[0], x, y);
+	} else {
+		int nWidth = width, nHeight = height;
+		if (nWidth <= 0) nWidth = 1;
+		OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, nHeight);
 	}
-	if (nWidth <= 0) nWidth = 2;
-	OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, nHeight);
 	OS.XFreeGC (xDisplay, gc);
 	return true;
 }
