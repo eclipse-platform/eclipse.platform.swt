@@ -294,6 +294,7 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
+	column.setFontDescription (getFontDescription ());
 }
 
 void createItem (TableItem item, int index) {
@@ -1462,6 +1463,16 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	*/
 	OS.gtk_widget_realize (handle);
 	return result;
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	TableColumn[] cloumns = getColumns ();
+	for (int i = 0; i < cloumns.length; i++) {
+		if (cloumns[i] != null) {
+			cloumns[i].setFontDescription (font);
+		}
+	}
 }
 
 void setForegroundColor (GdkColor color) {

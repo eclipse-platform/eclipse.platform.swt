@@ -404,6 +404,11 @@ public void setAlignment (int alignment) {
 	//TODO - there is OS support
 }
 
+void setFontDescription (int font) {
+	OS.gtk_widget_modify_font (labelHandle, font);
+	OS.gtk_widget_modify_font (imageHandle, font);
+}
+
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
