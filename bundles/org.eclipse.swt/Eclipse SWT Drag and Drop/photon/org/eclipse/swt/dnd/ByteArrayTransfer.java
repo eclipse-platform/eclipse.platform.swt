@@ -8,15 +8,20 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.internal.photon.*;
 
 /**
- * The class <code>ByteArrayTransfer</code> provides a platform specific mechanism for transforming
- * a Java array of bytes into a format that can be passed around in a Drag and Drop operation and vice
- * versa.
+ * The class <code>ByteArrayTransfer</code> provides a platform specific 
+ * mechanism for converting a java <code>byte[]</code> to a platform 
+ * specific representation of the byte array and vice versa.  See 
+ * <code>Transfer</code> for additional information.
  *
- * <p>This abstract class can be subclassed to provided utilities for transforming Java data types
- * into the byte array based platform specific drag and drop data types.  See TextTransfer and 
- * FileTransfer for examples.  If the data you are transferring <b>does not</b> map to a byte array, 
- * you should sub-class Transfer directly and do your own mapping to the platform data types.</p>
+ * <p><code>ByteArrayTransfer</code> is never used directly but is sub-classed 
+ * by transfer agents that convert between data in a java format such as a
+ * <code>String</code> and a platform specific byte array.
+ * 
+ * <p>If the data you are converting <b>does not</b> map to a 
+ * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly 
+ * and do your own mapping to a platform data type.</p>
  */
+
 public abstract class ByteArrayTransfer extends Transfer {
 public TransferData[] getSupportedTypes(){
 	int[] types = getTypeIds();

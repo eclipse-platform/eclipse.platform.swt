@@ -73,7 +73,8 @@ import org.eclipse.swt.internal.motif.*;
  *	<dt><b>Styles</b> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK 
  *	<dt><b>Events</b> <dd>DND.DragEnd, DND.DragSetData
  * </dl>
- */ 
+ */
+ 
 public class DragSource extends Widget {
 
 	private Callback convertProc;
@@ -97,6 +98,10 @@ public class DragSource extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @see DND#DROP_NONE
+ * @see DND#DROP_COPY
+ * @see DND#DROP_MOVE
+ * @see DND#DROP_LINK
  */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
@@ -133,6 +138,7 @@ public DragSource(Control control, int style) {
  * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
+
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);

@@ -61,7 +61,8 @@ import org.eclipse.swt.widgets.*;
  *	<dt><b>Events</b> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
  *                        DND.Drop, DND.DropAccept
  * </dl>
- */ 
+ */
+ 
 public class DropTarget extends Widget {
 	
 	private Callback dropProc;
@@ -97,6 +98,10 @@ public class DropTarget extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @see DND#DROP_NONE
+ * @see DND#DROP_COPY
+ * @see DND#DROP_MOVE
+ * @see DND#DROP_LINK
  */
 public DropTarget(Control control, int style) {
 
@@ -468,7 +473,7 @@ public Display getDisplay () {
  *
  * @return the list of data types that can be transferred to this DropTarget
  *
- */ 
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
