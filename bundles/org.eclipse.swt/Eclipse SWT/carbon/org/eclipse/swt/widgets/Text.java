@@ -570,6 +570,23 @@ public int getLineHeight () {
 }
 
 /**
+ * Returns the orientation of the receiver.
+ *
+ * @return the orientation bit.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public int getOrientation () {
+	checkWidget();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
  * Gets the position of the selected text.
  * <p>
  * Indexing is zero based.  The range of
@@ -1224,7 +1241,6 @@ void setFontStyle (Font font) {
  * <p>
  *
  * @param orientation new orientation bit
- * @return <code>true</code> if the orientation was changed and <code>false</code> otherwise.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1233,8 +1249,8 @@ void setFontStyle (Font font) {
  * 
  * @since 2.1.2
  */
-public boolean setOrientation (int orientation) {
-	return false;
+public void setOrientation (int orientation) {
+	checkWidget();
 }
 
 /**

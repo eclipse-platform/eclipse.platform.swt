@@ -595,6 +595,23 @@ public String [] getItems () {
 }
 
 /**
+ * Returns the orientation of the receiver.
+ *
+ * @return the orientation bit.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public int getOrientation () {
+	checkWidget();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
  * Returns a <code>Point</code> whose x coordinate is the start
  * of the selection in the receiver's text field, and whose y
  * coordinate is the end of the selection. The returned values
@@ -1100,7 +1117,6 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
  * <p>
  *
  * @param orientation new orientation bit
- * @return <code>true</code> if the orientation was changed and <code>false</code> otherwise.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1109,8 +1125,8 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
  * 
  * @since 2.1.2
  */
-public boolean setOrientation (int orientation) {
-	return false;
+public void setOrientation (int orientation) {
+	checkWidget();
 }
 
 /**

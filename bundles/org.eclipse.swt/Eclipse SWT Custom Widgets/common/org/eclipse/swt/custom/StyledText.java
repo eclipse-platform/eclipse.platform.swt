@@ -4160,6 +4160,22 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	gc.dispose();	
 	return offset;	
 }
+/**
+ * Return the orientation of the receiver.
+ *
+ * @return the orientation bit.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public int getOrientation () {
+	checkWidget();
+	return isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+}
 /** 
  * Returns the index of the last partially visible line.
  *
@@ -7426,6 +7442,8 @@ void setMouseWordSelectionAnchor() {
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
  * <p>
+ *
+ * @param orientation new orientation bit
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -7434,21 +7452,21 @@ void setMouseWordSelectionAnchor() {
  * 
  * @since 2.1.2
  */
-public boolean setOrientation(int orientation) {
+public void setOrientation(int orientation) {
 	if ((orientation & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)) == 0) { 
-		return false;
+		return;
 	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && (orientation & SWT.LEFT_TO_RIGHT) != 0) {
-		return false;	
+		return;	
 	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && isMirrored()) {
-		return false;	
+		return;	
 	} 
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && isMirrored() == false) {
-		return false;
+		return;
 	}
 	if (StyledTextBidi.setOrientation(this, orientation) == false) {
-		return false;
+		return;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
@@ -7462,7 +7480,6 @@ public boolean setOrientation(int orientation) {
 	keyActionMap.clear();
 	createKeyBindings();
 	super.redraw();
-	return true;
 }
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
