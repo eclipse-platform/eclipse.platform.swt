@@ -465,6 +465,10 @@ public void setBounds (int x, int y, int width, int height) {
 	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
 }
 
+void markLayout (boolean changed, boolean all) {
+	/* Do nothing */
+}
+
 void moveHandle (int x, int y) {
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
@@ -3196,5 +3200,9 @@ void update (boolean all) {
 	int /*long*/ window = paintWindow ();
 	display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
+}
+
+void updateLayout (boolean all) {
+	/* Do nothing */
 }
 }

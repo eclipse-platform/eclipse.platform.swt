@@ -59,6 +59,8 @@ public abstract class Widget {
 	static final int KEYED_DATA		= 1<<2;
 	static final int HANDLE			= 1<<3;
 	static final int FOCUS_FORCED	= 1<<4;
+	static final int LAYOUT_NEEDED	= 1<<5;
+	static final int LAYOUT_CHANGED	= 1<<6;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

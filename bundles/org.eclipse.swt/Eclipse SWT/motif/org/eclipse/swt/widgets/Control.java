@@ -1262,6 +1262,9 @@ void manageChildren () {
 	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
 	OS.XtSetMappedWhenManaged (handle, true);
 }
+void markLayout (boolean changed, boolean all) {
+	/* Do nothing */
+}
 Decorations menuShell () {
 	return parent.menuShell ();
 }
@@ -2817,6 +2820,9 @@ void updateIM () {
 	}
 	if (ptr1 != 0) OS.XtFree (ptr1);
 	if (ptr2 != 0) OS.XtFree (ptr2);
+}
+void updateLayout (boolean all) {
+	/* Do nothing */
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Shell shell = getShell ();

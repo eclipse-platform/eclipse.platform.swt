@@ -1004,6 +1004,10 @@ boolean isModal () {
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
 }
+public boolean isLayoutDeferred () {
+	checkWidget ();
+	return layoutCount > 0;
+}
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
@@ -1236,7 +1240,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		oldHeight = height;
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return false;
-		if (layout != null) layout.layout (this, false);
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false);
+		}
 	}
 	return move || resize;
 }
@@ -1450,7 +1457,10 @@ public void setVisible (boolean visible) {
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return;
-			if (layout != null) layout.layout (this, false);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
+			}
 		}
 	} else {
 	
@@ -1665,7 +1675,10 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 					oldHeight = xEvent.height;
 					sendEvent (SWT.Resize);
 					if (isDisposed ()) return 0;
-					if (layout != null) layout.layout (this, false);
+					if (layout != null) {
+						markLayout (false, false);
+						updateLayout (false);
+					}
 				}
 			}
 			return 0;

@@ -54,15 +54,17 @@ public abstract class Widget {
 	Object data;
 	
 	/* Global state flags */
-	static final int DISPOSED		= 1<<0;
-	static final int CANVAS			= 1<<1;
-	static final int KEYED_DATA		= 1<<2;
-	static final int HANDLE			= 1<<3;
-	static final int DISABLED		= 1<<4;
-	static final int MENU			= 1<<5;
-	static final int OBSCURED		= 1<<6;
-	static final int MOVED			= 1<<7;
-	static final int RESIZED		= 1<<8;
+	static final int DISPOSED                = 1<<0;
+	static final int CANVAS                  = 1<<1;
+	static final int KEYED_DATA           = 1<<2;
+	static final int HANDLE                   = 1<<3;
+	static final int DISABLED                = 1<<4;
+	static final int MENU                      = 1<<5;
+	static final int OBSCURED              = 1<<6;
+	static final int MOVED                   = 1<<7;
+	static final int RESIZED                  = 1<<8;
+	static final int LAYOUT_NEEDED    = 1<<9;
+	static final int LAYOUT_CHANGED = 1<<10;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;

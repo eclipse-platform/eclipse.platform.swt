@@ -566,6 +566,11 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 
+public boolean isLayoutDeferred () {
+	checkWidget ();
+	return layoutCount > 0;
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
@@ -980,7 +985,10 @@ void resizeBounds (int width, int height, boolean notify) {
 		resized = true;
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return;
-		if (layout != null) layout.layout (this, false);
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false);
+		}
 	}
 }
 
@@ -1278,7 +1286,10 @@ public void setVisible (boolean visible) {
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return;
-			if (layout != null) layout.layout (this, false);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
+			}
 		}
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
