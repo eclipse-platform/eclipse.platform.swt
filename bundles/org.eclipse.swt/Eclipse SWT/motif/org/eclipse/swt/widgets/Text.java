@@ -36,7 +36,7 @@ public class Text extends Scrollable {
 	XmTextVerifyCallbackStruct textVerify;
 	int drawCount;
 	
-	static final boolean isGB18030;
+	static final boolean IsGB18030;
 	public static final int LIMIT;
 	public static final String DELIMITER;
 	
@@ -48,7 +48,7 @@ public class Text extends Scrollable {
 	static {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
-		isGB18030 = Converter.defaultCodePage().endsWith("18030");
+		IsGB18030 = Converter.defaultCodePage ().endsWith ("18030");
 	}
 
 /**
@@ -326,7 +326,7 @@ void createHandle (int index) {
 		OS.XmNeditMode, (style & SWT.SINGLE) != 0 ? OS.XmSINGLE_LINE_EDIT : OS.XmMULTI_LINE_EDIT,
 		OS.XmNscrollHorizontal, (style & SWT.H_SCROLL) != 0 ? 1 : 0,
 		OS.XmNscrollVertical, (style & SWT.V_SCROLL) != 0 ? 1 : 0,
-		OS.XmNwordWrap, !isGB18030 && (style & SWT.WRAP) != 0 ? 1: 0,
+		OS.XmNwordWrap, !IsGB18030 && (style & SWT.WRAP) != 0 ? 1: 0,
 		OS.XmNeditable, (style & SWT.READ_ONLY) != 0 ? 0 : 1,
 		OS.XmNcursorPositionVisible, (style & SWT.READ_ONLY) != 0 && (style & SWT.SINGLE) != 0 ? 0 : 1,
 //		OS.XmNmarginWidth, 3,
