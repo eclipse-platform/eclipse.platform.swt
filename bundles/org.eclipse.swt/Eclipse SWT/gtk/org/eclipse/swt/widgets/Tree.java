@@ -1839,7 +1839,7 @@ public void setSelection (TreeItem [] items) {
 		if (item.isDisposed ()) break;
 		if (item.parent != this) continue;
 		int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-		showItem (path, first);
+		showItem (path, false);
 		if (first) {
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 		}
