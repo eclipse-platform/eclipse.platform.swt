@@ -641,9 +641,7 @@ void createHandle (int index) {
 		* before embedding and cannot be realized here because
 		* the handle belongs to another thread.
 		*/
-		int xParent = OS.XtWindow (handle);
-		if (xParent == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.XReparentWindow (xDisplay, xWindow, xParent, 0, 0);
+		OS.XReparentWindow (xDisplay, xWindow, handle, 0, 0);
 		handle = 0;
 	}
 	

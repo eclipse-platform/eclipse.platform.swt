@@ -34,7 +34,7 @@ case $OS in
             make -f make_linux.mak clean
         else
             echo "Building Linux version of SWT and GNOME DLLs."
-            make -f make_linux.mak make_swt make_gnome
+            make -f make_linux.mak make_swt make_awt make_gnome
 
             build_kde=`rpm -q kdebase | grep "not installed"`
             if [ "$build_kde" = "" ]; then

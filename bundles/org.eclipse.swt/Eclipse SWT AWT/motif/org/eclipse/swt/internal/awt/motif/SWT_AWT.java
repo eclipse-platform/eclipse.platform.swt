@@ -9,12 +9,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.awt.motif;
-
  
 import java.lang.reflect.Constructor;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.Library;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -22,13 +22,22 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 
 /* AWT Imports */
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
 import java.awt.Panel;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class SWT_AWT {
+
+	static {
+		System.loadLibrary("jawt");
+		Library.loadLibrary("swt-awt");
+	}
+
+static native final int getAWTHandle (Canvas canvas);
 
 public static Panel new_Panel (final Composite parent) {
 	int handle = parent.embeddedHandle;
@@ -81,7 +90,27 @@ public static Panel new_Panel (final Composite parent) {
 }
 
 public static Shell new_Shell (Display display, final Canvas parent) {
-	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-	return null;
+	int handle = 0;
+	try {
+		handle = getAWTHandle (parent);
+	} catch (Throwable e) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+	}
+	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+
+	final Shell shell = Shell.motif_new (display, handle);
+	final Display newDisplay = shell.getDisplay ();
+	parent.addComponentListener(new ComponentAdapter () {
+		public void componentResized (ComponentEvent e) {
+			newDisplay.syncExec (new Runnable () {
+				public void run () {
+					Dimension dim = parent.getSize ();
+					shell.setSize (dim.width, dim.height);
+				}
+			});
+		}
+	});
+	shell.setVisible (true);
+	return shell;
 }
 }
