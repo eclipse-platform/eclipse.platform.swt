@@ -266,7 +266,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					} else {
 						trim = child.getBorderWidth () * 2;
 					}
-					data.computeCache (child, x2 - x1 - trim, data.height, flushCache);
+					int currentWidth = Math.max (0, x2 - x1 - trim);
+					data.computeSize (child, currentWidth, data.height, flushCache);
 					if (flush == null) flush = new boolean [children.length];
 					flush [i] = true;
 				}

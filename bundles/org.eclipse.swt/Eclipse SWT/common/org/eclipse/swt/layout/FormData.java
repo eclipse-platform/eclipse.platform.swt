@@ -84,7 +84,7 @@ public FormData (int width, int height) {
 	this.height = height;
 }
 
-void computeCache (Control control, int width, int height, boolean flushCache) {
+void computeSize (Control control, int width, int height, boolean flushCache) {
 	if (cacheWidth == -1 || cacheHeight == -1) {
 		Point size = control.computeSize (width, height, flushCache);
 		cacheWidth = size.x;
@@ -94,12 +94,12 @@ void computeCache (Control control, int width, int height, boolean flushCache) {
 
 int getWidth (Control control, boolean flushCache) {
 	needed = true;
-	computeCache (control, width, height, flushCache);
+	computeSize (control, width, height, flushCache);
 	return cacheWidth;
 }
 
 int getHeight (Control control, boolean flushCache) {
-	computeCache (control, width, height, flushCache);
+	computeSize (control, width, height, flushCache);
 	return cacheHeight;
 }
 
