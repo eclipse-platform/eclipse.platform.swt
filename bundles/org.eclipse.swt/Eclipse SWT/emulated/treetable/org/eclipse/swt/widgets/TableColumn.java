@@ -218,10 +218,26 @@ public void dispose () {
 	if (isDisposed ()) return;
 	Rectangle parentBounds = parent.getClientArea ();
 	int x = getX ();
+	int index = getIndex ();
+	int orderIndex = getOrderIndex ();
 	Table parent = this.parent;
 	dispose (true);
+
 	int width = parentBounds.width - x;
 	parent.redraw (x, 0, width, parentBounds.height, false);
+	/* 
+	 * If column 0 was disposed and if the parent has style CHECK then
+	 * the new column 0 will change, so explicitly redraw it if it appears to
+	 * the left of the disposed column in the column order.
+	 */
+	if ((parent.style & SWT.CHECK) != 0 && index == 0) {
+		if (parent.columns.length > 0) {
+			TableColumn newColumn0 = parent.columns [0];
+			if (newColumn0.getOrderIndex () < orderIndex) {
+				parent.redraw (newColumn0.getX (), 0, newColumn0.width, parentBounds.height, false);
+			}
+		}
+	}
 	if (parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);
 	}
@@ -295,6 +311,14 @@ public boolean getMoveable () {
 	checkWidget ();
 	return moveable;
 }
+int getOrderIndex () {
+	TableColumn[] orderedColumns = parent.orderedColumns; 
+	if (orderedColumns == null) return getIndex ();
+	for (int i = 0; i < orderedColumns.length; i++) {
+		if (orderedColumns [i] == this) return i;
+	}
+	return -1;
+}
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *
@@ -347,10 +371,11 @@ public int getWidth () {
 	return width;
 }
 int getX () {
-	int index = getIndex ();
+	TableColumn[] columns = parent.getOrderedColumns ();
+	int index = getOrderIndex ();
 	int result = -parent.horizontalOffset;
 	for (int i = 0; i < index; i++) {
-		result += parent.columns [i].width;
+		result += columns [i].width;
 	}
 	return result;
 }
@@ -370,11 +395,11 @@ public void pack () {
 	TableItem[] availableItems = parent.items;
 	if (availableItems.length == 0) return;
 	int index = getIndex ();
-	int width = getPreferredWidth ();
+	int newWidth = getPreferredWidth ();
 	for (int i = 0; i < availableItems.length; i++) {
-		width = Math.max (width, availableItems [i].getPreferredWidth (index));
+		newWidth = Math.max (newWidth, availableItems [i].getPreferredWidth (index));
 	}
-	parent.updateColumnWidth (this, width);
+	if (newWidth != width) parent.updateColumnWidth (this, newWidth);
 }
 void paint (GC gc) {
 	int padding = parent.getHeaderPadding ();

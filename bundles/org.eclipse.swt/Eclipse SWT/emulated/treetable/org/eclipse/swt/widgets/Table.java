@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.*;
 public class Table extends Composite {
 	Canvas header;
 	TableColumn[] columns = new TableColumn [0];
+	TableColumn[] orderedColumns;
 	TableItem[] items = new TableItem [0];
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
@@ -320,6 +321,7 @@ public void clearAll () {
  * -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
+	TableColumn[] columns = getOrderedColumns ();
 	if (columns.length - 1 < startColumn) return -1;
 	int rightX = columns [startColumn].getX ();
 	for (int i = startColumn; i < columns.length; i++) {
@@ -340,6 +342,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
+			TableColumn[] columns = getOrderedColumns ();
 			TableColumn lastColumn = columns [columns.length - 1];
 			width = lastColumn.getX () + lastColumn.width;
 		}
@@ -359,6 +362,23 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
 	
+	if (orderedColumns != null) {
+		int insertIndex = 0;
+		if (index > 0) {
+			insertIndex = columns [index - 1].getOrderIndex () + 1;
+		}
+		TableColumn[] newOrderedColumns = new TableColumn [orderedColumns.length + 1];
+		System.arraycopy (orderedColumns, 0, newOrderedColumns, 0, insertIndex);
+		newOrderedColumns [insertIndex] = column;
+		System.arraycopy (
+			orderedColumns,
+			insertIndex,
+			newOrderedColumns,
+			insertIndex + 1,
+			orderedColumns.length - insertIndex);
+		orderedColumns = newOrderedColumns;
+	}
+
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
 		items [i].addColumn (column);
@@ -495,13 +515,36 @@ public void deselectAll () {
 	}
 }
 void destroyItem (TableColumn column) {
-	int numColumns = columns.length;
 	int index = column.getIndex ();
+	int orderedIndex = column.getOrderIndex ();
 
 	TableColumn[] newColumns = new TableColumn [columns.length - 1];
 	System.arraycopy (columns, 0, newColumns, 0, index);
 	System.arraycopy (columns, index + 1, newColumns, index, newColumns.length - index);
 	columns = newColumns;
+
+	if (orderedColumns != null) {
+		if (columns.length < 2) {
+			orderedColumns = null;
+		} else {
+			int removeIndex = column.getOrderIndex ();
+			TableColumn[] newOrderedColumns = new TableColumn [orderedColumns.length - 1];
+			System.arraycopy (orderedColumns, 0, newOrderedColumns, 0, removeIndex);
+			System.arraycopy (
+				orderedColumns,
+				removeIndex + 1,
+				newOrderedColumns,
+				removeIndex,
+				newOrderedColumns.length - removeIndex);
+			orderedColumns = newOrderedColumns;
+		}
+	}
+
+	/* ensure that column 0 always has left-alignment */
+	if (index == 0 && columns.length > 0) {
+		columns [0].style |= SWT.LEFT;
+		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
+	}
 
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
@@ -526,10 +569,11 @@ void destroyItem (TableColumn column) {
 			redraw ();
 		}
 	}
-	for (int i = index; i < columns.length; i++) {
-		Event event = new Event ();
-		event.widget = columns [i];
-		columns [i].sendEvent (SWT.Move, event);
+	TableColumn[] columns = getOrderedColumns ();
+	for (int i = orderedIndex; i < columns.length; i++) {
+		if (!columns [i].isDisposed ()) {
+			columns [i].sendEvent (SWT.Move);
+		}
 	}
 }
 /*
@@ -537,6 +581,8 @@ void destroyItem (TableColumn column) {
  * item being destroyed.
  */
 void destroyItem (TableItem item) {
+	if (item == focusItem) reassignFocus ();
+
 	int index = item.index;
 	Rectangle bounds = item.getBounds ();
 	int rightX = bounds.x + bounds.width;
@@ -577,7 +623,6 @@ void destroyItem (TableItem item) {
 			newSelectedItems.length - selectionIndex);
 		selectedItems = newSelectedItems;
 	}
-	if (item == focusItem) reassignFocus ();
 	if (item == anchorItem) anchorItem = null;
 }
 int getCellPadding () {
@@ -673,8 +718,17 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	// TODO
-	return null;
+	int[] result = new int [columns.length];
+	if (orderedColumns != null) {
+		for (int i = 0; i < result.length; i++) {
+			result [i] = orderedColumns [i].getIndex ();
+		}
+	} else {
+		for (int i = 0; i < columns.length; i++) {
+			result [i] = i;
+		}
+	}
+	return result;
 }
 /**
  * Returns an array of <code>TableColumn</code>s which are the
@@ -883,6 +937,10 @@ public boolean getLinesVisible () {
 	checkWidget ();
 	return linesVisible;
 }
+TableColumn[] getOrderedColumns () {
+	if (orderedColumns != null) return orderedColumns;
+	return columns;
+}
 /**
  * Returns an array of <code>TableItem</code>s that are currently
  * selected in the receiver. An empty array indicates that no
@@ -1049,6 +1107,7 @@ void handleEvents (Event event) {
 }
 void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
+	TableColumn[] columns = getOrderedColumns ();
 	for (int i = 0; i < columns.length; i++) {
 		TableColumn column = columns [i]; 
 		int x = column.getX () + column.width;
@@ -1122,6 +1181,7 @@ void headerOnMouseUp (Event event) {
 	resizeColumn = null;
 }
 void headerOnPaint (Event event) {
+	TableColumn[] columns = getOrderedColumns ();
 	int numColumns = columns.length;
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
@@ -1539,7 +1599,7 @@ void onDispose () {
 	}
 	topIndex = 0;
 	items = selectedItems = null;
-	columns = null;
+	columns = orderedColumns = null;
 	focusItem = anchorItem = lastClickedItem = null;
 	header = null;
 	resizeColumn = null;
@@ -2111,6 +2171,7 @@ void onPageUp (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onPaint (Event event) {
+	TableColumn[] columns = getOrderedColumns ();
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
 	int numColumns = columns.length;
@@ -2141,7 +2202,6 @@ void onPaint (Event event) {
 		int rightX = clipping.x + clipping.width;
 		int headerHeight = getHeaderHeight ();
 		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
-		if (y == headerHeight) y += itemHeight;		/* do not paint line at very top */
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;
@@ -2174,15 +2234,17 @@ void onPaint (Event event) {
 		if (isFocusControl ()) {
 			if (focusItem == item) {
 				Rectangle focusBounds = item.getFocusBounds ();
-				gc.setClipping (focusBounds);
-				int[] oldLineDash = gc.getLineDash ();
-				if (item.isSelected ()) {
-					gc.setLineDash (new int[] {2, 2});
-				} else {
-					gc.setLineDash (new int[] {1, 1});
+				if (focusBounds.width > 0) {
+					gc.setClipping (focusBounds);
+					int[] oldLineDash = gc.getLineDash ();
+					if (item.isSelected ()) {
+						gc.setLineDash (new int[] {2, 2});
+					} else {
+						gc.setLineDash (new int[] {1, 1});
+					}
+					gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+					gc.setLineDash (oldLineDash);
 				}
-				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-				gc.setLineDash (oldLineDash);
 			}
 		}
 	}
@@ -2333,14 +2395,15 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
 		if (columns.length > 0) {
-			int rightX = 0;
+			TableColumn lastColumn;
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				TableColumn lastColumn = columns [columns.length - 1];
-				rightX = lastColumn.getX () + lastColumn.width;
+				TableColumn[] orderedColumns = getOrderedColumns ();
+				lastColumn = orderedColumns [orderedColumns.length - 1];
 			} else {
-				rightX = columns [0].width - horizontalOffset;
+				lastColumn = columns [0];
 			}
-			if (rightX <= 0) return;	/* first column not visible */
+			int rightX = lastColumn.getX () + lastColumn.getWidth ();
+			if (rightX <= 0) return;	/* focus column(s) not visible */
 		}
 		endIndex = Math.min (endIndex, items.length - 1);
 		for (int i = startIndex; i <= endIndex; i++) {
@@ -2651,7 +2714,40 @@ void selectItem (TableItem item, boolean addToSelection) {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	// TODO
+	if (columns.length == 0) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columns.length) error (SWT.ERROR_INVALID_ARGUMENT);
+	boolean reorder = false;
+	boolean [] seen = new boolean [columns.length];
+	int[] oldOrder = getColumnOrder ();
+	for (int i = 0; i < order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columns.length) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (index != oldOrder [i]) reorder = true;
+	}
+	if (!reorder) return;
+
+	int[] oldX = new int [columns.length];
+	for (int i = 0; i < columns.length; i++) {
+		oldX [i] = columns [i].getX ();
+	}
+	orderedColumns = new TableColumn [order.length];
+	for (int i = 0; i < order.length; i++) {
+		orderedColumns [i] = columns [order [i]];
+	}
+	for (int i = 0; i < orderedColumns.length; i++) {
+		TableColumn column = orderedColumns [i];
+		if (!column.isDisposed () && column.getX () != oldX [column.getIndex ()]) {
+			column.sendEvent (SWT.Move);
+		}
+	}
+
+	redraw ();
+	if (header.isVisible ()) header.redraw ();
 }
 void setFocusItem (TableItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
@@ -2991,9 +3087,10 @@ public void setSelection (int [] indices) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < items.length)) return;
-	if (index == topIndex) return;
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	if (items.length <= visibleItemCount) return;
+	index = Math.min (index, items.length - visibleItemCount);
+	if (index == topIndex) return;
 
 	update ();
 	int change = topIndex - index;
@@ -3031,20 +3128,21 @@ public void showColumn (TableColumn column) {
 	int x = column.getX ();
 	int rightX = x + column.width;
 	Rectangle bounds = getClientArea ();
-	int boundsRight = bounds.x + bounds.width;
-	if (bounds.x <= x && rightX <= boundsRight) return;	 /* column is fully visible */
+	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
 
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
-	for (int i = 0; i < column.getIndex (); i++) {
+	TableColumn[] columns = getOrderedColumns ();
+	for (int i = 0; i < column.getOrderIndex (); i++) {
 		absX += columns [i].width;
 	}
 	if (x < bounds.x) { 	/* column is to left of viewport */
 		horizontalOffset = absX;
 	} else {
-		horizontalOffset = boundsRight - absX;
+		horizontalOffset = absX + column.width - bounds.width;
 	}
 	getHorizontalBar ().setSelection (horizontalOffset);
 	redraw ();
+	if (header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -3154,13 +3252,12 @@ void updateColumnWidth (TableColumn column, int width) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
 	}
 
-	Event event = new Event ();
-	event.widget = column;
-	column.sendEvent (SWT.Resize, event);
-	for (int i = column.getIndex () + 1; i < columns.length; i++) {
-		event = new Event ();
-		event.widget = columns [i];
-		columns [i].sendEvent (SWT.Move, event);
+	column.sendEvent (SWT.Resize);
+	TableColumn[] columns = getOrderedColumns ();
+	for (int i = column.getOrderIndex () + 1; i < columns.length; i++) {
+		if (!columns [i].isDisposed ()) {
+			columns [i].sendEvent (SWT.Move);
+		}
 	}
 }
 /*

@@ -192,15 +192,16 @@ void addColumn (TableColumn column) {
 	}
 
 	if (index == 0 && columnCount > 1) {
-		/*
-		 * The new second column now has more space available to it than it did while it
-		 * was the first column since it no longer has to show hierarchy decorations, so
-		 * recompute its displayText.
+		/* 
+		 * The new second column may have more width available to it than it did when it was
+		 * the first column if checkboxes are being shown, so recompute its displayText if needed. 
 		 */
-		GC gc = new GC (parent);
-		gc.setFont (getFont (1));
-		computeDisplayText (1, gc);
-		gc.dispose ();
+		if ((parent.style & SWT.CHECK) != 0) {
+			GC gc = new GC (parent);
+			gc.setFont (getFont (1));
+			computeDisplayText (1, gc);
+			gc.dispose ();
+		}
 	}
 }
 static Table checkNull (Table table) {
@@ -220,6 +221,8 @@ void clear () {
 	font = null;
 	cellFonts = null;
 	cached = false;
+	text = "";
+	image = null;
 
 	int columnCount = parent.columns.length;
 	if (columnCount > 0) {
@@ -234,13 +237,22 @@ void clear () {
 void computeDisplayText (int columnIndex, GC gc) {
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) return;
-	
+
 	TableColumn column = parent.columns [columnIndex];
 	int availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;
-	Image image = getImage (columnIndex);
-	if (image != null) {
-		availableWidth -= image.getBounds ().width;
-		availableWidth -= Table.MARGIN_IMAGE;
+	if (columnIndex == 0) {
+		availableWidth -= parent.col0ImageWidth;
+		if (parent.col0ImageWidth > 0) availableWidth -= Table.MARGIN_IMAGE;
+		if ((parent.style & SWT.CHECK) != 0) {
+			availableWidth -= parent.checkboxBounds.width;
+			availableWidth -= Table.MARGIN_IMAGE;
+		}
+	} else {
+		Image image = getImage (columnIndex);
+		if (image != null) {
+			availableWidth -= image.getBounds ().width;
+			availableWidth -= Table.MARGIN_IMAGE;
+		}
 	}
 
 	String text = getText (columnIndex);
@@ -366,8 +378,7 @@ public Color getBackground (int columnIndex) {
 	if (cellBackgrounds == null || cellBackgrounds [columnIndex] == null) return getBackground ();
 	return cellBackgrounds [columnIndex];
 }
-Rectangle getBounds () {
-	// TODO is this method needed?
+public Rectangle getBounds () {
 	checkWidget ();
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
@@ -441,7 +452,11 @@ Rectangle getCellBounds (int columnIndex) {
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
 	Rectangle result = parent.checkboxBounds;
-	result.x = parent.getCellPadding () - parent.horizontalOffset;
+	if (parent.columns.length == 0) {
+		result.x = parent.getCellPadding () - parent.horizontalOffset;
+	} else {
+		result.x = parent.columns [0].getX () + parent.getCellPadding ();
+	}
 	result.y = parent.getItemY (this) + (parent.itemHeight - result.height) / 2;
 	return result;
 }
@@ -513,7 +528,18 @@ String getDisplayText (int columnIndex) {
  * Returns the bounds that should be used for drawing a focus rectangle on the receiver
  */
 Rectangle getFocusBounds () {
-	int x = getTextX (0);
+	int x = 0;
+	int[] columnOrder = parent.getColumnOrder ();
+	if ((parent.style & SWT.FULL_SELECTION) != 0) {
+		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
+		if (col0index == 0) {
+			x = getTextX (0);
+		} else {
+			x = 0;
+		}
+	} else {
+		x = getTextX (0);
+	}
 	int width;
 	TableColumn[] columns = parent.columns;
 	if (columns.length == 0) {
@@ -521,7 +547,7 @@ Rectangle getFocusBounds () {
 	} else {
 		TableColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			column = columns [columns.length - 1];
+			column = columns [columnOrder [columnOrder.length - 1]];
 		} else {
 			column = columns [0];
 		}
@@ -638,7 +664,19 @@ public boolean getGrayed () {
  * Returns the bounds representing the clickable region that should select the receiver.
  */
 Rectangle getHitBounds () {
-	int contentX = getContentX (0);
+	int[] columnOrder = parent.getColumnOrder ();
+	int contentX = 0;
+	if ((parent.style & SWT.FULL_SELECTION) != 0) {
+		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
+		if (col0index == 0) {
+			contentX = getContentX (0);
+		} else {
+			contentX = 0;
+		}
+	} else {
+		contentX = getContentX (0);
+	}
+	
 	int width = 0;
 	TableColumn[] columns = parent.columns;
 	if (columns.length == 0) {
@@ -650,7 +688,7 @@ Rectangle getHitBounds () {
 		 */
 		TableColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			column = columns [columns.length - 1];
+			column = columns [columnOrder [columnOrder.length - 1]];
 		} else {
 			column = columns [0];
 		}
@@ -855,7 +893,8 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	if (!background.equals (parent.getBackground ())) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (background);
-		if (columnIndex == 0) {
+		TableColumn[] orderedColumns = parent.orderedColumns;
+		if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
 			Rectangle focusBounds = getFocusBounds ();
 			int fillWidth = 0;
 			if (column == null) {
@@ -884,13 +923,17 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 				if (parent.columns.length < 2 || (parent.style & SWT.FULL_SELECTION) == 0) {
 					fillWidth -= 2;	/* space for right bound of focus rect */
 				}
-				gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+				if (fillWidth > 0) {
+					gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+				}
 			} else {
 				int fillWidth = column.width;
 				if (columnIndex == parent.columns.length - 1) {
 					fillWidth -= 2;		/* space for right bound of focus rect */
 				}
-				gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+				if (fillWidth > 0) {
+					gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+				}
 			}
 			gc.setBackground (oldBackground);
 		}
@@ -1058,14 +1101,15 @@ void removeColumn (TableColumn column, int index) {
 		image = images [0];
 		images [0] = null;
 		/* 
-		 * The new first column will not have as much width available to it as it did when it was
-		 * the second column since it now has to show hierarchy decorations as well, so recompute
-		 * its displayText. 
+		 * The new first column may not have as much width available to it as it did when it was
+		 * the second column if checkboxes are being shown, so recompute its displayText if needed. 
 		 */
-		GC gc = new GC (parent);
-		gc.setFont (getFont (0));
-		computeDisplayText (0, gc);
-		gc.dispose ();
+		if ((parent.style & SWT.CHECK) != 0) {
+			GC gc = new GC (parent);
+			gc.setFont (getFont (0));
+			computeDisplayText (0, gc);
+			gc.dispose ();
+		}
 	}
 	if (columnCount < 2) {
 		texts = null;
@@ -1452,7 +1496,7 @@ public void setImage (int columnIndex, Image value) {
 			}
 			gc.dispose ();
 			parent.redraw (
-				0, 0,
+				columns [0].getX (), 0,
 				columns [0].width,
 				parent.getClientArea ().height,
 				true);
