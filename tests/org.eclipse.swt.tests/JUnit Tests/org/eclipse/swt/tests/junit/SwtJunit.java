@@ -17,7 +17,7 @@ package org.eclipse.swt.tests.junit;
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
 	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
-	public final static boolean isMac = System.getProperty("os.name").startsWith("Mac");
+	public final static boolean isCarbon = System.getProperty("os.name").startsWith("Mac");
 
 	public final static boolean isMotif = /*!isGTK &&*/ isLinux || isAIX || isSolaris || isHPUX;
 	
