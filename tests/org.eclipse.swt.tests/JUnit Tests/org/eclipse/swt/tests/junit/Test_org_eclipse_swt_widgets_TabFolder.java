@@ -325,10 +325,6 @@ public void test_setSelectionI() {
 	}
 }
 
-public void test_setSelectionIZ() {
-	warnUnimpl("Test test_setSelectionIZ not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();

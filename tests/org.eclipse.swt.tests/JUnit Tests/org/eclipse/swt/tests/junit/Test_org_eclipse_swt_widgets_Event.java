@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Event
@@ -36,7 +37,8 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	Event event = new Event();
+	assertNotNull(event);
 }
 
 public void test_getBounds() {
@@ -48,7 +50,9 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	Event event = new Event();
+	assertNotNull(event.toString());
+	assertTrue(event.toString().length() > 0);
 }
 
 public static Test suite() {

@@ -53,10 +53,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		group = new Group(shell, cases[i]);
 }
 
-public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
-}
-
 public void test_computeTrimIIII() {
 	warnUnimpl("Test test_computeTrimIIII not written");
 }

@@ -240,6 +240,10 @@ public void test_setImeInputModeI() {
 	assertTrue(":a:", shell.getImeInputMode() == SWT.NONE);
 }
 
+public void test_setRegionLorg_eclipse_swt_graphics_Region() {
+	warnUnimpl("Test test_setRegionLorg_eclipse_swt_graphics_Region not written");
+}
+
 public void test_setVisibleZ() {
 	shell.setVisible(false);
 	assertTrue(":a:", !shell.isVisible());
@@ -285,7 +289,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setActive");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setImeInputModeI");
-	methodNames.addElement("test_setRegion");
+	methodNames.addElement("test_setRegionLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_widgets_DisplayI");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Decorations.methodNames()); // add superclass method names
@@ -315,7 +319,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setActive")) test_setActive();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setImeInputModeI")) test_setImeInputModeI();
-	else if (getName().equals("test_setRegion")) test_setRegion();
+	else if (getName().equals("test_setRegionLorg_eclipse_swt_graphics_Region")) test_setRegionLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_widgets_DisplayI")) test_win32_newLorg_eclipse_swt_widgets_DisplayI();
 	else super.runTest();

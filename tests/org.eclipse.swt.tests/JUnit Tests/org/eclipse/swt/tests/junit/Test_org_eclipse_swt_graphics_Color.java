@@ -230,9 +230,13 @@ public void test_isDisposed() {
 
 public void test_toString() {
 	Color color = new Color(display, 0, 0, 255);
-	assertNotNull(color.toString());
-	assertTrue(color.toString().length() > 0);
-	assertEquals("Color {0, 0, 255}", color.toString());
+	try {
+		assertNotNull(color.toString());
+		assertTrue(color.toString().length() > 0);
+		assertEquals("Color {0, 0, 255}", color.toString());
+	} finally {
+		color.dispose();
+	}
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

@@ -172,6 +172,10 @@ public void test_getCursorLocation() {
 	}
 }
 
+public void test_getCursorSize() {
+	warnUnimpl("Test test_getCursorSize not written");
+}
+
 public void test_getData() {
 	// tested in setData(Object) method
 }
@@ -332,7 +336,7 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 }
 
 public void test_release() {
-	warnUnimpl("Test test_release not written");
+	// Overriding test_release from Device.
 }
 
 public void test_setAppNameLjava_lang_String() {
@@ -451,6 +455,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getCurrent");
 	methodNames.addElement("test_getCursorControl");
 	methodNames.addElement("test_getCursorLocation");
+	methodNames.addElement("test_getCursorSize");
 	methodNames.addElement("test_getData");
 	methodNames.addElement("test_getDataLjava_lang_String");
 	methodNames.addElement("test_getDefault");
@@ -485,6 +490,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_timerExecILjava_lang_Runnable");
 	methodNames.addElement("test_update");
 	methodNames.addElement("test_wake");
+	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -504,6 +510,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getCurrent")) test_getCurrent();
 	else if (getName().equals("test_getCursorControl")) test_getCursorControl();
 	else if (getName().equals("test_getCursorLocation")) test_getCursorLocation();
+	else if (getName().equals("test_getCursorSize")) test_getCursorSize();
 	else if (getName().equals("test_getData")) test_getData();
 	else if (getName().equals("test_getDataLjava_lang_String")) test_getDataLjava_lang_String();
 	else if (getName().equals("test_getDefault")) test_getDefault();

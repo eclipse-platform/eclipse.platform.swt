@@ -42,8 +42,28 @@ protected void tearDown() {
 }
 
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
-	AccessibleControlListener listener = new AccessibleControlAdapter() {
+	AccessibleControlListener listener = new AccessibleControlListener() {
 		public void getValue(AccessibleControlEvent e) {
+		}
+		public void getChild(AccessibleControlEvent e) {
+		}
+		public void getChildAtPoint(AccessibleControlEvent e) {
+		}
+		public void getChildCount(AccessibleControlEvent e) {
+		}
+		public void getChildren(AccessibleControlEvent e) {
+		}
+		public void getDefaultAction(AccessibleControlEvent e) {
+		}
+		public void getFocus(AccessibleControlEvent e) {
+		}
+		public void getLocation(AccessibleControlEvent e) {
+		}
+		public void getRole(AccessibleControlEvent e) {
+		}
+		public void getSelection(AccessibleControlEvent e) {
+		}
+		public void getState(AccessibleControlEvent e) {
 		}
 	};
 	accessible.addAccessibleControlListener(listener);
@@ -51,8 +71,14 @@ public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_Acce
 }
 
 public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
-	AccessibleListener listener = new AccessibleAdapter() {
+	AccessibleListener listener = new AccessibleListener() {
 		public void getName(AccessibleEvent e) {
+		}
+		public void getDescription(AccessibleEvent e) {
+		}
+		public void getHelp(AccessibleEvent e) {
+		}
+		public void getKeyboardShortcut(AccessibleEvent e) {
 		}
 	};
 	accessible.addAccessibleListener(listener);
@@ -60,8 +86,10 @@ public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleL
 }
 
 public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
-	AccessibleTextListener listener = new AccessibleTextAdapter() {
+	AccessibleTextListener listener = new AccessibleTextListener() {
 		public void getSelectionRange(AccessibleTextEvent e) {
+		}
+		public void getCaretOffset(AccessibleTextEvent e) {
 		}
 	};
 	accessible.addAccessibleTextListener(listener);

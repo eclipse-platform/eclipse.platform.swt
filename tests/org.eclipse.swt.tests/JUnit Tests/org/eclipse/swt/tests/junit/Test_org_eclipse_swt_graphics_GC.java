@@ -164,6 +164,10 @@ public void test_drawOvalIIII() {
 	gc.drawOval(10, 0, 20, 30);				
 }
 
+public void test_drawPointII() {
+	gc.drawPoint(10, 10);
+}
+
 public void test_drawPolygon$I() {
 	gc.drawPolygon(new int[] {0,0, 5,10, 0,20});				
 	gc.drawPolygon(new int[] {0,0});				
@@ -470,6 +474,7 @@ public void test_textExtentLjava_lang_StringI() {
 
 public void test_toString() {
 	String s = gc.toString();
+	assertNotNull(s);
 	assertTrue(s.length() > 0);
 }
 
@@ -503,6 +508,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII");
 	methodNames.addElement("test_drawLineIIII");
 	methodNames.addElement("test_drawOvalIIII");
+	methodNames.addElement("test_drawPointII");
 	methodNames.addElement("test_drawPolygon$I");
 	methodNames.addElement("test_drawPolyline$I");
 	methodNames.addElement("test_drawRectangleIIII");
@@ -565,6 +571,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII")) test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII();
 	else if (getName().equals("test_drawLineIIII")) test_drawLineIIII();
 	else if (getName().equals("test_drawOvalIIII")) test_drawOvalIIII();
+	else if (getName().equals("test_drawPointII")) test_drawPointII();
 	else if (getName().equals("test_drawPolygon$I")) test_drawPolygon$I();
 	else if (getName().equals("test_drawPolyline$I")) test_drawPolyline$I();
 	else if (getName().equals("test_drawRectangleIIII")) test_drawRectangleIIII();

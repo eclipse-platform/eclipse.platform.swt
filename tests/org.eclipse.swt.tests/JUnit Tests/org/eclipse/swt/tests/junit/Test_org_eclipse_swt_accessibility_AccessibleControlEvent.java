@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.AccessibleControlEvent
@@ -29,17 +31,27 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	shell = new Shell();
 }
 
 protected void tearDown() {
+	shell.dispose();
 }
 
 public void test_ConstructorLjava_lang_Object() {
-	warnUnimpl("Test test_ConstructorLjava_lang_Object not written");
+	// Object will typically be a widget.
+	AccessibleControlEvent event = new AccessibleControlEvent(shell);
+	assertNotNull(event);
+	
+	// Test with some other object also.
+	event = new AccessibleControlEvent(new Integer(5));
+	assertNotNull(event);
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	AccessibleControlEvent event = new AccessibleControlEvent(shell);
+	assertNotNull(event.toString());
+	assertTrue(event.toString().length() > 0);
 }
 
 
@@ -64,4 +76,7 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLjava_lang_Object")) test_ConstructorLjava_lang_Object();
 	else if (getName().equals("test_toString")) test_toString();
 }
+
+/* custom */
+public Shell shell;
 }

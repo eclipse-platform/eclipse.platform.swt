@@ -55,6 +55,10 @@ public void test_getContentsLorg_eclipse_swt_dnd_Transfer() {
 	warnUnimpl("Test test_getContentsLorg_eclipse_swt_dnd_Transfer not written");
 }
 
+public void test_isDisposed() {
+	warnUnimpl("Test test_isDisposed not written");
+}
+
 public void test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer() {
 	warnUnimpl("Test test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer not written");
 }
@@ -76,6 +80,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getAvailableTypeNames");
 	methodNames.addElement("test_getAvailableTypes");
 	methodNames.addElement("test_getContentsLorg_eclipse_swt_dnd_Transfer");
+	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer");
 	return methodNames;
 }
@@ -85,6 +90,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getAvailableTypeNames")) test_getAvailableTypeNames();
 	else if (getName().equals("test_getAvailableTypes")) test_getAvailableTypes();
 	else if (getName().equals("test_getContentsLorg_eclipse_swt_dnd_Transfer")) test_getContentsLorg_eclipse_swt_dnd_Transfer();
+	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer")) test_setContents$Ljava_lang_Object$Lorg_eclipse_swt_dnd_Transfer();
 }
 }

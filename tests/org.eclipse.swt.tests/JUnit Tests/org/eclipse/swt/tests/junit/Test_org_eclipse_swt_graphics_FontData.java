@@ -202,7 +202,9 @@ public void test_setStyleI() {
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	FontData data = new FontData();
+	assertNotNull(data.toString());
+	assertTrue(data.toString().length() > 0);
 }
 
 public void test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI() {

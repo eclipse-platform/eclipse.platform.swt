@@ -155,10 +155,6 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	}
 }
 
-public void test_setFocus() {
-	warnUnimpl("Test test_setFocus not written");
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();

@@ -12,6 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.layout.FormAttachment
@@ -29,33 +32,47 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	shell = new Shell();
 }
 
 protected void tearDown() {
+	shell.dispose();
+}
+
+public void test_ConstructorI() {
+	FormAttachment attachment = new FormAttachment(50);
+	assertNotNull(attachment);
 }
 
 public void test_ConstructorII() {
-	warnUnimpl("Test test_ConstructorII not written");
+	FormAttachment attachment = new FormAttachment(50, 10);
+	assertNotNull(attachment);
 }
 
 public void test_ConstructorIII() {
-	warnUnimpl("Test test_ConstructorIII not written");
+	FormAttachment attachment = new FormAttachment(50, 100, 10);
+	assertNotNull(attachment);
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Control not written");
+	FormAttachment attachment = new FormAttachment(shell);
+	assertNotNull(attachment);
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_ControlI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ControlI not written");
+	FormAttachment attachment = new FormAttachment(shell, 10);
+	assertNotNull(attachment);
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_ControlII() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ControlII not written");
+	FormAttachment attachment = new FormAttachment(shell, 10, SWT.LEFT);
+	assertNotNull(attachment);
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	FormAttachment attachment = new FormAttachment(50);
+	assertNotNull(attachment.toString());
+	assertTrue(attachment.toString().length() > 0);
 }
 
 
@@ -71,6 +88,7 @@ public static Test suite() {
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorI");
 	methodNames.addElement("test_ConstructorII");
 	methodNames.addElement("test_ConstructorIII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Control");
@@ -81,11 +99,15 @@ public static java.util.Vector methodNames() {
 }
 
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorII")) test_ConstructorII();
+	if (getName().equals("test_ConstructorI")) test_ConstructorI();
+	else if (getName().equals("test_ConstructorII")) test_ConstructorII();
 	else if (getName().equals("test_ConstructorIII")) test_ConstructorIII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Control")) test_ConstructorLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlI")) test_ConstructorLorg_eclipse_swt_widgets_ControlI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ControlII")) test_ConstructorLorg_eclipse_swt_widgets_ControlII();
 	else if (getName().equals("test_toString")) test_toString();
 }
+
+/* custom */
+public Shell shell;
 }

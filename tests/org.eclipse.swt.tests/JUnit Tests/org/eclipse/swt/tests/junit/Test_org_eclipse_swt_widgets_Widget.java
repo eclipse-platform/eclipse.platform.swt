@@ -158,7 +158,7 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 
 public void test_toString() {
 	assertNotNull(widget.toString());
-	assertEquals(false, widget.toString().equals(""));
+	assertTrue(widget.toString().length() > 0);
 }
 
 public static Test suite() {

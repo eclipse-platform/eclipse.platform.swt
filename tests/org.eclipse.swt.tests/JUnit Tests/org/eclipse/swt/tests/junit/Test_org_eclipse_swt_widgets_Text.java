@@ -737,6 +737,7 @@ public void test_insertLjava_lang_String() {
 }
 
 public void test_isVisible() {
+	// overriding test_isVisible() from Control
 	control.setVisible(true);
 	assertTrue(control.isVisible());  
 

@@ -14,6 +14,9 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 
+import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.widgets.*;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.events.TypedEvent
  *
@@ -30,9 +33,11 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	shell = new Shell();
 }
 
 protected void tearDown() {
+	shell.dispose();
 }
 
 public void test_ConstructorLjava_lang_Object() {
@@ -40,7 +45,18 @@ public void test_ConstructorLjava_lang_Object() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Event not written");
+	Event event = new Event();
+	event.widget = shell;
+	TypedEvent typedEvent = new TypedEvent(event);
+	assertNotNull(typedEvent);
+}
+
+public void test_toString() {
+	Event event = new Event();
+	event.widget = shell;
+	TypedEvent typedEvent = new TypedEvent(event);
+	assertNotNull(typedEvent.toString());
+	assertTrue(typedEvent.toString().length() > 0);
 }
 
 public static Test suite() {
@@ -56,10 +72,15 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLjava_lang_Object");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Event");
+	methodNames.addElement("test_toString");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLjava_lang_Object")) test_ConstructorLjava_lang_Object();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
+	else if (getName().equals("test_toString")) test_toString();
 }
+
+/* custom */
+public Shell shell;
 }
