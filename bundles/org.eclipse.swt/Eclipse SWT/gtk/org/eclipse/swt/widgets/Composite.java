@@ -405,6 +405,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
 	if ((state & CANVAS) == 0) {
 		return super.gtk_expose_event (widget, eventPtr);
 	}

@@ -182,9 +182,11 @@ void hookEvents () {
 	
 	/* Connect the paint signal */
 	int /*long*/ paintHandle = paintHandle ();
-	int paintMask = OS.GDK_EXPOSURE_MASK;
+	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
+	OS.g_signal_connect (paintHandle, OS.expose_event, windowProc3, -EXPOSE_EVENT);
 	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+	OS.g_signal_connect_after (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
@@ -1730,6 +1732,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 }
 	
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
@@ -1899,6 +1902,17 @@ int /*long*/ gtk_unrealize (int /*long*/ widget) {
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
 	return 0;	
+}
+
+int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ event) {
+	GdkEventVisibility gdkEvent = new GdkEventVisibility ();
+	OS.memmove (gdkEvent, event, GdkEventVisibility.sizeof);
+	if (gdkEvent.state == OS.GDK_VISIBILITY_FULLY_OBSCURED) {
+		state |= OBSCURED;
+	} else {
+		state &= ~OBSCURED;
+	}
+	return 0;
 }
 
 /**	 

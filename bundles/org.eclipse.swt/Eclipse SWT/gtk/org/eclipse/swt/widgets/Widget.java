@@ -60,6 +60,7 @@ public abstract class Widget {
 	static final int HANDLE			= 1<<3;
 	static final int DISABLED			= 1<<4;
 	static final int MENU				= 1<<5;
+	static final int OBSCURED			= 1<<6;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -108,7 +109,8 @@ public abstract class Widget {
 	static final int UNMAP_EVENT = 40;
 	static final int UNREALIZE = 41;
 	static final int VALUE_CHANGED = 42;
-	static final int WINDOW_STATE_EVENT = 43;
+	static final int VISIBILITY_NOTIFY_EVENT = 43;
+	static final int WINDOW_STATE_EVENT = 44;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -670,6 +672,10 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	return 0;
 }
 
+int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
 int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
@@ -1174,6 +1180,9 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
+		case -EXPOSE_EVENT: {
+			return (state & OBSCURED) != 0 ? 1 : 0;
+		}
 		case -BUTTON_PRESS_EVENT:
 		case -BUTTON_RELEASE_EVENT:
 		case -MOTION_NOTIFY_EVENT: {
@@ -1202,6 +1211,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case STYLE_SET: return gtk_style_set (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
+		case VISIBILITY_NOTIFY_EVENT: return gtk_visibility_notify_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
 		default: return 0;
 	}

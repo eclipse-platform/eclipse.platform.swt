@@ -100,6 +100,7 @@ Point getIMCaretPos () {
 }
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+	if ((state & OBSCURED) != 0) return 0;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	int /*long*/ result = super.gtk_expose_event (widget, event);
