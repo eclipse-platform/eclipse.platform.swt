@@ -52,6 +52,8 @@ public final class Cursor {
 	 */
 	Device device;
 	
+	boolean isIcon;
+	
 	/**
 	 * data used to create a HAND cursor.
 	 */
@@ -129,8 +131,6 @@ public final class Cursor {
 		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
 		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00
 	};
-	
-	boolean isIcon;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
