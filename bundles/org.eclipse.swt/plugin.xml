@@ -3,11 +3,11 @@
 <plugin
    name="Eclipse SWT"
    id="org.eclipse.swt"
-   version="0.108"
+   version="0.110"
    provider-name="OTI">
 
 <runtime>
-  <library name="swt0108.jar" >
+  <library name="swt.jar" >
      <export name = "*"/>
   </library>
 </runtime>
