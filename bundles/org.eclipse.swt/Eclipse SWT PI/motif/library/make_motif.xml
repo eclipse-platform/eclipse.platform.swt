@@ -83,7 +83,9 @@
 <target name="build_motif_solaris_lib" depends="init_solaris,build_file_lib">
 </target>
 
-<target name="clean" depends="init">
+<target name="clean">
+	<tstamp/>
+	<property name="log_dir" value="${basedir}"/>
 	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
