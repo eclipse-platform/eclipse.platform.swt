@@ -34,12 +34,14 @@ public class ClipboardExample {
 	static final int SIZE = 100;
 	
 public static void main( String[] args) {
-	new ClipboardExample().open();
+	Display display = new Display();
+	new ClipboardExample().open(display);
+	display.dispose();
 }
-void open() {
-	Display display = Display.getDefault ();
+public void open(Display display) {
 	clipboard = new Clipboard(display);
 	shell = new Shell (display);
+	shell.setText("SWT Clipboard");
 	shell.setLayout(new GridLayout(2, true));
 	
 	Group copyGroup = new Group(shell, SWT.NONE);
@@ -79,7 +81,6 @@ void open() {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	clipboard.dispose();
-	display.dispose();
 }
 void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	

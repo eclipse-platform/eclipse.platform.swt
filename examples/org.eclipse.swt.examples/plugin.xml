@@ -39,6 +39,16 @@
       </program>
    </item>
    <item
+         name="%launchitem.Clipboard.name"
+         description="%launchitem.Clipboard.description"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
+         id="org.eclipse.swt.examples.clipboard.standalonelauncher">
+      <program
+            pluginId="org.eclipse.swt.examples"
+            mainClass="org.eclipse.swt.examples.clipboard.ClipboardExample">
+      </program>
+   </item>
+   <item
          name="%launchitem.FileViewer.name"
          description="%launchitem.FileViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
