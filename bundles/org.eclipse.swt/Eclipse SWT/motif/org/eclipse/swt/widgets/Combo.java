@@ -1417,7 +1417,7 @@ public void setVisibleCount (int count) {
 	/*
 	* But in Motif.  Setting the XmNvisibleItemCount resource
 	* for the combo box after it has been realized causes the
-	* widget is layout badly, sometimes moving the drop down
+	* widget to layout badly, sometimes moving the drop down
 	* arrow part of the combo box outside of the bounds.
 	* The fix is to set the XmNvisibleItemCount resource on
 	* the list instead.
