@@ -587,7 +587,8 @@ void resizeToPreferredWidth (int index) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
-		rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
+		rbBand.cx = rbBand.cxIdeal + rect.left;
+		if ((style & SWT.FLAT) == 0) rbBand.cx += rect.right;
 		rbBand.fMask = OS.RBBIM_SIZE;
 		OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
 	}

@@ -189,7 +189,8 @@ public Point computeSize (int wHint, int hHint) {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	width += rect.left + rect.right + CoolBar.INSET;
+	width += rect.left + CoolBar.INSET;
+	if ((parent.style & SWT.FLAT) == 0) width += rect.right; 
 	return new Point (width, height);
 }
 
@@ -229,9 +230,14 @@ Rectangle getClientArea () {
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
 	int x = rect.left + insetRect.left;
-	int y = rect.top + insetRect.top;
-	int width = rect.right - rect.left - (insetRect.left + insetRect.right);
-	int height = rect.bottom - rect.top - (insetRect.top + insetRect.bottom);
+	int y = rect.top;
+	int width = rect.right - rect.left - insetRect.left;
+	int height = rect.bottom - rect.top;
+	if ((parent.style & SWT.FLAT) == 0) {
+		y += insetRect.top;
+		width -= insetRect.right;
+		height -= insetRect.top + insetRect.bottom; 
+	}
 	if (index == 0) {
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -363,7 +369,8 @@ public Point getPreferredSize () {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	int width = rbBand.cxIdeal + rect.left + rect.right + CoolBar.INSET;
+	int width = rbBand.cxIdeal + rect.left + CoolBar.INSET;
+	if ((parent.style & SWT.FLAT) == 0) width += rect.right;
 	return new Point (width, rbBand.cyMinChild);
 }
 
@@ -397,7 +404,9 @@ public void setPreferredSize (int width, int height) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = Math.max (0, width - rect.left - rect.right - CoolBar.INSET);
+	rbBand.cxIdeal = width - rect.left - CoolBar.INSET;
+	if ((parent.style & SWT.FLAT) == 0) rbBand.cxIdeal -= rect.right; 
+	rbBand.cxIdeal = Math.max (0, rbBand.cxIdeal);
 	rbBand.cyMaxChild = height;
 	if (!minimum) rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
@@ -497,7 +506,9 @@ public void setSize (int width, int height) {
 	if (!ideal) {
 		RECT rect = new RECT ();
 		OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-		rbBand.cxIdeal = Math.max (0, width - rect.left - rect.right - CoolBar.INSET);
+		rbBand.cxIdeal = width - rect.left - CoolBar.INSET;
+		if ((parent.style & SWT.FLAT) == 0) rbBand.cxIdeal -= rect.right; 
+		rbBand.cxIdeal = Math.max (0, rbBand.cxIdeal);
 	}
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;
