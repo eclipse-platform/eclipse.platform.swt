@@ -18,6 +18,22 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+#ifndef NO_GDK_1WINDOWING_1X11
+JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GDK_1WINDOWING_1X11\n")
+#ifdef GDK_WINDOWING_X11
+	rc = (jboolean)1;
+#else
+	rc = (jboolean)0;
+#endif	
+	NATIVE_EXIT(env, that, "GDK_1WINDOWING_1X11\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1ACCEL_1LABEL_1ACCEL_1STRING__II
 JNIEXPORT void JNICALL OS_NATIVE(GTK_1ACCEL_1LABEL_1ACCEL_1STRING__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

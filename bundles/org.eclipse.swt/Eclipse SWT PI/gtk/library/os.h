@@ -27,6 +27,14 @@
 #include <string.h>
 #include <dlfcn.h>
 
+#ifndef GDK_WINDOWING_X11
+#define NO_XSetInputFocus
+#define NO_gdk_1x11_1drawable_1get_1xdisplay
+#define NO_gdk_1x11_1drawable_1get_1xid
+#else
+#include <gdk/gdkx.h>
+#endif
+
 /*
 * Defined this prototype to avoid warnings, 
 * because it is a deprecated function in GTK.

@@ -314,6 +314,13 @@ public static final synchronized native int GTK_ACCEL_LABEL_ACCEL_STRING(int acc
 public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int widget);
 public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int widget);
 
+/** X11 Native methods and constants */
+public static final int RevertToParent = 2;
+public static final native boolean GDK_WINDOWING_X11();
+public static final synchronized native int XSetInputFocus(int display, int window, int revert, int time);
+public static final synchronized native int gdk_x11_drawable_get_xdisplay(int drawable);
+public static final synchronized native int gdk_x11_drawable_get_xid(int drawable);
+
 /** Native methods */
 public static final synchronized native int GDK_ROOT_PARENT();
 public static final synchronized native int GDK_TYPE_COLOR();
@@ -416,6 +423,8 @@ public static final synchronized native int gdk_event_get_graphics_expose(int wi
 public static final synchronized native boolean gdk_event_get_state(int event, int[] pmod);
 public static final synchronized native int gdk_event_get_time(int event);
 public static final synchronized native void gdk_event_handler_set(int func, int data, int notify);
+public static final synchronized native void gdk_error_trap_push();
+public static final synchronized native int gdk_error_trap_pop();
 public static final synchronized native void gdk_flush();
 public static final synchronized native void gdk_free_text_list(int list);
 public static final synchronized native void gdk_gc_get_values(int gc, GdkGCValues values);
@@ -488,6 +497,7 @@ public static final synchronized native void gdk_threads_leave();
 public static final synchronized native  int gdk_unicode_to_keyval(int wc);
 public static final synchronized native int gdk_visual_get_system();
 public static final synchronized native int gdk_window_at_pointer(int[] win_x, int[] win_y);
+public static final synchronized native void gdk_window_focus(int window, int timestamp);
 public static final synchronized native void gdk_window_get_frame_extents(int window, GdkRectangle rect);
 public static final synchronized native int gdk_window_get_origin(int window, int[] x, int[] y);
 public static final synchronized native int gdk_window_get_parent(int window);

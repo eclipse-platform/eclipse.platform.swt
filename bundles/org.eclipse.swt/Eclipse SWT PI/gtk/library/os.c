@@ -230,6 +230,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PANGO_1PIXELS)
 }
 #endif
 
+#ifndef NO_XSetInputFocus
+JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetInputFocus\n")
+	rc = (jint)XSetInputFocus((Display *)arg0, (Window)arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XSetInputFocus\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1filename_1from_1uri
 JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1uri)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -1179,6 +1191,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1drawable_1get_1visible_1region)
 	rc = (jint)gdk_drawable_get_visible_region((GdkDrawable *)arg0);
 	NATIVE_EXIT(env, that, "gdk_1drawable_1get_1visible_1region\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1error_1trap_1pop
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1error_1trap_1pop)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1error_1trap_1pop\n")
+	rc = (jint)gdk_error_trap_pop();
+	NATIVE_EXIT(env, that, "gdk_1error_1trap_1pop\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1error_1trap_1push
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1error_1trap_1push)
+	(JNIEnv *env, jclass that)
+{
+	NATIVE_ENTER(env, that, "gdk_1error_1trap_1push\n")
+	gdk_error_trap_push();
+	NATIVE_EXIT(env, that, "gdk_1error_1trap_1push\n")
 }
 #endif
 
@@ -2133,6 +2167,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1at_1pointer)
 }
 #endif
 
+#ifndef NO_gdk_1window_1focus
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1focus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1focus\n")
+	gdk_window_focus((GdkWindow *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gdk_1window_1focus\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1get_1frame_1extents
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1frame_1extents)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -2330,6 +2374,30 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1show)
 	NATIVE_ENTER(env, that, "gdk_1window_1show\n")
 	gdk_window_show((GdkWindow *)arg0);
 	NATIVE_EXIT(env, that, "gdk_1window_1show\n")
+}
+#endif
+
+#ifndef NO_gdk_1x11_1drawable_1get_1xdisplay
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1x11_1drawable_1get_1xdisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1x11_1drawable_1get_1xdisplay\n")
+	rc = (jint)gdk_x11_drawable_get_xdisplay((GdkDrawable *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1x11_1drawable_1get_1xdisplay\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1x11_1drawable_1get_1xid
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1x11_1drawable_1get_1xid)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1x11_1drawable_1get_1xid\n")
+	rc = (jint)gdk_x11_drawable_get_xid((GdkDrawable *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1x11_1drawable_1get_1xid\n")
+	return rc;
 }
 #endif
 
