@@ -26,6 +26,7 @@ public class PtFileSelectionInfo_t {
 	public int btn2;
 	public int num_args;
 	public int args;
-	public int [] spare = new int [4];
+	public int minfo;
+	public int [] spare = new int [3];
 	public static final int sizeof = 1500;
 }

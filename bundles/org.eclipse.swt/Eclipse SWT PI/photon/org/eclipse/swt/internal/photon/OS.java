@@ -475,9 +475,6 @@ public class OS {
 
 
 /** Natives */
-public static final native int GetStringUTFLength(String string);
-public static final native void GetStringUTFRegion(String string, int start, int len, byte[] buffer);
-public static final native String NewStringUTF(byte[] buffer);
 public static final native int PfDecomposeStemToID(byte[] pkszStem);
 public static final native org.eclipse.swt.internal.photon.PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, int font, int str, int len);
 public static final native org.eclipse.swt.internal.photon.PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int len);
@@ -507,7 +504,7 @@ public static final native int PgDrawPhImageRectmx(PhPoint_t pos, int image, PhR
 public static final native int PgDrawPolygon(short[] ptr, int num, PhPoint_t pos, int flags);
 public static final native int PgDrawRoundRect(PhRect_t rect, PhPoint_t radii, int flags);
 public static final native int PgDrawTImage(int ptr, int type, PhPoint_t pos, PhDim_t size, int bpl, int tag, int TransPtr, int TransBPl);
-public static final native int PgDrawText(byte[] ptr, int len, short x, short y, int flags);
+public static final native int PgDrawText(byte[] ptr, int len, PhPoint_t pos, int flags);
 public static final native org.eclipse.swt.internal.photon.PhRect_t PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
 public static final native int PgFlush();
 public static final native int PgGetVideoMode(PgDisplaySettings_t settings);
@@ -515,7 +512,7 @@ public static final native int PgGetVideoModeInfo(short mode_number, PgVideoMode
 public static final native int PgReadScreen(PhRect_t rect, int buffer);
 public static final native int PgReadScreenSize(PhRect_t rect);
 public static final native void PgSetAlpha(int alpha_op, PgMap_t src_alpha_map, int src_alpha_gradient, byte src_global_alpha, byte dst_global_alpha);
-public static final native int PgSetClipping(short n, int rects);
+public static final native void PgSetClipping(short n, int rects);
 public static final native int PgSetDrawBufferSize(int cmd_buf_len);
 public static final native int PgSetDrawMode(int mode);
 public static final native int PgSetFillColor(int color);
@@ -526,10 +523,10 @@ public static final native int PgSetMultiClip(int num, int clip_list);
 public static final native int PgSetPalette(int palette, int palette_id, short first_color, short num_colors, int flags, int tag);
 public static final native void PgSetRegion(int rid);
 public static final native int PgSetStrokeColor(int color);
-public static final native int PgSetStrokeDash(byte[] DashList, int ListLen, int DashScale);
+public static final native void PgSetStrokeDash(byte[] DashList, int ListLen, int DashScale);
 public static final native int PgSetStrokeWidth(int width);
 public static final native int PgSetTextColor(int color);
-public static final native int PgSetTextXORColor(int frgd, int bkgd);
+public static final native void PgSetTextXORColor(int frgd, int bkgd);
 public static final native void PgSetUserClip(PhRect_t ClipRect);
 public static final native int PgShmemCreate(int size, byte[] name);
 public static final native int PgShmemDestroy(int addr);
@@ -660,7 +657,7 @@ public static final native int PtMultiText();
 public static final native int PtNextTopLevelWidget(int widget);
 public static final native int PtPane();
 public static final native int PtPanelGroup();
-public static final native int PtPositionMenu(int widget, PhEvent_t event);
+public static final native void PtPositionMenu(int widget, PhEvent_t event);
 public static final native int PtProgress();
 public static final native int PtReParentWidget(int widget, int parent);
 public static final native int PtRealizeWidget(int widget);

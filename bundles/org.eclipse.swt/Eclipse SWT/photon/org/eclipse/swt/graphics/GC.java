@@ -1165,8 +1165,11 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	try {
 		int prevContext = setGC();	
 		setGCClipping();
+		PhPoint_t pos = new PhPoint_t();
+		pos.x = (short)x;
+		pos.y = (short)y;
 		if (!data.xorMode) {
-			OS.PgDrawText(buffer, buffer.length, (short)x, (short)y, drawFlags);
+			OS.PgDrawText(buffer, buffer.length, pos, drawFlags);
 		} else {
 			if (isTransparent) {
 				PhRect_t rect = new PhRect_t();
@@ -1183,7 +1186,8 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 				int prevCont = OS.PmMemStart(pmMC);
 				OS.PgSetTextColor(data.foreground);
 				OS.PgSetFont(data.font);
-				OS.PgDrawText(buffer, buffer.length, (short)0, (short)0, drawFlags);
+				pos.x = pos.y = (short)0;
+				OS.PgDrawText(buffer, buffer.length, pos, drawFlags);
 				OS.PmMemFlush(pmMC, image);
 				OS.PmMemStop(pmMC);
 				OS.PhDCSetCurrent(prevCont);
@@ -1202,7 +1206,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			} else {
 				OS.PgSetTextXORColor(data.foreground, data.background);
 				OS.PgSetDrawMode(OS.Pg_DrawModeS);
-				OS.PgDrawText(buffer, buffer.length, (short)x, (short)y, drawFlags);
+				OS.PgDrawText(buffer, buffer.length, pos, drawFlags);
 				dirtyBits |= DIRTY_XORMODE | DIRTY_FOREGROUND;				
 			}
 		}

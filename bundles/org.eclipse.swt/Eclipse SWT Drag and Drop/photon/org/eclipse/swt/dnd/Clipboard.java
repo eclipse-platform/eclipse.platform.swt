@@ -214,17 +214,8 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 			PhClipHeader clip = new PhClipHeader();
 			clip.data = transferData.pData;
 			clip.length = (short)transferData.length;
-			byte[] temp = Converter.wcsToMbcs(null, names[j], false);
-			byte[] type = new byte[8];
-			System.arraycopy(temp, 0, type, 0, Math.min(type.length - 1, temp.length));
-			clip.type_0 = type[0];
-			clip.type_1 = type[1];
-			clip.type_2 = type[2];
-			clip.type_3 = type[3];
-			clip.type_4 = type[4];
-			clip.type_5 = type[5];
-			clip.type_6 = type[6];
-			clip.type_7 = type[7];
+			byte[] buffer = Converter.wcsToMbcs(null, names[j], false);
+			System.arraycopy(buffer, 0, clip.type, 0, Math.min(clip.type.length - 1, buffer.length));
 			PhClipHeader[] newClips = new PhClipHeader[count + 1];
 			System.arraycopy(clips, 0, newClips, 0, clips.length);
 			clips = newClips;
@@ -282,16 +273,7 @@ public String[] getAvailableTypeNames() {
 	PhClipHeader[] types = _getAvailableTypes();
 	String[] names = new String[types.length];
 	for (int i = 0; i < types.length; i++) {
-		byte[] buffer = new byte[8];
-		buffer[0] = types[i].type_0;
-		buffer[1] = types[i].type_1;
-		buffer[2] = types[i].type_2;
-		buffer[3] = types[i].type_3;
-		buffer[4] = types[i].type_4;
-		buffer[5] = types[i].type_5;
-		buffer[6] = types[i].type_6;
-		buffer[7] = types[i].type_7;
-		char [] unicode = Converter.mbcsToWcs (null, buffer);
+		char [] unicode = Converter.mbcsToWcs (null, types[i].type);
 		names[i] = new String (unicode).trim();
 	}
 	return names;

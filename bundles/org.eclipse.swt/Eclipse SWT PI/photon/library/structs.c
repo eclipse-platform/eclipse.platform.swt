@@ -1,1335 +1,1485 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
- /**
- * JNI SWT object field getters and setters declarations for Photon structs.
- */
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "structs.h"
 
-/* Globals */
-PhPoint_t_FID_CACHE PhPoint_tFc;
-PhRect_t_FID_CACHE PhRect_tFc;
-PhTile_t_FID_CACHE PhTile_tFc;
-PtCallbackInfo_t_FID_CACHE PtCallbackInfo_tFc;
-PhWindowEvent_t_FID_CACHE PhWindowEvent_tFc;
-PhEvent_t_FID_CACHE PhEvent_tFc;
-FontQueryInfo_FID_CACHE FontQueryInfoFc;
-PhDim_t_FID_CACHE PhDim_tFc;
-PhImage_t_FID_CACHE PhImage_tFc;
-PhPointerEvent_t_FID_CACHE PhPointerEvent_tFc;
-PhKeyEvent_t_FID_CACHE PhKeyEvent_tFc;
-PtScrollbarCallback_t_FID_CACHE PtScrollbarCallback_tFc;
-PhCursorInfo_t_FID_CACHE PhCursorInfo_tFc;
+#ifndef NO_FontDetails
+typedef struct FontDetails_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID desc, stem, losize, hisize, flags;
+} FontDetails_FID_CACHE;
+
 FontDetails_FID_CACHE FontDetailsFc;
-PhArea_t_FID_CACHE PhArea_tFc;
-PtFileSelectionInfo_t_FID_CACHE PtFileSelectionInfo_tFc;
+
+void cacheFontDetailsFields(JNIEnv *env, jobject lpObject)
+{
+	if (FontDetailsFc.cached) return;
+	FontDetailsFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FontDetailsFc.desc = (*env)->GetFieldID(env, FontDetailsFc.clazz, "desc", "[B");
+	FontDetailsFc.stem = (*env)->GetFieldID(env, FontDetailsFc.clazz, "stem", "[B");
+	FontDetailsFc.losize = (*env)->GetFieldID(env, FontDetailsFc.clazz, "losize", "S");
+	FontDetailsFc.hisize = (*env)->GetFieldID(env, FontDetailsFc.clazz, "hisize", "S");
+	FontDetailsFc.flags = (*env)->GetFieldID(env, FontDetailsFc.clazz, "flags", "S");
+	FontDetailsFc.cached = 1;
+}
+
+FontDetails *getFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct)
+{
+	if (!FontDetailsFc.cached) cacheFontDetailsFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (void *)lpStruct->stem);
+	}
+	lpStruct->losize = (*env)->GetShortField(env, lpObject, FontDetailsFc.losize);
+	lpStruct->hisize = (*env)->GetShortField(env, lpObject, FontDetailsFc.hisize);
+	lpStruct->flags = (*env)->GetShortField(env, lpObject, FontDetailsFc.flags);
+	return lpStruct;
+}
+
+void setFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct)
+{
+	if (!FontDetailsFc.cached) cacheFontDetailsFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (void *)lpStruct->stem);
+	}
+	(*env)->SetShortField(env, lpObject, FontDetailsFc.losize, (jshort)lpStruct->losize);
+	(*env)->SetShortField(env, lpObject, FontDetailsFc.hisize, (jshort)lpStruct->hisize);
+	(*env)->SetShortField(env, lpObject, FontDetailsFc.flags, (jshort)lpStruct->flags);
+}
+#endif
+
+#ifndef NO_FontQueryInfo
+typedef struct FontQueryInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID font, desc, size, style, ascender, descender, width, lochar, hichar;
+} FontQueryInfo_FID_CACHE;
+
+FontQueryInfo_FID_CACHE FontQueryInfoFc;
+
+void cacheFontQueryInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (FontQueryInfoFc.cached) return;
+	FontQueryInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FontQueryInfoFc.font = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "font", "[B");
+	FontQueryInfoFc.desc = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "desc", "[B");
+	FontQueryInfoFc.size = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "size", "S");
+	FontQueryInfoFc.style = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "style", "S");
+	FontQueryInfoFc.ascender = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "ascender", "S");
+	FontQueryInfoFc.descender = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "descender", "S");
+	FontQueryInfoFc.width = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "width", "S");
+	FontQueryInfoFc.lochar = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "lochar", "I");
+	FontQueryInfoFc.hichar = (*env)->GetFieldID(env, FontQueryInfoFc.clazz, "hichar", "I");
+	FontQueryInfoFc.cached = 1;
+}
+
+FontQueryInfo *getFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryInfo *lpStruct)
+{
+	if (!FontQueryInfoFc.cached) cacheFontQueryInfoFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (void *)lpStruct->font);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	lpStruct->size = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.size);
+	lpStruct->style = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.style);
+	lpStruct->ascender = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.ascender);
+	lpStruct->descender = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.descender);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.width);
+	lpStruct->lochar = (*env)->GetIntField(env, lpObject, FontQueryInfoFc.lochar);
+	lpStruct->hichar = (*env)->GetIntField(env, lpObject, FontQueryInfoFc.hichar);
+	return lpStruct;
+}
+
+void setFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryInfo *lpStruct)
+{
+	if (!FontQueryInfoFc.cached) cacheFontQueryInfoFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (void *)lpStruct->font);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.size, (jshort)lpStruct->size);
+	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.style, (jshort)lpStruct->style);
+	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.ascender, (jshort)lpStruct->ascender);
+	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.descender, (jshort)lpStruct->descender);
+	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.width, (jshort)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, FontQueryInfoFc.lochar, (jint)lpStruct->lochar);
+	(*env)->SetIntField(env, lpObject, FontQueryInfoFc.hichar, (jint)lpStruct->hichar);
+}
+#endif
+
+#ifndef NO_PgAlpha_t
+typedef struct PgAlpha_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID alpha_op, src_alpha_map_dim_w, src_alpha_map_dim_h, src_alpha_map_bpl, src_alpha_map_bpp, src_alpha_map_map, src_global_alpha, dest_global_alpha;
+} PgAlpha_t_FID_CACHE;
+
 PgAlpha_t_FID_CACHE PgAlpha_tFc;
-PtTextCallback_t_FID_CACHE PtTextCallback_tFc;
-PgMap_t_FID_CACHE PgMap_tFc;
-PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc;
-PhRegion_t_FID_CACHE PhRegion_tFc;
-PtContainerCallback_t_FID_CACHE PtContainerCallback_tFc;
-PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
+
+void cachePgAlpha_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PgAlpha_tFc.cached) return;
+	PgAlpha_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PgAlpha_tFc.alpha_op = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "alpha_op", "I");
+	PgAlpha_tFc.src_alpha_map_dim_w = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_alpha_map_dim_w", "S");
+	PgAlpha_tFc.src_alpha_map_dim_h = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_alpha_map_dim_h", "S");
+	PgAlpha_tFc.src_alpha_map_bpl = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_alpha_map_bpl", "S");
+	PgAlpha_tFc.src_alpha_map_bpp = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_alpha_map_bpp", "S");
+	PgAlpha_tFc.src_alpha_map_map = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_alpha_map_map", "I");
+	PgAlpha_tFc.src_global_alpha = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "src_global_alpha", "B");
+	PgAlpha_tFc.dest_global_alpha = (*env)->GetFieldID(env, PgAlpha_tFc.clazz, "dest_global_alpha", "B");
+	PgAlpha_tFc.cached = 1;
+}
+
+PgAlpha_t *getPgAlpha_tFields(JNIEnv *env, jobject lpObject, PgAlpha_t *lpStruct)
+{
+	if (!PgAlpha_tFc.cached) cachePgAlpha_tFields(env, lpObject);
+	lpStruct->alpha_op = (*env)->GetIntField(env, lpObject, PgAlpha_tFc.alpha_op);
+	lpStruct->src_alpha_map.dim.w = (*env)->GetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_dim_w);
+	lpStruct->src_alpha_map.dim.h = (*env)->GetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_dim_h);
+	lpStruct->src_alpha_map.bpl = (*env)->GetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_bpl);
+	lpStruct->src_alpha_map.bpp = (*env)->GetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_bpp);
+	lpStruct->src_alpha_map.map = (char *)(*env)->GetIntField(env, lpObject, PgAlpha_tFc.src_alpha_map_map);
+	lpStruct->src_global_alpha = (*env)->GetByteField(env, lpObject, PgAlpha_tFc.src_global_alpha);
+	lpStruct->dest_global_alpha = (*env)->GetByteField(env, lpObject, PgAlpha_tFc.dest_global_alpha);
+	return lpStruct;
+}
+
+void setPgAlpha_tFields(JNIEnv *env, jobject lpObject, PgAlpha_t *lpStruct)
+{
+	if (!PgAlpha_tFc.cached) cachePgAlpha_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PgAlpha_tFc.alpha_op, (jint)lpStruct->alpha_op);
+	(*env)->SetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_dim_w, (jshort)lpStruct->src_alpha_map.dim.w);
+	(*env)->SetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_dim_h, (jshort)lpStruct->src_alpha_map.dim.h);
+	(*env)->SetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_bpl, (jshort)lpStruct->src_alpha_map.bpl);
+	(*env)->SetShortField(env, lpObject, PgAlpha_tFc.src_alpha_map_bpp, (jshort)lpStruct->src_alpha_map.bpp);
+	(*env)->SetIntField(env, lpObject, PgAlpha_tFc.src_alpha_map_map, (jint)lpStruct->src_alpha_map.map);
+	(*env)->SetByteField(env, lpObject, PgAlpha_tFc.src_global_alpha, (jbyte)lpStruct->src_global_alpha);
+	(*env)->SetByteField(env, lpObject, PgAlpha_tFc.dest_global_alpha, (jbyte)lpStruct->dest_global_alpha);
+}
+#endif
+
+#ifndef NO_PgDisplaySettings_t
+typedef struct PgDisplaySettings_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mode, xres, yres, refresh, flags, reserved;
+} PgDisplaySettings_t_FID_CACHE;
+
 PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc;
+
+void cachePgDisplaySettings_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PgDisplaySettings_tFc.cached) return;
+	PgDisplaySettings_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PgDisplaySettings_tFc.mode = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "mode", "I");
+	PgDisplaySettings_tFc.xres = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "xres", "I");
+	PgDisplaySettings_tFc.yres = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "yres", "I");
+	PgDisplaySettings_tFc.refresh = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "refresh", "I");
+	PgDisplaySettings_tFc.flags = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "flags", "I");
+	PgDisplaySettings_tFc.reserved = (*env)->GetFieldID(env, PgDisplaySettings_tFc.clazz, "reserved", "[I");
+	PgDisplaySettings_tFc.cached = 1;
+}
+
+PgDisplaySettings_t *getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct)
+{
+	if (!PgDisplaySettings_tFc.cached) cachePgDisplaySettings_tFields(env, lpObject);
+	lpStruct->mode = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.mode);
+	lpStruct->xres = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.xres);
+	lpStruct->yres = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.yres);
+	lpStruct->refresh = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.refresh);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.flags);
+	{
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (void *)lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct)
+{
+	if (!PgDisplaySettings_tFc.cached) cachePgDisplaySettings_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.mode, (jint)lpStruct->mode);
+	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.xres, (jint)lpStruct->xres);
+	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.yres, (jint)lpStruct->yres);
+	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.refresh, (jint)lpStruct->refresh);
+	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.flags, (jint)lpStruct->flags);
+	{
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (void *)lpStruct->reserved);
+	}
+}
+#endif
+
+#ifndef NO_PgMap_t
+typedef struct PgMap_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dim_w, dim_h, bpl, bpp, map;
+} PgMap_t_FID_CACHE;
+
+PgMap_t_FID_CACHE PgMap_tFc;
+
+void cachePgMap_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PgMap_tFc.cached) return;
+	PgMap_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PgMap_tFc.dim_w = (*env)->GetFieldID(env, PgMap_tFc.clazz, "dim_w", "S");
+	PgMap_tFc.dim_h = (*env)->GetFieldID(env, PgMap_tFc.clazz, "dim_h", "S");
+	PgMap_tFc.bpl = (*env)->GetFieldID(env, PgMap_tFc.clazz, "bpl", "S");
+	PgMap_tFc.bpp = (*env)->GetFieldID(env, PgMap_tFc.clazz, "bpp", "S");
+	PgMap_tFc.map = (*env)->GetFieldID(env, PgMap_tFc.clazz, "map", "I");
+	PgMap_tFc.cached = 1;
+}
+
+PgMap_t *getPgMap_tFields(JNIEnv *env, jobject lpObject, PgMap_t *lpStruct)
+{
+	if (!PgMap_tFc.cached) cachePgMap_tFields(env, lpObject);
+	lpStruct->dim.w = (*env)->GetShortField(env, lpObject, PgMap_tFc.dim_w);
+	lpStruct->dim.h = (*env)->GetShortField(env, lpObject, PgMap_tFc.dim_h);
+	lpStruct->bpl = (*env)->GetShortField(env, lpObject, PgMap_tFc.bpl);
+	lpStruct->bpp = (*env)->GetShortField(env, lpObject, PgMap_tFc.bpp);
+	lpStruct->map = (char *)(*env)->GetIntField(env, lpObject, PgMap_tFc.map);
+	return lpStruct;
+}
+
+void setPgMap_tFields(JNIEnv *env, jobject lpObject, PgMap_t *lpStruct)
+{
+	if (!PgMap_tFc.cached) cachePgMap_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PgMap_tFc.dim_w, (jshort)lpStruct->dim.w);
+	(*env)->SetShortField(env, lpObject, PgMap_tFc.dim_h, (jshort)lpStruct->dim.h);
+	(*env)->SetShortField(env, lpObject, PgMap_tFc.bpl, (jshort)lpStruct->bpl);
+	(*env)->SetShortField(env, lpObject, PgMap_tFc.bpp, (jshort)lpStruct->bpp);
+	(*env)->SetIntField(env, lpObject, PgMap_tFc.map, (jint)lpStruct->map);
+}
+#endif
+
+#ifndef NO_PgVideoModeInfo_t
+typedef struct PgVideoModeInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID width, height, bits_per_pixel, bytes_per_scanline, type, mode_capabilities1, mode_capabilities2, mode_capabilities3, mode_capabilities4, mode_capabilities5, mode_capabilities6, refresh_rates;
+} PgVideoModeInfo_t_FID_CACHE;
+
 PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
+
+void cachePgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PgVideoModeInfo_tFc.cached) return;
+	PgVideoModeInfo_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PgVideoModeInfo_tFc.width = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "width", "S");
+	PgVideoModeInfo_tFc.height = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "height", "S");
+	PgVideoModeInfo_tFc.bits_per_pixel = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "bits_per_pixel", "S");
+	PgVideoModeInfo_tFc.bytes_per_scanline = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "bytes_per_scanline", "S");
+	PgVideoModeInfo_tFc.type = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "type", "I");
+	PgVideoModeInfo_tFc.mode_capabilities1 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities1", "I");
+	PgVideoModeInfo_tFc.mode_capabilities2 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities2", "I");
+	PgVideoModeInfo_tFc.mode_capabilities3 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities3", "I");
+	PgVideoModeInfo_tFc.mode_capabilities4 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities4", "I");
+	PgVideoModeInfo_tFc.mode_capabilities5 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities5", "I");
+	PgVideoModeInfo_tFc.mode_capabilities6 = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "mode_capabilities6", "I");
+	PgVideoModeInfo_tFc.refresh_rates = (*env)->GetFieldID(env, PgVideoModeInfo_tFc.clazz, "refresh_rates", "[B");
+	PgVideoModeInfo_tFc.cached = 1;
+}
+
+PgVideoModeInfo_t *getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct)
+{
+	if (!PgVideoModeInfo_tFc.cached) cachePgVideoModeInfo_tFields(env, lpObject);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, PgVideoModeInfo_tFc.width);
+	lpStruct->height = (*env)->GetShortField(env, lpObject, PgVideoModeInfo_tFc.height);
+	lpStruct->bits_per_pixel = (*env)->GetShortField(env, lpObject, PgVideoModeInfo_tFc.bits_per_pixel);
+	lpStruct->bytes_per_scanline = (*env)->GetShortField(env, lpObject, PgVideoModeInfo_tFc.bytes_per_scanline);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.type);
+	lpStruct->mode_capabilities1 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities1);
+	lpStruct->mode_capabilities2 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities2);
+	lpStruct->mode_capabilities3 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities3);
+	lpStruct->mode_capabilities4 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities4);
+	lpStruct->mode_capabilities5 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities5);
+	lpStruct->mode_capabilities6 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities6);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (void *)lpStruct->refresh_rates);
+	}
+	return lpStruct;
+}
+
+void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct)
+{
+	if (!PgVideoModeInfo_tFc.cached) cachePgVideoModeInfo_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PgVideoModeInfo_tFc.width, (jshort)lpStruct->width);
+	(*env)->SetShortField(env, lpObject, PgVideoModeInfo_tFc.height, (jshort)lpStruct->height);
+	(*env)->SetShortField(env, lpObject, PgVideoModeInfo_tFc.bits_per_pixel, (jshort)lpStruct->bits_per_pixel);
+	(*env)->SetShortField(env, lpObject, PgVideoModeInfo_tFc.bytes_per_scanline, (jshort)lpStruct->bytes_per_scanline);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities1, (jint)lpStruct->mode_capabilities1);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities2, (jint)lpStruct->mode_capabilities2);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities3, (jint)lpStruct->mode_capabilities3);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities4, (jint)lpStruct->mode_capabilities4);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities5, (jint)lpStruct->mode_capabilities5);
+	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities6, (jint)lpStruct->mode_capabilities6);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (void *)lpStruct->refresh_rates);
+	}
+}
+#endif
+
+#ifndef NO_PhArea_t
+typedef struct PhArea_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pos_x, pos_y, size_w, size_h;
+} PhArea_t_FID_CACHE;
+
+PhArea_t_FID_CACHE PhArea_tFc;
+
+void cachePhArea_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhArea_tFc.cached) return;
+	PhArea_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhArea_tFc.pos_x = (*env)->GetFieldID(env, PhArea_tFc.clazz, "pos_x", "S");
+	PhArea_tFc.pos_y = (*env)->GetFieldID(env, PhArea_tFc.clazz, "pos_y", "S");
+	PhArea_tFc.size_w = (*env)->GetFieldID(env, PhArea_tFc.clazz, "size_w", "S");
+	PhArea_tFc.size_h = (*env)->GetFieldID(env, PhArea_tFc.clazz, "size_h", "S");
+	PhArea_tFc.cached = 1;
+}
+
+PhArea_t *getPhArea_tFields(JNIEnv *env, jobject lpObject, PhArea_t *lpStruct)
+{
+	if (!PhArea_tFc.cached) cachePhArea_tFields(env, lpObject);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PhArea_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PhArea_tFc.pos_y);
+	lpStruct->size.w = (*env)->GetShortField(env, lpObject, PhArea_tFc.size_w);
+	lpStruct->size.h = (*env)->GetShortField(env, lpObject, PhArea_tFc.size_h);
+	return lpStruct;
+}
+
+void setPhArea_tFields(JNIEnv *env, jobject lpObject, PhArea_t *lpStruct)
+{
+	if (!PhArea_tFc.cached) cachePhArea_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhArea_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PhArea_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetShortField(env, lpObject, PhArea_tFc.size_w, (jshort)lpStruct->size.w);
+	(*env)->SetShortField(env, lpObject, PhArea_tFc.size_h, (jshort)lpStruct->size.h);
+}
+#endif
+
+#ifndef NO_PhClipHeader
+typedef struct PhClipHeader_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, length, zero, data;
+} PhClipHeader_FID_CACHE;
+
 PhClipHeader_FID_CACHE PhClipHeaderFc;
 
-void cachePhPoint_tFids(JNIEnv *env, jobject lpObject, PPhPoint_t_FID_CACHE lpCache)
+void cachePhClipHeaderFields(JNIEnv *env, jobject lpObject)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->clazz, "x", "S");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->clazz, "y", "S");
-	lpCache->cached = 1;
+	if (PhClipHeaderFc.cached) return;
+	PhClipHeaderFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhClipHeaderFc.type = (*env)->GetFieldID(env, PhClipHeaderFc.clazz, "type", "[B");
+	PhClipHeaderFc.length = (*env)->GetFieldID(env, PhClipHeaderFc.clazz, "length", "S");
+	PhClipHeaderFc.zero = (*env)->GetFieldID(env, PhClipHeaderFc.clazz, "zero", "S");
+	PhClipHeaderFc.data = (*env)->GetFieldID(env, PhClipHeaderFc.clazz, "data", "I");
+	PhClipHeaderFc.cached = 1;
 }
 
-void getPhPoint_tFields(JNIEnv *env, jobject lpObject, PhPoint_t *lpStruct, PPhPoint_t_FID_CACHE lpCache)
+PhClipHeader *getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct)
 {
-	lpStruct->x = (*env)->GetShortField(env, lpObject, lpCache->x);
-	lpStruct->y = (*env)->GetShortField(env, lpObject, lpCache->y);
-}
-
-void setPhPoint_tFields(JNIEnv *env, jobject lpObject, PhPoint_t *lpStruct, PPhPoint_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->x, lpStruct->x);
-	(*env)->SetShortField(env, lpObject, lpCache->y, lpStruct->y);
-}
-
-void cachePhRect_tFids(JNIEnv *env, jobject lpObject, PPhRect_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->ul_x = (*env)->GetFieldID(env, lpCache->clazz, "ul_x", "S");
-	lpCache->ul_y = (*env)->GetFieldID(env, lpCache->clazz, "ul_y", "S");
-	lpCache->lr_x = (*env)->GetFieldID(env, lpCache->clazz, "lr_x", "S");
-	lpCache->lr_y = (*env)->GetFieldID(env, lpCache->clazz, "lr_y", "S");
-	lpCache->cached = 1;
-}
-
-void getPhRect_tFields(JNIEnv *env, jobject lpObject, PhRect_t *lpStruct, PPhRect_t_FID_CACHE lpCache)
-{
-	lpStruct->ul.x = (*env)->GetShortField(env, lpObject, lpCache->ul_x);
-	lpStruct->ul.y = (*env)->GetShortField(env, lpObject, lpCache->ul_y);
-	lpStruct->lr.x = (*env)->GetShortField(env, lpObject, lpCache->lr_x);
-	lpStruct->lr.y = (*env)->GetShortField(env, lpObject, lpCache->lr_y);
-}
-
-void setPhRect_tFields(JNIEnv *env, jobject lpObject, PhRect_t *lpStruct, PPhRect_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->ul_x, lpStruct->ul.x);
-	(*env)->SetShortField(env, lpObject, lpCache->ul_y, lpStruct->ul.y);
-	(*env)->SetShortField(env, lpObject, lpCache->lr_x, lpStruct->lr.x);
-	(*env)->SetShortField(env, lpObject, lpCache->lr_y, lpStruct->lr.y);
-}
-
-void cachePhTile_tFids(JNIEnv *env, jobject lpObject, PPhTile_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->rect_ul_x = (*env)->GetFieldID(env, lpCache->clazz, "rect_ul_x", "S");
-	lpCache->rect_ul_y = (*env)->GetFieldID(env, lpCache->clazz, "rect_ul_y", "S");
-	lpCache->rect_lr_x = (*env)->GetFieldID(env, lpCache->clazz, "rect_lr_x", "S");
-	lpCache->rect_lr_y = (*env)->GetFieldID(env, lpCache->clazz, "rect_lr_y", "S");
-	lpCache->next = (*env)->GetFieldID(env, lpCache->clazz, "next", "I");
-	lpCache->cached = 1;
-}
-
-void getPhTile_tFields(JNIEnv *env, jobject lpObject, PhTile_t *lpStruct, PPhTile_t_FID_CACHE lpCache)
-{
-	lpStruct->rect.ul.x = (*env)->GetShortField(env, lpObject, lpCache->rect_ul_x);
-	lpStruct->rect.ul.y = (*env)->GetShortField(env, lpObject, lpCache->rect_ul_y);
-	lpStruct->rect.lr.x = (*env)->GetShortField(env, lpObject, lpCache->rect_lr_x);
-	lpStruct->rect.lr.y = (*env)->GetShortField(env, lpObject, lpCache->rect_lr_y);
-	lpStruct->next = (PhTile_t *)(*env)->GetIntField(env, lpObject, lpCache->next);
-}
-
-void setPhTile_tFields(JNIEnv *env, jobject lpObject, PhTile_t *lpStruct, PPhTile_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->rect_ul_x, lpStruct->rect.ul.x);
-	(*env)->SetShortField(env, lpObject, lpCache->rect_ul_y, lpStruct->rect.ul.y);
-	(*env)->SetShortField(env, lpObject, lpCache->rect_lr_x, lpStruct->rect.lr.x);
-	(*env)->SetShortField(env, lpObject, lpCache->rect_lr_y, lpStruct->rect.lr.y);
-	(*env)->SetIntField(env, lpObject, lpCache->next, (jint)lpStruct->next);
-}
-
-void cachePtCallbackInfo_tFids(JNIEnv *env, jobject lpObject, PPtCallbackInfo_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->reason = (*env)->GetFieldID(env, lpCache->clazz, "reason", "I");
-	lpCache->reason_subtype = (*env)->GetFieldID(env, lpCache->clazz, "reason_subtype", "I");
-	lpCache->event = (*env)->GetFieldID(env, lpCache->clazz, "event", "I");
-	lpCache->cbdata = (*env)->GetFieldID(env, lpCache->clazz, "cbdata", "I");
-	lpCache->cached = 1;
-}
-
-void getPtCallbackInfo_tFields(JNIEnv *env, jobject lpObject, PtCallbackInfo_t *lpStruct, PPtCallbackInfo_t_FID_CACHE lpCache)
-{
-	lpStruct->reason = (*env)->GetIntField(env, lpObject, lpCache->reason);
-	lpStruct->reason_subtype = (*env)->GetIntField(env, lpObject, lpCache->reason_subtype);
-	lpStruct->event = (PhEvent_t *)(*env)->GetIntField(env, lpObject, lpCache->event);
-	lpStruct->cbdata = (void *)(*env)->GetIntField(env, lpObject, lpCache->cbdata);
-}
-
-void setPtCallbackInfo_tFields(JNIEnv *env, jobject lpObject, PtCallbackInfo_t *lpStruct, PPtCallbackInfo_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->reason, lpStruct->reason);
-	(*env)->SetIntField(env, lpObject, lpCache->reason_subtype, lpStruct->reason_subtype);
-	(*env)->SetIntField(env, lpObject, lpCache->event, (jint)lpStruct->event);
-	(*env)->SetIntField(env, lpObject, lpCache->cbdata, (jint)lpStruct->cbdata);
-}
-
-void cachePhWindowEvent_tFids(JNIEnv *env, jobject lpObject, PPhWindowEvent_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->event_f = (*env)->GetFieldID(env, lpCache->clazz, "event_f", "I");
-	lpCache->state_f = (*env)->GetFieldID(env, lpCache->clazz, "state_f", "I");
-	lpCache->rid = (*env)->GetFieldID(env, lpCache->clazz, "rid", "I");
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->size_w = (*env)->GetFieldID(env, lpCache->clazz, "size_w", "S");
-	lpCache->size_h = (*env)->GetFieldID(env, lpCache->clazz, "size_h", "S");
-	lpCache->event_state = (*env)->GetFieldID(env, lpCache->clazz, "event_state", "S");
-	lpCache->input_group = (*env)->GetFieldID(env, lpCache->clazz, "input_group", "S");
-	lpCache->rsvd0 = (*env)->GetFieldID(env, lpCache->clazz, "rsvd0", "I");
-	lpCache->rsvd1 = (*env)->GetFieldID(env, lpCache->clazz, "rsvd1", "I");
-	lpCache->rsvd2 = (*env)->GetFieldID(env, lpCache->clazz, "rsvd2", "I");
-	lpCache->rsvd3 = (*env)->GetFieldID(env, lpCache->clazz, "rsvd3", "I");
-	lpCache->cached = 1;
-}
-
-void getPhWindowEvent_tFields(JNIEnv *env, jobject lpObject, PhWindowEvent_t *lpStruct, PPhWindowEvent_t_FID_CACHE lpCache)
-{
-	lpStruct->event_f = (*env)->GetIntField(env, lpObject, lpCache->event_f);
-	lpStruct->state_f = (*env)->GetIntField(env, lpObject, lpCache->state_f);
-	lpStruct->rid = (*env)->GetIntField(env, lpObject, lpCache->rid);
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->size.w = (*env)->GetShortField(env, lpObject, lpCache->size_w);
-	lpStruct->size.h = (*env)->GetShortField(env, lpObject, lpCache->size_h);
-	lpStruct->event_state = (*env)->GetShortField(env, lpObject, lpCache->event_state);
-	lpStruct->input_group = (*env)->GetShortField(env, lpObject, lpCache->input_group);
-	lpStruct->rsvd[0] = (*env)->GetIntField(env, lpObject, lpCache->rsvd0);
-	lpStruct->rsvd[1] = (*env)->GetIntField(env, lpObject, lpCache->rsvd1);
-	lpStruct->rsvd[2] = (*env)->GetIntField(env, lpObject, lpCache->rsvd2);
-	lpStruct->rsvd[3] = (*env)->GetIntField(env, lpObject, lpCache->rsvd3);
-}
-
-void setPhWindowEvent_tFields(JNIEnv *env, jobject lpObject, PhWindowEvent_t *lpStruct, PPhWindowEvent_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->event_f, lpStruct->event_f);
-	(*env)->SetIntField(env, lpObject, lpCache->state_f, lpStruct->state_f);
-	(*env)->SetIntField(env, lpObject, lpCache->rid, lpStruct->rid);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetShortField(env, lpObject, lpCache->size_w, lpStruct->size.w);
-	(*env)->SetShortField(env, lpObject, lpCache->size_h, lpStruct->size.h);
-	(*env)->SetShortField(env, lpObject, lpCache->event_state, lpStruct->event_state);
-	(*env)->SetShortField(env, lpObject, lpCache->input_group, lpStruct->input_group);
-	(*env)->SetIntField(env, lpObject, lpCache->rsvd0, lpStruct->rsvd[0]);
-	(*env)->SetIntField(env, lpObject, lpCache->rsvd1, lpStruct->rsvd[1]);
-	(*env)->SetIntField(env, lpObject, lpCache->rsvd2, lpStruct->rsvd[2]);
-	(*env)->SetIntField(env, lpObject, lpCache->rsvd3, lpStruct->rsvd[3]);
-}
-
-
-void cachePhEvent_tFids(JNIEnv *env, jobject lpObject, PPhEvent_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
-	lpCache->subtype = (*env)->GetFieldID(env, lpCache->clazz, "subtype", "S");
-	lpCache->processing_flags = (*env)->GetFieldID(env, lpCache->clazz, "processing_flags", "S");
-	lpCache->emitter_rid = (*env)->GetFieldID(env, lpCache->clazz, "emitter_rid", "I");
-	lpCache->emitter_handle = (*env)->GetFieldID(env, lpCache->clazz, "emitter_handle", "I");
-	lpCache->collector_rid = (*env)->GetFieldID(env, lpCache->clazz, "collector_rid", "I");
-	lpCache->collector_handle = (*env)->GetFieldID(env, lpCache->clazz, "collector_handle", "I");
-	lpCache->input_group = (*env)->GetFieldID(env, lpCache->clazz, "input_group", "S");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "S");
-	lpCache->timestamp = (*env)->GetFieldID(env, lpCache->clazz, "timestamp", "I");
-	lpCache->translation_x = (*env)->GetFieldID(env, lpCache->clazz, "translation_x", "S");
-	lpCache->translation_y = (*env)->GetFieldID(env, lpCache->clazz, "translation_y", "S");
-	lpCache->num_rects = (*env)->GetFieldID(env, lpCache->clazz, "num_rects", "S");
-	lpCache->data_len = (*env)->GetFieldID(env, lpCache->clazz, "data_len", "S");
-	lpCache->cached = 1;
-}
-
-void getPhEvent_tFields(JNIEnv *env, jobject lpObject, PhEvent_t *lpStruct, PPhEvent_t_FID_CACHE lpCache)
-{
-	lpStruct->type = (*env)->GetIntField(env, lpObject, lpCache->type);
-	lpStruct->subtype = (*env)->GetShortField(env, lpObject, lpCache->subtype);
-	lpStruct->processing_flags = (*env)->GetShortField(env, lpObject, lpCache->processing_flags);
-	lpStruct->emitter.rid = (*env)->GetIntField(env, lpObject, lpCache->emitter_rid);
-	lpStruct->emitter.handle = (*env)->GetIntField(env, lpObject, lpCache->emitter_handle);
-	lpStruct->collector.rid = (*env)->GetIntField(env, lpObject, lpCache->collector_rid);
-	lpStruct->collector.handle = (*env)->GetIntField(env, lpObject, lpCache->collector_handle);
-	lpStruct->input_group = (*env)->GetShortField(env, lpObject, lpCache->input_group);
-	lpStruct->flags = (*env)->GetShortField(env, lpObject, lpCache->flags);
-	lpStruct->timestamp = (*env)->GetIntField(env, lpObject, lpCache->timestamp);
-	lpStruct->translation.x = (*env)->GetShortField(env, lpObject, lpCache->translation_x);
-	lpStruct->translation.y = (*env)->GetShortField(env, lpObject, lpCache->translation_y);
-	lpStruct->num_rects = (*env)->GetShortField(env, lpObject, lpCache->num_rects);
-	lpStruct->data_len = (*env)->GetShortField(env, lpObject, lpCache->data_len);
-}
-
-void setPhEvent_tFields(JNIEnv *env, jobject lpObject, PhEvent_t *lpStruct, PPhEvent_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->type, lpStruct->type);
-	(*env)->SetShortField(env, lpObject, lpCache->subtype, lpStruct->subtype);
-	(*env)->SetShortField(env, lpObject, lpCache->processing_flags, lpStruct->processing_flags);
-	(*env)->SetIntField(env, lpObject, lpCache->emitter_rid, lpStruct->emitter.rid);
-	(*env)->SetIntField(env, lpObject, lpCache->emitter_handle, lpStruct->emitter.handle);
-	(*env)->SetIntField(env, lpObject, lpCache->collector_rid, lpStruct->collector.rid);
-	(*env)->SetIntField(env, lpObject, lpCache->collector_handle, lpStruct->collector.handle);
-	(*env)->SetShortField(env, lpObject, lpCache->input_group, lpStruct->input_group);
-	(*env)->SetShortField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetIntField(env, lpObject, lpCache->timestamp, lpStruct->timestamp);
-	(*env)->SetShortField(env, lpObject, lpCache->translation_x, lpStruct->translation.x);
-	(*env)->SetShortField(env, lpObject, lpCache->translation_y, lpStruct->translation.y);
-	(*env)->SetShortField(env, lpObject, lpCache->num_rects, lpStruct->num_rects);
-	(*env)->SetShortField(env, lpObject, lpCache->data_len, lpStruct->data_len);
-}
-
-void cacheFontQueryInfoFids(JNIEnv *env, jobject lpObject, PFontQueryInfo_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->font = (*env)->GetFieldID(env, lpCache->clazz, "font", "[B");
-	lpCache->desc = (*env)->GetFieldID(env, lpCache->clazz, "desc", "[B");
-	lpCache->size = (*env)->GetFieldID(env, lpCache->clazz, "size", "S");
-	lpCache->style = (*env)->GetFieldID(env, lpCache->clazz, "style", "S");
-	lpCache->ascender = (*env)->GetFieldID(env, lpCache->clazz, "ascender", "S");
-	lpCache->descender = (*env)->GetFieldID(env, lpCache->clazz, "descender", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "S");
-	lpCache->lochar = (*env)->GetFieldID(env, lpCache->clazz, "lochar", "I");
-	lpCache->hichar = (*env)->GetFieldID(env, lpCache->clazz, "hichar", "I");
-	lpCache->cached = 1;
-}
-	
-void getFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryInfo *lpStruct, PFontQueryInfo_FID_CACHE lpCache)
-{
-	jbyteArray desc, font = (*env)->GetObjectField(env, lpObject, lpCache->font);
-    if (font) {
-        jbyte *font1 = (*env)->GetByteArrayElements(env, font, NULL);
-        memcpy(lpStruct->font, font1, MAX_FONT_TAG);
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
+	if (!PhClipHeaderFc.cached) cachePhClipHeaderFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (void *)lpStruct->type);
 	}
-	desc = (*env)->GetObjectField(env, lpObject, lpCache->desc);
-	if (desc) {
-        jbyte *desc1 = (*env)->GetByteArrayElements(env, desc, NULL);
-        memcpy(lpStruct->desc, desc1, MAX_DESC_LENGTH);
-        (*env)->ReleaseByteArrayElements(env, desc, desc1, JNI_ABORT);
+	lpStruct->length = (*env)->GetShortField(env, lpObject, PhClipHeaderFc.length);
+	lpStruct->zero = (*env)->GetShortField(env, lpObject, PhClipHeaderFc.zero);
+	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, PhClipHeaderFc.data);
+	return lpStruct;
+}
+
+void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct)
+{
+	if (!PhClipHeaderFc.cached) cachePhClipHeaderFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (void *)lpStruct->type);
 	}
-	lpStruct->size = (*env)->GetShortField(env, lpObject, lpCache->size);
-	lpStruct->style = (*env)->GetShortField(env, lpObject, lpCache->style);
-	lpStruct->ascender = (*env)->GetShortField(env, lpObject, lpCache->ascender);
-	lpStruct->descender = (*env)->GetShortField(env, lpObject, lpCache->descender);
-	lpStruct->width = (*env)->GetShortField(env, lpObject, lpCache->width);
-	lpStruct->lochar = (*env)->GetIntField(env, lpObject, lpCache->lochar);
-	lpStruct->hichar = (*env)->GetIntField(env, lpObject, lpCache->hichar);
+	(*env)->SetShortField(env, lpObject, PhClipHeaderFc.length, (jshort)lpStruct->length);
+	(*env)->SetShortField(env, lpObject, PhClipHeaderFc.zero, (jshort)lpStruct->zero);
+	(*env)->SetIntField(env, lpObject, PhClipHeaderFc.data, (jint)lpStruct->data);
 }
-
-void setFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryInfo *lpStruct, PFontQueryInfo_FID_CACHE lpCache)
-{
-	jbyteArray desc, font = (*env)->GetObjectField(env, lpObject, lpCache->font);
-    if (font) {
-        jbyte *font1 = (*env)->GetByteArrayElements(env, font, NULL);
-        memcpy(font1, lpStruct->font, MAX_FONT_TAG);
-        (*env)->ReleaseByteArrayElements(env, font, font1, 0);
-	}
-	desc = (*env)->GetObjectField(env, lpObject, lpCache->desc);
-	if (desc) {
-        jbyte *desc1 = (*env)->GetByteArrayElements(env, desc, NULL);
-        memcpy(desc1, lpStruct->desc, MAX_DESC_LENGTH);
-        (*env)->ReleaseByteArrayElements(env, desc, desc1, 0);
-	}
-	(*env)->SetShortField(env, lpObject, lpCache->size, lpStruct->size);
-	(*env)->SetShortField(env, lpObject, lpCache->style, lpStruct->style);
-	(*env)->SetShortField(env, lpObject, lpCache->ascender, lpStruct->ascender);
-	(*env)->SetShortField(env, lpObject, lpCache->descender, lpStruct->descender);
-	(*env)->SetShortField(env, lpObject, lpCache->width, lpStruct->width);
-	(*env)->SetIntField(env, lpObject, lpCache->lochar, lpStruct->lochar);
-	(*env)->SetIntField(env, lpObject, lpCache->hichar, lpStruct->hichar);
-}
-
-void cachePhDim_tFids(JNIEnv *env, jobject lpObject, PPhDim_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->w = (*env)->GetFieldID(env, lpCache->clazz, "w", "S");
-	lpCache->h = (*env)->GetFieldID(env, lpCache->clazz, "h", "S");
-	lpCache->cached = 1;
-}
-
-void getPhDim_tFields(JNIEnv *env, jobject lpObject, PhDim_t *lpStruct, PPhDim_t_FID_CACHE lpCache)
-{
-	lpStruct->w = (*env)->GetShortField(env, lpObject, lpCache->w);
-	lpStruct->h = (*env)->GetShortField(env, lpObject, lpCache->h);
-}
-
-void setPhDim_tFields(JNIEnv *env, jobject lpObject, PhDim_t *lpStruct, PPhDim_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->w, lpStruct->w);
-	(*env)->SetShortField(env, lpObject, lpCache->h, lpStruct->h);
-}
-
-void cachePhImage_tFids(JNIEnv *env, jobject lpObject, PPhImage_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
-	lpCache->image_tag = (*env)->GetFieldID(env, lpCache->clazz, "image_tag", "I");
-	lpCache->bpl = (*env)->GetFieldID(env, lpCache->clazz, "bpl", "I");
-	lpCache->size_w = (*env)->GetFieldID(env, lpCache->clazz, "size_w", "S");
-	lpCache->size_h = (*env)->GetFieldID(env, lpCache->clazz, "size_h", "S");
-	lpCache->palette_tag = (*env)->GetFieldID(env, lpCache->clazz, "palette_tag", "I");
-	lpCache->colors = (*env)->GetFieldID(env, lpCache->clazz, "colors", "I");
-	lpCache->alpha = (*env)->GetFieldID(env, lpCache->clazz, "alpha", "I");
-	lpCache->transparent = (*env)->GetFieldID(env, lpCache->clazz, "transparent", "I");
-	lpCache->format = (*env)->GetFieldID(env, lpCache->clazz, "format", "B");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "B");
-	lpCache->ghost_bpl = (*env)->GetFieldID(env, lpCache->clazz, "ghost_bpl", "B");
-	lpCache->spare1 = (*env)->GetFieldID(env, lpCache->clazz, "spare1", "B");
-	lpCache->ghost_bitmap = (*env)->GetFieldID(env, lpCache->clazz, "ghost_bitmap", "I");
-	lpCache->mask_bpl = (*env)->GetFieldID(env, lpCache->clazz, "mask_bpl", "I");
-	lpCache->mask_bm = (*env)->GetFieldID(env, lpCache->clazz, "mask_bm", "I");
-	lpCache->palette = (*env)->GetFieldID(env, lpCache->clazz, "palette", "I");
-	lpCache->image = (*env)->GetFieldID(env, lpCache->clazz, "image", "I");
-	lpCache->cached = 1;
-}
-
-void getPhImage_tFields(JNIEnv *env, jobject lpObject, PhImage_t *lpStruct, PPhImage_t_FID_CACHE lpCache)
-{
-	lpStruct->type = (*env)->GetIntField(env, lpObject, lpCache->type);
-	lpStruct->image_tag = (*env)->GetIntField(env, lpObject, lpCache->image_tag);
-	lpStruct->bpl = (*env)->GetIntField(env, lpObject, lpCache->bpl);
-	lpStruct->size.w = (*env)->GetShortField(env, lpObject, lpCache->size_w);
-	lpStruct->size.h = (*env)->GetShortField(env, lpObject, lpCache->size_h);
-	lpStruct->palette_tag = (*env)->GetIntField(env, lpObject, lpCache->palette_tag);
-	lpStruct->colors = (*env)->GetIntField(env, lpObject, lpCache->colors);
-	lpStruct->alpha = (PgAlpha_t *)(*env)->GetIntField(env, lpObject, lpCache->alpha);
-	lpStruct->transparent = (PgColor_t)(*env)->GetIntField(env, lpObject, lpCache->transparent);
-	lpStruct->format = (*env)->GetByteField(env, lpObject, lpCache->format);
-	lpStruct->flags = (*env)->GetByteField(env, lpObject, lpCache->flags);
-	lpStruct->ghost_bpl = (*env)->GetByteField(env, lpObject, lpCache->ghost_bpl);
-	lpStruct->spare1 = (*env)->GetByteField(env, lpObject, lpCache->spare1);
-	lpStruct->ghost_bitmap = (char *)(*env)->GetIntField(env, lpObject, lpCache->ghost_bitmap);
-	lpStruct->mask_bpl = (*env)->GetIntField(env, lpObject, lpCache->mask_bpl);
-	lpStruct->mask_bm = (char *)(*env)->GetIntField(env, lpObject, lpCache->mask_bm);
-	lpStruct->palette = (PgColor_t *)(*env)->GetIntField(env, lpObject, lpCache->palette);
-	lpStruct->image = (char *)(*env)->GetIntField(env, lpObject, lpCache->image);
-}
-
-void setPhImage_tFields(JNIEnv *env, jobject lpObject, PhImage_t *lpStruct, PPhImage_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->type, lpStruct->type);
-	(*env)->SetIntField(env, lpObject, lpCache->image_tag, lpStruct->image_tag);
-	(*env)->SetIntField(env, lpObject, lpCache->bpl, lpStruct->bpl);
-	(*env)->SetShortField(env, lpObject, lpCache->size_w, lpStruct->size.w);
-	(*env)->SetShortField(env, lpObject, lpCache->size_h, lpStruct->size.h);
-	(*env)->SetIntField(env, lpObject, lpCache->palette_tag, lpStruct->palette_tag);
-	(*env)->SetIntField(env, lpObject, lpCache->colors, lpStruct->colors);
-	(*env)->SetIntField(env, lpObject, lpCache->alpha, (jint)lpStruct->alpha);
-	(*env)->SetIntField(env, lpObject, lpCache->transparent, (jint)lpStruct->transparent);
-	(*env)->SetByteField(env, lpObject, lpCache->format, lpStruct->format);
-	(*env)->SetByteField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetByteField(env, lpObject, lpCache->ghost_bpl, lpStruct->ghost_bpl);
-	(*env)->SetByteField(env, lpObject, lpCache->spare1, lpStruct->spare1);
-	(*env)->SetIntField(env, lpObject, lpCache->ghost_bitmap, (jint)lpStruct->ghost_bitmap);
-	(*env)->SetIntField(env, lpObject, lpCache->mask_bpl, lpStruct->mask_bpl);
-	(*env)->SetIntField(env, lpObject, lpCache->mask_bm, (jint)lpStruct->mask_bm);
-	(*env)->SetIntField(env, lpObject, lpCache->palette, (jint)lpStruct->palette);
-	(*env)->SetIntField(env, lpObject, lpCache->image, (jint)lpStruct->image);
-}
-
-
-void cachePhPointerEvent_tFids(JNIEnv *env, jobject lpObject, PPhPointerEvent_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->buttons = (*env)->GetFieldID(env, lpCache->clazz, "buttons", "S");
-	lpCache->button_state = (*env)->GetFieldID(env, lpCache->clazz, "button_state", "S");
-	lpCache->click_count = (*env)->GetFieldID(env, lpCache->clazz, "click_count", "B");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "B");
-	lpCache->z = (*env)->GetFieldID(env, lpCache->clazz, "z", "S");
-	lpCache->key_mods = (*env)->GetFieldID(env, lpCache->clazz, "key_mods", "I");
-	lpCache->zero = (*env)->GetFieldID(env, lpCache->clazz, "zero", "I");
-	lpCache->cached = 1;
-}
-
-void getPhPointerEvent_tFields(JNIEnv *env, jobject lpObject, PhPointerEvent_t *lpStruct, PPhPointerEvent_t_FID_CACHE lpCache)
-{
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->buttons = (*env)->GetShortField(env, lpObject, lpCache->buttons);
-	lpStruct->button_state = (*env)->GetShortField(env, lpObject, lpCache->button_state);
-	lpStruct->click_count = (*env)->GetByteField(env, lpObject, lpCache->click_count);
-	lpStruct->flags = (*env)->GetByteField(env, lpObject, lpCache->flags);
-	lpStruct->z = (*env)->GetShortField(env, lpObject, lpCache->z);
-	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, lpCache->key_mods);
-	lpStruct->zero = (*env)->GetIntField(env, lpObject, lpCache->zero);
-}
-
-void setPhPointerEvent_tFields(JNIEnv *env, jobject lpObject, PhPointerEvent_t *lpStruct, PPhPointerEvent_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetShortField(env, lpObject, lpCache->buttons, lpStruct->buttons);
-	(*env)->SetShortField(env, lpObject, lpCache->button_state, lpStruct->button_state);
-	(*env)->SetByteField(env, lpObject, lpCache->click_count, lpStruct->click_count);
-	(*env)->SetByteField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetShortField(env, lpObject, lpCache->z, lpStruct->z);
-	(*env)->SetIntField(env, lpObject, lpCache->key_mods, lpStruct->key_mods);
-	(*env)->SetIntField(env, lpObject, lpCache->zero, lpStruct->zero);
-}
-
-void cachePhKeyEvent_tFids(JNIEnv *env, jobject lpObject, PPhKeyEvent_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->key_flags = (*env)->GetFieldID(env, lpCache->clazz, "key_flags", "I");
-	lpCache->key_mods = (*env)->GetFieldID(env, lpCache->clazz, "key_mods", "I");
-	lpCache->key_sym = (*env)->GetFieldID(env, lpCache->clazz, "key_sym", "I");
-	lpCache->key_cap = (*env)->GetFieldID(env, lpCache->clazz, "key_cap", "I");
-	lpCache->key_scan = (*env)->GetFieldID(env, lpCache->clazz, "key_scan", "S");
-	lpCache->key_zero = (*env)->GetFieldID(env, lpCache->clazz, "key_zero", "S");
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->button_state = (*env)->GetFieldID(env, lpCache->clazz, "button_state", "S");
-	lpCache->cached = 1;
-}
-
-void getPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct, PPhKeyEvent_t_FID_CACHE lpCache)
-{
-	lpStruct->key_flags = (*env)->GetIntField(env, lpObject, lpCache->key_flags);
-	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, lpCache->key_mods);
-	lpStruct->key_sym = (*env)->GetIntField(env, lpObject, lpCache->key_sym);
-	lpStruct->key_cap = (*env)->GetIntField(env, lpObject, lpCache->key_cap);
-	lpStruct->key_scan = (*env)->GetShortField(env, lpObject, lpCache->key_scan);
-#if _NTO_VERSION+0 >= 610
-	lpStruct->key_zero = (*env)->GetShortField(env, lpObject, lpCache->key_zero);
 #endif
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->button_state = (*env)->GetShortField(env, lpObject, lpCache->button_state);
+
+#ifndef NO_PhCursorDef_t
+typedef struct PhCursorDef_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hdr_len, hdr_type, size1_x, size1_y, offset1_x, offset1_y, color1, bytesperline1, size2_x, size2_y, offset2_x, offset2_y, color2, bytesperline2;
+} PhCursorDef_t_FID_CACHE;
+
+PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
+
+void cachePhCursorDef_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhCursorDef_tFc.cached) return;
+	PhCursorDef_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhCursorDef_tFc.hdr_len = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "hdr_len", "S");
+	PhCursorDef_tFc.hdr_type = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "hdr_type", "S");
+	PhCursorDef_tFc.size1_x = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "size1_x", "S");
+	PhCursorDef_tFc.size1_y = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "size1_y", "S");
+	PhCursorDef_tFc.offset1_x = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "offset1_x", "S");
+	PhCursorDef_tFc.offset1_y = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "offset1_y", "S");
+	PhCursorDef_tFc.color1 = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "color1", "I");
+	PhCursorDef_tFc.bytesperline1 = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "bytesperline1", "B");
+	PhCursorDef_tFc.size2_x = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "size2_x", "S");
+	PhCursorDef_tFc.size2_y = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "size2_y", "S");
+	PhCursorDef_tFc.offset2_x = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "offset2_x", "S");
+	PhCursorDef_tFc.offset2_y = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "offset2_y", "S");
+	PhCursorDef_tFc.color2 = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "color2", "I");
+	PhCursorDef_tFc.bytesperline2 = (*env)->GetFieldID(env, PhCursorDef_tFc.clazz, "bytesperline2", "B");
+	PhCursorDef_tFc.cached = 1;
 }
 
-void setPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct, PPhKeyEvent_t_FID_CACHE lpCache)
+PhCursorDef_t *getPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct)
 {
-	(*env)->SetIntField(env, lpObject, lpCache->key_flags, lpStruct->key_flags);
-	(*env)->SetIntField(env, lpObject, lpCache->key_mods, lpStruct->key_mods);
-	(*env)->SetIntField(env, lpObject, lpCache->key_sym, lpStruct->key_sym);
-	(*env)->SetIntField(env, lpObject, lpCache->key_cap, lpStruct->key_cap);
-	(*env)->SetShortField(env, lpObject, lpCache->key_scan, lpStruct->key_scan);
-#if _NTO_VERSION+0 >= 610
-	(*env)->SetShortField(env, lpObject, lpCache->key_zero, lpStruct->key_zero);
+	if (!PhCursorDef_tFc.cached) cachePhCursorDef_tFields(env, lpObject);
+	lpStruct->hdr.len = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.hdr_len);
+	lpStruct->hdr.type = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.hdr_type);
+	lpStruct->size1.x = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.size1_x);
+	lpStruct->size1.y = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.size1_y);
+	lpStruct->offset1.x = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.offset1_x);
+	lpStruct->offset1.y = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.offset1_y);
+	lpStruct->color1 = (*env)->GetIntField(env, lpObject, PhCursorDef_tFc.color1);
+	lpStruct->bytesperline1 = (*env)->GetByteField(env, lpObject, PhCursorDef_tFc.bytesperline1);
+	lpStruct->size2.x = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.size2_x);
+	lpStruct->size2.y = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.size2_y);
+	lpStruct->offset2.x = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.offset2_x);
+	lpStruct->offset2.y = (*env)->GetShortField(env, lpObject, PhCursorDef_tFc.offset2_y);
+	lpStruct->color2 = (*env)->GetIntField(env, lpObject, PhCursorDef_tFc.color2);
+	lpStruct->bytesperline2 = (*env)->GetByteField(env, lpObject, PhCursorDef_tFc.bytesperline2);
+	return lpStruct;
+}
+
+void setPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct)
+{
+	if (!PhCursorDef_tFc.cached) cachePhCursorDef_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.hdr_len, (jshort)lpStruct->hdr.len);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.hdr_type, (jshort)lpStruct->hdr.type);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.size1_x, (jshort)lpStruct->size1.x);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.size1_y, (jshort)lpStruct->size1.y);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.offset1_x, (jshort)lpStruct->offset1.x);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.offset1_y, (jshort)lpStruct->offset1.y);
+	(*env)->SetIntField(env, lpObject, PhCursorDef_tFc.color1, (jint)lpStruct->color1);
+	(*env)->SetByteField(env, lpObject, PhCursorDef_tFc.bytesperline1, (jbyte)lpStruct->bytesperline1);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.size2_x, (jshort)lpStruct->size2.x);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.size2_y, (jshort)lpStruct->size2.y);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.offset2_x, (jshort)lpStruct->offset2.x);
+	(*env)->SetShortField(env, lpObject, PhCursorDef_tFc.offset2_y, (jshort)lpStruct->offset2.y);
+	(*env)->SetIntField(env, lpObject, PhCursorDef_tFc.color2, (jint)lpStruct->color2);
+	(*env)->SetByteField(env, lpObject, PhCursorDef_tFc.bytesperline2, (jbyte)lpStruct->bytesperline2);
+}
 #endif
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetShortField(env, lpObject, lpCache->button_state, lpStruct->button_state);
+
+#ifndef NO_PhCursorInfo_t
+typedef struct PhCursorInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pos_x, pos_y, region, ig_region, color, last_press_x, last_press_y, msec, steady_x, steady_y, dragger, drag_boundary_ul_x, drag_boundary_ul_y, drag_boundary_lr_x, drag_boundary_lr_y, phantom_rid, type, ig, button_state, click_count, zero1, key_mods, zero2;
+} PhCursorInfo_t_FID_CACHE;
+
+PhCursorInfo_t_FID_CACHE PhCursorInfo_tFc;
+
+void cachePhCursorInfo_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhCursorInfo_tFc.cached) return;
+	PhCursorInfo_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhCursorInfo_tFc.pos_x = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "pos_x", "S");
+	PhCursorInfo_tFc.pos_y = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "pos_y", "S");
+	PhCursorInfo_tFc.region = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "region", "I");
+	PhCursorInfo_tFc.ig_region = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "ig_region", "I");
+	PhCursorInfo_tFc.color = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "color", "I");
+	PhCursorInfo_tFc.last_press_x = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "last_press_x", "S");
+	PhCursorInfo_tFc.last_press_y = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "last_press_y", "S");
+	PhCursorInfo_tFc.msec = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "msec", "I");
+	PhCursorInfo_tFc.steady_x = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "steady_x", "S");
+	PhCursorInfo_tFc.steady_y = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "steady_y", "S");
+	PhCursorInfo_tFc.dragger = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "dragger", "I");
+	PhCursorInfo_tFc.drag_boundary_ul_x = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "drag_boundary_ul_x", "S");
+	PhCursorInfo_tFc.drag_boundary_ul_y = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "drag_boundary_ul_y", "S");
+	PhCursorInfo_tFc.drag_boundary_lr_x = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "drag_boundary_lr_x", "S");
+	PhCursorInfo_tFc.drag_boundary_lr_y = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "drag_boundary_lr_y", "S");
+	PhCursorInfo_tFc.phantom_rid = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "phantom_rid", "I");
+	PhCursorInfo_tFc.type = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "type", "S");
+	PhCursorInfo_tFc.ig = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "ig", "S");
+	PhCursorInfo_tFc.button_state = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "button_state", "S");
+	PhCursorInfo_tFc.click_count = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "click_count", "B");
+	PhCursorInfo_tFc.zero1 = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "zero1", "B");
+	PhCursorInfo_tFc.key_mods = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "key_mods", "I");
+	PhCursorInfo_tFc.zero2 = (*env)->GetFieldID(env, PhCursorInfo_tFc.clazz, "zero2", "I");
+	PhCursorInfo_tFc.cached = 1;
 }
 
-void cachePtScrollbarCallback_tFids(JNIEnv *env, jobject lpObject, PPtScrollbarCallback_t_FID_CACHE lpCache)
+PhCursorInfo_t *getPhCursorInfo_tFields(JNIEnv *env, jobject lpObject, PhCursorInfo_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->action = (*env)->GetFieldID(env, lpCache->clazz, "action", "I");
-	lpCache->position = (*env)->GetFieldID(env, lpCache->clazz, "position", "I");
-	lpCache->cached = 1;
+	if (!PhCursorInfo_tFc.cached) cachePhCursorInfo_tFields(env, lpObject);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.pos_y);
+	lpStruct->region = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.region);
+	lpStruct->ig_region = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.ig_region);
+	lpStruct->color = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.color);
+	lpStruct->last_press.x = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.last_press_x);
+	lpStruct->last_press.y = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.last_press_y);
+	lpStruct->msec = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.msec);
+	lpStruct->steady.x = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.steady_x);
+	lpStruct->steady.y = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.steady_y);
+	lpStruct->dragger = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.dragger);
+	lpStruct->drag_boundary.ul.x = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_ul_x);
+	lpStruct->drag_boundary.ul.y = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_ul_y);
+	lpStruct->drag_boundary.lr.x = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_lr_x);
+	lpStruct->drag_boundary.lr.y = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_lr_y);
+	lpStruct->phantom_rid = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.phantom_rid);
+	lpStruct->type = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.type);
+	lpStruct->ig = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.ig);
+	lpStruct->button_state = (*env)->GetShortField(env, lpObject, PhCursorInfo_tFc.button_state);
+	lpStruct->click_count = (*env)->GetByteField(env, lpObject, PhCursorInfo_tFc.click_count);
+	lpStruct->zero1 = (*env)->GetByteField(env, lpObject, PhCursorInfo_tFc.zero1);
+	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.key_mods);
+	lpStruct->zero2 = (*env)->GetIntField(env, lpObject, PhCursorInfo_tFc.zero2);
+	return lpStruct;
 }
 
-void getPtScrollbarCallback_tFields(JNIEnv *env, jobject lpObject, PtScrollbarCallback_t *lpStruct, PPtScrollbarCallback_t_FID_CACHE lpCache)
+void setPhCursorInfo_tFields(JNIEnv *env, jobject lpObject, PhCursorInfo_t *lpStruct)
 {
-	lpStruct->action = (*env)->GetIntField(env, lpObject, lpCache->action);
-	lpStruct->position = (*env)->GetIntField(env, lpObject, lpCache->position);
+	if (!PhCursorInfo_tFc.cached) cachePhCursorInfo_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.region, (jint)lpStruct->region);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.ig_region, (jint)lpStruct->ig_region);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.color, (jint)lpStruct->color);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.last_press_x, (jshort)lpStruct->last_press.x);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.last_press_y, (jshort)lpStruct->last_press.y);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.msec, (jint)lpStruct->msec);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.steady_x, (jshort)lpStruct->steady.x);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.steady_y, (jshort)lpStruct->steady.y);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.dragger, (jint)lpStruct->dragger);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_ul_x, (jshort)lpStruct->drag_boundary.ul.x);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_ul_y, (jshort)lpStruct->drag_boundary.ul.y);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_lr_x, (jshort)lpStruct->drag_boundary.lr.x);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.drag_boundary_lr_y, (jshort)lpStruct->drag_boundary.lr.y);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.phantom_rid, (jint)lpStruct->phantom_rid);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.type, (jshort)lpStruct->type);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.ig, (jshort)lpStruct->ig);
+	(*env)->SetShortField(env, lpObject, PhCursorInfo_tFc.button_state, (jshort)lpStruct->button_state);
+	(*env)->SetByteField(env, lpObject, PhCursorInfo_tFc.click_count, (jbyte)lpStruct->click_count);
+	(*env)->SetByteField(env, lpObject, PhCursorInfo_tFc.zero1, (jbyte)lpStruct->zero1);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.key_mods, (jint)lpStruct->key_mods);
+	(*env)->SetIntField(env, lpObject, PhCursorInfo_tFc.zero2, (jint)lpStruct->zero2);
+}
+#endif
+
+#ifndef NO_PhDim_t
+typedef struct PhDim_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID w, h;
+} PhDim_t_FID_CACHE;
+
+PhDim_t_FID_CACHE PhDim_tFc;
+
+void cachePhDim_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhDim_tFc.cached) return;
+	PhDim_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhDim_tFc.w = (*env)->GetFieldID(env, PhDim_tFc.clazz, "w", "S");
+	PhDim_tFc.h = (*env)->GetFieldID(env, PhDim_tFc.clazz, "h", "S");
+	PhDim_tFc.cached = 1;
 }
 
-void setPtScrollbarCallback_tFields(JNIEnv *env, jobject lpObject, PtScrollbarCallback_t *lpStruct, PPtScrollbarCallback_t_FID_CACHE lpCache)
+PhDim_t *getPhDim_tFields(JNIEnv *env, jobject lpObject, PhDim_t *lpStruct)
 {
-	(*env)->SetIntField(env, lpObject, lpCache->action, lpStruct->action);
-	(*env)->SetIntField(env, lpObject, lpCache->position, lpStruct->position);
+	if (!PhDim_tFc.cached) cachePhDim_tFields(env, lpObject);
+	lpStruct->w = (*env)->GetShortField(env, lpObject, PhDim_tFc.w);
+	lpStruct->h = (*env)->GetShortField(env, lpObject, PhDim_tFc.h);
+	return lpStruct;
 }
 
-void cachePhCursorInfo_tFids(JNIEnv *env, jobject lpObject, PPhCursorInfo_t_FID_CACHE lpCache)
+void setPhDim_tFields(JNIEnv *env, jobject lpObject, PhDim_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->region = (*env)->GetFieldID(env, lpCache->clazz, "region", "I");
-	lpCache->ig_region = (*env)->GetFieldID(env, lpCache->clazz, "ig_region", "I");
-	lpCache->color = (*env)->GetFieldID(env, lpCache->clazz, "color", "I");
-	lpCache->last_press_x = (*env)->GetFieldID(env, lpCache->clazz, "last_press_x", "S");
-	lpCache->last_press_y = (*env)->GetFieldID(env, lpCache->clazz, "last_press_y", "S");
-	lpCache->msec = (*env)->GetFieldID(env, lpCache->clazz, "msec", "I");
-	lpCache->steady_x = (*env)->GetFieldID(env, lpCache->clazz, "steady_x", "I");
-	lpCache->steady_y = (*env)->GetFieldID(env, lpCache->clazz, "steady_y", "I");
-	lpCache->dragger = (*env)->GetFieldID(env, lpCache->clazz, "dragger", "I");
-	lpCache->drag_boundary_xUL = (*env)->GetFieldID(env, lpCache->clazz, "drag_boundary_xUL", "S");
-	lpCache->drag_boundary_yUL = (*env)->GetFieldID(env, lpCache->clazz, "drag_boundary_yUL", "S");
-	lpCache->drag_boundary_xLR = (*env)->GetFieldID(env, lpCache->clazz, "drag_boundary_xLR", "S");
-	lpCache->drag_boundary_yLR = (*env)->GetFieldID(env, lpCache->clazz, "drag_boundary_yLR", "S");
-	lpCache->phantom_rid = (*env)->GetFieldID(env, lpCache->clazz, "phantom_rid", "I");
-	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "S");
-	lpCache->ig = (*env)->GetFieldID(env, lpCache->clazz, "ig", "S");
-	lpCache->button_state = (*env)->GetFieldID(env, lpCache->clazz, "button_state", "S");
-	lpCache->click_count = (*env)->GetFieldID(env, lpCache->clazz, "click_count", "B");
-	lpCache->zero10 = (*env)->GetFieldID(env, lpCache->clazz, "zero10", "B");
-	lpCache->zero11 = (*env)->GetFieldID(env, lpCache->clazz, "zero11", "B");
-	lpCache->zero12 = (*env)->GetFieldID(env, lpCache->clazz, "zero12", "B");
-	lpCache->key_mods = (*env)->GetFieldID(env, lpCache->clazz, "key_mods", "I");
-	lpCache->zero2 = (*env)->GetFieldID(env, lpCache->clazz, "zero2", "I");
-	lpCache->cached = 1;
+	if (!PhDim_tFc.cached) cachePhDim_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhDim_tFc.w, (jshort)lpStruct->w);
+	(*env)->SetShortField(env, lpObject, PhDim_tFc.h, (jshort)lpStruct->h);
+}
+#endif
+
+#ifndef NO_PhEvent_t
+typedef struct PhEvent_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, subtype, processing_flags, emitter_rid, emitter_handle, collector_rid, collector_handle, input_group, flags, timestamp, translation_x, translation_y, num_rects, data_len;
+} PhEvent_t_FID_CACHE;
+
+PhEvent_t_FID_CACHE PhEvent_tFc;
+
+void cachePhEvent_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhEvent_tFc.cached) return;
+	PhEvent_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhEvent_tFc.type = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "type", "I");
+	PhEvent_tFc.subtype = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "subtype", "S");
+	PhEvent_tFc.processing_flags = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "processing_flags", "S");
+	PhEvent_tFc.emitter_rid = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "emitter_rid", "I");
+	PhEvent_tFc.emitter_handle = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "emitter_handle", "I");
+	PhEvent_tFc.collector_rid = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "collector_rid", "I");
+	PhEvent_tFc.collector_handle = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "collector_handle", "I");
+	PhEvent_tFc.input_group = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "input_group", "S");
+	PhEvent_tFc.flags = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "flags", "S");
+	PhEvent_tFc.timestamp = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "timestamp", "I");
+	PhEvent_tFc.translation_x = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "translation_x", "S");
+	PhEvent_tFc.translation_y = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "translation_y", "S");
+	PhEvent_tFc.num_rects = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "num_rects", "S");
+	PhEvent_tFc.data_len = (*env)->GetFieldID(env, PhEvent_tFc.clazz, "data_len", "S");
+	PhEvent_tFc.cached = 1;
 }
 
-void getPhCursorInfo_tFields(JNIEnv *env, jobject lpObject, PhCursorInfo_t *lpStruct, PPhCursorInfo_t_FID_CACHE lpCache)
+PhEvent_t *getPhEvent_tFields(JNIEnv *env, jobject lpObject, PhEvent_t *lpStruct)
 {
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->region = (*env)->GetIntField(env, lpObject, lpCache->region);
-	lpStruct->ig_region = (*env)->GetIntField(env, lpObject, lpCache->ig_region);
-	lpStruct->color = (*env)->GetIntField(env, lpObject, lpCache->color);
-	lpStruct->last_press.x = (*env)->GetShortField(env, lpObject, lpCache->last_press_x);
-	lpStruct->last_press.y = (*env)->GetShortField(env, lpObject, lpCache->last_press_y);
-	lpStruct->msec = (*env)->GetIntField(env, lpObject, lpCache->msec);
-	lpStruct->steady.x = (*env)->GetIntField(env, lpObject, lpCache->steady_x);
-	lpStruct->steady.y = (*env)->GetIntField(env, lpObject, lpCache->steady_y);
-	lpStruct->dragger = (*env)->GetIntField(env, lpObject, lpCache->dragger);
-	lpStruct->drag_boundary.ul.x = (*env)->GetShortField(env, lpObject, lpCache->drag_boundary_xUL);
-	lpStruct->drag_boundary.ul.y = (*env)->GetShortField(env, lpObject, lpCache->drag_boundary_yUL);
-	lpStruct->drag_boundary.lr.x = (*env)->GetShortField(env, lpObject, lpCache->drag_boundary_xLR);
-	lpStruct->drag_boundary.lr.y = (*env)->GetShortField(env, lpObject, lpCache->drag_boundary_yLR);
-	lpStruct->phantom_rid = (*env)->GetIntField(env, lpObject, lpCache->phantom_rid);
-	lpStruct->type = (*env)->GetShortField(env, lpObject, lpCache->type);
-	lpStruct->ig = (*env)->GetShortField(env, lpObject, lpCache->ig);
-	lpStruct->button_state = (*env)->GetShortField(env, lpObject, lpCache->button_state);
-	lpStruct->click_count = (*env)->GetByteField(env, lpObject, lpCache->click_count);
-//	lpStruct->zero10 = (*env)->GetByteField(env, lpObject, lpCache->zero10);
-//	lpStruct->zero11 = (*env)->GetByteField(env, lpObject, lpCache->zero11);
-//	lpStruct->zero12 = (*env)->GetByteField(env, lpObject, lpCache->zero12);
-	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, lpCache->key_mods);
-	lpStruct->zero2 = (*env)->GetIntField(env, lpObject, lpCache->zero2);
+	if (!PhEvent_tFc.cached) cachePhEvent_tFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, PhEvent_tFc.type);
+	lpStruct->subtype = (*env)->GetShortField(env, lpObject, PhEvent_tFc.subtype);
+	lpStruct->processing_flags = (*env)->GetShortField(env, lpObject, PhEvent_tFc.processing_flags);
+	lpStruct->emitter.rid = (*env)->GetIntField(env, lpObject, PhEvent_tFc.emitter_rid);
+	lpStruct->emitter.handle = (*env)->GetIntField(env, lpObject, PhEvent_tFc.emitter_handle);
+	lpStruct->collector.rid = (*env)->GetIntField(env, lpObject, PhEvent_tFc.collector_rid);
+	lpStruct->collector.handle = (*env)->GetIntField(env, lpObject, PhEvent_tFc.collector_handle);
+	lpStruct->input_group = (*env)->GetShortField(env, lpObject, PhEvent_tFc.input_group);
+	lpStruct->flags = (*env)->GetShortField(env, lpObject, PhEvent_tFc.flags);
+	lpStruct->timestamp = (*env)->GetIntField(env, lpObject, PhEvent_tFc.timestamp);
+	lpStruct->translation.x = (*env)->GetShortField(env, lpObject, PhEvent_tFc.translation_x);
+	lpStruct->translation.y = (*env)->GetShortField(env, lpObject, PhEvent_tFc.translation_y);
+	lpStruct->num_rects = (*env)->GetShortField(env, lpObject, PhEvent_tFc.num_rects);
+	lpStruct->data_len = (*env)->GetShortField(env, lpObject, PhEvent_tFc.data_len);
+	return lpStruct;
 }
 
-void setPhCursorInfo_tFields(JNIEnv *env, jobject lpObject, PhCursorInfo_t *lpStruct, PPhCursorInfo_t_FID_CACHE lpCache)
+void setPhEvent_tFields(JNIEnv *env, jobject lpObject, PhEvent_t *lpStruct)
 {
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetIntField(env, lpObject, lpCache->region, lpStruct->region);
-	(*env)->SetIntField(env, lpObject, lpCache->ig_region, lpStruct->ig_region);
-	(*env)->SetIntField(env, lpObject, lpCache->color, lpStruct->color);
-	(*env)->SetShortField(env, lpObject, lpCache->last_press_x, lpStruct->last_press.x);
-	(*env)->SetShortField(env, lpObject, lpCache->last_press_y, lpStruct->last_press.y);
-	(*env)->SetIntField(env, lpObject, lpCache->msec, lpStruct->msec);
-	(*env)->SetIntField(env, lpObject, lpCache->steady_x, lpStruct->steady.x);
-	(*env)->SetIntField(env, lpObject, lpCache->steady_y, lpStruct->steady.y);
-	(*env)->SetIntField(env, lpObject, lpCache->dragger, lpStruct->dragger);
-	(*env)->SetShortField(env, lpObject, lpCache->drag_boundary_xUL, lpStruct->drag_boundary.ul.x);
-	(*env)->SetShortField(env, lpObject, lpCache->drag_boundary_yUL, lpStruct->drag_boundary.ul.y);
-	(*env)->SetShortField(env, lpObject, lpCache->drag_boundary_xLR, lpStruct->drag_boundary.lr.x);
-	(*env)->SetShortField(env, lpObject, lpCache->drag_boundary_yLR, lpStruct->drag_boundary.lr.y);
-	(*env)->SetIntField(env, lpObject, lpCache->phantom_rid, lpStruct->phantom_rid);
-	(*env)->SetShortField(env, lpObject, lpCache->type, lpStruct->type);
-	(*env)->SetShortField(env, lpObject, lpCache->ig, lpStruct->ig);
-	(*env)->SetShortField(env, lpObject, lpCache->button_state, lpStruct->button_state);
-	(*env)->SetByteField(env, lpObject, lpCache->click_count, lpStruct->click_count);
-//	(*env)->SetByteField(env, lpObject, lpCache->zero10, lpStruct->zero10);
-//	(*env)->SetByteField(env, lpObject, lpCache->zero11, lpStruct->zero11);
-//	(*env)->SetByteField(env, lpObject, lpCache->zero12, lpStruct->zero12);
-	(*env)->SetIntField(env, lpObject, lpCache->key_mods, lpStruct->key_mods);
-	(*env)->SetIntField(env, lpObject, lpCache->zero2, lpStruct->zero2);
+	if (!PhEvent_tFc.cached) cachePhEvent_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.type, (jint)lpStruct->type);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.subtype, (jshort)lpStruct->subtype);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.processing_flags, (jshort)lpStruct->processing_flags);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.emitter_rid, (jint)lpStruct->emitter.rid);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.emitter_handle, (jint)lpStruct->emitter.handle);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.collector_rid, (jint)lpStruct->collector.rid);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.collector_handle, (jint)lpStruct->collector.handle);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.input_group, (jshort)lpStruct->input_group);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.flags, (jshort)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, PhEvent_tFc.timestamp, (jint)lpStruct->timestamp);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.translation_x, (jshort)lpStruct->translation.x);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.translation_y, (jshort)lpStruct->translation.y);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.num_rects, (jshort)lpStruct->num_rects);
+	(*env)->SetShortField(env, lpObject, PhEvent_tFc.data_len, (jshort)lpStruct->data_len);
+}
+#endif
+
+#ifndef NO_PhImage_t
+typedef struct PhImage_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, image_tag, bpl, size_w, size_h, palette_tag, colors, alpha, transparent, format, flags, ghost_bpl, spare1, ghost_bitmap, mask_bpl, mask_bm, palette, image;
+} PhImage_t_FID_CACHE;
+
+PhImage_t_FID_CACHE PhImage_tFc;
+
+void cachePhImage_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhImage_tFc.cached) return;
+	PhImage_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhImage_tFc.type = (*env)->GetFieldID(env, PhImage_tFc.clazz, "type", "I");
+	PhImage_tFc.image_tag = (*env)->GetFieldID(env, PhImage_tFc.clazz, "image_tag", "I");
+	PhImage_tFc.bpl = (*env)->GetFieldID(env, PhImage_tFc.clazz, "bpl", "I");
+	PhImage_tFc.size_w = (*env)->GetFieldID(env, PhImage_tFc.clazz, "size_w", "S");
+	PhImage_tFc.size_h = (*env)->GetFieldID(env, PhImage_tFc.clazz, "size_h", "S");
+	PhImage_tFc.palette_tag = (*env)->GetFieldID(env, PhImage_tFc.clazz, "palette_tag", "I");
+	PhImage_tFc.colors = (*env)->GetFieldID(env, PhImage_tFc.clazz, "colors", "I");
+	PhImage_tFc.alpha = (*env)->GetFieldID(env, PhImage_tFc.clazz, "alpha", "I");
+	PhImage_tFc.transparent = (*env)->GetFieldID(env, PhImage_tFc.clazz, "transparent", "I");
+	PhImage_tFc.format = (*env)->GetFieldID(env, PhImage_tFc.clazz, "format", "B");
+	PhImage_tFc.flags = (*env)->GetFieldID(env, PhImage_tFc.clazz, "flags", "B");
+	PhImage_tFc.ghost_bpl = (*env)->GetFieldID(env, PhImage_tFc.clazz, "ghost_bpl", "B");
+	PhImage_tFc.spare1 = (*env)->GetFieldID(env, PhImage_tFc.clazz, "spare1", "B");
+	PhImage_tFc.ghost_bitmap = (*env)->GetFieldID(env, PhImage_tFc.clazz, "ghost_bitmap", "I");
+	PhImage_tFc.mask_bpl = (*env)->GetFieldID(env, PhImage_tFc.clazz, "mask_bpl", "I");
+	PhImage_tFc.mask_bm = (*env)->GetFieldID(env, PhImage_tFc.clazz, "mask_bm", "I");
+	PhImage_tFc.palette = (*env)->GetFieldID(env, PhImage_tFc.clazz, "palette", "I");
+	PhImage_tFc.image = (*env)->GetFieldID(env, PhImage_tFc.clazz, "image", "I");
+	PhImage_tFc.cached = 1;
 }
 
-void cacheFontDetailsFids(JNIEnv *env, jobject lpObject, PFontDetails_FID_CACHE lpCache)
+PhImage_t *getPhImage_tFields(JNIEnv *env, jobject lpObject, PhImage_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->desc = (*env)->GetFieldID(env, lpCache->clazz, "desc", "[B");
-	lpCache->stem = (*env)->GetFieldID(env, lpCache->clazz, "stem", "[B");
-	lpCache->losize = (*env)->GetFieldID(env, lpCache->clazz, "losize", "S");
-	lpCache->hisize = (*env)->GetFieldID(env, lpCache->clazz, "hisize", "S");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "S");
-	lpCache->cached = 1;
+	if (!PhImage_tFc.cached) cachePhImage_tFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, PhImage_tFc.type);
+	lpStruct->image_tag = (*env)->GetIntField(env, lpObject, PhImage_tFc.image_tag);
+	lpStruct->bpl = (*env)->GetIntField(env, lpObject, PhImage_tFc.bpl);
+	lpStruct->size.w = (*env)->GetShortField(env, lpObject, PhImage_tFc.size_w);
+	lpStruct->size.h = (*env)->GetShortField(env, lpObject, PhImage_tFc.size_h);
+	lpStruct->palette_tag = (*env)->GetIntField(env, lpObject, PhImage_tFc.palette_tag);
+	lpStruct->colors = (*env)->GetIntField(env, lpObject, PhImage_tFc.colors);
+	lpStruct->alpha = (PgAlpha_t *)(*env)->GetIntField(env, lpObject, PhImage_tFc.alpha);
+	lpStruct->transparent = (*env)->GetIntField(env, lpObject, PhImage_tFc.transparent);
+	lpStruct->format = (*env)->GetByteField(env, lpObject, PhImage_tFc.format);
+	lpStruct->flags = (*env)->GetByteField(env, lpObject, PhImage_tFc.flags);
+	lpStruct->ghost_bpl = (*env)->GetByteField(env, lpObject, PhImage_tFc.ghost_bpl);
+	lpStruct->spare1 = (*env)->GetByteField(env, lpObject, PhImage_tFc.spare1);
+	lpStruct->ghost_bitmap = (char *)(*env)->GetIntField(env, lpObject, PhImage_tFc.ghost_bitmap);
+	lpStruct->mask_bpl = (*env)->GetIntField(env, lpObject, PhImage_tFc.mask_bpl);
+	lpStruct->mask_bm = (char *)(*env)->GetIntField(env, lpObject, PhImage_tFc.mask_bm);
+	lpStruct->palette = (PgColor_t *)(*env)->GetIntField(env, lpObject, PhImage_tFc.palette);
+	lpStruct->image = (char *)(*env)->GetIntField(env, lpObject, PhImage_tFc.image);
+	return lpStruct;
 }
 
-void getFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct, PFontDetails_FID_CACHE lpCache)
+void setPhImage_tFields(JNIEnv *env, jobject lpObject, PhImage_t *lpStruct)
 {
-	jbyteArray desc, stem = (*env)->GetObjectField(env, lpObject, lpCache->stem);
-    if (stem) {
-        jbyte *stem1 = (*env)->GetByteArrayElements(env, stem, NULL);
-        memcpy(lpStruct->stem, stem1, MAX_FONT_TAG);
-        (*env)->ReleaseByteArrayElements(env, stem, stem1, JNI_ABORT);
-	}
-	desc = (*env)->GetObjectField(env, lpObject, lpCache->desc);
-	if (desc) {
-        jbyte *desc1 = (*env)->GetByteArrayElements(env, desc, NULL);
-        memcpy(lpStruct->desc, desc1, MAX_DESC_LENGTH);
-        (*env)->ReleaseByteArrayElements(env, desc, desc1, JNI_ABORT);
-	}
-	lpStruct->losize = (*env)->GetShortField(env, lpObject, lpCache->losize);
-	lpStruct->hisize = (*env)->GetShortField(env, lpObject, lpCache->hisize);
-	lpStruct->flags = (*env)->GetShortField(env, lpObject, lpCache->flags);
+	if (!PhImage_tFc.cached) cachePhImage_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.image_tag, (jint)lpStruct->image_tag);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.bpl, (jint)lpStruct->bpl);
+	(*env)->SetShortField(env, lpObject, PhImage_tFc.size_w, (jshort)lpStruct->size.w);
+	(*env)->SetShortField(env, lpObject, PhImage_tFc.size_h, (jshort)lpStruct->size.h);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.palette_tag, (jint)lpStruct->palette_tag);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.colors, (jint)lpStruct->colors);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.alpha, (jint)lpStruct->alpha);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.transparent, (jint)lpStruct->transparent);
+	(*env)->SetByteField(env, lpObject, PhImage_tFc.format, (jbyte)lpStruct->format);
+	(*env)->SetByteField(env, lpObject, PhImage_tFc.flags, (jbyte)lpStruct->flags);
+	(*env)->SetByteField(env, lpObject, PhImage_tFc.ghost_bpl, (jbyte)lpStruct->ghost_bpl);
+	(*env)->SetByteField(env, lpObject, PhImage_tFc.spare1, (jbyte)lpStruct->spare1);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.ghost_bitmap, (jint)lpStruct->ghost_bitmap);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.mask_bpl, (jint)lpStruct->mask_bpl);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.mask_bm, (jint)lpStruct->mask_bm);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.palette, (jint)lpStruct->palette);
+	(*env)->SetIntField(env, lpObject, PhImage_tFc.image, (jint)lpStruct->image);
+}
+#endif
+
+#ifndef NO_PhKeyEvent_t
+typedef struct PhKeyEvent_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID key_mods, key_flags, key_cap, key_sym, key_scan, key_zero, pos_x, pos_y, button_state;
+} PhKeyEvent_t_FID_CACHE;
+
+PhKeyEvent_t_FID_CACHE PhKeyEvent_tFc;
+
+void cachePhKeyEvent_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhKeyEvent_tFc.cached) return;
+	PhKeyEvent_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhKeyEvent_tFc.key_mods = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_mods", "I");
+	PhKeyEvent_tFc.key_flags = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_flags", "I");
+	PhKeyEvent_tFc.key_cap = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_cap", "I");
+	PhKeyEvent_tFc.key_sym = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_sym", "I");
+	PhKeyEvent_tFc.key_scan = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_scan", "S");
+	PhKeyEvent_tFc.key_zero = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "key_zero", "S");
+	PhKeyEvent_tFc.pos_x = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "pos_x", "S");
+	PhKeyEvent_tFc.pos_y = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "pos_y", "S");
+	PhKeyEvent_tFc.button_state = (*env)->GetFieldID(env, PhKeyEvent_tFc.clazz, "button_state", "S");
+	PhKeyEvent_tFc.cached = 1;
 }
 
-void setFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct, PFontDetails_FID_CACHE lpCache)
+PhKeyEvent_t *getPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct)
 {
-	jbyteArray desc, stem = (*env)->GetObjectField(env, lpObject, lpCache->stem);
-    if (stem) {
-        jbyte *stem1 = (*env)->GetByteArrayElements(env, stem, NULL);
-        memcpy(stem1, lpStruct->stem, MAX_FONT_TAG);
-        (*env)->ReleaseByteArrayElements(env, stem, stem1, 0);
-	}
-	desc = (*env)->GetObjectField(env, lpObject, lpCache->desc);
-	if (desc) {
-        jbyte *desc1 = (*env)->GetByteArrayElements(env, desc, NULL);
-        memcpy(desc1, lpStruct->desc, MAX_DESC_LENGTH);
-        (*env)->ReleaseByteArrayElements(env, desc, desc1, 0);
-	}
-	(*env)->SetShortField(env, lpObject, lpCache->losize, lpStruct->losize);
-	(*env)->SetShortField(env, lpObject, lpCache->hisize, lpStruct->hisize);
-	(*env)->SetShortField(env, lpObject, lpCache->flags, lpStruct->flags);
+	if (!PhKeyEvent_tFc.cached) cachePhKeyEvent_tFields(env, lpObject);
+	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, PhKeyEvent_tFc.key_mods);
+	lpStruct->key_flags = (*env)->GetIntField(env, lpObject, PhKeyEvent_tFc.key_flags);
+	lpStruct->key_cap = (*env)->GetIntField(env, lpObject, PhKeyEvent_tFc.key_cap);
+	lpStruct->key_sym = (*env)->GetIntField(env, lpObject, PhKeyEvent_tFc.key_sym);
+	lpStruct->key_scan = (*env)->GetShortField(env, lpObject, PhKeyEvent_tFc.key_scan);
+	lpStruct->key_zero = (*env)->GetShortField(env, lpObject, PhKeyEvent_tFc.key_zero);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PhKeyEvent_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PhKeyEvent_tFc.pos_y);
+	lpStruct->button_state = (*env)->GetShortField(env, lpObject, PhKeyEvent_tFc.button_state);
+	return lpStruct;
 }
 
-void cachePhArea_tFids(JNIEnv *env, jobject lpObject, PPhArea_t_FID_CACHE lpCache)
+void setPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->size_w = (*env)->GetFieldID(env, lpCache->clazz, "size_w", "S");
-	lpCache->size_h = (*env)->GetFieldID(env, lpCache->clazz, "size_h", "S");
-	lpCache->cached = 1;
+	if (!PhKeyEvent_tFc.cached) cachePhKeyEvent_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PhKeyEvent_tFc.key_mods, (jint)lpStruct->key_mods);
+	(*env)->SetIntField(env, lpObject, PhKeyEvent_tFc.key_flags, (jint)lpStruct->key_flags);
+	(*env)->SetIntField(env, lpObject, PhKeyEvent_tFc.key_cap, (jint)lpStruct->key_cap);
+	(*env)->SetIntField(env, lpObject, PhKeyEvent_tFc.key_sym, (jint)lpStruct->key_sym);
+	(*env)->SetShortField(env, lpObject, PhKeyEvent_tFc.key_scan, (jshort)lpStruct->key_scan);
+	(*env)->SetShortField(env, lpObject, PhKeyEvent_tFc.key_zero, (jshort)lpStruct->key_zero);
+	(*env)->SetShortField(env, lpObject, PhKeyEvent_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PhKeyEvent_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetShortField(env, lpObject, PhKeyEvent_tFc.button_state, (jshort)lpStruct->button_state);
+}
+#endif
+
+#ifndef NO_PhPoint_t
+typedef struct PhPoint_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} PhPoint_t_FID_CACHE;
+
+PhPoint_t_FID_CACHE PhPoint_tFc;
+
+void cachePhPoint_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhPoint_tFc.cached) return;
+	PhPoint_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhPoint_tFc.x = (*env)->GetFieldID(env, PhPoint_tFc.clazz, "x", "S");
+	PhPoint_tFc.y = (*env)->GetFieldID(env, PhPoint_tFc.clazz, "y", "S");
+	PhPoint_tFc.cached = 1;
 }
 
-void getPhArea_tFields(JNIEnv *env, jobject lpObject, PhArea_t *lpStruct, PPhArea_t_FID_CACHE lpCache)
+PhPoint_t *getPhPoint_tFields(JNIEnv *env, jobject lpObject, PhPoint_t *lpStruct)
 {
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->size.w = (*env)->GetShortField(env, lpObject, lpCache->size_w);
-	lpStruct->size.h = (*env)->GetShortField(env, lpObject, lpCache->size_h);
+	if (!PhPoint_tFc.cached) cachePhPoint_tFields(env, lpObject);
+	lpStruct->x = (*env)->GetShortField(env, lpObject, PhPoint_tFc.x);
+	lpStruct->y = (*env)->GetShortField(env, lpObject, PhPoint_tFc.y);
+	return lpStruct;
 }
 
-void setPhArea_tFields(JNIEnv *env, jobject lpObject, PhArea_t *lpStruct, PPhArea_t_FID_CACHE lpCache)
+void setPhPoint_tFields(JNIEnv *env, jobject lpObject, PhPoint_t *lpStruct)
 {
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetShortField(env, lpObject, lpCache->size_w, lpStruct->size.w);
-	(*env)->SetShortField(env, lpObject, lpCache->size_h, lpStruct->size.h);
+	if (!PhPoint_tFc.cached) cachePhPoint_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhPoint_tFc.x, (jshort)lpStruct->x);
+	(*env)->SetShortField(env, lpObject, PhPoint_tFc.y, (jshort)lpStruct->y);
+}
+#endif
+
+#ifndef NO_PhPointerEvent_t
+typedef struct PhPointerEvent_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pos_x, pos_y, buttons, button_state, click_count, flags, z, key_mods, zero;
+} PhPointerEvent_t_FID_CACHE;
+
+PhPointerEvent_t_FID_CACHE PhPointerEvent_tFc;
+
+void cachePhPointerEvent_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhPointerEvent_tFc.cached) return;
+	PhPointerEvent_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhPointerEvent_tFc.pos_x = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "pos_x", "S");
+	PhPointerEvent_tFc.pos_y = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "pos_y", "S");
+	PhPointerEvent_tFc.buttons = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "buttons", "S");
+	PhPointerEvent_tFc.button_state = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "button_state", "S");
+	PhPointerEvent_tFc.click_count = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "click_count", "B");
+	PhPointerEvent_tFc.flags = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "flags", "B");
+	PhPointerEvent_tFc.z = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "z", "S");
+	PhPointerEvent_tFc.key_mods = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "key_mods", "I");
+	PhPointerEvent_tFc.zero = (*env)->GetFieldID(env, PhPointerEvent_tFc.clazz, "zero", "I");
+	PhPointerEvent_tFc.cached = 1;
 }
 
-void cachePtFileSelectionInfo_tFids(JNIEnv *env, jobject lpObject, PPtFileSelectionInfo_t_FID_CACHE lpCache)
+PhPointerEvent_t *getPhPointerEvent_tFields(JNIEnv *env, jobject lpObject, PhPointerEvent_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->ret = (*env)->GetFieldID(env, lpCache->clazz, "ret", "S");
-	lpCache->path = (*env)->GetFieldID(env, lpCache->clazz, "path", "[B");
-	lpCache->dim = (*env)->GetFieldID(env, lpCache->clazz, "dim", "Lorg/eclipse/swt/internal/photon/PhDim_t;");
-	lpCache->pos = (*env)->GetFieldID(env, lpCache->clazz, "pos", "Lorg/eclipse/swt/internal/photon/PhPoint_t;");
-	lpCache->format = (*env)->GetFieldID(env, lpCache->clazz, "format", "[B");
-	lpCache->fspec = (*env)->GetFieldID(env, lpCache->clazz, "fspec", "[B");
-	lpCache->user_data = (*env)->GetFieldID(env, lpCache->clazz, "user_data", "I");
-	lpCache->confirm_display = (*env)->GetFieldID(env, lpCache->clazz, "confirm_display", "I");
-	lpCache->confirm_selection = (*env)->GetFieldID(env, lpCache->clazz, "confirm_selection", "I");
-	lpCache->new_directory = (*env)->GetFieldID(env, lpCache->clazz, "new_directory", "I");
-	lpCache->btn1 = (*env)->GetFieldID(env, lpCache->clazz, "btn1", "I");
-	lpCache->btn2 = (*env)->GetFieldID(env, lpCache->clazz, "btn2", "I");
-	lpCache->num_args = (*env)->GetFieldID(env, lpCache->clazz, "num_args", "I");
-	lpCache->args = (*env)->GetFieldID(env, lpCache->clazz, "args", "I");
-	lpCache->spare = (*env)->GetFieldID(env, lpCache->clazz, "spare", "[I");
-	lpCache->cached = 1;
+	if (!PhPointerEvent_tFc.cached) cachePhPointerEvent_tFields(env, lpObject);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PhPointerEvent_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PhPointerEvent_tFc.pos_y);
+	lpStruct->buttons = (*env)->GetShortField(env, lpObject, PhPointerEvent_tFc.buttons);
+	lpStruct->button_state = (*env)->GetShortField(env, lpObject, PhPointerEvent_tFc.button_state);
+	lpStruct->click_count = (*env)->GetByteField(env, lpObject, PhPointerEvent_tFc.click_count);
+	lpStruct->flags = (*env)->GetByteField(env, lpObject, PhPointerEvent_tFc.flags);
+	lpStruct->z = (*env)->GetShortField(env, lpObject, PhPointerEvent_tFc.z);
+	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, PhPointerEvent_tFc.key_mods);
+	lpStruct->zero = (*env)->GetIntField(env, lpObject, PhPointerEvent_tFc.zero);
+	return lpStruct;
 }
 
-void getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelectionInfo_t *lpStruct, PPtFileSelectionInfo_t_FID_CACHE lpCache)
+void setPhPointerEvent_tFields(JNIEnv *env, jobject lpObject, PhPointerEvent_t *lpStruct)
 {
-	DECL_GLOB(pGlob)
-	
-	lpStruct->ret = (*env)->GetShortField(env, lpObject, lpCache->ret);
+	if (!PhPointerEvent_tFc.cached) cachePhPointerEvent_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhPointerEvent_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PhPointerEvent_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetShortField(env, lpObject, PhPointerEvent_tFc.buttons, (jshort)lpStruct->buttons);
+	(*env)->SetShortField(env, lpObject, PhPointerEvent_tFc.button_state, (jshort)lpStruct->button_state);
+	(*env)->SetByteField(env, lpObject, PhPointerEvent_tFc.click_count, (jbyte)lpStruct->click_count);
+	(*env)->SetByteField(env, lpObject, PhPointerEvent_tFc.flags, (jbyte)lpStruct->flags);
+	(*env)->SetShortField(env, lpObject, PhPointerEvent_tFc.z, (jshort)lpStruct->z);
+	(*env)->SetIntField(env, lpObject, PhPointerEvent_tFc.key_mods, (jint)lpStruct->key_mods);
+	(*env)->SetIntField(env, lpObject, PhPointerEvent_tFc.zero, (jint)lpStruct->zero);
+}
+#endif
+
+#ifndef NO_PhRect_t
+typedef struct PhRect_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ul_x, ul_y, lr_x, lr_y;
+} PhRect_t_FID_CACHE;
+
+PhRect_t_FID_CACHE PhRect_tFc;
+
+void cachePhRect_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhRect_tFc.cached) return;
+	PhRect_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhRect_tFc.ul_x = (*env)->GetFieldID(env, PhRect_tFc.clazz, "ul_x", "S");
+	PhRect_tFc.ul_y = (*env)->GetFieldID(env, PhRect_tFc.clazz, "ul_y", "S");
+	PhRect_tFc.lr_x = (*env)->GetFieldID(env, PhRect_tFc.clazz, "lr_x", "S");
+	PhRect_tFc.lr_y = (*env)->GetFieldID(env, PhRect_tFc.clazz, "lr_y", "S");
+	PhRect_tFc.cached = 1;
+}
+
+PhRect_t *getPhRect_tFields(JNIEnv *env, jobject lpObject, PhRect_t *lpStruct)
+{
+	if (!PhRect_tFc.cached) cachePhRect_tFields(env, lpObject);
+	lpStruct->ul.x = (*env)->GetShortField(env, lpObject, PhRect_tFc.ul_x);
+	lpStruct->ul.y = (*env)->GetShortField(env, lpObject, PhRect_tFc.ul_y);
+	lpStruct->lr.x = (*env)->GetShortField(env, lpObject, PhRect_tFc.lr_x);
+	lpStruct->lr.y = (*env)->GetShortField(env, lpObject, PhRect_tFc.lr_y);
+	return lpStruct;
+}
+
+void setPhRect_tFields(JNIEnv *env, jobject lpObject, PhRect_t *lpStruct)
+{
+	if (!PhRect_tFc.cached) cachePhRect_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhRect_tFc.ul_x, (jshort)lpStruct->ul.x);
+	(*env)->SetShortField(env, lpObject, PhRect_tFc.ul_y, (jshort)lpStruct->ul.y);
+	(*env)->SetShortField(env, lpObject, PhRect_tFc.lr_x, (jshort)lpStruct->lr.x);
+	(*env)->SetShortField(env, lpObject, PhRect_tFc.lr_y, (jshort)lpStruct->lr.y);
+}
+#endif
+
+#ifndef NO_PhRegion_t
+typedef struct PhRegion_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID rid, handle, owner, flags, state, events_sense, events_opaque, origin_x, origin_y, parent, child, bro_in_front, bro_behind, cursor_color, input_group, data_len, cursor_type;
+} PhRegion_t_FID_CACHE;
+
+PhRegion_t_FID_CACHE PhRegion_tFc;
+
+void cachePhRegion_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhRegion_tFc.cached) return;
+	PhRegion_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhRegion_tFc.rid = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "rid", "I");
+	PhRegion_tFc.handle = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "handle", "I");
+	PhRegion_tFc.owner = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "owner", "I");
+	PhRegion_tFc.flags = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "flags", "I");
+	PhRegion_tFc.state = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "state", "S");
+	PhRegion_tFc.events_sense = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "events_sense", "I");
+	PhRegion_tFc.events_opaque = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "events_opaque", "I");
+	PhRegion_tFc.origin_x = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "origin_x", "S");
+	PhRegion_tFc.origin_y = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "origin_y", "S");
+	PhRegion_tFc.parent = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "parent", "I");
+	PhRegion_tFc.child = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "child", "I");
+	PhRegion_tFc.bro_in_front = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "bro_in_front", "I");
+	PhRegion_tFc.bro_behind = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "bro_behind", "I");
+	PhRegion_tFc.cursor_color = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "cursor_color", "I");
+	PhRegion_tFc.input_group = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "input_group", "S");
+	PhRegion_tFc.data_len = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "data_len", "S");
+	PhRegion_tFc.cursor_type = (*env)->GetFieldID(env, PhRegion_tFc.clazz, "cursor_type", "S");
+	PhRegion_tFc.cached = 1;
+}
+
+PhRegion_t *getPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct)
+{
+	if (!PhRegion_tFc.cached) cachePhRegion_tFields(env, lpObject);
+	lpStruct->rid = (*env)->GetIntField(env, lpObject, PhRegion_tFc.rid);
+	lpStruct->handle = (*env)->GetIntField(env, lpObject, PhRegion_tFc.handle);
+	lpStruct->owner = (*env)->GetIntField(env, lpObject, PhRegion_tFc.owner);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, PhRegion_tFc.flags);
+	lpStruct->state = (*env)->GetShortField(env, lpObject, PhRegion_tFc.state);
+	lpStruct->events_sense = (*env)->GetIntField(env, lpObject, PhRegion_tFc.events_sense);
+	lpStruct->events_opaque = (*env)->GetIntField(env, lpObject, PhRegion_tFc.events_opaque);
+	lpStruct->origin.x = (*env)->GetShortField(env, lpObject, PhRegion_tFc.origin_x);
+	lpStruct->origin.y = (*env)->GetShortField(env, lpObject, PhRegion_tFc.origin_y);
+	lpStruct->parent = (*env)->GetIntField(env, lpObject, PhRegion_tFc.parent);
+	lpStruct->child = (*env)->GetIntField(env, lpObject, PhRegion_tFc.child);
+	lpStruct->bro_in_front = (*env)->GetIntField(env, lpObject, PhRegion_tFc.bro_in_front);
+	lpStruct->bro_behind = (*env)->GetIntField(env, lpObject, PhRegion_tFc.bro_behind);
+	lpStruct->cursor_color = (*env)->GetIntField(env, lpObject, PhRegion_tFc.cursor_color);
+	lpStruct->input_group = (*env)->GetShortField(env, lpObject, PhRegion_tFc.input_group);
+	lpStruct->data_len = (*env)->GetShortField(env, lpObject, PhRegion_tFc.data_len);
+	lpStruct->cursor_type = (*env)->GetShortField(env, lpObject, PhRegion_tFc.cursor_type);
+	return lpStruct;
+}
+
+void setPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct)
+{
+	if (!PhRegion_tFc.cached) cachePhRegion_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.rid, (jint)lpStruct->rid);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.handle, (jint)lpStruct->handle);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.owner, (jint)lpStruct->owner);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.flags, (jint)lpStruct->flags);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.state, (jshort)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.events_sense, (jint)lpStruct->events_sense);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.events_opaque, (jint)lpStruct->events_opaque);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.origin_x, (jshort)lpStruct->origin.x);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.origin_y, (jshort)lpStruct->origin.y);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.parent, (jint)lpStruct->parent);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.child, (jint)lpStruct->child);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.bro_in_front, (jint)lpStruct->bro_in_front);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.bro_behind, (jint)lpStruct->bro_behind);
+	(*env)->SetIntField(env, lpObject, PhRegion_tFc.cursor_color, (jint)lpStruct->cursor_color);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.input_group, (jshort)lpStruct->input_group);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.data_len, (jshort)lpStruct->data_len);
+	(*env)->SetShortField(env, lpObject, PhRegion_tFc.cursor_type, (jshort)lpStruct->cursor_type);
+}
+#endif
+
+#ifndef NO_PhTile_t
+typedef struct PhTile_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID rect_ul_x, rect_ul_y, rect_lr_x, rect_lr_y, next;
+} PhTile_t_FID_CACHE;
+
+PhTile_t_FID_CACHE PhTile_tFc;
+
+void cachePhTile_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhTile_tFc.cached) return;
+	PhTile_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhTile_tFc.rect_ul_x = (*env)->GetFieldID(env, PhTile_tFc.clazz, "rect_ul_x", "S");
+	PhTile_tFc.rect_ul_y = (*env)->GetFieldID(env, PhTile_tFc.clazz, "rect_ul_y", "S");
+	PhTile_tFc.rect_lr_x = (*env)->GetFieldID(env, PhTile_tFc.clazz, "rect_lr_x", "S");
+	PhTile_tFc.rect_lr_y = (*env)->GetFieldID(env, PhTile_tFc.clazz, "rect_lr_y", "S");
+	PhTile_tFc.next = (*env)->GetFieldID(env, PhTile_tFc.clazz, "next", "I");
+	PhTile_tFc.cached = 1;
+}
+
+PhTile_t *getPhTile_tFields(JNIEnv *env, jobject lpObject, PhTile_t *lpStruct)
+{
+	if (!PhTile_tFc.cached) cachePhTile_tFields(env, lpObject);
+	lpStruct->rect.ul.x = (*env)->GetShortField(env, lpObject, PhTile_tFc.rect_ul_x);
+	lpStruct->rect.ul.y = (*env)->GetShortField(env, lpObject, PhTile_tFc.rect_ul_y);
+	lpStruct->rect.lr.x = (*env)->GetShortField(env, lpObject, PhTile_tFc.rect_lr_x);
+	lpStruct->rect.lr.y = (*env)->GetShortField(env, lpObject, PhTile_tFc.rect_lr_y);
+	lpStruct->next = (PhTile_t *)(*env)->GetIntField(env, lpObject, PhTile_tFc.next);
+	return lpStruct;
+}
+
+void setPhTile_tFields(JNIEnv *env, jobject lpObject, PhTile_t *lpStruct)
+{
+	if (!PhTile_tFc.cached) cachePhTile_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PhTile_tFc.rect_ul_x, (jshort)lpStruct->rect.ul.x);
+	(*env)->SetShortField(env, lpObject, PhTile_tFc.rect_ul_y, (jshort)lpStruct->rect.ul.y);
+	(*env)->SetShortField(env, lpObject, PhTile_tFc.rect_lr_x, (jshort)lpStruct->rect.lr.x);
+	(*env)->SetShortField(env, lpObject, PhTile_tFc.rect_lr_y, (jshort)lpStruct->rect.lr.y);
+	(*env)->SetIntField(env, lpObject, PhTile_tFc.next, (jint)lpStruct->next);
+}
+#endif
+
+#ifndef NO_PhWindowEvent_t
+typedef struct PhWindowEvent_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID event_f, state_f, rid, pos_x, pos_y, size_w, size_h, event_state, input_group, rsvd0, rsvd1, rsvd2, rsvd3;
+} PhWindowEvent_t_FID_CACHE;
+
+PhWindowEvent_t_FID_CACHE PhWindowEvent_tFc;
+
+void cachePhWindowEvent_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PhWindowEvent_tFc.cached) return;
+	PhWindowEvent_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PhWindowEvent_tFc.event_f = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "event_f", "I");
+	PhWindowEvent_tFc.state_f = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "state_f", "I");
+	PhWindowEvent_tFc.rid = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "rid", "I");
+	PhWindowEvent_tFc.pos_x = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "pos_x", "S");
+	PhWindowEvent_tFc.pos_y = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "pos_y", "S");
+	PhWindowEvent_tFc.size_w = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "size_w", "S");
+	PhWindowEvent_tFc.size_h = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "size_h", "S");
+	PhWindowEvent_tFc.event_state = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "event_state", "S");
+	PhWindowEvent_tFc.input_group = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "input_group", "S");
+	PhWindowEvent_tFc.rsvd0 = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "rsvd0", "I");
+	PhWindowEvent_tFc.rsvd1 = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "rsvd1", "I");
+	PhWindowEvent_tFc.rsvd2 = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "rsvd2", "I");
+	PhWindowEvent_tFc.rsvd3 = (*env)->GetFieldID(env, PhWindowEvent_tFc.clazz, "rsvd3", "I");
+	PhWindowEvent_tFc.cached = 1;
+}
+
+PhWindowEvent_t *getPhWindowEvent_tFields(JNIEnv *env, jobject lpObject, PhWindowEvent_t *lpStruct)
+{
+	if (!PhWindowEvent_tFc.cached) cachePhWindowEvent_tFields(env, lpObject);
+	lpStruct->event_f = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.event_f);
+	lpStruct->state_f = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.state_f);
+	lpStruct->rid = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.rid);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.pos_y);
+	lpStruct->size.w = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.size_w);
+	lpStruct->size.h = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.size_h);
+	lpStruct->event_state = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.event_state);
+	lpStruct->input_group = (*env)->GetShortField(env, lpObject, PhWindowEvent_tFc.input_group);
+	lpStruct->rsvd[0] = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.rsvd0);
+	lpStruct->rsvd[1] = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.rsvd1);
+	lpStruct->rsvd[2] = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.rsvd2);
+	lpStruct->rsvd[3] = (*env)->GetIntField(env, lpObject, PhWindowEvent_tFc.rsvd3);
+	return lpStruct;
+}
+
+void setPhWindowEvent_tFields(JNIEnv *env, jobject lpObject, PhWindowEvent_t *lpStruct)
+{
+	if (!PhWindowEvent_tFc.cached) cachePhWindowEvent_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.event_f, (jint)lpStruct->event_f);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.state_f, (jint)lpStruct->state_f);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.rid, (jint)lpStruct->rid);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.size_w, (jshort)lpStruct->size.w);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.size_h, (jshort)lpStruct->size.h);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.event_state, (jshort)lpStruct->event_state);
+	(*env)->SetShortField(env, lpObject, PhWindowEvent_tFc.input_group, (jshort)lpStruct->input_group);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.rsvd0, (jint)lpStruct->rsvd[0]);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.rsvd1, (jint)lpStruct->rsvd[1]);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.rsvd2, (jint)lpStruct->rsvd[2]);
+	(*env)->SetIntField(env, lpObject, PhWindowEvent_tFc.rsvd3, (jint)lpStruct->rsvd[3]);
+}
+#endif
+
+#ifndef NO_PtCallbackInfo_t
+typedef struct PtCallbackInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID reason, reason_subtype, event, cbdata;
+} PtCallbackInfo_t_FID_CACHE;
+
+PtCallbackInfo_t_FID_CACHE PtCallbackInfo_tFc;
+
+void cachePtCallbackInfo_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtCallbackInfo_tFc.cached) return;
+	PtCallbackInfo_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtCallbackInfo_tFc.reason = (*env)->GetFieldID(env, PtCallbackInfo_tFc.clazz, "reason", "I");
+	PtCallbackInfo_tFc.reason_subtype = (*env)->GetFieldID(env, PtCallbackInfo_tFc.clazz, "reason_subtype", "I");
+	PtCallbackInfo_tFc.event = (*env)->GetFieldID(env, PtCallbackInfo_tFc.clazz, "event", "I");
+	PtCallbackInfo_tFc.cbdata = (*env)->GetFieldID(env, PtCallbackInfo_tFc.clazz, "cbdata", "I");
+	PtCallbackInfo_tFc.cached = 1;
+}
+
+PtCallbackInfo_t *getPtCallbackInfo_tFields(JNIEnv *env, jobject lpObject, PtCallbackInfo_t *lpStruct)
+{
+	if (!PtCallbackInfo_tFc.cached) cachePtCallbackInfo_tFields(env, lpObject);
+	lpStruct->reason = (*env)->GetIntField(env, lpObject, PtCallbackInfo_tFc.reason);
+	lpStruct->reason_subtype = (*env)->GetIntField(env, lpObject, PtCallbackInfo_tFc.reason_subtype);
+	lpStruct->event = (PhEvent_t *)(*env)->GetIntField(env, lpObject, PtCallbackInfo_tFc.event);
+	lpStruct->cbdata = (void *)(*env)->GetIntField(env, lpObject, PtCallbackInfo_tFc.cbdata);
+	return lpStruct;
+}
+
+void setPtCallbackInfo_tFields(JNIEnv *env, jobject lpObject, PtCallbackInfo_t *lpStruct)
+{
+	if (!PtCallbackInfo_tFc.cached) cachePtCallbackInfo_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PtCallbackInfo_tFc.reason, (jint)lpStruct->reason);
+	(*env)->SetIntField(env, lpObject, PtCallbackInfo_tFc.reason_subtype, (jint)lpStruct->reason_subtype);
+	(*env)->SetIntField(env, lpObject, PtCallbackInfo_tFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, PtCallbackInfo_tFc.cbdata, (jint)lpStruct->cbdata);
+}
+#endif
+
+#ifndef NO_PtColorSelectInfo_t
+typedef struct PtColorSelectInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID flags, nselectors, ncolor_models, color_models, selectors, pos_x, pos_y, size_w, size_h, palette, accept_text, dismiss_text, accept_dismiss_text, apply_f, data, rgb, dialog;
+} PtColorSelectInfo_t_FID_CACHE;
+
+PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc;
+
+void cachePtColorSelectInfo_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtColorSelectInfo_tFc.cached) return;
+	PtColorSelectInfo_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtColorSelectInfo_tFc.flags = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "flags", "S");
+	PtColorSelectInfo_tFc.nselectors = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "nselectors", "B");
+	PtColorSelectInfo_tFc.ncolor_models = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "ncolor_models", "B");
+	PtColorSelectInfo_tFc.color_models = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "color_models", "I");
+	PtColorSelectInfo_tFc.selectors = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "selectors", "I");
+	PtColorSelectInfo_tFc.pos_x = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "pos_x", "S");
+	PtColorSelectInfo_tFc.pos_y = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "pos_y", "S");
+	PtColorSelectInfo_tFc.size_w = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "size_w", "S");
+	PtColorSelectInfo_tFc.size_h = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "size_h", "S");
+	PtColorSelectInfo_tFc.palette = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "palette", "I");
+	PtColorSelectInfo_tFc.accept_text = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "accept_text", "I");
+	PtColorSelectInfo_tFc.dismiss_text = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "dismiss_text", "I");
+	PtColorSelectInfo_tFc.accept_dismiss_text = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "accept_dismiss_text", "I");
+	PtColorSelectInfo_tFc.apply_f = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "apply_f", "I");
+	PtColorSelectInfo_tFc.data = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "data", "I");
+	PtColorSelectInfo_tFc.rgb = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "rgb", "I");
+	PtColorSelectInfo_tFc.dialog = (*env)->GetFieldID(env, PtColorSelectInfo_tFc.clazz, "dialog", "I");
+	PtColorSelectInfo_tFc.cached = 1;
+}
+
+PtColorSelectInfo_t *getPtColorSelectInfo_tFields(JNIEnv *env, jobject lpObject, PtColorSelectInfo_t *lpStruct)
+{
+	if (!PtColorSelectInfo_tFc.cached) cachePtColorSelectInfo_tFields(env, lpObject);
+	lpStruct->flags = (*env)->GetShortField(env, lpObject, PtColorSelectInfo_tFc.flags);
+	lpStruct->nselectors = (*env)->GetByteField(env, lpObject, PtColorSelectInfo_tFc.nselectors);
+	lpStruct->ncolor_models = (*env)->GetByteField(env, lpObject, PtColorSelectInfo_tFc.ncolor_models);
+	lpStruct->color_models = (PgColorModel_t **)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.color_models);
+	lpStruct->selectors = (PtColorSelectorSpec_t *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.selectors);
+	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, PtColorSelectInfo_tFc.pos_x);
+	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, PtColorSelectInfo_tFc.pos_y);
+	lpStruct->size.w = (*env)->GetShortField(env, lpObject, PtColorSelectInfo_tFc.size_w);
+	lpStruct->size.h = (*env)->GetShortField(env, lpObject, PtColorSelectInfo_tFc.size_h);
+	lpStruct->palette.instance = (void *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.palette);
+	lpStruct->accept_text = (char *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.accept_text);
+	lpStruct->dismiss_text = (char *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.dismiss_text);
+	lpStruct->accept_dismiss_text = (char *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.accept_dismiss_text);
+	lpStruct->apply_f = (void *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.apply_f);
+	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.data);
+	lpStruct->rgb = (*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.rgb);
+	lpStruct->dialog = (PtWidget_t *)(*env)->GetIntField(env, lpObject, PtColorSelectInfo_tFc.dialog);
+	return lpStruct;
+}
+
+void setPtColorSelectInfo_tFields(JNIEnv *env, jobject lpObject, PtColorSelectInfo_t *lpStruct)
+{
+	if (!PtColorSelectInfo_tFc.cached) cachePtColorSelectInfo_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PtColorSelectInfo_tFc.flags, (jshort)lpStruct->flags);
+	(*env)->SetByteField(env, lpObject, PtColorSelectInfo_tFc.nselectors, (jbyte)lpStruct->nselectors);
+	(*env)->SetByteField(env, lpObject, PtColorSelectInfo_tFc.ncolor_models, (jbyte)lpStruct->ncolor_models);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.color_models, (jint)lpStruct->color_models);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.selectors, (jint)lpStruct->selectors);
+	(*env)->SetShortField(env, lpObject, PtColorSelectInfo_tFc.pos_x, (jshort)lpStruct->pos.x);
+	(*env)->SetShortField(env, lpObject, PtColorSelectInfo_tFc.pos_y, (jshort)lpStruct->pos.y);
+	(*env)->SetShortField(env, lpObject, PtColorSelectInfo_tFc.size_w, (jshort)lpStruct->size.w);
+	(*env)->SetShortField(env, lpObject, PtColorSelectInfo_tFc.size_h, (jshort)lpStruct->size.h);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.palette, (jint)lpStruct->palette.instance);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.accept_text, (jint)lpStruct->accept_text);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.dismiss_text, (jint)lpStruct->dismiss_text);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.accept_dismiss_text, (jint)lpStruct->accept_dismiss_text);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.apply_f, (jint)lpStruct->apply_f);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.data, (jint)lpStruct->data);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.rgb, (jint)lpStruct->rgb);
+	(*env)->SetIntField(env, lpObject, PtColorSelectInfo_tFc.dialog, (jint)lpStruct->dialog);
+}
+#endif
+
+#ifndef NO_PtFileSelectionInfo_t
+typedef struct PtFileSelectionInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ret, path, dim, pos, format, fspec, user_data, confirm_display, confirm_selection, new_directory, btn1, btn2, num_args, args, minfo, spare;
+} PtFileSelectionInfo_t_FID_CACHE;
+
+PtFileSelectionInfo_t_FID_CACHE PtFileSelectionInfo_tFc;
+
+void cachePtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtFileSelectionInfo_tFc.cached) return;
+	PtFileSelectionInfo_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtFileSelectionInfo_tFc.ret = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "ret", "S");
+	PtFileSelectionInfo_tFc.path = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "path", "[B");
+	PtFileSelectionInfo_tFc.dim = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "dim", "Lorg/eclipse/swt/internal/photon/PhDim_t;");
+	PtFileSelectionInfo_tFc.pos = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "pos", "Lorg/eclipse/swt/internal/photon/PhPoint_t;");
+	PtFileSelectionInfo_tFc.format = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "format", "[B");
+	PtFileSelectionInfo_tFc.fspec = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "fspec", "[B");
+	PtFileSelectionInfo_tFc.user_data = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "user_data", "I");
+	PtFileSelectionInfo_tFc.confirm_display = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "confirm_display", "I");
+	PtFileSelectionInfo_tFc.confirm_selection = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "confirm_selection", "I");
+	PtFileSelectionInfo_tFc.new_directory = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "new_directory", "I");
+	PtFileSelectionInfo_tFc.btn1 = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "btn1", "I");
+	PtFileSelectionInfo_tFc.btn2 = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "btn2", "I");
+	PtFileSelectionInfo_tFc.num_args = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "num_args", "I");
+	PtFileSelectionInfo_tFc.args = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "args", "I");
+	PtFileSelectionInfo_tFc.minfo = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "minfo", "I");
+	PtFileSelectionInfo_tFc.spare = (*env)->GetFieldID(env, PtFileSelectionInfo_tFc.clazz, "spare", "[I");
+	PtFileSelectionInfo_tFc.cached = 1;
+}
+
+PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelectionInfo_t *lpStruct)
+{
+	if (!PtFileSelectionInfo_tFc.cached) cachePtFileSelectionInfo_tFields(env, lpObject);
+	lpStruct->ret = (*env)->GetShortField(env, lpObject, PtFileSelectionInfo_tFc.ret);
 	{
-	jbyteArray path = (*env)->GetObjectField(env, lpObject, lpCache->path);
-    if (path) {
-        jbyte *path1 = (*env)->GetByteArrayElements(env, path, NULL);
-        memcpy(lpStruct->path, path1, sizeof (lpStruct->path));
-        (*env)->ReleaseByteArrayElements(env, path, path1, 0);
-	}
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (void *)lpStruct->path);
 	}
 	{
-	jobject dim = (*env)->GetObjectField(env, lpObject, lpCache->dim);
-    if (dim) {
-        cachePhDim_tFids(env, dim, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, dim, &lpStruct->dim, &PGLOB(PhDim_tFc));
-    }
-    }
-	{
-	jobject pos = (*env)->GetObjectField(env, lpObject, lpCache->pos);
-    if (pos) {
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, &lpStruct->pos, &PGLOB(PhPoint_tFc));
-    }
-    }
-	{
-	jbyteArray format = (*env)->GetObjectField(env, lpObject, lpCache->format);
-    if (format) {
-        jbyte *format1 = (*env)->GetByteArrayElements(env, format, NULL);
-        memcpy(lpStruct->format, format1, sizeof (lpStruct->format));
-        (*env)->ReleaseByteArrayElements(env, format, format1, 0);
-	}
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
+	getPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
 	{
-	jbyteArray fspec = (*env)->GetObjectField(env, lpObject, lpCache->fspec);
-    if (fspec) {
-        jbyte *fspec1 = (*env)->GetByteArrayElements(env, fspec, NULL);
-        memcpy(lpStruct->fspec, fspec1, sizeof (lpStruct->fspec));
-        (*env)->ReleaseByteArrayElements(env, fspec, fspec1, 0);
-	}
-	}
-	lpStruct->user_data = (void *) (*env)->GetIntField(env, lpObject, lpCache->user_data);
-	lpStruct->confirm_display = (void *) (*env)->GetIntField(env, lpObject, lpCache->confirm_display);
-	lpStruct->confirm_selection = (void *) (*env)->GetIntField(env, lpObject, lpCache->confirm_selection);
-	lpStruct->new_directory = (void *) (*env)->GetIntField(env, lpObject, lpCache->new_directory);
-	lpStruct->btn1 = (char *) (*env)->GetIntField(env, lpObject, lpCache->btn1);
-	lpStruct->btn2 = (char *) (*env)->GetIntField(env, lpObject, lpCache->btn2);
-	lpStruct->num_args = (*env)->GetIntField(env, lpObject, lpCache->num_args);
-	lpStruct->args = (void *)(*env)->GetIntField(env, lpObject, lpCache->args);
-	{
-	jintArray spare = (*env)->GetObjectField(env, lpObject, lpCache->spare);
-    if (spare) {
-        jint *spare1 = (*env)->GetIntArrayElements(env, spare, NULL);
-        memcpy(lpStruct->spare, spare1, sizeof (lpStruct->spare));
-        (*env)->ReleaseIntArrayElements(env, spare, spare1, 0);
-	}
-	}
-}
-
-void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelectionInfo_t *lpStruct, PPtFileSelectionInfo_t_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	
-	(*env)->SetShortField(env, lpObject, lpCache->ret, lpStruct->ret);
-	{
-	jbyteArray path = (*env)->GetObjectField(env, lpObject, lpCache->path);
-    if (path) {
-        jbyte *path1 = (*env)->GetByteArrayElements(env, path, NULL);
-        memcpy(path1, lpStruct->path, sizeof (lpStruct->path));
-        (*env)->ReleaseByteArrayElements(env, path, path1, 0);
-	}
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
+	getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
-	jobject dim = (*env)->GetObjectField(env, lpObject, lpCache->dim);
-    if (dim) { 
-        cachePhDim_tFids(env, dim, &PGLOB(PhDim_tFc));
-        setPhDim_tFields(env, dim, &lpStruct->dim, &PGLOB(PhDim_tFc));
-    }	
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (void *)lpStruct->format);
 	}
 	{
-	jobject pos = (*env)->GetObjectField(env, lpObject, lpCache->pos);
-    if (pos) { 
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        setPhPoint_tFields(env, pos, &lpStruct->pos, &PGLOB(PhPoint_tFc));
-    }	
-	}	
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (void *)lpStruct->fspec);
+	}
+	lpStruct->user_data = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.user_data);
+	lpStruct->confirm_display = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_display);
+	lpStruct->confirm_selection = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_selection);
+	lpStruct->new_directory = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.new_directory);
+	lpStruct->btn1 = (char *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.btn1);
+	lpStruct->btn2 = (char *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.btn2);
+	lpStruct->num_args = (*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.num_args);
+	lpStruct->args = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.args);
+	lpStruct->minfo = (PtFileSelectorInfo_t *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo);
 	{
-	jbyteArray format = (*env)->GetObjectField(env, lpObject, lpCache->format);
-    if (format) {
-        jbyte *format1 = (*env)->GetByteArrayElements(env, format, NULL);
-        memcpy(format1, lpStruct->format, sizeof (lpStruct->format));
-        (*env)->ReleaseByteArrayElements(env, format, format1, 0);
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (void *)lpStruct->spare);
 	}
+	return lpStruct;
+}
+
+void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelectionInfo_t *lpStruct)
+{
+	if (!PtFileSelectionInfo_tFc.cached) cachePtFileSelectionInfo_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PtFileSelectionInfo_tFc.ret, (jshort)lpStruct->ret);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (void *)lpStruct->path);
 	}
 	{
-	jbyteArray fspec = (*env)->GetObjectField(env, lpObject, lpCache->fspec);
-    if (fspec) {
-        jbyte *fspec1 = (*env)->GetByteArrayElements(env, fspec, NULL);
-        memcpy(fspec1, lpStruct->fspec, sizeof (lpStruct->fspec));
-        (*env)->ReleaseByteArrayElements(env, fspec, fspec1, 0);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
+	setPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
-	}
-	(*env)->SetIntField(env, lpObject, lpCache->user_data, (int) lpStruct->user_data);
-	(*env)->SetIntField(env, lpObject, lpCache->confirm_display, (int) lpStruct->confirm_display);
-	(*env)->SetIntField(env, lpObject, lpCache->confirm_selection, (int) lpStruct->confirm_selection);
-	(*env)->SetIntField(env, lpObject, lpCache->new_directory, (int) lpStruct->new_directory);
-	(*env)->SetIntField(env, lpObject, lpCache->btn1, (int) lpStruct->btn1);
-	(*env)->SetIntField(env, lpObject, lpCache->btn2, (int) lpStruct->btn2);
-	(*env)->SetIntField(env, lpObject, lpCache->num_args, lpStruct->num_args);
-	(*env)->SetIntField(env, lpObject, lpCache->args, (int) lpStruct->args);
 	{
-	jintArray spare = (*env)->GetObjectField(env, lpObject, lpCache->spare);
-    if (spare) {
-        jint *spare1 = (*env)->GetIntArrayElements(env, spare, NULL);
-        memcpy(spare1, lpStruct->spare, sizeof (lpStruct->spare));
-        (*env)->ReleaseIntArrayElements(env, spare, spare1, 0);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
+	setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (void *)lpStruct->format);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (void *)lpStruct->fspec);
+	}
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.user_data, (jint)lpStruct->user_data);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_display, (jint)lpStruct->confirm_display);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_selection, (jint)lpStruct->confirm_selection);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.new_directory, (jint)lpStruct->new_directory);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.btn1, (jint)lpStruct->btn1);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.btn2, (jint)lpStruct->btn2);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.num_args, (jint)lpStruct->num_args);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.args, (jint)lpStruct->args);
+	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo, (jint)lpStruct->minfo);
+	{
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (void *)lpStruct->spare);
 	}
 }
+#endif
 
-void cachePgAlpha_tFids(JNIEnv *env, jobject lpObject, PPgAlpha_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->alpha_op = (*env)->GetFieldID(env, lpCache->clazz, "alpha_op", "I");
-	lpCache->src_alpha_map_dim_w = (*env)->GetFieldID(env, lpCache->clazz, "src_alpha_map_dim_w", "S");
-	lpCache->src_alpha_map_dim_h = (*env)->GetFieldID(env, lpCache->clazz, "src_alpha_map_dim_h", "S");
-	lpCache->src_alpha_map_bpl = (*env)->GetFieldID(env, lpCache->clazz, "src_alpha_map_bpl", "S");
-	lpCache->src_alpha_map_bpp = (*env)->GetFieldID(env, lpCache->clazz, "src_alpha_map_bpp", "S");
-	lpCache->src_alpha_map_map = (*env)->GetFieldID(env, lpCache->clazz, "src_alpha_map_map", "I");
-	lpCache->src_global_alpha = (*env)->GetFieldID(env, lpCache->clazz, "src_global_alpha", "B");
-	lpCache->dest_global_alpha = (*env)->GetFieldID(env, lpCache->clazz, "dest_global_alpha", "B");
-	lpCache->cached = 1;
-}
+#ifndef NO_PtScrollbarCallback_t
+typedef struct PtScrollbarCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID action, position;
+} PtScrollbarCallback_t_FID_CACHE;
 
-void getPgAlpha_tFields(JNIEnv *env, jobject lpObject, PgAlpha_t *lpStruct, PPgAlpha_t_FID_CACHE lpCache)
+PtScrollbarCallback_t_FID_CACHE PtScrollbarCallback_tFc;
+
+void cachePtScrollbarCallback_tFields(JNIEnv *env, jobject lpObject)
 {
-	lpStruct->alpha_op = (*env)->GetIntField(env, lpObject, lpCache->alpha_op);
-	lpStruct->src_alpha_map.dim.w = (*env)->GetShortField(env, lpObject, lpCache->src_alpha_map_dim_w);
-	lpStruct->src_alpha_map.dim.h = (*env)->GetShortField(env, lpObject, lpCache->src_alpha_map_dim_h);
-	lpStruct->src_alpha_map.bpl = (*env)->GetShortField(env, lpObject, lpCache->src_alpha_map_bpl);
-	lpStruct->src_alpha_map.bpp = (*env)->GetShortField(env, lpObject, lpCache->src_alpha_map_bpp);
-	lpStruct->src_alpha_map.map = (char *)(*env)->GetIntField(env, lpObject, lpCache->src_alpha_map_map);
-	lpStruct->src_global_alpha = (*env)->GetByteField(env, lpObject, lpCache->src_global_alpha);
-	lpStruct->dest_global_alpha = (*env)->GetByteField(env, lpObject, lpCache->dest_global_alpha);
+	if (PtScrollbarCallback_tFc.cached) return;
+	PtScrollbarCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtScrollbarCallback_tFc.action = (*env)->GetFieldID(env, PtScrollbarCallback_tFc.clazz, "action", "I");
+	PtScrollbarCallback_tFc.position = (*env)->GetFieldID(env, PtScrollbarCallback_tFc.clazz, "position", "I");
+	PtScrollbarCallback_tFc.cached = 1;
 }
 
-void setPgAlpha_tFields(JNIEnv *env, jobject lpObject, PgAlpha_t *lpStruct, PPgAlpha_t_FID_CACHE lpCache)
+PtScrollbarCallback_t *getPtScrollbarCallback_tFields(JNIEnv *env, jobject lpObject, PtScrollbarCallback_t *lpStruct)
 {
-	(*env)->SetIntField(env, lpObject, lpCache->alpha_op, lpStruct->alpha_op);
-	(*env)->SetShortField(env, lpObject, lpCache->src_alpha_map_dim_w, lpStruct->src_alpha_map.dim.w);
-	(*env)->SetShortField(env, lpObject, lpCache->src_alpha_map_dim_h, lpStruct->src_alpha_map.dim.h);
-	(*env)->SetShortField(env, lpObject, lpCache->src_alpha_map_bpl, lpStruct->src_alpha_map.bpl);
-	(*env)->SetShortField(env, lpObject, lpCache->src_alpha_map_bpp, lpStruct->src_alpha_map.bpp);
-	(*env)->SetIntField(env, lpObject, lpCache->src_alpha_map_map, (jint)lpStruct->src_alpha_map.map);
-	(*env)->SetByteField(env, lpObject, lpCache->src_global_alpha, lpStruct->src_global_alpha);
-	(*env)->SetByteField(env, lpObject, lpCache->dest_global_alpha, lpStruct->dest_global_alpha);
+	if (!PtScrollbarCallback_tFc.cached) cachePtScrollbarCallback_tFields(env, lpObject);
+	lpStruct->action = (*env)->GetIntField(env, lpObject, PtScrollbarCallback_tFc.action);
+	lpStruct->position = (*env)->GetIntField(env, lpObject, PtScrollbarCallback_tFc.position);
+	return lpStruct;
 }
 
-void cachePtTextCallback_tFids(JNIEnv *env, jobject lpObject, PPtTextCallback_t_FID_CACHE lpCache)
+void setPtScrollbarCallback_tFields(JNIEnv *env, jobject lpObject, PtScrollbarCallback_t *lpStruct)
 {
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->start_pos = (*env)->GetFieldID(env, lpCache->clazz, "start_pos", "I");
-	lpCache->end_pos = (*env)->GetFieldID(env, lpCache->clazz, "end_pos", "I");
-	lpCache->cur_insert = (*env)->GetFieldID(env, lpCache->clazz, "cur_insert", "I");
-	lpCache->new_insert = (*env)->GetFieldID(env, lpCache->clazz, "new_insert", "I");
-	lpCache->length = (*env)->GetFieldID(env, lpCache->clazz, "length", "I");
-	lpCache->reserved = (*env)->GetFieldID(env, lpCache->clazz, "reserved", "S");
-	lpCache->text = (*env)->GetFieldID(env, lpCache->clazz, "text", "I");
-	lpCache->doit = (*env)->GetFieldID(env, lpCache->clazz, "doit", "I");
-	lpCache->cached = 1;
+	if (!PtScrollbarCallback_tFc.cached) cachePtScrollbarCallback_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PtScrollbarCallback_tFc.action, (jint)lpStruct->action);
+	(*env)->SetIntField(env, lpObject, PtScrollbarCallback_tFc.position, (jint)lpStruct->position);
 }
-	
-void getPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct, PPtTextCallback_t_FID_CACHE lpCache)
+#endif
+
+#ifndef NO_PtTextCallback_t
+typedef struct PtTextCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID start_pos, end_pos, cur_insert, new_insert, length, reserved, text, doit;
+} PtTextCallback_t_FID_CACHE;
+
+PtTextCallback_t_FID_CACHE PtTextCallback_tFc;
+
+void cachePtTextCallback_tFields(JNIEnv *env, jobject lpObject)
 {
-	lpStruct->start_pos = (*env)->GetIntField(env, lpObject, lpCache->start_pos);
-	lpStruct->end_pos = (*env)->GetIntField(env, lpObject, lpCache->end_pos);
-	lpStruct->cur_insert = (*env)->GetIntField(env, lpObject, lpCache->cur_insert);
-	lpStruct->new_insert = (*env)->GetIntField(env, lpObject, lpCache->new_insert);
-	lpStruct->length = (*env)->GetIntField(env, lpObject, lpCache->length);
-	lpStruct->reserved = (*env)->GetShortField(env, lpObject, lpCache->reserved);
-	lpStruct->text = (char *)(*env)->GetIntField(env, lpObject, lpCache->text);
-	lpStruct->doit = (*env)->GetIntField(env, lpObject, lpCache->doit);
+	if (PtTextCallback_tFc.cached) return;
+	PtTextCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtTextCallback_tFc.start_pos = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "start_pos", "I");
+	PtTextCallback_tFc.end_pos = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "end_pos", "I");
+	PtTextCallback_tFc.cur_insert = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "cur_insert", "I");
+	PtTextCallback_tFc.new_insert = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "new_insert", "I");
+	PtTextCallback_tFc.length = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "length", "I");
+	PtTextCallback_tFc.reserved = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "reserved", "S");
+	PtTextCallback_tFc.text = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "text", "I");
+	PtTextCallback_tFc.doit = (*env)->GetFieldID(env, PtTextCallback_tFc.clazz, "doit", "I");
+	PtTextCallback_tFc.cached = 1;
 }
 
-void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct, PPtTextCallback_t_FID_CACHE lpCache)
+PtTextCallback_t *getPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct)
 {
-	(*env)->SetIntField(env, lpObject, lpCache->start_pos, lpStruct->start_pos);
-	(*env)->SetIntField(env, lpObject, lpCache->end_pos, lpStruct->end_pos);
-	(*env)->SetIntField(env, lpObject, lpCache->cur_insert, lpStruct->cur_insert);
-	(*env)->SetIntField(env, lpObject, lpCache->new_insert, lpStruct->new_insert);
-	(*env)->SetIntField(env, lpObject, lpCache->length, lpStruct->length);
-	(*env)->SetShortField(env, lpObject, lpCache->reserved, lpStruct->reserved);
-	(*env)->SetIntField(env, lpObject, lpCache->text, (jint)lpStruct->text);
-	(*env)->SetIntField(env, lpObject, lpCache->doit, lpStruct->doit);
-}
-	
-void cachePgMap_tFids(JNIEnv *env, jobject lpObject, PPgMap_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->dim_w = (*env)->GetFieldID(env, lpCache->clazz, "dim_w", "S");
-	lpCache->dim_h = (*env)->GetFieldID(env, lpCache->clazz, "dim_h", "S");
-	lpCache->bpl = (*env)->GetFieldID(env, lpCache->clazz, "bpl", "S");
-	lpCache->bpp = (*env)->GetFieldID(env, lpCache->clazz, "bpp", "S");
-	lpCache->map = (*env)->GetFieldID(env, lpCache->clazz, "map", "I");
-	lpCache->cached = 1;
+	if (!PtTextCallback_tFc.cached) cachePtTextCallback_tFields(env, lpObject);
+	lpStruct->start_pos = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.start_pos);
+	lpStruct->end_pos = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.end_pos);
+	lpStruct->cur_insert = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.cur_insert);
+	lpStruct->new_insert = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.new_insert);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.length);
+	lpStruct->reserved = (*env)->GetShortField(env, lpObject, PtTextCallback_tFc.reserved);
+	lpStruct->text = (char *)(*env)->GetIntField(env, lpObject, PtTextCallback_tFc.text);
+	lpStruct->doit = (*env)->GetIntField(env, lpObject, PtTextCallback_tFc.doit);
+	return lpStruct;
 }
 
-void getPgMap_tFields(JNIEnv *env, jobject lpObject, PgMap_t *lpStruct, PPgMap_t_FID_CACHE lpCache)
+void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct)
 {
-	lpStruct->dim.w = (*env)->GetShortField(env, lpObject, lpCache->dim_w);
-	lpStruct->dim.h = (*env)->GetShortField(env, lpObject, lpCache->dim_h);
-	lpStruct->bpl = (*env)->GetShortField(env, lpObject, lpCache->bpl);
-	lpStruct->bpp = (*env)->GetShortField(env, lpObject, lpCache->bpp);
-	lpStruct->map = (char *)(*env)->GetIntField(env, lpObject, lpCache->map);
+	if (!PtTextCallback_tFc.cached) cachePtTextCallback_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.start_pos, (jint)lpStruct->start_pos);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.end_pos, (jint)lpStruct->end_pos);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.cur_insert, (jint)lpStruct->cur_insert);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.new_insert, (jint)lpStruct->new_insert);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.length, (jint)lpStruct->length);
+	(*env)->SetShortField(env, lpObject, PtTextCallback_tFc.reserved, (jshort)lpStruct->reserved);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.text, (jint)lpStruct->text);
+	(*env)->SetIntField(env, lpObject, PtTextCallback_tFc.doit, (jint)lpStruct->doit);
 }
+#endif
 
-void setPgMap_tFields(JNIEnv *env, jobject lpObject, PgMap_t *lpStruct, PPgMap_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->dim_w, lpStruct->dim.w);
-	(*env)->SetShortField(env, lpObject, lpCache->dim_h, lpStruct->dim.h);
-	(*env)->SetShortField(env, lpObject, lpCache->bpl, lpStruct->bpl);
-	(*env)->SetShortField(env, lpObject, lpCache->bpp, lpStruct->bpp);
-	(*env)->SetIntField(env, lpObject, lpCache->map, (jint)lpStruct->map);
-}
-
-void cachePtColorSelectInfo_tFids(JNIEnv *env, jobject lpObject, PPtColorSelectInfo_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "S");
-	lpCache->nselectors = (*env)->GetFieldID(env, lpCache->clazz, "nselectors", "B");
-	lpCache->ncolor_models = (*env)->GetFieldID(env, lpCache->clazz, "ncolor_models", "B");
-	lpCache->color_models = (*env)->GetFieldID(env, lpCache->clazz, "color_models", "I");
-	lpCache->selectors = (*env)->GetFieldID(env, lpCache->clazz, "selectors", "I");
-	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
-	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
-	lpCache->size_w = (*env)->GetFieldID(env, lpCache->clazz, "size_w", "S");
-	lpCache->size_h = (*env)->GetFieldID(env, lpCache->clazz, "size_h", "S");
-	lpCache->palette = (*env)->GetFieldID(env, lpCache->clazz, "palette", "I");
-	lpCache->accept_text = (*env)->GetFieldID(env, lpCache->clazz, "accept_text", "I");
-	lpCache->dismiss_text = (*env)->GetFieldID(env, lpCache->clazz, "dismiss_text", "I");
-	lpCache->accept_dismiss_text = (*env)->GetFieldID(env, lpCache->clazz, "accept_dismiss_text", "I");
-	lpCache->apply_f = (*env)->GetFieldID(env, lpCache->clazz, "apply_f", "I");
-	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
-	lpCache->rgb = (*env)->GetFieldID(env, lpCache->clazz, "rgb", "I");
-	lpCache->dialog = (*env)->GetFieldID(env, lpCache->clazz, "dialog", "I");
-	lpCache->cached = 1;
-}
-
-void getPtColorSelectInfo_tFields(JNIEnv *env, jobject lpObject, PtColorSelectInfo_t *lpStruct, PPtColorSelectInfo_t_FID_CACHE lpCache)
-{
-	lpStruct->flags = (*env)->GetShortField(env, lpObject, lpCache->flags);
-	lpStruct->nselectors = (*env)->GetByteField(env, lpObject, lpCache->nselectors);
-	lpStruct->ncolor_models = (*env)->GetByteField(env, lpObject, lpCache->ncolor_models);
-	lpStruct->color_models = (PgColorModel_t **)(*env)->GetIntField(env, lpObject, lpCache->color_models);
-	lpStruct->selectors = (PtColorSelectorSpec_t *)(*env)->GetIntField(env, lpObject, lpCache->selectors);
-	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
-	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
-	lpStruct->size.w = (*env)->GetShortField(env, lpObject, lpCache->size_w);
-	lpStruct->size.h = (*env)->GetShortField(env, lpObject, lpCache->size_h);
-	lpStruct->palette.instance = (void *)(*env)->GetIntField(env, lpObject, lpCache->palette);
-	lpStruct->accept_text = (char *)(*env)->GetIntField(env, lpObject, lpCache->accept_text);
-	lpStruct->dismiss_text = (char *)(*env)->GetIntField(env, lpObject, lpCache->dismiss_text);
-	lpStruct->accept_dismiss_text = (char *)(*env)->GetIntField(env, lpObject, lpCache->accept_dismiss_text);
-	lpStruct->apply_f = (void (*))(*env)->GetIntField(env, lpObject, lpCache->apply_f);
-	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, lpCache->data);
-	lpStruct->rgb = (*env)->GetIntField(env, lpObject, lpCache->rgb);
-	lpStruct->dialog = (PtWidget_t *)(*env)->GetIntField(env, lpObject, lpCache->dialog);
-}
-	
-void setPtColorSelectInfo_tFields(JNIEnv *env, jobject lpObject, PtColorSelectInfo_t *lpStruct, PPtColorSelectInfo_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetByteField(env, lpObject, lpCache->nselectors, lpStruct->nselectors);
-	(*env)->SetByteField(env, lpObject, lpCache->ncolor_models, lpStruct->ncolor_models);
-	(*env)->SetIntField(env, lpObject, lpCache->color_models, (jint)lpStruct->color_models);
-	(*env)->SetIntField(env, lpObject, lpCache->selectors, (jint)lpStruct->selectors);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
-	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
-	(*env)->SetShortField(env, lpObject, lpCache->size_w, lpStruct->size.w);
-	(*env)->SetShortField(env, lpObject, lpCache->size_h, lpStruct->size.h);
-	(*env)->SetIntField(env, lpObject, lpCache->palette, (jint)lpStruct->palette.instance);
-	(*env)->SetIntField(env, lpObject, lpCache->accept_text, (jint)lpStruct->accept_text);
-	(*env)->SetIntField(env, lpObject, lpCache->dismiss_text, (jint)lpStruct->dismiss_text);
-	(*env)->SetIntField(env, lpObject, lpCache->accept_dismiss_text, (jint)lpStruct->accept_dismiss_text);
-	(*env)->SetIntField(env, lpObject, lpCache->apply_f, (jint)lpStruct->apply_f);
-	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
-	(*env)->SetIntField(env, lpObject, lpCache->rgb, lpStruct->rgb);
-	(*env)->SetIntField(env, lpObject, lpCache->dialog, (jint)lpStruct->dialog);
-}
-
-void cachePhRegion_tFids(JNIEnv *env, jobject lpObject, PPhRegion_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->rid = (*env)->GetFieldID(env, lpCache->clazz, "rid", "I");
-	lpCache->handle = (*env)->GetFieldID(env, lpCache->clazz, "handle", "I");
-	lpCache->owner = (*env)->GetFieldID(env, lpCache->clazz, "owner", "I");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "I");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->clazz, "state", "S");
-	lpCache->events_sense = (*env)->GetFieldID(env, lpCache->clazz, "events_sense", "I");
-	lpCache->events_opaque = (*env)->GetFieldID(env, lpCache->clazz, "events_opaque", "I");
-	lpCache->origin_x = (*env)->GetFieldID(env, lpCache->clazz, "origin_x", "S");
-	lpCache->origin_y = (*env)->GetFieldID(env, lpCache->clazz, "origin_y", "S");
-	lpCache->parent = (*env)->GetFieldID(env, lpCache->clazz, "parent", "I");
-	lpCache->child = (*env)->GetFieldID(env, lpCache->clazz, "child", "I");
-	lpCache->bro_in_front = (*env)->GetFieldID(env, lpCache->clazz, "bro_in_front", "I");
-	lpCache->bro_behind = (*env)->GetFieldID(env, lpCache->clazz, "bro_behind", "I");
-	lpCache->cursor_color = (*env)->GetFieldID(env, lpCache->clazz, "cursor_color", "I");
-	lpCache->input_group = (*env)->GetFieldID(env, lpCache->clazz, "input_group", "S");
-	lpCache->data_len = (*env)->GetFieldID(env, lpCache->clazz, "data_len", "S");
-	lpCache->cursor_type = (*env)->GetFieldID(env, lpCache->clazz, "cursor_type", "S");
-	lpCache->cached = 1;
-}
-
-void getPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct, PPhRegion_t_FID_CACHE lpCache)
-{
-	lpStruct->rid = (*env)->GetIntField(env, lpObject, lpCache->rid);
-	lpStruct->handle = (*env)->GetIntField(env, lpObject, lpCache->handle);
-	lpStruct->owner = (*env)->GetIntField(env, lpObject, lpCache->owner);
-	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
-	lpStruct->state = (*env)->GetShortField(env, lpObject, lpCache->state);
-	lpStruct->events_sense = (*env)->GetIntField(env, lpObject, lpCache->events_sense);
-	lpStruct->events_opaque = (*env)->GetIntField(env, lpObject, lpCache->events_opaque);
-	lpStruct->origin.x = (*env)->GetShortField(env, lpObject, lpCache->origin_x);
-	lpStruct->origin.y = (*env)->GetShortField(env, lpObject, lpCache->origin_y);
-	lpStruct->parent = (*env)->GetIntField(env, lpObject, lpCache->parent);
-	lpStruct->child = (*env)->GetIntField(env, lpObject, lpCache->child);
-	lpStruct->bro_in_front = (*env)->GetIntField(env, lpObject, lpCache->bro_in_front);
-	lpStruct->bro_behind = (*env)->GetIntField(env, lpObject, lpCache->bro_behind);
-	lpStruct->cursor_color = (*env)->GetIntField(env, lpObject, lpCache->cursor_color);
-	lpStruct->input_group = (*env)->GetShortField(env, lpObject, lpCache->input_group);
-	lpStruct->data_len = (*env)->GetShortField(env, lpObject, lpCache->data_len);
-	lpStruct->cursor_type = (*env)->GetShortField(env, lpObject, lpCache->cursor_type);
-}
-
-void setPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct, PPhRegion_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->rid, lpStruct->rid);
-	(*env)->SetIntField(env, lpObject, lpCache->handle, lpStruct->handle);
-	(*env)->SetIntField(env, lpObject, lpCache->owner, lpStruct->owner);
-	(*env)->SetIntField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetShortField(env, lpObject, lpCache->state, lpStruct->state);
-	(*env)->SetIntField(env, lpObject, lpCache->events_sense, lpStruct->events_sense);
-	(*env)->SetIntField(env, lpObject, lpCache->events_opaque, lpStruct->events_opaque);
-	(*env)->SetShortField(env, lpObject, lpCache->origin_x, lpStruct->origin.x);
-	(*env)->SetShortField(env, lpObject, lpCache->origin_y, lpStruct->origin.y);
-	(*env)->SetIntField(env, lpObject, lpCache->parent, lpStruct->parent);
-	(*env)->SetIntField(env, lpObject, lpCache->child, lpStruct->child);
-	(*env)->SetIntField(env, lpObject, lpCache->bro_in_front, lpStruct->bro_in_front);
-	(*env)->SetIntField(env, lpObject, lpCache->bro_behind, lpStruct->bro_behind);
-	(*env)->SetIntField(env, lpObject, lpCache->cursor_color, lpStruct->cursor_color);
-	(*env)->SetShortField(env, lpObject, lpCache->input_group, lpStruct->input_group);
-	(*env)->SetShortField(env, lpObject, lpCache->data_len, lpStruct->data_len);
-	(*env)->SetShortField(env, lpObject, lpCache->cursor_type, lpStruct->cursor_type);
-}
-
-void cachePtContainerCallback_tFids(JNIEnv *env, jobject lpObject, PPtContainerCallback_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->new_size_ul_x = (*env)->GetFieldID(env, lpCache->clazz, "new_size_ul_x", "S");
-	lpCache->new_size_ul_y = (*env)->GetFieldID(env, lpCache->clazz, "new_size_ul_y", "S");
-	lpCache->new_size_lr_x = (*env)->GetFieldID(env, lpCache->clazz, "new_size_lr_x", "S");
-	lpCache->new_size_lr_y = (*env)->GetFieldID(env, lpCache->clazz, "new_size_lr_y", "S");
-	lpCache->old_size_ul_x = (*env)->GetFieldID(env, lpCache->clazz, "old_size_ul_x", "S");
-	lpCache->old_size_ul_y = (*env)->GetFieldID(env, lpCache->clazz, "old_size_ul_y", "S");
-	lpCache->old_size_lr_x = (*env)->GetFieldID(env, lpCache->clazz, "old_size_lr_x", "S");
-	lpCache->old_size_lr_y = (*env)->GetFieldID(env, lpCache->clazz, "old_size_lr_y", "S");
-	lpCache->new_dim_w = (*env)->GetFieldID(env, lpCache->clazz, "new_dim_w", "S");
-	lpCache->new_dim_h = (*env)->GetFieldID(env, lpCache->clazz, "new_dim_h", "S");
-	lpCache->old_dim_w = (*env)->GetFieldID(env, lpCache->clazz, "old_dim_w", "S");
-	lpCache->old_dim_h = (*env)->GetFieldID(env, lpCache->clazz, "old_dim_h", "S");
-	lpCache->cached = 1;
-}
-
-void getPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache)
-{
-	lpStruct->new_size.ul.x = (*env)->GetShortField(env, lpObject, lpCache->new_size_ul_x);
-	lpStruct->new_size.ul.y = (*env)->GetShortField(env, lpObject, lpCache->new_size_ul_y);
-	lpStruct->new_size.lr.x = (*env)->GetShortField(env, lpObject, lpCache->new_size_lr_x);
-	lpStruct->new_size.lr.y = (*env)->GetShortField(env, lpObject, lpCache->new_size_lr_y);
-	lpStruct->old_size.ul.x = (*env)->GetShortField(env, lpObject, lpCache->old_size_ul_x);
-	lpStruct->old_size.ul.y = (*env)->GetShortField(env, lpObject, lpCache->old_size_ul_y);
-	lpStruct->old_size.lr.x = (*env)->GetShortField(env, lpObject, lpCache->old_size_lr_x);
-	lpStruct->old_size.lr.y = (*env)->GetShortField(env, lpObject, lpCache->old_size_lr_y);
-	lpStruct->new_dim.w = (*env)->GetShortField(env, lpObject, lpCache->new_dim_w);
-	lpStruct->new_dim.h = (*env)->GetShortField(env, lpObject, lpCache->new_dim_h);
-	lpStruct->old_dim.w = (*env)->GetShortField(env, lpObject, lpCache->old_dim_w);
-	lpStruct->old_dim.h = (*env)->GetShortField(env, lpObject, lpCache->old_dim_h);
-}
-
-void setPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->new_size_ul_x, lpStruct->new_size.ul.x);
-	(*env)->SetShortField(env, lpObject, lpCache->new_size_ul_y, lpStruct->new_size.ul.y);
-	(*env)->SetShortField(env, lpObject, lpCache->new_size_lr_x, lpStruct->new_size.lr.x);
-	(*env)->SetShortField(env, lpObject, lpCache->new_size_lr_y, lpStruct->new_size.lr.y);
-	(*env)->SetShortField(env, lpObject, lpCache->old_size_ul_x, lpStruct->old_size.ul.x);
-	(*env)->SetShortField(env, lpObject, lpCache->old_size_ul_y, lpStruct->old_size.ul.y);
-	(*env)->SetShortField(env, lpObject, lpCache->old_size_lr_x, lpStruct->old_size.lr.x);
-	(*env)->SetShortField(env, lpObject, lpCache->old_size_lr_y, lpStruct->old_size.lr.y);
-	(*env)->SetShortField(env, lpObject, lpCache->new_dim_w, lpStruct->new_dim.w);
-	(*env)->SetShortField(env, lpObject, lpCache->new_dim_h, lpStruct->new_dim.h);
-	(*env)->SetShortField(env, lpObject, lpCache->old_dim_w, lpStruct->old_dim.w);
-	(*env)->SetShortField(env, lpObject, lpCache->old_dim_h, lpStruct->old_dim.h);
-}
-
-void cachePhCursorDef_tFids(JNIEnv *env, jobject lpObject, PPhCursorDef_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->bytesperline2 = (*env)->GetFieldID(env, lpCache->clazz, "bytesperline2", "B");
-	lpCache->color2 = (*env)->GetFieldID(env, lpCache->clazz, "color2", "I");
-	lpCache->offset2_y = (*env)->GetFieldID(env, lpCache->clazz, "offset2_y", "S");
-	lpCache->offset2_x = (*env)->GetFieldID(env, lpCache->clazz, "offset2_x", "S");
-	lpCache->size2_y = (*env)->GetFieldID(env, lpCache->clazz, "size2_y", "S");
-	lpCache->size2_x = (*env)->GetFieldID(env, lpCache->clazz, "size2_x", "S");
-	lpCache->bytesperline1 = (*env)->GetFieldID(env, lpCache->clazz, "bytesperline1", "B");
-	lpCache->color1 = (*env)->GetFieldID(env, lpCache->clazz, "color1", "I");
-	lpCache->offset1_y = (*env)->GetFieldID(env, lpCache->clazz, "offset1_y", "S");
-	lpCache->offset1_x = (*env)->GetFieldID(env, lpCache->clazz, "offset1_x", "S");
-	lpCache->size1_y = (*env)->GetFieldID(env, lpCache->clazz, "size1_y", "S");
-	lpCache->size1_x = (*env)->GetFieldID(env, lpCache->clazz, "size1_x", "S");
-	lpCache->hdr_type = (*env)->GetFieldID(env, lpCache->clazz, "hdr_type", "S");
-	lpCache->hdr_len = (*env)->GetFieldID(env, lpCache->clazz, "hdr_len", "S");
-	lpCache->cached = 1;
-}
-
-void getPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache)
-{
-	lpStruct->bytesperline2 = (*env)->GetByteField(env, lpObject, lpCache->bytesperline2);
-	lpStruct->color2 = (*env)->GetIntField(env, lpObject, lpCache->color2);
-	lpStruct->offset2.y = (*env)->GetShortField(env, lpObject, lpCache->offset2_y);
-	lpStruct->offset2.x = (*env)->GetShortField(env, lpObject, lpCache->offset2_x);
-	lpStruct->size2.y = (*env)->GetShortField(env, lpObject, lpCache->size2_y);
-	lpStruct->size2.x = (*env)->GetShortField(env, lpObject, lpCache->size2_x);
-	lpStruct->bytesperline1 = (*env)->GetByteField(env, lpObject, lpCache->bytesperline1);
-	lpStruct->color1 = (*env)->GetIntField(env, lpObject, lpCache->color1);
-	lpStruct->offset1.y = (*env)->GetShortField(env, lpObject, lpCache->offset1_y);
-	lpStruct->offset1.x = (*env)->GetShortField(env, lpObject, lpCache->offset1_x);
-	lpStruct->size1.y = (*env)->GetShortField(env, lpObject, lpCache->size1_y);
-	lpStruct->size1.x = (*env)->GetShortField(env, lpObject, lpCache->size1_x);
-	lpStruct->hdr.type = (*env)->GetShortField(env, lpObject, lpCache->hdr_type);
-	lpStruct->hdr.len = (*env)->GetShortField(env, lpObject, lpCache->hdr_len);
-}
-
-void setPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache)
-{
-	(*env)->SetByteField(env, lpObject, lpCache->bytesperline2, lpStruct->bytesperline2);
-	(*env)->SetIntField(env, lpObject, lpCache->color2, lpStruct->color2);
-	(*env)->SetShortField(env, lpObject, lpCache->offset2_y, lpStruct->offset2.y);
-	(*env)->SetShortField(env, lpObject, lpCache->offset2_x, lpStruct->offset2.x);
-	(*env)->SetShortField(env, lpObject, lpCache->size2_y, lpStruct->size2.y);
-	(*env)->SetShortField(env, lpObject, lpCache->size2_x, lpStruct->size2.x);
-	(*env)->SetByteField(env, lpObject, lpCache->bytesperline1, lpStruct->bytesperline1);
-	(*env)->SetIntField(env, lpObject, lpCache->color1, lpStruct->color1);
-	(*env)->SetShortField(env, lpObject, lpCache->offset1_y, lpStruct->offset1.y);
-	(*env)->SetShortField(env, lpObject, lpCache->offset1_x, lpStruct->offset1.x);
-	(*env)->SetShortField(env, lpObject, lpCache->size1_y, lpStruct->size1.y);
-	(*env)->SetShortField(env, lpObject, lpCache->size1_x, lpStruct->size1.x);
-	(*env)->SetShortField(env, lpObject, lpCache->hdr_type, lpStruct->hdr.type);
-	(*env)->SetShortField(env, lpObject, lpCache->hdr_len, lpStruct->hdr.len);
-}
-
-void cachePgDisplaySettings_tFids(JNIEnv *env, jobject lpObject, PPgDisplaySettings_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->reserved = (*env)->GetFieldID(env, lpCache->clazz, "reserved", "[I");
-	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "I");
-	lpCache->refresh = (*env)->GetFieldID(env, lpCache->clazz, "refresh", "I");
-	lpCache->yres = (*env)->GetFieldID(env, lpCache->clazz, "yres", "I");
-	lpCache->xres = (*env)->GetFieldID(env, lpCache->clazz, "xres", "I");
-	lpCache->mode = (*env)->GetFieldID(env, lpCache->clazz, "mode", "I");
-	lpCache->cached = 1;
-}
-
-void getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache)
-{
-	jintArray reserved = (*env)->GetObjectField(env, lpObject, lpCache->reserved);
-    if (reserved) {
-        jint *reserved1 = (*env)->GetIntArrayElements(env, reserved, NULL);
-        memcpy(lpStruct->reserved, reserved1, sizeof (lpStruct->reserved));
-        (*env)->ReleaseIntArrayElements(env, reserved, reserved1, JNI_ABORT);
-	}
-	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
-	lpStruct->refresh = (*env)->GetIntField(env, lpObject, lpCache->refresh);
-	lpStruct->yres = (*env)->GetIntField(env, lpObject, lpCache->yres);
-	lpStruct->xres = (*env)->GetIntField(env, lpObject, lpCache->xres);
-	lpStruct->mode = (*env)->GetIntField(env, lpObject, lpCache->mode);
-}
-
-void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache)
-{
-	jintArray reserved = (*env)->GetObjectField(env, lpObject, lpCache->reserved);
-    if (reserved) {
-        jint *reserved1 = (*env)->GetIntArrayElements(env, reserved, NULL);
-        memcpy(reserved1, lpStruct->reserved, sizeof (lpStruct->reserved));
-        (*env)->ReleaseIntArrayElements(env, reserved, reserved1, 0);
-	}
-	(*env)->SetIntField(env, lpObject, lpCache->flags, lpStruct->flags);
-	(*env)->SetIntField(env, lpObject, lpCache->refresh, lpStruct->refresh);
-	(*env)->SetIntField(env, lpObject, lpCache->yres, lpStruct->yres);
-	(*env)->SetIntField(env, lpObject, lpCache->xres, lpStruct->xres);
-	(*env)->SetIntField(env, lpObject, lpCache->mode, lpStruct->mode);
-}
-
-void cachePgVideoModeInfo_tFids(JNIEnv *env, jobject lpObject, PPgVideoModeInfo_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->refresh_rates = (*env)->GetFieldID(env, lpCache->clazz, "refresh_rates", "[B");
-	lpCache->mode_capabilities6 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities6", "I");
-	lpCache->mode_capabilities5 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities5", "I");
-	lpCache->mode_capabilities4 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities4", "I");
-	lpCache->mode_capabilities3 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities3", "I");
-	lpCache->mode_capabilities2 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities2", "I");
-	lpCache->mode_capabilities1 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities1", "I");
-	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
-	lpCache->bytes_per_scanline = (*env)->GetFieldID(env, lpCache->clazz, "bytes_per_scanline", "S");
-	lpCache->bits_per_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bits_per_pixel", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "S");
-	lpCache->cached = 1;
-}
-
-void getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache)
-{
-	jbyteArray refresh_rates = (*env)->GetObjectField(env, lpObject, lpCache->refresh_rates);
-    if (refresh_rates) {
-        jbyte *refresh_rates1 = (*env)->GetByteArrayElements(env, refresh_rates, NULL);
-        memcpy(lpStruct->refresh_rates, refresh_rates1, sizeof(lpStruct->refresh_rates));
-        (*env)->ReleaseByteArrayElements(env, refresh_rates, refresh_rates1, JNI_ABORT);
-	}
-	lpStruct->mode_capabilities6 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities6);
-	lpStruct->mode_capabilities5 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities5);
-	lpStruct->mode_capabilities4 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities4);
-	lpStruct->mode_capabilities3 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities3);
-	lpStruct->mode_capabilities2 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities2);
-	lpStruct->mode_capabilities1 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities1);
-	lpStruct->type = (*env)->GetIntField(env, lpObject, lpCache->type);
-	lpStruct->bytes_per_scanline = (*env)->GetShortField(env, lpObject, lpCache->bytes_per_scanline);
-	lpStruct->bits_per_pixel = (*env)->GetShortField(env, lpObject, lpCache->bits_per_pixel);
-	lpStruct->height = (*env)->GetShortField(env, lpObject, lpCache->height);
-	lpStruct->width = (*env)->GetShortField(env, lpObject, lpCache->width);
-}
-
-void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache)
-{
-	jbyteArray refresh_rates = (*env)->GetObjectField(env, lpObject, lpCache->refresh_rates);
-    if (refresh_rates) {
-        jbyte *refresh_rates1 = (*env)->GetByteArrayElements(env, refresh_rates, NULL);
-        memcpy(refresh_rates1, lpStruct->refresh_rates, sizeof(lpStruct->refresh_rates));
-        (*env)->ReleaseByteArrayElements(env, refresh_rates, refresh_rates1, 0);
-	}
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities6, lpStruct->mode_capabilities6);
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities5, lpStruct->mode_capabilities5);
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities4, lpStruct->mode_capabilities4);
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities3, lpStruct->mode_capabilities3);
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities2, lpStruct->mode_capabilities2);
-	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities1, lpStruct->mode_capabilities1);
-	(*env)->SetIntField(env, lpObject, lpCache->type, lpStruct->type);
-	(*env)->SetShortField(env, lpObject, lpCache->bytes_per_scanline, lpStruct->bytes_per_scanline);
-	(*env)->SetShortField(env, lpObject, lpCache->bits_per_pixel, lpStruct->bits_per_pixel);
-	(*env)->SetShortField(env, lpObject, lpCache->height, lpStruct->height);
-	(*env)->SetShortField(env, lpObject, lpCache->width, lpStruct->width);
-}
-
-void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
-	lpCache->length = (*env)->GetFieldID(env, lpCache->clazz, "length", "S");
-	lpCache->type_7 = (*env)->GetFieldID(env, lpCache->clazz, "type_7", "B");
-	lpCache->type_6 = (*env)->GetFieldID(env, lpCache->clazz, "type_6", "B");
-	lpCache->type_5 = (*env)->GetFieldID(env, lpCache->clazz, "type_5", "B");
-	lpCache->type_4 = (*env)->GetFieldID(env, lpCache->clazz, "type_4", "B");
-	lpCache->type_3 = (*env)->GetFieldID(env, lpCache->clazz, "type_3", "B");
-	lpCache->type_2 = (*env)->GetFieldID(env, lpCache->clazz, "type_2", "B");
-	lpCache->type_1 = (*env)->GetFieldID(env, lpCache->clazz, "type_1", "B");
-	lpCache->type_0 = (*env)->GetFieldID(env, lpCache->clazz, "type_0", "B");
-	lpCache->cached = 1;
-}
-
-void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache)
-{
-	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, lpCache->data);
-	lpStruct->length = (*env)->GetShortField(env, lpObject, lpCache->length);
-	lpStruct->type[7] = (*env)->GetByteField(env, lpObject, lpCache->type_7);
-	lpStruct->type[6] = (*env)->GetByteField(env, lpObject, lpCache->type_6);
-	lpStruct->type[5] = (*env)->GetByteField(env, lpObject, lpCache->type_5);
-	lpStruct->type[4] = (*env)->GetByteField(env, lpObject, lpCache->type_4);
-	lpStruct->type[3] = (*env)->GetByteField(env, lpObject, lpCache->type_3);
-	lpStruct->type[2] = (*env)->GetByteField(env, lpObject, lpCache->type_2);
-	lpStruct->type[1] = (*env)->GetByteField(env, lpObject, lpCache->type_1);
-	lpStruct->type[0] = (*env)->GetByteField(env, lpObject, lpCache->type_0);
-}
-
-void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
-	(*env)->SetShortField(env, lpObject, lpCache->length, lpStruct->length);
-	(*env)->SetByteField(env, lpObject, lpCache->type_7, lpStruct->type[7]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_6, lpStruct->type[6]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_5, lpStruct->type[5]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_4, lpStruct->type[4]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_3, lpStruct->type[3]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_2, lpStruct->type[2]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_1, lpStruct->type[1]);
-	(*env)->SetByteField(env, lpObject, lpCache->type_0, lpStruct->type[0]);
-}
 #ifndef NO_utsname
 typedef struct utsname_FID_CACHE {
 	int cached;
@@ -1339,7 +1489,7 @@ typedef struct utsname_FID_CACHE {
 
 utsname_FID_CACHE utsnameFc;
 
-void cacheutsnameFids(JNIEnv *env, jobject lpObject)
+void cacheutsnameFields(JNIEnv *env, jobject lpObject)
 {
 	if (utsnameFc.cached) return;
 	utsnameFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1351,55 +1501,55 @@ void cacheutsnameFids(JNIEnv *env, jobject lpObject)
 	utsnameFc.cached = 1;
 }
 
-struct utsname *getutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct)
+utsname *getutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct)
 {
-	if (!utsnameFc.cached) cacheutsnameFids(env, lpObject);
+	if (!utsnameFc.cached) cacheutsnameFields(env, lpObject);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), lpStruct->sysname);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (void *)lpStruct->sysname);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), lpStruct->nodename);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (void *)lpStruct->nodename);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), lpStruct->release);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (void *)lpStruct->release);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), lpStruct->version);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (void *)lpStruct->version);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), lpStruct->machine);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (void *)lpStruct->machine);
 	}
 	return lpStruct;
 }
 
-void setutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct)
+void setutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct)
 {
-	if (!utsnameFc.cached) cacheutsnameFids(env, lpObject);
+	if (!utsnameFc.cached) cacheutsnameFields(env, lpObject);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), lpStruct->sysname);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (void *)lpStruct->sysname);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), lpStruct->nodename);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (void *)lpStruct->nodename);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), lpStruct->release);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (void *)lpStruct->release);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), lpStruct->version);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (void *)lpStruct->version);
 	}
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), lpStruct->machine);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (void *)lpStruct->machine);
 	}
 }
-#endif /* NO_utsname */
+#endif
 

@@ -8,14 +8,26 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.photon;
 
+#ifndef INC_os_H
+#define INC_os_H
 
-public class PhClipHeader {
-	public byte[] type = new byte[8];
-	public short length;
-	public short zero;
-	public int data;
-	public static final int sizeof = 16;
-}
+#define NDEBUG
 
+#include <Ph.h>
+#include <Pt.h>
+#include <photon/PhRender.h>
+#include <sys/utsname.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+#include <malloc.h>
+
+void *PtCreateAppContext();
+
+#define utsname struct utsname
+
+#define NATIVE_ENTER(env,clazz,func)
+#define NATIVE_EXIT(env,clazz,func)
+
+#endif /* INC_os_H */

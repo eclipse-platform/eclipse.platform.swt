@@ -1,6751 +1,3685 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
-/**
- * SWT OS natives implementation.
- */ 
-
-// #define PRINT_FAILED_RCODES
-#define NDEBUG 
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "structs.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <malloc.h>
+#define OS_NATIVE(func) Java_org_eclipse_swt_internal_photon_OS_##func
 
-#ifdef PR_20268
-#include "clip.c"
-#include "pt_blit.c"
-#include "pt_draw_widget.c"
-#define PtBlit PtBlit_
-#define PtClippedBlit PtClippedBlit_
-#endif
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMajorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMajorVersionNumber\n");
-#endif
-    return SWT_VERSION / 1000;
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMinorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMinorVersionNumber\n");
-#endif
-    return SWT_VERSION % 1000;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindow
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWindow
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWindow\n");
-#endif
-	
-	return (jint)PtWindow;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtList
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtList
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtList\n");
-#endif
-	
-	return (jint)PtList;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtLabel
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtLabel
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtLabel\n");
-#endif
-	
-	return (jint)PtLabel;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtInit
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtInit
-  (JNIEnv *env, jobject that, jbyteArray name)
-{
-    char *name1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtInit\n");
-#endif
-
-    if (name)
-        name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
-
-    result = (jint)PtInit(name1);
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtCreateWidget
- * Signature: (III[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCreateWidget
-  (JNIEnv *env, jobject that, jint clazz, jint parent, jint n_args, jintArray args)
-{
-    PtArg_t *args1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtCreateWidget\n");
-#endif
-
-    if (args)
-        args1 = (PtArg_t *)(*env)->GetIntArrayElements(env, args, NULL);
-
-    result = (jint)PtCreateWidget((PtWidgetClassRef_t *)clazz, (PtWidget_t *)parent, n_args, args1);
-
-    if (args)
-        (*env)->ReleaseIntArrayElements(env, args, (jint *)args1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSetResources
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetResources
-  (JNIEnv *env, jobject that, jint widget, jint n_args, jintArray args)
-{
-    jint *args1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSetResources\n");
-#endif
-
-    if (args)
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-
-    result = (jint)PtSetResources((PtWidget_t *)widget, n_args, (PtArg_t *)args1);
-
-    if (args)
-        (*env)->ReleaseIntArrayElements(env, args, args1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSetResource
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetResource
-  (JNIEnv *env, jobject that, jint widget, jint type, jint value, jint length)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSetResource\n");
-#endif
-
-	return (jint)PtSetResource((PtWidget_t *)widget, type, value, length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtRealizeWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRealizeWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtRealizeWidget\n");
-#endif
-	
-	return (jint)PtRealizeWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAddEventHandler
- * Signature: (IIII)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAddEventHandler
-  (JNIEnv *env, jobject that, jint widget, jint event_mask, jint callback, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAddEventHandler\n");
-#endif
-	
-	PtAddEventHandler((PtWidget_t *)widget, (unsigned long)event_mask, (PtCallbackF_t *)callback, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetRid
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetRid
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetRid\n");
-#endif
-	
-	return (jint)PtWidgetRid((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtMainLoop
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtMainLoop
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtMainLoop\n");
-#endif
-	
-	PtMainLoop();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgFlush
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgFlush
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgFlush\n");
-#endif
-	
-	return (jint)PgFlush();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgCreateGC
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgCreateGC
-  (JNIEnv *env, jobject that, jint size)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgCreateGC\n");
-#endif
-	
-	return (jint)PgCreateGC(size);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetGC
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetGC
-  (JNIEnv *env, jobject that, jint GC)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetGC\n");
-#endif
-	
-	return (jint)PgSetGC((PhGC_t *)GC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetRegion
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetRegion
-  (JNIEnv *env, jobject that, jint rid)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetRegion\n");
-#endif
-	
-	PgSetRegion(rid);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetFillColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetFillColor
-  (JNIEnv *env, jobject that, jint color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetFillColor\n");
-#endif
-	
-	return (jint)PgSetFillColor(color);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetStrokeColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetStrokeColor
-  (JNIEnv *env, jobject that, jint color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetStrokeColor\n");
-#endif
-	
-	return (jint)PgSetStrokeColor(color);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetTextColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetTextColor
-  (JNIEnv *env, jobject that, jint color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetTextColor\n");
-#endif
-	
-	return (jint)PgSetTextColor(color);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetTextXORColor
-  (JNIEnv *env, jobject that, jint frgd, jint bkgd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetTextXORColor\n");
-#endif
-	
-	PgSetTextXORColor(frgd, bkgd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetFont
- * Signature: ([B)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetFont
-  (JNIEnv *env, jobject that, jbyteArray ff)
-{
-    jbyte *ff1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetFont\n");
-#endif
-
-    if (ff)
-        ff1 = (*env)->GetByteArrayElements(env, ff, NULL);
-
-    PgSetFont(ff1);
-
-    if (ff)
-        (*env)->ReleaseByteArrayElements(env, ff, ff1, JNI_ABORT);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetStrokeDash
- * Signature: ([BII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetStrokeDash
-  (JNIEnv *env, jobject that, jbyteArray DashList, jint ListLen, jint DashScale)
-{
-    jbyte *DashList1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetStrokeDash\n");
-#endif
-
-    if (DashList)
-        DashList1 = (*env)->GetByteArrayElements(env, DashList, NULL);
-
-    PgSetStrokeDash(DashList1, ListLen, DashScale);
-
-    if (DashList)
-        (*env)->ReleaseByteArrayElements(env, DashList, DashList1, JNI_ABORT);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetStrokeWidth
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetStrokeWidth
-  (JNIEnv *env, jobject that, jint width)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetStrokeWidth\n");
-#endif
-	
-	return (jint)PgSetStrokeWidth(width);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetDrawMode
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetDrawMode
-  (JNIEnv *env, jobject that, jint mode)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetDrawMode\n");
-#endif
-	
-	return (jint)PgSetDrawMode(mode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetClipping
- * Signature: (SI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetClipping
-  (JNIEnv *env, jobject that, jshort n, jint rects)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetClipping\n");
-#endif
-	
-	PgSetClipping(n, (PhRect_t *)rects);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetPalette
- * Signature: (IISSII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetPalette
-  (JNIEnv *env, jobject that, jint palette, jint palette_id, jshort first_color, jshort num_colors, jint flags, jint tag)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetPalette\n");
-#endif
-	
-	return (jint)PgSetPalette((PgColor_t *)palette, palette_id, first_color, num_colors, flags, tag);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawArc
- * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhPoint_t;III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawArc
-  (JNIEnv *env, jobject that, jobject center, jobject radii, jint start, jint end, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t center1, *lpCenter1=NULL, radii1, *lpRadii1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawArc\n");
-#endif
-
-    if (center) {
-        lpCenter1 = &center1;
-        cachePhPoint_tFids(env, center, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, center, lpCenter1, &PGLOB(PhPoint_tFc));
-    }
-    if (radii) {
-        lpRadii1 = &radii1;
-        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PgDrawArc(lpCenter1, lpRadii1, start, end, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawEllipse
- * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhPoint_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawEllipse
-  (JNIEnv *env, jobject that, jobject center, jobject radii, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t center1, *lpCenter1=NULL, radii1, *lpRadii1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawEllipse\n");
-#endif
-
-    if (center) {
-        lpCenter1 = &center1;
-        cachePhPoint_tFids(env, center, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, center, lpCenter1, &PGLOB(PhPoint_tFc));
-    }
-    if (radii) {
-        lpRadii1 = &radii1;
-        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PgDrawEllipse(lpCenter1, lpRadii1, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawGradient
- * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhPoint_t;IIIIIIII[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawGradient
-  (JNIEnv *env, jobject that, jobject ul, jobject lr, jint gradient_type, jint transition_type, jint num_color_pts, jint color1, jint color2, jint color3, jint color4, jint table_size, jbyteArray transition_table)
-{
-	DECL_GLOB(pGlob)
-    jbyte *transition_table1=NULL;
-    PhPoint_t ul1, *lpUl1 = NULL, lr1, *lpLr1 = NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawGradient\n");
-#endif
-
-    if (ul) {
-        lpUl1 = &ul1;
-        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, ul, lpUl1, &PGLOB(PhPoint_tFc));
-    }
-    if (lr) {
-        lpLr1 = &lr1;
-        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, lr, lpLr1, &PGLOB(PhPoint_tFc));
-    }
-    if (transition_table)
-    	transition_table1 = (*env)->GetByteArrayElements(env, transition_table, NULL);
-
-    result = (jint) PgDrawGradient(lpUl1, lpLr1,
-    	(unsigned long) gradient_type, (unsigned long) transition_type, (unsigned long) num_color_pts,
-    	(PgColor_t) color1, (PgColor_t) color2, (PgColor_t) color3, (PgColor_t) color4,
-    	(unsigned long) table_size, (unsigned char*) transition_table1);
-
-    if (transition_table)
-    	(*env)->ReleaseByteArrayElements(env, transition_table, transition_table1, 0);
-
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawRoundRect
- * Signature: (Lorg/eclipse/swt/photon/PhRect_t;Lorg/eclipse/swt/photon/PhPoint_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawRoundRect
-  (JNIEnv *env, jobject that, jobject rect, jobject radii, jint flags)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t rect1, *lpRect1=NULL;
-    PhPoint_t radii1, *lpRadii1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawRoundRect\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    if (radii) {
-        lpRadii1 = &radii1;
-        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PgDrawRoundRect(lpRect1, lpRadii1, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawPolygon
- * Signature: ([SI;Lorg/eclipse/swt/photon/PhPoint_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawPolygon
-  (JNIEnv *env, jobject that, jshortArray ptr, jint num, jobject pos, jint flags)
-{
-	DECL_GLOB(pGlob)
-    jshort *ptr1=NULL;
-    PhPoint_t pos1, *lpPos1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawPolygon\n");
-#endif
-
-    if (ptr)
-        ptr1 = (*env)->GetShortArrayElements(env, ptr, NULL);
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-
-    result = (jint) PgDrawPolygon((PhPoint_t *)ptr1, num, lpPos1, flags);
-
-    if (ptr)
-        (*env)->ReleaseShortArrayElements(env, ptr, ptr1, 0);
-
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawILine
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawILine
-  (JNIEnv *env, jobject that, jint x1, jint y1, jint x2, jint y2)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawILine\n");
-#endif
-	
-	return (jint)PgDrawILine(x1, y1, x2, y2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawIRect
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawIRect
-  (JNIEnv *env, jobject that, jint ulx, jint uly, jint lrx, jint lry, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawIRect\n");
-#endif
-	
-	return (jint)PgDrawIRect(ulx, uly, lrx, lry, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetMultiClip
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetMultiClip
-  (JNIEnv *env, jobject that, jint num, jint clip_list)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetMultiClip\n");
-#endif
-	
-#ifdef PR_20268
-	int	ret;
-	extern int call_draw_f_mclip;
-	call_draw_f_mclip = 2;
-	ret = PgSetMultiClip(num, (PhRect_t *)clip_list);
-	call_draw_f_mclip = 0;
-	return (jint)ret;
-#else
-	return (jint)PgSetMultiClip(num, (PhRect_t *)clip_list);
-#endif
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgFindGuardain
- * Signature: (II)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFindGuardian
-  (JNIEnv *env, jobject that, jint widget, jint superior_only )
-{
-	return (jint)PtFindGuardian( (PtWidget_t*)widget, (int)superior_only );
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetUserClip
- * Signature: (I)I
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetUserClip__I
-  (JNIEnv *env, jobject that, jint ClipRect)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetUserClip\n");
-#endif
-	
-	PgSetUserClip((PhRect_t *)ClipRect);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetUserClip
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetUserClip__Lorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jobject ClipRect)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t ClipRect1, *lpClipRect1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetUserClip\n");
-#endif
-	
-    if (ClipRect) {
-        lpClipRect1 = &ClipRect1;
-        cachePhRect_tFids(env, ClipRect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, ClipRect, lpClipRect1, &PGLOB(PhRect_tFc));
-    }
-	PgSetUserClip(lpClipRect1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetDrawBufferSize
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetDrawBufferSize
-  (JNIEnv *env, jobject that, jint cmd_buf_len)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetDrawBufferSize\n");
-#endif
-	
-	return (jint)PgSetDrawBufferSize(cmd_buf_len);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDestroyGC
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDestroyGC
-  (JNIEnv *env, jobject that, jint GC)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDestroyGC\n");
-#endif
-	
-	PgDestroyGC((PhGC_t *)GC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawImage
- * Signature: (IILorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhDim_t;II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawImage
-  (JNIEnv *env, jobject that, jint ptr, jint type, jobject pos, jobject size, jint bpl, jint tag)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t pos1, *lpPos1=NULL;
-    PhDim_t size1, *lpSize1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawImage\n");
-#endif
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (size) {
-        lpSize1 = &size1;
-        cachePhDim_tFids(env, size, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, size, lpSize1, &PGLOB(PhDim_tFc));
-    }
-    return (jint) PgDrawImage((void *)ptr, type, lpPos1, lpSize1, bpl, tag);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawTImage
- * Signature: (IILorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhDim_t;IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawTImage
-  (JNIEnv *env, jobject that, jint ptr, jint type, jobject pos, jobject size, jint bpl, jint tag, jint TransPtr, jint TransBPL)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t pos1, *lpPos1=NULL;
-    PhDim_t size1, *lpSize1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawTImage\n");
-#endif
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (size) {
-        lpSize1 = &size1;
-        cachePhDim_tFids(env, size, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, size, lpSize1, &PGLOB(PhDim_tFc));
-    }
-    return (jint) PgDrawTImage((void *)ptr, type, lpPos1, lpSize1, bpl, tag, (void *)TransPtr, TransBPL);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PiCropImage
- * Signature: (ILorg/eclipse/swt/photon/PhRect_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PiCropImage
-  (JNIEnv *env, jobject that, jint image, jobject bounds, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t bounds1, *lpBounds1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PiCropImage\n");
-#endif
-
-    if (bounds) {
-        lpBounds1 = &bounds1;
-        cachePhRect_tFids(env, bounds, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, bounds, lpBounds1, &PGLOB(PhRect_tFc));
-    }
-    return (jint) PiCropImage((PhImage_t *)image, lpBounds1, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawBitmap
- * Signature: (IILorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhDim_t;II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawBitmap
-  (JNIEnv *env, jobject that, jint ptr, jint flags, jobject pos, jobject size, jint bpl, jint tag)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t pos1, *lpPos1=NULL;
-    PhDim_t size1, *lpSize1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawBitmap\n");
-#endif
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (size) {
-        lpSize1 = &size1;
-        cachePhDim_tFids(env, size, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, size, lpSize1, &PGLOB(PhDim_tFc));
-    }
-    return (jint) PgDrawBitmap((void *)ptr, flags, lpPos1, (PhPoint_t *)lpSize1, bpl, tag);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawPhImageRectmx
- * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;ILorg/eclipse/swt/photon/PhRect_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawPhImageRectmx
-  (JNIEnv *env, jobject that, jobject pos, int image, jobject rect, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t pos1, *lpPos1=NULL;
-    PhRect_t rect1, *lpRect1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawPhImageRectmx\n");
-#endif
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    return (jint) PgDrawPhImageRectmx(lpPos1, (PhImage_t *)image, lpRect1, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawPhImagemx
- * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;ILorg/eclipse/swt/photon/PhRect_t;I)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawPhImagemx
-  (JNIEnv *env, jobject that, jobject pos, int image, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t pos1, *lpPos1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawPhImagemx\n");
-#endif
-
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PgDrawPhImagemx(lpPos1, (PhImage_t *)image, flags);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhBlit
- * Signature: (ILorg/eclipse/swt/photon/PhRect_t;ILorg/eclipse/swt/photon/PhPoint_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhBlit
-  (JNIEnv *env, jobject that, jint rid, jobject rect, jobject offset)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t rect1, *lpRect1=NULL;
-    PhPoint_t offset1, *lpOffset1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhBlit\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    if (offset) {
-        lpOffset1 = &offset1;
-        cachePhPoint_tFids(env, offset, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, offset, lpOffset1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PhBlit((PhRid_t)rid, lpRect1, lpOffset1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhMakeTransBitmap
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMakeTransBitmap
-  (JNIEnv *env, jobject that, jint image, jint trans_color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhMakeTransBitmap\n");
-#endif
-
-    return (jint) PhMakeTransBitmap((PhImage_t *)image, (PgColor_t)trans_color);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtEnter
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtEnter
-  (JNIEnv *env, jobject that, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtEnter\n");
-#endif
-	
-	return (jint)PtEnter(flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtLeave
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtLeave
-  (JNIEnv *env, jobject that, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtLeave\n");
-#endif
-	
-	return (jint)PtLeave(flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGetResources
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGetResources
-  (JNIEnv *env, jobject that, jint widget, jint n_args, jintArray args)
-{
-    jint *args1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtGetResources\n");
-#endif
-
-    if (args)
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-
-    result = (jint)PtGetResources((PtWidget_t *)widget, n_args, (PtArg_t *)args1);
-
-    if (args)
-        (*env)->ReleaseIntArrayElements(env, args, args1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtDestroyWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtDestroyWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtDestroyWidget\n");
-#endif
-	
-	return (jint)PtDestroyWidget((PtWidget_t *)widget);
-}  
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhEventPeek
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhEventPeek
-  (JNIEnv *env, jobject that, jint buffer, jint size)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhEventPeek\n");
-#endif
-	
-	return (jint)PhEventPeek((void *)buffer, size);
-} 
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhEventNext
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhEventNext
-  (JNIEnv *env, jobject that, jint buffer, jint size)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhEventNext\n");
-#endif
-	
-	return (jint)PhEventNext((void *)buffer, size);
-} 
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhGetMsgSize
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhGetMsgSize
-  (JNIEnv *env, jobject that, jint event_buf)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhGetMsgSize\n");
-#endif
-	
-	return (jint)PhGetMsgSize((PhEvent_t *)event_buf);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhGetTile
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhGetTile
-  (JNIEnv *env, jobject that)
-{
-	PhTile_t *tile;
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhGetTile\n");
-#endif
-	
-	tile = PhGetTile();
-	memset(tile, 0, sizeof(PhTile_t));
-	return (jint)tile;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhTranslateTiles
- * Signature: (ILorg/eclipse/swt/internal/photon/PhPoint_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhTranslateTiles
-  (JNIEnv *env, jobject that, jint tile, jobject point_add)
-{
-
-	DECL_GLOB(pGlob)
-	
-    PhPoint_t point_add1, *lpPoint_add1=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhTranslateTiles\n");
-#endif
-
-	if (point_add) {
-        lpPoint_add1= &point_add1;
-        cachePhPoint_tFids(env, point_add, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, point_add, lpPoint_add1, &PGLOB(PhPoint_tFc));
-    }
-    result = (jint)PhTranslateTiles((PhTile_t *)tile, lpPoint_add1);
-
-    if (point_add) {
-        setPhPoint_tFields(env, point_add, lpPoint_add1, &PGLOB(PhPoint_tFc));
-    }
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhDeTranslateTiles
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhDeTranslateTiles
-  (JNIEnv *env, jobject that, jint tile, jint point_sutract)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhDeTranslateTiles\n");
-#endif
-	
-	return (jint)PhDeTranslateTiles((PhTile_t *)tile, (PhPoint_t *)point_sutract);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhAddMergeTiles
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhAddMergeTiles
-  (JNIEnv *env, jobject that, jint tiles, jint add_tiles, jintArray added)
-{
-	jint *added1 = NULL;
-	jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhAddMergeTiles\n");
-#endif
-
-    if (added)
-        added1 = (*env)->GetIntArrayElements(env, added, NULL);
-
-	result = (jint)PhAddMergeTiles((PhTile_t *)tiles, (PhTile_t *)add_tiles, added1);
-
-    if (added)
-        (*env)->ReleaseIntArrayElements(env, added, added1, 0);
-
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhIntersectTilings
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhIntersectTilings
-  (JNIEnv *env, jobject that, jint tile1, jint tile2, jshortArray num_intersect_tiles)
-{
-	jshort *num_intersect_tiles1 = NULL;
-	jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhIntersectTilings\n");
-#endif
-
-    if (num_intersect_tiles)
-        num_intersect_tiles1 = (*env)->GetShortArrayElements(env, num_intersect_tiles, NULL);
-
-	result = (jint)PhIntersectTilings((PhTile_t *)tile1, (PhTile_t *)tile2, num_intersect_tiles1);
-
-    if (num_intersect_tiles)
-        (*env)->ReleaseShortArrayElements(env, num_intersect_tiles, num_intersect_tiles1, 0);
-
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhCoalesceTiles
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhCoalesceTiles
-  (JNIEnv *env, jobject that, jint tiles)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhCoalesceTiles\n");
-#endif
-	
-	return (jint)PhCoalesceTiles((PhTile_t *)tiles);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhSortTiles
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhSortTiles
-  (JNIEnv *env, jobject that, jint tiles)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhSortTiles\n");
-#endif
-	
-	return (jint)PhSortTiles((PhTile_t *)tiles);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhMergeTiles
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMergeTiles
-  (JNIEnv *env, jobject that, jint tiles)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhMergeTiles\n");
-#endif
-	
-	return (jint)PhMergeTiles((PhTile_t *)tiles);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhRectUnion
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhRectUnion__II
-  (JNIEnv *env, jobject that, jint rect1, jint rect2)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhRectUnion__II\n");
-#endif
-	
-	return (jint)PhRectUnion((PhRect_t *)rect1, (PhRect_t *)rect2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhRectIntersect
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhRectIntersect
-  (JNIEnv *env, jobject that, jint rect1, jint rect2)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhRectIntersect\n");
-#endif
-	
-	return (jint)PhRectIntersect((PhRect_t *)rect1, (PhRect_t *)rect2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipTilings
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipTilings
-  (JNIEnv *env, jobject that, jint tiles, jint clip_tiles, jintArray intersection)
-{
-    jint *intersection1 = NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipTilings\n");
-#endif
-
-    if (intersection)
-        intersection1 = (*env)->GetIntArrayElements(env, intersection, NULL);
-
-    result = (jint)PhClipTilings((PhTile_t *)tiles, (PhTile_t *)clip_tiles, (PhTile_t **)intersection1);
-
-    if (intersection)
-        (*env)->ReleaseIntArrayElements(env, intersection, intersection1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhTilesToRects
- * Signature: (I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhTilesToRects
-  (JNIEnv *env, jobject that, jint tiles, jintArray num_rects)
-{
-    jint *num_rects1 = NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhTilesToRects\n");
-#endif
-
-    if (num_rects)
-        num_rects1 = (*env)->GetIntArrayElements(env, num_rects, NULL);
-
-    result = (jint)PhTilesToRects((PhTile_t *)tiles, (int *)num_rects1);
-
-    if (num_rects)
-        (*env)->ReleaseIntArrayElements(env, num_rects, num_rects1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhRectsToTiles
- * Signature: (I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhRectsToTiles
-  (JNIEnv *env, jobject that, jint rects, jint num_rects)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhRectsToTiles\n");
-#endif
-
-    return (jint)PhRectsToTiles((PhRect_t *)rects, num_rects);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhFreeTiles
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhFreeTiles
-  (JNIEnv *env, jobject that, jint tiles)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhFreeTiles\n");
-#endif
-	
-	PhFreeTiles((PhTile_t *)tiles);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhCopyTiles
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhCopyTiles
-  (JNIEnv *env, jobject that, jint tile)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhCopyTiles\n");
-#endif
-	
-	return (jint) PhCopyTiles((PhTile_t *)tile);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtEventHandler
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtEventHandler
-  (JNIEnv *env, jobject that, jint event)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtEventHandler\n");
-#endif
-	
-	return (jint)PtEventHandler((PhEvent_t *)event);
-}  
-
-/*
- * Class:	org_eclipse_swt_internal_photon_OS
- * Method:	malloc
- * Signature: (I)I 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_malloc
-  (JNIEnv *env, jclass that, jint size)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "malloc\n");
-#endif
-
-	return (jint)calloc(1, (size_t)size);
-}
-
-/*
- * Class:	org_eclipse_swt_internal_photon_OS
- * Method:	free
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_free
-  (JNIEnv *env, jclass that, jint ptr)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "free\n");
-#endif
-
-	free((void *)ptr);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhPoint_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhPoint_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhPoint_tFids(env, src, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, src, src1, &PGLOB(PhPoint_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhPoint_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhPoint_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhPoint_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhPoint_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhPoint_tFids(env, dest, &PGLOB(PhPoint_tFc));
-        setPhPoint_tFields(env, dest, dest1, &PGLOB(PhPoint_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhWindowQueryVisible
- * Signature: (IIILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhWindowQueryVisible
-  (JNIEnv *env, jobject that, jint flag, jint rid, jint input_group, jobject rectangle)
-{
-	DECL_GLOB(pGlob)
-	int result;
-	PhRect_t rect, *lpRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PhWindowQueryVisible\n");
-#endif
-
-    if (rectangle) {
-        lpRect = &rect;
-        cachePhRect_tFids(env, rectangle, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rectangle, lpRect, &PGLOB(PhRect_tFc));
-    }
-    result =PhWindowQueryVisible(flag, rid, input_group, lpRect);
-    if (rectangle) {
-        setPhRect_tFields(env, rectangle, lpRect, &PGLOB(PhRect_tFc));
-    }
-    
-    return (jint) result;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__I_3II
-  (JNIEnv *env, jclass that, jint dest, jintArray src, jint count)
-{
-    jint *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3II\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetIntArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseIntArrayElements(env, src, src1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: ([III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3III
-  (JNIEnv *env, jclass that, jintArray dest, jint src, jint count)
-{
-    jint *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3III\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetIntArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseIntArrayElements(env, dest, dest1, 0);    
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawText
- * Signature: ([CISSI)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawText
-  (JNIEnv *env, jclass that, jcharArray ptr, jint len, jshort x, jshort y, jint flags)
-{
-	jint result = 0;
-    jchar * ptr1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PgDrawText\n");
-#endif
-
-    if (ptr) {
-    	PhPoint_t pos;
-
-    	pos.x = x;
-    	pos.y = y;
-    	ptr1 = (*env)->GetCharArrayElements(env, ptr, NULL);
-
-		result = (jint)PgDrawText((char *)ptr1, len, &pos, (int)flags);
-		
-        (*env)->ReleaseCharArrayElements(env, ptr, ptr1, JNI_ABORT);    
-    }
-    
-    return result;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawText
- * Signature: ([BISSI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawText
-  (JNIEnv *env, jclass that, jbyteArray ptr, jint len, jshort x, jshort y, jint flags)
-{
-	jint result = 0;
-    jbyte * ptr1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PgDrawText\n");
-#endif
-
-    /* don't do anything if ptr is NULL */
-    if (ptr) {
-    	PhPoint_t pos;
-
-    	pos.x = x;
-    	pos.y = y;
-    	ptr1 = (*env)->GetByteArrayElements(env, ptr, NULL);
-
-		result = (jint)PgDrawText((char *)ptr1, len, &pos, (int)flags);
-		
-        (*env)->ReleaseByteArrayElements(env, ptr, ptr1, JNI_ABORT);    
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawMultiTextArea
- * Signature: ([BILorg/eclipse/swt/photon/PhRect_t;III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawMultiTextArea
-  (JNIEnv *env, jclass that, jbyteArray ptr, jint len, jobject canvas, jint text_flags, jint canvas_flags, int linespacing)
-{
-	DECL_GLOB(pGlob)
-	jint result = 0;
-    jbyte * ptr1 = NULL;
-    PhRect_t canvas1, *lpCanvas1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PgDrawMultiTextArea\n");
-#endif
-
-    /* don't do anything if ptr is NULL */
-    if (!ptr) return 0;
- 
-	if (canvas) {
-        lpCanvas1 = &canvas1;
-        cachePhRect_tFids(env, canvas, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, canvas, lpCanvas1, &PGLOB(PhRect_tFc));
-    }
-    ptr1 = (*env)->GetByteArrayElements(env, ptr, NULL);
-
-	result = (jint)PgDrawMultiTextArea((char *)ptr1, len, lpCanvas1, text_flags, canvas_flags, linespacing);
-		
-	(*env)->ReleaseByteArrayElements(env, ptr, ptr1, JNI_ABORT);    
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetExtent
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetExtent__II
-  (JNIEnv *env, jobject that, jint widget, jint extent)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetExtent\n");
-#endif
-	
-	return (jint)PtWidgetExtent((PtWidget_t *)widget, (PhRect_t *)extent);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetChildBack
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetChildBack
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetChildBack\n");
-#endif
-	
-	return (jint)PtWidgetChildBack((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetIsRealized
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetIsRealized
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetIsRealized\n");
-#endif
-	
-	return (jint)PtWidgetIsRealized((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetBrotherInFront
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetBrotherInFront
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetBrotherInFront\n");
-#endif
-	
-	return (jint)PtWidgetBrotherInFront((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetParent
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetParent
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetParent\n");
-#endif
-	
-	return (jint)PtWidgetParent((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhTile_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhTile_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhTile_tFids(env, src, &PGLOB(PhTile_tFc));
-        getPhTile_tFields(env, src, src1, &PGLOB(PhTile_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhTile_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhTile_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhTile_tFids(env, dest, &PGLOB(PhTile_tFc));
-        setPhTile_tFields(env, dest, dest1, &PGLOB(PhTile_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PtCallbackInfo_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PtCallbackInfo_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePtCallbackInfo_tFids(env, src, &PGLOB(PtCallbackInfo_tFc));
-        getPtCallbackInfo_tFields(env, src, src1, &PGLOB(PtCallbackInfo_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PtCallbackInfo_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PtCallbackInfo_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePtCallbackInfo_tFids(env, dest, &PGLOB(PtCallbackInfo_tFc));
-        setPtCallbackInfo_tFields(env, dest, dest1, &PGLOB(PtCallbackInfo_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhWindowEvent_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhWindowEvent_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhWindowEvent_tFids(env, src, &PGLOB(PhWindowEvent_tFc));
-        getPhWindowEvent_tFields(env, src, src1, &PGLOB(PhWindowEvent_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhWindowEvent_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhWindowEvent_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhWindowEvent_tFids(env, dest, &PGLOB(PhWindowEvent_tFc));
-        setPhWindowEvent_tFields(env, dest, dest1, &PGLOB(PhWindowEvent_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAddCallback
- * Signature: (IIII)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAddCallback
-  (JNIEnv *env, jobject that, jint widget, jint callback_type, jint callback, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAddEventHandler\n");
-#endif
-	
-	PtAddCallback((PtWidget_t *)widget, (unsigned long)callback_type, (PtCallbackF_t *)callback, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetChildFront
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetChildFront
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetChildFront\n");
-#endif
-	
-	return (jint) PtWidgetChildFront((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetBrotherBehind
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetBrotherBehind
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetBrotherBehind\n");
-#endif
-	
-	return (jint) PtWidgetBrotherBehind((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (I[BI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__I_3BI
-  (JNIEnv *env, jclass that, jint dest, jbyteArray src, jint count)
-{
-    jbyte *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3BI\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetByteArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseByteArrayElements(env, src, src1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: ([BII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3BII
-  (JNIEnv *env, jclass that, jbyteArray dest, jint src, jint count)
-{
-    jbyte *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3BII\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseByteArrayElements(env, dest, dest1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindow
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtButton
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtButton\n");
-#endif
-	
-	return (jint)PtButton;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhRect_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhRect_tFids(env, src, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, src, src1, &PGLOB(PhRect_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhPoint_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhRect_tFids(env, dest, &PGLOB(PhRect_tFc));
-        setPhRect_tFields(env, dest, dest1, &PGLOB(PhRect_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtUnrealizeWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtUnrealizeWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtUnrealizeWidget\n");
-#endif
-	
-	return (jint)PtUnrealizeWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSyncWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSyncWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSyncWidget\n");
-#endif
-	
-	return (jint)PtSyncWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtFlush
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFlush
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtFlush\n");
-#endif
-	
-	return (jint)PtFlush();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerGiveFocus
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerGiveFocus
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtContainerGiveFocus\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtContainerGiveFocus((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerFocusNext
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerFocusNext
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtContainerFocusNext\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtContainerFocusNext((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerFocusPrev
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerFocusPrev
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtContainerFocusPrev\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtContainerFocusPrev((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGlobalFocusNext
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusNext
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtGlobalFocusNext\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtGlobalFocusNext((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGlobalFocusPrev
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusPrev
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtGlobalFocusPrev\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtGlobalFocusPrev((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGlobalFocusNextContainer
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusNextContainer
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtGlobalFocusNextContainer\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtGlobalFocusNextContainer((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGlobalFocusPrevContainer
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusPrevContainer
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtGlobalFocusPrevContainer\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    result = (jint) PtGlobalFocusPrevContainer((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetToFront
-  * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetToFront
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetToFront\n");
-#endif
-	
-	return (jint) PtWidgetToFront((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetToBack
-  * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetToBack
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetToBack\n");
-#endif
-	
-	return (jint) PtWidgetToBack((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetInsert
-  * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetInsert
-  (JNIEnv *env, jobject that, jint widget, jint new_sibling, jint behind)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetInsert\n");
-#endif
-	
-	return (jint) PtWidgetInsert((PtWidget_t *)widget, (PtWidget_t *)new_sibling, behind);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtDamageExtent
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtDamageExtent
-  (JNIEnv *env, jobject that, jint widget, jobject extent)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtContainerGiveFocus\n");
-#endif
-
-    if (extent) {
-        lpObject = &object;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpObject, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PtDamageExtent((PtWidget_t *)widget, lpObject);
-    if (extent) {
-        setPhRect_tFields(env, extent, lpObject, &PGLOB(PhRect_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__III
-  (JNIEnv *env, jobject that, jint dest, jint src, jint size)
-{
-	return (jint)memmove((void *)dest, (void *)src, size);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfQueryFontInfo
- * Signature: ([BLorg/eclipse/swt/internal/photon/FontQueryInfo;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfQueryFontInfo
-  (JNIEnv *env, jobject that, jbyteArray font, jobject info)
-{
-	DECL_GLOB(pGlob)
-    jbyte *font1=NULL;
-	FontQueryInfo info1, *lpInfo1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfQueryFontInfo\n");
-#endif
-
-    if (font)
-        font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (info) {
-        lpInfo1 = &info1;
-        cacheFontQueryInfoFids(env, info, &PGLOB(FontQueryInfoFc));
-        getFontQueryInfoFields(env, info, lpInfo1, &PGLOB(FontQueryInfoFc));
-    }
-
-    result = (jint)PfQueryFontInfo(font1, lpInfo1);
-
-    if (font)
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
-    if (info) {
-        setFontQueryInfoFields(env, info, lpInfo1, &PGLOB(FontQueryInfoFc));
-    }
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfQueryFonts
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfQueryFonts
-  (JNIEnv *env, jobject that, jint symbol, jint flags, jint list, jint n)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfQueryFonts\n");
-#endif
-
-    return (jint)PfQueryFonts(symbol, flags, (FontDetails *)list, n);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfExtentWideText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[CI)Lorg/eclipse/swt/internal/photon/PhRect_t;
- */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentWideText
-  (JNIEnv *env, jobject that, jobject extent, jobject pos, jbyteArray font, jcharArray str, jint len)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t extent1, *lpExtent1=NULL;
-	PhPoint_t pos1, *lpPos1=NULL;
-    jbyte *font1=NULL;
-    jchar *str1=NULL;
-    PhRect_t * result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfExtentWideText\n");
-#endif
-
-    if (extent) {
-        lpExtent1 = &extent1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (str)
-        str1 = (*env)->GetCharArrayElements(env, str, NULL);
-
-    result = PfExtentWideText(lpExtent1, lpPos1, font1, str1, len);
-
-    if (extent) {
-        setPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
-    if (str)
-        (*env)->ReleaseCharArrayElements(env, str, str1, JNI_ABORT);
-	
-	return result != NULL ? extent : NULL;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgExtentMultiText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BII)Lorg/eclipse/swt/internal/photon/PhRect_t;
- */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PgExtentMultiText
-  (JNIEnv *env, jobject that, jobject extent, jobject pos, jbyteArray font, jbyteArray str, jint n, int linespacing)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t extent1, *lpExtent1=NULL;
-	PhPoint_t pos1, *lpPos1=NULL;
-    jbyte *font1=NULL;
-    jbyte *str1=NULL;
-    PhRect_t * result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgExtentMultiText\n");
-#endif
-
-    if (extent) {
-        lpExtent1 = &extent1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (str)
-        str1 = (*env)->GetByteArrayElements(env, str, NULL);
-
-    result = PgExtentMultiText(lpExtent1, lpPos1, font1, str1, n, linespacing);
-
-    if (extent) {
-        setPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
-    if (str)
-        (*env)->ReleaseByteArrayElements(env, str, str1, JNI_ABORT);
-	
-	return result != NULL ? extent : NULL;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfExtentText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BI)Lorg/eclipse/swt/internal/photon/PhRect_t;
- */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI
-  (JNIEnv *env, jclass that, jobject extent, jobject pos, jbyteArray font, jbyteArray str, jint len)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t extent1, *lpExtent1=NULL;
-	PhPoint_t pos1, *lpPos1=NULL;
-    jbyte *str1=NULL;
-    jbyte *font1=NULL;
-    PhRect_t * result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfExtentText\n");
-#endif
-
-    if (extent) {
-        lpExtent1 = &extent1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (str)
-        str1 = (*env)->GetByteArrayElements(env, str, NULL);
-
-    result = PfExtentText(lpExtent1, lpPos1, font1, str1, len);
-
-    if (extent) {
-        setPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (font)
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
-    if (str)
-        (*env)->ReleaseByteArrayElements(env, str, str1, JNI_ABORT);
-	
-	return result != NULL ? extent : NULL;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfExtentText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;III)Lorg/eclipse/swt/internal/photon/PhRect_t;
- */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III
-  (JNIEnv *env, jclass that, jobject extent, jobject pos, jint font, jint str, jint len)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t extent1, *lpExtent1=NULL;
-	PhPoint_t pos1, *lpPos1=NULL;
-    PhRect_t * result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfExtentText\n");
-#endif
-
-    if (extent) {
-        lpExtent1 = &extent1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        lpPos1 = &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-
-    result = PfExtentText(lpExtent1, lpPos1, (char *)font, (char *)str, len);
-
-    if (extent) {
-        setPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
-    }
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-	
-	return result != NULL ? extent : NULL;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhDim_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhDim_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhDim_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhDim_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhDim_tFids(env, src, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, src, src1, &PGLOB(PhDim_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhDim_t;II)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhDim_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhDim_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhDim_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhDim_tFids(env, dest, &PGLOB(PhDim_tFc));
-        setPhDim_tFields(env, dest, dest1, &PGLOB(PhDim_tFc));
-    }
-
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhImage_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhImage_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhImage_tFids(env, src, &PGLOB(PhImage_tFc));
-        getPhImage_tFields(env, src, src1, &PGLOB(PhImage_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhImage_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhImage_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhImage_tFids(env, dest, &PGLOB(PhImage_tFc));
-        setPhImage_tFields(env, dest, dest1, &PGLOB(PhImage_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhCreateImage
- * Signature: (Lorg/eclipse/swt/photon/PhImage_t;SSI[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhCreateImage__Lorg_eclipse_swt_internal_photon_PhImage_1t_2SSI_3III
-  (JNIEnv *env, jobject that, jobject buffer, jshort width, jshort height, jint type, jintArray palette, jint ncolors, jint tag)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-    jint *palette1 = NULL;
-    PhImage_t buffer1, *lpBuffer1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhCreateImage\n");
-#endif
-
-    if (buffer) {
-        lpBuffer1 = &buffer1;
-        cachePhImage_tFids(env, buffer, &PGLOB(PhImage_tFc));
-        getPhImage_tFields(env, buffer, lpBuffer1, &PGLOB(PhImage_tFc));
-    }
-	if (palette)
-        palette1 = (*env)->GetIntArrayElements(env, palette, NULL);
-
-    result = (jint)PhCreateImage(lpBuffer1, width, height, type, (PgColor_t *)palette1, ncolors, tag);
-
-    if (buffer) {
-        setPhImage_tFields(env, buffer, lpBuffer1, &PGLOB(PhImage_tFc));
-    }
-    if (palette)
-        (*env)->ReleaseIntArrayElements(env, palette, palette1, JNI_ABORT);
-        
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhCreateImage
- * Signature: (Lorg/eclipse/swt/photon/PhImage_t;SSIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhCreateImage__Lorg_eclipse_swt_internal_photon_PhImage_1t_2SSIIII
-  (JNIEnv *env, jobject that, jobject buffer, jshort width, jshort height, jint type, jint palette, jint ncolors, jint tag)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-    PhImage_t buffer1, *lpBuffer1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhCreateImage\n");
-#endif
-
-    if (buffer) {
-        lpBuffer1 = &buffer1;
-        cachePhImage_tFids(env, buffer, &PGLOB(PhImage_tFc));
-        getPhImage_tFields(env, buffer, lpBuffer1, &PGLOB(PhImage_tFc));
-    }
-
-    result = (jint)PhCreateImage(lpBuffer1, width, height, type, (PgColor_t *)palette, ncolors, tag);
-    
-    if (buffer) {
-        setPhImage_tFields(env, buffer, lpBuffer1, &PGLOB(PhImage_tFc));
-    }
-
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhReleaseImage
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhReleaseImage
-  (JNIEnv *env, jobject that, jint image)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhReleaseImage\n");
-#endif
-	
-	PhReleaseImage((PhImage_t *)image);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PmMemCreateMC
- * Signature: (ILorg/eclipse/swt/photon/PhDim_t;Lorg/eclipse/swt/photon/PhPoint_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PmMemCreateMC
-  (JNIEnv *env, jobject that, jint image, jobject dim, jobject translation)
-{
-	DECL_GLOB(pGlob)
-    PhDim_t dim1, *lpDim1=NULL;
-    PhPoint_t translation1, *lpTranslation1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PmMemCreateMC\n");
-#endif
-
-    if (dim) {
-        lpDim1 = &dim1;
-        cachePhDim_tFids(env, dim, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, dim, lpDim1, &PGLOB(PhDim_tFc));
-    }
-    if (translation) {
-        lpTranslation1 = &translation1;
-        cachePhPoint_tFids(env, translation, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, translation, lpTranslation1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PmMemCreateMC((PhImage_t *)image, lpDim1, lpTranslation1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PmMemReleaseMC
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PmMemReleaseMC
-  (JNIEnv *env, jobject that, jint mc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PmMemReleaseMC\n");
-#endif
-	
-	PmMemReleaseMC((PmMemoryContext_t *)mc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PmMemStart
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PmMemStart
-  (JNIEnv *env, jobject that, jint mc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PmMemStart\n");
-#endif
-	
-	return (jint)PmMemStart((PmMemoryContext_t *)mc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PmMemStop
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PmMemStop
-  (JNIEnv *env, jobject that, jint mc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PmMemStop\n");
-#endif
-	
-	return (jint)PmMemStop((PmMemoryContext_t *)mc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PmMemFlush
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PmMemFlush
-  (JNIEnv *env, jobject that, jint mc, jint image)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PmMemFlush\n");
-#endif
-	
-	return (jint)PmMemFlush((PmMemoryContext_t *)mc, (PhImage_t *)image);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtCreateWidgetClass
- * Signature: (III[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCreateWidgetClass
-  (JNIEnv *env, jobject that, jint superclass_ref, jint size, jint n_args, jintArray args)
-{
-    jint *args1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtCreateWidgetClass\n");
-#endif
-
-    if (args)
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-
-    result = (jint)PtCreateWidgetClass((PtWidgetClassRef_t *)superclass_ref, size, n_args, (PtArg_t *)args1);
-
-    if (args)
-        (*env)->ReleaseIntArrayElements(env, args, args1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSuperClassDraw
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSuperClassDraw
-  (JNIEnv *env, jobject that, jint wc_ref, jint widget, jint damage)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSuperClassDraw\n");
-#endif
-	
-	PtSuperClassDraw((PtWidgetClassRef_t *) wc_ref, (PtWidget_t *)widget, (PhTile_t *)damage);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtToggleButton
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtToggleButton
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtToggleButton\n");
-#endif
-	
-	return (jint)PtToggleButton;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtOnOffButton
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtOnOffButton
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtOnOffButton\n");
-#endif
-	
-	return (jint)PtOnOffButton;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtOnOffButton
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtComboBox
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtComboBox\n");
-#endif
-	
-	return (jint)PtComboBox;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtText
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtText
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtText\n");
-#endif
-	
-	return (jint)PtText;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtMultiText
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtMultiText
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtMultiText\n");
-#endif
-	
-	return (jint)PtMultiText;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtMenu
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtMenu
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtMenu\n");
-#endif
-	
-	return (jint)PtMenu;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtMenuBar
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtMenuBar
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtMenuBar\n");
-#endif
-	
-	return (jint)PtMenuBar;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtMenuButton
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtMenuButton
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtMenuButton\n");
-#endif
-	
-	return (jint)PtMenuButton;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtScrollbar
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtScrollbar
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtScrollbar\n");
-#endif
-	
-	return (jint)PtScrollbar;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSeparator
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSeparator
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSeparator\n");
-#endif
-	
-	return (jint)PtSeparator;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListAddItems
- * Signature: (I[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListAddItems
-  (JNIEnv *env, jobject that, jint widget, jintArray items, jint item_count, jint position)
-{
-    jint *items1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListAddItems\n");
-#endif
-
-    if (items)
-        items1 = (*env)->GetIntArrayElements(env, items, NULL);
-
-    result = (jint)PtListAddItems((PtWidget_t *)widget, (void *)items1, item_count, position);
-
-    if (items)
-        (*env)->ReleaseIntArrayElements(env, items, items1, 0);
-	
-	return result;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListUnselectPos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListUnselectPos
-  (JNIEnv *env, jobject that, jint widget, jint pos)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListUnselectPos\n");
-#endif
-
-	PtListUnselectPos((PtWidget_t *)widget, pos);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (I[SI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__I_3SI
-  (JNIEnv *env, jclass that, jint dest, jintArray src, jint count)
-{
-    jshort *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3SI\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetShortArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseShortArrayElements(env, src, src1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: ([SII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3SII
-  (JNIEnv *env, jclass that, jintArray dest, jint src, jint count)
-{
-    jshort *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3SII\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetShortArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseShortArrayElements(env, dest, dest1, 0);    
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    strlen
- * Signature: (II)V
- */
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_strlen
-  (JNIEnv *env, jobject that, jint string)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "strlen\n");
-#endif
-
-	return (jint) strlen((char *) string);
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_strdup
-  (JNIEnv *env, jobject that, jint string)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "strdup\n");
-#endif
-
-	return (jint) strdup((char *) string);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListDeleteItemPos
- * Signature: (III)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListDeleteItemPos
-  (JNIEnv *env, jobject that, jint widget, jint item_count, jint position)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListDeleteItemPos\n");
-#endif
-
-	PtListDeleteItemPos((PtWidget_t *)widget, item_count, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListDeleteAllItems
- * Signature: (I)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListDeleteAllItems
-  (JNIEnv *env, jobject that, jint widget)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListDeleteAllItems\n");
-#endif
-
-	PtListDeleteAllItems((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListSelectPos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListSelectPos
-  (JNIEnv *env, jobject that, jint widget, jint pos)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListSelectPos\n");
-#endif
-
-	PtListSelectPos((PtWidget_t *)widget, pos);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListReplaceItemPos
- * Signature: (I[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListReplaceItemPos
-  (JNIEnv *env, jobject that, jint widget, jintArray items, jint item_count, jint position)
-{
-    jint *items1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListReplaceItemPos\n");
-#endif
-
-    if (items)
-        items1 = (*env)->GetIntArrayElements(env, items, NULL);
-
-    result = (jint)PtListReplaceItemPos((PtWidget_t *)widget, (void *)items1, item_count, position);
-
-    if (items)
-        (*env)->ReleaseIntArrayElements(env, items, items1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListGotoPos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListGotoPos
-  (JNIEnv *env, jobject that, jint widget, jint pos)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListGotoPos\n");
-#endif
-
-	PtListGotoPos((PtWidget_t *)widget, pos);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtListItemPos
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtListItemPos
-  (JNIEnv *env, jobject that, jint widget, jbyteArray item)
-{
-    char *item1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtListItemPos\n");
-#endif
-
-    if (item)
-        item1 = (char *)(*env)->GetByteArrayElements(env, item, NULL);
-
-	result = PtListItemPos((PtWidget_t *)widget, item1);
-
-    if (item)
-        (*env)->ReleaseByteArrayElements(env, item, (jbyte *)item1, 0);
-
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtTextModifyText
- * Signature: (IIII[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTextModifyText__IIII_3BI
-  (JNIEnv *env, jobject that, jint widget, jint start, jint end, jint insert_pos, jbyteArray text, jint length)
-{
-    char *text1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtTextModifyText\n");
-#endif
-
-    if (text)
-        text1 = (char *)(*env)->GetByteArrayElements(env, text, NULL);
-
-    result = (jint)PtTextModifyText((PtWidget_t *)widget, start, end, insert_pos, text1, length);
-
-    if (text)
-        (*env)->ReleaseByteArrayElements(env, text, (jbyte *)text1, 0);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtTextModifyText
- * Signature: (IIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTextModifyText__IIIIII
-  (JNIEnv *env, jobject that, jint widget, jint start, jint end, jint insert_pos, jint text, jint length)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtTextModifyText\n");
-#endif
-
-	return (jint)PtTextModifyText((PtWidget_t *)widget, start, end, insert_pos, (char *)text, length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtTextGetSelection
- * Signature: (I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTextGetSelection
-  (JNIEnv *env, jobject that, jint widget, jintArray start, jintArray end)
-{
-    int *start1=NULL, *end1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtTextGetSelection\n");
-#endif
-
-    if (start)
-        start1 = (int *)(*env)->GetIntArrayElements(env, start, NULL);
-    if (end)
-        end1 = (int *)(*env)->GetIntArrayElements(env, end, NULL);
-
-    result = (jint)PtTextGetSelection((PtWidget_t *)widget, start1, end1);
-
-    if (start)
-        (*env)->ReleaseIntArrayElements(env, start, (jint *)start1, 0);
-    if (end)
-        (*env)->ReleaseIntArrayElements(env, end, (jint *)end1, 0);
-	
-	return result;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtTextSetSelection
- * Signature: (I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTextSetSelection
-  (JNIEnv *env, jobject that, jint widget, jintArray start, jintArray end)
-{
-    int *start1=NULL, *end1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtTextSetSelection\n");
-#endif
-
-    if (start)
-        start1 = (int *)(*env)->GetIntArrayElements(env, start, NULL);
-    if (end)
-        end1 = (int *)(*env)->GetIntArrayElements(env, end, NULL);
-
-    result = (jint)PtTextSetSelection((PtWidget_t *)widget, start1, end1);
-
-    if (start)
-        (*env)->ReleaseIntArrayElements(env, start, (jint *)start1, 0);
-    if (end)
-        (*env)->ReleaseIntArrayElements(env, end, (jint *)end1, 0);
-	
-	return result;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtPositionMenu
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtPositionMenu
-  (JNIEnv *env, jobject that, jint widget, jobject event)
-{
-	DECL_GLOB(pGlob)
-	PhEvent_t object, *lpObject=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtPositionMenu\n");
-#endif
-    if (event) {
-        lpObject = &object;
-        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-    PtPositionMenu((PtWidget_t *)widget, lpObject);
-    if (event) {
-        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtReParentWidget
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtReParentWidget
-  (JNIEnv *env, jobject that, jint widget, jint parent)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtReParentWidget\n");
-#endif
-
-	return (jint) PtReParentWidget((PtWidget_t *)widget, (PtWidget_t *)parent);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtForwardWindowEvent
- * Signature: (Lorg/eclipse/swt/internal/photon/PhWindowEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtForwardWindowEvent
-  (JNIEnv *env, jobject that, jobject event)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhWindowEvent_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtForwardWindowEvent\n");
-#endif
-
-    if (event) {
-        lpObject = &object;
-        cachePhWindowEvent_tFids(env, event, &PGLOB(PhWindowEvent_tFc));
-        getPhWindowEvent_tFields(env, event, lpObject, &PGLOB(PhWindowEvent_tFc));
-    }
-    result = (jint) PtForwardWindowEvent(lpObject);
-    if (event) {
-        setPhWindowEvent_tFields(env, event, lpObject, &PGLOB(PhWindowEvent_tFc));
-    }
-    
-    return result;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetOffset
- * Signature: (ILorg/eclipse/swt/internal/photon/PhPoint_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetOffset
-  (JNIEnv *env, jobject that, jint widget, jobject offset)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhPoint_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtWidgetOffset\n");
-#endif
-
-    if (offset) {
-        lpObject = &object;
-        cachePhPoint_tFids(env, offset, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, offset, lpObject, &PGLOB(PhPoint_tFc));
-    }
-    result = (jint) PtWidgetOffset((PtWidget_t *)widget, lpObject);
-    if (offset) {
-        setPhPoint_tFields(env, offset, lpObject, &PGLOB(PhPoint_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtRemoveCallback
- * Signature: (IIII)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRemoveCallback
-  (JNIEnv *env, jobject that, jint widget, jint callback_type, jint callback, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtRemoveCallback\n");
-#endif
-	
-	PtRemoveCallback((PtWidget_t *)widget, (unsigned long)callback_type, (PtCallbackF_t *)callback, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindow
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtScrollContainer
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtScrollContainer\n");
-#endif
-	
-	return (jint)PtScrollContainer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetCanvas
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetCanvas__II
-  (JNIEnv *env, jobject that, jint widget, jint canvas_rect)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtWidgetCanvas\n");
-#endif
-
-    return (jint) PtWidgetCanvas((PtWidget_t *)widget, (PhRect_t *)canvas_rect);
-} 
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetCanvas
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jint widget, jobject canvas_rect)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtWidgetCanvas\n");
-#endif
-
-    if (canvas_rect) {
-        lpObject = &object;
-        cachePhRect_tFids(env, canvas_rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PtWidgetCanvas((PtWidget_t *)widget, lpObject);
-    if (canvas_rect) {
-        setPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtLabelWidgetCanvas
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtLabelWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jint widget, jobject canvas_rect)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtLabelWidgetCanvas\n");
-#endif
-
-    if (canvas_rect) {
-        lpObject = &object;
-        cachePhRect_tFids(env, canvas_rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PtLabelWidgetCanvas((PtWidget_t *)widget, lpObject);
-    if (canvas_rect) {
-        setPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetClass
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetClass
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetClass\n");
-#endif
-	
-	return (jint) PtWidgetClass ((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhPointerEvent_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhPointerEvent_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhPointerEvent_tFids(env, src, &PGLOB(PhPointerEvent_tFc));
-        getPhPointerEvent_tFields(env, src, src1, &PGLOB(PhPointerEvent_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhPointerEvent_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhPointerEvent_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhPointerEvent_tFids(env, dest, &PGLOB(PhPointerEvent_tFc));
-        setPhPointerEvent_tFields(env, dest, dest1, &PGLOB(PhPointerEvent_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhGetData
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhGetData
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhGetData\n");
-#endif
-	
-	return (jint)PhGetData((PhEvent_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhGetRects
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhGetRects
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhGetRects\n");
-#endif
-	
-	return (jint)PhGetRects((PhEvent_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhEvent_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhEvent_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhEvent_tFids(env, dest, &PGLOB(PhEvent_tFc));
-        setPhEvent_tFields(env, dest, dest1, &PGLOB(PhEvent_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhEvent_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhEvent_tFids(env, src, &PGLOB(PhEvent_tFc));
-        getPhEvent_tFields(env, src, src1, &PGLOB(PhEvent_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtExtentWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtExtentWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtExtentWidget\n");
-#endif
-	
-	return (jint)PtExtentWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtExtentWidgetFamily
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtExtentWidgetFamily
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtExtentWidgetFamily\n");
-#endif
-	
-	return (jint)PtExtentWidgetFamily((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGetAbsPosition
- * Signature: ([S[S)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGetAbsPosition
-  (JNIEnv *env, jobject that, jint widget, jshortArray x, jshortArray y)
-{
-    jshort *x1=NULL, *y1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtGetAbsPosition\n");
-#endif
-
-    if (x)
-        x1 = (*env)->GetShortArrayElements(env, x, NULL);
-    if (y)
-        y1 = (*env)->GetShortArrayElements(env, y, NULL);
-
-	PtGetAbsPosition((PtWidget_t *)widget, x1, y1);
-
-    if (x)
-        (*env)->ReleaseShortArrayElements(env, x, x1, 0);
-    if (y)
-        (*env)->ReleaseShortArrayElements(env, y, y1, 0);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSetAreaFromExtent
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhArea_t;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetAreaFromExtent
-  (JNIEnv *env, jobject that, jint widget, jobject extent, jobject area)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object1, *lpObject1=NULL;
-	PhArea_t object2, *lpObject2=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtSetAreaFromExtent\n");
-#endif
-
-    if (extent) {
-        lpObject1 = &object1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpObject1, &PGLOB(PhRect_tFc));
-    }
-    if (area) {
-        lpObject2 = &object2;
-        cachePhArea_tFids(env, area, &PGLOB(PhArea_tFc));
-        getPhArea_tFields(env, area, lpObject2, &PGLOB(PhArea_tFc));
-    }
-    result = (jint) PtSetAreaFromExtent((PtWidget_t *)widget, lpObject1, (PhArea_t *)lpObject2);
-    if (extent) {
-        setPhRect_tFields(env, extent, lpObject1, &PGLOB(PhRect_tFc));
-    }
-    if (area) {
-        setPhArea_tFields(env, area, lpObject2, &PGLOB(PhArea_tFc));
-    }
-   
-    return result;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSetAreaFromWidgetCanvas
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhArea_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetAreaFromWidgetCanvas
-  (JNIEnv *env, jobject that, jint widget, jobject extent, jobject area)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object1, *lpObject1=NULL;
-	PhArea_t object2, *lpObject2=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtSetAreaFromWidgetCanvas\n");
-#endif
-
-    if (extent) {
-        lpObject1 = &object1;
-        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, extent, lpObject1, &PGLOB(PhRect_tFc));
-    }
-    if (area) {
-        lpObject2 = &object2;
-        cachePhArea_tFids(env, area, &PGLOB(PhArea_tFc));
-        getPhArea_tFields(env, area, lpObject2, &PGLOB(PhArea_tFc));
-    }
-    result = (jint) PtSetAreaFromWidgetCanvas((PtWidget_t *)widget, lpObject1, lpObject2);
-    if (extent) {
-        setPhRect_tFields(env, extent, lpObject1, &PGLOB(PhRect_tFc));
-    }
-    if (area) {
-        setPhArea_tFields(env, area, lpObject2, &PGLOB(PhArea_tFc));
-    }
-   
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhKeyEvent_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhKeyEvent_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhKeyEvent_tFids(env, src, &PGLOB(PhKeyEvent_tFc));
-        getPhKeyEvent_tFields(env, src, src1, &PGLOB(PhKeyEvent_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhKeyEvent_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhKeyEvent_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhKeyEvent_tFids(env, dest, &PGLOB(PhKeyEvent_tFc));
-        setPhKeyEvent_tFields(env, dest, dest1, &PGLOB(PhKeyEvent_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhTo8859_1
- * Signature: (I)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhTo8859_11
-  (JNIEnv *env, jobject that, jint event)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhTo8859_1\n");
-#endif
-	
-	return (jint)PhTo8859_1((PhKeyEvent_t *)event);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhKeyToMb_1
- * Signature: ([BI)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhKeyToMb
-  (JNIEnv *env, jobject that, jbyteArray buffer, jint event)
-{
-    jbyte *buffer1=NULL;
- 	jint result;
- 	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhKeyToMb\n");
-#endif
-	
-	if (buffer)
-        buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-        
-   	result = PhKeyToMb(buffer1, (PhKeyEvent_t *)event);
-
-    if (buffer)
-        (*env)->ReleaseByteArrayElements(env, buffer, buffer1, 0);
-	
-	return result;
-}
-*/
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PtScrollbarCallback_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PtScrollbarCallback_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePtScrollbarCallback_tFids(env, src, &PGLOB(PtScrollbarCallback_tFc));
-        getPtScrollbarCallback_tFields(env, src, src1, &PGLOB(PtScrollbarCallback_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PtScrollbarCallback_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PtScrollbarCallback_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhPoint_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePtScrollbarCallback_tFids(env, dest, &PGLOB(PtScrollbarCallback_tFc));
-        setPtScrollbarCallback_tFields(env, dest, dest1, &PGLOB(PtScrollbarCallback_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSetParentWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetParentWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSetParentWidget\n");
-#endif
-	
-	return (jint)PtSetParentWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtFrameSize
- * Signature: (II[I[I[I[I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFrameSize
-  (JNIEnv *env, jobject that, jint render, jint border_size, jintArray left_border, jintArray top_border, jintArray right_border, jintArray bottom_border)
-{
-    int *left_border1=NULL;
-    int *top_border1=NULL;
-    int *right_border1=NULL;
-    int *bottom_border1=NULL;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtFrameSize\n");
-#endif
-
-    if (left_border)
-        left_border1 = (*env)->GetIntArrayElements(env, left_border, NULL);
-    if (top_border)
-        top_border1 = (*env)->GetIntArrayElements(env, top_border, NULL);
-    if (right_border)
-        right_border1 = (*env)->GetIntArrayElements(env, right_border, NULL);
-    if (bottom_border)
-        bottom_border1 = (*env)->GetIntArrayElements(env, bottom_border, NULL);
-
-    PtFrameSize (render, border_size, left_border1, top_border1, right_border1, bottom_border1);
-
-    if (left_border)
-        (*env)->ReleaseIntArrayElements(env, left_border, left_border1, 0);
-    if (top_border)
-        (*env)->ReleaseIntArrayElements(env, top_border, top_border1, 0);	
-    if (right_border)
-        (*env)->ReleaseIntArrayElements(env, right_border, right_border1, 0);
-    if (bottom_border)
-        (*env)->ReleaseIntArrayElements(env, bottom_border, bottom_border1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtCreateAppContext
- * Signature: ()I
- */
-void *PtCreateAppContext();
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCreateAppContext
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtCreateAppContext\n");
-#endif
-	
-	return (jint)PtCreateAppContext();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppProcessEvent ()
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppProcessEvent
-  (JNIEnv *env, jobject that, jint app_context)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppProcessEvent \n");
-#endif
-	
-	PtAppProcessEvent ((PtAppContext_t)app_context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppAddWorkProc
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppAddWorkProc
-  (JNIEnv *env, jobject that, jint app_context, jint work_func, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppAddWorkProc\n");
-#endif
-	
-	return (jint)PtAppAddWorkProc ((PtAppContext_t)app_context, (PtWorkProc_t) work_func, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppRemoveWorkProc()
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppRemoveWorkProc
-  (JNIEnv *env, jobject that, jint app_context, jint WorkProc_id)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppRemoveWorkProc\n");
-#endif
-	
-	PtAppRemoveWorkProc((PtAppContext_t)app_context, (PtWorkProcId_t *) WorkProc_id);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetExtent
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetExtent__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jint widget, jobject rect) 
-{
-	DECL_GLOB(pGlob)
-	PhRect_t rect1, *lpRect=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetExtent\n");
-#endif
-  
-    if (rect) {
-        lpRect = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PtWidgetExtent((PtWidget_t *) widget, lpRect);
-    if (rect) {
-        setPhRect_tFields(env, rect, lpRect, &PGLOB(PhRect_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetArea
- * Signature: (ILorg/eclipse/swt/internal/photon/PhArea_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetArea
-  (JNIEnv *env, jobject that, jint widget, jobject area) 
-{
-	DECL_GLOB(pGlob)
-	PhArea_t area1, *lpArea=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetArea\n");
-#endif
-  
-    if (area) {
-        lpArea = &area1;
-        cachePhArea_tFids(env, area, &PGLOB(PhArea_tFc));
-        getPhArea_tFields(env, area, lpArea, &PGLOB(PhArea_tFc));
-    }
-    result = (jint) PtWidgetArea((PtWidget_t *) widget, lpArea);
-    if (area) {
-        setPhArea_tFields(env, area, lpArea, &PGLOB(PhArea_tFc));
-    }
-    
-    return result;
-}
- 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhQueryCursor
- * Signature: (ILorg/eclipse/swt/internal/photon/PhCursorInfo_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhQueryCursor
-  (JNIEnv *env, jobject that, jshort ig, jobject buf) 
-{
-	DECL_GLOB(pGlob)
-	PhCursorInfo_t buf1, *lpBuf1=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhQueryCursor\n");
-#endif
-  
-    if (buf) {
-        lpBuf1 = &buf1;
-        cachePhCursorInfo_tFids(env, buf, &PGLOB(PhCursorInfo_tFc));
-        getPhCursorInfo_tFields(env, buf, lpBuf1, &PGLOB(PhCursorInfo_tFc));
-    }
-    result = (jint) PhQueryCursor(ig, lpBuf1);
-    if (buf) {
-        setPhCursorInfo_tFields(env, buf, lpBuf1, &PGLOB(PhCursorInfo_tFc));
-    }
-    
-    return result;
-}
- 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhInputGroup
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhInputGroup
-  (JNIEnv *env, jobject that, jint event)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhInputGroup\n");
-#endif
-	
-	return (jint) PhInputGroup ((PhEvent_t *) event);
-}
-
-#ifndef NO_PhQueryRids
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhQueryRids
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jobject arg6, jintArray arg7, jint arg8)
+#ifndef NO_PfDecomposeStemToID
+JNIEXPORT jint JNICALL OS_NATIVE(PfDecomposeStemToID)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-	DECL_GLOB(pGlob)
-	PhRect_t _arg6, *lparg6=NULL;
-	jint *lparg7=NULL;
+	jbyte *lparg0=NULL;
 	jint rc;
-
-	DEBUG_CALL("PhQueryRids\n")
-
-	if (arg6) {
-		lparg6 = &_arg6;
-		cachePhRect_tFids(env, arg6, &PGLOB(PhRect_tFc));
-		getPhRect_tFields(env, arg6, lparg6, &PGLOB(PhRect_tFc));
-	}
-	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
-	rc = (jint)PhQueryRids(arg0, arg1, arg2, arg3, arg4, (PhRid_t)arg5, (PhRect_t*)lparg6, (PhRid_t *)lparg7, arg8);
-	if (arg6) {
-		setPhRect_tFields(env, arg6, lparg6, &PGLOB(PhRect_tFc));
-	}
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	NATIVE_ENTER(env, that, "PfDecomposeStemToID\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)PfDecomposeStemToID(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PfDecomposeStemToID\n")
 	return rc;
 }
 #endif
 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainer
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainer
-  (JNIEnv *env, jobject that)
+#ifndef NO_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III
+JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jint arg4)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtContainer\n");
-#endif
-	
-	return (jint)PtContainer;
+	PhRect_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jobject rc;
+	NATIVE_ENTER(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)arg2, (const char *)arg3, arg4);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtScrollArea
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtScrollArea
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtScrollArea\n");
 #endif
-	
-	return (jint)PtScrollArea;
+
+#ifndef NO_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI
+JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jobject rc;
+	NATIVE_ENTER(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)lparg2, (const char *)lparg3, arg4);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAddClassStyle
- * Signature: (II)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAddClassStyle
-  (JNIEnv *env, jobject that, jint wclass, jint style)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAddClassStyle\n");
 #endif
-	
-	return (jint)PtAddClassStyle((PtWidgetClassRef_t *)wclass, (PtWidgetClassStyle_t *)style);
+
+#ifndef NO_PfExtentWideText
+JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentWideText)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jcharArray arg3, jint arg4)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jobject rc;
+	NATIVE_ENTER(env, that, "PfExtentWideText\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
+	rc = (jobject)PfExtentWideText(lparg0, lparg1, (const char *)lparg2, (const uint16_t *)lparg3, arg4);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PfExtentWideText\n")
+	return rc;
 }
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtClippedBlit
- * Signature: (IILorg/eclipse/swt/photon/PhPoint_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtClippedBlit
-  (JNIEnv *env, jobject that, jint widget, jint src, jobject delta, jint clip)
-{
-	DECL_GLOB(pGlob)
-    PhPoint_t delta1, *lpDelta1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtClippedBlit\n");
 #endif
-	if (delta) {
-        lpDelta1 = &delta1;
-        cachePhPoint_tFids(env, delta, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, delta, lpDelta1, &PGLOB(PhPoint_tFc));
-    }
-	
-	return (jint)PtClippedBlit((PtWidget_t *)widget, (PhTile_t *)src, lpDelta1, (PhTile_t *)clip);
+
+#ifndef NO_PfFontDescription
+JNIEXPORT jint JNICALL OS_NATIVE(PfFontDescription)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PfFontDescription\n")
+	rc = (jint)PfFontDescription((FontID *)arg0);
+	NATIVE_EXIT(env, that, "PfFontDescription\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/FontDetails;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_FontDetails_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    FontDetails object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_FontDetails_2I\n");
 #endif
 
-    if (src) {
-        src1=&object;
-        cacheFontDetailsFids(env, src, &PGLOB(FontDetailsFc));
-        getFontDetailsFields(env, src, src1, &PGLOB(FontDetailsFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
+#ifndef NO_PfFontFlags
+JNIEXPORT jint JNICALL OS_NATIVE(PfFontFlags)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PfFontFlags\n")
+	rc = (jint)PfFontFlags((FontID *)arg0);
+	NATIVE_EXIT(env, that, "PfFontFlags\n")
+	return rc;
 }
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/FontDetails;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	FontDetails object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II\n");
 #endif
 
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cacheFontDetailsFids(env, dest, &PGLOB(FontDetailsFc));
-        setFontDetailsFields(env, dest, dest1, &PGLOB(FontDetailsFc));
-    }
-
+#ifndef NO_PfFontSize
+JNIEXPORT jint JNICALL OS_NATIVE(PfFontSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PfFontSize\n")
+	rc = (jint)PfFontSize((FontID *)arg0);
+	NATIVE_EXIT(env, that, "PfFontSize\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhArea_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhArea_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I\n");
 #endif
 
-    if (src) {
-        src1=&object;
-        cachePhArea_tFids(env, src, &PGLOB(PhArea_tFc));
-        getPhArea_tFields(env, src, src1, &PGLOB(PhArea_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
+#ifndef NO_PfFreeFont
+JNIEXPORT jint JNICALL OS_NATIVE(PfFreeFont)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PfFreeFont\n")
+	rc = (jint)PfFreeFont((FontID *)arg0);
+	NATIVE_EXIT(env, that, "PfFreeFont\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhArea_t;II)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhArea_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-	PhArea_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhArea_1t_2II\n");
 #endif
 
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhArea_tFids(env, dest, &PGLOB(PhArea_tFc));
-        setPhArea_tFields(env, dest, dest1, &PGLOB(PhArea_tFc));
-    }
-
+#ifndef NO_PfLoadMetrics
+JNIEXPORT jint JNICALL OS_NATIVE(PfLoadMetrics)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PfLoadMetrics\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)PfLoadMetrics((const char *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PfLoadMetrics\n")
+	return rc;
 }
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtFileSelection
- * Signature: (ILorg/eclipse/swt/photon/PhPoint_t;[B[B[B[B[BLorg/eclipse/swt/photon/PtFileSelectionInfo_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFileSelection
-  (JNIEnv *env, jobject that, jint widget, jobject pos, jbyteArray title, jbyteArray root_dir, jbyteArray file_spec, jbyteArray btn1, jbyteArray btn2, jbyteArray format, jobject info, jint flags)
-{
-	DECL_GLOB(pGlob)
-
-	PhPoint_t pos1, *lpPos1=NULL;
-	PtFileSelectionInfo_t info1, *lpInfo1=NULL;
-	
-	char *title1=NULL;
-    char *root_dir1=NULL;
-    char *file_spec1=NULL;
-    char *btn11=NULL;
-    char *btn21=NULL;
-    char *format1=NULL;
-    
-    jint result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtFileSelection\n");
 #endif
 
-    if (pos) {
-        lpPos1= &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (info) {
-        memset (&info1, 0, sizeof (PtFileSelectionInfo_t));
-        lpInfo1= &info1;
-        cachePtFileSelectionInfo_tFids(env, info, &PGLOB(PtFileSelectionInfo_tFc));
-        getPtFileSelectionInfo_tFields(env, info, lpInfo1, &PGLOB(PtFileSelectionInfo_tFc));
-    }
-    if (title) title1 = (*env)->GetByteArrayElements(env, title, NULL);
-    if (root_dir) root_dir1 = (*env)->GetByteArrayElements(env, root_dir, NULL);
-    if (file_spec) file_spec1 = (*env)->GetByteArrayElements(env, file_spec, NULL);
-    if (btn1) btn11 = (*env)->GetByteArrayElements(env, btn1, NULL);
-    if (btn2) btn21 = (*env)->GetByteArrayElements(env, btn2, NULL);
-    if (format) format1 = (*env)->GetByteArrayElements(env, format, NULL);
-
-    result = (jint) PtFileSelection ((PtWidget_t *)widget, lpPos1, title1, root_dir1, file_spec1, btn11, btn21, format1, lpInfo1, flags);
-
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }    
-    if (info) {
-        setPtFileSelectionInfo_tFields(env, info, lpInfo1, &PGLOB(PtFileSelectionInfo_tFc));
-    }    
-    if (title) (*env)->ReleaseByteArrayElements(env, title, title1, 0);
-    if (root_dir) (*env)->ReleaseByteArrayElements(env, root_dir, root_dir1, 0);	
-    if (file_spec) (*env)->ReleaseByteArrayElements(env, file_spec, file_spec1, 0);
-    if (btn1) (*env)->ReleaseByteArrayElements(env, btn1, btn11, 0);
-    if (btn2) (*env)->ReleaseByteArrayElements(env, btn2, btn21, 0);
-    if (format) (*env)->ReleaseByteArrayElements(env, format, format1, 0);
-      
-	return result;
+#ifndef NO_PfQueryFontInfo
+JNIEXPORT jint JNICALL OS_NATIVE(PfQueryFontInfo)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1)
+{
+	jbyte *lparg0=NULL;
+	FontQueryInfo _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PfQueryFontInfo\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = getFontQueryInfoFields(env, arg1, &_arg1);
+	rc = (jint)PfQueryFontInfo((const char *)lparg0, (FontQueryInfo *)lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) setFontQueryInfoFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PfQueryFontInfo\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetPreferredSize
- * Signature: (ILorg/eclipse/swt/photon/PhDim_t;)Lorg/eclipse/swt/photon/PhDim_t;
- */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetPreferredSize
-  (JNIEnv *env, jobject that, jint widget, jobject dim)
-{
-	DECL_GLOB(pGlob)
-    PhDim_t dim1, *result, *lpDim1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetPreferredSize\n");
 #endif
 
-    if (dim) {
-        lpDim1 = &dim1;
-        cachePhDim_tFids(env, dim, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, dim, lpDim1, &PGLOB(PhDim_tFc));
-    }
-    result = PtWidgetPreferredSize((PtWidget_t *)widget, lpDim1);
-    if (dim) {
-        setPhDim_tFields(env, dim, lpDim1, &PGLOB(PhDim_tFc));
-    }
-    return result == NULL ? NULL : dim;
+#ifndef NO_PfQueryFonts
+JNIEXPORT jint JNICALL OS_NATIVE(PfQueryFonts)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PfQueryFonts\n")
+	rc = (jint)PfQueryFonts(arg0, arg1, (FontDetails *)arg2, arg3);
+	NATIVE_EXIT(env, that, "PfQueryFonts\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppCreatePulse
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppCreatePulse
-  (JNIEnv *env, jobject that, jint app, jint priority)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppCreatePulse\n");
-#endif
-	
-	return (jint)PtAppCreatePulse((PtAppContext_t)app, priority);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppAddInput
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppAddInput
-  (JNIEnv *env, jobject that, jint app_context, jint pid, jint input_func, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppAddInput\n");
-#endif
-	
-	return (jint)PtAppAddInput((PtAppContext_t)app_context, (pid_t)pid, (PtInputCallbackProc_t)input_func, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppRemoveInput
- * Signature: (II)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppRemoveInput
-  (JNIEnv *env, jobject that, jint app_context, jint input_id)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppRemoveInput\n");
-#endif
-	
-	PtAppRemoveInput((PtAppContext_t)app_context, (PtInputId_t *)input_id);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppDeletePulse
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppDeletePulse
-  (JNIEnv *env, jobject that, jint app, jint pulse_pid)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppDeletePulse\n");
-#endif
-	
-	return (jint)PtAppDeletePulse((PtAppContext_t)app, (pid_t)pulse_pid);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAppPulseTrigger
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAppPulseTrigger
-  (JNIEnv *env, jobject that, jint app, jint pulse)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAppPulseTrigger\n");
-#endif
-	
-	return (jint)PtAppPulseTrigger((PtAppContext_t)app, (pid_t)pulse);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerFindFocus
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerFindFocus
-  (JNIEnv *env, jobject that, jint family_member)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtContainerFindFocus\n");
-#endif
-	
-	return (jint)PtContainerFindFocus((PtWidget_t *)family_member);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtIsFocused
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtIsFocused
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtIsFocused\n");
-#endif
-	
-	return (jint)PtIsFocused((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindowFocus
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWindowFocus
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWindowFocus\n");
-#endif
-	
-	return (jint)PtWindowFocus((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindowToFront
-  * Signature: (I)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWindowToFront
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWindowToFront\n");
-#endif
-	
-	PtWindowToFront((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindowToBack
-  * Signature: (I)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWindowToBack
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWindowToBack\n");
-#endif
-	
-	PtWindowToBack((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtFindDisjoint
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFindDisjoint
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtFindDisjoint\n");
-#endif
-	
-	return (jint) PtFindDisjoint((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardCopyString
- * Signature: (SI)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardCopyString__SI
-  (JNIEnv *env, jobject that, jshort ig, jint string)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardCopyString\n");
-#endif
-	
-	return (jint) PhClipboardCopyString(ig, (char *)string);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardCopyString
- * Signature: (S[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardCopyString__S_3B
-  (JNIEnv *env, jclass that, jshort ig, jbyteArray string)
-{
-    jbyte *string1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardCopyString\n");
 #endif
 
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-
-    result = (jint)PhClipboardCopyString(ig, (char *)string1);
-
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-	
-	return result;
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardPasteString
- * Signature: (S)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteString
-  (JNIEnv *env, jobject that, jshort ig)
+#ifndef NO_PgAlphaOff
+JNIEXPORT void JNICALL OS_NATIVE(PgAlphaOff)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardPasteString\n");
-#endif
-	
-	return (jint) PhClipboardPasteString(ig);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtBlockAllWindows
- * Signature: (ISI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockAllWindows
-  (JNIEnv *env, jobject that, jint skip, jshort cursor, jint cursor_color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtBlockAllWindows\n");
-#endif
-	
-	return (jint) PtBlockAllWindows((PtWidget_t *)skip, cursor, (PgColor_t)cursor_color);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtBlockWindow
- * Signature: (ISI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlockWindow
-  (JNIEnv *env, jobject that, jint window, jshort cursor, jint cursor_color)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtBlockWindow\n");
-#endif
-	
-	return (jint) PtBlockWindow((PtWidget_t *)window, cursor, (PgColor_t)cursor_color);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtUnblockWindows
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtUnblockWindows
-  (JNIEnv *env, jobject that, jint bl)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtUnblockWindows\n");
-#endif
-	
-	PtUnblockWindows((PtBlockedList_t *)bl);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtNextTopLevelWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtNextTopLevelWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtNextTopLevelWidget\n");
-#endif
-	
-	return (jint) PtNextTopLevelWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWindowGetState
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWindowGetState
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWindowGetState\n");
-#endif
-	
-	return (jint) PtWindowGetState((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAddHotkeyHandler
- * Signature: (IIISII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAddHotkeyHandler
-  (JNIEnv *env, jobject that, jint widget, jint key_sym_cap, jint key_mods, jshort flags, jint data, jint callback)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAddHotkeyHandler\n");
-#endif
-	
-	PtAddHotkeyHandler((PtWidget_t *)widget, key_sym_cap, key_mods, flags, (void *)data, (PtCallbackF_t *)callback);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtRemoveHotkeyHandler
- * Signature: (IIISII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRemoveHotkeyHandler
-  (JNIEnv *env, jobject that, jint widget, jint key_sym_cap, jint key_mods, jshort flags, jint data, jint callback)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtRemoveHotkeyHandler\n");
-#endif
-	
-	PtRemoveHotkeyHandler((PtWidget_t *)widget, key_sym_cap, key_mods, flags, (void *)data, (PtCallbackF_t *)callback);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PgAlpha_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-	/* Some fields of the structure are not represented in Java.
-	* Make the are set to zero.
-	*/
-    PgAlpha_t object = {0}, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePgAlpha_tFids(env, src, &PGLOB(PgAlpha_tFc));
-        getPgAlpha_tFields(env, src, src1, &PGLOB(PgAlpha_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PgAlpha_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	/* Some fields of the structure are not represented in Java.
-	* Make the are set to zero.
-	*/
-	PgAlpha_t object = {0}, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePgAlpha_tFids(env, dest, &PGLOB(PgAlpha_tFc));
-        setPgAlpha_tFields(env, dest, dest1, &PGLOB(PgAlpha_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetAlpha
- * Signature: (IIIBB)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetAlpha
-  (JNIEnv *env, jobject that, jint alpha_op, jobject src_alpha_map, jint src_alpha_gradient, jbyte src_global_alpha, jbyte dst_global_alpha)
-{
-	DECL_GLOB(pGlob)
-	PgMap_t map1, *lpMap1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetAlpha\n");
-#endif
-
-    if (src_alpha_map) {
-        lpMap1 = &map1;
-        cachePgMap_tFids(env, src_alpha_map, &PGLOB(PgMap_tFc));
-        getPgMap_tFields(env, src_alpha_map, lpMap1, &PGLOB(PgMap_tFc));
-    }
-	PgSetAlpha(alpha_op, lpMap1, (PgGradient_t *)src_alpha_gradient, (char unsigned)src_global_alpha, (char unsigned)dst_global_alpha);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetAlpha
- * Signature: (IIIBB)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetAlpha
-  (JNIEnv *env, jobject that, jint alpha_op, jint src_alpha_map, jint src_alpha_gradient, jbyte src_global_alpha, jbyte dst_global_alpha)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetAlpha\n");
-#endif
-	
-	PgSetAlpha(alpha_op, (PgMap_t *)src_alpha_map, (PgGradient_t *)src_alpha_gradient, (char unsigned)src_global_alpha, (char unsigned)dst_global_alpha);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgAlphaOn
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgAlphaOn
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgAlphaOn\n");
-#endif
-	
-	PgAlphaOn();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgAlphaOff
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgAlphaOff
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgAlphaOff\n");
-#endif
-	
+	NATIVE_ENTER(env, that, "PgAlphaOff\n")
 	PgAlphaOff();
+	NATIVE_EXIT(env, that, "PgAlphaOff\n")
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PtTextCallback_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PtTextCallback_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePtTextCallback_tFids(env, src, &PGLOB(PtTextCallback_tFc));
-        getPtTextCallback_tFields(env, src, src1, &PGLOB(PtTextCallback_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PtTextCallback_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PtTextCallback_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePtTextCallback_tFids(env, dest, &PGLOB(PtTextCallback_tFc));
-        setPtTextCallback_tFields(env, dest, dest1, &PGLOB(PtTextCallback_tFc));
-    }
-
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhInitDrag
- * Signature: (IILorg/eclipse/swt/photon/PhRect_t;Lorg/eclipse/swt/photon/PhRect_t;ILorg/eclipse/swt/photon/PhDim_t;Lorg/eclipse/swt/photon/PhDim_t;Lorg/eclipse/swt/photon/PhDim_t;Lorg/eclipse/swt/photon/PhPoint_t;[I;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhInitDrag
-  (JNIEnv *env, jobject that, jint rid, jint flags, jobject rect, jobject boundary, jint input_group, jobject min, jobject max, jobject step, jobject ptrpos, jshortArray cursor)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t rect1, rect2, *lpRect1=NULL, *lpRect2=NULL;
-	PhDim_t dim1, dim2, dim3, *lpDim1=NULL, *lpDim2=NULL, *lpDim3=NULL;
-    PhPoint_t point1, *lpPoint1=NULL;
-    jshort *cursor1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhInitDrag\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    if (boundary) {
-        lpRect2 = &rect2;
-        cachePhRect_tFids(env, boundary, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, boundary, lpRect2, &PGLOB(PhRect_tFc));
-    }
-    if (min) {
-        lpDim1 = &dim1;
-        cachePhDim_tFids(env, min, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, min, lpDim1, &PGLOB(PhDim_tFc));
-    }
-    if (max) {
-        lpDim2 = &dim2;
-        cachePhDim_tFids(env, max, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, max, lpDim2, &PGLOB(PhDim_tFc));
-    }
-    if (step) {
-        lpDim3 = &dim3;
-        cachePhDim_tFids(env, step, &PGLOB(PhDim_tFc));
-        getPhDim_tFields(env, step, lpDim3, &PGLOB(PhDim_tFc));
-    }    
-    if (ptrpos) {
-        lpPoint1 = &point1;
-        cachePhPoint_tFids(env, ptrpos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, ptrpos, lpPoint1, &PGLOB(PhPoint_tFc));
-    }
-    if (cursor)
-        cursor1 = (*env)->GetShortArrayElements(env, cursor, NULL);
-    
-    result = (jint) PhInitDrag(rid, flags, lpRect1, lpRect2, input_group, lpDim1, lpDim2, lpDim3, lpPoint1, (PhCursorDescription_t *)cursor1);
-    
-    if (cursor)
-        (*env)->ReleaseShortArrayElements(env, cursor, cursor1, 0);
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtProgress
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtProgress
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtProgress\n");
-#endif
-	
-	return (jint)PtProgress;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtPanelGroup
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtPanelGroup
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtPanelGroup\n");
-#endif
-	
-	return (jint)PtPanelGroup;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhAreaToRect
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhArea_t;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhAreaToRect
-  (JNIEnv *env, jobject that, jobject area, jobject rect)
-{
-	DECL_GLOB(pGlob)
-	PhArea_t object1, *lpObject1=NULL;
-	PhRect_t object2, *lpObject2=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PhAreaToRect\n");
-#endif
-
-    if (area) {
-        lpObject1 = &object1;
-        cachePhArea_tFids(env, area, &PGLOB(PhArea_tFc));
-        getPhArea_tFields(env, area, lpObject1, &PGLOB(PhArea_tFc));
-    }
-    if (rect) {
-        lpObject2 = &object2;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpObject2, &PGLOB(PhRect_tFc));
-    }
-	PhAreaToRect(lpObject1, lpObject2);
-    if (area) {
-        setPhArea_tFields(env, area, lpObject1, &PGLOB(PhArea_tFc));
-    }
-    if (rect) {
-        setPhRect_tFields(env, rect, lpObject2, &PGLOB(PhRect_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtCalcCanvas
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCalcCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jint widget, jobject canvas_rect)
-{
-	DECL_GLOB(pGlob)
-	jint result;
-	PhRect_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtCalcCanvas\n");
-#endif
-
-    if (canvas_rect) {
-        lpObject = &object;
-        cachePhRect_tFids(env, canvas_rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PtCalcCanvas((PtWidget_t *)widget, lpObject);
-    if (canvas_rect) {
-        setPhRect_tFields(env, canvas_rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtValidParent
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtValidParent
-  (JNIEnv *env, jobject that, jint widget, jint class_ref)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtValidParent\n");
-#endif
-	
-	return (jint)PtValidParent((PtWidget_t *)widget, (PtWidgetClassRef_t *) class_ref);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtCalcBorder
- * Signature: (ILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCalcBorder__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv *env, jobject that, jint widget, jobject rect)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t object, *lpObject=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtCalcBorder\n");
-#endif
-
-    if (rect) {
-        lpObject = &object;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-    PtCalcBorder((PtWidget_t *)widget, lpObject);
-    if (rect) {
-        setPhRect_tFields(env, rect, lpObject, &PGLOB(PhRect_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtPane
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtPane
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtPane\n");
-#endif
-	
-	return (jint)PtPane;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PgMap_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgMap_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PgMap_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgMap_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePgMap_tFids(env, src, &PGLOB(PgMap_tFc));
-        getPgMap_tFields(env, src, src1, &PGLOB(PgMap_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PgMap_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PgMap_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePgMap_tFids(env, dest, &PGLOB(PgMap_tFc));
-        setPgMap_tFields(env, dest, dest1, &PGLOB(PgMap_tFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtDamageWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtDamageWidget
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtDamageWidget\n");
-#endif
-	
-	return (jint)PtDamageWidget((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtBlit
- * Signature: (ILorg/eclipse/swt/photon/PhRect_t;ILorg/eclipse/swt/photon/PhPoint_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBlit
-  (JNIEnv *env, jobject that, jint widget, jobject rect, jobject offset)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t rect1, *lpRect1=NULL;
-    PhPoint_t offset1, *lpOffset1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtBlit\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    if (offset) {
-        lpOffset1 = &offset1;
-        cachePhPoint_tFids(env, offset, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, offset, lpOffset1, &PGLOB(PhPoint_tFc));
-    }
-    return (jint) PtBlit((PtWidget_t *)widget, lpRect1, lpOffset1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerHold
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerHold
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtContainerHold\n");
-#endif
-	
-	return (jint)PtContainerHold((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtContainerRelease
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerRelease
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtContainerRelease\n");
-#endif
-	
-	return (jint)PtContainerRelease((PtWidget_t *)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtFontSelection
- * Signature: (ILorg/eclipse/swt/photon/PhPoint_t;[B[BII[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFontSelection
-  (JNIEnv *env, jobject that, jint parent, jobject pos, jbyteArray title, jbyteArray font, jint symbol, jint flags, jbyteArray sample)
-{
-	DECL_GLOB(pGlob)
-
-	PhPoint_t pos1, *lpPos1=NULL;
-	
-	char *title1=NULL;
-    char *font1=NULL;
-    char *sample1=NULL;
-    
-    jint result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtFontSelection\n");
-#endif
-
-    if (pos) {
-        lpPos1= &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (title) title1 = (*env)->GetByteArrayElements(env, title, NULL);
-    if (font) font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (sample) sample1 = (*env)->GetByteArrayElements(env, sample, NULL);
-
-    result = (jint) PtFontSelection ((PtWidget_t *)parent, lpPos1, title1, font1, symbol, flags, sample1);
-
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }    
-    if (title) (*env)->ReleaseByteArrayElements(env, title, title1, 0);
-    if (font) (*env)->ReleaseByteArrayElements(env, font, font1, 0);	
-    if (sample) (*env)->ReleaseByteArrayElements(env, sample, sample1, 0);
-      
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfGenerateFontName
- * Signature: ([BII[B)[B
- */
-JNIEXPORT jbyteArray JNICALL Java_org_eclipse_swt_internal_photon_OS_PfGenerateFontName
-  (JNIEnv *env, jobject that, jbyteArray pkucDescription, jint kuiFlags, jint kuiSize, jbyteArray pucBuff)
-{
-	char *pkucDescription1=NULL;
-    char *pucBuff1=NULL;
-    
-    uchar_t *result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfGenerateFontName\n");
-#endif
-
-    if (pkucDescription) pkucDescription1 = (*env)->GetByteArrayElements(env, pkucDescription, NULL);
-    if (pucBuff) pucBuff1 = (*env)->GetByteArrayElements(env, pucBuff, NULL);
-
-    result = PfGenerateFontName(pkucDescription1, kuiFlags, kuiSize, pucBuff1);
-
-    if (pkucDescription) (*env)->ReleaseByteArrayElements(env, pkucDescription, pkucDescription1, 0);
-    if (pucBuff) (*env)->ReleaseByteArrayElements(env, pucBuff, pucBuff1, 0);	
-      
-	return result == NULL ? NULL : pucBuff;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfFindFont
- * Signature: ([BII)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFindFont
-  (JNIEnv *env, jobject that, jbyteArray pkucDescription, jint kulFlags, jint kulSize)
-{
-	char *pkucDescription1=NULL;
-    
-    jint result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfFindFont\n");
-#endif
-
-    if (pkucDescription) pkucDescription1 = (*env)->GetByteArrayElements(env, pkucDescription, NULL);
-
-    result = (jint)PfFindFont(pkucDescription1, kulFlags, kulSize);
-
-    if (pkucDescription) (*env)->ReleaseByteArrayElements(env, pkucDescription, pkucDescription1, 0);
-      
-	return result;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfFreeFont
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFreeFont
-  (JNIEnv *env, jobject that, jint ptsID)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfFreeFont\n");
-#endif
-
-    return PfFreeFont((FontID *)ptsID);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfFontDescription
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontDescription
-  (JNIEnv *env, jobject that, jint ptsID)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfFontDescription\n");
-#endif
-
-    return (jint)PfFontDescription((FontID *)ptsID);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfFontFlags
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontFlags
-  (JNIEnv *env, jobject that, jint ptsID)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfFontFlags\n");
-#endif
-
-    return PfFontFlags((FontID *)ptsID);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfFontSize
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontSize
-  (JNIEnv *env, jobject that, jint ptsID)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfFontSize\n");
-#endif
-
-    return PfFontSize((FontID *)ptsID);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfConvertFontID
- * Signature: (I)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfConvertFontID
-  (JNIEnv *env, jobject that, jint ptsID)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfConvertFontID\n");
-#endif
-
-    return (jint)PfConvertFontID((FontID *)ptsID);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfDecomposeStemToID
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfDecomposeStemToID
-  (JNIEnv *env, jobject that, jbyteArray pkszStem)
-{
-	char *pkszStem1=NULL;
-    
-    jint result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfDecomposeStemToID\n");
-#endif
-
-    if (pkszStem) pkszStem1 = (*env)->GetByteArrayElements(env, pkszStem, NULL);
-
-    result = (jint)PfDecomposeStemToID(pkszStem1);
-
-    if (pkszStem) (*env)->ReleaseByteArrayElements(env, pkszStem, pkszStem1, 0);
-      
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtToolbar
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtToolbar
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtToolbar\n");
-#endif
-	
-	return (jint)PtToolbar;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtColorSelGroup
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtColorSelGroup
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtColorSelGroup\n");
-#endif
-	
-	return (jint)PtColorSelGroup;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtColorPatch
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtColorPatch
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtColorPatch\n");
-#endif
-	
-	return (jint)PtColorPatch;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtColorPalette
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtColorPalette
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtColorPalette\n");
-#endif
-	
-	return (jint)PtColorPalette;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtGroup
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGroup
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtGroup\n");
-#endif
-	
-	return (jint)PtGroup;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    Pg_CM_RGB
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_Pg_1CM_1RGB
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Pg_CM_RGB\n");
-#endif
-	
-	return (jint)Pg_CM_RGB;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    Pg_CM_HSB
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_Pg_1CM_1HSB
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Pg_CM_HSB\n");
-#endif
-	
-	return (jint)Pg_CM_HSB;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    Pg_CM_HLS
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_Pg_1CM_1HLS
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Pg_CM_HLS\n");
-#endif
-	
-	return (jint)Pg_CM_HLS;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhRectUnion
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2
-  (JNIEnv * env, jobject that, jobject rect1, jobject rect2)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t rect11, *lpRect11=NULL;
-	PhRect_t rect21, *lpRect21=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2\n");
-#endif
-
-    if (rect1) {
-        lpRect11 = &rect11;
-        cachePhRect_tFids(env, rect1, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect1, lpRect11, &PGLOB(PhRect_tFc));
-    }
-    if (rect2) {
-        lpRect21 = &rect21;
-        cachePhRect_tFids(env, rect2, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect2, lpRect21, &PGLOB(PhRect_tFc));
-    }
-	result = PhRectUnion(lpRect11, lpRect21);
-    if (rect1) {
-        setPhRect_tFields(env, rect1, lpRect11, &PGLOB(PhRect_tFc));
-    }
-    if (rect2) {
-        setPhRect_tFields(env, rect2, lpRect21, &PGLOB(PhRect_tFc));
-    }
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtRegion
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRegion
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtRegion\n");
-#endif
-	
-	return (jint)PtRegion;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAddFilterCallback
- * Signature: (IIII)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAddFilterCallback
-  (JNIEnv *env, jobject that, jint widget, jint callback_type, jint callback, jint data)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAddFilterCallback\n");
-#endif
-	
-	PtAddFilterCallback((PtWidget_t *)widget, (unsigned long)callback_type, (PtCallbackF_t *)callback, (void *)data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtTimer
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtTimer
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtTimer\n");
-#endif
-	
-	return (jint)PtTimer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtHit
- * Signature: (IILorg/eclipse/swt/internal/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtHit
-  (JNIEnv * env, jobject that, jint container, jint n, jobject rect)
-{
-	DECL_GLOB(pGlob)
-	PhRect_t rect1, *lpRect1=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtHit\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-	result = (jint) PtHit ((PtWidget_t *) container, n, lpRect1);
-    if (rect) {
-        setPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtColorSelect
- * Signature: (I[BLorg/eclipse/swt/internal/photon/PtColorSelectInfo_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtColorSelect
-  (JNIEnv *env, jobject that, jint parent, jbyteArray title, jobject info)
-{
-	DECL_GLOB(pGlob)
-	PtColorSelectInfo_t info1, *lpInfo1=NULL;
-	jbyte *title1=NULL;
-	jint result;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtColorSelect\n");
-#endif
-
-	if (title) title1 = (*env)->GetByteArrayElements(env, title, NULL);
-    if (info) {
-        lpInfo1 = &info1;
-        cachePtColorSelectInfo_tFids(env, info, &PGLOB(PtColorSelectInfo_tFc));
-        getPtColorSelectInfo_tFields(env, info, lpInfo1, &PGLOB(PtColorSelectInfo_tFc));
-    }
-    result = PtColorSelect((PtWidget_t *)parent, (char *)title1, lpInfo1);
-    if (title) (*env)->ReleaseByteArrayElements(env, title, title1, 0);
-    if (info) {
-        setPtColorSelectInfo_tFields(env, info, lpInfo1, &PGLOB(PtColorSelectInfo_tFc));
-    }
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgDrawArrow
- * Signature: (Lorg/eclipse/swt/photon/PhRect_t;SII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawArrow
-  (JNIEnv *env, jobject that, jobject rect, jshort unknown, jint color, jint flags)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t rect1, *lpRect1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgDrawArrow\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    PgDrawArrow(lpRect1, unknown, (PgColor_t)color, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetIsClassMember
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetIsClassMember
-  (JNIEnv *env, jobject that, jint widget, jint clazz)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetIsClassMember\n");
-#endif
-	
-	return (jint)PtWidgetIsClassMember((PtWidget_t *)widget, (PtWidgetClassRef_t *)clazz);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtBeep
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtBeep
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtBeep\n");
-#endif
-	
-	return (jint)PtBeep();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtAlert
- * Signature: (ILorg/eclipse/swt/photon/PhPoint_t;[BI[B[BII[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtAlert
-  (JNIEnv *env, jobject that, jint parent, jobject pos, jbyteArray title, int image, jbyteArray message, 
-  	jbyteArray msgFont, int btnCount, jintArray buttons, jintArray btnFonts,
-  	int defBtn, int escBtn, int flags)
-{
-	DECL_GLOB(pGlob)
-
-	PhPoint_t pos1, *lpPos1=NULL;
-	
-	char *title1=NULL;
-    char *message1=NULL;
-    char *msgFont1=NULL;
-    jint *buttons1=NULL;
-    jint *btnFonts1=NULL;
-    
-    jint result;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtAlert\n");
-#endif
-
-    if (pos) {
-        lpPos1= &pos1;
-        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
-        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }
-    if (title) title1 = (*env)->GetByteArrayElements(env, title, NULL);
-    if (message) message1 = (*env)->GetByteArrayElements(env, message, NULL);
-    if (msgFont) msgFont1 = (*env)->GetByteArrayElements(env, msgFont, NULL);
-    if (buttons) buttons1 = (*env)->GetIntArrayElements(env, buttons, NULL);
-    if (btnFonts) btnFonts1 = (*env)->GetIntArrayElements(env, btnFonts, NULL);
-
-    result = (jint) PtAlert ((PtWidget_t *)parent, lpPos1, title1, (PhImage_t *)image, message1, msgFont1, btnCount, (char const**)buttons1, (char const**)btnFonts1, defBtn, escBtn, flags);
-
-    if (pos) {
-        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
-    }    
-    if (title) (*env)->ReleaseByteArrayElements(env, title, title1, 0);
-    if (msgFont) (*env)->ReleaseByteArrayElements(env, msgFont, msgFont1, 0);	
-    if (message) (*env)->ReleaseByteArrayElements(env, message, message1, 0);
-    if (buttons) (*env)->ReleaseIntArrayElements(env, buttons, buttons1, 0);
-    if (btnFonts) (*env)->ReleaseIntArrayElements(env, btnFonts, btnFonts1, 0);
-      
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSlider
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSlider
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtSlider\n");
-#endif
-	
-	return (jint)PtSlider;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PiDuplicateImage
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PiDuplicateImage
-  (JNIEnv *env, jobject that, jint image, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PiDuplicateImage\n");
-#endif
-	
-	return (jint)PiDuplicateImage ((PhImage_t *)image, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhMakeGhostBitmap
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMakeGhostBitmap
-  (JNIEnv *env, jobject that, jint image)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhMakeGhostBitmap\n");
-#endif
-
-    return (jint) PhMakeGhostBitmap((PhImage_t *)image);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgReadScreen
- * Signature: (Lorg/eclipse/swt/photon/PhRect_t;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgReadScreen
-  (JNIEnv *env, jobject that, jobject rect, jint buffer)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t rect1, *lpRect1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgReadScreen\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    return (jint) PgReadScreen(lpRect1, (void *) buffer);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgReadScreenSize
- * Signature: (Lorg/eclipse/swt/photon/PhRect_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgReadScreenSize
-  (JNIEnv *env, jobject that, jobject rect)
-{
-	DECL_GLOB(pGlob)
-    PhRect_t rect1, *lpRect1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgReadScreenSize\n");
-#endif
-
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    return (jint) PgReadScreenSize(lpRect1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgShmemDestroy
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgShmemDestroy
-  (JNIEnv *env, jobject that, jint addr)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgShmemDestroy\n");
-#endif
-
-    return (jint) PgShmemDestroy((void *)addr);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgShmemDetach
- * Signature: (I)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgShmemDetach
-  (JNIEnv *env, jobject that, jint addr)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgShmemDetach\n");
-#endif
-
-    return (jint) PgShmemDetach((void *)addr);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgShmemCreate
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgShmemCreate
-  (JNIEnv *env, jobject that, jint size, jbyteArray name)
-{
-	jint result;
-	char *name1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgShmemCreate\n");
-#endif
-
-	if (name) name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    result = (jint) PgShmemCreate(size, name1);
-    if (name) (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgShmemCleanup
- * Signature: ()V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgShmemCleanup
-  (JNIEnv *env, jobject that, jint addr)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgShmemCleanup\n");
-#endif
-
-    PgShmemCleanup();
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhRegionQuery
- * Signature: (ILorg/eclipse/swt/photon/PhRegion_t;Lorg/eclipse/swt/photon/PhRect_t;II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhRegionQuery
-  (JNIEnv *env, jobject that, jint rid, jobject region, jobject rect, jint data, jint data_len)
-{
-	DECL_GLOB(pGlob)
-    PhRegion_t region1, *lpRegion1=NULL;
-    PhRect_t rect1, *lpRect1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhRegionQuery\n");
-#endif
-
-    if (region) {
-        lpRegion1 = &region1;
-        cachePhRegion_tFids(env, region, &PGLOB(PhRegion_tFc));
-        getPhRegion_tFields(env, region, lpRegion1, &PGLOB(PhRegion_tFc));
-    }
-    if (rect) {
-        lpRect1 = &rect1;
-        cachePhRect_tFids(env, rect, &PGLOB(PhRect_tFc));
-        getPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }
-    result = (jint) PhRegionQuery((PhRid_t)rid, lpRegion1, lpRect1, (void *) data, data_len);   
-    if (region) {
-        setPhRegion_tFields(env, region, lpRegion1, &PGLOB(PhRegion_tFc));
-    }    
-    if (rect) {
-        setPhRect_tFields(env, rect, lpRect1, &PGLOB(PhRect_tFc));
-    }      
-    return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PiGetPixelRGB
- * Signature: (II)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PiGetPixelRGB
-  (JNIEnv *env, jobject that, jint image, jint x, jint y, jintArray value)
-{
-	jint result;
-	jint *value1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PiGetPixelRGB\n");
-#endif
-	
-    if (value) value1 = (*env)->GetIntArrayElements(env, value, NULL);
-    
-	result = (jint)PiGetPixelRGB ((PhImage_t *)image, x, y, (PgColor_t *)value1);
-	
-    if (value) (*env)->ReleaseIntArrayElements(env, value, value1, 0);
-
-	return result;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PtContainerCallback_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PtContainerCallback_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePtContainerCallback_tFids(env, src, &PGLOB(PtContainerCallback_tFc));
-        getPtContainerCallback_tFields(env, src, src1, &PGLOB(PtContainerCallback_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PtContainerCallback_t;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PtContainerCallback_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePtContainerCallback_tFids(env, dest, &PGLOB(PtContainerCallback_tFc));
-        setPtContainerCallback_tFields(env, dest, dest1, &PGLOB(PtContainerCallback_tFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtSendEventToWidget
- * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSendEventToWidget
-  (JNIEnv *env, jobject that, jint widget, jint event)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PtSendEventToWidget\n");
-#endif
-
-    return (jint) PtSendEventToWidget((PtWidget_t *)widget, (void *)event);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhCursorDef_t;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PhCursorDef_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhCursorDef_tFids(env, src, &PGLOB(PhCursorDef_tFc));
-        getPhCursorDef_tFields(env, src, src1, &PGLOB(PhCursorDef_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhCursorDef_t;II)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhCursorDef_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhCursorDef_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhCursorDef_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhCursorDef_tFids(env, dest, &PGLOB(PhCursorDef_tFc));
-        setPhCursorDef_tFields(env, dest, dest1, &PGLOB(PhCursorDef_tFc));
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgSetFillTransPat
- * Signature: ([B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetFillTransPat
-  (JNIEnv *env, jobject that, jbyteArray pat)
-{
-    char *pat1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgSetFillTransPat\n");
 #endif
 
-    if (pat)
-        pat1 = (char *)(*env)->GetByteArrayElements(env, pat, NULL);
-
-    PgSetFillTransPat(pat1);
-
-    if (pat)
-        (*env)->ReleaseByteArrayElements(env, pat, (jbyte *)pat1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtInflateBalloon
- * Signature: (III[B[BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtInflateBalloon
-  (JNIEnv *env, jobject that, jint win, jint me, jint position, jbyteArray str, jbyteArray font, int fill, int text_color)
-{
-    jbyte *font1=NULL;
-    jbyte *str1=NULL;
-    int result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtInflateBalloon\n");
-#endif
-
-    if (font)
-        font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    if (str)
-        str1 = (*env)->GetByteArrayElements(env, str, NULL);
-
-    result = (jint) PtInflateBalloon((PtWidget_t *)win, (PtWidget_t *)me, position, str1, font1, fill, text_color);
-
-    if (font)
-        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
-    if (str)
-        (*env)->ReleaseByteArrayElements(env, str, str1, JNI_ABORT);
-	
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PgDisplaySettings_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PgDisplaySettings_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePgDisplaySettings_tFids(env, src, &PGLOB(PgDisplaySettings_tFc));
-        getPgDisplaySettings_tFields(env, src, src1, &PGLOB(PgDisplaySettings_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;II)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PgDisplaySettings_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePgDisplaySettings_tFids(env, dest, &PGLOB(PgDisplaySettings_tFc));
-        setPgDisplaySettings_tFields(env, dest, dest1, &PGLOB(PgDisplaySettings_tFc));
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	
-    PgVideoModeInfo_t object, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePgVideoModeInfo_tFids(env, src, &PGLOB(PgVideoModeInfo_tFc));
-        getPgVideoModeInfo_tFields(env, src, src1, &PGLOB(PgVideoModeInfo_tFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;II)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PgVideoModeInfo_t object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II\n");
-#endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePgVideoModeInfo_tFids(env, dest, &PGLOB(PgVideoModeInfo_tFc));
-        setPgVideoModeInfo_tFields(env, dest, dest1, &PGLOB(PgVideoModeInfo_tFc));
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgGetVideoMode
- * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoMode
-  (JNIEnv *env, jobject that, jobject settings)
-{
-	DECL_GLOB(pGlob)
-	PgDisplaySettings_t settings1 = {0}, *lpSettings1=&settings1;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgGetVideoMode\n");
-#endif
-
-    result = (jint)PgGetVideoMode(lpSettings1);
-
-    if (settings) {
-        cachePgDisplaySettings_tFids(env, settings, &PGLOB(PgDisplaySettings_tFc));
-        setPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
-    }
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PgGetVideoModeInfo
- * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoModeInfo
-  (JNIEnv *env, jobject that, jint mode_number, jobject mode_info)
+#ifndef NO_PgAlphaOn
+JNIEXPORT void JNICALL OS_NATIVE(PgAlphaOn)
+	(JNIEnv *env, jclass that)
 {
-	DECL_GLOB(pGlob)	
-    PgVideoModeInfo_t mode_info1, *lpmode_info1=NULL;
-	jint result;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PgGetVideoModeInfo\n");
-#endif
-
-	if (mode_info) {
-        lpmode_info1 = &mode_info1;
-        cachePgVideoModeInfo_tFids(env, mode_info, &PGLOB(PgVideoModeInfo_tFc));
-        getPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
-    }
-    result = (jint)PgGetVideoModeInfo(mode_number, lpmode_info1);
-
-    if (mode_info) {
-        setPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
-    }
-	return result;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardCopy
- * Signature: (SI[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardCopy
-  (JNIEnv *env, jclass that, jshort ig, jint n, jbyteArray clip)
-{	
-   jbyte *clip1;
-   jint result;
-   
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PhClipboardCopy\n");
-#endif
-
-    if (clip) {
-        clip1 = (*env)->GetByteArrayElements(env, clip, NULL);
-    }
-    
-    result = (jint)PhClipboardCopy(ig, n, (PhClipHeader const *)clip1);
-    
-    if (clip) {
-        (*env)->ReleaseByteArrayElements(env, clip, clip1, 0);
-    }
-    
-    return result;
+	NATIVE_ENTER(env, that, "PgAlphaOn\n")
+	PgAlphaOn();
+	NATIVE_EXIT(env, that, "PgAlphaOn\n")
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardPasteStart
- * Signature: (S)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteStart
-  (JNIEnv *env, jobject that, jshort ig)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardPasteStart\n");
 #endif
-	
-	return (jint) PhClipboardPasteStart(ig);
-}
 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardPasteType
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteType
-  (JNIEnv *env, jobject that, jint cbdata, jbyteArray type)
+#ifndef NO_PgCreateGC
+JNIEXPORT jint JNICALL OS_NATIVE(PgCreateGC)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	 char *type1=NULL;
-	 jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardPasteType\n");
-#endif
-
- 	if (type)
-        type1 = (char *)(*env)->GetByteArrayElements(env, type, NULL);
-    	
-	result = (jint) PhClipboardPasteType((void *)cbdata, type1);
-	
-	if (type)
-        (*env)->ReleaseByteArrayElements(env, type, (jbyte *)type1, 0);
-        
-	return result;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgCreateGC\n")
+	rc = (jint)PgCreateGC(arg0);
+	NATIVE_EXIT(env, that, "PgCreateGC\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardPasteTypeN
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteTypeN
-  (JNIEnv *env, jobject that, jint cbdata, jint n)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PhClipboardPasteTypeN\n");
 #endif
-	return (jint) PhClipboardPasteTypeN((void *)cbdata, n);
-}
 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhClipboardPasteFinish
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteFinish
-  (JNIEnv *env, jobject that, jint cbdata)
+#ifndef NO_PgDestroyGC
+JNIEXPORT void JNICALL OS_NATIVE(PgDestroyGC)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhClipboardPasteFinish\n");
-#endif
-	
-	PhClipboardPasteFinish((void *)cbdata);
-	
-	return;
+	NATIVE_ENTER(env, that, "PgDestroyGC\n")
+	PgDestroyGC((PhGC_t *)arg0);
+	NATIVE_EXIT(env, that, "PgDestroyGC\n")
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/photon/PhClipHeader;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II
-  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	PhClipHeader object, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n");
 #endif
-
-    memmove((void *)&object, (void *)src, count);
-    if (dest) {
-        dest1=&object;
-        cachePhClipHeaderFids(env, dest, &PGLOB(PhClipHeaderFc));
-        setPhClipHeaderFields(env, dest, dest1, &PGLOB(PhClipHeaderFc));
-    }
 
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: ([BLorg/eclipse/swt/internal/photon/PhClipHeader;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I
-  (JNIEnv *env, jobject that, jbyteArray dest, jobject src, jint count)
+#ifndef NO_PgDrawArc
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawArc)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jint arg4)
 {
-	DECL_GLOB(pGlob)
-	jbyte *dest1=NULL;
-    PhClipHeader object, *src1= NULL;
-    
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
-#endif
-
-    if (src) {
-        src1=&object;
-        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
-        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
-    }
-    
-    if (dest) {
-    	dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
-    }
-    
-    memmove((void *)dest1, (void *)src1, count);
-    
-    if (dest) {
-    	 (*env)->ReleaseByteArrayElements(env, dest, (jbyte *)dest1, 0);
-    }
+	PhPoint_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawArc\n")
+	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jint)PgDrawArc(lparg0, lparg1, arg2, arg3, arg4);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PgDrawArc\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/photon/PhClipHeader;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___ILorg_eclipse_swt_internal_photon_PhClipHeader_2I
-  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    PhClipHeader object, *src1= NULL;
-    
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
 #endif
 
-    if (src) {
-        src1=&object;
-        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
-        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
-    }
-    
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtHold
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtHold
-  (JNIEnv *env, jobject that)
+#ifndef NO_PgDrawArrow
+JNIEXPORT void JNICALL OS_NATIVE(PgDrawArrow)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtHold\n");
-#endif
-	
-	return (jint)PtHold();
+	PhRect_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "PgDrawArrow\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	PgDrawArrow(lparg0, arg1, (PgColor_t)arg2, arg3);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PgDrawArrow\n")
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtRelease
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRelease
-  (JNIEnv *env, jobject that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtRelease\n");
 #endif
-	
-	return (jint)PtRelease();
-}
 
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PhMoveCursorAbs
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhMoveCursorAbs
-  (JNIEnv *env, jobject that, jint input_group, jint x, jint y)
+#ifndef NO_PgDrawBitmap
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawBitmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jint arg5)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "PhMoveCursorAbs\n");
-#endif
-	PhMoveCursorAbs(input_group, x, y);
+	PhPoint_t _arg2, *lparg2=NULL;
+	PhDim_t _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawBitmap\n")
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
+	rc = (jint)PgDrawBitmap((void const *)arg0, (int)arg1, (PhPoint_t *)lparg2, (PhPoint_t *)lparg3, (int)arg4, (long)arg5);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "PgDrawBitmap\n")
+	return rc;
 }
-
-/*
- * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PtWidgetFlags
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetFlags
-  (JNIEnv *env, jobject that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtWidgetFlags\n");
 #endif
-	
-	return (jint)PtWidgetFlags((PtWidget_t *)widget);
-}
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_getenv
-  (JNIEnv *env, jobject that, jbyteArray name)
+#ifndef NO_PgDrawEllipse
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawEllipse)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2)
 {
-    char *name1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getenv\n");
-#endif
-
-    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
-    result = (jint)getenv(name1);
-    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
-
-	return result;
+	PhPoint_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawEllipse\n")
+	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jint)PgDrawEllipse(lparg0, lparg1, arg2);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PgDrawEllipse\n")
+	return rc;
 }
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhDCSetCurrent
-  (JNIEnv *env, jobject that, jint draw_context)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PhDCSetCurrent\n");
 #endif
-	
-	return (jint)PhDCSetCurrent((PhDrawContext_t *)draw_context);
-}
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfLoadMetrics
-  (JNIEnv *env, jobject that, jbyteArray font)
+#ifndef NO_PgDrawGradient
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawGradient)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jbyteArray arg10)
 {
-    jbyte *font1=NULL;
-    jint result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PfLoadMetrics\n");
-#endif
-
-    if (font) font1 = (*env)->GetByteArrayElements(env, font, NULL);
-    result = (jint)PfLoadMetrics(font1);
-    if (font) (*env)->ReleaseByteArrayElements(env, font, (char *)font1, 0);
-
-	return result;
+	PhPoint_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg10=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawGradient\n")
+	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg10) lparg10 = (*env)->GetByteArrayElements(env, arg10, NULL);
+	rc = (jint)PgDrawGradient(lparg0, lparg1, arg2, arg3, arg4, (PgColor_t)arg5, (PgColor_t)arg6, (PgColor_t)arg7, (PgColor_t)arg8, arg9, (unsigned char *)lparg10);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg10) (*env)->ReleaseByteArrayElements(env, arg10, lparg10, 0);
+	NATIVE_EXIT(env, that, "PgDrawGradient\n")
+	return rc;
 }
-
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_photon_OS_NewStringUTF
-  (JNIEnv *env, jobject that, jbyteArray buffer)
-{
-    jbyte *buffer1=NULL;
-    jstring result;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "NewStringUTF\n");
 #endif
-
-    if (buffer) buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-    result = (*env)->NewStringUTF(env, buffer1);
-    if (buffer) (*env)->ReleaseByteArrayElements(env, buffer, (char *)buffer1, 0);
 
-	return result;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFLength
-  (JNIEnv *env, jobject that, jstring string)
+#ifndef NO_PgDrawILine
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawILine)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetStringUTFLength\n");
-#endif
-	
-	return (*env)->GetStringUTFLength(env, string);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFRegion
-  (JNIEnv *env, jobject that, jstring string, jint start, jint length, jbyteArray buffer)
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawILine\n")
+	rc = (jint)PgDrawILine(arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "PgDrawILine\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawIRect
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawIRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-    jbyte *buffer1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetStringUTFRegion\n");
-#endif
-
-    if (buffer) buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-    (*env)->GetStringUTFRegion(env, string, start, length, buffer1);
-    if (buffer) (*env)->ReleaseByteArrayElements(env, buffer, (char *)buffer1, 0);
-}
-
-#ifndef NO_uname
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_uname
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawIRect\n")
+	rc = (jint)PgDrawIRect(arg0, arg1, arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "PgDrawIRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawImage
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jint arg5)
+{
+	PhPoint_t _arg2, *lparg2=NULL;
+	PhDim_t _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawImage\n")
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
+	rc = (jint)PgDrawImage((void const *)arg0, arg1, lparg2, lparg3, arg4, arg5);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "PgDrawImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawMultiTextArea
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawMultiTextArea)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg0=NULL;
+	PhRect_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawMultiTextArea\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
+	rc = (jint)PgDrawMultiTextArea((char *)lparg0, arg1, lparg2, arg3, arg4, arg5);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PgDrawMultiTextArea\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawPhImageRectmx
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawPhImageRectmx)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2, jint arg3)
+{
+	PhPoint_t _arg0, *lparg0=NULL;
+	PhRect_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawPhImageRectmx\n")
+	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
+	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
+	rc = (jint)PgDrawPhImageRectmx(lparg0, (PhImage_t const *)arg1, lparg2, arg3);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PgDrawPhImageRectmx\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawPolygon
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawPolygon)
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jobject arg2, jint arg3)
+{
+	jshort *lparg0=NULL;
+	PhPoint_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawPolygon\n")
+	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	rc = (jint)PgDrawPolygon((PhPoint_t const *)lparg0, arg1, (PhPoint_t const *)lparg2, arg3);
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PgDrawPolygon\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawRoundRect
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawRoundRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawRoundRect\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jint)PgDrawRoundRect((PhRect_t const *)lparg0, (PhPoint_t const *)lparg1, arg2);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PgDrawRoundRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawTImage
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawTImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	PhPoint_t _arg2, *lparg2=NULL;
+	PhDim_t _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawTImage\n")
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
+	rc = (jint)PgDrawTImage((void const *)arg0, arg1, (PhPoint_t const *)lparg2, (PhDim_t const *)lparg3, arg4, arg5, (void const *)arg6, arg7);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "PgDrawTImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgDrawText
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawText)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jobject arg2, jint arg3)
+{
+	jbyte *lparg0=NULL;
+	PhPoint_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawText\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	rc = (jint)PgDrawText((char const *)lparg0, arg1, (PhPoint_t *)lparg2, arg3);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PgDrawText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgExtentMultiText
+JNIEXPORT jobject JNICALL OS_NATIVE(PgExtentMultiText)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jobject rc;
+	NATIVE_ENTER(env, that, "PgExtentMultiText\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jobject)PgExtentMultiText((PhRect_t *)lparg0, (PhPoint_t *)lparg1, (char *)lparg2, (char *)lparg3, arg4, arg5);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PgExtentMultiText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgFlush
+JNIEXPORT jint JNICALL OS_NATIVE(PgFlush)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgFlush\n")
+	rc = (jint)PgFlush();
+	NATIVE_EXIT(env, that, "PgFlush\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgGetVideoMode
+JNIEXPORT jint JNICALL OS_NATIVE(PgGetVideoMode)
 	(JNIEnv *env, jclass that, jobject arg0)
 {
-	struct utsname _arg0, *lparg0=NULL;
+	PgDisplaySettings_t _arg0={0}, *lparg0=NULL;
 	jint rc;
+	NATIVE_ENTER(env, that, "PgGetVideoMode\n")
+	if (arg0) lparg0 = getPgDisplaySettings_tFields(env, arg0, &_arg0);
+	rc = (jint)PgGetVideoMode((PgDisplaySettings_t *)lparg0);
+	if (arg0) setPgDisplaySettings_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PgGetVideoMode\n")
+	return rc;
+}
+#endif
 
-	DEBUG_CALL("uname\n")
+#ifndef NO_PgGetVideoModeInfo
+JNIEXPORT jint JNICALL OS_NATIVE(PgGetVideoModeInfo)
+	(JNIEnv *env, jclass that, jshort arg0, jobject arg1)
+{
+	PgVideoModeInfo_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgGetVideoModeInfo\n")
+	if (arg1) lparg1 = getPgVideoModeInfo_tFields(env, arg1, &_arg1);
+	rc = (jint)PgGetVideoModeInfo(arg0, (PgVideoModeInfo_t *)lparg1);
+	if (arg1) setPgVideoModeInfo_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PgGetVideoModeInfo\n")
+	return rc;
+}
+#endif
 
-	if (arg0) lparg0 = &_arg0;
-	rc = (jint)uname(lparg0);
+#ifndef NO_PgReadScreen
+JNIEXPORT jint JNICALL OS_NATIVE(PgReadScreen)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgReadScreen\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	rc = (jint)PgReadScreen((PhRect_t *)lparg0, (void *)arg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PgReadScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgReadScreenSize
+JNIEXPORT jint JNICALL OS_NATIVE(PgReadScreenSize)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgReadScreenSize\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	rc = (jint)PgReadScreenSize((PhRect_t *)lparg0);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PgReadScreenSize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetAlpha
+JNIEXPORT void JNICALL OS_NATIVE(PgSetAlpha)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jbyte arg3, jbyte arg4)
+{
+	PgMap_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "PgSetAlpha\n")
+	if (arg1) lparg1 = getPgMap_tFields(env, arg1, &_arg1);
+	PgSetAlpha(arg0, (PgMap_t const *)lparg1, (PgGradient_t const *)arg2, arg3, arg4);
+	if (arg1) setPgMap_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PgSetAlpha\n")
+}
+#endif
+
+#ifndef NO_PgSetClipping
+JNIEXPORT void JNICALL OS_NATIVE(PgSetClipping)
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PgSetClipping\n")
+	PgSetClipping(arg0, (PhRect_t const *)arg1);
+	NATIVE_EXIT(env, that, "PgSetClipping\n")
+}
+#endif
+
+#ifndef NO_PgSetDrawBufferSize
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetDrawBufferSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetDrawBufferSize\n")
+	rc = (jint)PgSetDrawBufferSize(arg0);
+	NATIVE_EXIT(env, that, "PgSetDrawBufferSize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetDrawMode
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetDrawMode)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetDrawMode\n")
+	rc = (jint)PgSetDrawMode(arg0);
+	NATIVE_EXIT(env, that, "PgSetDrawMode\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetFillColor
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetFillColor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetFillColor\n")
+	rc = (jint)PgSetFillColor((PgColor_t)arg0);
+	NATIVE_EXIT(env, that, "PgSetFillColor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetFillTransPat
+JNIEXPORT void JNICALL OS_NATIVE(PgSetFillTransPat)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "PgSetFillTransPat\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	PgSetFillTransPat((PgPattern_t)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PgSetFillTransPat\n")
+}
+#endif
+
+#ifndef NO_PgSetFont
+JNIEXPORT void JNICALL OS_NATIVE(PgSetFont)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "PgSetFont\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	PgSetFont((char const *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PgSetFont\n")
+}
+#endif
+
+#ifndef NO_PgSetGC
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetGC)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetGC\n")
+	rc = (jint)PgSetGC((PhGC_t *)arg0);
+	NATIVE_EXIT(env, that, "PgSetGC\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetMultiClip
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetMultiClip)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetMultiClip\n")
+	rc = (jint)PgSetMultiClip(arg0, (PhRect_t const *)arg1);
+	NATIVE_EXIT(env, that, "PgSetMultiClip\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetPalette
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetPalette)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2, jshort arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetPalette\n")
+	rc = (jint)PgSetPalette((PgColor_t const *)arg0, arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "PgSetPalette\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetRegion
+JNIEXPORT void JNICALL OS_NATIVE(PgSetRegion)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PgSetRegion\n")
+	PgSetRegion((PhRid_t)arg0);
+	NATIVE_EXIT(env, that, "PgSetRegion\n")
+}
+#endif
+
+#ifndef NO_PgSetStrokeColor
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeColor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetStrokeColor\n")
+	rc = (jint)PgSetStrokeColor((PgColor_t)arg0);
+	NATIVE_EXIT(env, that, "PgSetStrokeColor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetStrokeDash
+JNIEXPORT void JNICALL OS_NATIVE(PgSetStrokeDash)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "PgSetStrokeDash\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	PgSetStrokeDash((unsigned char const *)lparg0, arg1, arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PgSetStrokeDash\n")
+}
+#endif
+
+#ifndef NO_PgSetStrokeWidth
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetStrokeWidth)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetStrokeWidth\n")
+	rc = (jint)PgSetStrokeWidth(arg0);
+	NATIVE_EXIT(env, that, "PgSetStrokeWidth\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetTextColor
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetTextColor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgSetTextColor\n")
+	rc = (jint)PgSetTextColor((PgColor_t)arg0);
+	NATIVE_EXIT(env, that, "PgSetTextColor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgSetTextXORColor
+JNIEXPORT void JNICALL OS_NATIVE(PgSetTextXORColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PgSetTextXORColor\n")
+	PgSetTextXORColor((PgColor_t)arg0, (PgColor_t)arg1);
+	NATIVE_EXIT(env, that, "PgSetTextXORColor\n")
+}
+#endif
+
+#ifndef NO_PgSetUserClip
+JNIEXPORT void JNICALL OS_NATIVE(PgSetUserClip)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "PgSetUserClip\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	PgSetUserClip((PhRect_t const *)lparg0);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PgSetUserClip\n")
+}
+#endif
+
+#ifndef NO_PgShmemCreate
+JNIEXPORT jint JNICALL OS_NATIVE(PgShmemCreate)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PgShmemCreate\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)PgShmemCreate(arg0, (char const *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PgShmemCreate\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PgShmemDestroy
+JNIEXPORT jint JNICALL OS_NATIVE(PgShmemDestroy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgShmemDestroy\n")
+	rc = (jint)PgShmemDestroy((void *)arg0);
+	NATIVE_EXIT(env, that, "PgShmemDestroy\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhAddMergeTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhAddMergeTiles)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhAddMergeTiles\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PhAddMergeTiles((PhTile_t *)arg0, (PhTile_t *)arg1, (int *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PhAddMergeTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhAreaToRect
+JNIEXPORT void JNICALL OS_NATIVE(PhAreaToRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	PhArea_t _arg0, *lparg0=NULL;
+	PhRect_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "PhAreaToRect\n")
+	if (arg0) lparg0 = getPhArea_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	PhAreaToRect((PhArea_t const *)lparg0, (PhRect_t *)lparg1);
+	if (arg0) setPhArea_tFields(env, arg0, lparg0);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PhAreaToRect\n")
+}
+#endif
+
+#ifndef NO_PhBlit
+JNIEXPORT void JNICALL OS_NATIVE(PhBlit)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	PhPoint_t _arg2, *lparg2=NULL;
+	NATIVE_ENTER(env, that, "PhBlit\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	PhBlit((PhRid_t)arg0, (const PhRect_t *)lparg1, (const PhPoint_t *)lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PhBlit\n")
+}
+#endif
+
+#ifndef NO_PhClipTilings
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipTilings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipTilings\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PhClipTilings((PhTile_t *)arg0, (PhTile_t *)arg1, (PhTile_t **)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PhClipTilings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardCopy
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardCopy)
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardCopy\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)PhClipboardCopy(arg0, arg1, (PhClipHeader const *)lparg2);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PhClipboardCopy\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardCopyString
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardCopyString)
+	(JNIEnv *env, jclass that, jshort arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardCopyString\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)PhClipboardCopyString(arg0, (const char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PhClipboardCopyString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardPasteFinish
+JNIEXPORT void JNICALL OS_NATIVE(PhClipboardPasteFinish)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PhClipboardPasteFinish\n")
+	PhClipboardPasteFinish((void *)arg0);
+	NATIVE_EXIT(env, that, "PhClipboardPasteFinish\n")
+}
+#endif
+
+#ifndef NO_PhClipboardPasteStart
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardPasteStart)
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardPasteStart\n")
+	rc = (jint)PhClipboardPasteStart(arg0);
+	NATIVE_EXIT(env, that, "PhClipboardPasteStart\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardPasteString
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardPasteString)
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardPasteString\n")
+	rc = (jint)PhClipboardPasteString(arg0);
+	NATIVE_EXIT(env, that, "PhClipboardPasteString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardPasteType
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardPasteType)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardPasteType\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)PhClipboardPasteType((void *)arg0, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PhClipboardPasteType\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhClipboardPasteTypeN
+JNIEXPORT jint JNICALL OS_NATIVE(PhClipboardPasteTypeN)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhClipboardPasteTypeN\n")
+	rc = (jint)PhClipboardPasteTypeN((void *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PhClipboardPasteTypeN\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhCoalesceTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhCoalesceTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhCoalesceTiles\n")
+	rc = (jint)PhCoalesceTiles((PhTile_t *)arg0);
+	NATIVE_EXIT(env, that, "PhCoalesceTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhCopyTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhCopyTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhCopyTiles\n")
+	rc = (jint)PhCopyTiles((PhTile_t *)arg0);
+	NATIVE_EXIT(env, that, "PhCopyTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhCreateImage
+JNIEXPORT jint JNICALL OS_NATIVE(PhCreateImage)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	PhImage_t _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhCreateImage\n")
+	if (arg0) lparg0 = getPhImage_tFields(env, arg0, &_arg0);
+	rc = (jint)PhCreateImage((PhImage_t *)lparg0, arg1, arg2, arg3, (PgColor_t const *)arg4, arg5, arg6);
+	if (arg0) setPhImage_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PhCreateImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhDCSetCurrent
+JNIEXPORT jint JNICALL OS_NATIVE(PhDCSetCurrent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhDCSetCurrent\n")
+	rc = (jint)PhDCSetCurrent((void *)arg0);
+	NATIVE_EXIT(env, that, "PhDCSetCurrent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhDeTranslateTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhDeTranslateTiles)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhDeTranslateTiles\n")
+	rc = (jint)PhDeTranslateTiles((PhTile_t *)arg0, (PhPoint_t const *)arg1);
+	NATIVE_EXIT(env, that, "PhDeTranslateTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhEventNext
+JNIEXPORT jint JNICALL OS_NATIVE(PhEventNext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhEventNext\n")
+	rc = (jint)PhEventNext((void *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PhEventNext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhEventPeek
+JNIEXPORT jint JNICALL OS_NATIVE(PhEventPeek)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhEventPeek\n")
+	rc = (jint)PhEventPeek((void *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PhEventPeek\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhFreeTiles
+JNIEXPORT void JNICALL OS_NATIVE(PhFreeTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PhFreeTiles\n")
+	PhFreeTiles((PhTile_t *)arg0);
+	NATIVE_EXIT(env, that, "PhFreeTiles\n")
+}
+#endif
+
+#ifndef NO_PhGetData
+JNIEXPORT jint JNICALL OS_NATIVE(PhGetData)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhGetData\n")
+	rc = (jint)PhGetData((PhEvent_t *)arg0);
+	NATIVE_EXIT(env, that, "PhGetData\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhGetMsgSize
+JNIEXPORT jint JNICALL OS_NATIVE(PhGetMsgSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhGetMsgSize\n")
+	rc = (jint)PhGetMsgSize((PhEvent_t const *)arg0);
+	NATIVE_EXIT(env, that, "PhGetMsgSize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhGetRects
+JNIEXPORT jint JNICALL OS_NATIVE(PhGetRects)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhGetRects\n")
+	rc = (jint)PhGetRects((PhEvent_t *)arg0);
+	NATIVE_EXIT(env, that, "PhGetRects\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhInitDrag
+JNIEXPORT jint JNICALL OS_NATIVE(PhInitDrag)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jobject arg5, jobject arg6, jobject arg7, jobject arg8, jshortArray arg9)
+{
+	PhRect_t _arg2, *lparg2=NULL;
+	PhRect_t _arg3, *lparg3=NULL;
+	PhDim_t _arg5, *lparg5=NULL;
+	PhDim_t _arg6, *lparg6=NULL;
+	PhDim_t _arg7, *lparg7=NULL;
+	PhPoint_t _arg8, *lparg8=NULL;
+	jshort *lparg9=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhInitDrag\n")
+	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getPhRect_tFields(env, arg3, &_arg3);
+	if (arg5) lparg5 = getPhDim_tFields(env, arg5, &_arg5);
+	if (arg6) lparg6 = getPhDim_tFields(env, arg6, &_arg6);
+	if (arg7) lparg7 = getPhDim_tFields(env, arg7, &_arg7);
+	if (arg8) lparg8 = getPhPoint_tFields(env, arg8, &_arg8);
+	if (arg9) lparg9 = (*env)->GetShortArrayElements(env, arg9, NULL);
+	rc = (jint)PhInitDrag((PhRid_t)arg0, arg1, (const PhRect_t *)lparg2, (const PhRect_t *)lparg3, arg4, (PhDim_t *)lparg5, (PhDim_t *)lparg6, (PhDim_t *)lparg7, (PhPoint_t *)lparg8, (PhCursorDescription_t *)lparg9);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	if (arg3) setPhRect_tFields(env, arg3, lparg3);
+	if (arg5) setPhDim_tFields(env, arg5, lparg5);
+	if (arg6) setPhDim_tFields(env, arg6, lparg6);
+	if (arg7) setPhDim_tFields(env, arg7, lparg7);
+	if (arg8) setPhPoint_tFields(env, arg8, lparg8);
+	if (arg9) (*env)->ReleaseShortArrayElements(env, arg9, lparg9, 0);
+	NATIVE_EXIT(env, that, "PhInitDrag\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhInputGroup
+JNIEXPORT jint JNICALL OS_NATIVE(PhInputGroup)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhInputGroup\n")
+	rc = (jint)PhInputGroup((PhEvent_t *)arg0);
+	NATIVE_EXIT(env, that, "PhInputGroup\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhIntersectTilings
+JNIEXPORT jint JNICALL OS_NATIVE(PhIntersectTilings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhIntersectTilings\n")
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)PhIntersectTilings((PhTile_t const *)arg0, (PhTile_t const *)arg1, lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PhIntersectTilings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhMakeGhostBitmap
+JNIEXPORT jint JNICALL OS_NATIVE(PhMakeGhostBitmap)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhMakeGhostBitmap\n")
+	rc = (jint)PhMakeGhostBitmap((PhImage_t *)arg0);
+	NATIVE_EXIT(env, that, "PhMakeGhostBitmap\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhMakeTransBitmap
+JNIEXPORT jint JNICALL OS_NATIVE(PhMakeTransBitmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhMakeTransBitmap\n")
+	rc = (jint)PhMakeTransBitmap((PhImage_t *)arg0, (PgColor_t)arg1);
+	NATIVE_EXIT(env, that, "PhMakeTransBitmap\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhMergeTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhMergeTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhMergeTiles\n")
+	rc = (jint)PhMergeTiles((PhTile_t *)arg0);
+	NATIVE_EXIT(env, that, "PhMergeTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhMoveCursorAbs
+JNIEXPORT void JNICALL OS_NATIVE(PhMoveCursorAbs)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "PhMoveCursorAbs\n")
+	PhMoveCursorAbs(arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "PhMoveCursorAbs\n")
+}
+#endif
+
+#ifndef NO_PhQueryCursor
+JNIEXPORT jint JNICALL OS_NATIVE(PhQueryCursor)
+	(JNIEnv *env, jclass that, jshort arg0, jobject arg1)
+{
+	PhCursorInfo_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhQueryCursor\n")
+	if (arg1) lparg1 = getPhCursorInfo_tFields(env, arg1, &_arg1);
+	rc = (jint)PhQueryCursor(arg0, (PhCursorInfo_t *)lparg1);
+	if (arg1) setPhCursorInfo_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PhQueryCursor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhQueryRids
+JNIEXPORT jint JNICALL OS_NATIVE(PhQueryRids)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jobject arg6, jintArray arg7, jint arg8)
+{
+	PhRect_t _arg6, *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhQueryRids\n")
+	if (arg6) lparg6 = getPhRect_tFields(env, arg6, &_arg6);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)PhQueryRids(arg0, (PhRid_t)arg1, arg2, arg3, arg4, (PhRid_t)arg5, (const PhRect_t *)lparg6, (PhRid_t *)lparg7, arg8);
+	if (arg6) setPhRect_tFields(env, arg6, lparg6);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	NATIVE_EXIT(env, that, "PhQueryRids\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhRectIntersect
+JNIEXPORT jint JNICALL OS_NATIVE(PhRectIntersect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhRectIntersect\n")
+	rc = (jint)PhRectIntersect((PhRect_t *)arg0, (PhRect_t const *)arg1);
+	NATIVE_EXIT(env, that, "PhRectIntersect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhRectUnion__II
+JNIEXPORT jint JNICALL OS_NATIVE(PhRectUnion__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhRectUnion__II\n")
+	rc = (jint)PhRectUnion((PhRect_t *)arg0, (PhRect_t const *)arg1);
+	NATIVE_EXIT(env, that, "PhRectUnion__II\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2
+JNIEXPORT jint JNICALL OS_NATIVE(PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PhRectUnion((PhRect_t *)lparg0, (PhRect_t const *)lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhRectsToTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhRectsToTiles)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhRectsToTiles\n")
+	rc = (jint)PhRectsToTiles((PhRect_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PhRectsToTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhRegionQuery
+JNIEXPORT jint JNICALL OS_NATIVE(PhRegionQuery)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jint arg3, jint arg4)
+{
+	PhRegion_t _arg1, *lparg1=NULL;
+	PhRect_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhRegionQuery\n")
+	if (arg1) lparg1 = getPhRegion_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
+	rc = (jint)PhRegionQuery((PhRid_t)arg0, (PhRegion_t *)lparg1, (PhRect_t *)lparg2, (void *)arg3, arg4);
+	if (arg1) setPhRegion_tFields(env, arg1, lparg1);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PhRegionQuery\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhReleaseImage
+JNIEXPORT void JNICALL OS_NATIVE(PhReleaseImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PhReleaseImage\n")
+	PhReleaseImage((PhImage_t *)arg0);
+	NATIVE_EXIT(env, that, "PhReleaseImage\n")
+}
+#endif
+
+#ifndef NO_PhSortTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhSortTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PhSortTiles\n")
+	rc = (jint)PhSortTiles((PhTile_t *)arg0);
+	NATIVE_EXIT(env, that, "PhSortTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhTilesToRects
+JNIEXPORT jint JNICALL OS_NATIVE(PhTilesToRects)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhTilesToRects\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PhTilesToRects((PhTile_t *)arg0, (int *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PhTilesToRects\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhTranslateTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PhTranslateTiles)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhTranslateTiles\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jint)PhTranslateTiles((PhTile_t *)arg0, (PhPoint_t const *)lparg1);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PhTranslateTiles\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PhWindowQueryVisible
+JNIEXPORT jint JNICALL OS_NATIVE(PhWindowQueryVisible)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	PhRect_t _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhWindowQueryVisible\n")
+	if (arg3) lparg3 = getPhRect_tFields(env, arg3, &_arg3);
+	rc = (jint)PhWindowQueryVisible(arg0, (PhRid_t)arg1, arg2, (PhRect_t *)lparg3);
+	if (arg3) setPhRect_tFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "PhWindowQueryVisible\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PiCropImage
+JNIEXPORT jint JNICALL OS_NATIVE(PiCropImage)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PiCropImage\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PiCropImage((PhImage_t *)arg0, (PhRect_t const *)lparg1, arg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PiCropImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PiDuplicateImage
+JNIEXPORT jint JNICALL OS_NATIVE(PiDuplicateImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PiDuplicateImage\n")
+	rc = (jint)PiDuplicateImage((PhImage_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PiDuplicateImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PmMemCreateMC
+JNIEXPORT jint JNICALL OS_NATIVE(PmMemCreateMC)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	PhDim_t _arg1, *lparg1=NULL;
+	PhPoint_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PmMemCreateMC\n")
+	if (arg1) lparg1 = getPhDim_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	rc = (jint)PmMemCreateMC((PhImage_t *)arg0, (PhDim_t *)lparg1, (PhPoint_t *)lparg2);
+	if (arg1) setPhDim_tFields(env, arg1, lparg1);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PmMemCreateMC\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PmMemFlush
+JNIEXPORT jint JNICALL OS_NATIVE(PmMemFlush)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PmMemFlush\n")
+	rc = (jint)PmMemFlush((PmMemoryContext_t *)arg0, (PhImage_t *)arg1);
+	NATIVE_EXIT(env, that, "PmMemFlush\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PmMemReleaseMC
+JNIEXPORT void JNICALL OS_NATIVE(PmMemReleaseMC)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PmMemReleaseMC\n")
+	PmMemReleaseMC((PmMemoryContext_t *)arg0);
+	NATIVE_EXIT(env, that, "PmMemReleaseMC\n")
+}
+#endif
+
+#ifndef NO_PmMemStart
+JNIEXPORT jint JNICALL OS_NATIVE(PmMemStart)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PmMemStart\n")
+	rc = (jint)PmMemStart((PmMemoryContext_t *)arg0);
+	NATIVE_EXIT(env, that, "PmMemStart\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PmMemStop
+JNIEXPORT jint JNICALL OS_NATIVE(PmMemStop)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PmMemStop\n")
+	rc = (jint)PmMemStop((PmMemoryContext_t *)arg0);
+	NATIVE_EXIT(env, that, "PmMemStop\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAddCallback
+JNIEXPORT void JNICALL OS_NATIVE(PtAddCallback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "PtAddCallback\n")
+	PtAddCallback((PtWidget_t *)arg0, arg1, (PtCallbackF_t *)arg2, (void *)arg3);
+	NATIVE_EXIT(env, that, "PtAddCallback\n")
+}
+#endif
+
+#ifndef NO_PtAddEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(PtAddEventHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "PtAddEventHandler\n")
+	PtAddEventHandler((PtWidget_t *)arg0, arg1, (PtCallbackF_t *)arg2, (void *)arg3);
+	NATIVE_EXIT(env, that, "PtAddEventHandler\n")
+}
+#endif
+
+#ifndef NO_PtAddFilterCallback
+JNIEXPORT void JNICALL OS_NATIVE(PtAddFilterCallback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "PtAddFilterCallback\n")
+	PtAddFilterCallback((PtWidget_t *)arg0, arg1, (PtCallbackF_t *)arg2, (void *)arg3);
+	NATIVE_EXIT(env, that, "PtAddFilterCallback\n")
+}
+#endif
+
+#ifndef NO_PtAddHotkeyHandler
+JNIEXPORT void JNICALL OS_NATIVE(PtAddHotkeyHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshort arg3, jint arg4, jint arg5)
+{
+	NATIVE_ENTER(env, that, "PtAddHotkeyHandler\n")
+	PtAddHotkeyHandler((PtWidget_t *)arg0, arg1, arg2, arg3, (void *)arg4, (PtCallbackF_t *)arg5);
+	NATIVE_EXIT(env, that, "PtAddHotkeyHandler\n")
+}
+#endif
+
+#ifndef NO_PtAlert
+JNIEXPORT jint JNICALL OS_NATIVE(PtAlert)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jint arg3, jbyteArray arg4, jbyteArray arg5, jint arg6, jintArray arg7, jintArray arg8, jint arg9, jint arg10, jint arg11)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAlert\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)PtAlert((PtWidget_t *)arg0, (PhPoint_t const *)lparg1, (char const *)lparg2, (PhImage_t const *)arg3, (char const *)lparg4, (char const *)lparg5, arg6, (char const **)lparg7, (char const **)lparg8, arg9, arg10, arg11);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "PtAlert\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppAddInput
+JNIEXPORT jint JNICALL OS_NATIVE(PtAppAddInput)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAppAddInput\n")
+	rc = (jint)PtAppAddInput((PtAppContext_t)arg0, (pid_t)arg1, (PtInputCallbackProc_t)arg2, (void *)arg3);
+	NATIVE_EXIT(env, that, "PtAppAddInput\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppAddWorkProc
+JNIEXPORT jint JNICALL OS_NATIVE(PtAppAddWorkProc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAppAddWorkProc\n")
+	rc = (jint)PtAppAddWorkProc((PtAppContext_t)arg0, (PtWorkProc_t)arg1, (void *)arg2);
+	NATIVE_EXIT(env, that, "PtAppAddWorkProc\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppCreatePulse
+JNIEXPORT jint JNICALL OS_NATIVE(PtAppCreatePulse)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAppCreatePulse\n")
+	rc = (jint)PtAppCreatePulse((PtAppContext_t)arg0, arg1);
+	NATIVE_EXIT(env, that, "PtAppCreatePulse\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppDeletePulse
+JNIEXPORT jint JNICALL OS_NATIVE(PtAppDeletePulse)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAppDeletePulse\n")
+	rc = (jint)PtAppDeletePulse((PtAppContext_t)arg0, (pid_t)arg1);
+	NATIVE_EXIT(env, that, "PtAppDeletePulse\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppProcessEvent
+JNIEXPORT void JNICALL OS_NATIVE(PtAppProcessEvent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PtAppProcessEvent\n")
+	PtAppProcessEvent((PtAppContext_t)arg0);
+	NATIVE_EXIT(env, that, "PtAppProcessEvent\n")
+}
+#endif
+
+#ifndef NO_PtAppPulseTrigger
+JNIEXPORT jint JNICALL OS_NATIVE(PtAppPulseTrigger)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtAppPulseTrigger\n")
+	rc = (jint)PtAppPulseTrigger((PtAppContext_t)arg0, (pid_t)arg1);
+	NATIVE_EXIT(env, that, "PtAppPulseTrigger\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtAppRemoveInput
+JNIEXPORT void JNICALL OS_NATIVE(PtAppRemoveInput)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtAppRemoveInput\n")
+	PtAppRemoveInput((PtAppContext_t)arg0, (PtInputId_t *)arg1);
+	NATIVE_EXIT(env, that, "PtAppRemoveInput\n")
+}
+#endif
+
+#ifndef NO_PtAppRemoveWorkProc
+JNIEXPORT void JNICALL OS_NATIVE(PtAppRemoveWorkProc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtAppRemoveWorkProc\n")
+	PtAppRemoveWorkProc((PtAppContext_t)arg0, (PtWorkProcId_t *)arg1);
+	NATIVE_EXIT(env, that, "PtAppRemoveWorkProc\n")
+}
+#endif
+
+#ifndef NO_PtBeep
+JNIEXPORT jint JNICALL OS_NATIVE(PtBeep)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtBeep\n")
+	rc = (jint)PtBeep();
+	NATIVE_EXIT(env, that, "PtBeep\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtBlit
+JNIEXPORT jint JNICALL OS_NATIVE(PtBlit)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	PhPoint_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtBlit\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	rc = (jint)PtBlit((PtWidget_t const *)arg0, (PhRect_t const *)lparg1, (PhPoint_t const *)lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PtBlit\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtBlockAllWindows
+JNIEXPORT jint JNICALL OS_NATIVE(PtBlockAllWindows)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtBlockAllWindows\n")
+	rc = (jint)PtBlockAllWindows((PtWidget_t *)arg0, arg1, (PgColor_t)arg2);
+	NATIVE_EXIT(env, that, "PtBlockAllWindows\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtBlockWindow
+JNIEXPORT jint JNICALL OS_NATIVE(PtBlockWindow)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtBlockWindow\n")
+	rc = (jint)PtBlockWindow((PtWidget_t *)arg0, arg1, (PgColor_t)arg2);
+	NATIVE_EXIT(env, that, "PtBlockWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtButton
+JNIEXPORT jint JNICALL OS_NATIVE(PtButton)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtButton\n")
+	rc = (jint)PtButton;
+	NATIVE_EXIT(env, that, "PtButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtCalcBorder
+JNIEXPORT void JNICALL OS_NATIVE(PtCalcBorder)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "PtCalcBorder\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	PtCalcBorder((PtWidget_t *)arg0, lparg1);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtCalcBorder\n")
+}
+#endif
+
+#ifndef NO_PtCalcCanvas
+JNIEXPORT jint JNICALL OS_NATIVE(PtCalcCanvas)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtCalcCanvas\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PtCalcCanvas((PtWidget_t *)arg0, (PhRect_t *)lparg1);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtCalcCanvas\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtClippedBlit
+JNIEXPORT jint JNICALL OS_NATIVE(PtClippedBlit)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	PhPoint_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtClippedBlit\n")
+	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
+	rc = (jint)PtClippedBlit((PtWidget_t const *)arg0, (PhTile_t const *)arg1, (PhPoint_t const *)lparg2, (PhTile_t const *)arg3);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PtClippedBlit\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtColorSelect
+JNIEXPORT jint JNICALL OS_NATIVE(PtColorSelect)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2)
+{
+	jbyte *lparg1=NULL;
+	PtColorSelectInfo_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtColorSelect\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = getPtColorSelectInfo_tFields(env, arg2, &_arg2);
+	rc = (jint)PtColorSelect((PtWidget_t *)arg0, (char *)lparg1, lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) setPtColorSelectInfo_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PtColorSelect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtComboBox
+JNIEXPORT jint JNICALL OS_NATIVE(PtComboBox)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtComboBox\n")
+	rc = (jint)PtComboBox;
+	NATIVE_EXIT(env, that, "PtComboBox\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainer
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainer)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainer\n")
+	rc = (jint)PtContainer;
+	NATIVE_EXIT(env, that, "PtContainer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerFindFocus
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerFindFocus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerFindFocus\n")
+	rc = (jint)PtContainerFindFocus((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtContainerFindFocus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerFocusNext
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerFocusNext)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerFocusNext\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtContainerFocusNext((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtContainerFocusNext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerFocusPrev
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerFocusPrev)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerFocusPrev\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtContainerFocusPrev((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtContainerFocusPrev\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerGiveFocus
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerGiveFocus)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerGiveFocus\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtContainerGiveFocus((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtContainerGiveFocus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerHold
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerHold)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerHold\n")
+	rc = (jint)PtContainerHold((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtContainerHold\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtContainerRelease
+JNIEXPORT jint JNICALL OS_NATIVE(PtContainerRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtContainerRelease\n")
+	rc = (jint)PtContainerRelease((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtContainerRelease\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtCreateAppContext
+JNIEXPORT jint JNICALL OS_NATIVE(PtCreateAppContext)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtCreateAppContext\n")
+	rc = (jint)PtCreateAppContext();
+	NATIVE_EXIT(env, that, "PtCreateAppContext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtCreateWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtCreateWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtCreateWidget\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)PtCreateWidget((PtWidgetClassRef_t *)arg0, (PtWidget_t *)arg1, arg2, (PtArg_t const *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PtCreateWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtCreateWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(PtCreateWidgetClass)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtCreateWidgetClass\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)PtCreateWidgetClass((PtWidgetClassRef_t *)arg0, arg1, arg2, (PtArg_t const *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PtCreateWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtDamageExtent
+JNIEXPORT jint JNICALL OS_NATIVE(PtDamageExtent)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtDamageExtent\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PtDamageExtent((PtWidget_t *)arg0, (PhRect_t const *)lparg1);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtDamageExtent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtDamageWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtDamageWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtDamageWidget\n")
+	rc = (jint)PtDamageWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtDamageWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtDestroyWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtDestroyWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtDestroyWidget\n")
+	rc = (jint)PtDestroyWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtDestroyWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtDisjoint
+JNIEXPORT jint JNICALL OS_NATIVE(PtDisjoint)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtDisjoint\n")
+	rc = (jint)PtDisjoint;
+	NATIVE_EXIT(env, that, "PtDisjoint\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtEnter
+JNIEXPORT jint JNICALL OS_NATIVE(PtEnter)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtEnter\n")
+	rc = (jint)PtEnter(arg0);
+	NATIVE_EXIT(env, that, "PtEnter\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtEventHandler
+JNIEXPORT jint JNICALL OS_NATIVE(PtEventHandler)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtEventHandler\n")
+	rc = (jint)PtEventHandler((PhEvent_t *)arg0);
+	NATIVE_EXIT(env, that, "PtEventHandler\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtExtentWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtExtentWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtExtentWidget\n")
+	rc = (jint)PtExtentWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtExtentWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtExtentWidgetFamily
+JNIEXPORT jint JNICALL OS_NATIVE(PtExtentWidgetFamily)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtExtentWidgetFamily\n")
+	rc = (jint)PtExtentWidgetFamily((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtExtentWidgetFamily\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtFileSelection
+JNIEXPORT jint JNICALL OS_NATIVE(PtFileSelection)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jbyteArray arg6, jbyteArray arg7, jobject arg8, jint arg9)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jbyte *lparg6=NULL;
+	jbyte *lparg7=NULL;
+	PtFileSelectionInfo_t _arg8={0}, *lparg8=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtFileSelection\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetByteArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = getPtFileSelectionInfo_tFields(env, arg8, &_arg8);
+	rc = (jint)PtFileSelection((PtWidget_t *)arg0, (PhPoint_t const *)lparg1, (char const *)lparg2, (char const *)lparg3, (char const *)lparg4, (char const *)lparg5, (char const *)lparg6, (char const *)lparg7, (PtFileSelectionInfo_t *)lparg8, arg9);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseByteArrayElements(env, arg7, lparg7, 0);
+	if (arg8) setPtFileSelectionInfo_tFields(env, arg8, lparg8);
+	NATIVE_EXIT(env, that, "PtFileSelection\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtFindDisjoint
+JNIEXPORT jint JNICALL OS_NATIVE(PtFindDisjoint)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtFindDisjoint\n")
+	rc = (jint)PtFindDisjoint((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtFindDisjoint\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtFlush
+JNIEXPORT jint JNICALL OS_NATIVE(PtFlush)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtFlush\n")
+	rc = (jint)PtFlush();
+	NATIVE_EXIT(env, that, "PtFlush\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtFontSelection
+JNIEXPORT jint JNICALL OS_NATIVE(PtFontSelection)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5, jbyteArray arg6)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg6=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtFontSelection\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	rc = (jint)PtFontSelection((PtWidget_t *)arg0, (const PhPoint_t *)lparg1, (const char *)lparg2, (const char *)lparg3, arg4, arg5, (const char *)lparg6);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "PtFontSelection\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtForwardWindowEvent
+JNIEXPORT jint JNICALL OS_NATIVE(PtForwardWindowEvent)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	PhWindowEvent_t _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtForwardWindowEvent\n")
+	if (arg0) lparg0 = getPhWindowEvent_tFields(env, arg0, &_arg0);
+	rc = (jint)PtForwardWindowEvent((PhWindowEvent_t const *)lparg0);
+	if (arg0) setPhWindowEvent_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "PtForwardWindowEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtFrameSize
+JNIEXPORT void JNICALL OS_NATIVE(PtFrameSize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	NATIVE_ENTER(env, that, "PtFrameSize\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	PtFrameSize(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	NATIVE_EXIT(env, that, "PtFrameSize\n")
+}
+#endif
+
+#ifndef NO_PtGetAbsPosition
+JNIEXPORT void JNICALL OS_NATIVE(PtGetAbsPosition)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jshortArray arg2)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	NATIVE_ENTER(env, that, "PtGetAbsPosition\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	PtGetAbsPosition((PtWidget_t *)arg0, lparg1, lparg2);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PtGetAbsPosition\n")
+}
+#endif
+
+#ifndef NO_PtGetResources
+JNIEXPORT jint JNICALL OS_NATIVE(PtGetResources)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGetResources\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PtGetResources((PtWidget_t *)arg0, arg1, (PtArg_t *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PtGetResources\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGlobalFocusNext
+JNIEXPORT jint JNICALL OS_NATIVE(PtGlobalFocusNext)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGlobalFocusNext\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtGlobalFocusNext((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtGlobalFocusNext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGlobalFocusNextContainer
+JNIEXPORT jint JNICALL OS_NATIVE(PtGlobalFocusNextContainer)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGlobalFocusNextContainer\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtGlobalFocusNextContainer((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtGlobalFocusNextContainer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGlobalFocusPrev
+JNIEXPORT jint JNICALL OS_NATIVE(PtGlobalFocusPrev)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGlobalFocusPrev\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtGlobalFocusPrev((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtGlobalFocusPrev\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGlobalFocusPrevContainer
+JNIEXPORT jint JNICALL OS_NATIVE(PtGlobalFocusPrevContainer)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGlobalFocusPrevContainer\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PtGlobalFocusPrevContainer((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtGlobalFocusPrevContainer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGroup
+JNIEXPORT jint JNICALL OS_NATIVE(PtGroup)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtGroup\n")
+	rc = (jint)PtGroup;
+	NATIVE_EXIT(env, that, "PtGroup\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtHit
+JNIEXPORT jint JNICALL OS_NATIVE(PtHit)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	PhRect_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtHit\n")
+	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
+	rc = (jint)PtHit(( PtWidget_t *)arg0, arg1, (PhRect_t const *)lparg2);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PtHit\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtHold
+JNIEXPORT jint JNICALL OS_NATIVE(PtHold)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtHold\n")
+	rc = (jint)PtHold();
+	NATIVE_EXIT(env, that, "PtHold\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtInflateBalloon
+JNIEXPORT jint JNICALL OS_NATIVE(PtInflateBalloon)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtInflateBalloon\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)PtInflateBalloon((PtWidget_t *)arg0, (PtWidget_t *)arg1, arg2, (char const *)lparg3, (char const *)lparg4, (PgColor_t)arg5, (PgColor_t)arg6);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "PtInflateBalloon\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtInit
+JNIEXPORT jint JNICALL OS_NATIVE(PtInit)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtInit\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)PtInit((char const *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PtInit\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtIsFocused
+JNIEXPORT jint JNICALL OS_NATIVE(PtIsFocused)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtIsFocused\n")
+	rc = (jint)PtIsFocused((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtIsFocused\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtLabel
+JNIEXPORT jint JNICALL OS_NATIVE(PtLabel)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtLabel\n")
+	rc = (jint)PtLabel;
+	NATIVE_EXIT(env, that, "PtLabel\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtLeave
+JNIEXPORT jint JNICALL OS_NATIVE(PtLeave)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtLeave\n")
+	rc = (jint)PtLeave(arg0);
+	NATIVE_EXIT(env, that, "PtLeave\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtList
+JNIEXPORT jint JNICALL OS_NATIVE(PtList)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtList\n")
+	rc = (jint)PtList;
+	NATIVE_EXIT(env, that, "PtList\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListAddItems
+JNIEXPORT jint JNICALL OS_NATIVE(PtListAddItems)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtListAddItems\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PtListAddItems((PtWidget_t *)arg0, (const char **)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PtListAddItems\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListDeleteAllItems
+JNIEXPORT jint JNICALL OS_NATIVE(PtListDeleteAllItems)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtListDeleteAllItems\n")
+	rc = (jint)PtListDeleteAllItems((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtListDeleteAllItems\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListDeleteItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(PtListDeleteItemPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtListDeleteItemPos\n")
+	rc = (jint)PtListDeleteItemPos((PtWidget_t *)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "PtListDeleteItemPos\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListGotoPos
+JNIEXPORT void JNICALL OS_NATIVE(PtListGotoPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtListGotoPos\n")
+	PtListGotoPos((PtWidget_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PtListGotoPos\n")
+}
+#endif
+
+#ifndef NO_PtListItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(PtListItemPos)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtListItemPos\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)PtListItemPos((PtWidget_t *)arg0, (const char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PtListItemPos\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListReplaceItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(PtListReplaceItemPos)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtListReplaceItemPos\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PtListReplaceItemPos((PtWidget_t *)arg0, (const char **)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PtListReplaceItemPos\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtListSelectPos
+JNIEXPORT void JNICALL OS_NATIVE(PtListSelectPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtListSelectPos\n")
+	PtListSelectPos((PtWidget_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PtListSelectPos\n")
+}
+#endif
+
+#ifndef NO_PtListUnselectPos
+JNIEXPORT void JNICALL OS_NATIVE(PtListUnselectPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtListUnselectPos\n")
+	PtListUnselectPos((PtWidget_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PtListUnselectPos\n")
+}
+#endif
+
+#ifndef NO_PtMainLoop
+JNIEXPORT void JNICALL OS_NATIVE(PtMainLoop)
+	(JNIEnv *env, jclass that)
+{
+	NATIVE_ENTER(env, that, "PtMainLoop\n")
+	PtMainLoop();
+	NATIVE_EXIT(env, that, "PtMainLoop\n")
+}
+#endif
+
+#ifndef NO_PtMenu
+JNIEXPORT jint JNICALL OS_NATIVE(PtMenu)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtMenu\n")
+	rc = (jint)PtMenu;
+	NATIVE_EXIT(env, that, "PtMenu\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtMenuBar
+JNIEXPORT jint JNICALL OS_NATIVE(PtMenuBar)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtMenuBar\n")
+	rc = (jint)PtMenuBar;
+	NATIVE_EXIT(env, that, "PtMenuBar\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtMenuButton
+JNIEXPORT jint JNICALL OS_NATIVE(PtMenuButton)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtMenuButton\n")
+	rc = (jint)PtMenuButton;
+	NATIVE_EXIT(env, that, "PtMenuButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtMultiText
+JNIEXPORT jint JNICALL OS_NATIVE(PtMultiText)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtMultiText\n")
+	rc = (jint)PtMultiText;
+	NATIVE_EXIT(env, that, "PtMultiText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtNextTopLevelWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtNextTopLevelWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtNextTopLevelWidget\n")
+	rc = (jint)PtNextTopLevelWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtNextTopLevelWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtPane
+JNIEXPORT jint JNICALL OS_NATIVE(PtPane)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtPane\n")
+	rc = (jint)PtPane;
+	NATIVE_EXIT(env, that, "PtPane\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtPanelGroup
+JNIEXPORT jint JNICALL OS_NATIVE(PtPanelGroup)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtPanelGroup\n")
+	rc = (jint)PtPanelGroup;
+	NATIVE_EXIT(env, that, "PtPanelGroup\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtPositionMenu
+JNIEXPORT void JNICALL OS_NATIVE(PtPositionMenu)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "PtPositionMenu\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	PtPositionMenu((PtWidget_t *)arg0, (PhEvent_t *)lparg1);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtPositionMenu\n")
+}
+#endif
+
+#ifndef NO_PtProgress
+JNIEXPORT jint JNICALL OS_NATIVE(PtProgress)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtProgress\n")
+	rc = (jint)PtProgress;
+	NATIVE_EXIT(env, that, "PtProgress\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtReParentWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtReParentWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtReParentWidget\n")
+	rc = (jint)PtReParentWidget((PtWidget_t *)arg0, (PtWidget_t *)arg1);
+	NATIVE_EXIT(env, that, "PtReParentWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtRealizeWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtRealizeWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtRealizeWidget\n")
+	rc = (jint)PtRealizeWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtRealizeWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtRegion
+JNIEXPORT jint JNICALL OS_NATIVE(PtRegion)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtRegion\n")
+	rc = (jint)PtRegion;
+	NATIVE_EXIT(env, that, "PtRegion\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtRelease
+JNIEXPORT jint JNICALL OS_NATIVE(PtRelease)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtRelease\n")
+	rc = (jint)PtRelease();
+	NATIVE_EXIT(env, that, "PtRelease\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtRemoveCallback
+JNIEXPORT void JNICALL OS_NATIVE(PtRemoveCallback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "PtRemoveCallback\n")
+	PtRemoveCallback((PtWidget_t *)arg0, arg1, (PtCallbackF_t *)arg2, (void *)arg3);
+	NATIVE_EXIT(env, that, "PtRemoveCallback\n")
+}
+#endif
+
+#ifndef NO_PtRemoveHotkeyHandler
+JNIEXPORT void JNICALL OS_NATIVE(PtRemoveHotkeyHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshort arg3, jint arg4, jint arg5)
+{
+	NATIVE_ENTER(env, that, "PtRemoveHotkeyHandler\n")
+	PtRemoveHotkeyHandler((PtWidget_t *)arg0, arg1, arg2, arg3, (void *)arg4, (PtCallbackF_t *)arg5);
+	NATIVE_EXIT(env, that, "PtRemoveHotkeyHandler\n")
+}
+#endif
+
+#ifndef NO_PtScrollArea
+JNIEXPORT jint JNICALL OS_NATIVE(PtScrollArea)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtScrollArea\n")
+	rc = (jint)PtScrollArea;
+	NATIVE_EXIT(env, that, "PtScrollArea\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtScrollContainer
+JNIEXPORT jint JNICALL OS_NATIVE(PtScrollContainer)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtScrollContainer\n")
+	rc = (jint)PtScrollContainer;
+	NATIVE_EXIT(env, that, "PtScrollContainer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtScrollbar
+JNIEXPORT jint JNICALL OS_NATIVE(PtScrollbar)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtScrollbar\n")
+	rc = (jint)PtScrollbar;
+	NATIVE_EXIT(env, that, "PtScrollbar\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSendEventToWidget
+JNIEXPORT void JNICALL OS_NATIVE(PtSendEventToWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "PtSendEventToWidget\n")
+	PtSendEventToWidget((PtWidget_t *)arg0, (PhEvent_t *)arg1);
+	NATIVE_EXIT(env, that, "PtSendEventToWidget\n")
+}
+#endif
+
+#ifndef NO_PtSeparator
+JNIEXPORT jint JNICALL OS_NATIVE(PtSeparator)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSeparator\n")
+	rc = (jint)PtSeparator;
+	NATIVE_EXIT(env, that, "PtSeparator\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSetAreaFromWidgetCanvas
+JNIEXPORT jint JNICALL OS_NATIVE(PtSetAreaFromWidgetCanvas)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	PhArea_t _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSetAreaFromWidgetCanvas\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPhArea_tFields(env, arg2, &_arg2);
+	rc = (jint)PtSetAreaFromWidgetCanvas((PtWidget_t *)arg0, lparg1, lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	if (arg2) setPhArea_tFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PtSetAreaFromWidgetCanvas\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSetParentWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtSetParentWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSetParentWidget\n")
+	rc = (jint)PtSetParentWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtSetParentWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSetResource
+JNIEXPORT jint JNICALL OS_NATIVE(PtSetResource)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSetResource\n")
+	rc = (jint)PtSetResource((PtWidget_t *)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "PtSetResource\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSetResources
+JNIEXPORT jint JNICALL OS_NATIVE(PtSetResources)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSetResources\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PtSetResources((PtWidget_t *)arg0, arg1, (PtArg_t *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PtSetResources\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSlider
+JNIEXPORT jint JNICALL OS_NATIVE(PtSlider)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSlider\n")
+	rc = (jint)PtSlider;
+	NATIVE_EXIT(env, that, "PtSlider\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtSuperClassDraw
+JNIEXPORT void JNICALL OS_NATIVE(PtSuperClassDraw)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "PtSuperClassDraw\n")
+	PtSuperClassDraw((PtWidgetClassRef_t *)arg0, (PtWidget_t *)arg1, (PhTile_t const *)arg2);
+	NATIVE_EXIT(env, that, "PtSuperClassDraw\n")
+}
+#endif
+
+#ifndef NO_PtSyncWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtSyncWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtSyncWidget\n")
+	rc = (jint)PtSyncWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtSyncWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtText
+JNIEXPORT jint JNICALL OS_NATIVE(PtText)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtText\n")
+	rc = (jint)PtText;
+	NATIVE_EXIT(env, that, "PtText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtTextGetSelection
+JNIEXPORT jint JNICALL OS_NATIVE(PtTextGetSelection)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtTextGetSelection\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PtTextGetSelection((PtWidget_t *)arg0, lparg1, lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PtTextGetSelection\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtTextModifyText__IIII_3BI
+JNIEXPORT jint JNICALL OS_NATIVE(PtTextModifyText__IIII_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4, jint arg5)
+{
+	jbyte *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtTextModifyText__IIII_3BI\n")
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)PtTextModifyText((PtWidget_t *)arg0, arg1, arg2, arg3, (char const *)lparg4, arg5);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "PtTextModifyText__IIII_3BI\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtTextModifyText__IIIIII
+JNIEXPORT jint JNICALL OS_NATIVE(PtTextModifyText__IIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtTextModifyText__IIIIII\n")
+	rc = (jint)PtTextModifyText((PtWidget_t *)arg0, arg1, arg2, arg3, (char const *)arg4, arg5);
+	NATIVE_EXIT(env, that, "PtTextModifyText__IIIIII\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtTextSetSelection
+JNIEXPORT jint JNICALL OS_NATIVE(PtTextSetSelection)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtTextSetSelection\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PtTextSetSelection((PtWidget_t *)arg0, lparg1, lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PtTextSetSelection\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtTimer
+JNIEXPORT jint JNICALL OS_NATIVE(PtTimer)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtTimer\n")
+	rc = (jint)PtTimer;
+	NATIVE_EXIT(env, that, "PtTimer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtToggleButton
+JNIEXPORT jint JNICALL OS_NATIVE(PtToggleButton)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtToggleButton\n")
+	rc = (jint)PtToggleButton;
+	NATIVE_EXIT(env, that, "PtToggleButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtToolbar
+JNIEXPORT jint JNICALL OS_NATIVE(PtToolbar)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtToolbar\n")
+	rc = (jint)PtToolbar;
+	NATIVE_EXIT(env, that, "PtToolbar\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtUnblockWindows
+JNIEXPORT void JNICALL OS_NATIVE(PtUnblockWindows)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PtUnblockWindows\n")
+	PtUnblockWindows((PtBlockedList_t *)arg0);
+	NATIVE_EXIT(env, that, "PtUnblockWindows\n")
+}
+#endif
+
+#ifndef NO_PtUnrealizeWidget
+JNIEXPORT jint JNICALL OS_NATIVE(PtUnrealizeWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtUnrealizeWidget\n")
+	rc = (jint)PtUnrealizeWidget((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtUnrealizeWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtValidParent
+JNIEXPORT jint JNICALL OS_NATIVE(PtValidParent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtValidParent\n")
+	rc = (jint)PtValidParent((PtWidget_t *)arg0, (PtWidgetClassRef_t *)arg1);
+	NATIVE_EXIT(env, that, "PtValidParent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetArea
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetArea)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhArea_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetArea\n")
+	if (arg1) lparg1 = getPhArea_tFields(env, arg1, &_arg1);
+	rc = (jint)PtWidgetArea((PtWidget_t *)arg0, (PhArea_t *)lparg1);
+	if (arg1) setPhArea_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtWidgetArea\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetBrotherBehind
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetBrotherBehind)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetBrotherBehind\n")
+	rc = (jint)PtWidgetBrotherBehind((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetBrotherBehind\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetBrotherInFront
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetBrotherInFront)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetBrotherInFront\n")
+	rc = (jint)PtWidgetBrotherInFront((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetBrotherInFront\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetCanvas__II
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetCanvas__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetCanvas__II\n")
+	rc = (jint)PtWidgetCanvas((PtWidget_t *)arg0, (PhRect_t *)arg1);
+	NATIVE_EXIT(env, that, "PtWidgetCanvas__II\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PtWidgetCanvas((PtWidget_t *)arg0, lparg1);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtWidgetCanvas__ILorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetChildBack
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetChildBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetChildBack\n")
+	rc = (jint)PtWidgetChildBack((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetChildBack\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetChildFront
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetChildFront)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetChildFront\n")
+	rc = (jint)PtWidgetChildFront((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetChildFront\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetClass)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetClass\n")
+	rc = (jint)PtWidgetClass((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetExtent__II
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetExtent__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetExtent__II\n")
+	rc = (jint)PtWidgetExtent((PtWidget_t *)arg0, arg1);
+	NATIVE_EXIT(env, that, "PtWidgetExtent__II\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetExtent__ILorg_eclipse_swt_internal_photon_PhRect_1t_2
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetExtent__ILorg_eclipse_swt_internal_photon_PhRect_1t_2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetExtent__ILorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	rc = (jint)PtWidgetExtent((PtWidget_t *)arg0, lparg1);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtWidgetExtent__ILorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetFlags
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetFlags)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetFlags\n")
+	rc = (jint)PtWidgetFlags((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetFlags\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetInsert
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetInsert)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetInsert\n")
+	rc = (jint)PtWidgetInsert((PtWidget_t *)arg0, (PtWidget_t *)arg1, arg2);
+	NATIVE_EXIT(env, that, "PtWidgetInsert\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetIsClassMember
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetIsClassMember)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetIsClassMember\n")
+	rc = (jint)PtWidgetIsClassMember((PtWidget_t *)arg0, (PtWidgetClassRef_t *)arg1);
+	NATIVE_EXIT(env, that, "PtWidgetIsClassMember\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetIsRealized
+JNIEXPORT jboolean JNICALL OS_NATIVE(PtWidgetIsRealized)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "PtWidgetIsRealized\n")
+	rc = (jboolean)PtWidgetIsRealized((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetIsRealized\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetOffset
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetOffset)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetOffset\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	rc = (jint)PtWidgetOffset((PtWidget_t *)arg0, (PhPoint_t *)lparg1);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtWidgetOffset\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetParent
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetParent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetParent\n")
+	rc = (jint)PtWidgetParent((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetParent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetPreferredSize
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetPreferredSize)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PhDim_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetPreferredSize\n")
+	if (arg1) lparg1 = getPhDim_tFields(env, arg1, &_arg1);
+	rc = (jint)PtWidgetPreferredSize((PtWidget_t *)arg0, (PhDim_t *)lparg1);
+	if (arg1) setPhDim_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PtWidgetPreferredSize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetRid
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetRid)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetRid\n")
+	rc = (jint)PtWidgetRid((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetRid\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetToBack
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetToBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetToBack\n")
+	rc = (jint)PtWidgetToBack((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetToBack\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWidgetToFront
+JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetToFront)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWidgetToFront\n")
+	rc = (jint)PtWidgetToFront((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWidgetToFront\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWindow
+JNIEXPORT jint JNICALL OS_NATIVE(PtWindow)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWindow\n")
+	rc = (jint)PtWindow;
+	NATIVE_EXIT(env, that, "PtWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWindowFocus
+JNIEXPORT jint JNICALL OS_NATIVE(PtWindowFocus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWindowFocus\n")
+	rc = (jint)PtWindowFocus((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWindowFocus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWindowGetState
+JNIEXPORT jint JNICALL OS_NATIVE(PtWindowGetState)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWindowGetState\n")
+	rc = (jint)PtWindowGetState((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWindowGetState\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PtWindowToBack
+JNIEXPORT void JNICALL OS_NATIVE(PtWindowToBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PtWindowToBack\n")
+	PtWindowToBack((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWindowToBack\n")
+}
+#endif
+
+#ifndef NO_PtWindowToFront
+JNIEXPORT void JNICALL OS_NATIVE(PtWindowToFront)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "PtWindowToFront\n")
+	PtWindowToFront((PtWidget_t *)arg0);
+	NATIVE_EXIT(env, that, "PtWindowToFront\n")
+}
+#endif
+
+#ifndef NO_free
+JNIEXPORT void JNICALL OS_NATIVE(free)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "free\n")
+	free((void *)arg0);
+	NATIVE_EXIT(env, that, "free\n")
+}
+#endif
+
+#ifndef NO_getenv
+JNIEXPORT jint JNICALL OS_NATIVE(getenv)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "getenv\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)getenv((const char *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "getenv\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_malloc
+JNIEXPORT jint JNICALL OS_NATIVE(malloc)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "malloc\n")
+	rc = (jint)malloc((size_t)arg0);
+	NATIVE_EXIT(env, that, "malloc\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhPoint_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n")
+	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPoint_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove___3III
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3III\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3III\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3II\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhTile_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I\n")
+	if (arg1) lparg1 = getPhTile_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhTile_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhTile_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II\n")
+	if (arg0) lparg0 = getPhTile_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhTile_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhTile_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtCallbackInfo_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II\n")
+	if (arg0) lparg0 = getPtCallbackInfo_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPtCallbackInfo_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtCallbackInfo_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhWindowEvent_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II\n")
+	if (arg0) lparg0 = getPhWindowEvent_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhWindowEvent_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhWindowEvent_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove___3BII
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3BII\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3BII\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3BI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3BI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3BI\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhRect_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I\n")
+	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhRect_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II\n")
+	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhRect_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove___3SII
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3SII)
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jint arg2)
+{
+	jshort *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3SII\n")
+	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3SII\n")
+}
+#endif
+
+#ifndef NO_memmove__III
+JNIEXPORT void JNICALL OS_NATIVE(memmove__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "memmove__III\n")
+	memmove((void *)arg0, (const void *)arg1, arg2);
+	NATIVE_EXIT(env, that, "memmove__III\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhImage_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I\n")
+	if (arg1) lparg1 = getPhImage_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhImage_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhImage_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhImage_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II\n")
+	if (arg0) lparg0 = getPhImage_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhImage_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhImage_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	FontDetails _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II\n")
+	if (arg0) lparg0 = getFontDetailsFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setFontDetailsFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhPointerEvent_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I\n")
+	if (arg1) lparg1 = getPhPointerEvent_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhPointerEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhPointerEvent_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II\n")
+	if (arg0) lparg0 = getPhPointerEvent_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhPointerEvent_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhEvent_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II\n")
+	if (arg0) lparg0 = getPhEvent_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhEvent_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhEvent_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhEvent_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n")
+	if (arg1) lparg1 = getPhEvent_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhEvent_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhKeyEvent_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II\n")
+	if (arg0) lparg0 = getPhKeyEvent_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhKeyEvent_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhKeyEvent_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtScrollbarCallback_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II\n")
+	if (arg0) lparg0 = getPtScrollbarCallback_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPtScrollbarCallback_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtScrollbarCallback_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhArea_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I\n")
+	if (arg1) lparg1 = getPhArea_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhArea_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PgAlpha_t _arg0={0}, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II\n")
+	if (arg0) lparg0 = getPgAlpha_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPgAlpha_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PgAlpha_t _arg1={0}, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I\n")
+	if (arg1) lparg1 = getPgAlpha_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPgAlpha_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtTextCallback_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n")
+	if (arg0) lparg0 = getPtTextCallback_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPtTextCallback_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PtTextCallback_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I\n")
+	if (arg1) lparg1 = getPtTextCallback_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPtTextCallback_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PgMap_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II\n")
+	if (arg0) lparg0 = getPgMap_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPgMap_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PhCursorDef_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n")
+	if (arg1) lparg1 = getPhCursorDef_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, arg2);
+	if (arg1) setPhCursorDef_tFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PhClipHeader _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n")
+	if (arg0) lparg0 = getPhClipHeaderFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPhClipHeaderFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n")
+}
+#endif
+
+#ifndef NO_memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	PhClipHeader _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = getPhClipHeaderFields(env, arg1, &_arg1);
+	memmove((void *)lparg0, (const void *)lparg1, arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) setPhClipHeaderFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n")
+}
+#endif
+
+#ifndef NO_strdup
+JNIEXPORT jint JNICALL OS_NATIVE(strdup)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "strdup\n")
+	rc = (jint)strdup((const char *)arg0);
+	NATIVE_EXIT(env, that, "strdup\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_strlen
+JNIEXPORT jint JNICALL OS_NATIVE(strlen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "strlen\n")
+	rc = (jint)strlen((const char*)arg0);
+	NATIVE_EXIT(env, that, "strlen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_uname
+JNIEXPORT jint JNICALL OS_NATIVE(uname)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	utsname _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "uname\n")
+	if (arg0) lparg0 = getutsnameFields(env, arg0, &_arg0);
+	rc = (jint)uname((utsname *)lparg0);
 	if (arg0) setutsnameFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "uname\n")
 	return rc;
 }
 #endif
