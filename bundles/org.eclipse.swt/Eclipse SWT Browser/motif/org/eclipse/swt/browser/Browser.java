@@ -1594,24 +1594,22 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	nsIDOMWindow topWindow = new nsIDOMWindow(aTop[0]);
 	topWindow.Release();
 	
-	/* report only top frame changes */
-	if (aTop[0] == aDOMWindow[0]) {
-		nsIURI location = new nsIURI(aLocation);
-		int aSpec = XPCOM.nsCString_new();
-		location.GetSpec(aSpec);
-		int length = XPCOM.nsCString_Length(aSpec);
-		int buffer = XPCOM.nsCString_get(aSpec);
-		byte[] dest = new byte[length + 1];
-		XPCOM.memmove(dest, buffer, length);
-		XPCOM.nsCString_delete(aSpec);
+	nsIURI location = new nsIURI(aLocation);
+	int aSpec = XPCOM.nsCString_new();
+	location.GetSpec(aSpec);
+	int length = XPCOM.nsCString_Length(aSpec);
+	int buffer = XPCOM.nsCString_get(aSpec);
+	byte[] dest = new byte[length + 1];
+	XPCOM.memmove(dest, buffer, length);
+	XPCOM.nsCString_delete(aSpec);
 
-		LocationEvent event = new LocationEvent(this);
-		event.display = getDisplay();
-		event.widget = this;
-		event.location = new String(dest);
-		for (int i = 0; i < locationListeners.length; i++)
-			locationListeners[i].changed(event);
-	}
+	LocationEvent event = new LocationEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
+	event.location = new String(dest);
+	event.top = aTop[0] == aDOMWindow[0];
+	for (int i = 0; i < locationListeners.length; i++)
+		locationListeners[i].changed(event);
 	return XPCOM.NS_OK;
 }
   
