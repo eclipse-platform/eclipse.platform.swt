@@ -256,6 +256,16 @@ void createWidget (int index) {
 	itemCount = columnCount = 0;
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_FOREGROUND;
+}
+
 /**
  * Deselects the item at the given zero-relative index in the receiver.
  * If the item at the index was already deselected, it remains

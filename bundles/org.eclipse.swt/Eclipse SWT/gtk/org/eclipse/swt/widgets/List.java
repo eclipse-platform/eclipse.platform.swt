@@ -203,6 +203,16 @@ void createHandle (int index) {
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_FOREGROUND;
+}
+
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();

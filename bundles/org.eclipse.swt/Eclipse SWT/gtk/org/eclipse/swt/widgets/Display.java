@@ -117,7 +117,7 @@ public class Display extends Device {
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
 	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
 	GdkColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
-	GdkColor COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND;
+	GdkColor COLOR_TEXT_FOREGROUND, COLOR_TEXT_BACKGROUND, COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND;
 	GdkColor COLOR_TITLE_FOREGROUND, COLOR_TITLE_BACKGROUND, COLOR_TITLE_BACKGROUND_GRADIENT;
 	GdkColor COLOR_TITLE_INACTIVE_FOREGROUND, COLOR_TITLE_INACTIVE_BACKGROUND, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
 		
@@ -846,6 +846,20 @@ final void initializeSystemColors() {
 	gdkColor.green = style.bg0_green;
 	gdkColor.blue  = style.bg0_blue;
 	COLOR_WIDGET_BACKGROUND = gdkColor;
+
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.text0_pixel;
+	gdkColor.red   = style.text0_red;
+	gdkColor.green = style.text0_green;
+	gdkColor.blue  = style.text0_blue;
+	COLOR_TEXT_FOREGROUND = gdkColor;
+
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.base0_pixel;
+	gdkColor.red   = style.base0_red;
+	gdkColor.green = style.base0_green;
+	gdkColor.blue  = style.base0_blue;
+	COLOR_TEXT_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
 	gdkColor.pixel = style.text0_pixel;

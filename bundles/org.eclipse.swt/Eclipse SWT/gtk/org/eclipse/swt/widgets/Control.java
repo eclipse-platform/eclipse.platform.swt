@@ -72,6 +72,16 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_WIDGET_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_WIDGET_FOREGROUND;
+}
+
 void deregister () {
 	super.deregister ();
 	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
@@ -1846,8 +1856,7 @@ public void setBackground (Color color) {
 	checkWidget();
 	GdkColor gdkColor;
 	if (color == null) {
-//		gdkColor = defaultBackground ();
-		return;
+		gdkColor = defaultBackground ();
 	} else {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
@@ -2006,8 +2015,7 @@ public void setForeground (Color color) {
 	checkWidget();
 	GdkColor gdkColor;
 	if (color == null) {
-//		gdkColor = defaultForeground ();
-		return;
+		gdkColor = defaultForeground ();
 	} else {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;

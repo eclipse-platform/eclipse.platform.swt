@@ -291,6 +291,16 @@ void createHandle (int index) {
 	OS.gtk_widget_show (handle);
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_TEXT_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_TEXT_FOREGROUND;
+}
+
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (entryHandle);

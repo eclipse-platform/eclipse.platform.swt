@@ -299,6 +299,16 @@ public void cut () {
 	OS.gtk_editable_cut_clipboard(handle);
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_TEXT_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_TEXT_FOREGROUND;
+}
+
 /**
  * Gets the line number of the caret.
  * <p>

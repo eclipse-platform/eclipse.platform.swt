@@ -274,6 +274,16 @@ void createWidget (int index) {
 	items = new TreeItem [4];
 }
 
+GdkColor defaultBackground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_BACKGROUND;
+}
+
+GdkColor defaultForeground () {
+	Display display = getDisplay ();
+	return display.COLOR_LIST_FOREGROUND;
+}
+
 /**
  * Deselects all selected items in the receiver.
  *
