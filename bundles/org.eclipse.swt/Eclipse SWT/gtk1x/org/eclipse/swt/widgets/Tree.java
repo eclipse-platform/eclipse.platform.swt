@@ -92,8 +92,9 @@ Point _getClientAreaSize () {
 }
 
 boolean _setSize(int width, int height) {
-	UtilFuncs.setSize (fixedHandle, width, height);
-	return UtilFuncs.setSize (scrolledHandle, width, height);
+	if (!UtilFuncs.setSize (eventBoxHandle, width, height)) return false;
+	UtilFuncs.setSize (scrolledHandle, width, height);
+	return true;
 }
 
 /**
@@ -165,18 +166,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void configure() {
 	_connectParent();
-	OS.gtk_container_add (fixedHandle, scrolledHandle);	
-	OS.gtk_container_add (scrolledHandle, handle);	
+	OS.gtk_container_add(eventBoxHandle, fixedHandle);
+	OS.gtk_fixed_put (fixedHandle, scrolledHandle, (short)0, (short)0);
+	OS.gtk_container_add (scrolledHandle, handle);
 }
 
 void createHandle (int index) {
 	state |= HANDLE;
+
+	eventBoxHandle = OS.gtk_event_box_new();
+	if (eventBoxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+
 	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
+	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		
+	scrolledHandle = OS.gtk_scrolled_window_new(0,0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
 	handle = OS.gtk_ctree_new (1, 0);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
+
 	if ((style & SWT.CHECK) != 0) {
 		/*
 		* This code is intentionally commented.  At this
@@ -529,7 +539,7 @@ void hookEvents () {
 	signal_connect (handle, "tree_collapse", SWT.Collapse, 3);
 }
 
-int topHandle() { return fixedHandle; }
+int topHandle() { return eventBoxHandle; }
 int parentingHandle() { return fixedHandle; }
 
 boolean isMyHandle(int h) {
@@ -849,6 +859,7 @@ public void setSelection (TreeItem [] items) {
 }
 
 void showHandle() {
+	OS.gtk_widget_show (eventBoxHandle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
