@@ -928,7 +928,7 @@ Control getControl (int handle) {
 		* NOTE:  This check will not work in the case where the same
 		* widget is registered multiple times with different handles.
 		*/
-		if (control != null && control.handle == handle) {
+		if (control != null && control.checkHandle (handle)) {
 			return control;
 		}
 	}
