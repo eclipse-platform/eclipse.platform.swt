@@ -2690,6 +2690,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1e
 	return (jint)gtk_get_current_event_time();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1grab_1remove
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1grab_1remove\n")
+
+	gtk_grab_remove((GtkWidget *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1hbox_1new
 	(JNIEnv *env, jclass that, jboolean arg0, jint arg1)
 {
