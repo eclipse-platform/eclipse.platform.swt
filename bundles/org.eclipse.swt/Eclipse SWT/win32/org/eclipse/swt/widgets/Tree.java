@@ -1002,6 +1002,23 @@ public void setSelection (TreeItem [] items) {
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
+void showItem (int hItem) {
+	/*
+	* Bug in Windows.  When TVM_ENSUREVISIBLE is used to ensure
+	* that an item is visible and the client area of the tree is
+	* smaller that the size of one item, TVM_ENSUREVISIBLE makes
+	* the next item in the tree visible by making it the top item
+	* instead of making the desired item visible.  The fix is to
+	* detect the case when the client area is too small and make
+	* the desired visible item be the top item in the tree.
+	*/
+	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
+		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	} else {
+		OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+	}
+}
+
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled
@@ -1023,8 +1040,8 @@ public void setSelection (TreeItem [] items) {
 public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, item.handle);
+	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	showItem (item.handle);
 }
 
 /**
@@ -1045,8 +1062,7 @@ public void showItem (TreeItem item) {
 public void showSelection () {
 	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (hItem == 0) return;
-	OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+	if (hItem != 0) showItem (hItem);
 }
 
 int widgetStyle () {
