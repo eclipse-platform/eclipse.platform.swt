@@ -137,7 +137,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	/*
+	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
+	* only the minimum size necessary for its child. This causes the child
+	* alignment to fail. The fix is to set the child size to the size
+	* of the button.
+	*/
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
+	}
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		OS.gtk_widget_set_size_request (boxHandle, width, -1);
+	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
 			int /*long*/ [] buffer = new int /*long*/ [1];
@@ -562,25 +575,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	/*
 	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
 	* only the minimum size necessary for its child. This causes the child
-	* alignment to fail. The fix is to set the child size to all available space
-	* excluding trimmings.
+	* alignment to fail. The fix is to set the child size to the size
+	* of the button.
 	*/
 	if ((result & RESIZED) != 0 && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		int childHeight = 0, buttonWidth = 0, buttonHeight = 0;
-		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (handle, requisition);
-		buttonWidth = requisition.width;
-		buttonHeight = requisition.height;
-		OS.gtk_widget_size_request (boxHandle, requisition);
-		childHeight = requisition.height;
-		OS.gtk_widget_set_size_request (handle, -1, -1);
-		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
-		OS.gtk_widget_size_request (handle, requisition);
-		int trim = requisition.width;
-		OS.gtk_widget_size_request (boxHandle, requisition);
-		trim -= requisition.width;
-		OS.gtk_widget_set_size_request (handle, buttonWidth, buttonHeight);
-		OS.gtk_widget_set_size_request (boxHandle, Math.max (1, width - trim), childHeight);
+		OS.gtk_widget_set_size_request (boxHandle, width, -1);
 	}
 	return result;
 }
