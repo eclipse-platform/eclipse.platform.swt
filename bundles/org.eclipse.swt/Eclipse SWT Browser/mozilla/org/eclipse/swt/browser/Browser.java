@@ -27,11 +27,6 @@ import org.eclipse.swt.layout.*;
  * it does not make sense to set a layout on it.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p><p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
  * </p>
  * 
  * @since 3.0
@@ -751,6 +746,19 @@ public String getUrl() {
 	return dest != null ? new String(dest) : ""; //$NON-NLS-1$
 }
 
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * previous session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's back command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #back
+ */
 public boolean isBackEnabled() {
 	checkWidget();
 	int[] result = new int[1];
@@ -766,6 +774,19 @@ public boolean isBackEnabled() {
 	return aCanGoBack[0];
 }
 
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * next session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's forward command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #forward
+ */
 public boolean isForwardEnabled() {
 	checkWidget();
 	int[] result = new int[1];
