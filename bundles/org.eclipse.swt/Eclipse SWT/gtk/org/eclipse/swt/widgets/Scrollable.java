@@ -99,8 +99,18 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int border = getBorderWidth ();
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
-	trimHeight += hScrollBarWidth();
-	trimWidth  += vScrollBarWidth();
+	trimHeight += hScrollBarWidth ();
+	trimWidth  += vScrollBarWidth ();
+	if (scrolledHandle != 0) {
+		if (OS.gtk_scrolled_window_get_shadow_type (scrolledHandle) != OS.GTK_SHADOW_NONE) {
+			GtkStyle style = new GtkStyle ();
+			OS.memmove (style, OS.gtk_widget_get_style (scrolledHandle));
+			trimX -= style.xthickness;
+			trimY -= style.ythickness;
+			trimWidth += style.xthickness * 2;
+			trimHeight += style.ythickness * 2;
+		}
+	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 
