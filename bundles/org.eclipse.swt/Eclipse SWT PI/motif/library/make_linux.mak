@@ -9,10 +9,10 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 
 
 # Define the installation directories for various products.
-#    IVE_HOME   - IBM's version of Java (J9)
+#    JAVA_HOME  - The JDK > 1.3
 #    MOTIF_HOME - Motif includes and libraries
 #    QT_HOME    - identifier namespace package (used by KDE)
-IVE_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
+JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
 QT_HOME    = /usr/lib/qt-2.3.0
 
@@ -47,7 +47,7 @@ CFLAGS = -O -s \
 	-DLINUX -DMOTIF -DGNOME \
 	-fpic \
 	-I./ \
-	-I$(IVE_HOME)/include \
+	-I$(JAVA_HOME)/include \
 	-I$(MOTIF_HOME)/include \
 	-I/usr/X11R6/include \
 	`gnome-config --cflags gnome gnomeui`
@@ -77,7 +77,7 @@ $(KDE_DLL): $(KDE_OBJ)
 
 $(KDE_OBJ): kde.cc
 	g++  -c -O -I/usr/include/kde -I$(QT_HOME)/include -I./   \
-	     -I../ -I$(IVE_HOME)/include -fno-rtti -o kde.o kde.cc
+	     -I../ -I$(JAVA_HOME)/include -fno-rtti -o kde.o kde.cc
 
 clean:
 	rm -f *.so *.o

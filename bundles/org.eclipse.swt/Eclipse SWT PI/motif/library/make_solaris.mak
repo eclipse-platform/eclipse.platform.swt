@@ -9,7 +9,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 
 
 # Define the installation directories for various products.
-#    JAVA_HOME  - Sun's version of Java (JDK2)
+#    JAVA_HOME  - The JDK > 1.3
 #    MOTIF_HOME - Motif includes and libraries
 #    CDE_HOME - CDE includes and libraries
 JAVA_HOME  = /tools/java1.3

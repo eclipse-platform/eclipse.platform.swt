@@ -10,7 +10,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 CC=cc_r
 
 # Define the installation directories for various products.
-#    JAVA_HOME   - IBM's version of Java
+#    JAVA_HOME  - The JDK > 1.3
 #    CDE_HOME - CDE includes and libraries
 #    MOTIF_HOME - Motif includes and libraries
 JAVA_HOME   = /usr/java131
