@@ -346,8 +346,6 @@ public boolean open () {
 	return !cancelled;
 }
 
-
-
 private void drawRectangles () {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
@@ -388,11 +386,10 @@ private int waitEvent() {
 	while (true) {
 		eventPtr = OS.gdk_event_get();
 		if (eventPtr != 0) {
-			// hack, must implement memmove properly
-			// GdkEvent event = new GdkEvent(eventPtr);
-			OS.memmove(eventType, eventPtr, 4);
+			GdkEvent event = new GdkEvent();
+			OS.memmove(event, eventPtr, GdkEvent.sizeof);
 			OS.gdk_event_free(eventPtr);
-			return eventType[0];
+			return event.type;
 		}
 		else {
 			try { Thread.sleep(50); } catch (Exception ex) {}
