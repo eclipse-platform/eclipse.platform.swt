@@ -5088,18 +5088,42 @@ void modifyContent(Event event, boolean updateCaret) {
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
 		int replacedLength = event.end - event.start;
+		boolean isCharacterRemove = replacedLength == 1 && event.text.length() == 0;
 		boolean isBackspace = event.start < caretOffset;
 		boolean isDirectionBoundary = false;
-		
-		if (updateCaret && isBidi()) {
+				
+		if (updateCaret && isBidi() && isCharacterRemove) {
+			// set the keyboard language to the language of the deleted character.
+			// determine direction boundary so that caret location can be updated 
+			// properly.
 			int line = content.getLineAtOffset(caretOffset);
 			int lineStartOffset = content.getOffsetAtLine(line);		
 			int offsetInLine = caretOffset - lineStartOffset;
 			String lineText = content.getLine(line);
 			GC gc = new GC(this);
-			StyledTextBidi bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineStartOffset, lineText));
-			
-			isDirectionBoundary = (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1));
+			StyledTextBidi bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineStartOffset, lineText));			
+			if (isBackspace) {
+				if (offsetInLine > 0) {
+					// the line start/end does not represent a direction boundary 
+					// even if the previous/next line has a different direction.
+					isDirectionBoundary = 
+						offsetInLine < lineText.length() && 
+						(bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1) || 
+						 bidi.isLocalNumber(offsetInLine) != bidi.isLocalNumber(offsetInLine - 1));
+					bidi.setKeyboardLanguage(offsetInLine - 1);
+				}
+			}
+			else {
+				if (offsetInLine < lineText.length()) {
+					// the line start/end does not represent a direction boundary 
+					// even if the previous/next line has a different direction.
+					isDirectionBoundary = 
+						offsetInLine > 0 && 
+						(bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1) || 
+						 bidi.isLocalNumber(offsetInLine) != bidi.isLocalNumber(offsetInLine - 1));
+					bidi.setKeyboardLanguage(offsetInLine);
+				}
+			}
 			gc.dispose();
 		}						
 		if (isListening(ExtendedModify)) {
@@ -5117,7 +5141,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			if (isBidi()) {
 				// Update the caret direction so that the caret moves to the 
 				// typed/deleted character. Fixes 1GJLQ16.
-				if (replacedLength == 1 && event.text.length() == 0) {
+				if (isCharacterRemove) {
 					updateBidiDirection(isBackspace, isDirectionBoundary);
 				}
 				else {
@@ -7058,7 +7082,6 @@ int textWidth(String line, int lineIndex, int length, GC gc) {
  */
 void updateBidiDirection(boolean isBackspace, boolean isDirectionBoundary) {
 	if (isDirectionBoundary) {
-		int oldDirection = lastCaretDirection;						
 		if (isBackspace) {
 			// Deleted previous character (backspace) at a direction boundary
 			// Go to direction segment of deleted character
@@ -7067,9 +7090,6 @@ void updateBidiDirection(boolean isBackspace, boolean isDirectionBoundary) {
 		else {
 			// Deleted next character. Go to direction segment of deleted character
 			lastCaretDirection = ST.COLUMN_PREVIOUS;
-		}
-		if (lastCaretDirection != oldDirection) {
-			setBidiKeyboardLanguage();
 		}
 	}
 	else {

@@ -444,11 +444,13 @@ int getCaretPosition(int logicalOffset, int direction) {
 		}
 	}
 	else
-	// consider local numbers as R2L in determining direction boundaries.
-	// fixes 1GK9API.
+	// always consider local numbers as a direction boundary 
+	// because they represent a discontiguous text segment coming from 
+	// a R2L segment.
 	// treat user specified direction segments like real direction changes.
 	if (direction == ST.COLUMN_NEXT &&
-		(isRightToLeftInput(logicalOffset) != isRightToLeftInput(logicalOffset - 1) ||
+		(isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1) ||
+		 isLocalNumber(logicalOffset) != isLocalNumber(logicalOffset - 1) ||
 		 isStartOfBidiSegment(logicalOffset))) {
 		int visualOffset = order[logicalOffset-1];
 		// moving between segments.
@@ -791,6 +793,23 @@ static boolean isCharacterShaped(GC gc) {
  */
 static boolean isLigated(GC gc) {
 	return (BidiUtil.getFontBidiAttributes(gc) & BidiUtil.LIGATE) != 0;
+}
+/**
+ * Returns if the character at the given offset is a local number.
+ * <p>
+ * 
+ * @param logicalIndex the index of the character
+ * @return 
+ * 	true=the character at the specified index is a local number
+ * 	false=the character at the specified index is not a local number
+ */
+boolean isLocalNumber(int logicalIndex) {
+	boolean isLocalNumber = false;
+	
+	if (logicalIndex < classBuffer.length) {
+		isLocalNumber = classBuffer[logicalIndex] == BidiUtil.CLASS_LOCALNUMBER;
+	}
+	return isLocalNumber;
 }
 /**
  * Returns the direction of the character at the specified index.
