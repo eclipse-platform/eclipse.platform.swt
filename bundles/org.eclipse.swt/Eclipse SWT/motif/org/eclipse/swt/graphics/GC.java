@@ -1973,24 +1973,23 @@ public FontMetrics getFontMetrics() {
 			/* Calculate average character width */
 			int propPtr = fontStruct.properties;
 			for (int i = 0; i < fontStruct.n_properties; i++) {
-				/* Reef through properties looking for XAFONT */
+				/* Look through properties for XAFONT */
 				int[] prop = new int[2];
 				OS.memmove(prop, propPtr, 8);
 				if (prop[0] == OS.XA_FONT) {
 					/* Found it, prop[1] points to the string */
-					StringBuffer stringBuffer = new StringBuffer();
 					int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
-					int strPtr = ptr;
-					byte[] c = new byte[1];
-					OS.memmove(c, strPtr, 1);
-					while (c[0] != 0) {
-						stringBuffer.append((char)c[0]);
-						strPtr++;
-						OS.memmove(c, strPtr, 1);
+					int length = OS.strlen(ptr);
+					byte[] nameBuf = new byte[length];
+					OS.memmove(nameBuf, ptr, length);
+					OS.XFree(ptr);
+					String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+					int avg = 0;
+					try {
+						avg = FontData.motif_new(xlfd).averageWidth / 10;
+					} catch (Exception e) {
+						// leave avg unchanged so that it will be computed below
 					}
-					String xlfd = stringBuffer.toString().toLowerCase();
-					int avg = FontData.motif_new(xlfd).averageWidth / 10;
-					OS.XtFree(ptr);
 					if (avg == 0) {
 						/*
 						 * Not all fonts have average character width encoded
@@ -2046,24 +2045,42 @@ public FontMetrics getFontMetrics() {
 				/* Calculate average character width */
 				int propPtr = fontStruct.properties;
 				for (int j = 0; j < fontStruct.n_properties; j++) {
-					/* Reef through properties looking for XAFONT */
+					/* Look through properties for XAFONT */
 					int[] prop = new int[2];
 					OS.memmove(prop, propPtr, 8);
 					if (prop[0] == OS.XA_FONT) {
 						/* Found it, prop[1] points to the string */
-						StringBuffer stringBuffer = new StringBuffer();
 						int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
-						int strPtr = ptr;
-						byte[] c = new byte[1];
-						OS.memmove(c, strPtr, 1);
-						while (c[0] != 0) {
-							stringBuffer.append((char)c[0]);
-							strPtr++;
-							OS.memmove(c, strPtr, 1);
-						}
-						String xlfd = stringBuffer.toString().toLowerCase();
-						int avg = FontData.motif_new(xlfd).averageWidth / 10;
+						int length = OS.strlen(ptr);
+						byte[] nameBuf = new byte[length];
+						OS.memmove(nameBuf, ptr, length);
 						OS.XFree(ptr);
+						String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+						int avg = 0;
+						try {
+							avg = FontData.motif_new(xlfd).averageWidth / 10;
+						} catch (Exception e) {
+							/*
+							 * Some font servers, for example, xfstt, do not pass
+							 * reasonable font properties to the client, so we
+							 * cannot construct a FontData for these. Use the font
+							 * name instead.
+							 */
+							int[] fontName = new int[1];
+							OS.memmove(fontName, fontNamePtr [0] + (i * 4), 4);
+							ptr = fontName[0];
+							if (ptr != 0 ) {
+								length = OS.strlen(ptr);
+								nameBuf = new byte[length];
+								OS.memmove(nameBuf, ptr, length);
+								xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+								try {
+									avg = FontData.motif_new(xlfd).averageWidth / 10;
+								} catch (Exception ex) {
+									// leave avg unchanged (0) so that it will be computed below
+								}
+							}
+						}
 						if (avg == 0) {
 							/*
 							 * Not all fonts have average character width encoded

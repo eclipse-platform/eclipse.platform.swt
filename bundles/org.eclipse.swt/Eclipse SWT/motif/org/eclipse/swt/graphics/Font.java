@@ -274,47 +274,17 @@ public FontData[] getFontData() {
 	int fontListEntry;
 	int[] fontStructPtr = new int[1];
 	int[] fontNamePtr = new int[1];
-	String[] xlfds = new String[0];
-	/* Go through each entry in the font list */
-	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
-		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
-		if (buffer[0] == OS.XmFONT_IS_FONT) { 
-			/* FontList contains a single font */
-			OS.memmove(fontStruct,fontPtr,20 * 4);
-			int propPtr = fontStruct.properties;
-			for (int i = 0; i < fontStruct.n_properties; i++) {
-				/* Reef through properties looking for XAFONT */
-				int[] prop = new int[2];
-				OS.memmove(prop, propPtr, 8);
-				if (prop[0] == OS.XA_FONT) {
-					/* Found it, prop[1] points to the string */
-					int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
-					int length = OS.strlen(ptr);
-					byte[] nameBuf = new byte[length];
-					OS.memmove(nameBuf, ptr, length);
-					/* Use the character encoding for the default locale */
-					String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
-					/* Add the xlfd to the array */
-					String[] newXlfds = new String[xlfds.length + 1];
-					System.arraycopy(xlfds, 0, newXlfds, 0, xlfds.length);
-					newXlfds[newXlfds.length - 1] = xlfd;
-					xlfds = newXlfds;
-					OS.XtFree(ptr);
-					break;
-				}
-				propPtr += 8;
-			}
-		}
-		else { 
-			/* FontList contains a fontSet */
-			int nFonts = OS.XFontsOfFontSet(fontPtr,fontStructPtr,fontNamePtr);
-			int [] fontStructs = new int[nFonts];
-			OS.memmove(fontStructs,fontStructPtr[0],nFonts * 4);
-			for (int i = 0; i < nFonts; i++) { // Go through each fontStruct in the font set.
-				OS.memmove(fontStruct,fontStructs[i],20 * 4);
+	FontData[] data = new FontData[0];
+	try {
+		/* Go through each entry in the font list */
+		while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
+			int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
+			if (buffer[0] == OS.XmFONT_IS_FONT) { 
+				/* FontList contains a single font */
+				OS.memmove(fontStruct,fontPtr,20 * 4);
 				int propPtr = fontStruct.properties;
-				for (int j = 0; j < fontStruct.n_properties; j++) {
-					// Reef through properties looking for XAFONT
+				for (int i = 0; i < fontStruct.n_properties; i++) {
+					/* Look through properties for XAFONT */
 					int[] prop = new int[2];
 					OS.memmove(prop, propPtr, 8);
 					if (prop[0] == OS.XA_FONT) {
@@ -323,28 +293,71 @@ public FontData[] getFontData() {
 						int length = OS.strlen(ptr);
 						byte[] nameBuf = new byte[length];
 						OS.memmove(nameBuf, ptr, length);
+						OS.XtFree(ptr);
+						/* Use the character encoding for the default locale */
 						String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
 						/* Add the xlfd to the array */
-						String[] newXlfds = new String[xlfds.length + 1];
-						System.arraycopy(xlfds, 0, newXlfds, 0, xlfds.length);
-						newXlfds[newXlfds.length - 1] = xlfd;
-						xlfds = newXlfds;
-						OS.XFree(ptr);
+						FontData[] newData = new FontData[data.length + 1];
+						System.arraycopy(data, 0, newData, 0, data.length);
+						newData[newData.length - 1] = FontData.motif_new(xlfd);
+						data = newData;
 						break;
 					}
 					propPtr += 8;
 				}
 			}
+			else { 
+				/* FontList contains a fontSet */
+				int nFonts = OS.XFontsOfFontSet(fontPtr,fontStructPtr,fontNamePtr);
+				int [] fontStructs = new int[nFonts];
+				OS.memmove(fontStructs,fontStructPtr[0],nFonts * 4);
+				for (int i = 0; i < nFonts; i++) { // Go through each fontStruct in the font set.
+					OS.memmove(fontStruct,fontStructs[i],20 * 4);
+					int propPtr = fontStruct.properties;
+					for (int j = 0; j < fontStruct.n_properties; j++) {
+						// Look through properties for XAFONT
+						int[] prop = new int[2];
+						OS.memmove(prop, propPtr, 8);
+						if (prop[0] == OS.XA_FONT) {
+							/* Found it, prop[1] points to the string */
+							int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
+							int length = OS.strlen(ptr);
+							byte[] nameBuf = new byte[length];
+							OS.memmove(nameBuf, ptr, length);
+							OS.XFree(ptr);
+							String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+							/* Add the xlfd to the array */
+							FontData[] newData = new FontData[data.length + 1];
+							System.arraycopy(data, 0, newData, 0, data.length);
+							try {
+								newData[newData.length - 1] = FontData.motif_new(xlfd);
+							} catch (Exception e) {
+								/*
+								 * Some font servers, for example, xfstt, do not pass
+								 * reasonable font properties to the client, so we
+								 * cannot construct a FontData for these. Use the font
+								 * name instead and return null if that fails.
+								 */
+								int[] fontName = new int[1];
+								OS.memmove(fontName, fontNamePtr [0] + (i * 4), 4);
+								ptr = fontName[0];
+								if (ptr != 0) {
+									length = OS.strlen(ptr);
+									nameBuf = new byte[length];
+									OS.memmove(nameBuf, ptr, length);
+									xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+									newData[newData.length - 1] = FontData.motif_new(xlfd);
+								}
+							}
+							data = newData;
+							break;
+						}
+						propPtr += 8;
+					}
+				}
+			}
 		}
-	}
-	OS.XmFontListFreeFontContext(context);
-	if (xlfds.length == 0) return null;
-	FontData[] fontData = new FontData[xlfds.length];
-	/* Construct each fontData out of the xlfd */
-	try {
-		for (int i = 0; i < xlfds.length; i++) {
-			fontData[i] = FontData.motif_new(xlfds[i]);
-		}
+		if (data.length == 0) return null;
 	} catch (Exception e) {
 		/*
 		 * Some font servers, for example, xfstt, do not pass
@@ -352,8 +365,10 @@ public FontData[] getFontData() {
 		 * cannot construct a FontData for these. Return null.
 		 */
 		return null;
+	} finally {
+		OS.XmFontListFreeFontContext(context);
 	}
-	return fontData;
+	return data;
 }
 
 /**
