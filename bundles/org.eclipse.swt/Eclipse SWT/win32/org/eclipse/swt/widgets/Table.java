@@ -452,7 +452,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-
+	
+	/*
+	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
+	* if the font is changed for an item, the bounds for the
+	* item are not updated, causing the text to be clipped.
+	* The fix is to detect the version of COMCTL32.DLL, and
+	* if it is one of the versions with the problem, then
+	* use version 5.00 of the control (a version that does
+	* not have the problem).  This is the recomended work
+	* around from the MSDN.
+	*/
+	if (OS.COMCTL32_MAJOR < 6) {
+		OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
+	}
+	
 	/* 
 	* This code is intentionally commented.  According to
 	* the documentation, setting the default item size is
@@ -2353,7 +2367,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 	/*
 	* NOTE: It is much faster to measure the strings and compute the
 	* width of the scroll bar in non-virtual table rather than using
-	* LVM_SETCOUMNWIDTH with LVSCW_AUTOSIZE.
+	* LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE.
 	*/
 	if (count == 1 && columns [0] == null) {
 		int newWidth = 0;
@@ -2362,18 +2376,36 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		int imageIndent = 0;
 		while (index < count) {
 			String string = null;
+			int font = -1;
 			if (item != null) {
 				string = item.text;
 				imageIndent = Math.max (imageIndent, item.imageIndent);
+				if (item.cellFont != null) font = item.cellFont [0];
+				if (font == -1) font = item.font;
 			} else {
 				if (items [index] != null) {
-					string = items [index].text;
-					imageIndent = Math.max (imageIndent, items [index].imageIndent);
+					TableItem tableItem = items [index];
+					string = tableItem.text;
+					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
+					if (tableItem.cellFont != null) font = tableItem.cellFont [0];
+					if (font == -1) font = tableItem.font;
 				}
 			}
 			if (string != null && string.length () != 0) {
-				TCHAR buffer = new TCHAR (getCodePage (), string, true);
-				newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
+				if (font != -1) {
+					int hDC = OS.GetDC (handle);
+					int oldFont = OS.SelectObject (hDC, font);
+					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+					TCHAR tchar = new TCHAR (getCodePage (), string, false);
+					RECT rect = new RECT ();
+					OS.DrawText (hDC, tchar, tchar.length (), rect, flags);
+					OS.SelectObject (hDC, oldFont);
+					OS.ReleaseDC (handle, hDC);
+					newWidth = Math.max (newWidth, rect.right - rect.left);
+				} else {
+					TCHAR buffer = new TCHAR (getCodePage (), string, true);
+					newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
+				}
 			}
 			if (item != null) break;
 			index++;
