@@ -15,6 +15,7 @@ public /*final*/ class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
 	String toolTipText;
+	int toolTipHandle;
 	Image hotImage, disabledImage;
 	int button, arrow;
 
@@ -218,6 +219,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
+	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
 	OS.PtAddCallback (button, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
@@ -238,6 +240,31 @@ int processEvent (int widget, int data, int info) {
 		return OS.Pt_CONTINUE;
 	}
 	return super.processEvent (widget, data, info);;
+}
+
+int processMouseEnter (int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	switch (ev.subtype) {
+		case OS.Ph_EV_PTR_STEADY:
+			int [] args = {OS.Pt_ARG_TEXT_FONT, 0, 0};
+			OS.PtGetResources (button, args.length / 3, args);
+			int length = OS.strlen (args [1]);
+			byte [] font = new byte [length + 1];
+			OS.memmove (font, args [1], length);
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = createToolTip (toolTipText, button, font);
+			break;
+		case OS.Ph_EV_PTR_UNSTEADY:
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = 0;
+			break;		
+	}
+	return OS.Pt_END;
 }
 
 int processSelection (int info) {

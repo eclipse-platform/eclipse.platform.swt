@@ -6314,3 +6314,34 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetFillTransPat
         (*env)->ReleaseByteArrayElements(env, pat, (jbyte *)pat1, 0);
 }
 
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtInflateBalloon
+ * Signature: (III[B[BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtInflateBalloon
+  (JNIEnv *env, jobject that, jint win, jint me, jint position, jbyteArray str, jbyteArray font, int fill, int text_color)
+{
+    jbyte *font1=NULL;
+    jbyte *str1=NULL;
+    int result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtInflateBalloon\n");
+#endif
+
+    if (font)
+        font1 = (*env)->GetByteArrayElements(env, font, NULL);
+    if (str)
+        str1 = (*env)->GetByteArrayElements(env, str, NULL);
+
+    result = (jint) PtInflateBalloon((PtWidget_t *)win, (PtWidget_t *)me, position, str1, font1, fill, text_color);
+
+    if (font)
+        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
+    if (str)
+        (*env)->ReleaseByteArrayElements(env, str, str1, JNI_ABORT);
+	
+	return result;
+}
+

@@ -14,6 +14,8 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Menu menu;
 	Object layoutData;
+	String toolTipText;
+	int toolTipHandle;
 	
 Control () {
 	/* Do nothing */
@@ -279,7 +281,7 @@ public Point getSize () {
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return null;
+	return toolTipText;
 }
 
 public Shell getShell () {
@@ -662,9 +664,16 @@ int processMouseEnter (int info) {
 			break;
 		case OS.Ph_EV_PTR_LEAVE:
 		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
-			sendEvent (SWT.MouseExit, event);			
+			sendEvent (SWT.MouseExit, event);
+			break;
 		case OS.Ph_EV_PTR_STEADY:
 			postEvent (SWT.MouseHover, event);
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
+			break;
+		case OS.Ph_EV_PTR_UNSTEADY:
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = 0;
 			break;		
 	}
 	return OS.Pt_END;
@@ -1106,6 +1115,7 @@ public void setVisible (boolean visible) {
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	toolTipText = string;
 }
 
 void setZOrder() {

@@ -768,7 +768,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Ph_EV_PTR_STEADY                                      = 2;
 //public static final int Ph_EV_PTR_TRANSIENT_ENTER                             = 8;
 //public static final int Ph_EV_PTR_TRANSIENT_LEAVE                             = 9;
-//public static final int Ph_EV_PTR_UNSTEADY                                    = 3;
+	public static final int Ph_EV_PTR_UNSTEADY                                    = 3;
 	public static final int Ph_EV_PTR_MOTION                                      = ( Ph_EV_PTR_MOTION_NOBUTTON | Ph_EV_PTR_MOTION_BUTTON );
 //public static final int Ph_EV_PTR_ALL                                         = ( Ph_EV_BUT_PRESS | Ph_EV_BUT_RELEASE | Ph_EV_PTR_MOTION | Ph_EV_BUT_REPEAT  );
 //public static final int Ph_EV_RAW                                             = 0x00008000;
@@ -2921,5 +2921,7 @@ public static final native void PtSendEventToWidget (int widget, int event);
 public static final native void memmove (int dest, PhCursorDef_t src, int size);
 
 public static final native void PgSetFillTransPat (byte [] pat);
+
+public static final native int PtInflateBalloon (int win, int me, int position, byte [] string, byte [] font, int fill, int text_color);
 
 }

@@ -104,6 +104,48 @@ void createHandle (int index) {
 	/* Do nothing */
 }
 
+int createToolTip (String string, int handle, byte [] font) {
+	if (string == null || string.length () == 0 || handle == 0) {
+		return 0;
+	}
+
+	int shellHandle = OS.PtFindDisjoint (handle);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	Display display = getDisplay ();
+	int fill = display.INFO_BACKGROUND;
+	int text_color = display.INFO_FOREGROUND;
+	int toolTipHandle = OS.PtInflateBalloon (shellHandle, handle, OS.Pt_BALLOON_RIGHT, buffer, font, fill, text_color);
+
+	/*
+	* Feature in Photon. The position of the inflated balloon
+	* is relative to the widget position and not to the cursor
+	* position. The fix is to re-position the balloon.
+	*/
+	int ig = OS.PhInputGroup (0);
+	PhCursorInfo_t info = new PhCursorInfo_t ();
+	OS.PhQueryCursor ((short)ig, info);
+	short [] absX = new short [1], absY = new short [1];
+	OS.PtGetAbsPosition (shellHandle, absX, absY);
+	int x = info.pos_x - absX [0] + 16;
+	int y = info.pos_y - absY [0] + 16;
+	PhArea_t shellArea = new PhArea_t ();
+	OS.PtWidgetArea (shellHandle, shellArea);
+	PhArea_t toolTipArea = new PhArea_t ();
+	OS.PtWidgetArea (toolTipHandle, toolTipArea);
+	x = Math.max (0, Math.min (x, shellArea.size_w - toolTipArea.size_w));
+	y = Math.max (0, Math.min (y, shellArea.size_h - toolTipArea.size_h));
+	PhPoint_t pt = new PhPoint_t ();
+	pt.x = (short) x;
+	pt.y = (short) y;
+	int ptr = OS.malloc (PhPoint_t.sizeof);
+	OS.memmove (ptr, pt, PhPoint_t.sizeof);
+	int [] args = {OS.Pt_ARG_POS, ptr, 0};
+	OS.PtSetResources (toolTipHandle, args.length / 3, args);
+	OS.free (ptr);
+
+	return toolTipHandle;
+}
+
 void createWidget (int index) {
 	createHandle (index);
 	hookEvents ();
@@ -113,6 +155,10 @@ void createWidget (int index) {
 void deregister () {
 	if (handle == 0) return;
 	WidgetTable.remove (handle);
+}
+
+void destroyToolTip (int toolTipHandle) {
+	if (toolTipHandle != 0) OS.PtDestroyWidget (toolTipHandle);
 }
 
 void destroyWidget () {
