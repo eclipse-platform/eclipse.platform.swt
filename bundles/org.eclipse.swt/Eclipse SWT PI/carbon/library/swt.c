@@ -1541,15 +1541,39 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits(JNIEnv *
 	(*env)->ReleaseShortArrayElements(env, dstRect, sb, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMask(JNIEnv *env, jclass zz, jint srcBits,
+static jmp_buf jmpbuf;
+
+static void jumper() {
+	longjmp(jmpbuf, 1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMask(JNIEnv *env, jclass zz, jint srcBits,
 		jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect) {
+		
     jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
     jshort *sb= (*env)->GetShortArrayElements(env, maskRect, 0);
     jshort *sc= (*env)->GetShortArrayElements(env, dstRect, 0);
-	CopyMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, (Rect*) sa, (Rect*) sb, (Rect*) sc);
+    
+    Rect ra= *((Rect*)sa);
+    Rect rb= *((Rect*)sb);
+    Rect rc= *((Rect*)sc);
+    
 	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
 	(*env)->ReleaseShortArrayElements(env, maskRect, sb, 0);
 	(*env)->ReleaseShortArrayElements(env, dstRect, sc, 0);
+    
+    if (setjmp(jmpbuf) != 0) {
+    	SysBeep(100);
+    	fprintf(stderr, "OS.CopyMask: signal %08x %08x %08x\n", srcBits, maskBits, dstBits);
+    	return -1;
+    }
+    
+	if (signal(SIGSEGV, jumper) == BADSIG)
+ 		fprintf(stderr, "OS.CopyMask: error in signal1\n");
+	CopyMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, &ra, &rb, &rc);
+	if (signal(SIGSEGV, SIG_DFL) == BADSIG)
+ 		fprintf(stderr, "OS.CopyMask: error in signal2\n");
+	return 0;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyDeepMask(JNIEnv *env, jclass zz, jint srcBits,
@@ -1716,6 +1740,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPort(JNI
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BeginUpdate(JNIEnv *env, jclass zz, jint wHandle) {
 	BeginUpdate((WindowRef)wHandle);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GlobalToLocal(JNIEnv *env, jclass zz, jshortArray point) {
+    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
+	GlobalToLocal((Point*)sa);
+	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_LocalToGlobal(JNIEnv *env, jclass zz, jshortArray point) {
+    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
+	LocalToGlobal((Point*)sa);
+	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGlobalToLocalPoint(JNIEnv *env, jclass zz,
@@ -2265,9 +2301,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setControlToolTip
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl(JNIEnv *env, jclass zz,
 			jint wHandle, jboolean visible, jshort initialValue, jshort minValue, jshort maxValue, jshort procID) {
-	jint h= (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
-	//HIObjectPrintDebugInfo((HIObjectRef)h);
-	return h;
+	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl(JNIEnv *env, jclass zz, jint cHandle) {
@@ -2298,11 +2332,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl
 	return status;
 }
 
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmbedControl(JNIEnv *env, jclass zz, jint cHandle, jint parentHandle) {
 	return (jint) RC(EmbedControl((ControlRef) cHandle, (ControlRef) parentHandle));
 }
-*/
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlOwner(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jint) GetControlOwner((ControlRef) cHandle);
@@ -2334,7 +2366,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeControl(JNIEn
 	SizeControl((ControlRef) cHandle, w, h);
 }
 
-/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowControl(JNIEnv *env, jclass zz, jint cHandle) {
 	ShowControl((ControlRef) cHandle);
 }
@@ -2342,18 +2373,15 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowControl(JNIEn
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HideControl(JNIEnv *env, jclass zz, jint cHandle) {
 	HideControl((ControlRef) cHandle);
 }
-*/
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlVisible(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jboolean) IsControlVisible((ControlRef) cHandle);
 }
 
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlVisibility(JNIEnv *env, jclass zz, jint cHandle,
                 jboolean isVisible, jboolean doDraw) {
 	return (jint) RC(SetControlVisibility((ControlRef)cHandle, isVisible, doDraw));
 }
-*/
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlActive(JNIEnv *env, jclass zz, jint cHandle) {
 	return (jboolean) IsControlActive((ControlRef) cHandle);

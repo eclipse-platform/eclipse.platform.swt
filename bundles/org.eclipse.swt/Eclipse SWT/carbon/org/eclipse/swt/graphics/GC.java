@@ -388,8 +388,11 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				if (srcImage.transparentPixel != -1) srcImage.createMask();
 	
 				int maskBits= srcImage.mask != 0 ? OS.DerefHandle(srcImage.mask) : 0;
-				if (maskBits != 0)
-					OS.CopyMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData());
+				if (maskBits != 0) {
+					int rc= OS.CopyMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData());
+					if (rc != OS.kNoErr)
+						System.out.println("GC.drawImage: error in CopyMask: " + rc);
+				}
 
 				/* Destroy the image mask if there is a GC created on the image */
 				if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
