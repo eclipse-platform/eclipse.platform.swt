@@ -468,7 +468,7 @@ void hookEvents () {
 }
 int hoverProc (int id) {
 	boolean showTip = toolTipText != null;
-	parent.processMouseHover (id, !showTip);
+	parent.hoverProc (id, !showTip);
 	if (showTip) {
 		Display display = getDisplay ();
 		display.showToolTip (handle, toolTipText);

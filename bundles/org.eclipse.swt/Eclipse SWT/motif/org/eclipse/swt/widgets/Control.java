@@ -1339,9 +1339,9 @@ int processIMEFocusOut () {
 	return 0;
 }
 int hoverProc (int id) {
-	return processMouseHover (id, true);
+	return hoverProc (id, true);
 }
-int processMouseHover (int id, boolean showTip) {
+int hoverProc (int id, boolean showTip) {
 	Display display = getDisplay ();
 	if (showTip) display.showToolTip (handle, toolTipText);
 	sendMouseEvent (SWT.MouseHover, 0);
