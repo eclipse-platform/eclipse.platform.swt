@@ -3389,34 +3389,32 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	if (!force && tabHeight == oldHeight) return false;
 	
 	oldSize = null;
-	if (!simple) {
-		if (onBottom) {
-			curve = bezier(0, tabHeight + 2,
-			               CURVE_LEFT, tabHeight + 2,
-					       CURVE_WIDTH - CURVE_RIGHT, 1,
-			               CURVE_WIDTH, 1,
-			               CURVE_WIDTH);
-			// workaround to get rid of blip at end of bezier
-			int index = -1;
-			for (int i = 0; i < curve.length/2; i++) {
-				if (curve[2*i+1] > tabHeight) {
-					index = i;
-				} else {
-					break;
-				}
+	if (onBottom) {
+		curve = bezier(0, tabHeight + 2,
+		               CURVE_LEFT, tabHeight + 2,
+				       CURVE_WIDTH - CURVE_RIGHT, 1,
+		               CURVE_WIDTH, 1,
+		               CURVE_WIDTH);
+		// workaround to get rid of blip at end of bezier
+		int index = -1;
+		for (int i = 0; i < curve.length/2; i++) {
+			if (curve[2*i+1] > tabHeight) {
+				index = i;
+			} else {
+				break;
 			}
-			if (index > 0) {
-				int[] newCurve = new int[curve.length - 2*(index-1)];
-				System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
-				curve = newCurve;
-			}	
-		} else {
-			curve = bezier(0, 0,
-			               CURVE_LEFT, 0, 
-			               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
-			               CURVE_WIDTH, tabHeight + 1,
-			               CURVE_WIDTH);
 		}
+		if (index > 0) {
+			int[] newCurve = new int[curve.length - 2*(index-1)];
+			System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
+			curve = newCurve;
+		}	
+	} else {
+		curve = bezier(0, 0,
+		               CURVE_LEFT, 0, 
+		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
+		               CURVE_WIDTH, tabHeight + 1,
+		               CURVE_WIDTH);
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
