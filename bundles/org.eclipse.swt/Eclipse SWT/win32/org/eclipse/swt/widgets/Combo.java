@@ -79,6 +79,7 @@ public class Combo extends Composite {
 	 */
 	static final int CBID_LIST = 1000;
 	static final int CBID_EDIT = 1001;
+	static int EditProc, ListProc;
 	
 	static final int ComboProc;
 	static final TCHAR ComboClass = new TCHAR (0,"COMBOBOX", true);
@@ -397,6 +398,18 @@ public void copy () {
 
 void createHandle () {
 	super.createHandle ();
+	state &= ~CANVAS;
+
+	/* Get the text and list window procs */
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0 && EditProc == 0) {
+		EditProc = OS.GetWindowLong (hwndText, OS.GWL_WNDPROC);
+	}
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0 && ListProc == 0) {
+		ListProc = OS.GetWindowLong (hwndList, OS.GWL_WNDPROC);
+	}
+
 	/*
 	* Bug in Windows.  If the combo box has the CBS_SIMPLE style,
 	* the list portion of the combo box is not drawn correctly the
@@ -408,7 +421,6 @@ void createHandle () {
 		OS.SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
 		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 	}
-	state &= ~CANVAS;
 }
 
 /**
@@ -432,6 +444,14 @@ public void cut () {
 
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
+}
+
+void deregister () {
+	super.deregister ();
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) display.removeControl (hwndText);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) display.removeControl (hwndList);
 }
 
 /**
@@ -793,6 +813,14 @@ public int indexOf (String string, int start) {
 public void paste () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
+}
+
+void register () {
+	super.register ();
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) display.addControl (hwndText, this);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) display.addControl (hwndList, this);
 }
 
 /**
@@ -1249,46 +1277,17 @@ public void setTextLimit (int limit) {
 	OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
 }
 
-boolean translateMessage (MSG msg) {
-	if (super.translateMessage (msg)) return true;
-	
-	/*
-	* In order to see key events for the text widget in a combo box,
-	* filter the key events before they are dispatched to the text
-	* widget and invoke the cooresponding key handler for the combo
-	* box as if the key was sent directly to the combo box, not the
-	* text field.  The key is still dispatched to the text widget, 
-	* in the normal fashion.  Note that we must call TranslateMessage()
-	* in order to process accented keys properly.
-	*/
+void subclass () {
+	super.subclass ();
+	int newProc = display.windowProc;
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	if (hwndText != 0 && msg.hwnd == hwndText) {
-		switch (msg.message) {
-			case OS.WM_CHAR:
-			case OS.WM_SYSCHAR:
-			case OS.WM_KEYDOWN:  {
-				if (msg.message == OS.WM_KEYDOWN) {
-					if (display.translateTraversal (msg, this)) return true;
-				} else {
-					if (display.translateMnemonic (msg, this)) return true;
-				}
-			}
-		}
-		OS.TranslateMessage (msg);
-		LRESULT result = null;
-		switch (msg.message) {
-			case OS.WM_CHAR:		result = WM_CHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_IME_CHAR:	result = WM_IME_CHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_KEYDOWN:		result = WM_KEYDOWN (msg.wParam, msg.lParam); break;
-			case OS.WM_KEYUP:		result = WM_KEYUP (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSCHAR:		result = WM_SYSCHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (msg.wParam, msg.lParam); break;
-		}
-		if (result == null) OS.DispatchMessage (msg);
-		return true;
+	if (hwndText != 0) {
+		OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, newProc);
 	}
-	return false;
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) {	
+		OS.SetWindowLong (hwndList, OS.GWL_WNDPROC, newProc);
+	}
 }
 
 boolean translateTraversal (MSG msg) {
@@ -1332,6 +1331,18 @@ boolean traverseEscape () {
 	return super.traverseEscape ();
 }
 
+void unsubclass () {
+	super.unsubclass ();
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0 && EditProc != 0) {
+		OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, EditProc);
+	}
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0 && ListProc != 0) {
+		OS.SetWindowLong (hwndList, OS.GWL_WNDPROC, ListProc);
+	}
+}
+
 int widgetExtStyle () {
 	return super.widgetExtStyle () & ~OS.WS_EX_NOINHERITLAYOUT;
 }
@@ -1349,6 +1360,33 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return ComboProc;
+}
+
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
+	if (hwnd != handle) {
+		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+		if ((hwndText != 0 && hwnd == hwndText) || (hwndList != 0 && hwnd == hwndList)) {
+			LRESULT result = null;
+			switch (msg) {
+				case OS.WM_CHAR:		result = WM_CHAR (wParam, lParam); break;
+				case OS.WM_IME_CHAR:	result = WM_IME_CHAR (wParam, lParam); break;
+				case OS.WM_KEYDOWN:		result = WM_KEYDOWN (wParam, lParam); break;
+				case OS.WM_KEYUP:		result = WM_KEYUP (wParam, lParam); break;
+				case OS.WM_SYSCHAR:		result = WM_SYSCHAR (wParam, lParam); break;
+				case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (wParam, lParam); break;
+				case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (wParam, lParam); break;
+				case OS.WM_CONTEXTMENU:
+					/* Pretend the WM_CONTEXTMENU was sent to the combo box */
+					result = WM_CONTEXTMENU (handle, lParam); break;
+			}
+			if (result != null) return result.value;
+			int windowProc = hwnd == hwndText ? EditProc : ListProc;
+			return OS.CallWindowProc (windowProc, hwnd, msg, wParam, lParam);
+		}
+	}	
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {

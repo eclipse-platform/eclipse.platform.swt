@@ -2491,10 +2491,6 @@ boolean translateAccelerator (MSG msg) {
 	return menuShell ().translateAccelerator (msg);
 }
 
-boolean translateMessage (MSG msg) {
-	return false;
-}
-
 boolean translateMnemonic (char key) {
 	if (!isVisible () || !isEnabled ()) return false;
 	Event event = new Event ();

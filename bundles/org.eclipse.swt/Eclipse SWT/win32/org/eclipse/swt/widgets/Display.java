@@ -657,7 +657,6 @@ boolean filterMessage (MSG msg) {
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		Control control = findControl (msg.hwnd);
 		if (control != null) {
-			if (control.translateMessage (msg)) return true;
 			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {	
 				lastAscii = lastKey = 0;
 				lastVirtual = lastNull = false;
