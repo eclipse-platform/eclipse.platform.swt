@@ -790,18 +790,11 @@ public void setMaximized (boolean maximized) {
 				bits &= ~OS.WS_CAPTION;
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 			}
-			
 			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			if (parent != null) {
-				Rectangle rect = parent.getClientArea ();
-				OS.SetWindowPos (handle, 0, rect.x, rect.y, rect.width, rect.height, flags);						
-			} else {
-				RECT rect = new RECT ();
-				OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-				int width = rect.right - rect.left;
-				int height = rect.bottom - rect.top;
-				OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);			
-			}
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			int width = rect.right - rect.left, height = rect.bottom - rect.top;
+			OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
 		} else {
 			if ((style & SWT.NO_TRIM) == 0) {
 				/* insert caption when no longer maximized */
