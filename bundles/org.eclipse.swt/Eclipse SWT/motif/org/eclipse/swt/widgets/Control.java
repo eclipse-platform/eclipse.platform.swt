@@ -1398,10 +1398,7 @@ int processPaint (int callData) {
 	event.x = xEvent.x;  event.y = xEvent.y;
 	event.width = xEvent.width;  event.height = xEvent.height;
 	GC gc = event.gc = new GC (this);
-	XRectangle rect = new XRectangle ();
-	rect.x = (short) xEvent.x;  rect.y = (short) xEvent.y;
-	rect.width = (short) xEvent.width;  rect.height = (short) xEvent.height;
-	OS.XSetClipRectangles (xDisplay, gc.handle, 0, 0, rect, 1, OS.Unsorted);
+	gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.Paint, event);
 	if (!gc.isDisposed ()) gc.dispose ();
 	event.gc = null;

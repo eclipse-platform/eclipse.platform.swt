@@ -470,17 +470,18 @@ int processPaint (int callData) {
 	if (xDisplay == 0) return 0;
 	Event event = new Event ();
 	GC gc = event.gc = new GC (this);
-	OS.XSetRegion (xDisplay, gc.handle, damagedRegion);
+	Region region = Region.motif_new (damagedRegion);
+	gc.setClipping (region);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
 	event.time = OS.XtLastTimestampProcessed (xDisplay);
 	event.x = rect.x;  event.y = rect.y;
 	event.width = rect.width;  event.height = rect.height;
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
+	OS.XDestroyRegion (damagedRegion);
+	damagedRegion = 0;
 	return 0;
 }
 void propagateChildren (boolean enabled) {
