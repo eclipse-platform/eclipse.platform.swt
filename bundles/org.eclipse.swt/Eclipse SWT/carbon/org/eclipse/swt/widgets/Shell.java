@@ -1025,7 +1025,7 @@ int processResize (Object callData) {
 	boolean sizeChanged= (oldWidth != w || oldHeight != h);
 
 	if (scrolledHandle != 0 && sizeChanged) {
-		handleResize(scrolledHandle, 0, 0, w, h);
+		handleResize(scrolledHandle, new MacRect(0, 0, w, h));
 	}
 	
 	if (positionChanged) {

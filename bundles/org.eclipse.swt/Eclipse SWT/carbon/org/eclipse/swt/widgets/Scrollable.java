@@ -362,8 +362,8 @@ int topHandle () {
 	 * Overridden from Control.
 	 * x and y are relative to window!
 	 */
-	void handleResize(int scrolledHandle, int x, int y, int w, int h) {
-		super.handleResize(scrolledHandle, x, y, w, h);
+	void handleResize(int scrolledHandle, MacRect bounds) {
+		super.handleResize(scrolledHandle, bounds);
 		relayout123();
 	}
 	

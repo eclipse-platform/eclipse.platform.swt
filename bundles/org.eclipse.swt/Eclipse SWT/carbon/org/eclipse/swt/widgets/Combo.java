@@ -1485,8 +1485,12 @@ void enableWidget (boolean enabled) {
 	 * Overridden from Control. Takes care of shadow
 	 * x and y are relative to window!
 	 */
-	void handleResize(int hndl, int x, int y, int width, int height) {
-		super.handleResize(hndl, x, y, width, height);
+	void handleResize(int hndl, MacRect bounds) {
+		super.handleResize(hndl, bounds);
+		int x= bounds.getX();
+		int y= bounds.getY();
+		int width= bounds.getWidth();
+		int height= bounds.getHeight();
 		if (fTX != 0) {
 			x= x+width-BUTTON_WIDTH;
 			y= y+(height-BUTTON_WIDTH)/2;

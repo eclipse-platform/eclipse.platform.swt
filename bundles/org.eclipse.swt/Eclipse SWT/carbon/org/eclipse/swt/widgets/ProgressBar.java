@@ -29,6 +29,10 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public /*final*/ class ProgressBar extends Control {
+	
+	// AW
+	private int fInset;
+	// AW
 
 /**
  * Constructs a new instance of this class given its parent
@@ -61,18 +65,6 @@ public /*final*/ class ProgressBar extends Control {
  * @see Widget#getStyle
  */
 public ProgressBar (Composite parent, int style) {
-	/*
-	 * Feature in Motif. If you set the progress bar's value to 0,
-	 * the thumb does not disappear. In order to make this happen,
-	 * we hide the widget when the value is set to zero by changing
-	 * its colors to render it invisible, which means that it
-	 * would not visible unless a border is present. The fix is to
-	 * always ensure that there is a border, which will be drawn
-	 * even when the value is 0.
-	 */
-	/* AW
-	super (parent, checkStyle (style | SWT.BORDER));
-	*/
 	super (parent, checkStyle (style));
 }
 static int checkStyle (int style) {
@@ -82,9 +74,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
+	/* AW
 	Display display = getDisplay ();
 	int hScroll = display.scrolledMarginX;
 	int vScroll = display.scrolledMarginY;
+	*/
+	//Point e= MacUtil.computeSize(handle);
+	int size= 12;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		width += size * 10;
+		height += size;
+	} else {
+		width += size;
+		height += size * 10;
+	}
+	/* AW
 	if ((style & SWT.HORIZONTAL) != 0) {
 		width += hScroll * 10;
 		height += vScroll;
@@ -92,32 +96,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width += hScroll;
 		height += vScroll * 10;
 	}
+	*/
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
 }
 void createHandle (int index) {
 	state |= HANDLE;
-    /* AW
-	int background = defaultBackground ();
-    */
 	int parentHandle = parent.handle;
-    /* AW
-	int [] argList = {
-		OS.XmNshowArrows, 0,
-		OS.XmNsliderSize, 1,
-		OS.XmNtraversalOn, 0,
-		OS.XmNtroughColor, background,
-		OS.XmNtopShadowColor, background,
-		OS.XmNbottomShadowColor, background,
-		OS.XmNshadowThickness, 1,
-		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
-		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
-		OS.XmNprocessingDirection, ((style & SWT.H_SCROLL) != 0) ? OS.XmMAX_ON_RIGHT : OS.XmMAX_ON_TOP,
-		OS.XmNancestorSensitive, 1,
-	};
-	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
-    */
 	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
@@ -177,17 +163,6 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget();
-    /* AW
-	int [] argList = {
-		OS.XmNminimum, 0,
-		OS.XmNsliderSize, 0,
-		OS.XmNbackground, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int minimum = argList [1], sliderSize = argList [3], background = argList [5];
-	if (sliderSize == 1 && background == defaultBackground()) sliderSize = 0;
-	return minimum + sliderSize;
-    */
     return OS.GetControl32BitValue(handle);
 }
 /* AW
@@ -240,36 +215,6 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-    /* AW
-	int [] argList = {
-		OS.XmNminimum, 0,
-		OS.XmNmaximum, 0,
-		OS.XmNsliderSize, 0,
-		OS.XmNvalue, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int minimum = argList [1];
-	int maximum = argList [3];
-	int sliderSize = argList [5];
-    */
-    /* AW
-	int minimum = getMinimum();
-	int maximum = getMaximum();
-	int sliderSize = getThumb();
-	if (value >= maximum) return;
-	int selection = sliderSize + minimum;
-	if (value > selection) selection = value;
-    */
-    /* AW
-	argList [1] = value;
-	argList [7] = value;
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	display.setWarnings (warnings);
-	setThumb(selection - value);
-    */
     OS.SetControl32BitMinimum(handle, value);
 }
 /**
@@ -287,52 +232,8 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	if (value < 0) return;
-
-    /* AW
-	int [] argList = {
-		OS.XmNminimum, 0,
-		OS.XmNmaximum, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int minimum = argList [1];
-	int maximum = argList [3];
-	int selection = value;
-	if (selection < minimum) selection = minimum;
-	if (selection > maximum) selection = maximum;
-	setThumb(selection - minimum);
-    */
     OS.SetControl32BitValue(handle, value);
 }
-/* AW
-void setThumb (int sliderSize) {
-	Display display = getDisplay ();
-	int backgroundPixel = defaultBackground ();
-	int [] argList1 = new int [] {
-		OS.XmNbackground, 0,
-		OS.XmNminimum, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	if (sliderSize == 0) {
-		if (argList1 [1] != backgroundPixel) {
-			OS.XmChangeColor (handle, backgroundPixel);
-		}
-	} else {
-		if (argList1 [1] != display.listForeground) {
-			OS.XmChangeColor (handle, display.listForeground);
-		}
-	}
-	int [] argList2 = new int [] {
-		OS.XmNsliderSize, (sliderSize == 0) ? 1 : sliderSize,
-		OS.XmNtroughColor, backgroundPixel,
-		OS.XmNtopShadowColor, backgroundPixel,
-		OS.XmNbottomShadowColor, backgroundPixel,
-		OS.XmNvalue, argList1[3]
-	};
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.XtSetValues (handle, argList2, argList2.length / 2);
-	display.setWarnings (warnings);
-}
-*/
 
 ////////////////////////////////////////////////////////
 // Mac stuff
@@ -340,20 +241,35 @@ void setThumb (int sliderSize) {
 
 /**
  * Overridden from Control since we want to center the bar within its area. 
- * x and y are relative to window!
  */
-void handleResize(int hndl, int x, int y, int width, int height) {
-	final int WIDTH= 16;
-	if (width > height) { 	// horizontal
-		int shift= (height-WIDTH)/2;
-		if (shift < 0)
-			shift= 0;
-		super.handleResize(hndl, x, y+shift, width, WIDTH);
+void handleResize(int hndl, MacRect bounds) {
+	
+	Point e= MacUtil.computeSize(hndl);
+	final int WIDTH= Math.max(e.x, e.y);
+	
+	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
+		int height= bounds.getHeight();
+		fInset= (height-WIDTH)/2;
+		if (fInset < 0)
+			fInset= 0;
+		bounds.inset(0, fInset, 0, fInset);
 	} else {	// vertical
-		int shift= (width-WIDTH)/2;
-		if (shift < 0)
-			shift= 0;
-		super.handleResize(hndl, x+shift, y, WIDTH, height);
+		int width= bounds.getWidth();
+		fInset= (width-WIDTH)/2;
+		if (fInset < 0)
+			fInset= 0;
+		bounds.inset(fInset, 0, fInset, 0);
+	}
+	super.handleResize(hndl, bounds);
+}
+
+void internalGetControlBounds(int hndl, MacRect bounds) {
+	OS.GetControlBounds(hndl, bounds.getData());
+	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
+		bounds.inset(0, fInset, 0, fInset);
+	} else {	// vertical
+		bounds.inset(fInset, 0, fInset, 0);
 	}
 }
+
 }

@@ -1423,8 +1423,8 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		OS.TXNDraw(fTX, 0);
 	}
 	
-	void handleResize(int hndl, int x, int y, int width, int height) {
-		super.handleResize(hndl, x, y, width, height);
+	void handleResize(int hndl, MacRect bounds) {
+		super.handleResize(hndl, bounds);
 		syncBounds();
 	}
 

@@ -679,9 +679,10 @@ void setTabImage(int index, Image image) {
  * Overridden from Control.
  * x and y are relative to window!
  */
-void handleResize(int hndl, int x, int y, int width, int height) {
-	//super.handleResize(hndl, x, y, width, height);
-	super.handleResize(hndl, x+MARGIN, y+0, width-2*MARGIN, height-MARGIN);
+void handleResize(int hndl, MacRect bounds) {
+
+	bounds.inset(MARGIN, 0, MARGIN, MARGIN);
+	super.handleResize(hndl, bounds);
 	
 	if (handle != 0) {
 		int selectedIndex= OS.GetControl32BitValue(handle)-1;
