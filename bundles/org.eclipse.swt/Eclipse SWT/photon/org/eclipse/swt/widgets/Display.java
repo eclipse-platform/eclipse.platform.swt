@@ -81,7 +81,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Display extends Device {
 
-	/**** TEMPORARY CODE FOR MOTIF TABLE ***/
+	/**** TEMPORARY CODE FOR EMULATED TABLE ***/
 	static int textHighlightThickness = 0;
 	
 	/* TEMPORARY HACK FOR PHOTON */
