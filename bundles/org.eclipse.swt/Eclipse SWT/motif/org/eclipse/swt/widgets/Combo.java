@@ -60,6 +60,7 @@ public /*final*/ class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 
+	boolean ignoreSelect;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -769,9 +770,9 @@ int processSelection (int callData) {
 	* cases we want to eat this callback so that listeners are not
 	* notified.
 	*/
-	if (getSelectionIndex() == -1)
+	if (ignoreSelect || getSelectionIndex() == -1)
 		return 0;
-		
+
 	return super.processSelection(callData);
 }
 /**
@@ -990,7 +991,9 @@ public void select (int index) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
 		int [] argList2 = {OS.XmNselectedPosition, index};
+		ignoreSelect = true;
 		OS.XtSetValues(handle, argList2, argList2.length / 2);
+		ignoreSelect = false;
 	}
 }
 /**
@@ -1162,7 +1165,17 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	if ((style & SWT.READ_ONLY) == 0) {
+	/*
+	* The read-only and non-read-only cases must be handled
+	* separately here because the platform will allow the
+	* text of a read-only combo to be set to any value,
+	* regardless of whether it appears in the combo's item
+	* list or not.
+	*/
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = indexOf (string);
+		if (index != -1) select (index);
+	} else {
 		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) return;
