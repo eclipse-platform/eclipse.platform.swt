@@ -15,7 +15,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import java.util.Enumeration;
-import java.util.Stack;
 import java.util.Vector;
  
 /**
@@ -1446,7 +1445,7 @@ void setExpandingItem(TreeItem item) {
 }
 public void setFont(Font font) {
 	checkWidget();
-	Stack children = new Stack();						// traverse the tree depth first
+	Vector children = new Vector();
 	Enumeration elements;
 	AbstractTreeItem item;
 
@@ -1460,14 +1459,17 @@ public void setFont(Font font) {
 	// Call itemChanged for all tree items
 	elements = getRoot().getChildren().elements();
 	while (elements.hasMoreElements() == true) {
-		children.push(elements.nextElement());
-	}			
-	while (children.empty() == false) {
-		item = (AbstractTreeItem) children.pop();
+		children.addElement(elements.nextElement());
+	}
+	// traverse the tree depth first	
+	int size;
+	while ((size = children.size()) != 0) {
+		item = (AbstractTreeItem)children.elementAt(size - 1);
+		children.removeElementAt(size - 1);
 		itemChanged(item, 0, getClientArea().width);
 		elements = item.getChildren().elements();
 		while (elements.hasMoreElements() == true) {
-			children.push(elements.nextElement());
+			children.addElement(elements.nextElement());
 		}			
 	}
 	setRedraw(true);									// re-enable redraw
