@@ -840,7 +840,7 @@ public void setImageIndent (int indent) {
 	if (indent < 0) return;
 	imageIndent = indent;
 	if (parent.ignoreRedraw) return;
-	if ((parent.style & SWT.VIRTUAL) != 0) {
+	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
 		if (index != -1) {
 			int hwnd = parent.handle;
