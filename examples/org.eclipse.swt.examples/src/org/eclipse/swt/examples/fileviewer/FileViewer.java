@@ -470,7 +470,6 @@ public class FileViewer {
 	private DropTarget createTreeDropTarget(final Tree tree) {
 		DropTarget dropTarget = new DropTarget(tree, DND.DROP_MOVE | DND.DROP_COPY);
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
-		dropTarget.addDropListener(new TreeDropFeedbackListener(tree));
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragEnter(DropTargetEvent event) {
 				isDropping = true;
@@ -481,6 +480,7 @@ public class FileViewer {
 			}
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
+				event.feedback |= DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
 			}
 			public void drop(DropTargetEvent event) {
 				File targetFile = getTargetFile(event);
@@ -780,6 +780,7 @@ public class FileViewer {
 			}
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
+				event.feedback |= DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
 			}
 			public void drop(DropTargetEvent event) {
 				File targetFile = getTargetFile(event);
