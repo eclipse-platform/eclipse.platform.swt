@@ -3264,7 +3264,7 @@ static final void blit(int op,
 /**
  * Computes the required channel shift from a mask.
  */
-private final static int getChannelShift(int mask) {
+final static int getChannelShift(int mask) {
 	if (mask == 0) return 0;
 	int i;
 	for (i = 0; ((mask & 1) == 0) && (i < 32); ++i) {
@@ -3276,7 +3276,7 @@ private final static int getChannelShift(int mask) {
 /**
  * Computes the required channel width (depth) from a mask.
  */
-private final static int getChannelWidth(int mask, int shift) {
+final static int getChannelWidth(int mask, int shift) {
 	if (mask == 0) return 0;
 	int i;
 	mask >>>= shift;
@@ -3289,7 +3289,7 @@ private final static int getChannelWidth(int mask, int shift) {
 /**
  * Extracts a field from packed RGB data given a mask for that field.
  */
-private final static byte getChannelField(int data, int mask) {
+final static byte getChannelField(int data, int mask) {
 	final int shift = getChannelShift(mask);
 	return anyToEight[getChannelWidth(mask, shift)][(data & mask) >>> shift];
 }
@@ -3297,7 +3297,7 @@ private final static byte getChannelField(int data, int mask) {
 /**
  * Arbitrary channel width data to 8-bit conversion table
  */
-private static final byte[][] anyToEight = new byte[9][];
+static final byte[][] anyToEight = new byte[9][];
 static {
 	for (int b = 0; b < 9; ++b) {
 		byte[] data = anyToEight[b] = new byte[1 << b];
