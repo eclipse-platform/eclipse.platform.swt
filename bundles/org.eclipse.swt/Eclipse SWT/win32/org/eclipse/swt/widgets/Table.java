@@ -1209,26 +1209,23 @@ void releaseWidget () {
 public void remove (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
-	int last = -1;
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int last = -1;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
-		if (index != last || i == 0) {
+		if (index != last) {
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = false;
-			if (code == 0) {
-				if (0 <= index && index < count) {
-					error (SWT.ERROR_ITEM_NOT_REMOVED);
-				} else {
-					error (SWT.ERROR_INVALID_RANGE);
-				}
-			}
-			
-			// BUG - disposed callback could remove an item
+			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			items [index].releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;

@@ -738,10 +738,15 @@ public boolean isSelected (int index) {
 public void remove (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
@@ -755,7 +760,7 @@ public void remove (int [] indices) {
 	int i = 0, topCount = 0, last = -1;
 	while (i < newIndices.length) {
 		int index = newIndices [i];
-		if (index != last || i == 0) {
+		if (index != last) {
 			TCHAR buffer = null;
 			if ((style & SWT.H_SCROLL) != 0) {
 				int length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
@@ -785,11 +790,7 @@ public void remove (int [] indices) {
 		topIndex -= topCount;
 		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
-	if (i < newIndices.length) {
-		int index = newIndices [i];
-		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	if (i < newIndices.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
 /**
