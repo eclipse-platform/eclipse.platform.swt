@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 760;
-int OS_nativeFunctionCallCount[760];
+int OS_nativeFunctionCount = 761;
+int OS_nativeFunctionCallCount[761];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -646,6 +646,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetDataBrowserTableViewHiliteStyle", 
 	"SetDataBrowserTableViewItemRow", 
 	"SetDataBrowserTableViewNamedColumnWidth", 
+	"SetDataBrowserTableViewRowHeight", 
 	"SetDataBrowserTarget", 
 	"SetDragAllowableActions", 
 	"SetDragDropAction", 

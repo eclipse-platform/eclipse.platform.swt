@@ -650,6 +650,7 @@ typedef enum {
 	SetDataBrowserTableViewHiliteStyle_FUNC,
 	SetDataBrowserTableViewItemRow_FUNC,
 	SetDataBrowserTableViewNamedColumnWidth_FUNC,
+	SetDataBrowserTableViewRowHeight_FUNC,
 	SetDataBrowserTarget_FUNC,
 	SetDragAllowableActions_FUNC,
 	SetDragDropAction_FUNC,

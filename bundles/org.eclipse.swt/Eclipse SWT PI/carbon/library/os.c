@@ -8919,6 +8919,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserTableViewNamedColumnWidth)
 }
 #endif
 
+#ifndef NO_SetDataBrowserTableViewRowHeight
+JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserTableViewRowHeight)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDataBrowserTableViewRowHeight_FUNC);
+	rc = (jint)SetDataBrowserTableViewRowHeight((ControlRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetDataBrowserTableViewRowHeight_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetDataBrowserTarget
 JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserTarget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

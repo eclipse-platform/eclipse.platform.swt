@@ -1311,6 +1311,7 @@ public static final native int SetDataBrowserTableViewColumnPosition(int browser
 public static final native int SetDataBrowserTableViewHiliteStyle(int browser, int hiliteStyle);  
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
 public static final native int SetDataBrowserTableViewNamedColumnWidth(int browser, int column, short width);
+public static final native int SetDataBrowserTableViewRowHeight(int browser, short height	);
 public static final native int SetDataBrowserTarget(int cHandle, int rootID);
 public static final native int SetDragAllowableActions(int theDrag, int inActions, boolean isLocal);
 public static final native int SetDragDropAction(int theDrag, int inAction);
