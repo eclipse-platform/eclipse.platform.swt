@@ -644,7 +644,7 @@ String getText (int start, int stop) {
  */
 public int getTextHeight () {
 	checkWidget();
-	return fontHeight (getFontDescription (), entryHandle != 0 ? entryHandle : handle);
+	return fontHeight (getFontDescription (), entryHandle != 0 ? entryHandle : handle) + 8;
 }
 
 /**
