@@ -216,7 +216,62 @@ public FontData open () {
 	fontData = null;
 	rgb = null;
 	open = true;
-	OS.FPShowHideFontPanel ();	
+	/*
+	* Feature in the Macintosh.  The Fonts window is not modal and it cannot
+	* be accessed through direct API.  The fix is to figure out the Fonts
+	* window by checking all available windows and set its modality
+	* explicitily.
+	*/
+	int count = 0;
+	int window = OS.GetPreviousWindow (0);
+	while (window != 0) {
+		count++;
+		window = OS.GetPreviousWindow (window);
+	}
+	int [] windows = new int [count];
+	boolean[] visible = new boolean [count];
+	count = 0;
+	window = OS.GetPreviousWindow (0);
+	while (window != 0) {
+		windows [count] = window;
+		visible [count] = OS.IsWindowVisible (window);
+		count++;
+		window = OS.GetPreviousWindow (window);
+	}
+	OS.FPShowHideFontPanel ();
+	int fontsWindow = 0;
+	window = OS.GetPreviousWindow (0);
+	while (window != 0 && fontsWindow == 0) {
+		if (OS.IsWindowVisible (window)) {
+			boolean found = false;
+			for (int i = 0; i < windows.length; i++) {
+				if (windows [i] == window) {
+					found = true;
+					if (!visible [i]) {
+						fontsWindow = window;
+						break;						
+					}
+				}
+			}
+			if (!found) {
+				fontsWindow = window;
+				break;
+			}
+		}
+		window = OS.GetPreviousWindow (window);
+	}
+	if (fontsWindow != 0) {
+		int inModalKind = OS.kWindowModalityNone;
+		if ((style & SWT.PRIMARY_MODAL) != 0) inModalKind = OS.kWindowModalityWindowModal;
+		if ((style & SWT.APPLICATION_MODAL) != 0) inModalKind = OS.kWindowModalityAppModal;
+		if ((style & SWT.SYSTEM_MODAL) != 0) inModalKind = OS.kWindowModalitySystemModal;
+		if (inModalKind != OS.kWindowModalityNone) {
+			int inUnavailableWindow = 0;
+			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
+			OS.SetWindowModality (fontsWindow, inModalKind, inUnavailableWindow);
+			OS.SelectWindow (fontsWindow);
+		}
+	}
 	Display display = parent.display;
 	while (!parent.isDisposed() && open) {
 		if (!display.readAndDispatch ()) display.sleep ();
