@@ -36,7 +36,7 @@ public final class CCombo extends Composite {
 
 	Text text;
 	List list;
-	int maxItemCount = 5;
+	int visibleItemCount = 5;
 	Shell popup;
 	Button arrow;
 	boolean hasFocus;
@@ -540,6 +540,23 @@ public int getTextLimit () {
 	return text.getTextLimit ();
 }
 /**
+ * Gets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @return the number of items that are visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public int getVisibleItemCount () {
+	checkWidget ();
+	return visibleItemCount;
+}
+/**
 * Gets the index of an item.
 * <p>
 * The list is searched starting at 0 until an
@@ -657,7 +674,7 @@ void internalLayout () {
 	
 	Point size = getSize();
 	int itemCount = list.getItemCount();
-	itemCount = (itemCount == 0) ? maxItemCount : Math.min(maxItemCount, itemCount);
+	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
 	int itemHeight = list.getItemHeight () * itemCount;
 	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
 	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
@@ -1102,7 +1119,24 @@ public void setVisible (boolean visible) {
 	super.setVisible(visible);
 	if (!visible) popup.setVisible(false);
 }
-
+/**
+ * Sets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @param count the new number of items to be visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setVisibleItemCount (int count) {
+	checkWidget ();
+	if (count < 0) return;
+	visibleItemCount = count;
+}
 void textEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
