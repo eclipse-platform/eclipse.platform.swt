@@ -516,10 +516,14 @@ public Browser(Composite parent, int style) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the window hosting the receiver should be closed.
  * <p>
+ * This notification occurs when a javascript command such as
+ * <code>window.close</code> gets executed by a <code>Browser</code>.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -542,10 +546,15 @@ public void addCloseWindowListener(CloseWindowListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the current location is changed or about to be changed.
  * <p>
+ * This notification typically occurs when the application navigates
+ * to a new location with {@link #setUrl(String)} or when the user
+ * activates a hyperlink.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -568,10 +577,14 @@ public void addLocationListener(LocationListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when a new window needs to be created.
  * <p>
+ * This notification occurs when a javascript command such as
+ * <code>window.open</code> gets executed by a <code>Browser</code>.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -594,10 +607,11 @@ public void addOpenWindowListener(OpenWindowListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when a progress is made during the loading of the current 
+ * URL or when the loading of the current URL has been completed.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -620,10 +634,14 @@ public void addProgressListener(ProgressListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the status text is changed.
  * <p>
+ * The status text is typically displayed in the status bar of
+ * a browser application.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -646,10 +664,11 @@ public void addStatusTextListener(StatusTextListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when the title of the current document is available
+ * or has changed.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -672,10 +691,11 @@ public void addTitleListener(TitleListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when a window hosting the receiver needs to be displayed
+ * or hidden.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -882,9 +902,10 @@ public void refresh() {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the window hosting the receiver should be closed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -920,9 +941,10 @@ public void removeCloseWindowListener(CloseWindowListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the current location is changed or about to be changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -958,9 +980,10 @@ public void removeLocationListener(LocationListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a new window needs to be created.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -996,9 +1019,11 @@ public void removeOpenWindowListener(OpenWindowListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a progress is made during the loading of the current 
+ * URL or when the loading of the current URL has been completed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1034,9 +1059,10 @@ public void removeProgressListener(ProgressListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the status text is changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1072,9 +1098,11 @@ public void removeStatusTextListener(StatusTextListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the title of the current document is available
+ * or has changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1110,9 +1138,11 @@ public void removeTitleListener(TitleListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a window hosting the receiver needs to be displayed
+ * or hidden.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

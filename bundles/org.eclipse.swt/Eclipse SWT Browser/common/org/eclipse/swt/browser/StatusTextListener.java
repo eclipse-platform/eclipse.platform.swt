@@ -14,8 +14,8 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * a {@link StatusTextEvent} notification when the status text
- * for a {@link Browser} needs to be updated.
+ * a {@link StatusTextEvent} notification when the status text for
+ * a {@link Browser} is changed.
  * 
  * @see Browser#addStatusTextListener(StatusTextListener)
  * @see Browser#removeStatusTextListener(StatusTextListener)
@@ -26,7 +26,7 @@ public interface StatusTextListener extends SWTEventListener {
 
 /**
  * This method is called when the status text is changed. The
- * status text is typically showed in the status bar of a browser 
+ * status text is typically displayed in the status bar of a browser 
  * application. 
  * <p>
  *
