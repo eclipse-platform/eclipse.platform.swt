@@ -759,7 +759,7 @@ public void open () {
 	* queue but not dispatch events.
 	*/
 	MSG msg = new MSG ();
-	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
+	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
 	restoreFocus ();
 }
 
