@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.*;
 
 public /*final*/ class Caret extends Widget {
 	Canvas parent;
+	Image image;
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible, isShowing;
@@ -53,9 +54,14 @@ boolean drawCaret () {
 	OS.PgSetRegion (OS.PtWidgetRid (handle));
 	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
 	OS.PgSetFillColor (color);
-	int nWidth = width;
+	int nWidth = width, nHeight = height;
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		nWidth = rect.width;
+		nHeight = rect.height;
+	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.PgDrawIRect (x, y, x + nWidth - 1, y + height - 1, OS.Pg_DRAW_FILL);
+	OS.PgDrawIRect (x, y, x + nWidth - 1, y + nHeight - 1, OS.Pg_DRAW_FILL);
 	OS.PgSetGC (prevContext);	
 	OS.PgDestroyGC (phGC);
 	return true;
@@ -63,6 +69,10 @@ boolean drawCaret () {
 
 public Rectangle getBounds () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -77,6 +87,11 @@ public Font getFont () {
 	return parent.getFont ();
 }
 
+public Image getImage () {
+	checkWidget();
+	return image;
+}
+
 public Point getLocation () {
 	checkWidget();
 	return new Point (x, y);
@@ -89,6 +104,10 @@ public Canvas getParent () {
 
 public Point getSize () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
 
@@ -130,6 +149,7 @@ void releaseWidget () {
 //		display.setCurrentCaret (null);
 //	}
 	parent = null;
+	image = null;
 }
 
 public void setBounds (int x, int y, int width, int height) {
@@ -165,6 +185,13 @@ void setFocus () {
 
 public void setFont (Font font) {
 	checkWidget();
+}
+
+public void setImage (Image image) {
+	checkWidget();
+	if (isShowing) hideCaret ();
+	this.image = image;
+	if (isShowing) showCaret ();
 }
 
 public void setLocation (int x, int y) {
