@@ -42,6 +42,7 @@ public class Snippet154 {
 		frame.add(panel);
 		JRootPane root = new JRootPane();
 		panel.add(root);
+		java.awt.Container contentPane = root.getContentPane();
 
 		/* Creating components */
 		int nrows = 1000, ncolumns = 10;
@@ -61,7 +62,6 @@ public class Snippet154 {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.createDefaultColumnsFromModel();
 		JScrollPane scrollPane = new JScrollPane(table);
-		java.awt.Container contentPane = root.getContentPane();
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(scrollPane);
 		
