@@ -7,7 +7,7 @@
 CPU=ARM
 
 maj_ver=2
-min_ver=014
+min_ver=015
 bld_num=0
 
 DLLPREFIX=swt
