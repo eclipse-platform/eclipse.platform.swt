@@ -986,7 +986,23 @@ public void setExpanded (boolean value) {
 		expanded = value;
 		if (availableIndex == -1) return;
 		parent.makeDescendentsAvailable (this);
-		parent.redrawFromItemDownwards (availableIndex + 1);
+		int descendentsCount = computeAvailableDescendentCount ();
+		int previousNextAvailableIndex = availableIndex + descendentsCount;
+		if (previousNextAvailableIndex != parent.availableItems.length) {
+			/* the receiver was not the last available item before being expanded */
+			Rectangle clientArea = parent.getClientArea ();
+			int y = parent.getItemY (parent.availableItems [availableIndex + 1]);
+			parent.update ();
+			GC gc = new GC (parent);
+			gc.copyArea (
+				0, y,
+				clientArea.width, clientArea.height - y,
+				0, y + ((descendentsCount - 1) * parent.itemHeight));				
+			gc.dispose ();
+		}
+		int redrawStart = availableIndex + 1;
+		int redrawEnd = redrawStart + descendentsCount - 2;
+		parent.redrawItems (redrawStart, redrawEnd, false);
 	} else {
 		int oldAvailableLength = parent.availableItems.length;
 		TreeItem[] descendents = computeAvailableDescendents ();
@@ -1009,6 +1025,7 @@ public void setExpanded (boolean value) {
 		}
 		parent.redrawItems (availableIndex + 1, oldAvailableLength - 1, false);
 	}
+	/* redraw the receiver's expander box */
 	Rectangle bounds = getExpanderBounds ();
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 }

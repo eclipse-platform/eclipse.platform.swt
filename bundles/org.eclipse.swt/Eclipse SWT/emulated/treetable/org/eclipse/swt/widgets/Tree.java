@@ -1719,11 +1719,11 @@ void makeDescendentsAvailable (TreeItem item) {
 	System.arraycopy (availableDescendents, 0, newAvailableItems, itemAvailableIndex, availableDescendents.length);
 	int startIndex = itemAvailableIndex + 1;
 	System.arraycopy (
-			availableItems,
-			startIndex,
-			newAvailableItems,
-			itemAvailableIndex + availableDescendents.length,
-			availableItems.length - startIndex);
+		availableItems,
+		startIndex,
+		newAvailableItems,
+		itemAvailableIndex + availableDescendents.length,
+		availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
@@ -1751,11 +1751,11 @@ void makeDescendentsUnavailable (TreeItem item, TreeItem[] removedDescendents) {
 	System.arraycopy (availableItems, 0, newAvailableItems, 0, item.availableIndex + 1);
 	int startIndex = item.availableIndex + descendentsLength;
 	System.arraycopy (
-			availableItems,
-			startIndex,
-			newAvailableItems,
-			item.availableIndex + 1,
-			availableItems.length - startIndex);
+		availableItems,
+		startIndex,
+		newAvailableItems,
+		item.availableIndex + 1,
+		availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndexes */
