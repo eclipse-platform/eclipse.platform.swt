@@ -646,7 +646,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollbarVisible (this, visible);
+	parent.setScrollBarVisible (this, visible);
 }
 int XmNdecrementCallback (int w, int client_data, int call_data) {
 	sendScrollEvent (SWT.ARROW_UP);

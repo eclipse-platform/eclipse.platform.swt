@@ -759,6 +759,11 @@ public void setTabList (Control [] tabList) {
 	} 
 	this.tabList = tabList;
 }
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	boolean changed = super.setScrollBarVisible (bar, visible);
+	if (changed && layout != null) layout.layout (this, false);
+	return changed;
+}
 boolean setTabGroupFocus (boolean next) {
 	if (isTabItem ()) return setTabItemFocus (next);
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;

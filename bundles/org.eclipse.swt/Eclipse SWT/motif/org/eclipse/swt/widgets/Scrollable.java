@@ -292,11 +292,11 @@ void setBackgroundPixel (int pixel) {
 		if (argList1 [3] != 0) OS.XmChangeColor (argList1 [3], pixel);
 	}
 }
-void setScrollbarVisible (ScrollBar bar, boolean visible) {
-	if (scrolledHandle == 0) return;
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	if (scrolledHandle == 0) return false;
 	int barHandle = bar.handle;
 	boolean managed = OS.XtIsManaged (barHandle);
-	if (managed == visible) return;
+	if (managed == visible) return false;
 
 	/*
 	* Feature in Motif.  Hiding or showing a scroll bar
@@ -317,8 +317,9 @@ void setScrollbarVisible (ScrollBar bar, boolean visible) {
 	/* Restore the size */
 	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
 
-	sendEvent (SWT.Resize);
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
+	sendEvent (SWT.Resize);
+	return true;
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;
