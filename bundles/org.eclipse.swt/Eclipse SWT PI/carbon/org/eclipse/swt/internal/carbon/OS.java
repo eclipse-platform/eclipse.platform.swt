@@ -224,6 +224,8 @@ public class OS {
 	public static final int kEventMouseExited = 9;
 	public static final int kEventMouseMoved = 5;
 	public static final int kEventMouseUp = 2;
+	public static final int kEventMouseWheelAxisX = 0;
+	public static final int kEventMouseWheelAxisY = 1;
 	public static final int kEventMouseWheelMoved = 10;
 	public static final int kEventParamAEEventClass = ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
 	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
@@ -245,6 +247,7 @@ public class OS {
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
+	public static final int kEventParamMouseWheelAxis = ('m'<<24) + ('w'<<16) + ('a'<<8) + 'x';
 	public static final int kEventParamMouseWheelDelta = ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
 	public static final int kEventParamPreviousBounds = ('p'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
@@ -491,6 +494,7 @@ public class OS {
 	public static final int typeMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
+	public static final int typeMouseWheelAxis = ('m'<<24) + ('w'<<16) + ('a'<<8) + 'x';
 	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	public static final int typeQDRectangle = ('q'<<24) + ('d'<<16) + ('r'<<8) + 't';
 	public static final int typeQDRgnHandle = ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';

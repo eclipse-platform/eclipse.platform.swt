@@ -934,6 +934,7 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color != null ? color.handle : null;
+	redrawWidget (handle);
 }
 
 public void setBounds (int x, int y, int width, int height) {
@@ -1058,6 +1059,7 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color != null ? color.handle : null;
+	redrawWidget (handle);
 }
 
 public void setLayoutData (Object layoutData) {
