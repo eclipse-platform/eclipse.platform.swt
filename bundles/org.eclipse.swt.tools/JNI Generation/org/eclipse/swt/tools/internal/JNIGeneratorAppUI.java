@@ -705,9 +705,8 @@ void updateMembers() {
 	int[] indices = classesLt.getSelectionIndices();
 	if (indices.length != 1) return;
 	TableItem classItem = classesLt.getItem(indices[0]);
-	ClassData classData = (ClassData)classItem.getData();;
+	ClassData classData = (ClassData)classItem.getData();
 	Class clazz = classData.getClazz();
-	String className = clazz.getName();
 	boolean hasNatives = false;
 	Method[] methods = clazz.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {

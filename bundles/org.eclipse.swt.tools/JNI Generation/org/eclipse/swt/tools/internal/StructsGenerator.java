@@ -107,7 +107,6 @@ void generateSourceStart(Class clazz) {
 }
 
 void generateSourceEnd(Class clazz) {
-	String clazzName = getClassName(clazz);
 	output("#endif");
 	outputDelimiter();
 }

@@ -74,7 +74,7 @@ public class SwtReplace extends Task {
 			}
 			writer.write(line);
 			writer.newLine();
-		};
+		}
 		reader.close();
 		writer.close();
 		if (modified) {

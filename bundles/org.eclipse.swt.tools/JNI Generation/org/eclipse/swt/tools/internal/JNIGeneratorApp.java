@@ -250,7 +250,7 @@ public Class[] getClasses() {
 	return classes;
 }
 
-public Class[] getNativesClasses() throws ClassNotFoundException {
+public Class[] getNativesClasses() {
 	if (mainClass == null) return new Class[0];
 	ArrayList result = new ArrayList();
 	Class[] classes = getClasses();
@@ -269,7 +269,7 @@ public Class[] getNativesClasses() throws ClassNotFoundException {
 	return (Class[])result.toArray(new Class[result.size()]);
 }
 
-public Class[] getStructureClasses() throws ClassNotFoundException {
+public Class[] getStructureClasses() {
 	if (mainClass == null) return new Class[0];
 	ArrayList result = new ArrayList();
 	Class[] classes = getClasses();

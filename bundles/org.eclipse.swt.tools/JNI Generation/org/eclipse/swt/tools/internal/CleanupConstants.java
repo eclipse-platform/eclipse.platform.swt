@@ -54,7 +54,6 @@ public void generate(Field field) {
 		String str = (String)files.get(key);
 		if (str.indexOf(name) != -1) {
 			int modifiers = field.getModifiers();
-			Class clazz = field.getDeclaringClass();
 			String modifiersStr = Modifier.toString(modifiers);
 			output("\t");
 			output(modifiersStr);
