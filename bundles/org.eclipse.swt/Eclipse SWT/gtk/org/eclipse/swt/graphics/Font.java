@@ -182,7 +182,7 @@ public FontData[] getFontData() {
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(null, buffer));
-	int height = OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
+	int height = OS.PANGO_PIXELS(OS.pango_font_description_get_size(handle));
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
 	int style = SWT.NORMAL;
