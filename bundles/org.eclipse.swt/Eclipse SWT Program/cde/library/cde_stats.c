@@ -14,9 +14,10 @@
 
 #ifdef NATIVE_STATS
 
-int CDE_nativeFunctionCount = 18;
-int CDE_nativeFunctionCallCount[18];
+int CDE_nativeFunctionCount = 19;
+int CDE_nativeFunctionCallCount[19];
 char * CDE_nativeFunctionNames[] = {
+	"DtActionArg_1sizeof",
 	"_1DtActionInvoke",
 	"_1DtAppInitialize",
 	"_1DtDbLoad",

@@ -15,6 +15,18 @@
 
 #define CDE_NATIVE(func) Java_org_eclipse_swt_internal_cde_CDE_##func
 
+#ifndef NO_DtActionArg_1sizeof
+JNIEXPORT jint JNICALL CDE_NATIVE(DtActionArg_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	CDE_NATIVE_ENTER(env, that, DtActionArg_1sizeof_FUNC);
+	rc = (jint)DtActionArg_sizeof();
+	CDE_NATIVE_EXIT(env, that, DtActionArg_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1DtActionInvoke
 JNIEXPORT jint JNICALL CDE_NATIVE(_1DtActionInvoke)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2, jint arg3, jbyteArray arg4, jbyteArray arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9)

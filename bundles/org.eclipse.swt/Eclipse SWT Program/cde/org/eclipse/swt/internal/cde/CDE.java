@@ -20,6 +20,9 @@ public class CDE extends Platform {
 	public static final String DtDTS_DA_ICON = "ICON";
 	public static final String DtDTS_DA_MIME_TYPE = "MIME_TYPE";
 	public static final String DtDTS_DA_NAME_TEMPLATE = "NAME_TEMPLATE";
+	
+	/** 64 bit */
+	public static final native int DtActionArg_sizeof();
 
 /** Natives */
 public static final native boolean _DtAppInitialize(int /*long*/ appContext, int /*long*/ display, int /*long*/ topWiget, byte[] appName, byte[] appClass);

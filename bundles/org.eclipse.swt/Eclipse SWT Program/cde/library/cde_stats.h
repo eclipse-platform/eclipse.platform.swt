@@ -21,6 +21,7 @@ extern char* CDE_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	DtActionArg_1sizeof_FUNC,
 	_1DtActionInvoke_FUNC,
 	_1DtAppInitialize_FUNC,
 	_1DtDbLoad_FUNC,

@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.cde;
 
 public class DtActionArg {
 	public int argClass;
-	public int name;
-	public static final int sizeof = 24;
+	public int /*long*/ name;
+	public static final int sizeof = CDE.DtActionArg_sizeof();
 }
