@@ -272,10 +272,10 @@ void createAcceleratorTable () {
 	hAccel = nAccel = 0;
 	int maxAccel = 0;
 	if (menuBar == null || items == null) {
-		if (!OS.IsWinCE) return;
+		if (!OS.IsPPC) return;
 		maxAccel = 1;
 	} else {
-		maxAccel = OS.IsWinCE ? items.length + 1 : items.length;
+		maxAccel = OS.IsPPC ? items.length + 1 : items.length;
 	}
 	int size = ACCEL.sizeof;
 	ACCEL accel = new ACCEL ();
@@ -298,7 +298,7 @@ void createAcceleratorTable () {
 			}
 		}
 	}
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		/* 
 		* Note on WinCE PPC.  Close the shell when user taps CTRL-Q.
 		* IDOK represents the "Done Button" which also closes the shell.
@@ -1173,7 +1173,7 @@ boolean traverseItem (boolean next) {
 int widgetExtStyle () {
 	int bits = 0;
 	if ((style & SWT.NO_TRIM) != 0) return bits;
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
 	}
 	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
@@ -1208,7 +1208,7 @@ int widgetStyle () {
 	}
 
 	/* Set the system menu and close box bits */
-	if (!OS.IsWinCE) {
+	if (!OS.IsPPC) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_SYSMENU;
 	}
 	

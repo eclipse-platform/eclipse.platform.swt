@@ -16,6 +16,7 @@ public class OS {
 	public static final boolean IsWin95;
 	public static final boolean IsWinNT;
 	public static final boolean IsWinCE;
+	public static final boolean IsPPC;
 	public static final boolean IsDBLocale;
 	public static final boolean IsUnicode;
 	public static final int WIN32_MAJOR, WIN32_MINOR;
@@ -68,7 +69,8 @@ public class OS {
 		IsWin32s = info.dwPlatformId == VER_PLATFORM_WIN32s;
 		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 		IsWinNT = info.dwPlatformId == VER_PLATFORM_WIN32_NT;
-		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;	
+		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;
+		IsPPC  = IsPPC();	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
 
@@ -2059,6 +2061,7 @@ public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean
 public static final native boolean InvalidateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean IsDBCSLeadByte (byte TestChar);
 public static final native boolean IsIconic (int hWnd);
+public static final native boolean IsPPC();
 public static final native boolean IsWindowEnabled (int hWnd);
 public static final native boolean IsWindowVisible (int hWnd);
 public static final native boolean IsZoomed (int hWnd);

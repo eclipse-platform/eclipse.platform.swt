@@ -946,7 +946,7 @@ int widgetStyle () {
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		/*
 		* Note: this does not work when we get WM_ACTIVATE prior
 		* to adding a listener.
@@ -970,7 +970,7 @@ LRESULT WM_CLOSE (int wParam, int lParam) {
 }
 
 LRESULT WM_COMMAND (int wParam, int lParam) {
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		/*
 		* Note in WinCE PPC:  close the Shell when the "Done Button" has
 		* been pressed.

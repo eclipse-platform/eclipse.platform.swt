@@ -3502,6 +3502,17 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsIconic
 }
 #endif // _WIN32_WCE
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsPPC
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("IsPPC\n")
+#ifdef WIN32_PLATFORM_PSPC
+	return TRUE;
+#else
+	return FALSE;
+#endif // WIN32_PLATFORM_PSPC
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowEnabled
 	(JNIEnv *env, jclass that, jint arg0)
 {
