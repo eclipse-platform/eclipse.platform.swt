@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import junit.framework.*;
@@ -67,7 +68,34 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent e) {
+			listenerCalled = true;
+		};
+		public void widgetDefaultSelected(SelectionEvent e) {
+		};
+	};
+	
+	try {
+		button.addSelectionListener(null);
+		fail("No exception thrown for addSelectionListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	button.addSelectionListener(listener);
+	button.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+	
+	try {
+		button.removeSelectionListener(null);
+		fail("No exception thrown for removeSelectionListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	listenerCalled = false;
+	button.removeSelectionListener(listener);
+	button.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_computeSizeIIZ() {
@@ -89,7 +117,7 @@ public void test_computeSizeIIZ() {
 }
 
 public void test_getAlignment() {
-	warnUnimpl("Test test_getAlignment not written");
+	// tested in test_setAlignmentI()
 }
 
 public void test_getImage() {
@@ -101,11 +129,11 @@ public void test_getSelection() {
 }
 
 public void test_getText() {
-	warnUnimpl("Test test_getText not written");
+	// tested in  test_setTextLjava_lang_String()
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 public void test_setAlignmentI() {
@@ -144,7 +172,8 @@ public void test_setAlignmentI() {
 }
 
 public void test_setFocus() {
-	warnUnimpl("Test test_setFocus not written");
+	Button btn = new Button(shell, SWT.ARROW);
+	btn.setFocus();
 }
 
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
