@@ -37,7 +37,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Group extends Composite {
-
+	String text = "";
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -139,14 +140,7 @@ byte [] defaultFont () {
  */
 public String getText () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_TITLE, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	if (args [1] == 0) return "";
-	int length = OS.strlen (args [1]);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, args [1], length);
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	return new String (unicode);
+	return text;
 }
 
 Point getTitleSize() {
@@ -200,6 +194,7 @@ Point getTitleSize() {
 public void setText (String string) {	
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	text = string;
 	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
