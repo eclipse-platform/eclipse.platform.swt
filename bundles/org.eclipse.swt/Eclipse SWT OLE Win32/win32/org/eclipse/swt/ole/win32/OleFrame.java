@@ -209,7 +209,6 @@ static int getMsgProc(int code, int wParam, int lParam) {
 					}
 					/* Allow OleClientSite to process key events before activeX control */
 					if (!consumed) {
-						int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 						int hwndOld = msg.hwnd;
 						msg.hwnd = site.handle;
 						consumed = OS.DispatchMessage (msg) == 1;
