@@ -28,7 +28,7 @@ public class Callback {
 
 	/* Load the SWT library */
 	static {
-		Library.loadLibrary ("swt");
+		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
 
 /**
@@ -71,18 +71,18 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	
 	/* Inline the common cases */
 	if (isArrayBased) {
-		signature = "([I)I";
+		signature = "([I)I"; //$NON-NLS-1$
 	} else {
 		switch (argCount) {
-			case 0: signature = "()I"; break;
-			case 1: signature = "(I)I"; break;
-			case 2: signature = "(II)I"; break;
-			case 3: signature = "(III)I"; break;
-			case 4: signature = "(IIII)I"; break;
+			case 0: signature = "()I"; break; //$NON-NLS-1$
+			case 1: signature = "(I)I"; break; //$NON-NLS-1$
+			case 2: signature = "(II)I"; break; //$NON-NLS-1$
+			case 3: signature = "(III)I"; break; //$NON-NLS-1$
+			case 4: signature = "(IIII)I"; break; //$NON-NLS-1$
 			default:
-				signature = "(";
-				for (int i=0; i<argCount; i++) signature += "I";
-				signature += ")I";
+				signature = "("; //$NON-NLS-1$
+				for (int i=0; i<argCount; i++) signature += "I"; //$NON-NLS-1$
+				signature += ")I"; //$NON-NLS-1$
 		}
 	}
 	

@@ -2163,44 +2163,44 @@ public class SWT {
  */
 static String findErrorText (int code) {
 	switch (code) {
-		case ERROR_UNSPECIFIED:            return "Unspecified error";
-		case ERROR_NO_HANDLES:			   return "No more handles";
-		case ERROR_NO_MORE_CALLBACKS:      return "No more callbacks";
-		case ERROR_NULL_ARGUMENT:          return "Argument cannot be null";
-		case ERROR_INVALID_ARGUMENT:       return "Argument not valid";
-		case ERROR_INVALID_RANGE:          return "Index out of bounds";
-		case ERROR_CANNOT_BE_ZERO:         return "Argument cannot be zero";
-		case ERROR_CANNOT_GET_ITEM:        return "Cannot get item";
-		case ERROR_CANNOT_GET_SELECTION:   return "Cannot get selection";
-		case ERROR_CANNOT_GET_ITEM_HEIGHT: return "Cannot get item height";
-		case ERROR_CANNOT_GET_TEXT:        return "Cannot get text";
-		case ERROR_CANNOT_SET_TEXT:        return "Cannot set text";
-		case ERROR_ITEM_NOT_ADDED:         return "Item not added";
-		case ERROR_ITEM_NOT_REMOVED:       return "Item not removed";
-		case ERROR_NOT_IMPLEMENTED:        return "Not implemented";
-		case ERROR_MENU_NOT_DROP_DOWN:     return "Menu must be a drop down";
-		case ERROR_THREAD_INVALID_ACCESS:  return "Invalid thread access";
-		case ERROR_WIDGET_DISPOSED:        return "Widget is disposed";
-		case ERROR_MENUITEM_NOT_CASCADE:   return "Menu item is not a CASCADE"; 
-		case ERROR_CANNOT_SET_SELECTION:   return "Cannot set selection"; 
-		case ERROR_CANNOT_SET_MENU:        return "Cannot set menu"; 
-		case ERROR_CANNOT_SET_ENABLED:     return "Cannot set the enabled state"; 
-		case ERROR_CANNOT_GET_ENABLED:     return "Cannot get the enabled state"; 
-		case ERROR_INVALID_PARENT:         return "Widget has the wrong parent"; 
-		case ERROR_MENU_NOT_BAR:           return "Menu is not a BAR"; 
-		case ERROR_CANNOT_GET_COUNT:       return "Cannot get count";
-		case ERROR_MENU_NOT_POP_UP:        return "Menu is not a POP_UP";
-		case ERROR_UNSUPPORTED_DEPTH:      return "Unsupported color depth";
-		case ERROR_IO:                     return "i/o error";
-		case ERROR_INVALID_IMAGE:          return "Invalid image";
-		case ERROR_UNSUPPORTED_FORMAT:     return "Unsupported or unrecognized format";
-		case ERROR_INVALID_SUBCLASS:       return "Subclassing not allowed";
-		case ERROR_GRAPHIC_DISPOSED:       return "Graphic is disposed";
-		case ERROR_DEVICE_DISPOSED:        return "Device is disposed";
-		case ERROR_FAILED_EXEC:            return "Failed to execute runnable";
-		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library";
+		case ERROR_UNSPECIFIED:            return "Unspecified error"; //$NON-NLS-1$
+		case ERROR_NO_HANDLES:			   return "No more handles"; //$NON-NLS-1$
+		case ERROR_NO_MORE_CALLBACKS:      return "No more callbacks"; //$NON-NLS-1$
+		case ERROR_NULL_ARGUMENT:          return "Argument cannot be null"; //$NON-NLS-1$
+		case ERROR_INVALID_ARGUMENT:       return "Argument not valid"; //$NON-NLS-1$
+		case ERROR_INVALID_RANGE:          return "Index out of bounds"; //$NON-NLS-1$
+		case ERROR_CANNOT_BE_ZERO:         return "Argument cannot be zero"; //$NON-NLS-1$
+		case ERROR_CANNOT_GET_ITEM:        return "Cannot get item"; //$NON-NLS-1$
+		case ERROR_CANNOT_GET_SELECTION:   return "Cannot get selection"; //$NON-NLS-1$
+		case ERROR_CANNOT_GET_ITEM_HEIGHT: return "Cannot get item height"; //$NON-NLS-1$
+		case ERROR_CANNOT_GET_TEXT:        return "Cannot get text"; //$NON-NLS-1$
+		case ERROR_CANNOT_SET_TEXT:        return "Cannot set text"; //$NON-NLS-1$
+		case ERROR_ITEM_NOT_ADDED:         return "Item not added"; //$NON-NLS-1$
+		case ERROR_ITEM_NOT_REMOVED:       return "Item not removed"; //$NON-NLS-1$
+		case ERROR_NOT_IMPLEMENTED:        return "Not implemented"; //$NON-NLS-1$
+		case ERROR_MENU_NOT_DROP_DOWN:     return "Menu must be a drop down"; //$NON-NLS-1$
+		case ERROR_THREAD_INVALID_ACCESS:  return "Invalid thread access"; //$NON-NLS-1$
+		case ERROR_WIDGET_DISPOSED:        return "Widget is disposed"; //$NON-NLS-1$
+		case ERROR_MENUITEM_NOT_CASCADE:   return "Menu item is not a CASCADE"; //$NON-NLS-1$
+		case ERROR_CANNOT_SET_SELECTION:   return "Cannot set selection";  //$NON-NLS-1$
+		case ERROR_CANNOT_SET_MENU:        return "Cannot set menu";  //$NON-NLS-1$
+		case ERROR_CANNOT_SET_ENABLED:     return "Cannot set the enabled state";  //$NON-NLS-1$
+		case ERROR_CANNOT_GET_ENABLED:     return "Cannot get the enabled state";  //$NON-NLS-1$
+		case ERROR_INVALID_PARENT:         return "Widget has the wrong parent";  //$NON-NLS-1$
+		case ERROR_MENU_NOT_BAR:           return "Menu is not a BAR";  //$NON-NLS-1$
+		case ERROR_CANNOT_GET_COUNT:       return "Cannot get count"; //$NON-NLS-1$
+		case ERROR_MENU_NOT_POP_UP:        return "Menu is not a POP_UP"; //$NON-NLS-1$
+		case ERROR_UNSUPPORTED_DEPTH:      return "Unsupported color depth"; //$NON-NLS-1$
+		case ERROR_IO:                     return "i/o error"; //$NON-NLS-1$
+		case ERROR_INVALID_IMAGE:          return "Invalid image"; //$NON-NLS-1$
+		case ERROR_UNSUPPORTED_FORMAT:     return "Unsupported or unrecognized format"; //$NON-NLS-1$
+		case ERROR_INVALID_SUBCLASS:       return "Subclassing not allowed"; //$NON-NLS-1$
+		case ERROR_GRAPHIC_DISPOSED:       return "Graphic is disposed"; //$NON-NLS-1$
+		case ERROR_DEVICE_DISPOSED:        return "Device is disposed"; //$NON-NLS-1$
+		case ERROR_FAILED_EXEC:            return "Failed to execute runnable"; //$NON-NLS-1$
+		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
 	}
-	return "Unknown error";
+	return "Unknown error"; //$NON-NLS-1$
 }
 
 /**
@@ -2366,7 +2366,7 @@ static {
 	* to stop the compiler from inlining.
 	*/
 	String platform = getPlatform ();
-	if ("carbon".equals (platform)) {
+	if ("carbon".equals (platform)) { //$NON-NLS-1$
 		MOD1 = COMMAND;
 		MOD2 = SHIFT;
 		MOD3 = ALT;

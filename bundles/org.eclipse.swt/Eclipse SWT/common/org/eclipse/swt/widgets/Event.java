@@ -203,6 +203,6 @@ public void setBounds (Rectangle rect) {
 * @return a string representation of the object
 */
 public String toString () {
-	return "Event {type=" + type + ",widget=" + widget + ",x=" + x + ",y=" + y + ",width=" + width + ",height=" + height + "}";
+	return "Event {type=" + type + ",widget=" + widget + ",x=" + x + ",y=" + y + ",width=" + width + ",height=" + height + "}";  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 }
 }

@@ -250,9 +250,9 @@ public static String getMessage(String key) {
 	}	
 	if (msgs == null) {
 		try {
-			msgs = ResourceBundle.getBundle("org.eclipse.swt.internal.SWTMessages");
+			msgs = ResourceBundle.getBundle("org.eclipse.swt.internal.SWTMessages"); //$NON-NLS-1$
 		} catch (MissingResourceException ex) {
-			answer = key + " (no resource bundle)";
+			answer = key + " (no resource bundle)"; //$NON-NLS-1$
 		}
 	}
 	if (msgs != null) {

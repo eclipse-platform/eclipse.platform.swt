@@ -91,7 +91,7 @@ public String getMessage() {
 	if (throwable == null)
 		return super.getMessage();
 	else
-		return super.getMessage() + " (" + throwable.toString() + ")";
+		return super.getMessage() + " (" + throwable.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 /**
@@ -105,7 +105,7 @@ public String getMessage() {
 public synchronized void printStackTrace() {
 	super.printStackTrace();
 	if (throwable != null) {
-		System.err.println("*** Stack trace of contained error ***");
+		System.err.println("*** Stack trace of contained error ***"); //$NON-NLS-1$
 		throwable.printStackTrace();
 	}
 }

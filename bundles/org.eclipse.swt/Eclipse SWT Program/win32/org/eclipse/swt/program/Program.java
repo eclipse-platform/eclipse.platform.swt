@@ -44,7 +44,7 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	if (extension.charAt (0) != '.') extension = "." + extension;
+	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, extension, true);
 	int [] phkResult = new int [1];
@@ -127,12 +127,12 @@ static Program getProgram (String key) {
 	if (name == null || name.length () == 0) return null;
 
 	/* Command */
-	String COMMAND = "\\shell\\open\\command";
+	String COMMAND = "\\shell\\open\\command"; //$NON-NLS-1$
 	String command = getKeyValue (key + COMMAND, true);
 	if (command == null || command.length () == 0) return null;
 	
 	/* Icon */
-	String DEFAULT_ICON = "\\DefaultIcon";
+	String DEFAULT_ICON = "\\DefaultIcon"; //$NON-NLS-1$
 	String iconName = getKeyValue (key + DEFAULT_ICON, true);
 	if (iconName == null || iconName.length () == 0) return null;
 	
@@ -194,7 +194,7 @@ public static boolean launch (String fileName) {
 	
 	/* Use the character encoding for the default locale */
 	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer1 = new TCHAR (0, "open", true);
+	TCHAR buffer1 = new TCHAR (0, "open", true); //$NON-NLS-1$
 	int byteCount1 = buffer1.length () * TCHAR.sizeof;
 	int lpVerb = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount1);
 	OS.MoveMemory (lpVerb, buffer1, byteCount1);
@@ -233,8 +233,8 @@ public static boolean launch (String fileName) {
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	boolean quote = true;
-	String prefix = command, suffix = "";
-	int index = command.indexOf ("%1");
+	String prefix = command, suffix = ""; //$NON-NLS-1$
+	int index = command.indexOf ("%1"); //$NON-NLS-1$
 	if (index != -1) {
 		int count=0;
 		int i=index + 2, length = command.length ();
@@ -246,7 +246,7 @@ public boolean execute (String fileName) {
 		prefix = command.substring (0, index);
 		suffix = command.substring (index + 2, length);
 	}
-	if (quote) fileName = " \"" + fileName + "\"";
+	if (quote) fileName = " \"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 	try {
 		Compatibility.exec(prefix + fileName + suffix);
 	} catch (IOException e) {
@@ -322,7 +322,7 @@ public int hashCode() {
 }
 
 public String toString () {
-	return "Program {" + name + "}";
+	return "Program {" + name + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 }
