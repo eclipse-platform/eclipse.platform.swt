@@ -141,27 +141,45 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
+void drawFocus (int control) {
+	int visibleRgn = getVisibleRegion (control, false);
+	if (!OS.EmptyRgn (visibleRgn)) {
+		int [] currentPort = new int [1];
+		OS.GetPort (currentPort);
+		int window = OS.GetControlOwner (control);
+		int port = OS.GetWindowPort (window);
+		OS.SetPort (port);
+		int oldClip = OS.NewRgn ();
+		OS.GetClip (oldClip);
+		OS.SetClip (visibleRgn);
+		drawBackground (control, null);
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		Rect inset = inset ();
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
+		boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
+		boolean drawBorder = hasBorder ();
+		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		if (hasFocus ()) {
+			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+			if (drawFocus) OS.DrawThemeFocusRect (rect, true);
+		} else {
+			if (drawFocus) OS.DrawThemeFocusRect (rect, false);
+			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+		}
+		OS.SetClip (oldClip);
+		OS.SetPort (currentPort [0]);
+	}
+	OS.DisposeRgn (visibleRgn);
+}
+
 void drawWidget (int control) {
 	if ((state & CANVAS) != 0) {
 		if (control == scrolledHandle) {
-			drawBackground (control, null);
-			Rect rect = new Rect ();
-			OS.GetControlBounds (control, rect);
-			Rect inset = inset ();
-			rect.left += inset.left;
-			rect.top += inset.top;
-			rect.right -= inset.right;
-			rect.bottom -= inset.bottom;
-			boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
-			boolean drawBorder = hasBorder ();
-			int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-			if (hasFocus ()) {
-				if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
-				if (drawFocus) OS.DrawThemeFocusRect (rect, true);
-			} else {
-				if (drawFocus) OS.DrawThemeFocusRect (rect, false);
-				if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
-			}
+			drawFocus (control);
 		} else {
 			if ((style & SWT.NO_BACKGROUND) != 0) return;
 			drawBackground (control, background);
