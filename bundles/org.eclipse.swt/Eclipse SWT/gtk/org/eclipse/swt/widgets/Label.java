@@ -223,6 +223,14 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+public int getBorderWidth () {
+	checkWidget();
+	if (frameHandle != 0) {
+		return OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (frameHandle));
+	}
+	return 0;
+}
+
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.

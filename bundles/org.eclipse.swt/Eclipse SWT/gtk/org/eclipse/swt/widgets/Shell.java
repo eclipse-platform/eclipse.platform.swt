@@ -431,6 +431,10 @@ void bringToTop (boolean force) {
 	hasFocus = true;
 }
 
+void checkBorder () {
+	/* Do nothing */
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on

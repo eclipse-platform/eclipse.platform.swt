@@ -305,12 +305,17 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+void checkBorder () {
+	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
+}
+
 void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	showWidget ();
 	setInitialSize ();
 	setZOrder (null, false);
+	checkBorder ();
 }
 
 /**
