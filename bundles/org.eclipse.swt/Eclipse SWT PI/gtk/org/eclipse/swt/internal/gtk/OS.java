@@ -130,6 +130,7 @@ public class OS {
 	public static final int GDK_RIGHT_SIDE = 0x60;
 	public static final int GDK_Return = 0xff0d;
 	public static final int GDK_Right = 0xff53;
+	public static final int GDK_space = 0x20;
 	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
 	public static final int GDK_SB_UP_ARROW = 0x72;
 	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
