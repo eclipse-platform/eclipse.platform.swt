@@ -3048,6 +3048,8 @@ void setWNDCLASSFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpStruct, PWNDCL
 	(*env)->SetIntField(env, lpObject, lpCache->lpszClassName, (jint)lpStruct->lpszClassName);
 }
 
+#ifndef _WIN32_WCE
+
 void cacheNONCLIENTMETRICSFids(JNIEnv *env, jobject lpObject, PNONCLIENTMETRICS_FID_CACHE lpCache)
 {
 	if (lpCache->cached) return;
@@ -3069,6 +3071,8 @@ void cacheNONCLIENTMETRICSFids(JNIEnv *env, jobject lpObject, PNONCLIENTMETRICS_
 	lpCache->lfMessageFont = (*env)->GetFieldID(env, lpCache->clazz, "lfMessageFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
 	lpCache->cached = 1;
 }
+
+#endif // _WIN32_WCE
 
 /************************ OLE ***************************/
 
