@@ -435,7 +435,7 @@ public int getItemCount () {
 }
 
 /**
- * Returns an array of <code>TabItem</code>s which are the items
+ * Returns an array of <code>ToolItem</code>s which are the items
  * in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
