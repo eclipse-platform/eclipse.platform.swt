@@ -6,18 +6,18 @@ package org.eclipse.swt.examples.layoutexample;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 
+import java.text.*;
 import java.util.*;
-import java.text.MessageFormat;
 
 public class LayoutExample {
 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_layout");
-
+	private TabFolder tabFolder;
+	
 	/**
 	 * Creates an instance of a LayoutExample embedded inside
 	 * the supplied parent Composite.
@@ -25,7 +25,7 @@ public class LayoutExample {
 	 * @param parent the container of the example
 	 */
 	public LayoutExample(Composite parent) {
-		TabFolder tabFolder = new TabFolder (parent, SWT.NULL);
+		tabFolder = new TabFolder (parent, SWT.NULL);
 		Tab [] tabs = new Tab [] {
 			new FillLayoutTab (this),
 			new RowLayoutTab (this),
@@ -37,6 +37,21 @@ public class LayoutExample {
 		    item.setText (tabs [i].getTabText ());
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		}
+	}
+	
+	/**
+	 * Grabs input focus.
+	 */
+	public void setFocus() {
+		tabFolder.setFocus();
+	}
+	
+	/**
+	 * Disposes of all resources associated with a particular
+	 * instance of the LayoutExample.
+	 */	
+	public void dispose() {
+		tabFolder = null;
 	}
 	
 	/**
