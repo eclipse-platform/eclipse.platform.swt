@@ -351,6 +351,25 @@ public boolean open () {
 	XAnyEvent xEvent = new XAnyEvent ();
 	int [] newX = new int [1], newY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	
+	int ptrGrabResult = OS.XGrabPointer (
+		xDisplay,
+		xWindow,
+		0,
+		OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
+		OS.GrabModeAsync,
+		OS.GrabModeAsync,
+		OS.None,
+		OS.None,
+		OS.CurrentTime);
+	int kbdGrabResult = OS.XGrabKeyboard (
+		xDisplay,
+		xWindow,
+		0,
+		OS.GrabModeAsync,
+		OS.GrabModeAsync,
+		OS.CurrentTime);
+				
 	/*
 	 *  Tracker behaves like a Dialog with its own OS event loop.
 	 */
@@ -389,7 +408,11 @@ public boolean open () {
 					 * If this happens then return false to indicate that
 					 * the move failed.
 					 */
-					if (isDisposed ()) return false;
+					if (isDisposed ()) {
+						if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+						if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
+						return false;
+					}
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
@@ -454,7 +477,11 @@ public boolean open () {
 						 * If this happens then return false to indicate that
 						 * the move failed.
 						 */
-						if (isDisposed ()) return false;
+						if (isDisposed ()) {
+							if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+							if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
+							return false;
+						}
 						drawRectangles ();
 						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
 					}
@@ -472,6 +499,8 @@ public boolean open () {
 	}
 	drawRectangles ();
 	tracking = false;
+	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	return !cancelled;
 }
 /**

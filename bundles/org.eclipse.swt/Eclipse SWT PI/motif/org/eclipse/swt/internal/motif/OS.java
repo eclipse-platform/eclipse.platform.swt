@@ -176,7 +176,7 @@ public class OS {
 	public static final int GrabModeAsync = 1;
 //	public static final int GrabModeSync = 0;
 //	public static final int GrabNotViewable = 3;
-//	public static final int GrabSuccess = 0;
+	public static final int GrabSuccess = 0;
 	public static final int GraphicsExpose = 13;
 //	public static final int GravityNotify = 24;
 	public static final int GXand = 0x1;
@@ -963,6 +963,13 @@ public static final synchronized native int XGetGeometry (int display, int drawa
 public static final synchronized native int XGetImage (int display, int drawable, int x, int y, int width, int height, int plane_mask, int format);
 public static final synchronized native int XGetInputFocus (int display, int [] window, int [] revert);
 public static final synchronized native boolean XGetWindowAttributes (int display, int window, XWindowAttributes attributes);
+public static final synchronized native int XGrabKeyboard (
+	int display, 
+	int grabWindow,
+	int ownerEvents,
+	int pointerMode,
+	int keyboardMode,
+	int time);
 public static final synchronized native int XGrabPointer (
 	int display, 
 	int grabWindow,
@@ -1017,6 +1024,7 @@ public static final synchronized native void XSubtractRegion (int sra, int srb, 
 public static final synchronized native void XSync (int display, boolean discard);
 public static final synchronized native int XSynchronize (int display, boolean onoff);
 public static final synchronized native void XUndefineCursor (int display, int window);
+public static final synchronized native int XUngrabKeyboard (int display, int time);
 public static final synchronized native int XUngrabPointer (int display, int time);
 public static final synchronized native void XUnionRectWithRegion (XRectangle rectangle, int src_region, int dest_region_return);
 public static final synchronized native void XUnionRegion (int sra, int srb, int dr_return);
