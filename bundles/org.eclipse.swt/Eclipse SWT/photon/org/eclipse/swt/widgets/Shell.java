@@ -415,6 +415,7 @@ void createHandle (int index) {
 		int clazz = display.PtContainer;
 		int [] args = {
 			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
+			OS.Pt_ARG_CONTAINER_FLAGS, OS.Pt_HOTKEYS_FIRST, OS.Pt_HOTKEYS_FIRST,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		shellHandle = OS.PtCreateWidget (clazz, handle, args.length / 3, args);
@@ -457,6 +458,7 @@ void createHandle (int index) {
 			OS.Pt_ARG_WINDOW_STATE, windowState, ~0,
 			OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
+			OS.Pt_ARG_CONTAINER_FLAGS, OS.Pt_HOTKEYS_FIRST, OS.Pt_HOTKEYS_FIRST,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		OS.PtSetParentWidget (parentHandle);
