@@ -563,7 +563,9 @@ public static final native void gtk_widget_remove_accelerator(int widget, int ac
 public static final native void gtk_widget_set_parent(int widget, int parent);
 public static final native void gtk_window_add_accel_group(int window, int accel_group);
 public static final native void gtk_window_set_policy(int window, int allow_shrink, int allow_grow, int auto_shrink);
+public static final native void gtk_window_set_modal(int window, boolean modal);
 public static final native void gtk_window_set_title(int window, byte[] title);
+public static final native void gtk_window_set_transient_for(int window, int parent);
 public static final native void gtk_widget_reparent(int widget, int new_parent);
 public static final native void gtk_widget_size_allocate(int widget, GtkAllocation allocation);
 public static final native int XListFonts(byte[] pattern, int maxFonts, int[] pnum_fonts);
