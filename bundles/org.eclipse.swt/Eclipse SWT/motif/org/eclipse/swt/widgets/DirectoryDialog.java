@@ -24,7 +24,6 @@ import org.eclipse.swt.*;
  * </p>
  */
 public class DirectoryDialog extends Dialog {
-	Display appContext;
 	String filterPath = "";
 	boolean cancel = true;
 	String message = "";
@@ -129,7 +128,7 @@ public String open () {
 
 	/* Get the parent */
 	boolean destroyContext;
-	appContext = Display.getCurrent ();
+	Display appContext = Display.getCurrent ();
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
