@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
+import org.eclipse.swt.layout.*;
 
 /**
  * Instances of this class implement the browser user interface
@@ -50,12 +51,14 @@ public class Browser extends Composite {
 	XPCOMObject supportsWeakReference;
 	XPCOMObject contextMenuListener;	
 	XPCOMObject uriContentListener;
+	XPCOMObject tooltipListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int request;
 	String html;
 	Point location;
 	Point size;
+	Shell tip = null;
 
 	/* External Listener management */
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
@@ -599,6 +602,14 @@ void createCOMInterfaces() {
 		public int method9(int[] args) {return GetParentContentListener(args[0]);}
 		public int method10(int[] args) {return SetParentContentListener(args[0]);}		
 	};
+	
+	tooltipListener = new XPCOMObject(new int[]{2, 0, 0, 3, 0}) {
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}
+		public int method3(int[] args) {return OnShowTooltip(args[0], args[1], args[2]);}
+		public int method4(int[] args) {return OnHideTooltip();}		
+	};
 }
 
 void disposeCOMInterfaces() {
@@ -641,6 +652,10 @@ void disposeCOMInterfaces() {
 	if (uriContentListener != null) {
 		uriContentListener.dispose();
 		uriContentListener = null;
+	}
+	if (tooltipListener != null) {
+		tooltipListener.dispose();
+		tooltipListener = null;
 	}
 }
 
@@ -773,6 +788,9 @@ void onDispose() {
 	
 	Release();
 	webBrowser.Release();
+	
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	tip = null;
 
 	BrowserCount--;
 	/*
@@ -1297,6 +1315,11 @@ int QueryInterface(int riid, int ppvObject) {
 	}
 	if (guid.Equals(nsIURIContentListener.NS_IURICONTENTLISTENER_IID)) {
 		XPCOM.memmove(ppvObject, new int[] {uriContentListener.getAddress()}, 4);
+		AddRef();
+		return XPCOM.NS_OK;
+	}
+	if (guid.Equals(nsITooltipListener.NS_ITOOLTIPLISTENER_IID)) {
+		XPCOM.memmove(ppvObject, new int[] {tooltipListener.getAddress()}, 4);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
@@ -1856,4 +1879,38 @@ int GetParentContentListener(int aParentContentListener) {
 int SetParentContentListener(int aParentContentListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
+
+/* nsITooltipListener */
+
+int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
+	int length = XPCOM.nsCRT_strlen_PRUnichar(aTipText);
+	char[] dest = new char[length];
+	XPCOM.memmove(dest, aTipText, length * 2);
+	String text = new String(dest);
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	Shell parent = getShell();
+	Display display = getDisplay();
+	/* Assuming cursor is 21x21 because this is the size of
+	 * the arrow cursor on Windows
+	 */ 
+	int cursorHeight = 21; 
+	Point point = display.map(this, null, aXCoords, aYCoords + cursorHeight);
+	tip = new Shell(parent, SWT.ON_TOP);
+	tip.setLayout(new FillLayout());
+	Label label = new Label(tip, SWT.CENTER);
+	label.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+	label.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+	label.setText(text);
+	tip.setLocation(point);
+	tip.pack();
+	tip.open();
+	return XPCOM.NS_OK;
+}
+
+int OnHideTooltip() {
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	tip = null;
+	return XPCOM.NS_OK;
+}
+
 }
