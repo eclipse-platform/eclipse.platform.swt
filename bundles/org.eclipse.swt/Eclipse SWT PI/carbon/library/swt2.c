@@ -65,15 +65,14 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DrawThemeButton(JNIEnv *env, jclass zz,
-				jshortArray bounds, jshort kind, jshortArray newInfoArray, jshortArray prevInfoArray, jint eraseProc,
+				jobject bounds, jshort kind, jshortArray newInfoArray, jshortArray prevInfoArray, jint eraseProc,
 					jint labelProc, jint userData) {
 	ThemeButtonDrawInfo info;
 	ThemeButtonDrawInfo newInfo, *prevInfo= NULL;	
 	jint status= 0;
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
+	Rect sa;
 	jshort *sb= (*env)->GetShortArrayElements(env, newInfoArray, 0);
 	jshort *sc= NULL;
-	
 	
 	newInfo.state= sb[0];
 	newInfo.value= sb[1];
@@ -86,11 +85,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DrawThemeButton(
 		info.adornment= sc[2];
 		prevInfo= &info;
 	}
+	
+	getRectFields(env, bounds, &sa);
 
-	status= (jint) RC(DrawThemeButton((const Rect *)sa, (ThemeButtonKind)kind, &newInfo, prevInfo, (ThemeEraseUPP)eraseProc,
+	status= (jint) RC(DrawThemeButton(&sa, (ThemeButtonKind)kind, &newInfo, prevInfo, (ThemeEraseUPP)eraseProc,
 						(ThemeButtonDrawUPP) labelProc, (UInt32)userData));
 						
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 	(*env)->ReleaseShortArrayElements(env, newInfoArray, sb, 0);
 	if (sc != NULL)
 		(*env)->ReleaseShortArrayElements(env, prevInfoArray, sc, 0);
@@ -414,7 +414,7 @@ static void jumper() {
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CopyMask(JNIEnv *env, jclass zz, jint srcBits,
-		jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect) {
+		jint maskBits, jint dstBits, jobject srcRect, jobject maskRect, jobject dstRect) {
 
     Rect ra;
     Rect rb;

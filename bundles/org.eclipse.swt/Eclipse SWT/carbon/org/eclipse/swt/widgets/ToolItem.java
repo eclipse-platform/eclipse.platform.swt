@@ -962,7 +962,7 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	return 0;
 }
 int processPaint (Object callData) {
-
+	
 	if ((style & SWT.SEPARATOR) != 0 && control != null)
 		return 0;
 		
@@ -981,7 +981,9 @@ int processPaint (Object callData) {
 			data.background = parent.getBackgroundPixel();
 			data.font = parent.font.handle;
 			data.controlHandle = handle;
-			return OS.GetWindowPort(OS.GetControlOwner(handle));
+			int port= OS.GetWindowPort(OS.GetControlOwner(handle));
+			if (port == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			return port;
 		}
 		public void internal_dispose_GC (int xGC, GCData data) {
 		}
@@ -992,11 +994,12 @@ int processPaint (Object callData) {
 	GC gc= new GC(drawable);
 	MacControlEvent me= (MacControlEvent) callData;
 	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
+	
 	if (!r.isEmpty()) {
 		
 		// erase background
 		gc.fillRectangle(0, 0, width, height);
-		
+
 		if ((style & SWT.SEPARATOR) != 0) {
 		
 			OS.DrawThemeSeparator(bounds, OS.kThemeStateActive);
