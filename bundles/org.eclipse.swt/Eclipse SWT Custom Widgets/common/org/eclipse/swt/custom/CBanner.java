@@ -62,8 +62,8 @@ public class CBanner extends Composite {
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
 	static final int CURVE_TAIL = 200;
-	static final int MIN_LEFT = 100;
-	static final int MIN_RIGHT = 150;
+	static final int MIN_LEFT = 10;
+	static final int MIN_RIGHT = 10;
 	
 	static RGB BORDER1 = null;
 	
