@@ -6,6 +6,7 @@ package org.eclipse.swt.dnd;
  */
  
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.photon.OS;
 
 /**
  * The <code>RTFTransfer</code> class is used to transfer text with the RTF format
