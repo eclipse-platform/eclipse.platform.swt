@@ -32,6 +32,11 @@ public final class GCData {
 	public int lineStyle = SWT.LINE_SOLID;
 	public boolean xorMode;
 	
+	public Font font;
+	public int fontAscent;
+	public int layout;
+	public int style;
+	
 	public int paintEvent;
 	public Rect portRect;
 }

@@ -184,27 +184,25 @@ public void dispose() {
 	if (handle == 0) return;
 	if (data.device.isDisposed()) return;
 
-//	
-//	/* Free resources */
-//	int clipRgn = data.clipRgn;
-//	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
-//	Image image = data.image;
-//	if (image != null) {
-//		image.memGC = null;
+	/* Free resources */
+	int clipRgn = data.clipRgn;
+	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
+	Image image = data.image;
+	if (image != null) {
+		image.memGC = null;
 //		if (image.transparentPixel != -1) image.createMask();
-//	}
-//	
-//	int context = data.context;
-//	if (context != 0) OS.g_object_unref(context);
-//	int layout = data.layout;
-//	if (layout != 0) OS.g_object_unref(layout);
-//
+	}
+	int layout = data.layout;
+	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
+	int style = data.style;
+	if (style != 0) OS.ATSUDisposeTextLayout(style);
+
 	/* Dispose the GC */
 	
 	OS.CGContextRestoreGState(handle);
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = 0;
+	data.clipRgn = data.style = data.layout = 0;
 	drawable = null;
 	data.image = null;
 	data = null;
@@ -656,11 +654,20 @@ public void drawString (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - need to avoid delimiter and tabs
-//	int layout = data.layout;
-//	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-//	OS.pango_layout_set_text(layout, buffer, buffer.length);
-//	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	OS.CGContextSaveGState(handle);
+	short[] info = new short[4];
+	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
+	int length = string.length();
+	char[] buffer = new char[length];
+	string.getChars(0, length, buffer, 0);
+	int ptr = OS.NewPtr(length * 2);
+	OS.memcpy(ptr, buffer, length * 2);
+	OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
+	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	OS.ATSUDrawText(data.layout, 0, length, x << 16, -y << 16);
+	OS.DisposePtr(ptr);
+	OS.CGContextRestoreGState(handle);
 }
 
 /** 
@@ -748,11 +755,8 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//	//FIXME - check flags
-//	int layout = data.layout;
-//	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-//	OS.pango_layout_set_text(layout, buffer, buffer.length);
-//	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	//NOT DONE
+	drawString(string, x, y);
 }
 
 /**
@@ -1064,7 +1068,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
  */
 public int getAdvanceWidth(char ch) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	//BOGUS
+	//NOT DONE
 	return stringExtent(new String(new char[]{ch})).x;
 }
 
@@ -1100,7 +1104,7 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	//BOGUS
+	//NOT DONE
 	return stringExtent(new String(new char[]{ch})).x;
 }
 
@@ -1171,8 +1175,7 @@ public void getClipping(Region region) {
  */
 public Font getFont() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	return Font.gtk_new(data.device, data.font);
-	return null;
+	return data.font;
 }
 
 /**
@@ -1188,18 +1191,14 @@ public Font getFont() {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	int context = data.context;
-//	//FIXME - figure out correct language
-//	byte[] buffer = Converter.wcsToMbcs(null, "en_US", true);
-//	int lang = OS.pango_language_from_string(buffer);
-////	int lang = OS.pango_context_get_language(context);
-//	int metrics = OS.pango_context_get_metrics(context, data.font, lang);
+	Font font = data.font;
+	FontInfo info = new FontInfo();
+	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	FontMetrics fm = new FontMetrics();
-//	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
-//	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
-//	fm.averageCharWidth = OS.PANGO_PIXELS(OS.pango_font_metrics_get_approximate_char_width(metrics));
-//	fm.height = fm.ascent + fm.descent;
-//	OS.pango_font_metrics_unref(metrics);
+	fm.ascent = info.ascent;
+	fm.descent = info.descent;
+	fm.averageCharWidth = info.widMax / 2;
+	fm.height = fm.ascent + fm.descent;
 	return fm;
 }
 
@@ -1297,19 +1296,36 @@ void init(Drawable drawable, GCData data, int context) {
 	float[] background = data.background;
 	if (background != null) OS.CGContextSetFillColor(context, background);
 	OS.CGContextSaveGState(context);
-//	int font = data.font;
-//	if (font != 0) OS.pango_layout_set_font_description(layout, font);
 
-//	Image image = data.image;
-//	if (image != null) {
-//		image.memGC = this;
-//		/*
-//		 * The transparent pixel mask might change when drawing on
-//		 * the image.  Destroy it so that it is regenerated when
-//		 * necessary.
-//		 */
+	int[] buffer = new int[1];
+	OS.ATSUCreateTextLayout(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.layout = buffer[0];
+	OS.ATSUCreateStyle(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.style = buffer[0];
+	Font font = data.font;
+	if (font != null) setFont(font);
+	
+	int ptr = OS.NewPtr(4);
+	buffer[0] = context;
+	OS.memcpy(ptr, buffer, 4);
+	int[] tags = new int[]{OS.kATSUCGContextTag};
+	int[] sizes = new int[]{4};
+	int[] values = new int[]{ptr};
+	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+
+	Image image = data.image;
+	if (image != null) {
+		image.memGC = this;
+		/*
+		 * The transparent pixel mask might change when drawing on
+		 * the image.  Destroy it so that it is regenerated when
+		 * necessary.
+		 */
 //		if (image.transparentPixel != -1) image.destroyMask();
-//	}
+	}
 	this.drawable = drawable;
 	this.data = data;
 	handle = context;
@@ -1468,10 +1484,22 @@ void setCGClipping () {
  */
 public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	if (font == null) font = data.device.systemFont;
-//	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//	int fontHandle = data.font = font.handle;
-//	OS.pango_layout_set_font_description(data.layout, fontHandle);
+	if (font == null) font = data.device.systemFont;
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.font = font;
+	int ptr = OS.NewPtr(16);
+	OS.memcpy(ptr, new int[]{font.handle}, 4); 
+	OS.memcpy(ptr + 4, new int[]{font.size << 16}, 4); 
+	OS.memcpy(ptr + 8, new byte[]{(font.style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
+	OS.memcpy(ptr + 9, new byte[]{(font.style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
+	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
+	int[] sizes = new int[]{4, 4, 1, 1};
+	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
+	OS.ATSUSetAttributes(data.style, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+	FontInfo info = new FontInfo();
+	OS.FetchFontInfo(font.id, font.size, font.style, info);
+	data.fontAscent = info.ascent;
 }
 
 /**
@@ -1590,15 +1618,22 @@ public void setXORMode(boolean xor) {
 public Point stringExtent(String string) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return null;
-//	//FIXME - need to avoid delimiter and tabs
-//	int layout = data.layout;
-//	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-//	OS.pango_layout_set_text(layout, buffer, buffer.length);
-//	int[] width = new int[1];
-//	int[] height = new int[1];
-//	OS.pango_layout_get_size(layout, width, height);
-//	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+	int length = string.length();
+	char[] buffer = new char[length];
+	string.getChars(0, length, buffer, 0);
+	int ptr1 = OS.NewPtr(length * 2);
+	OS.memcpy(ptr1, buffer, length * 2);
+	OS.ATSUSetTextPointerLocation(data.layout, ptr1, 0, length, length);
+	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	int ptr2 = OS.NewPtr(ATSTrapezoid.sizeof);
+	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr2, null);
+	OS.DisposePtr(ptr1);
+	ATSTrapezoid trapezoid = new ATSTrapezoid();
+	OS.memcpy(trapezoid, ptr2, ATSTrapezoid.sizeof);
+	OS.DisposePtr(ptr2);
+	int width = (trapezoid.upperRight_x >> 16) - (trapezoid.upperLeft_x >> 16);
+	int height = (trapezoid.lowerRight_y >> 16) - (trapezoid.upperRight_y >> 16);
+	return new Point(width, height);
 }
 
 /**
@@ -1658,15 +1693,8 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return null;
-//	//FIXME - check flags
-//	int layout = data.layout;
-//	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-//	OS.pango_layout_set_text(layout, buffer, buffer.length);
-//	int[] width = new int[1];
-//	int[] height = new int[1];
-//	OS.pango_layout_get_size(layout, width, height);
-//	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+	//NOT DONE
+	return stringExtent(string);
 }
 
 /**

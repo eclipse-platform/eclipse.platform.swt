@@ -122,6 +122,148 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTex
 }
 #endif /* NO_AppendMenuItemTextWithCFString */
 
+#ifndef NO_ATSUCreateStyle
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUCreateStyle)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUCreateStyle\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)ATSUCreateStyle((ATSUStyle *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUCreateTextLayout
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUCreateTextLayout)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUCreateTextLayout\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)ATSUCreateTextLayout((ATSUTextLayout *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUDisposeStyle
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUDisposeStyle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ATSUDisposeStyle\n")
+
+	return (jint)ATSUDisposeStyle((ATSUStyle)arg0);
+}
+#endif
+
+#ifndef NO_ATSUDisposeTextLayout
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUDisposeTextLayout)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ATSUDisposeTextLayout\n")
+
+	return (jint)ATSUDisposeTextLayout((ATSUTextLayout)arg0);
+}
+#endif
+
+#ifndef NO_ATSUDrawText
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUDrawText)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("ATSUDrawText\n")
+
+	return (jint)ATSUDrawText((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (UniCharCount)arg2, (ATSUTextMeasurement)arg3, (ATSUTextMeasurement)arg4);
+}
+#endif
+
+#ifndef NO_ATSUGetGlyphBounds
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetGlyphBounds)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jshort arg5, jint arg6, jint arg7, jintArray arg8)
+{
+	jint *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUGetGlyphBounds\n")
+
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)ATSUGetGlyphBounds((ATSUTextLayout)arg0, (ATSUTextMeasurement)arg1, (ATSUTextMeasurement)arg2, (UniCharArrayOffset)arg3, (UniCharCount)arg4, (UInt16)arg5, (ItemCount)arg6, (ATSTrapezoid *)arg7, (ItemCount *)lparg8);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUSetAttributes\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)ATSUSetAttributes((ATSUStyle)arg0, (ItemCount)arg1, (ATSUAttributeTag *)lparg2, (ByteCount *)lparg3, (ATSUAttributeValuePtr *)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetLayoutControls
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetLayoutControls)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUSetLayoutControls\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)ATSUSetLayoutControls((ATSUTextLayout)arg0, (ItemCount)arg1, (ATSUAttributeTag *)lparg2, (ByteCount *)lparg3, (ATSUAttributeValuePtr *)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetRunStyle
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetRunStyle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("ATSUSetRunStyle\n")
+
+	return (jint)ATSUSetRunStyle((ATSUTextLayout)arg0, (ATSUStyle)arg1, (UniCharArrayOffset)arg2, (UniCharCount)arg3);
+}
+#endif
+
+#ifndef NO_ATSUSetTextPointerLocation
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetTextPointerLocation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("ATSUSetTextPointerLocation\n")
+
+	return (jint)ATSUSetTextPointerLocation((ATSUTextLayout)arg0, (ConstUniCharArrayPtr)arg1, (UniCharArrayOffset)arg2, (UniCharCount)arg3, (UniCharCount)arg4);
+}
+#endif
+
 #ifndef NO_AutoSizeDataBrowserListViewColumns
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AutoSizeDataBrowserListViewColumns
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1626,6 +1768,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRgn
 }
 #endif /* NO_EraseRgn */
 
+#ifndef NO_FetchFontInfo
+JNIEXPORT jint JNICALL OS_NATIVE(FetchFontInfo)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2, jobject arg3)
+{
+	FontInfo _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("FetchFontInfo\n")
+
+	if (arg3) lparg3 = getFontInfoFields(env, arg3, &_arg3);
+	rc = (jint)FetchFontInfo(arg0, arg1, arg2, lparg3);
+	if (arg3) setFontInfoFields(env, arg3, lparg3);
+	return rc;
+}
+#endif
+
 #ifndef NO_FMGetFontFamilyFromName
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -1657,6 +1815,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyNa
 	return rc;
 }
 #endif /* NO_FMGetFontFamilyName */
+
+#ifndef NO_FMGetFontFromFontFamilyInstance
+JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFromFontFamilyInstance)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jintArray arg2, jshortArray arg3)
+{
+	jint *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("FMGetFontFromFontFamilyInstance\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)FMGetFontFromFontFamilyInstance((FMFontFamily)arg0, (FMFontStyle)arg1, (FMFont *)lparg2, (FMFontStyle *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
 
 #ifndef NO_FindWindow
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FindWindow
@@ -5696,6 +5873,48 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3III
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 }
 #endif /* NO_memcpy___3III */
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	ATSTrapezoid _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II\n")
+
+	if (arg0) lparg0 = getATSTrapezoidFields(env, arg0, &_arg0);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setATSTrapezoidFields(env, arg0, lparg0);
+}
+#endif
+
+#ifndef NO_memcpy__I_3CI
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3CI)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__I_3CI\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
+#ifndef NO_memcpy__I_3II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__I_3II\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+}
+#endif
 
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
