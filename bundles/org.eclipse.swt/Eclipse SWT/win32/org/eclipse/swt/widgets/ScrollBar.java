@@ -580,9 +580,9 @@ public void setMaximum (int value) {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	info.fMask = OS.SIF_PAGE | OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
+	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (hwnd, type, info);
-	if (value - info.nMin - info.nPage + 1 < 0) return;
+	if (value - info.nMin - info.nPage < 1) return;
 	info.nMax = value;
 	OS.SetScrollInfo (hwnd, type, info, (state & DISABLED) == 0);
 	
@@ -646,9 +646,9 @@ public void setMinimum (int value) {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	info.fMask = OS.SIF_PAGE |OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
+	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (hwnd, type, info);
-	if (info.nMax - value - info.nPage + 1 < 0) return;
+	if (info.nMax - value - info.nPage < 1) return;
 	info.nMin = value;
 	OS.SetScrollInfo (hwnd, type, info, true);
 	
