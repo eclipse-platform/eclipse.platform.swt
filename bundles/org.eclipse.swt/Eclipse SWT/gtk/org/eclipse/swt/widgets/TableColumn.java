@@ -172,6 +172,8 @@ static int checkStyle (int style) {
 
 void createWidget (int index) {
 	parent.createItem (this, index);
+	hookEvents ();
+	register ();
 	text = "";
 }
 
