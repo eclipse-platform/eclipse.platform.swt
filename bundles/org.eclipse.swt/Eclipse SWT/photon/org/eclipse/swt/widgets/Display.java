@@ -27,8 +27,8 @@ public /*final*/ class Display extends Device {
 	Event [] eventQueue;
 	
 	/* Events Dispatching and Callback */
-	Callback windowCallback, drawCallback, workCallback, inputCallback;
-	int windowProc, drawProc, workProc, inputProc, input, pulse;
+	Callback windowCallback, drawCallback, workCallback, inputCallback, hotkeyCallback;
+	int windowProc, drawProc, workProc, inputProc, hotkeyProc, input, pulse;
 	boolean idle;
 
 	/* Sync/Async Widget Communication */
@@ -454,6 +454,12 @@ public Thread getThread () {
 	return thread;
 }
 
+int hotkeyProc (int handle, int data, int info) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return OS.Pt_CONTINUE;
+	return widget.processHotkey (data, info);
+}
+
 protected void init () {
 	super.init ();
 	initializeDisplay ();
@@ -479,6 +485,9 @@ void initializeDisplay () {
 	timerCallback = new Callback (this, "timerProc", 3);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	hotkeyCallback = new Callback (this, "hotkeyProc", 3);
+	hotkeyProc = hotkeyCallback.getAddress ();
+	if (hotkeyProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	pulse = OS.PtAppCreatePulse (app_context, -1);
 	input = OS.PtAppAddInput (app_context, pulse, inputProc, 0);
@@ -774,10 +783,6 @@ void releaseDisplay () {
 	OS.PtAppRemoveInput (app_context, input);
 	OS.PtAppDeletePulse (app_context, pulse);
 	
-	/* Free the window proc */
-	windowCallback.dispose ();
-	windowCallback = null;
-
 	/* Free the timers */
 	if (timers != null) {
 		for (int i=0; i<timers.length; i++) {
@@ -789,7 +794,11 @@ void releaseDisplay () {
 	timerProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
-	
+
+	/* Free the window proc */
+	windowCallback.dispose ();
+	windowCallback = null;
+
 	/* Free callbacks */
 	drawCallback.dispose();
 	drawCallback = null;
@@ -797,6 +806,8 @@ void releaseDisplay () {
 	workCallback = null;
 	inputCallback.dispose();
 	inputCallback = null;
+	hotkeyCallback.dispose();
+	hotkeyCallback = null;
 		
 	/* Release references */
 	thread = null;

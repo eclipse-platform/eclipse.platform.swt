@@ -13,6 +13,7 @@ import org.eclipse.swt.events.*;
 
 public class MenuItem extends Item {
 	Menu parent, menu;
+	int accelerator;
 	
 public MenuItem (Menu parent, int style) {
 	this (parent, style, parent.getItemCount());
@@ -96,8 +97,7 @@ void createHandle (int index) {
 public int getAccelerator () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
-	return 0;
+	return accelerator;
 }
 
 public Display getDisplay () {
@@ -153,6 +153,11 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int processActivate (int info) {
+	processShow (info);
+	return OS.Pt_CONTINUE;
+}
+
 int processSelection (int info) {
 	if ((style & SWT.CASCADE) != 0) {
 		int [] args = {OS.Pt_ARG_BUTTON_TYPE, 0, 0};
@@ -165,11 +170,19 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int processShow (int info) {
+	if (menu != null) {		
+		int menuHandle = menu.handle;
+		OS.PtPositionMenu (menuHandle, null);
+		OS.PtRealizeWidget (menuHandle);
+	}
+	return OS.Pt_CONTINUE;
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	if (menu != null) menu.dispose ();
 	menu = null;
-//	parent.destroyItem (this);
 }
 
 void releaseWidget () {
@@ -179,22 +192,9 @@ void releaseWidget () {
 	}
 	menu = null;
 	super.releaseWidget ();
-//	if (accelerator != 0) {
-//		parent.destroyAcceleratorTable ();
-//	}
-//	accelerator = 0;
-//	Decorations shell = parent.parent;
-//	shell.remove (this);
+	if (accelerator != 0) removeAccelerator ();
+	accelerator = 0;
 	parent = null;
-}
-
-int processShow (int info) {
-	if (menu != null) {		
-		int menuHandle = menu.handle;
-		OS.PtPositionMenu (menuHandle, null);
-		OS.PtRealizeWidget (menuHandle);
-	}
-	return OS.Pt_CONTINUE;
 }
 
 public void removeArmListener (ArmListener listener) {
@@ -213,6 +213,22 @@ public void removeHelpListener (HelpListener listener) {
 	eventTable.unhook (SWT.Help, listener);
 }
 
+void removeAccelerator () {
+	if (accelerator == 0) return;
+
+	int keyMods = 0;
+	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
+	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
+	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
+	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
+	Display display = getDisplay ();
+	int keyCode = display.untranslateKey (key);
+	if (keyCode != 0) key = keyCode;
+	else key = Character.toLowerCase ((char)key);
+	Shell shell = parent.getShell ();
+	OS.PtRemoveHotkeyHandler(shell.shellHandle, key, keyMods, (short)0, handle, display.hotkeyProc);
+}
+
 public void removeSelectionListener (SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -226,19 +242,22 @@ public void setAccelerator (int accelerator) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	
-	//NOT DONE: remove previous - NEEDED NEEDED
-//	
-//	if (accelerator != 0) {
-//		int keyMods = 0;
-//		if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
-//		if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
-//		if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
-//		int key = accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL);
-//		//key = Display.untranslateKey(key);
-//		key = 0x61;
-//		System.out.println("key=" + Integer.toHexString(key));
-//		OS.PtAddHotkeyHandler(handle, key, keyMods, (short)0, SWT.Selection, 0);
-//	}
+	removeAccelerator ();
+
+	this.accelerator = accelerator;		
+	if (accelerator == 0) return;
+
+	int keyMods = 0;
+	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
+	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
+	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
+	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
+	Display display = getDisplay ();
+	int keyCode = display.untranslateKey (key);
+	if (keyCode != 0) key = keyCode;
+	else key = Character.toLowerCase ((char)key);
+	Shell shell = parent.getShell ();
+	OS.PtAddHotkeyHandler(shell.shellHandle, key, keyMods, (short)0, handle, display.hotkeyProc);
 }
 
 public void setEnabled (boolean enabled) {
@@ -328,31 +347,51 @@ public void setText (String string) {
 			if (mnemonic == 0) mnemonic = text [i];
 			j--;
 		}
-	}	
-	byte [] buffer2;
+	}
+	int keyMods = 0; 
+	byte [] buffer2 = new byte [1];
 	if (accel && ++i < text.length) {
-		char [] accelText = new char [text.length - i];
-		System.arraycopy (text, i, accelText, 0, accelText.length);
-		buffer2 = Converter.wcsToMbcs (null, accelText, true);
-	} else {
-		buffer2 = new byte [1];
+		int start = i;
+//		while (i < text.length) {
+//			if (text [i] == '+') {
+//				String str = new String (text, start, i - start);
+//				if (str.equals ("Ctrl")) keyMods |= OS.Pk_KM_Ctrl;
+//				if (str.equals ("Shift")) keyMods |= OS.Pk_KM_Shift;
+//				if (str.equals ("Alt")) keyMods |= OS.Pk_KM_Alt;
+//				start = i + 1;
+//			}
+//			i++;
+//		}
+		if (start < text.length) {
+			char [] accelText = new char [text.length - start];
+			System.arraycopy (text, start, accelText, 0, accelText.length);
+			buffer2 = Converter.wcsToMbcs (null, accelText, true);
+		}
 	}
 	while (j < text.length) text [j++] = 0;
 	byte [] buffer1 = Converter.wcsToMbcs (null, text, true);
-	int ptr = OS.malloc (buffer1.length);
-	OS.memmove (ptr, buffer1, buffer1.length);
+	int ptr1 = OS.malloc (buffer1.length);
+	OS.memmove (ptr1, buffer1, buffer1.length);
+	int ptr2 = OS.malloc (buffer2.length);
+	OS.memmove (ptr2, buffer2, buffer2.length);
 	int ptr3 = 0;
 	if (mnemonic != 0) {
 		byte [] buffer3 = Converter.wcsToMbcs (null, new char []{mnemonic}, true);
 		ptr3 = OS.malloc (buffer3.length);
 		OS.memmove (ptr3, buffer3, buffer3.length);
 	}
+	if ((parent.style & SWT.BAR) != 0) {
+		replaceMnemonic (mnemonic, OS.Pk_KM_Alt);
+	}
 	int [] args = {
-		OS.Pt_ARG_TEXT_STRING, ptr, 0,
+		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
+		OS.Pt_ARG_ACCEL_TEXT, ptr2, 0,
+		OS.Pt_ARG_MODIFIER_KEYS, keyMods, keyMods,
 		OS.Pt_ARG_ACCEL_KEY, ptr3, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	OS.free (ptr);
+	OS.free (ptr1);
+	OS.free (ptr2);
 	OS.free (ptr3);
 	/*
 	* Bug on Photon.  When a the text is set on a menu

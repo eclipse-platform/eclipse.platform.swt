@@ -5,6 +5,7 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -22,6 +23,7 @@ public abstract class Widget {
 	
 	static final int DISPOSED		= 0x00000001;
 	static final int HANDLE			= 0x00000002;
+	static final int CANVAS			= 0x00000004;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
@@ -233,6 +235,10 @@ void postEvent (int eventType, Event event) {
 	getDisplay ().postEvent (event);
 }
 
+int processActivate (int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int processDefaultSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
@@ -249,12 +255,17 @@ int processHide (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int processHotkey (int data, int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int processKey (int info) {
 	return OS.Pt_CONTINUE;
 }
 
 int processEvent (int data, int info) {
 	switch (data) {
+		case SWT.Activate:			return processActivate (info);
 //		case SWT.Arm:				return processArm (info);
 //		case SWT.Dispose:			return processDispose (info);
 		case SWT.DefaultSelection:	return processDefaultSelection (info);
@@ -366,6 +377,27 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+void replaceMnemonic (int mnemonic, int mods) {
+	Display display = getDisplay ();
+	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	if (args [1] != 0) {
+		int length = OS.strlen (args [1]);
+		if (length > 0) {
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, args [1], length);
+			char [] accelText = Converter.mbcsToWcs (null, buffer);
+			if (accelText.length > 0) {
+				char key = Character.toLowerCase (accelText [0]);
+				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+			}
+		}
+	}
+	if (mnemonic == 0) return;
+	char key = Character.toLowerCase ((char)mnemonic);
+	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
 }
 
 void sendEvent (int eventType) {

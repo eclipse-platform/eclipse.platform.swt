@@ -14,7 +14,7 @@ public class Menu extends Widget {
 	int x, y;
 	boolean hasLocation;
 	Decorations parent;
-	MenuItem cascade;
+	MenuItem cascade, defaultItem;
 
 public Menu (Control parent) {
 	this (checkNull (parent).getShell (), SWT.POP_UP);
@@ -93,8 +93,7 @@ void createWidget (int index) {
 public MenuItem getDefaultItem () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
-	return null;
+	return defaultItem;
 }
 
 public Display getDisplay () {
@@ -127,12 +126,19 @@ public int getItemCount () {
 public MenuItem getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - bogus
-	MenuItem[] items = getItems();
-	if (!(0 <= index && index < items.length)) {
-		error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);	
+	int i = 0;
+	int child = OS.PtWidgetChildBack (handle);
+	if (child != 0 && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
+	while (child != 0) {
+		Widget widget = WidgetTable.get (child);
+		if (widget != null && widget instanceof MenuItem) {
+			if (i++ == index) return (MenuItem) widget;
+		}
+		child = OS.PtWidgetBrotherInFront (child);
 	}
-	return items [index];
+	error (SWT.ERROR_INVALID_RANGE);
+	return null;
 }
 
 public MenuItem [] getItems () {
@@ -215,10 +221,14 @@ public int indexOf (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE - bogus
-	MenuItem[] items = getItems();
-	for (int i=0; i<items.length; i++) {
-		if (item == items [i]) return i;
+	int i = 0;
+	int child = OS.PtWidgetChildBack (handle);
+	if (child != 0 && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
+	while (child != 0) {
+		Widget widget = WidgetTable.get (child);
+		if (item == widget) return i;
+		if (widget != null && widget instanceof MenuItem) i++;
+		child = OS.PtWidgetBrotherInFront (child);
 	}
 	return -1;
 }
@@ -248,7 +258,7 @@ int processShow (int info) {
 	/*
 	* Bug in Photon.  If menu items are created in the event above,
 	* the menu will not layout properly.  The fix is to force
-	* the menu to relayout and position itself again.
+	* the menu to relayout itself again.
 	*/
 	OS.PtExtentWidgetFamily (handle);
 
@@ -298,7 +308,7 @@ public void removeMenuListener (MenuListener listener) {
 public void setDefaultItem (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
+	defaultItem = item;
 }
 
 public void setEnabled (boolean enabled) {
