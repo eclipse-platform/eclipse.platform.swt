@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -568,11 +568,8 @@ void updateImages () {
 				disabledImage2 = null;
 				disabled = disabledImage;
 				if (disabledImage == null) {
-					disabled = image;
-					if (!getEnabled ()) {
-						Color color = parent.getBackground ();
-						disabled = disabledImage2 = createDisabledImage (image, color);
-					}
+					Color color = parent.getBackground ();
+					disabled = disabledImage2 = createDisabledImage (image, color);
 				}
 			}
 			disabledImageList.put (info.iImage, disabled);
