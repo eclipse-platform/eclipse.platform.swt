@@ -1644,8 +1644,19 @@ void removeColumn(TreeColumn column) {
 	System.arraycopy(columns, index + 1, newColumns, index, newColumns.length - index);
 	columns = newColumns;
 	
-	TreeColumn lastColumn = columns[columns.length - 1];
-	getHorizontalBar().setMaximum(lastColumn.getX() + lastColumn.width);
+	/* ensure that column 0 always has left-alignment */
+	if (index == 0 && columns.length > 0) {
+		columns [0].style |= SWT.LEFT;
+		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
+	}
+	
+	int lastColumnIndex = columns.length - 1;
+	if (lastColumnIndex < 0) {	/* no more columns */
+		updateHorizontalBar ();
+	} else {
+		TreeColumn lastColumn = columns[lastColumnIndex];
+		getHorizontalBar().setMaximum(lastColumn.getX() + lastColumn.width);
+	}
 	
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {

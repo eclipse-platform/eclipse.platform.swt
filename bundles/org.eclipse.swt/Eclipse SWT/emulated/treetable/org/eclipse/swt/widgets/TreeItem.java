@@ -723,7 +723,7 @@ void initialize () {
 		UncheckedImage = new Image (display, IMAGEDATA_UNCHECKED);
 		GrayUncheckedImage = new Image (display, IMAGEDATA_GRAY_UNCHECKED);
 		CheckmarkImage = new Image (display, IMAGEDATA_CHECKMARK);
-		LinesColor = display.getSystemColor (SWT.COLOR_GRAY);
+		LinesColor = new Color (display, 170, 170, 170);
 		SelectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 		SelectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
 	}

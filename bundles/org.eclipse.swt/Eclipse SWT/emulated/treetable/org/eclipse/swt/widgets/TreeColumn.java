@@ -163,6 +163,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 public void setAlignment (int alignment) {
 	checkWidget ();
+	if (getIndex () == 0) return; 	/* column 0 can only have left-alignment */
 	if ((style & alignment) != 0) return;				/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
