@@ -87,7 +87,7 @@ public class TableTreeEditor extends ControlEditor {
 /**
 * Creates a TableEditor for the specified Table.
 *
-* @param table the Table Control above which this editor will be displayed
+* @param tableTree the Table Control above which this editor will be displayed
 *
 */
 public TableTreeEditor (TableTree tableTree) {

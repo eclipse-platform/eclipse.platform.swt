@@ -135,7 +135,7 @@ public class ScrolledComposite extends Composite {
  *
  * @see SWT#H_SCROLL
  * @see SWT#V_SCROLL
- * @see #getStyle
+ * @see #getStyle()
  */	
 public ScrolledComposite(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -222,7 +222,7 @@ public Control getContent() {
 	return content;
 }
 
-private void hScroll() {
+void hScroll() {
 	if (content == null) return;
 	Point location = content.getLocation ();
 	ScrollBar hBar = getHorizontalBar ();
@@ -313,7 +313,7 @@ private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	return false;
 }
 
-private void resize() {
+void resize() {
 	if (inResize) return;
 	inResize = true;
 	layout();
@@ -577,7 +577,7 @@ public void setMinWidth(int width) {
 	setMinSize(width, minHeight);
 }
 
-private void vScroll() {
+void vScroll() {
 	if (content == null) return;
 	Point location = content.getLocation ();
 	ScrollBar vBar = getVerticalBar ();

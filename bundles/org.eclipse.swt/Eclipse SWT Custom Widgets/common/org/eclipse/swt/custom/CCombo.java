@@ -67,7 +67,7 @@ public final class CCombo extends Composite {
  * @see SWT#BORDER
  * @see SWT#READ_ONLY
  * @see SWT#FLAT
- * @see Widget#getStyle
+ * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
 	super (parent, style = checkStyle (style));
@@ -571,7 +571,7 @@ public int indexOf (String string) {
 * found, -1 is returned.  Indexing is zero based.
 *
 * @param string the search item
-* @param index the starting position
+* @param start the starting position
 * @return the index of the item
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
@@ -802,7 +802,6 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 * the OS.
 *
 * @param index the index of the item
-* @return the selection state
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
 *	when called from the wrong thread

@@ -70,7 +70,7 @@ public class SashForm extends Composite {
  *
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
- * @see #getStyle
+ * @see #getStyle()
  */
 public SashForm(Composite parent, int style) {
 	super(parent, checkStyle(style));

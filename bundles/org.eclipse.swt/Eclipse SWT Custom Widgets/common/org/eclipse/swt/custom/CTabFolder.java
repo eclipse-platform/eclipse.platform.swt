@@ -358,8 +358,8 @@ static void fillRegion(GC gc, Region region) {
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
  *
- * @see CTabFolderCloseListener
- * @see #removeCTabFolderCloseListener(CTabFolderCloseListener)
+ * @see CTabFolder2Listener
+ * @see #removeCTabFolder2Listener(CTabFolder2Listener)
  * 
  * UNDER CONSTRUCTION
  * @since 3.0
@@ -3277,8 +3277,8 @@ void showList (Rectangle rect) {
 		item.setData(id, tab);
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				MenuItem item = (MenuItem)e.widget;
-				int index = indexOf((CTabItem)item.getData(id));
+				MenuItem menuItem = (MenuItem)e.widget;
+				int index = indexOf((CTabItem)menuItem.getData(id));
 				CTabFolder.this.setSelection(index, true);
 			}
 		});

@@ -12,5 +12,5 @@ package org.eclipse.swt.custom;
 
 
 public class CTabFolderAdapter implements CTabFolderListener {
-	public void itemClosed(CTabFolderEvent event){};
+	public void itemClosed(CTabFolderEvent event){}
 }

@@ -97,7 +97,7 @@ public class CLabel extends Canvas {
  * @see SWT#SHADOW_IN
  * @see SWT#SHADOW_OUT
  * @see SWT#SHADOW_NONE
- * @see #getStyle
+ * @see #getStyle()
  */
 public CLabel(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -303,7 +303,7 @@ private void initAccessible() {
 		}
 	});
 }
-private void onDispose(DisposeEvent event) {
+void onDispose(DisposeEvent event) {
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
@@ -314,7 +314,7 @@ private void onDispose(DisposeEvent event) {
 /* 
  * Process the paint event
  */
-private void onPaint(PaintEvent event) {
+void onPaint(PaintEvent event) {
 	Rectangle rect = getClientArea();
 	if (rect.width == 0 || rect.height == 0) return;
 	

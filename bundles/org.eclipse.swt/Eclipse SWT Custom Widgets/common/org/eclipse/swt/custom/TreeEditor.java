@@ -183,7 +183,6 @@ public void setItem (TreeItem item) {
 * 
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TreeItem for the row of the cell being tracked by this editor
-* @param column the zero based index of the column of the cell being tracked by this editor
 */
 public void setEditor (Control editor, TreeItem item) {
 	setItem(item);

@@ -20,7 +20,7 @@ public interface CTabFolderListener extends SWTEventListener {
  * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be 
  * made not visible when the CTabItem is closed.
  * 
- * @param e an event indicating the item being closed
+ * @param event an event indicating the item being closed
  */
 public void itemClosed(CTabFolderEvent event);
 }

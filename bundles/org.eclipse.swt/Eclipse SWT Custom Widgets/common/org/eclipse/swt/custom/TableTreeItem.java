@@ -60,7 +60,7 @@ public class TableTreeItem extends Item {
  * </ul>
  *
  * @see SWT
- * @see Widget#getStyle
+ * @see Widget#getStyle()
  */
 public TableTreeItem(TableTree parent, int style) {
 	this (parent, style, parent.getItemCount());
@@ -93,7 +93,7 @@ public TableTreeItem(TableTree parent, int style) {
  * </ul>
  *
  * @see SWT
- * @see Widget#getStyle
+ * @see Widget#getStyle()
  */
 public TableTreeItem(TableTree parent, int style, int index) {
 	this (parent, null, style, index);
@@ -114,7 +114,7 @@ public TableTreeItem(TableTree parent, int style, int index) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -125,7 +125,7 @@ public TableTreeItem(TableTree parent, int style, int index) {
  * </ul>
  *
  * @see SWT
- * @see Widget#getStyle
+ * @see Widget#getStyle()
  */
 public TableTreeItem(TableTreeItem parent, int style) {
 	this (parent, style, parent.getItemCount());
@@ -146,7 +146,7 @@ public TableTreeItem(TableTreeItem parent, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
@@ -158,7 +158,7 @@ public TableTreeItem(TableTreeItem parent, int style) {
  * </ul>
  *
  * @see SWT
- * @see Widget#getStyle
+ * @see Widget#getStyle()
  */
 public TableTreeItem(TableTreeItem parent, int style, int index) {
 	this (parent.getParent(), parent, style, index);
