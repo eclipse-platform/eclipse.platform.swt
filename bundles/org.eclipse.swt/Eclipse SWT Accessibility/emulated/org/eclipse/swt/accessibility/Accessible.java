@@ -27,18 +27,14 @@ public class Accessible {
 	}
 
 	public void addAccessibleListener(AccessibleListener listener) {
-		checkWidget();
 	}
 	
 	public void removeAccessibleListener(AccessibleListener listener) {
-		checkWidget();
 	}
 	
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
-		checkWidget();
 	}
 
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
-		checkWidget();
 	}
 }
