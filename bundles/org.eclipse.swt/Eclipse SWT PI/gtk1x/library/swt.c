@@ -26,6 +26,51 @@
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	g_log_default_handler
+ * Signature:	
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1default_1handler
+  (JNIEnv *env, jclass that, jint log_domain, jint log_levels, jint message, jint unused_data)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "g_log_default_handler");
+#endif
+
+	g_log_default_handler((gchar *)log_domain, (GLogLevelFlags)log_levels, (gchar *) message, (gpointer) unused_data);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	g_log_set_handler
+ * Signature:	
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1set_1handler
+  (JNIEnv *env, jclass that, jint log_domain, jint log_levels, jint log_func, jint user_data)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "g_log_set_handler");
+#endif
+
+	return g_log_set_handler((gchar *)log_domain, (GLogLevelFlags)log_levels, (GLogFunc) log_func, (gpointer) user_data);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	g_log_remove_handler
+ * Signature:	
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1remove_1handler
+  (JNIEnv *env, jclass that, jint log_domain, jint handler_id)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "g_log_remove_handler");
+#endif
+
+	g_log_remove_handler((gchar *)log_domain, handler_id);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	GTK_WIDGET_TYPE
  * Signature:	
  */

@@ -25,6 +25,11 @@ public abstract class Device implements Drawable {
 	/* Disposed flag */
 	boolean disposed;
 	
+	/* Warning and Error Handlers */
+	int handler_id, logProc;
+	Callback logCallback;
+	boolean warnings = true;
+	
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
@@ -358,6 +363,18 @@ public Font getSystemFont () {
 }
 
 protected void init () {
+	
+	/* Create GTK warnings and error callbacks */
+	logCallback = new Callback (this, "logProc", 4);
+	logProc = logCallback.getAddress ();
+	if (logProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	/* Set GTK warning and error handlers */
+	if (debug) {
+		handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
+	}
+	
+	/* Create the standard colors */
 	COLOR_BLACK = new Color (this, 0,0,0);
 	COLOR_DARK_RED = new Color (this, 0x80,0,0);
 	COLOR_DARK_GREEN = new Color (this, 0,0x80,0);
@@ -424,6 +441,14 @@ public boolean isDisposed () {
 	return disposed;
 }
 
+int logProc (int log_domain, int log_level, int message, int user_data) {
+	if (debug && warnings) {
+		new Error ().printStackTrace ();
+		OS.g_log_default_handler (log_domain, log_level, message, 0);
+	}
+	return 0;
+}
+
 void new_Object (Object object) {
 	for (int i=0; i<objects.length; i++) {
 		if (objects [i] == null) {
@@ -441,7 +466,7 @@ void new_Object (Object object) {
 	newErrors [errors.length] = new Error ();
 	errors = newErrors;
 }
-	
+
 protected void release () {
 	if (gdkColors != null) {
 		int colormap = OS.gdk_colormap_get_system();
@@ -461,6 +486,11 @@ protected void release () {
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
+		
+	/* Free the GTK error and warning handler */
+	if (handler_id != 0) OS.g_log_remove_handler (0, handler_id);
+	logCallback.dispose ();  logCallback = null;
+	handler_id = logProc = 0;
 }
 
 /**
@@ -477,6 +507,13 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
+	this.warnings = warnings;
+	if (debug) return;
+	OS.g_log_remove_handler (0, handler_id);
+	handler_id = 0;
+	if (warnings) {
+		handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
+	}
 }
 
 }
