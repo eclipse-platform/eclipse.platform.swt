@@ -50,9 +50,10 @@ import org.eclipse.swt.widgets.*;
  * creating instances of <code>FormAttachment</code> and setting them into
  * the top, bottom, left, and right fields of the child's <code>FormData</code>.
  * </p>
+ * <p>
  * If a side is not given an attachment, it is defined as not being attached
  * to anything, causing the child to remain at it's preferred size.  If a child
- * is given no attachemts on either the left or the right or top or bottom, it is
+ * is given no attachments on either the left or the right or top or bottom, it is
  * automatically attached to the left and top of the composite respectively.
  * The following code positions <code>button1</code> and <code>button2</code>
  * but relies on default attachments:
@@ -64,7 +65,6 @@ import org.eclipse.swt.widgets.*;
  *		button2.setLayoutData(data2);
  * </pre>
  * </p>
- * <p>
  * 
  * @see FormData
  * @see FormAttachment
