@@ -253,6 +253,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		}
 	}
 	if (clipping != null) {
+		gc.setClipping(clipping);
 		OS.CGContextRestoreGState(gc.handle);
 		OS.CGContextSaveGState(gc.handle);
 		clipping.dispose();
