@@ -244,11 +244,9 @@ public final class ImageData implements CloneableCompatibility {
  * @param palette the palette of the image (must not be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative, or if the depth is not
+ *        	one of 1, 2, 4, 8, 16, 24 or 32</li>
  *    <li>ERROR_NULL_ARGUMENT - if the palette is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth argument is not one of 1, 2, 4, 8, 16, 24 or 32</li>
  * </ul>
  */
 public ImageData(int width, int height, int depth, PaletteData palette) {
@@ -270,11 +268,9 @@ public ImageData(int width, int height, int depth, PaletteData palette) {
  * @param data the data of the image
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative, or if the depth is not
+ *        	one of 1, 2, 4, 8, 16, 24 or 32</li>
  *    <li>ERROR_NULL_ARGUMENT - if the palette or data is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth argument is not one of 1, 2, 4, 8, 16, 24 or 32</li>
  * </ul>
  */
 public ImageData(int width, int height, int depth, PaletteData palette, int scanlinePad, byte[] data) {
