@@ -306,26 +306,6 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	OS.HeapFree(hHeap, 0, lpOrder);
 }
 /**
- * Return rendering information for the given text.  Wraps the GetFontLanguageInfo
- * and GetCharacterPlacement functions.
- * <p>
- * 
- * @param gc the GC to use for rendering and measuring of this line, input parameter
- * @param text text that bidi data should be calculated for, input parameter
- * @param order an array of integers representing the visual position of each character in
- *  the text array, output parameter
- * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
- *  LOCALNUMBER) of each character in the text array, input/output parameter
- * @param dx an array of integers representing the pixel width of each glyph in the returned
- *  glyph buffer, output paramteter
- * @param flags an integer representing rendering flag information, input parameter
- * @return buffer with the glyphs that should be rendered for the given text
- */
-public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
-	int[] offsets = new int[] {0, text.length()};
-	return getRenderInfo(gc, text, order, classBuffer, dx, flags, offsets);
-}
-/**
  * Return bidi attribute information for the font in the specified gc.  
  * <p>
  *

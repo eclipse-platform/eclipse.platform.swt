@@ -61,13 +61,6 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
  *  Not implemented. Returns null.
  *
  */
-public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
-	return null;
-}
-/*
- *  Not implemented. Returns null.
- *
- */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
 	return null;
 }
