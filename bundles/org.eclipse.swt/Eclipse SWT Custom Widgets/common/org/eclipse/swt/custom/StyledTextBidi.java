@@ -54,6 +54,11 @@ class StyledTextBidi {
 			
 			return renderPositions[visualEnd] + dx[visualEnd];
 		}
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+			buf.append("vStart,Stop:" + getVisualStart()  + "," + getVisualEnd() + " lStart,Stop:" + logicalStart  + "," + logicalEnd + " renderStart,Stop: " + getRenderStartX() + "," + getRenderStopX());
+			return buf.toString();
+		}
 	}
 	
 public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont) {
@@ -129,7 +134,6 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int x = xOffset + run.getRenderStartX();
-
 		drawGlyphs(visualStart, visualEnd - visualStart + 1, x, yOffset);				
 	}		
 	// between R2L and L2R direction segment?
@@ -212,7 +216,7 @@ public void fillBackground(int logicalStart, int length, int xOffset, int yOffse
 		int visualStart = run.getVisualStart();
 		int visualEnd = run.getVisualEnd();
 		int startX = run.getRenderStartX();
-		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
+		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
 	}				
 }
 public int[] getCaretOffsetAndDirectionAtX(int x) {
@@ -447,17 +451,17 @@ Vector getDirectionRuns(int logicalStart, int length) {
 	int logicalEnd = logicalStart + length - 1;
 	int segmentLogicalStart = logicalStart;
 	int segmentLogicalEnd = segmentLogicalStart;
-	
+	 
 	if (logicalEnd < getTextLength()) {
 		while (segmentLogicalEnd <= logicalEnd) {
-			boolean isStartRightToLeft = isRightToLeft(segmentLogicalStart);			
+			int segType = classBuffer[segmentLogicalStart];
 			// Search for the end of the direction segment. Each segment needs to 
 			// be rendered separately. 
 			// E.g., 11211 (1=R2L, 2=L2R), rendering from logical index 0 to 5 
 			// would be visual 1 to 4 and would thus miss visual 0. Rendering the 
 			// segments separately would render from visual 1 to 0, then 2, then 
 			// 4 to 3.
-			while (segmentLogicalEnd < logicalEnd && isStartRightToLeft == isRightToLeft(segmentLogicalEnd + 1)) {
+			while (segmentLogicalEnd < logicalEnd && segType == classBuffer[segmentLogicalEnd + 1]) {
 				segmentLogicalEnd++;
 			}
 			directionRuns.addElement(new DirectionRun(segmentLogicalStart, segmentLogicalEnd));
