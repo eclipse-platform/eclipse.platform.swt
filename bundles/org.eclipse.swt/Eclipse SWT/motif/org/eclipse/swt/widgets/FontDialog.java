@@ -118,9 +118,9 @@ void createChildren() {
 	dialog.setLayout(layout);
 
 	// row one
-	characterSetLabel.setText("Character set:");
-	faceNameLabel.setText("Font:");
-	extendedStyleLabel.setText("Extended style:");
+	characterSetLabel.setText(SWT.getMessage("SWT_Character_set") + ":");
+	faceNameLabel.setText(SWT.getMessage("SWT_Font") + ":");
+	extendedStyleLabel.setText(SWT.getMessage("SWT_Extended_style") + ":");
 	
 	new Label(dialog, SWT.NULL);
 
@@ -159,9 +159,9 @@ void createChildren() {
 	
 	// row five
 	fontSizeLabel = new Label(dialog, SWT.NULL);	
-	fontSizeLabel.setText("Size:");	
+	fontSizeLabel.setText(SWT.getMessage("SWT_Size") + ":");	
 	fontStyleLabel = new Label(dialog, SWT.NULL);
-	fontStyleLabel.setText("Style:");
+	fontStyleLabel.setText(SWT.getMessage("SWT_Style") + ":");
 
 	fillLabel = new Label(dialog, SWT.NULL);
 	gridData = new GridData();
@@ -194,7 +194,7 @@ void createChildren() {
 	
 	// row eight
 	sampleGroup = new Group(dialog, SWT.NULL);
-	sampleGroup.setText("Sample");
+	sampleGroup.setText(SWT.getMessage("SWT_Sample"));
 	gridData = new GridData();
 	gridData.heightHint = 70;	
 	gridData.horizontalSpan = 3;
@@ -772,7 +772,7 @@ void createOkCancel() {
 	GridData gridData;
 	
 	ok = new Button(dialog, SWT.PUSH);
-	ok.setText("OK");
+	ok.setText(SWT.getMessage("SWT_OK"));
 	dialog.setDefaultButton(ok);	
 	gridData = new GridData();
 	gridData.horizontalAlignment = GridData.FILL;
@@ -780,7 +780,7 @@ void createOkCancel() {
 	ok.setLayoutData(gridData);
 
 	cancel = new Button(dialog, SWT.PUSH);
-	cancel.setText("Cancel");
+	cancel.setText(SWT.getMessage("SWT_Cancel"));
 	gridData = new GridData();
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.verticalAlignment = GridData.BEGINNING;		
