@@ -521,26 +521,11 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
-	/*
-	* Feature in Quartz.  Drawing a one-pixel line produces no output.  The
-	* fix is to fill a one-pixel rectangle instead.
-	*/
-	if (x1 == x2 && y1 == y2) {
-		CGRect rect = new CGRect();
-		rect.x = x1;
-		rect.y = y1;
-		rect.width = 1;
-		rect.height = 1;
-		OS.CGContextSetFillColor(handle, data.foreground);
-		OS.CGContextFillRect(handle, rect);
-		OS.CGContextSetFillColor(handle, data.background);
-	} else {
-		OS.CGContextBeginPath(handle);
-		float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-		OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
-		OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
-		OS.CGContextStrokePath(handle);
-	}
+	OS.CGContextBeginPath(handle);
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
+	OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
+	OS.CGContextStrokePath(handle);
 	flush();
 }
 
@@ -591,10 +576,6 @@ public void drawOval(int x, int y, int width, int height) {
 public void drawPoint(int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
-	/*
-	* Feature in Quartz.  Drawing a one-pixel line produces no output.  The
-	* fix is to fill a one-pixel rectangle instead.
-	*/
 	CGRect rect = new CGRect();
 	rect.x = x;
 	rect.y = y;
@@ -1564,7 +1545,8 @@ void init(Drawable drawable, GCData data, int context) {
 	float[] foreground = data.foreground;
 	if (foreground != null) OS.CGContextSetStrokeColor(context, foreground);
 	float[] background = data.background;
-	if (background != null) OS.CGContextSetFillColor(context, background);
+	if (background != null) OS.CGContextSetFillColor(context, background);	
+	OS.CGContextSetLineCap(context, OS.kCGLineCapRound);
 
 	Image image = data.image;
 	if (image != null) image.memGC = this;
