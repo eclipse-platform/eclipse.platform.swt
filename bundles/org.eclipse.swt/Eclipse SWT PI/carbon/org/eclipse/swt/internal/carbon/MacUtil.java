@@ -447,4 +447,25 @@ public class MacUtil {
 		}
 		return s;
 	}
+	
+	public static void RGBBackColor(int packed) {
+		if ((packed & 0xff000000) == 0) {
+			OS.RGBBackColor((short)(((packed >> 16) & 0xFF) * 257),
+							(short)(((packed >> 8) & 0xFF) * 257),
+							(short)(((packed) & 0xFF) * 257));
+		} else {
+			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
+		}
+	}
+	
+	public static void RGBForeColor(int packed) {
+		if ((packed & 0xff000000) == 0) {
+			OS.RGBForeColor((short)(((packed >> 16) & 0xFF) * 257),
+							(short)(((packed >> 8) & 0xFF) * 257),
+							(short)(((packed) & 0xFF) * 257));
+		} else {
+			OS.RGBForeColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
+		}
+	}
+
 }
