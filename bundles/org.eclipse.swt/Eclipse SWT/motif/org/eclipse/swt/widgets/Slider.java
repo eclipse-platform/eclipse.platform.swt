@@ -277,6 +277,10 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, SWT.Selection);
 	OS.XtAddCallback (handle, OS.XmNtoTopCallback, windowProc, SWT.Selection);
 }
+void overrideTranslations () {
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+}
 int processSelection (int callData) {
 	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
 	OS.memmove (struct, callData, XmAnyCallbackStruct.sizeof);

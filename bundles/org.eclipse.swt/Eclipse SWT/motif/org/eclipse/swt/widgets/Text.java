@@ -870,6 +870,12 @@ public void insert (String string) {
 	OS.XmTextSetInsertionPosition (handle, position);
 	display.setWarnings (warnings);
 }
+void overrideTranslations () {
+	if ((style & SWT.SINGLE) != 0) {
+		Display display = getDisplay ();
+		OS.XtOverrideTranslations (handle, display.tabTranslations);
+	}
+}
 /**
  * Pastes text from clipboard.
  * <p>

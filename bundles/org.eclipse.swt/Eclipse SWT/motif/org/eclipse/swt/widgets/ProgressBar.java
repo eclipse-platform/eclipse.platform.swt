@@ -121,10 +121,6 @@ void disableButtonPress () {
 	attributes.event_mask = event_mask & ~OS.ButtonPressMask;
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
 }
-void disableTraversal () {
-	int [] argList = {OS.XmNtraversalOn, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-}
 /**
  * Returns the maximum value which the receiver will allow.
  *
@@ -181,14 +177,7 @@ public int getSelection () {
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
-	/*
-	* ProgressBars never participate in focus traversal when
-	* either enabled or disabled.
-	*/
-	if (enabled) {
-		disableTraversal ();
-		disableButtonPress ();
-	}
+	if (enabled) disableButtonPress ();
 }
 void realizeChildren () {
 	super.realizeChildren ();

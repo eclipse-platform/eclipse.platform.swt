@@ -348,16 +348,6 @@ int processMouseUp (int callData) {
 	/* widget could be disposed here */
 	return 0;
 }
-void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
-	/*
-	* Sashes do not participate in focus traversal.
-	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-}
 void realizeChildren () {
 	super.realizeChildren ();
 	int window = OS.XtWindow (handle);
@@ -406,9 +396,7 @@ public void removeSelectionListener(SelectionListener listener) {
 public boolean setFocus () {
 	int [] argList = new int [] {OS.XmNtraversalOn, 1};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	Display display = getDisplay ();
-	OS.XtOverrideTranslations (handle, display.tabTranslations);
-	OS.XtOverrideTranslations (handle, display.arrowTranslations);
+	overrideTranslations ();
 	boolean result = super.setFocus ();
 	if (!result) {
 		argList [1] = 0;

@@ -1180,9 +1180,7 @@ void manageChildren () {
 	if (argList1 [1] != 0) {
 		OS.XtSetValues (handle, argList1, argList1.length / 2);
 	}
-	Display display = getDisplay ();
-	OS.XtOverrideTranslations (handle, display.tabTranslations);
-	OS.XtOverrideTranslations (handle, display.arrowTranslations);
+	overrideTranslations ();
 	int [] argList3 = {OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
 	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
@@ -1246,6 +1244,11 @@ public void moveBelow (Control control) {
 		if (parent != control.parent) return;
 	}
 	setZOrder (control, false);
+}
+void overrideTranslations () {
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 }
 /**
  * Causes the receiver to be resized to its preferred size.
@@ -2112,7 +2115,10 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	boolean fixFocus = false;
+	if (!enabled) fixFocus = isFocusAncestor ();
 	enableWidget (enabled);
+	if (fixFocus) fixFocus ();
 	if (!enabled || (isEnabled () && enabled)) {
 		propagateChildren (enabled);
 	}

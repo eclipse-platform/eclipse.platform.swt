@@ -408,13 +408,6 @@ int processSelection (int callData) {
 }
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);
-	/*
-	* Scroll bars never participate in focus traversal.
-	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 }
 void releaseChild () {
 	super.releaseChild ();

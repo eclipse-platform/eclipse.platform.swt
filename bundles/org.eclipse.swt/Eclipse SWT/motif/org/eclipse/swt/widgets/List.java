@@ -779,6 +779,10 @@ public boolean isSelected (int index) {
 	if (index == -1) return false;
 	return OS.XmListPosSelected (handle, index + 1);
 }
+void overrideTranslations () {
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+}
 /**
  * Removes the item from the receiver at the given
  * zero-relative index.

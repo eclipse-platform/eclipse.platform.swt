@@ -232,11 +232,7 @@ public boolean forceFocus () {
 	for (int i=0; i<children.length; i++) {
 		argList [1] = traversals [i];
 		OS.XtSetValues (children [i].handle, argList, argList.length / 2);
-		if (argList [1] != 0) {
-			Display display = getDisplay ();
-			OS.XtOverrideTranslations (handle, display.tabTranslations);
-			OS.XtOverrideTranslations (handle, display.arrowTranslations);
-		}
+		if (argList [1] != 0) children [i].overrideTranslations ();
 	}
 	return result;
 }
@@ -496,17 +492,6 @@ void propagateChildren (boolean enabled) {
 		Control child = children [i];
 		if (child.getEnabled ()) {
 			child.propagateChildren (enabled);
-		}
-	}
-}
-void propagateWidget (boolean enabled) {
-	super.propagateWidget (enabled);
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) {
-			if (enabled) {
-				int [] argList = {OS.XmNtraversalOn, 0};
-				OS.XtSetValues (handle, argList, argList.length / 2);
-			}
 		}
 	}
 }

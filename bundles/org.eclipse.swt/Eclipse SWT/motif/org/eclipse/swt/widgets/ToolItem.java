@@ -1098,15 +1098,5 @@ int processSetFocus (int callData) {
 }
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);
-	/*
-	* Tool items participate in focus traversal only when
-	* the tool bar takes focus.
-	*/
-	if ((parent.style & SWT.NO_FOCUS) != 0) {
-		if (enabled) {
-			int [] argList = {OS.XmNtraversalOn, 0};
-			OS.XtSetValues (handle, argList, argList.length / 2);
-		}
-	}
 }
 }

@@ -210,6 +210,10 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, SWT.Selection);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, SWT.Selection);
 }
+void overrideTranslations () {
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's value changes.

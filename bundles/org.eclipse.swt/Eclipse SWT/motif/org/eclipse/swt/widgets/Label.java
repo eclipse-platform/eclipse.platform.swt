@@ -261,17 +261,6 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
-void propagateWidget (boolean enabled) {
-	super.propagateWidget (enabled);
-	/*
-	* Labels never participate in focus traversal when
-	* either enabled or disabled.
-	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-}
 void releaseWidget () {
 	super.releaseWidget ();
 	int [] argList = {

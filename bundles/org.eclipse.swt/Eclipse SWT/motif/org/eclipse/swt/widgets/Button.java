@@ -473,16 +473,6 @@ int processSelection (int callData) {
 	}
 	return super.processSelection (callData);
 }
-void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
-	/*
-	* Arrow do not participate in focus traversal.
-	*/
-	if (enabled && (style & SWT.ARROW) != 0) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-}
 void releaseWidget () {
 	super.releaseWidget ();
 	int [] argList = {
