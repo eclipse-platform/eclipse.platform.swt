@@ -289,12 +289,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	event.widget = control;
 	//event.time = ??;
 	event.dataType = transferData;
-	try {
-		notifyListeners(DND.DragSetData,event);
-	} catch (Throwable err) {
-		return 0;
-	}
-	
+	notifyListeners(DND.DragSetData,event);
 	if (event.data == null) return 0;
 
 	Transfer transferAgent = null;
@@ -321,7 +316,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	}
 }
 private void drag() {
-
+	moveRequested = false;
 	// Current event must be a Button Press event
 	Display display = control.getDisplay ();
 	XButtonEvent xEvent = new XButtonEvent();
@@ -332,13 +327,7 @@ private void drag() {
 	event.widget = this;	
 	event.time = xEvent.time;
 	event.doit = true;
-	
-	try {
-		notifyListeners(DND.DragStart, event);
-	} catch (Throwable e) {
-		event.doit = false;
-	}
-
+	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) { 
 		int time = xEvent.time;
 		int dc = OS.XmGetDragContext(control.handle, time);
@@ -429,13 +418,9 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 		event.time = data.timeStamp;
 		event.detail = DND.DROP_NONE;
 		event.doit = false;
-		try {
-			notifyListeners(DND.DragEnd,event);
-		} catch (Throwable err) {
-		}
+		notifyListeners(DND.DragEnd,event);
 		return 0;
 	} 
-	
 	DNDEvent event = new DNDEvent();
 	event.widget = this.control;
 	event.time = data.timeStamp;
@@ -447,17 +432,10 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 		} else {
 			event.detail = osOpToOp(data.operation);
 		}
-		
 	}
 	event.doit = (data.completionStatus != 0);
-
-	try {
-		notifyListeners(DND.DragEnd,event);
-	} catch (Throwable err) {
-	}
-	
+	notifyListeners(DND.DragEnd,event);
 	moveRequested = false;
-	
 	return 0;
 }
 /**

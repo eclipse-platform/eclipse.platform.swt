@@ -236,13 +236,7 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				
-				try {
-					notifyListeners(DND.DragOver, event);
-				} catch (Throwable e) {
-					event.dataType = null;
-					event.detail  = DND.DROP_NONE;
-				}
+				notifyListeners(DND.DragOver, event);
 				
 				effect.show(event.feedback, event.x, event.y);
 				
@@ -370,9 +364,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 		event.widget = this;
 		event.time = callbackData.timeStamp;
 		event.detail = DND.DROP_NONE;
-		try {
-			notifyListeners(DND.DragLeave, event);
-		} catch (Throwable e) {}
+		notifyListeners(DND.DragLeave, event);
 		return;
 	}
 	
@@ -411,20 +403,10 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	}
 	
 	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-	
-	try {
-		notifyListeners(event.type, event);
-	} catch (Throwable err) {
-		callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_INVALID;
-		callbackData.operation = opToOsOp(DND.DROP_NONE);
-		OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
-		return;
-	}
-
+	notifyListeners(event.type, event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
-	
 	selectedDataType = null;
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
@@ -470,16 +452,9 @@ private void dropProcCallback(int widget, int client_data, int call_data) {
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
-	try {
-		notifyListeners(DND.DropAccept,event);
-	} catch (Throwable err) {
-		event.detail = DND.DROP_NONE;
-		event.dataType = null;
-	}
-	
+	notifyListeners(DND.DropAccept,event);
 	selectedDataType = null;
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
@@ -858,15 +833,12 @@ private void transferProcCallback(int widget, int client_data, int pSelection, i
 	event.detail = selectedOperation;
 	event.dataType = transferData;
 	event.data = object;
-	try {
-		notifyListeners(DND.Drop, event);
-		selectedOperation = DND.DROP_NONE;
-		if ((allowedOperations & event.detail) == event.detail) {
-			selectedOperation = event.detail;
-		}
-	} catch (Throwable e) {
-		selectedOperation = DND.DROP_NONE;
+	notifyListeners(DND.Drop, event);
+	selectedOperation = DND.DROP_NONE;
+	if ((allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
 	}
+
 	//workaround - restore original timeout
 	int xtContext = OS.XtDisplayToApplicationContext (getDisplay().xDisplay);
 	OS.XtAppSetSelectionTimeout (xtContext, selectionTimeout);
