@@ -110,10 +110,8 @@ public class Display extends Device {
 		
 	/* Colors */
 	Color NORMAL_fg,   NORMAL_bg,   NORMAL_dark,   NORMAL_mid,   NORMAL_light,   NORMAL_text,   NORMAL_base;
-	Color ACTIVE_fg,   ACTIVE_bg,   ACTIVE_dark,   ACTIVE_mid,   ACTIVE_light,   ACTIVE_text,   ACTIVE_base;
-	Color PRELIGHT_fg, PRELIGHT_bg, PRELIGHT_dark, PRELIGHT_mid, PRELIGHT_light, PRELIGHT_text, PRELIGHT_base;
-	Color SELECTED_fg, SELECTED_bg, SELECTED_dark, SELECTED_mid, SELECTED_light, SELECTED_text, SELECTED_base;
-	Color INSENSITIVE_fg, INSENSITIVE_bg, INSENSITIVE_dark, INSENSITIVE_mid, INSENSITIVE_light, INSENSITIVE_text, INSENSITIVE_base;
+	Color SELECTED_bg, SELECTED_dark, SELECTED_light, SELECTED_text, SELECTED_base;
+	Color INSENSITIVE_fg, INSENSITIVE_bg, INSENSITIVE_dark, INSENSITIVE_mid, INSENSITIVE_light, INSENSITIVE_text;
 	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -870,13 +868,13 @@ void initializeSystemColors() {
 	gdk_SELECTED_light.blue  = defaultStyle.light3_blue;
 	SELECTED_light = Color.gtk_new(gdk_SELECTED_light);
 	
-
-	GdkColor gdk_PRELIGHT_light = new GdkColor();
-	gdk_PRELIGHT_light.pixel = defaultStyle.light2_pixel;
-	gdk_PRELIGHT_light.red   = defaultStyle.light2_red;
-	gdk_PRELIGHT_light.green = defaultStyle.light2_green;
-	gdk_PRELIGHT_light.blue  = defaultStyle.light2_blue;
-	PRELIGHT_light = Color.gtk_new(gdk_PRELIGHT_light);
+	GdkColor gdk_SELECTED_dark = new GdkColor();
+	gdk_SELECTED_dark.pixel = defaultStyle.dark3_pixel;
+	gdk_SELECTED_dark.red   = defaultStyle.dark3_red;
+	gdk_SELECTED_dark.green = defaultStyle.dark3_green;
+	gdk_SELECTED_dark.blue  = defaultStyle.dark3_blue;
+	SELECTED_dark = Color.gtk_new(gdk_SELECTED_dark);
+	
 
 	GdkColor gdk_INSENSITIVE_light = new GdkColor();
 	gdk_INSENSITIVE_light.pixel = defaultStyle.light4_pixel;
@@ -884,6 +882,13 @@ void initializeSystemColors() {
 	gdk_INSENSITIVE_light.green = defaultStyle.light4_green;
 	gdk_INSENSITIVE_light.blue  = defaultStyle.light4_blue;
 	INSENSITIVE_light = Color.gtk_new(gdk_INSENSITIVE_light);
+
+	GdkColor gdk_INSENSITIVE_dark = new GdkColor();
+	gdk_INSENSITIVE_dark.pixel = defaultStyle.light4_pixel;
+	gdk_INSENSITIVE_dark.red   = defaultStyle.light4_red;
+	gdk_INSENSITIVE_dark.green = defaultStyle.light4_green;
+	gdk_INSENSITIVE_dark.blue  = defaultStyle.light4_blue;
+	INSENSITIVE_dark = Color.gtk_new(gdk_INSENSITIVE_dark);
 
 	GdkColor gdk_INSENSITIVE_fg = new GdkColor();
 	gdk_INSENSITIVE_fg.pixel = defaultStyle.fg4_pixel;
@@ -898,6 +903,20 @@ void initializeSystemColors() {
 	gdk_INSENSITIVE_bg.green = defaultStyle.bg4_green;
 	gdk_INSENSITIVE_bg.blue  = defaultStyle.bg4_blue;
 	INSENSITIVE_bg = Color.gtk_new(gdk_INSENSITIVE_bg);
+
+	GdkColor gdk_INSENSITIVE_mid = new GdkColor();
+	gdk_INSENSITIVE_mid.pixel = defaultStyle.bg4_pixel;
+	gdk_INSENSITIVE_mid.red   = defaultStyle.bg4_red;
+	gdk_INSENSITIVE_mid.green = defaultStyle.bg4_green;
+	gdk_INSENSITIVE_mid.blue  = defaultStyle.bg4_blue;
+	INSENSITIVE_mid = Color.gtk_new(gdk_INSENSITIVE_mid);
+
+	GdkColor gdk_INSENSITIVE_text = new GdkColor();
+	gdk_INSENSITIVE_text.pixel = defaultStyle.bg4_pixel;
+	gdk_INSENSITIVE_text.red   = defaultStyle.bg4_red;
+	gdk_INSENSITIVE_text.green = defaultStyle.bg4_green;
+	gdk_INSENSITIVE_text.blue  = defaultStyle.bg4_blue;
+	INSENSITIVE_text = Color.gtk_new(gdk_INSENSITIVE_text);
 
 
 }
@@ -1152,11 +1171,8 @@ void releaseDisplay () {
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	NORMAL_fg = NORMAL_bg = NORMAL_dark = NORMAL_mid = NORMAL_light = NORMAL_text = NORMAL_base =
-	ACTIVE_fg = ACTIVE_bg = ACTIVE_dark = ACTIVE_mid = ACTIVE_light = ACTIVE_text = ACTIVE_base =
-	PRELIGHT_fg = PRELIGHT_bg = PRELIGHT_dark = PRELIGHT_mid = PRELIGHT_light = PRELIGHT_text = PRELIGHT_base =
-	SELECTED_fg = SELECTED_bg = SELECTED_dark = SELECTED_mid = SELECTED_light = SELECTED_text = SELECTED_base =
-	INSENSITIVE_fg = INSENSITIVE_bg = INSENSITIVE_dark = INSENSITIVE_mid = INSENSITIVE_light = INSENSITIVE_text =
-	INSENSITIVE_base = null;
+	SELECTED_bg = SELECTED_dark = SELECTED_light = SELECTED_text = SELECTED_base =
+	INSENSITIVE_fg = INSENSITIVE_bg = INSENSITIVE_dark = INSENSITIVE_mid = INSENSITIVE_light = INSENSITIVE_text =null;
 }
 
 RunnableLock removeFirst () {
