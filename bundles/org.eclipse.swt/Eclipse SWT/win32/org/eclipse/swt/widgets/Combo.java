@@ -1055,15 +1055,12 @@ protected boolean setTabGroupFocus () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	if ((style & SWT.READ_ONLY) != 0) {
-		int code = OS.SendMessage (handle, OS.CB_SELECTSTRING, -1, buffer);
-		if (code != OS.CB_ERR) {
-			sendEvent (SWT.Modify);
-			// widget could be disposed at this point
-		}
+		int index = indexOf (string);
+		if (index != -1) select (index);
 		return;
 	}
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	if (OS.SetWindowText (handle, buffer)) {
 		sendEvent (SWT.Modify);
 		// widget could be disposed at this point
