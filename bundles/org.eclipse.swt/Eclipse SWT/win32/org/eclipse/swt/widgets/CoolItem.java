@@ -149,7 +149,7 @@ protected void checkSubclass () {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a <code>CoolItem</code> is the size that
+ * The <em>preferred size</em> of a <code>CoolItem</code> is the size that
  * it would best be displayed at. The width hint and height hint arguments
  * allow the caller to ask the instance questions such as "Given a particular
  * width, how high does it need to be to show all of the contents?"

@@ -328,7 +328,7 @@ abstract int callWindowProc (int msg, int wParam, int lParam);
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
@@ -354,7 +354,7 @@ public Point computeSize (int wHint, int hHint) {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
