@@ -619,6 +619,30 @@ void setDefault (boolean value) {
 	int [] argList = {OS.XmNshowAsDefault, (value ? 1 : 0)};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+public void setFont (Font font) {
+	checkWidget();
+	
+	/*
+	* Bug in Motif. Setting the font in a button widget that does
+	* not have a non-empty string causes GP on UTF-8 locale.
+	* The fix is to set a non-empty string, change the font,
+	* and restore the empty string at the end. 
+	*/	
+	int [] argList1 = {OS.XmNlabelString, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	boolean fixString = OS.IsDBLocale && OS.XmStringEmpty (argList1 [1]); 
+	if (fixString) {
+		byte[] buffer = Converter.wcsToMbcs (getCodePage (), "string", true);
+		int xmString = OS.XmStringCreateLocalized (buffer);	
+		int [] argList2 = { 
+			OS.XmNlabelType, OS.XmSTRING,
+			OS.XmNlabelString, xmString,
+		};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
+	super.setFont (font);
+	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
+}
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.

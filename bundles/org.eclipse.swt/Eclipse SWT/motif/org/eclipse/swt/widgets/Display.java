@@ -1383,7 +1383,14 @@ void initializeButton () {
 
 	/* Get the push button information */
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreatePushButton (shellHandle, null, null, 0);
+
+	/* 
+	* Bug in Motif. When running on UTF-8, Motif becomes unstable and
+	* GP's some time later  when a button widget is created with empty
+	* text. The fix is to create the button with a non-empty string.
+	*/
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	widgetHandle = OS.XmCreatePushButton (shellHandle, buffer, null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);

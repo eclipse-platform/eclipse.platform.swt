@@ -367,7 +367,28 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return changed;
 }
 public void setFont (Font font) {
+	checkWidget();
+	
+	/*
+	* Bug in Motif. Setting the font in a label widget that does
+	* not have a non-empty string causes GP on UTF-8 locale.
+	* The fix is to set a non-empty string, change the font,
+	* and restore the empty string at the end. 
+	*/
+	int [] argList1 = {OS.XmNlabelString, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	boolean fixString = OS.IsDBLocale && OS.XmStringEmpty (argList1 [1]); 
+	if (fixString) {
+		byte[] buffer = Converter.wcsToMbcs (getCodePage (), "string", true);
+		int xmString = OS.XmStringCreateLocalized (buffer);	
+		int [] argList2 = { 
+			OS.XmNlabelType, OS.XmSTRING,
+			OS.XmNlabelString, xmString,
+		};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 	super.setFont (font);
+	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
 	if ((style & SWT.WRAP) != 0) setText (text);
 }
 /**
