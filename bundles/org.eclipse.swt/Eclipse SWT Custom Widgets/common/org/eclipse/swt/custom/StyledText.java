@@ -2659,12 +2659,11 @@ void doMouseLocationChange(int x, int y, boolean select) {
 		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
 	}
 	newCaretLine = content.getLineAtOffset(newCaretOffset);
-	if (x >= 0 || 
-		newCaretLine != content.getLineAtOffset(caretOffset)) {
-		// Only change the caret offset when the mouse is within 
-		// the left client area border or on a different line. 
-		// Otherwise the autoscroll selection may be reset. 
-		// Fixes 1GKM3XS
+	// Is the mouse within the left client area border or on 
+	// a different line? If not the autoscroll selection 
+	// could be incorrectly reset. Fixes 1GKM3XS
+	if (y >= 0 && y < getClientArea().height && 
+		(x >= 0 || newCaretLine != content.getLineAtOffset(caretOffset))) {
 		if (newCaretOffset != caretOffset) {
 			caretOffset = newCaretOffset;
 			caretLine = newCaretLine;
