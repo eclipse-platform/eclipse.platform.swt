@@ -709,6 +709,7 @@ public Rectangle getBounds () {
 }
 
 int getCodePage () {
+	if (OS.IsUnicode) return OS.CP_ACP;
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
@@ -2928,23 +2929,35 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	* originated from a mouse event and display the menu when the
 	* mouse was released in the client area.
 	*/
+	int x = 0, y = 0;
 	if (lParam != -1) {
 		POINT pt = new POINT ();
-		pt.x = (short) (lParam & 0xFFFF);
-		pt.y = (short) (lParam >> 16);
+		x = pt.x = (short) (lParam & 0xFFFF);
+		y = pt.y = (short) (lParam >> 16);
 		OS.ScreenToClient (handle, pt);
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		if (!OS.PtInRect (rect, pt)) return null;
+	} else {
+		int pos = OS.GetMessagePos ();
+		x = (short) (pos & 0xFFFF);
+		y = (short) (pos >> 16);
 	}
-	
+
 	/*
 	* Because context menus can be shared between controls
 	* and the parent of all menus is the shell, the menu may
 	* have been destroyed.
 	*/
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (!event.doit) return LRESULT.ZERO;
 	if (menu != null && !menu.isDisposed ()) {
-//		menu.setLocation (x, y);
+		if (x != event.x || y != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
 		menu.setVisible (true);
 		return LRESULT.ZERO;
 	}
@@ -3116,28 +3129,8 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	if (newMenu != null && newMenu.isDisposed ()) newMenu = null;
 	shell.activeMenu = newMenu;
 	
-	/*
-	* Send the show event
-	*/
+	/* Send the show event */
 	if (newMenu != null && newMenu != oldMenu) {
-		/*
-		* SWT.Selection events are posted to allow stepping
-		* in the VA/Java debugger.  SWT.Show events are
-		* sent to ensure that application event handler
-		* code runs before the menu is displayed.  This
-		* means that SWT.Show events would normally occur
-		* before SWT.Selection events.  While this is not 
-		* strictly incorrect, applications often use the 
-		* SWT.Selection event to update the state of menu
-		* items and would like the ordering of events to 
-		* be the other way around.
-		*
-		* The fix is to run the deferred events before
-		* the menu is shown.  This means that stepping
-		* through a selection event that was caused by
-		* a popup menu will fail in VA/Java.
-		*/
-		display.runDeferredEvents ();
 		newMenu.sendEvent (SWT.Show);
 		// widget could be disposed at this point
 	}
