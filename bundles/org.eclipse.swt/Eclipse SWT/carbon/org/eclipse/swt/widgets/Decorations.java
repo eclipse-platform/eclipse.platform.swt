@@ -35,6 +35,10 @@ static int checkStyle (int style) {
 	return style;
 }
 
+void bringToTop () {
+	moveAbove (null);
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -188,6 +192,15 @@ public void setMenuBar (Menu menu) {
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	this.minimized = minimized;
+}
+
+void setSavedFocus (Control control) {
+	if (this == control) {
+		savedFocus = null;
+		return;
+	}
+	if (this != control.menuShell ()) return;
+	savedFocus = control;
 }
 
 public void setText (String string) {

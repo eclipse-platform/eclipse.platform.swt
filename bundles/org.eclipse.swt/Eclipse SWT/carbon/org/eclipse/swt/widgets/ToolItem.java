@@ -208,6 +208,10 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
+int getDrawCount () {
+	return parent.getDrawCount ();
+}
+
 public Image getHotImage () {
 	checkWidget();
 	return hotImage;

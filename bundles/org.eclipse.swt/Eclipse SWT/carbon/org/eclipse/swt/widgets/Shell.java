@@ -80,6 +80,10 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 
+void bringToTop () {
+	OS.SelectWindow (shellHandle);
+}
+
 public void close () {
 	checkWidget();
 	closeWidget ();
@@ -210,6 +214,10 @@ public Rectangle getBounds () {
 public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return display;
+}
+
+int getDrawCount () {
+	return drawCount;
 }
 
 public int getImeInputMode () {

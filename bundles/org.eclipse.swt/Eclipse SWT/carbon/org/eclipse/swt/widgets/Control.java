@@ -209,6 +209,11 @@ void fixFocus () {
 
 public boolean forceFocus () {
 	checkWidget();
+	Decorations shell = menuShell ();
+	shell.setSavedFocus (this);
+	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
+	if (isFocusControl ()) return true;
+	shell.bringToTop ();
 	int window = OS.GetControlOwner (handle);
 	return OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr;
 }
@@ -243,6 +248,11 @@ public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
+}
+
+int getDrawCount () {
+	if (drawCount > 0) return drawCount;
+	return parent.getDrawCount ();
 }
 
 public boolean getEnabled () {
@@ -1043,17 +1053,13 @@ public boolean setParent (Composite parent) {
 
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	//NOT DONE
-//	if (redraw) {
-//		if (--drawCount == 0) {
-//			OS.HIViewSetDrawingEnabled (handle, true);
-//			OS.HIViewSetNeedsDisplay (handle, true);
-//		}
-//	} else {
-//		if (drawCount++ == 0) {
-//			OS.HIViewSetDrawingEnabled (handle, false);
-//		}
-//	}
+	if (redraw) {
+		if (--drawCount == 0) {
+			redrawWidget (topHandle ());
+		}
+	} else {
+		drawCount++;
+	}
 }
 
 boolean setRadioSelection (boolean value){

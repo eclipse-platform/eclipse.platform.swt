@@ -113,6 +113,10 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 
+int getDrawCount () {
+	return parent.getDrawCount ();
+}
+
 public boolean getEnabled () {
 	checkWidget();
 	return (state & DISABLED) == 0;

@@ -354,7 +354,9 @@ public int getStyle () {
 }
 
 int getVisibleRegion (int control) {
-	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
+	int visibleRgn = OS.NewRgn ();
+	if (getDrawCount () > 0) return visibleRgn;
+	int childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
 	int window = OS.GetControlOwner (control);
 	int port = OS.GetWindowPort (window);
 	OS.GetPortVisibleRegion (port, visibleRgn);
@@ -399,6 +401,10 @@ void hookEvents () {
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
+}
+
+int getDrawCount () {
+	return 0;
 }
 
 Rect getInset () {
