@@ -311,14 +311,30 @@ public void pack () {
 	parent.ignoreResize = true;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
 	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	/*
-	* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-	* where each item has I_IMAGECALLBACK but there are no images in the
-	* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
-	* first column, causing long items to be clipped with '...'.  The fix
-	* is to increase the value by a small amount. 
-	*/
-	if (index == 0 && parent.imageList == null) columnWidth += 2;
+	if (index == 0) {
+		/*
+		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+		* where each item has I_IMAGECALLBACK but there are no images in the
+		* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
+		* first column, causing long items to be clipped with '...'.  The fix
+		* is to increase the column width by a small amount.
+		*/
+		if (parent.imageList == null) columnWidth += 2;
+		/*
+		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+		* for a table with a state image list, the column is width does not
+		* include space for the state icon.  The fix is to increase the column
+		* width by the width of the image list.
+		*/
+		if ((parent.style & SWT.CHECK) != 0) {
+			int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+			if (hStateList != 0) {
+				int [] cx = new int [1], cy = new int [1];
+				OS.ImageList_GetIconSize (hStateList, cx, cy);
+				columnWidth += cx [0];
+			}
+		}
+	}
 	if (headerWidth > columnWidth) {
 		if (image == null) {
 			/*
