@@ -1779,7 +1779,6 @@ int OnStartURIOpen(int aURI, int retval) {
 }
 
 int DoContent(int aContentType, int aIsContentPreferred, int aRequest, int aContentHandler, int retval) {
-	System.out.println("DoContent");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -1789,7 +1788,6 @@ int IsPreferred(int aContentType, int aDesiredContentType, int retval) {
 }
 
 int CanHandleContent(int aContentType, int aIsContentPreferred, int aDesiredContentType, int retval) {
-	System.out.println("CanHandleContent");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -1802,7 +1800,6 @@ int SetLoadCookie(int aLoadCookie) {
 }
 
 int GetParentContentListener(int aParentContentListener) {
-	System.out.println("GetParentContentListener");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 	
