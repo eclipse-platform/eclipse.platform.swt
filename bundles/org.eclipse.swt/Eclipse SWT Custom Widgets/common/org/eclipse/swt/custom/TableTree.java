@@ -205,7 +205,21 @@ void expandItem (TableTreeItem item) {
 	event.item = item;
 	notifyListeners(SWT.Expand, event);
 }
-
+public Color getBackground () {
+	// This method must be overriden otherwise, in a TableTree in which the first
+	// item has no sub items, a grey (Widget background colour) square will appear in
+	// the first column of the first item.
+	// It is not possible in the constructor to set the background of the TableTree
+	// to be the same as the background of the Table because this interferes with 
+	// the TableTree adapting to changes in the System color settings.
+	return table.getBackground();
+}
+public Color getForeground () {
+	return table.getForeground();
+}
+public Font getFont () {
+	return table.getFont();
+}
 /**
  * Gets the number of items.
  * <p>
