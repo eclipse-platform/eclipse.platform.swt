@@ -475,6 +475,7 @@ public class OS extends Platform {
 	public static final int HDF_LEFT = 0;
 	public static final int HDF_RIGHT = 1;
 	public static final int HDI_IMAGE = 32;
+	public static final int HDI_ORDER = 0x80;
 	public static final int HDI_TEXT = 0x2;
 	public static final int HDI_WIDTH = 0x1;
 	public static final int HDI_FORMAT = 0x4;
@@ -495,12 +496,14 @@ public class OS extends Platform {
 	public static final int HDM_SETITEMW = HDM_FIRST + 12;
 	public static final int HDM_SETITEM = IsUnicode ? HDM_SETITEMW : HDM_SETITEMA;
 	public static final int HDN_FIRST = 0xfffffed4;
+	public static final int HDN_BEGINDRAG = HDN_FIRST - 10;
 	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
 	public static final int HDN_BEGINTRACKW = 0xfffffeba;
 	public static final int HDN_BEGINTRACKA = 0xfffffece;
 	public static final int HDN_DIVIDERDBLCLICKA = HDN_FIRST - 5;
 	public static final int HDN_DIVIDERDBLCLICKW = HDN_FIRST - 25;
 	public static final int HDN_DIVIDERDBLCLICK = IsUnicode ? HDN_DIVIDERDBLCLICKW : HDN_DIVIDERDBLCLICKA;
+	public static final int HDN_ENDDRAG = HDN_FIRST - 11;
 	public static final int HDN_ITEMCHANGED = IsUnicode ? 0xfffffebf : 0xfffffed3;
 	public static final int HDN_ITEMCHANGEDW = 0xfffffebf;
 	public static final int HDN_ITEMCHANGEDA = 0xfffffed3;
@@ -669,6 +672,7 @@ public class OS extends Platform {
 	public static final int LVM_FIRST = 0x1000;
 	public static final int LVM_GETBKCOLOR = 0x1000;
 	public static final int LVM_GETCOLUMN = IsUnicode ? 0x105f : 0x1019;
+	public static final int LVM_GETCOLUMNORDERARRAY = LVM_FIRST + 59;
 	public static final int LVM_GETCOLUMNWIDTH = 0x101d;
 	public static final int LVM_GETCOUNTPERPAGE = 0x1028;
 	public static final int LVM_GETEXTENDEDLISTVIEWSTYLE = 0x1037;
@@ -695,6 +699,7 @@ public class OS extends Platform {
 	public static final int LVM_SETBKCOLOR = 0x1001;
 	public static final int LVM_SETCALLBACKMASK = LVM_FIRST + 11;
 	public static final int LVM_SETCOLUMN = IsUnicode ? 0x1060 : 0x101a;
+	public static final int LVM_SETCOLUMNORDERARRAY = LVM_FIRST + 58;
 	public static final int LVM_SETCOLUMNWIDTH = 0x101e;
 	public static final int LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1036;
 	public static final int LVM_SETIMAGELIST = 0x1003;
@@ -724,6 +729,7 @@ public class OS extends Platform {
 	public static final int LVSIL_STATE = 0x2;
 	public static final int LVS_EX_FULLROWSELECT = 0x20;
 	public static final int LVS_EX_GRIDLINES = 0x1;
+	public static final int LVS_EX_HEADERDRAGDROP = 0x10;
 	public static final int LVS_EX_LABELTIP = 0x4000;
 	public static final int LVS_EX_ONECLICKACTIVATE = 0x40;
 	public static final int LVS_EX_SUBITEMIMAGES = 0x2;
