@@ -1522,7 +1522,8 @@ public void setSelectionForeground (Color color) {
 }
 /**
  * Display an insert marker before or after the specified tab item. 
- * Null will clear the mark.
+ * 
+ * A value of null will clear the mark.
  * 
  * @param item the item with which the mark is associated or null
  * 
@@ -1542,8 +1543,9 @@ public void setInsertMark(CTabItem item, boolean after) {
 	setInsertMark(index, after);
 }
 /**
- * Display an insert marker before or after the specified tab item. 
- * -1 will clear the mark.
+ * Display an insert marker before or after the specified tab item.
+ * 
+ * A value of -1 will clear the mark.
  * 
  * @param item the index of the item with which the mark is associated or null
  * 

@@ -26,12 +26,13 @@ import org.eclipse.swt.widgets.*;
 public class SelectionEvent extends TypedEvent {
 	
 	/**
-	 * the item that was selected
+	 * The item that was selected.
 	 */
 	public Widget item;
 	
 	/**
-	 * extra detail information about the selection, depending on the widget
+	 * Extra detail information about the selection, depending on the widget.
+	 * 
 	 * <p><b>Sash</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
 	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
@@ -51,33 +52,33 @@ public class SelectionEvent extends TypedEvent {
 	public int detail;
 
 	/**
-	 * the x location of the selected area
+	 * The x location of the selected area.
 	 */
 	public int x;
 	
 	/**
-	 * the y location of selected area
+	 * The y location of selected area.
 	 */
 	public int y;
 	
 	/**
-	 * the width of selected area
+	 * The width of selected area.
 	 */
 	public int width;
 	
 	/**
-	 * the height of selected area
+	 * The height of selected area.
 	 */
 	public int height;
 
 	/**
-	 * the state of the keyboard modifier keys at the time
+	 * The state of the keyboard modifier keys at the time
 	 * the event was generated.
 	 */
 	public int stateMask;
 
 	/**
-	 * a flag indicating whether the operation should be allowed
+	 * A flag indicating whether the operation should be allowed.
 	 */
 	public boolean doit;
 	

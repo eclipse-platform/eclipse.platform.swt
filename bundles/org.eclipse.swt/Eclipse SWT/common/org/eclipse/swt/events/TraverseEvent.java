@@ -80,7 +80,7 @@ import org.eclipse.swt.widgets.*;
 public class TraverseEvent extends KeyEvent {
 	
 	/**
-	 * the type of traversal
+	 * The traversal type.
 	 * <p><ul>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_NONE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_ESCAPE}</li>
@@ -104,7 +104,8 @@ public class TraverseEvent extends KeyEvent {
 	public int detail;
 	
 	/**
-	 * a flag indicating whether the operation should be allowed.
+	 * A flag indicating whether the operation should be allowed.
+	 * 
 	 * Setting this field to <code>false</code> will cancel the operation
 	 * and allow the traversal key stroke to be delivered to the control.
 	 * A value of true indicates that the traversal, described by the

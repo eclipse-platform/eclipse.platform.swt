@@ -1029,8 +1029,8 @@ public void setText (String string) {
 	list.showSelection ();
 }
 /**
-* Sets the text limit
-* <p>
+* Sets the text limit.
+* 
 * @param limit new text limit
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)

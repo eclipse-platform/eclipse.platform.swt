@@ -3871,10 +3871,9 @@ int getLineCountWhole() {
 	return lineCount;
 }
 /**
- * Returns the line at the specified offset in the text.
- * 0 <= offset <= getCharCount() so that getLineAtOffset(getCharCount())
+ * Returns the line at the specified offset in the text
+ * where 0 &lt= offset &lt= getCharCount() so that getLineAtOffset(getCharCount())
  * returns the line of the insert location.
- * <p>
  *
  * @param offset offset relative to the start of the content. 
  * 	0 <= offset <= getCharCount()
