@@ -852,8 +852,8 @@ public Point getSize () {
 	if ((style & SWT.BAR) != 0) {
 		MENUBARINFO info = new MENUBARINFO ();
 		info.cbSize = MENUBARINFO.sizeof;
-		int hWnd = parent.getShell ().handle;
-		OS.GetMenuBarInfo (hWnd, OS.OBJID_MENU, 0, info);
+		int hwnd = parent.getShell ().handle;
+		OS.GetMenuBarInfo (hwnd, OS.OBJID_MENU, 0, info);
 		int width = info.right - info.left;
 		int height = info.bottom - info.top;
 		return new Point (width, height);
@@ -861,9 +861,9 @@ public Point getSize () {
 	int count = GetMenuItemCount (handle);
 	if (count == 0) return new Point (0, 0);
 	RECT rect = new RECT ();
-	int hWnd = parent.handle;
-	OS.GetMenuItemRect (hWnd, handle, count - 1, rect);
-	OS.MapWindowPoints (0, parent.handle, rect, 2);
+	int hwnd = parent.handle;
+	OS.GetMenuItemRect (hwnd, handle, count - 1, rect);
+	OS.MapWindowPoints (0, hwnd, rect, 2);
 	int width = rect.right + 4;
 	int height = rect.bottom + 4;
 	return new Point (width, height);
