@@ -650,7 +650,6 @@ char mbcsToWcs (int ch, int codePage) {
  * @param eventType the type of event which has occurred
  * @param event the event data
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
