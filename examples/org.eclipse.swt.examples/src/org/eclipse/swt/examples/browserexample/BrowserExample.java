@@ -15,6 +15,8 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+
+import java.io.*;
 import java.util.*;
 
 public class BrowserExample {
@@ -323,9 +325,15 @@ public class BrowserExample {
 				if (images == null) {
 					images = new Image[imageLocations.length];
 					for (int i = 0; i < imageLocations.length; ++i) {
-						ImageData source = new ImageData(clazz.getResourceAsStream(imageLocations[i]));
+						InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i]);
+						ImageData source = new ImageData(sourceStream);
 						ImageData mask = source.getTransparencyMask();
 						images[i] = new Image(null, source, mask);
+						try {
+							sourceStream.close();
+						} catch (IOException e) {
+							e.printStackTrace ();
+						}
 					}
 				}
 				return;
@@ -342,8 +350,14 @@ public class BrowserExample {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText(getResourceString("window.title"));
-		Image icon = new Image(display, BrowserExample.class.getResourceAsStream(iconLocation));
+		InputStream stream = BrowserExample.class.getResourceAsStream(iconLocation);
+		Image icon = new Image(display, stream);
 		shell.setImage(icon);
+		try {
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		BrowserExample app = new BrowserExample(shell, true);
 		app.setShellDecoration(icon, true);
 		shell.open();

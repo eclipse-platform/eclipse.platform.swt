@@ -12,7 +12,6 @@ package org.eclipse.swt.examples.controlexample;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -30,15 +29,6 @@ class TextTab extends ScrollableTab {
 	 */
 	TextTab(ControlExample instance) {
 		super(instance);
-	}
-	
-	/**
-	 * Creates a bitmap image. 
-	 */
-	Image createBitmapImage (Display display, String name) {
-		ImageData source = new ImageData(ControlExample.class.getResourceAsStream(name + ".bmp"));
-		ImageData mask = new ImageData(ControlExample.class.getResourceAsStream(name + "_mask.bmp"));
-		return new Image (display, source, mask);
 	}
 
 	/**

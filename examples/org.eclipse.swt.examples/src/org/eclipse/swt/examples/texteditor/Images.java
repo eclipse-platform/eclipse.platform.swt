@@ -11,6 +11,7 @@
 package org.eclipse.swt.examples.texteditor;
 
 
+import java.io.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -34,9 +35,18 @@ public void freeAll () {
 }
 
 Image createBitmapImage(Display display, String fileName) {
-	ImageData source = new ImageData(Images.class.getResourceAsStream(fileName+".bmp"));
-	ImageData mask = new ImageData(Images.class.getResourceAsStream(fileName+"_mask"+".bmp"));
-	return new Image (display, source, mask);
+	InputStream sourceStream = Images.class.getResourceAsStream (fileName + ".bmp");
+	InputStream maskStream = Images.class.getResourceAsStream (fileName + "_mask.bmp");
+	ImageData source = new ImageData (sourceStream);
+	ImageData mask = new ImageData (maskStream);
+	Image result = new Image (display, source, mask);
+	try {
+		sourceStream.close ();
+		maskStream.close ();
+	} catch (IOException e) {
+		e.printStackTrace ();
+	}
+	return result;
 }
 
 public void loadAll (Display display) {

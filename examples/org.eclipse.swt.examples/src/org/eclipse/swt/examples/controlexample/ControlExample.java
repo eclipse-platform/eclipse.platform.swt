@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+import java.io.*;
 import java.text.*;
 import java.util.*;
 
@@ -152,10 +153,15 @@ public class ControlExample {
 					images = new Image[imageLocations.length];
 					
 					for (int i = 0; i < imageLocations.length; ++i) {
-						ImageData source = new ImageData(clazz.getResourceAsStream(
-							imageLocations[i]));
+						InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i]);
+						ImageData source = new ImageData(sourceStream);
 						ImageData mask = source.getTransparencyMask();
 						images[i] = new Image(null, source, mask);
+						try {
+							sourceStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 				return;

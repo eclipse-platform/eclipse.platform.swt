@@ -66,6 +66,11 @@ public class HoverHelp {
 					ImageData source = new ImageData(stream);
 					ImageData mask = source.getTransparencyMask();
 					images[i] = new Image(display, source, mask);
+					try {
+						stream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}	
 		} catch (Exception ex) {

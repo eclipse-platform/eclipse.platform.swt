@@ -53,15 +53,6 @@ class CanvasTab extends Tab {
 	CanvasTab(ControlExample instance) {
 		super(instance);
 	}
-	
-	/**
-	 * Creates a bitmap image. 
-	 */
-	Image createBitmapImage (Display display, String name) {
-		ImageData source = new ImageData(ControlExample.class.getResourceAsStream(name + ".bmp"));
-		ImageData mask = new ImageData(ControlExample.class.getResourceAsStream(name + "_mask.bmp"));
-		return new Image (display, source, mask);
-	}
 
 	/**
 	 * Creates the "Other" group.

@@ -122,18 +122,16 @@ class IconCache {
 	 * @param path the relative path to the icon
 	 */
 	private Image createStockImage(Display display, String path) {
+		InputStream stream = IconCache.class.getResourceAsStream (path);
+		ImageData imageData = new ImageData (stream);
+		ImageData mask = imageData.getTransparencyMask ();
+		Image result = new Image (display, imageData, mask);
 		try {
-			InputStream stream = IconCache.class.getResourceAsStream(path);
-			if (stream != null) {
-				ImageData imageData = new ImageData(stream);
-				if (imageData != null) {
-					ImageData mask = imageData.getTransparencyMask();
-					return new Image(display, imageData, mask);
-				}
-			}
-		} catch (Exception e) {
+			stream.close ();
+		} catch (IOException e) {
+			e.printStackTrace ();
 		}
-		return null;
+		return result;
 	}
 	/**
 	 * Gets an image for a file associated with a given program
