@@ -147,14 +147,13 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  		return;
 	}
 	if (data.control != 0) {
-		//WRONG
 		int window = OS.GetControlOwner(data.control);
 		int port = OS.GetWindowPort(window);
-		int[] currentPort = new int [1];
+		int[] currentPort = new int[1];
 		OS.GetPort(currentPort);
 		OS.SetPort(port);
 		int oldRgn = OS.NewRgn();
-		OS.GetClip (oldRgn);
+		OS.GetClip(oldRgn);
 		int clipRgn = data.visibleRgn;
 		if (data.clipRgn != 0) {
 			clipRgn = OS.NewRgn();
@@ -165,6 +164,21 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		OS.GetControlBounds(data.control, rect);
 		int left = rect.left + srcX;
 		int top = rect.top + srcY;
+		
+		/*
+		* Feature in the Macintosh.  The ScrollRect() function scrolls bits
+		* relative to the structure region of the window. Other Quickdraw
+		* functions such as MoveTo()/LineTo() draw relative to the content
+		* region. Graphics operations are always relative to the content
+		* region.  The fix is to offset the rectangle before calling
+		* ScrollRect().  		*/
+		Rect structRect = new Rect ();
+		OS.GetWindowBounds (window, (short)OS.kWindowContentRgn, structRect);
+		Rect contentRect = new Rect ();
+		OS.GetWindowBounds (window, (short)OS.kWindowStructureRgn, contentRect);
+		left += contentRect.left - structRect.left;
+		top += contentRect.top - structRect.top;
+		
 		OS.SetRect(rect, (short)left, (short)top, (short)(left + width), (short)(top + height));
 		int invalRgn = OS.NewRgn();
 		OS.ScrollRect(rect, (short)deltaX, (short)deltaY, invalRgn);

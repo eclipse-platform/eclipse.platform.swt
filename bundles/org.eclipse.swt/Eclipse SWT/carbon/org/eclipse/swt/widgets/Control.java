@@ -434,11 +434,11 @@ public int internal_new_GC (GCData data) {
 			Rect portRect = new Rect ();
 			OS.GetPortBounds (port, portRect);
 			int clipRgn = getClipping (handle);
+			if (paintRgn != 0) OS.SectRgn (paintRgn, clipRgn, clipRgn);
 			OS.ClipCGContextToRegion (context, portRect, clipRgn);
 			int portHeight = portRect.bottom - portRect.top;
 			OS.CGContextScaleCTM (context, 1, -1);
 			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-			if (paintRgn != 0) OS.SectRgn (paintRgn, clipRgn, clipRgn);
 			visibleRgn = clipRgn;
 		}
 	}
@@ -574,10 +574,9 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	Rect bounds = new Rect ();
 	OS.GetRegionBounds (region [0], bounds);
-	int [] parentHandle = new int [1];
-	OS.GetSuperControl (handle, parentHandle);
 	Rect rect = new Rect ();
-	OS.GetControlBounds (parentHandle [0], rect);
+	OS.GetControlBounds (handle, rect);
+	if (!OS.SectRect (rect, bounds, bounds)) return result;
 	OS.OffsetRect (bounds, (short) -rect.left, (short) -rect.top);
 
 	GCData data = new GCData ();

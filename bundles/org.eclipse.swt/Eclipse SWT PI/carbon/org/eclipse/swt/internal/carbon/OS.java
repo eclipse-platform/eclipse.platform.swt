@@ -885,6 +885,7 @@ public static final native int RetainMenu(int mHandle);
 public static final native int RevealDataBrowserItem(int browser, int item, int property, byte options);
 public static final native int RunStandardAlert(int dialogHandle, int modalFilterUPP, short[] itemHit);
 public static final native void ScrollRect(Rect rect, short dh, short dv, int updateRgn);
+public static final native boolean SectRect(Rect src1, Rect src2, Rect dstRect);
 public static final native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native void SelectWindow(int wHandle);
 public static final native int SendEventToEventTarget(int theEvent, int theTarget);
