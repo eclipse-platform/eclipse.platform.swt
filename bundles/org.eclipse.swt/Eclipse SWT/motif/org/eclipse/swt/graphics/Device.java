@@ -666,7 +666,7 @@ public void setWarnings (boolean warnings) {
 }
 
 int xErrorProc (int xDisplay, int xErrorEvent) {
-	if (debug) {
+	if (debug && warnings) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xErrorProc, xDisplay, xErrorEvent);
 	}
@@ -690,7 +690,7 @@ int xtErrorProc (int message) {
 }
 
 int xtWarningProc (int message) {
-	if (debug) {
+	if (debug && warnings) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xtWarningProc, message, 0);
 	}
