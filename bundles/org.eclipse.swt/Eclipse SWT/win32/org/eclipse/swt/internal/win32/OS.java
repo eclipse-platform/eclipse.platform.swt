@@ -4468,4 +4468,13 @@ public static final native boolean DrawState (int hdc, int hbr, int lpOutputFunc
 
 public static final native int CreatePen (int fnPenStyle, int nWidth, int crColor);
 public static final native int SetStretchBltMode(int hdc, int iStretchMode);
+
+public static final native int GetCharacterPlacement(int hdc, byte[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+public static final native boolean ExtTextOut(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
+public static final native int GetFontLanguageInfo(int hdc);
+public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
+public static final native int GetKeyboardLayout(int idThread);
+public static final native int ActivateKeyboardLayout(int hkl, int Flags);
+public static final native int SetTextAlign(int hdc, int fMode);
+
 }

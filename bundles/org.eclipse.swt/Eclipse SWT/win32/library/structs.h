@@ -111,7 +111,8 @@
 	FUNCDESC1_FID_CACHE Funcdesc1Fc; \
 	FUNCDESC2_FID_CACHE Funcdesc2Fc; \
 	VARDESC1_FID_CACHE Vardesc1Fc; \
-	VARDESC2_FID_CACHE Vardesc2Fc;
+	VARDESC2_FID_CACHE Vardesc2Fc; \
+	GCP_RESULTS_FID_CACHE GCP_RESULTSFc;
 
 /*	PARAFORMAT_FID_CACHE ParaformatFc; \*/
 /*	CHARFORMAT_FID_CACHE CharformatFc; \*/
@@ -1210,6 +1211,16 @@ typedef struct VARDESC2_FID_CACHE {
 
 typedef VARDESC2_FID_CACHE *PVARDESC2_FID_CACHE;
 
+/* GCP_RESULTS struct */
+typedef struct GCP_RESULTS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID nMaxFit, nGlyphs, lpGlyphs, lpClass, lpCaretPos, lpDx, lpOrder, lpOutString, lStructSize;
+} GCP_RESULTS_FID_CACHE;
+
+typedef GCP_RESULTS_FID_CACHE *PGCP_RESULTS_FID_CACHE;
+
+
 /* ----------- ole cache function prototypes  ----------- */
 
 void cacheGuidFids(JNIEnv *env, jobject lpGuid, PGUID_FID_CACHE lpCache);
@@ -1233,6 +1244,7 @@ void cacheFuncdesc1Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC1_FID_CACHE lp
 void cacheFuncdesc2Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC2_FID_CACHE lpCache);
 void cacheVardesc1Fids(JNIEnv *env, jobject lpVardesc, PVARDESC1_FID_CACHE lpCache);
 void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCache);
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache);
 
 /* ----------- cache function prototypes  ----------- */
 
@@ -1514,6 +1526,8 @@ void getVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
 void setVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC1_FID_CACHE *lpVardescFc);
 void getVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
 void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
 
 
 #endif // INC_structs_H
