@@ -362,11 +362,13 @@ void set (int index, Image image, int count) {
 				case SWT.TRANSPARENCY_NONE:
 				default:
 					hBitmap = copyBitmap (hImage, cx [0], cy [0]);
+					if (index != count) hMask = createMask (hImage, cx [0], cy [0], -1, -1);
 					break;
 			}
 			if (index == count) {
 				OS.ImageList_Add (handle, hBitmap, hMask);
 			} else {
+				/* Note that the mask must always be replaced even for TRANSPARENCY_NONE */
 				OS.ImageList_Replace (handle, index, hBitmap, hMask);
 			}
 			if (hMask != 0) OS.DeleteObject (hMask);
