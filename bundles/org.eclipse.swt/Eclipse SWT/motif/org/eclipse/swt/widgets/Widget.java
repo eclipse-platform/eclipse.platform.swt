@@ -741,37 +741,8 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		}
 		
 		/*
-		* Feature in MOTIF. For some reason, XLookupString() fails 
-		* to translate both the keysym and the character when the
-		* control key is down.  For example, Ctrl+2 has the correct
-		* keysym value (50) but no character value, while Ctrl+/ has
-		* the keysym value (2F) but an invalid character value
-		* (1F).  It seems that Motif is applying the algorithm to
-		* convert a character to a control character for characters
-		* that are not valid control characters.  The fix is to test
-		* for 7-bit ASCII keysym values that fall outside of the
-		* the valid control character range and use the keysym value
-		* as the character, not the incorrect value that XLookupString()
-		* returns.  Even though lower case values are not strictly
-		* valid control characters, they are included in the range.
-		* 
-		* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
-		*/
-		if ((xEvent.state & OS.ControlMask) != 0) {
-			int key = keysym [0];
-			if (0 <= key && key <= 0x7F) {
-				if ('a' <= key && key <= 'z') {
-					key -= 'a' - 'A';
-				}
-				if (!(64 <= key && key <= 95)) {
-					buffer [0] = (byte) key;
-				}
-			}
-		}
-		
-		/*
 		* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
-		* and Shift+F12 are not translated correctly by XLookupString.
+		* and Shift+F12 are not translated correctly by XLookupString().
 		* The fix is to look for these values explicitly and correct them.
 		*/
 		if (OS.IsHPUX && keysym [0] != 0) {
@@ -792,6 +763,29 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		}
 		
 		/*
+		* Feature in MOTIF. For some reason, XLookupString() fails 
+		* to translate both the keysym and the character when the
+		* control key is down.  For example, Ctrl+2 has the correct
+		* keysym value (50) but no character value, while Ctrl+/ has
+		* the keysym value (2F) but an invalid character value
+		* (1F).  It seems that Motif is applying the algorithm to
+		* convert a character to a control character for characters
+		* that are not valid control characters.  The fix is to test
+		* for 7-bit ASCII keysym values that fall outside of the
+		* the valid control character range and use the keysym value
+		* as the character, not the incorrect value that XLookupString()
+		* returns.  Even though lower case values are not strictly
+		* valid control characters, they are included in the range.
+		* 
+		* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
+		*/
+		int key = keysym [0];
+		if ((xEvent.state & OS.ControlMask) != 0 && (0 <= key && key <= 0x7F)) {
+			if ('a' <= key && key <= 'z') key -= 'a' - 'A';
+			if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
+		}
+		
+		/*
 		* Bug in Motif.  There are some keycodes for which 
 		* XLookupString() does not translate the character.
 		* Some of examples are Shift+Tab and Ctrl+Space.
@@ -804,6 +798,18 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		/* Fill in the event keyCode or character */
 		if (keysym [0] != 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
+		}
+		if (event.keyCode == 0) {
+			byte [] buffer1 = new byte [5];
+			int [] keysym1 = new int [1];
+			int oldState = xEvent.state;
+			xEvent.state = 0;
+			OS.XLookupString (xEvent, buffer1, buffer1.length, keysym1, null);
+			xEvent.state = oldState;
+			if (buffer1 [0] != 0) {
+				char [] result = Converter.mbcsToWcs (null, buffer1);
+				if (result.length != 0) event.keyCode = result [0];
+			}
 		}
 		if (buffer [0] != 0) {
 			char [] result = Converter.mbcsToWcs (null, buffer);
