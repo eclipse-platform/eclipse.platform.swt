@@ -2674,6 +2674,10 @@ public void setSelection (TreeItem[] items) {
 		System.arraycopy (selectedItems, 0, temp, 0, index);
 		selectedItems = temp;
 	}
+	if (selectedItems.length == 0) {	/* no valid items */
+		deselectAll ();
+		return;
+	}
 
 	for (int i = 0; i < oldSelection.length; i++) {
 		if (!oldSelection [i].isSelected ()) {
@@ -2683,7 +2687,8 @@ public void setSelection (TreeItem[] items) {
 			}
 		}
 	}
-	if (selectedItems.length > 0) showSelection ();
+	showItem (selectedItems [0]);
+	setFocusItem (selectedItems [0], true);
 	for (int i = 0; i < selectedItems.length; i++) {
 		int availableIndex = selectedItems [i].availableIndex;
 		if (availableIndex != -1) {

@@ -807,7 +807,7 @@ Rectangle getFocusBounds () {
  * Returns the x value of the receiver's focus rectangle.
  */
 int getFocusX () {
-	int result = getContentX (0);
+	int result = getContentX (0) - 2;
 	int imageSpace = parent.col0ImageWidth;
 	if (imageSpace > 0) {
 		result += imageSpace + Tree.MARGIN_IMAGE;
