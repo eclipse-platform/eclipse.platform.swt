@@ -355,3 +355,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1FONT_1SELECTION
      */
     return (jint) (((GtkFontSelectionDialog*)fsd)->cancel_button);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1default
+  (JNIEnv *env, jclass that, jint window, jint widget)
+{
+    gtk_window_set_default((GtkWindow*)window, (GtkWidget*)widget);
+}
