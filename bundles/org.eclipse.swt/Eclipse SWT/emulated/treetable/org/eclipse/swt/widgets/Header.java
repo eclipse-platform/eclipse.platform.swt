@@ -43,9 +43,9 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	int height = 0;
 
 	for (int i = 0; i < getItemCount(); i++) {
-		width += getItemBounds(i).width;
+		width += getBounds(i).width;
 		if (height == 0) {
-			height = getItemBounds(i).height;
+			height = getBounds(i).height;
 		}
 	}
 	if (width == 0) {
@@ -68,7 +68,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
  * @param itemIndex - specifies the item to draw
  */
 void drawHighlightShadow(GC gc, int itemIndex) {
-	Rectangle bounds = getItemBounds(itemIndex);
+	Rectangle bounds = getBounds(itemIndex);
 	Color oldForeground = getForeground();
 
 	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));	
@@ -84,7 +84,7 @@ void drawHighlightShadow(GC gc, int itemIndex) {
  * @param itemIndex - specifies the item to draw
  */
 void drawLowlightShadows(GC gc, int itemIndex) {
-	Rectangle bounds = getItemBounds(itemIndex);
+	Rectangle bounds = getBounds(itemIndex);
 	Point bottomShadowStart = new Point(bounds.x + 1, bounds.height - 2);
 	Point bottomShadowStop = new Point(bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
 	Point rightShadowStart = null;
@@ -129,7 +129,7 @@ void drawLowlightShadows(GC gc, int itemIndex) {
  *	should be returned.
  * @return the bouding rectangle of the item identified by 'itemIndex'.
  */
-Rectangle getItemBounds(int itemIndex) {
+Rectangle getBounds(int itemIndex) {
 	Rectangle bounds = null;
 	int itemCount = getItemCount();
 
@@ -222,7 +222,7 @@ String getText(int itemIndex) {
  * @param itemIndex - item that should be drawn
  */
 void paint(GC gc, int itemIndex) {
-	Rectangle bounds = getItemBounds(itemIndex);
+	Rectangle bounds = getBounds(itemIndex);
 	// draw header background
 	gc.fillRectangle(bounds.x, bounds.y + 1, bounds.width, bounds.height - 3);
 	
@@ -279,7 +279,7 @@ void paint(Event event) {
  * @param itemIndex - specifies the header item that should be redrawn
  */
 void redraw(int itemIndex) {
-	Rectangle bounds = getItemBounds(itemIndex);
+	Rectangle bounds = getBounds(itemIndex);
 
 	if (bounds != null) {
 		redraw(bounds.x, 0, bounds.width, bounds.height, false);
@@ -319,7 +319,7 @@ void setHeaderHeight() {
  *	> 0 = item width increased. < 0 = item width decreased
  */
 void widthChange(int itemIndex, int widthDiff) {
-	Rectangle bounds = getItemBounds(itemIndex);
+	Rectangle bounds = getBounds(itemIndex);
 	Rectangle headerBounds = getBounds();
 	
 	if (bounds != null) {
