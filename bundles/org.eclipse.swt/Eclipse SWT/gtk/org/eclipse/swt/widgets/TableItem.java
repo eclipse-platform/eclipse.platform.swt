@@ -184,7 +184,8 @@ public Rectangle getBounds (int index) {
 			rect.width -= x [0] + w [0];
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
+	int headerHeight = parent.getHeaderHeight ();
+	return new Rectangle (rect.x, rect.y + headerHeight, rect.width, rect.height);
 }
 
 /**
@@ -365,7 +366,8 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
 		rect.x += x [0];
 	}
-	return new Rectangle (rect.x, rect.y, w [0], rect.height);
+	int headerHeight = parent.getHeaderHeight ();
+	return new Rectangle (rect.x, rect.y + headerHeight, w [0], rect.height);
 }
 
 /**
