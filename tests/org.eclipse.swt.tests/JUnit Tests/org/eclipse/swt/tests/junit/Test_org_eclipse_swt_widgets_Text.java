@@ -923,7 +923,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 public void test_setOrientationI() {
 	text.setOrientation(SWT.RIGHT_TO_LEFT);
-	if (SWT.getPlatform().equals("win32")) {
+	if ((text.getStyle() & SWT.MIRRORED) != 0) {
 		assertTrue(":a:", text.getOrientation()==SWT.RIGHT_TO_LEFT);
 	}
 	text.setOrientation(SWT.LEFT_TO_RIGHT);

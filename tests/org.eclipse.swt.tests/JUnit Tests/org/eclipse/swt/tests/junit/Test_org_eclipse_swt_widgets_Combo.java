@@ -705,7 +705,7 @@ public void test_setItems$Ljava_lang_String() {
 
 public void test_setOrientationI() {
 	combo.setOrientation(SWT.RIGHT_TO_LEFT);
-	if (SWT.getPlatform().equals("win32")) {
+	if ((combo.getStyle() & SWT.MIRRORED) != 0) {
 		assertTrue(":a:", combo.getOrientation()==SWT.RIGHT_TO_LEFT);
 	}
 	combo.setOrientation(SWT.LEFT_TO_RIGHT);
