@@ -1784,7 +1784,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1get_1mo
 //	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
 	handle = dlopen("libgdk-x11-2.0.so", RTLD_LAZY);
 	if (handle != NULL) {
-		fptr = (gint (*)(GdkScreen *))dlsym(handle, "gdk_screen_get_monitor_geometry");
+		fptr = (void (*)(GdkScreen *,  gint, GdkRectangle *))dlsym(handle, "gdk_screen_get_monitor_geometry");
 		if (fptr != NULL) {
 			(*fptr)((GdkScreen *)arg0, arg1, lparg2);
 		}
