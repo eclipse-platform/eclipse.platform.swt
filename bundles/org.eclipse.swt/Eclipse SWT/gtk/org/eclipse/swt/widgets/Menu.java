@@ -559,7 +559,7 @@ public void setLocation (int x, int y) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	if ((style & SWT.BAR) != 0) return;
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
 		int address = 0;
 		Callback GtkMenuPositionFunc = null;

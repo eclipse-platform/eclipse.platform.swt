@@ -604,3 +604,9 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1set_1re
 {
 	gtk_widget_set_redraw_on_allocate((GtkWidget*)widget, (gboolean)redraw);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1MAPPED
+  (JNIEnv *env, jclass that, jint wid)
+{
+	return GTK_WIDGET_MAPPED((GtkWidget*)wid);
+}
