@@ -362,10 +362,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_set_size_request (handle, wHint, hHint);
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
+	GtkRequisition entryRequesition = new GtkRequisition ();
+	OS.gtk_widget_size_request (entryHandle, entryRequesition);
+	GtkRequisition listRequesition = new GtkRequisition ();
+	int listParent = OS.gtk_widget_get_parent (listHandle);
+	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
 	OS.gtk_widget_set_size_request (handle, width, height);
-	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	width = (requisition.width - entryRequesition.width) + listRequesition.width;
+	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	return new Point (width, height);	
+	return new Point (width, height);
 }
 
 /**
@@ -894,11 +900,9 @@ public void select (int index) {
 	String [] items = getItems ();
 	if (index >= items.length) return;
 	String selectedText = items [index];
-	OS.gtk_signal_handler_block_by_data (entryHandle, SWT.Modify);
 	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
 	OS.gtk_list_select_item (listHandle, index);
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedText, true));
-	OS.gtk_signal_handler_unblock_by_data (entryHandle, SWT.Modify);
 	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
