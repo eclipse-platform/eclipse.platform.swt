@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Point;
  * @see org.eclipse.swt.custom.StyledTextContent
  */
 public class Test_org_eclipse_swt_custom_StyledTextContent extends SwtTestCase {
+	int XINSET = 0;
 
 	class ContentImplementation implements StyledTextContent {
 		String textContent = "";
@@ -61,7 +62,16 @@ public class Test_org_eclipse_swt_custom_StyledTextContent extends SwtTestCase {
 public Test_org_eclipse_swt_custom_StyledTextContent(String name) {
 	super(name);
 }
+private boolean isBidi() {
+	String codePage = System.getProperty("file.encoding").toUpperCase();
+	boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+	
+	// Running on Windows and with Hebrew or Arabic codepage?
+	return isWindows && ("CP1255".equals(codePage) || "CP1256".equals(codePage));
+}
 protected void setUp() {
+	if (isBidi()) XINSET = 3;
+	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	styledText.setContent(content);
@@ -80,7 +90,7 @@ public void test_getCharCount() {
 
 public void test_getLineI() {
 	// will indirectly cause getLine to be called
-	assertTrue(":b:", styledText.getLocationAtOffset(0).equals(new Point(0,0)));
+	assertTrue(":b:", styledText.getLocationAtOffset(0).equals(new Point(XINSET,0)));
 }
 
 public void test_getLineAtOffsetI() {
@@ -97,7 +107,7 @@ public void test_getLineDelimiter() {
 
 public void test_getOffsetAtLineI() {
 	// will indirectly cause getOffsetAtLine to be called
-	assertTrue(":f:", styledText.getLocationAtOffset(0).equals(new Point(0,0)));
+	assertTrue(":f:", styledText.getLocationAtOffset(0).equals(new Point(XINSET,0)));
 }
 
 public void test_getTextRangeII() {
