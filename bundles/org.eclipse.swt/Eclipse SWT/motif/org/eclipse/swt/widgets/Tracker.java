@@ -361,7 +361,8 @@ public boolean open () {
 	int [] unused = new int [1], mask = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
 	Point cursorPos;
-	boolean mouseDown = (mask [0] & OS.Button1Mask) != 0;
+	int mouseMasks = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
+	boolean mouseDown = (mask [0] & mouseMasks) != 0;
 	if (!mouseDown) {
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor (xDisplay, xWindow);
