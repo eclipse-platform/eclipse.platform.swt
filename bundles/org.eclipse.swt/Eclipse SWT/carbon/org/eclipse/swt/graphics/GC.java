@@ -1837,8 +1837,6 @@ int setString(String string, int flags) {
 	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags & ~SWT.DRAW_TRANSPARENT)) {
 		return data.stringLength;
 	}
-	if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-	data.stringPtr = 0;
 	int layout = data.layout;
 	int length = string.length();
 	char[] chars = new char[length];
@@ -1867,7 +1865,7 @@ int setString(String string, int flags) {
 		length = j;
 	}
 	if ((flags & SWT.DRAW_TAB) != 0) {
-		if (data.tabs == 0) createTabs ();
+		if (data.tabs == 0) createTabs();
 		OS.ATSUSetTabArray(layout, data.tabs, TAB_COUNT);
 	} else {
 		OS.ATSUSetTabArray(layout, 0, 0);
@@ -1884,10 +1882,11 @@ int setString(String string, int flags) {
 	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
 	OS.ATSUSetRunStyle(layout, atsuiStyle, 0, length);
 	OS.ATSUSetTransientFontMatching(layout, true);
+	if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
+	data.stringPtr = ptr;
 	data.string = string;
 	data.stringLength = length;
 	data.drawFlags = flags;
-	data.stringPtr = ptr;
 	return length;
 }
 
