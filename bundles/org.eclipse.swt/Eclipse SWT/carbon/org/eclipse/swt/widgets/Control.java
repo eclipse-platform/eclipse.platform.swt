@@ -287,6 +287,7 @@ void hookEvents () {
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+		OS.kEventClassControl, OS.kEventControlHit,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
@@ -372,6 +373,10 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

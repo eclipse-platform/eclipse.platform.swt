@@ -10,13 +10,13 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
+import org.eclipse.swt.internal.carbon.CFRange;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public  class Button extends Control {
-	String text;
 
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -120,8 +120,18 @@ void createHandle () {
 }
 
 public int getAlignment () {
-	checkWidget();
-    return 0;
+	checkWidget ();
+	if ((style & SWT.ARROW) != 0) {
+		if ((style & SWT.UP) != 0) return SWT.UP;
+		if ((style & SWT.DOWN) != 0) return SWT.DOWN;
+		if ((style & SWT.LEFT) != 0) return SWT.LEFT;
+		if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
+		return SWT.UP;
+	}
+	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
+	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
+	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
+	return SWT.LEFT;
 }
 
 public Image getImage () {
@@ -133,14 +143,30 @@ String getNameText () {
 }
 
 public boolean getSelection () {
-	checkWidget();
+	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-    return false;
+    return OS.GetControl32BitValue(handle) != 0;
 }
 
 public String getText () {
-	checkWidget();
-	return text;
+	checkWidget ();
+	int sHandle []= new int [1];
+    OS.CopyControlTitleAsCFString (handle, sHandle);
+    if (sHandle [0] == 0) return "";
+	int length = OS.CFStringGetLength (sHandle [0]);
+	char [] buffer= new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (sHandle [0], range, buffer);
+	OS.CFRelease (sHandle [0]);
+	return new String (buffer);
+}
+
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHit (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	postEvent (SWT.Selection);
+	return OS.eventNotHandledErr;
 }
 
 public void removeSelectionListener(SelectionListener listener) {
@@ -152,22 +178,56 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 public void setAlignment (int alignment) {
-	checkWidget();
+	if ((style & SWT.ARROW) != 0) {
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		//OS.SetControlData (??);
+		return;
+	}
+	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	int textAlignment = 0;
+	int graphicAlignment = 0;
+	if ((style & SWT.LEFT) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
+		graphicAlignment = OS.kControlBevelButtonAlignLeft;
+	}
+	if ((style & SWT.CENTER) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+		graphicAlignment = OS.kControlBevelButtonAlignRight;
+	}
+	if ((style & SWT.RIGHT) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextCenter;
+		graphicAlignment = OS.kControlBevelButtonAlignCenter;
+	}
+	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
+	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
+}
+
+public boolean setFocus () {
+	checkWidget ();
+	if ((style & SWT.ARROW) != 0) return false;
+	return super.setFocus ();
 }
 
 public void setImage (Image image) {
 	checkWidget();
+	if ((style & SWT.ARROW) != 0) return;
 }
 
 public void setSelection (boolean selected) {
 	checkWidget();
+	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
+	OS.SetControl32BitValue (handle, selected ? 1 : 0);
 }
 
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	text = string;
+	String text = string;
 	char [] buffer = new char [text.length ()];
 	int i=0, j=0;
 	while (i < buffer.length) {

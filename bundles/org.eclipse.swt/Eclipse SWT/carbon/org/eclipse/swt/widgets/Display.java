@@ -901,6 +901,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 				switch (eventKind) {
 					case OS.kEventControlBoundsChanged:	return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 					case OS.kEventControlDraw:				return control.kEventControlDraw (nextHandler, theEvent, userData);
+					case OS.kEventControlHit:				return control.kEventControlHit (nextHandler, theEvent, userData);
 				}
 			}
 			break;
