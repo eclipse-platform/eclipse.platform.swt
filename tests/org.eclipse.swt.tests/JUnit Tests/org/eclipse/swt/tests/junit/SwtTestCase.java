@@ -11,13 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import java.io.*;
 import junit.framework.*;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -147,10 +144,18 @@ static public void assertEquals(String message, Object expected[], Object actual
 	}
 }
 static public void assertEquals(String message, int expectedCode, Throwable actualThrowable) {
-	try {
-		SWT.error(expectedCode);
-	} catch (Throwable expectedThrowable) {
-		assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
+	if (actualThrowable instanceof SWTError) {
+		SWTError error = (SWTError) actualThrowable;
+		assertEquals(message, expectedCode, error.code);
+	} else if (actualThrowable instanceof SWTException) {
+		SWTException exception = (SWTException) actualThrowable;
+		assertEquals(message, expectedCode, exception.code);
+	} else {
+		try {
+			SWT.error(expectedCode);
+		} catch (Throwable expectedThrowable) {
+			assertEquals(message, expectedThrowable.getMessage(), actualThrowable.getMessage());
+		}
 	}
 }
 static public void assertEquals(Object expected[], Object actual[]) {
