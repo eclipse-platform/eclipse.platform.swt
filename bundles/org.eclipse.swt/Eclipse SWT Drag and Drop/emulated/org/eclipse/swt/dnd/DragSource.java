@@ -147,6 +147,14 @@ public void addDragListener(DragSourceListener listener) {
 
 }
 
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DropTarget.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
+	
 /**
  * Returns the Control which is registered for this DragSource.  This is the control that the 
  * user clicks in to initiate dragging.

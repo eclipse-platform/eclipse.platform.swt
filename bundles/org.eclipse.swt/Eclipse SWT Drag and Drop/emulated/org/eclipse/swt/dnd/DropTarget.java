@@ -122,6 +122,14 @@ public DropTarget(Control control, int style) {
 public void addDropListener(DropTargetListener listener) {	
 }
 
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DropTarget.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
+	
 /**
  * Returns the Control which is registered for this DropTarget.  This is the control over which the 
  * user positions the cursor to drop the data.
