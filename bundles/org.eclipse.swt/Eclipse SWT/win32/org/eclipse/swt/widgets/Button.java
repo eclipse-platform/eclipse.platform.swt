@@ -87,6 +87,10 @@ public Button (Composite parent, int style) {
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -100,6 +104,7 @@ public Button (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();

@@ -200,6 +200,10 @@ public void addModifyListener (ModifyListener listener) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -213,6 +217,7 @@ public void addModifyListener (ModifyListener listener) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

@@ -49,6 +49,11 @@ public ToolItem (ToolBar parent, int style, int index) {
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called when the mouse is over the arrow portion of a drop-down tool,
+ * the event object detail field contains the value <code>SWT.ARROW</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -62,6 +67,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();

@@ -106,6 +106,10 @@ public void addModifyListener (ModifyListener listener) {
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is not called for texts.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -119,6 +123,7 @@ public void addModifyListener (ModifyListener listener) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

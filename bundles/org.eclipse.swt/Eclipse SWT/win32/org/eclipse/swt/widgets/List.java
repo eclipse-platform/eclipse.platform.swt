@@ -144,6 +144,10 @@ public void add (String string, int index) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the selection changes.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -157,6 +161,7 @@ public void add (String string, int index) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();

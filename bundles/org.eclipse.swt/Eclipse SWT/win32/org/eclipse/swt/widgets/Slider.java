@@ -77,6 +77,18 @@ public Slider (Composite parent, int style) {
  * be notified when the receiver's value changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
+ * <code>0</code> - for the end of a drag.
+ * <code>SWT.DRAG</code>.
+ * <code>SWT.HOME</code>.
+ * <code>SWT.END</code>.
+ * <code>SWT.ARROW_DOWN</code>.
+ * <code>SWT.ARROW_UP</code>.
+ * <code>SWT.PAGE_DOWN</code>.
+ * <code>SWT.PAGE_UP</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -90,6 +102,7 @@ public Slider (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
