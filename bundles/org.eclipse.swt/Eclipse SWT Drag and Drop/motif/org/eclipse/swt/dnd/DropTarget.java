@@ -122,32 +122,27 @@ public DropTarget(Control control, int style) {
 	dragProc = new Callback(this, "dragProcCallback", 3);
 	if (dragProc == null)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
-		
-	int[] args = new int[]{
-		OS.XmNdropSiteOperations, opToOsOp(style),
-		OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,
-		OS.XmNdropProc,           dropProc.getAddress(),
-		OS.XmNdragProc,           dragProc.getAddress(),
-		OS.XmNanimationStyle,     OS.XmDRAG_UNDER_NONE,
-		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
-	};
-
-	// This code is intentionally commented.
-	// the OS may have registered this widget as a drop site on creation.
-	// Remove the registered drop site because it has preconfigured values which we do not want.
-	//OS.XmDropSiteUnregister(control.handle);
-	
-	// Register drop site with our own values
-	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
-			if (!DropTarget.this.isDisposed()){
-				DropTarget.this.dispose();
+			switch (event.type) {
+				case SWT.Dispose:
+					if (!DropTarget.this.isDisposed()){
+						DropTarget.this.dispose();
+					}
+					break;
+				case SWT.Show:
+					registerDropTarget();
+					break;
+				case SWT.Hide:
+					unregisterDropTarget();
+					break;
 			}
 		}
 	};
 	control.addListener (SWT.Dispose, controlListener);
+	control.addListener (SWT.Show, controlListener);
+	control.addListener (SWT.Hide, controlListener);
 	
 	this.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
@@ -162,6 +157,8 @@ public DropTarget(Control control, int style) {
 	} else {
 		effect = new NoDragUnderEffect(control);
 	}
+	
+	registerDropTarget();
 }
 
 /**
@@ -521,7 +518,9 @@ public void notifyListeners (int eventType, Event event) {
 }
 
 private void onDispose() {
-	
+
+	unregisterDropTarget();
+		
 	if (dropProc != null)
 		dropProc.dispose();
 	dropProc = null;
@@ -533,11 +532,11 @@ private void onDispose() {
 	if (dragProc != null)
 		dragProc.dispose();
 	dragProc = null;
-	//if (control != null && !control.isDisposed()){
-	//	OS.XmDropSiteUnregister(control.handle);
-	//}
+
 	if (controlListener != null) {
 		control.removeListener(SWT.Dispose, controlListener);
+		control.removeListener(SWT.Show, controlListener);
+		control.removeListener(SWT.Hide, controlListener);
 	}
 	controlListener = null;
 	control = null;
@@ -566,6 +565,56 @@ private int osOpToOp(byte osOperation){
 		operation |= DND.DROP_LINK;
 	
 	return operation;
+}
+private void registerDropTarget() {	
+	if (control == null || control.isDisposed()) return;
+
+	int[] args = new int[]{
+		OS.XmNdropSiteOperations, opToOsOp(getStyle()),
+		OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,
+		OS.XmNdropProc,           dropProc.getAddress(),
+		OS.XmNdragProc,           dragProc.getAddress(),
+		OS.XmNanimationStyle,     OS.XmDRAG_UNDER_NONE,
+		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
+	};
+	
+	if (transferAgents.length != 0) {
+		TransferData[] transferData = new TransferData[0];
+		for (int i = 0, length = transferAgents.length; i < length; i++){
+			TransferData[] data = transferAgents[i].getSupportedTypes();
+			TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
+			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+			transferData = newTransferData;
+		}
+		
+		int[] atoms = new int[transferData.length];
+		for (int i = 0, length = transferData.length; i < length; i++){
+			atoms[i] = transferData[i].type;
+		}
+	
+		// Copy import targets to global memory 
+		int pImportTargets = OS.XtMalloc(atoms.length * 4);
+		OS.memmove(pImportTargets, atoms, atoms.length * 4);
+		
+		int[] args2 = new int[]{
+			OS.XmNimportTargets,      pImportTargets,
+			OS.XmNnumImportTargets,   atoms.length
+		};
+		
+		int[] newArgs = new int[args.length + args2.length];
+		System.arraycopy(args, 0, newArgs, 0, args.length);
+		System.arraycopy(args2, 0, newArgs, args.length, args2.length);
+		args = newArgs;	
+	}
+	
+	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
+}
+
+private void unregisterDropTarget() {
+	if (control == null || control.isDisposed()) return;
+
+	OS.XmDropSiteUnregister(control.handle);
 }
 private void releaseDropInfo(){
 	selectedDataType = null;
@@ -616,7 +665,9 @@ public void removeDropListener(DropTargetListener listener) {
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	this.transferAgents = transferAgents;
-			
+	
+	if (!control.isVisible()) return;
+	
 	// register data types
 	TransferData[] transferData = new TransferData[0];
 	for (int i = 0, length = transferAgents.length; i < length; i++){
