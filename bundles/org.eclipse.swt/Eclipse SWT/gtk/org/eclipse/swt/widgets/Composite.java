@@ -386,7 +386,7 @@ int gtk_button_press_event (int widget, int event) {
 				count = OS.g_list_length (list);
 				OS.g_list_free (list);
 			}
-			if (count == 0) OS.gtk_widget_grab_focus (handle);
+			if (count == 0) setFocus ();
 		}
 	}
 	return result;

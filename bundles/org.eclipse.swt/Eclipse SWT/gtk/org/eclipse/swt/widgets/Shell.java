@@ -395,17 +395,30 @@ void adjustTrim () {
 }
 
 void bringToTop (boolean force) {
-	if ((style & SWT.ON_TOP) != 0) return;
 	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return; 
 	if (hasFocus) return;
 	Shell shell = display.getActiveShell ();
 	if (!force) {
 		if (shell == null) return;
 		int focusHandle = OS.gtk_window_get_focus (shell.shellHandle);
-		if (focusHandle == 0 || !OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
+		if (focusHandle != 0) {
+			if (!OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
+		}
 	}
 	if (shell != null) shell.hasFocus = false;
-	OS.gtk_window_present (shellHandle);
+	/*
+	* Feature on GTK.  
+	*/
+	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
+		int xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+		int xid = OS.gdk_x11_drawable_get_xid (window);
+		OS.gdk_error_trap_push ();
+		OS.XSetInputFocus (xDisplay, xid, OS.RevertToParent, OS.gtk_get_current_event_time ());
+		OS.gdk_error_trap_pop ();
+	} else {
+		OS.gdk_window_focus (window, OS.gtk_get_current_event_time ());
+	}
 	hasFocus = true;
 }
 
