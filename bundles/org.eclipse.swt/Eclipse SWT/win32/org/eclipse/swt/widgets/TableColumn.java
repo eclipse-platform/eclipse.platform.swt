@@ -344,7 +344,7 @@ public void pack () {
 			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
 			* column is expanded to fill the client area.  The fix is to
 			* resize the table to be small, set the column width and then
-			* restor the table to its original size.
+			* restore the table to its original size.
 			*/
 			RECT rect = null;
 			boolean fixWidth = index == parent.getColumnCount () - 1;

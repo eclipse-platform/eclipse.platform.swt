@@ -1878,7 +1878,7 @@ protected void init () {
 	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
 	OS.RegisterClass (lpWndClass);
 
-	/* Register the SWT drop shadown window class */
+	/* Register the SWT drop shadow window class */
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		lpWndClass.style |= OS.CS_DROPSHADOW;
 	}
@@ -2431,9 +2431,8 @@ public boolean post (Event event) {
 					case SWT.ESC: inputs.wVk = (short) OS.VK_ESCAPE; break;
 					case SWT.TAB: inputs.wVk = (short) OS.VK_TAB; break;
 					/*
-					* Since there is no LF key on then keyboard, do not attempt
-					* to map LF to CR or attempt to post an LF key because no
-					* such key exists on the keyboard.
+					* Since there is no LF key on the keyboard, do not attempt
+					* to map LF to CR or attempt to post an LF key.
 					*/
 //					case SWT.LF: inputs.wVk = (short) OS.VK_RETURN; break;
 					case SWT.LF: return false;
