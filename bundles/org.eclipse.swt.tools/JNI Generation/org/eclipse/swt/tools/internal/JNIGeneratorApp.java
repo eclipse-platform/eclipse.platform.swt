@@ -136,7 +136,8 @@ void generateSWT_C() {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = 
 			"#include \"swt.h\"\n" +
-			"#include \"" + outputName + "_structs.h\"\n";
+			"#include \"" + outputName + "_structs.h\"\n" +
+			"#include \"" + outputName + "_stats.h\"\n";
 		metaData.setMetaData("swt_includes", inc);
 		NativesGenerator gen = new NativesGenerator();
 		gen.setMetaData(metaData);

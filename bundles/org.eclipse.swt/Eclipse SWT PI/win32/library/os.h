@@ -51,7 +51,6 @@
 
 /* Optional custom definitions to exclude some types */
 #include "defines.h"
-#include "os_stats.h"
 
 /* Structs excludes */
 #ifdef _WIN32_WCE

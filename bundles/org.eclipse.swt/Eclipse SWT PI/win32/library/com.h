@@ -13,10 +13,6 @@
 #define INC_com_H
 
 #include "os_structs.h"
-
 #include "com_custom.h"
-
-#undef CoCreateInstance_FUNC
-#include "com_stats.h"
 
 #endif /* INC_com_H */
