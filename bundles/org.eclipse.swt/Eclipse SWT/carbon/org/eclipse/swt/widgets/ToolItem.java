@@ -611,6 +611,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		y -= rect.top;
 		int width = rect.right - rect.left;
 		if (width - x < 12) {
+			x = rect.left;
+			y = rect.bottom;
+			OS.GetControlBounds (parent.handle, rect);
+			x -= rect.left;
+			y -= rect.top;
 			Event event = new Event ();
 			event.detail = SWT.ARROW;
 			event.x = x;
