@@ -2146,7 +2146,7 @@ public void copy() {
 	int length = selection.y - selection.x;
 	if (length > 0) {
 		try {
-			setClipboardContent(selection.x, length);
+			setClipboardContent(selection.x, length, DND.CLIPBOARD);
 		}
 		catch (SWTError error) {
 			// Copy to clipboard failed. This happens when another application 
@@ -2347,7 +2347,7 @@ public void cut(){
 	
 	if (length > 0) {
 		try {
-			setClipboardContent(selection.x, length);
+			setClipboardContent(selection.x, length, DND.CLIPBOARD);
 		}
 		catch (SWTError error) {
 			// Copy to clipboard failed. This happens when another application 
@@ -3419,6 +3419,10 @@ int getCaretWidth() {
 	Caret caret = getCaret();
 	if (caret == null) return 0;
 	return caret.getSize().x;
+}
+Object getClipboardContent(int clipboardType) {
+	TextTransfer plainTextTransfer = TextTransfer.getInstance();
+	return clipboard.getContents(plainTextTransfer, clipboardType);
 }
 int getClusterNext(int offset, int lineIndex) {
 	String line = content.getLine(lineIndex);
@@ -5026,6 +5030,16 @@ void handleMouseDoubleClick(Event event) {
 void handleMouseDown(Event event) {
 	mouseDown = true;
 	mouseDoubleClick = false;
+	if (event.button == 2) {
+		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
+		if (text != null && text.length() > 0) {
+			Event e = new Event();
+			e.start = selection.x;
+			e.end = selection.y;
+			e.text = getModelDelimitedText(text);
+			sendKeyEvent(e);
+		}
+	}
 	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
@@ -5633,9 +5647,8 @@ void modifyContent(Event event, boolean updateCaret) {
  */
 public void paste(){
 	checkWidget();	
-	TextTransfer transfer = TextTransfer.getInstance();
 	String text;
-	text = (String) clipboard.getContents(transfer);
+	text = (String) getClipboardContent(DND.CLIPBOARD);
 	if (text != null && text.length() > 0) {
 		Event event = new Event();
 		event.start = selection.x;
@@ -6469,6 +6482,22 @@ void sendSelectionEvent() {
 	event.x = selection.x;
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
+	try {
+		if (selection.y - selection.x > 0) {
+			setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
+		} else {
+			clipboard.clearContents(DND.SELECTION_CLIPBOARD);
+		}
+	}
+	catch (SWTError error) {
+		// Copy to clipboard failed. This happens when another application 
+		// is accessing the clipboard while we copy. Ignore the error.
+		// Fixes 1GDQAVN
+		// Rethrow all other errors. Fixes bug 17578.
+		if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+			throw error;
+		}
+	}
 }
 /**
  * Sets whether the widget wraps lines.
@@ -6650,7 +6679,7 @@ public void setCaretOffset(int offset) {
  * @exception SWTError, see Clipboard.setContents
  * @see org.eclipse.swt.dnd.Clipboard.setContents
  */
-void setClipboardContent(int start, int length) throws SWTError {
+void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
 	RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 	TextTransfer plainTextTransfer = TextTransfer.getInstance();
 	RTFWriter rtfWriter = new RTFWriter(start, length);
@@ -6660,7 +6689,8 @@ void setClipboardContent(int start, int length) throws SWTError {
 
 	clipboard.setContents(
 		new String[]{rtfText, plainText}, 
-		new Transfer[]{rtfTransfer, plainTextTransfer});
+		new Transfer[]{rtfTransfer, plainTextTransfer},
+		clipboardType);
 }
 /**
  * Sets the content implementation to use for text storage.
