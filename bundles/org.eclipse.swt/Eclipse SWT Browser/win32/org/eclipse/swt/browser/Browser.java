@@ -82,7 +82,10 @@ public class Browser extends Composite {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
- *
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
+ * </ul>
+ * 
  * @see #getStyle
  * 
  * @since 3.0
@@ -90,7 +93,12 @@ public class Browser extends Composite {
 public Browser(Composite parent, int style) {
 	super(parent, style);
 	frame = new OleFrame(this, SWT.NONE);
-	site = new OleControlSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
+	try {
+		site = new OleControlSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
+	} catch (SWTException e) {
+		dispose();
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 	addListener(SWT.Dispose, new Listener() {
