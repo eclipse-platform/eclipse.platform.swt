@@ -43,7 +43,7 @@ public class OS {
 	public static final int inZoomIn = 7;
 	public static final int inZoomOut = 8;
 	public static final int italic = 2;
-	public static final int k3ARGBPixelFormat = 0x00000020;
+	public static final int k32ARGBPixelFormat = 0x00000020;
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kAlertCautionAlert = 2;
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';

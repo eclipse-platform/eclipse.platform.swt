@@ -289,7 +289,7 @@ void createHandle () {
 	int bpl = size * 4;
 	int [] gWorld = new int [1];
 	int data = OS.NewPtr (bpl * size);
-	OS.NewGWorldFromPtr (gWorld, OS.k3ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
+	OS.NewGWorldFromPtr (gWorld, OS.k32ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
 	int [] curPort = new int [1];
 	int [] curGWorld = new int [1];
 	OS.GetGWorld (curPort, curGWorld);	
