@@ -12,11 +12,15 @@ package org.eclipse.swt.tests.junit;
  */public class SwtJunit {
 
 	public static final String testFontName;
+	public final static boolean isWindows = System.getProperty("os.name").startsWith("Win");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
-	public final static boolean isMotif = isLinux || isAIX;
-	public final static boolean isWindows = !isMotif;
+	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
+	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
+	public final static boolean isMac = System.getProperty("os.name").startsWith("Mac");
 
+	public final static boolean isMotif = /*!isGTK &&*/ isLinux || isAIX || isSolaris || isHPUX;
+	
 	static {
 		if (isMotif) {
 			testFontName = "misc-fixed";
