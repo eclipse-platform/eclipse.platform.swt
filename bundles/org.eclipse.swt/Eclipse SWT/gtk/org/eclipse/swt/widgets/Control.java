@@ -38,7 +38,7 @@ import org.eclipse.swt.accessibility.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	int /*long*/ fixedHandle;
-	int /*long*/ redrawWindow;
+	int /*long*/ redrawWindow, enableWindow;
 	int drawCount;
 	Composite parent;
 	Cursor cursor;
@@ -108,8 +108,7 @@ boolean drawGripper (int x, int y, int width, int height) {
 }
 
 void enableWidget (boolean enabled) {
-	int /*long*/ topHandle = topHandle ();
-	OS.gtk_widget_set_sensitive (topHandle, enabled);
+	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
 int /*long*/ eventHandle () {
@@ -487,7 +486,12 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int oldX = OS.GTK_WIDGET_X (topHandle);
 		int oldY = OS.GTK_WIDGET_Y (topHandle);
 		sameOrigin = x == oldX && y == oldY;
-		if (!sameOrigin) moveHandle (x, y);
+		if (!sameOrigin) {
+			if (enableWindow != 0) {
+				OS.gdk_window_move (enableWindow, x, y);
+			}
+			moveHandle (x, y);
+		}
 	}
 	if (resize) {
 		width = Math.max (1, width);
@@ -498,6 +502,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (!sameExtent) {
 			if (redrawWindow != 0) {
 				OS.gdk_window_resize (redrawWindow, width, height);
+			}
+			if (enableWindow != 0) {
+				OS.gdk_window_resize (enableWindow, width, height);
 			}
 			resizeHandle (width, height);
 		}
@@ -2170,6 +2177,10 @@ void releaseWidget () {
 		OS.gtk_im_context_reset (imHandle);
 		OS.gtk_im_context_set_client_window (imHandle, 0);
 	}
+	if (enableWindow != 0) {
+		OS.gdk_window_destroy (enableWindow);
+		enableWindow = 0;
+	}
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
@@ -2456,6 +2467,44 @@ public void setEnabled (boolean enabled) {
 		state |= DISABLED;
 	}
 	enableWidget (enabled);
+	if (enabled) {
+		if (enableWindow != 0) {
+			OS.gdk_window_destroy (enableWindow);
+			enableWindow = 0;
+		}
+	} else {
+		OS.gtk_widget_realize (handle);
+		int /*long*/ parentHandle = parent.parentingHandle ();
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (parentHandle);
+		Rectangle rect = getBounds ();
+		GdkWindowAttr attributes = new GdkWindowAttr ();
+		attributes.x = rect.x;
+		attributes.y = rect.y;
+		attributes.width = rect.width;
+		attributes.height = rect.height;
+		attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
+		attributes.wclass = OS.GDK_INPUT_ONLY;
+		attributes.window_type = OS.GDK_WINDOW_CHILD;
+		enableWindow = OS.gdk_window_new (window, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
+		if (enableWindow != 0) {
+			OS.gdk_window_set_user_data (enableWindow, parentHandle);
+			if (!OS.GDK_WINDOWING_X11 ()) {
+				OS.gdk_window_raise (enableWindow);
+			} else {
+				int /*long*/ topHandle = topHandle ();
+				int /*long*/ topWindow = OS.GTK_WIDGET_WINDOW (topHandle);			
+				int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (topWindow);
+				int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (enableWindow);
+				int xScreen = OS.XDefaultScreen (xDisplay);
+				int flags = OS.CWStackMode | OS.CWSibling;			
+				XWindowChanges changes = new XWindowChanges ();
+				changes.sibling = OS.gdk_x11_drawable_get_xid (topWindow);
+				changes.stack_mode = OS.Above;
+				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+			}
+			OS.gdk_window_show (enableWindow);
+		}
+	}
 	if (fixFocus) fixFocus ();
 }
 
@@ -2679,9 +2728,11 @@ public void setRedraw (boolean redraw) {
 				attributes.event_mask = OS.GDK_EXPOSURE_MASK;
 				attributes.window_type = OS.GDK_WINDOW_CHILD;
 				redrawWindow = OS.gdk_window_new (window, attributes, 0);
-				OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
-				OS.gdk_window_raise (redrawWindow);
-				OS.gdk_window_show (redrawWindow);
+				if (redrawWindow != 0) {
+					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
+					OS.gdk_window_raise (redrawWindow);
+					OS.gdk_window_show (redrawWindow);
+				}
 			}
 		}
 	}
@@ -2774,15 +2825,24 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 	int /*long*/ siblingHandle = sibling != null ? sibling.topHandle () : 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	if (window != 0) {
-		int /*long*/ siblingWindow = sibling != null ? OS.GTK_WIDGET_WINDOW (siblingHandle) : 0;
+		int /*long*/ siblingWindow = 0;
+		if (sibling != null) {
+			if (above && sibling.enableWindow != 0) {
+				siblingWindow = enableWindow;
+			} else {
+				siblingWindow = OS.GTK_WIDGET_WINDOW (siblingHandle);
+			}
+		}
 		int /*long*/ redrawWindow = fixChildren ? parent.redrawWindow : 0;
 		if (!OS.GDK_WINDOWING_X11 () || (siblingWindow == 0 && redrawWindow == 0)) {
-				if (above) {
-					OS.gdk_window_raise (window);
-					if (redrawWindow != 0) OS.gdk_window_raise (redrawWindow);
-				} else {
-					OS.gdk_window_lower (window);
-				}
+			if (above) {
+				OS.gdk_window_raise (window);
+				if (redrawWindow != 0) OS.gdk_window_raise (redrawWindow);
+				if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
+			} else {
+				if (enableWindow != 0) OS.gdk_window_lower (enableWindow);
+				OS.gdk_window_lower (window);
+			}
 		} else {
 			XWindowChanges changes = new XWindowChanges ();
 			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow != 0 ? siblingWindow : redrawWindow);
@@ -2801,7 +2861,13 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 			* When the receiver is not a top level shell, XReconfigureWMWindow ()
 			* behaves the same as XConfigureWindow ().
 			*/
-			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);			
+			if (enableWindow != 0) {
+				changes.sibling = OS.gdk_x11_drawable_get_xid (window);
+				changes.stack_mode = OS.Above;
+				xWindow = OS.gdk_x11_drawable_get_xid (enableWindow);
+				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+			}
 		}
 	}
 	if (fixChildren) {

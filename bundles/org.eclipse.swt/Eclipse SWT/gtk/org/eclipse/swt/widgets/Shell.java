@@ -894,6 +894,9 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (redrawWindow != 0) {
 		OS.gdk_window_resize (redrawWindow, width, height);
 	}
+	if (enableWindow != 0) {
+		OS.gdk_window_resize (enableWindow, width, height);
+	}
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	int menuHeight = 0;
 	if (menuBar != null) {
@@ -939,6 +942,43 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		resizeBounds (width, height, changed);
 	}
 	return move || resize;
+}
+
+public void setEnabled (boolean enabled) {
+	checkWidget();
+	if (((state & DISABLED) == 0) == enabled) return;
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
+	if (enabled) {
+		if (enableWindow != 0) {
+			OS.gdk_window_destroy (enableWindow);
+			enableWindow = 0;
+		}
+	} else {
+		int /*long*/ parentHandle = shellHandle;
+		OS.gtk_widget_realize (parentHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (parentHandle);
+		Rectangle rect = getBounds ();
+		GdkWindowAttr attributes = new GdkWindowAttr ();
+		attributes.width = rect.width;
+		attributes.height = rect.height;
+		attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
+		attributes.wclass = OS.GDK_INPUT_ONLY;
+		attributes.window_type = OS.GDK_WINDOW_CHILD;
+		enableWindow = OS.gdk_window_new (window, attributes, 0);
+		if (enableWindow != 0) {
+			if (cursor != null) {
+				OS.gdk_window_set_cursor (enableWindow, cursor.handle);
+				OS.gdk_flush ();
+			}
+			OS.gdk_window_set_user_data (enableWindow, parentHandle);
+			OS.gdk_window_raise (enableWindow);
+			OS.gdk_window_show (enableWindow);
+		}
+	}
 }
 
 /**

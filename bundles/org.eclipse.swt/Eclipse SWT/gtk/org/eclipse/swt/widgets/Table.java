@@ -837,10 +837,6 @@ void destroyItem (TableItem item) {
 	if (itemCount == 0) resetCustomDraw ();
 }
 
-void enableWidget (boolean enabled) {
-	OS.gtk_widget_set_sensitive (scrolledHandle, enabled);
-}
-
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }

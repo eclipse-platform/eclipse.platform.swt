@@ -304,10 +304,6 @@ void destroyItem (TabItem item) {
 	}
 }
 
-void enableWidget (boolean enabled) {
-	OS.gtk_widget_set_sensitive (handle, enabled);
-}
-
 int /*long*/ eventHandle () {
 	return fixedHandle;
 }

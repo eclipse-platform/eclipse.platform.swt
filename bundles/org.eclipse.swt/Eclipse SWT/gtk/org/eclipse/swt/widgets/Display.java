@@ -779,7 +779,6 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-	boolean forward = false;
 	Control control = null;
 	int /*long*/ window = 0;
 	switch (gdkEvent.type) {
@@ -799,54 +798,24 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 					Widget widget = getWidget (handle);
 					if (widget != null && widget instanceof Control) {
 						control = (Control) widget;
-						if (control.isEnabled ()) break;
-						forward = true;
+						break;
 					}
 				}
 			} while ((window = OS.gdk_window_get_parent (window)) != 0);
 		}
 	}
 	Shell shell = null;
-	GdkEventButton gdkEventButton = null;
-	int /*long*/ oldWindow = 0;
-	double oldX = 0, oldY = 0;
 	if (control != null ) {
-		if (window == 0) return 0;
-		if (forward) {
-			switch (gdkEvent.type) {
-				case OS.GDK_ENTER_NOTIFY:
-				case OS.GDK_LEAVE_NOTIFY:
-					return 0;
-			}
-			gdkEventButton = new GdkEventButton ();
-			OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-			oldWindow = gdkEventButton.window;
-			oldX = gdkEventButton.x;
-			oldY = gdkEventButton.y;
-			int /*long*/ eventHandle = control.eventHandle ();
-			gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
-			int [] origin_x = new int [1], origin_y = new int [1];
-			OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
-			gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
-			gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
-			OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
-		}
 		shell = control.getShell ();
 		if ((shell.style & SWT.ON_TOP) != 0) {
 			OS.gtk_grab_add (shell.shellHandle);
 		}
 	}
 	OS.gtk_main_do_event (event);
-	if (dispatchEvents == null) putGdkEvents();
+	if (dispatchEvents == null) putGdkEvents ();
 	if (control != null ) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
 			OS.gtk_grab_remove (shell.shellHandle);
-		}
-		if (forward) {
-			gdkEventButton.window = oldWindow;
-			gdkEventButton.x = oldX;
-			gdkEventButton.y = oldY;
-			OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
 		}
 	}
 	return 0;

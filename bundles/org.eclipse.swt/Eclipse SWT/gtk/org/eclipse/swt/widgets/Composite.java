@@ -248,17 +248,8 @@ void deregister () {
 }
 
 void enableWidget (boolean enabled) {
-	//NOT DONE - take into account current enabled scroll bar state
-	if (scrolledHandle != 0) {
-		if (horizontalBar != null) {
-			int /*long*/ barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
-			OS.gtk_widget_set_sensitive (barHandle, enabled);
-		}
-		if (verticalBar != null) {
-			int /*long*/ barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
-			OS.gtk_widget_set_sensitive (barHandle, enabled);
-		}
-	}
+	if ((state & CANVAS) != 0) return;
+	super.enableWidget (enabled);
 }
 
 Menu [] findMenus (Control control) {

@@ -514,10 +514,6 @@ public void deselectAll () {
 	setItems (items, false, false);
 }
 
-void enableWidget (boolean enabled) {
-	OS.gtk_widget_set_sensitive (handle, enabled);
-}
-
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
