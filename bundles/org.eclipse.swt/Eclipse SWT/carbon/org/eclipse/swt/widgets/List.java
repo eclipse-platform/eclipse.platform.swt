@@ -898,6 +898,10 @@ public boolean isSelected (int index) {
 	System.out.println("List.isSelected: nyi");
     return true;
 }
+int processSelection (Object callData) {
+	
+	return super.processSelection(callData);
+}
 /**
  * Removes the item from the receiver at the given
  * zero-relative index.
@@ -1645,7 +1649,9 @@ public void showSelection () {
 ////////////////////////////////////
 // Mac stuff
 ////////////////////////////////////
+
 private static final int FIRST_ID= 1000;
+
 private void ensureSize(int ensureSize) {
 	int[] numItems= new int[1];
 	OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, 0, numItems);
@@ -1661,6 +1667,7 @@ private void ensureSize(int ensureSize) {
 			OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, n, items, 0);
 	}
 }
+
 private void invalidateRange(int start, int numItems) {
 	if (numItems > 0) {
 		int[] items;
@@ -1674,6 +1681,7 @@ private void invalidateRange(int start, int numItems) {
 		OS.UpdateDataBrowserItems(handle, OS.kDataBrowserNoItem, numItems, items, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 	}
 }
+
 int handleItemCallback(int cHandle, int colId, int rowID, int item) {
 	if (rowID == COL_ID) {
 		int x= colId - FIRST_ID;

@@ -37,6 +37,10 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
+	// AW
+	int fDrawCount= 0;
+	private boolean fVisible= true;
+	// AW
 
 Control () {
 	/* Do nothing */
@@ -897,7 +901,8 @@ public boolean getVisible () {
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	return argList [1] != 0;
     */
-	return OS.IsControlVisible(topHandle);
+	//return OS.IsControlVisible(topHandle);
+	return fVisible;
 }
 boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
@@ -1234,7 +1239,7 @@ int processMouseDown (Object callData) {
         /* AW
 		OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 		menu.setVisible (true);
-        */
+		*/
 	}
 	int clickTime = display.getDoubleClickTime ();
 	int lastTime = display.lastTime, eventTime = xEvent.getWhen();
@@ -1318,6 +1323,11 @@ int processMouseUp (Object callData) {
 }
 int processPaint (Object callData) {
 	if (!hooks (SWT.Paint)) return 0;
+	
+	if (!fVisible || fDrawCount > 0) {
+		//System.out.println("Control.processPaint: premature exit");
+		return 0;
+	}
 	
 	// AW
 	// calculate damage rect for this Control
@@ -2263,10 +2273,19 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	/*
-	int topHandle = topHandle ();
-	OS.SetControlVisibility(topHandle, redraw, redraw);
-	*/
+	if (redraw) {
+		if (--fDrawCount == 0) {
+			if (fVisible) {
+				OS.SetControlVisibility(topHandle(), true, true);
+			}
+		}
+	} else {
+		if (fDrawCount++ == 0) {
+			if (fVisible) {
+				OS.SetControlVisibility(topHandle(), false, false);
+			}
+		}
+	}
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
@@ -2360,19 +2379,29 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	int topHandle = topHandle ();
     /* AW
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	if ((argList [1] != 0) == visible) return;
 	OS.XtSetMappedWhenManaged (topHandle, visible);
     */
-	if (OS.IsControlVisible(topHandle) != visible) {
-		OS.SetControlVisibility(topHandle, visible, true);
-		sendEvent (visible ? SWT.Show : SWT.Hide);
-		if (visible)
-			redraw();
-	}
+    if (visible != fVisible) {
+	    fVisible= visible;
+	    
+	    if (fDrawCount == 0) {
+			int topHandle = topHandle ();
+			if (OS.IsControlVisible(topHandle) != visible) {
+				if (visible) {
+					OS.SetControlVisibility(topHandle, true, false);
+					sendEvent (SWT.Show);
+					redraw();
+				} else {
+					OS.SetControlVisibility(topHandle, false, true);
+					sendEvent (SWT.Hide);
+				}
+			}
+	    }
+    }
 }
 void setZOrder (Control control, boolean above) {
 	

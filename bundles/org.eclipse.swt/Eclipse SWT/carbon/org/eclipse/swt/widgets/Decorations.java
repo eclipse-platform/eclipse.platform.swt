@@ -207,7 +207,9 @@ int dialogHandle () {
 	return dialogHandle = OS.createDialogShell(handle, 0);
 }
 */
+/* AW
 Menu findMenu (int id) {
+	System.out.println("********* Decorator.findMenu *********");
 	if (menus == null) return null;
 	for (int i= 0; i < menus.length; i++) {
 		Menu menu= menus[i];
@@ -218,6 +220,7 @@ Menu findMenu (int id) {
 	}
 	return null;
 }
+*/
 // AW
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;

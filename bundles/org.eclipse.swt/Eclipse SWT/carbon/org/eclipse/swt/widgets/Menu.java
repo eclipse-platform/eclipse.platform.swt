@@ -883,9 +883,12 @@ public void setVisible (boolean visible) {
 	getDisplay().menuIsVisible(false);
 	short menuID= OS.HiWord(result);
 	if (menuID != 0) {
+		System.out.println("Menu.setVisible: should not happen");
+		/*
 		Menu menu= getShell().findMenu(menuID);
 		if (menu != null)
 			menu.handleMenu(result);
+		*/
 	}
 }
 

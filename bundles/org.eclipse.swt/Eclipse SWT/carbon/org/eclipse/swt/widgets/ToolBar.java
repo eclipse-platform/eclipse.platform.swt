@@ -34,7 +34,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
-	int drawCount, itemCount;
+	int itemCount;
 	ToolItem [] items;
 	// AW
 	boolean fGotSize= false;
@@ -368,12 +368,12 @@ void propagateWidget (boolean enabled) {
 	}
 }
 void relayout () {
-	if (drawCount > 0) return;
+	if (fDrawCount > 0) return;
 	Rectangle rect = getClientArea ();
 	layout (rect.width, rect.height, true);
 }
 void relayout (int width, int height) {
-	if (drawCount > 0) return;
+	if (fDrawCount > 0) return;
 	layout (width, height, true);
 }
 void releaseWidget () {
@@ -410,9 +410,9 @@ public void setBounds (int x, int y, int width, int height) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
-		if (--drawCount == 0) relayout();
+		if (--fDrawCount == 0) relayout();
 	} else {
-		drawCount++;
+		fDrawCount++;
 	}
 }
 public void setSize (int width, int height) {

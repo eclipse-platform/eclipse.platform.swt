@@ -900,6 +900,8 @@ protected void init () {
 	int[] mask2= new int[] {
 		OS.kEventClassCommand, 1,
 		
+		OS.kEventClassAppleEvent, OS.kEventParamAEEventID,
+		
 		//OS.kEventClassMenu, OS.kEventMenuBeginTracking,
 		//OS.kEventClassMenu, OS.kEventMenuEndTracking,
 	
@@ -1162,48 +1164,10 @@ public boolean readAndDispatch () {
 	switch (rc) {
 	case OS.kNoErr:
 		int target= OS.GetEventDispatcherTarget();
-		
-		/*
-		System.out.println("readAndDispatch: " + MacUtil.toString(eventClass));
-		*/
 		int event= evt[0];
 		
-		int eventClass= OS.GetEventClass(event);
-		if (eventClass == OS.kEventClassMouse) {
-			switch (OS.GetEventKind(event)) {
-			case OS.kEventMouseDown:
-			case OS.kEventMouseDragged:
-				switch (MacEvent.getEventMouseButton(event)) {
-				case 1:
-					fMouseButtonState |= SWT.BUTTON1;
-					break;
-				case 2:
-					fMouseButtonState |= SWT.BUTTON2;
-					break;
-				case 3:
-					fMouseButtonState |= SWT.BUTTON3;
-					break;
-				}
-				break;
-			case OS.kEventMouseMoved:
-				fMouseButtonState= 0;
-				break;
-			case OS.kEventMouseUp:
-				switch (MacEvent.getEventMouseButton(event)) {
-				case 1:
-					fMouseButtonState &= ~SWT.BUTTON1;
-					break;
-				case 2:
-					fMouseButtonState &= ~SWT.BUTTON2;
-					break;
-				case 3:
-					fMouseButtonState &= ~SWT.BUTTON3;
-					break;
-				}
-				break;
-			}
-		}	
-		
+		MacEvent.trackStateMask(event);
+				
 		OS.SendEventToEventTarget(event, target);
 		OS.ReleaseEvent(event);
 		repairPending();
@@ -1954,7 +1918,9 @@ static String convertToLf(String text) {
 	}
 	
 	private int handleDataBrowserItemNotificationCallback(int cHandle, int item, int message) {
-		//System.out.println("Display.handleDataBrowserItemNotificationCallback: " + message);
+		if (message == 14) {	// selection changed
+			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
+		}
 		return OS.kNoErr;
 	}
 	
@@ -2085,6 +2051,10 @@ static String convertToLf(String text) {
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		switch (eventClass) {
+		
+		case OS.kEventClassAppleEvent:
+			System.out.println("kEventClassAppleEvent");
+			break;
 			
 		case OS.kEventClassCommand:
 		
@@ -2331,17 +2301,7 @@ static String convertToLf(String text) {
 	
 		MacPoint where= me.getWhere();
 		MacPoint globalPos= me.getWhere();
-		
-		/*
-		hideToolTip ();
-		
-		if (whichWindow != OS.FrontNonFloatingWindow()) {
-			System.out.println("  front click");
-			//OS.SelectWindow(whichWindow);
-			return true;
-		}
-		*/
-		
+				
 		int savedPort= OS.GetPort();
 		OS.SetPortWindowPort(whichWindow);
 		OS.GlobalToLocal(where.getData());
@@ -2373,7 +2333,7 @@ static String convertToLf(String text) {
 			Widget wc= WidgetTable.get(whichControl);
 			if (wc instanceof Control) {
 				Menu cm= ((Control)wc).getMenu();	// is a context menu installed?
-				if (cm != null && OS.IsShowContextualMenuClick(me.getData())) {
+				if (cm != null && me.isShowContextualMenuClick()) {
 					handleContextClick(cm, globalPos, me);
 					return false;
 				}
@@ -2404,7 +2364,7 @@ static String convertToLf(String text) {
 		}
 		return false;
 	}
-
+	
 	/*
 	private int handleKeyEvent2(int type, MacEvent me) {
 		System.out.println("  handleKeyEvent: " + me.getKeyCode());	
@@ -2449,11 +2409,14 @@ static String convertToLf(String text) {
 		}
 
 		if (menuId != 0) {
+			System.out.println("Display.handleContextClick: should not happen");
+			/*
 			Menu menu= cm.getShell().findMenu(menuId);
 			if (menu != null) {
 				//System.out.println("handleMenu: " + index);
 				menu.handleMenu(index);
 			}
+			*/
 		}
 	}
 	
@@ -2520,23 +2483,6 @@ static String convertToLf(String text) {
 			OS.DisposeRgn(rgn);
 		}
 	}
-	
-	/*
-	private void doMenuCommand(int menuResult) {
-		short menuID= OS.HiWord(menuResult);
-		if (menuID != 0) {
-			int frontWindow= OS.FrontWindow();
-			Widget w= WidgetTable.get(frontWindow);
-			if (w instanceof Shell) {
-				Shell shell= (Shell) w;
-				Menu menu= shell.findMenu(menuID);	
-				if (menu != null)
-					menu.handleMenu(menuResult);
-			}
-		}
-		OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
-	}
-	*/
 	
 	public static int ticksToMS(int ticks) {
 		return ticks * 17;		// 17 * 60 == 1000

@@ -37,7 +37,7 @@ public class ToolItem extends Item {
 	
 	// AW
 	private boolean fPressed;
-	private short[] prevInfo;
+	private short[] fPrevInfo;
 	// AW
 	
 	static final int DEFAULT_WIDTH = 24;
@@ -1054,10 +1054,10 @@ int processPaint (Object callData) {
 
 		if (newInfo != null) {
 			MacRect b= new MacRect(bounds.getX()+1, bounds.getY()+1, width-2, height-2);
-			//OS.DrawThemeButton(bounds.getData(), OS.kThemeSmallBevelButton, newInfo, prevInfo, 0, 0, 0);
-			OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, prevInfo, 0, 0, 0);
+			//OS.DrawThemeButton(bounds.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
+			OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
 		}
-		prevInfo= newInfo;
+		fPrevInfo= newInfo;
 			
 		if (enabled) {
 			gc.setForeground (parent.getForeground());

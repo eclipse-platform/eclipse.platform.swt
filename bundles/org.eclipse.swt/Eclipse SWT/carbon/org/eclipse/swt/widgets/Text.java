@@ -40,7 +40,7 @@ public class Text extends Scrollable {
 	// AW
 	
 	char echoCharacter;
-	int drawCount;
+	// AW int drawCount;
 
 	public static final int LIMIT;
 	public static final String DELIMITER;
@@ -1141,11 +1141,14 @@ public void setEditable (boolean editable) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	if (redraw) {
-		if (--drawCount == 0) ; /* AW OS.XmTextEnableRedisplay(handle); */
-	} else {
-		if (drawCount++ == 0) ; /* AW OS.XmTextDisableRedisplay(handle); */
-	}
+	super.setRedraw(redraw);
+// AW
+//	if (redraw) {
+//		if (--drawCount == 0) ; /* AW OS.XmTextEnableRedisplay(handle); */
+//	} else {
+//		if (drawCount++ == 0) ; /* AW OS.XmTextDisableRedisplay(handle); */
+//	}
+// AW
 }
 /**
  * Sets the selection.

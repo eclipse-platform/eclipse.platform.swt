@@ -806,36 +806,7 @@ void sendEvent (int eventType) {
 	sendEvent (eventType, new Event ());
 }
 void setInputState (Event event, MacEvent mEvent) {
-	
-	event.stateMask= getDisplay().fMouseButtonState;
-	
-	int modifiers= mEvent.getModifiers();
-	
-	if ((modifiers & OS.shiftKey) != 0)
-		event.stateMask |= SWT.SHIFT;
-		
-	if ((modifiers & OS.controlKey) != 0)
-		event.stateMask |= SWT.CONTROL;
-		
-	if ((modifiers & OS.cmdKey) != 0) {
-		// if the Command modifier is pressed we report the Option modifier as 'ALT'
-		if ((modifiers & OS.optionKey) != 0)
-			event.stateMask |= SWT.ALT;
-	} else {
-		// we don't report the option modifier as 'ALT'
-	}
-	
-	/*
-	if (false) {
-		// map option modifier to ALT modifier
-		if ((modifiers & OS.optionKey) != 0)
-			event.stateMask |= SWT.ALT;
-	} else {
-		// map control modifier to ALT modifier
-		if ((modifiers & OS.controlKey) != 0)
-			event.stateMask |= SWT.ALT;
-	}
-	*/
+	event.stateMask= mEvent.getStateMask();
 }
 void setKeyState (Event event, MacEvent mEvent) {
 	if (mEvent.getKeyCode() != 0) {
