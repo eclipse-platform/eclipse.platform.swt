@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.launcher;
 
-
-import org.eclipse.core.runtime.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
