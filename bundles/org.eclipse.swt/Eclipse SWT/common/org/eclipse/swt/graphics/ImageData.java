@@ -284,7 +284,8 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
 /**
  * Constructs an <code>ImageData</code> loaded from the specified
  * input stream. Throws an error if an error occurs while loading
- * the image, or if the image has an unsupported type.
+ * the image, or if the image has an unsupported type.  Application
+ * code is still responsible for closing the input stream.
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
