@@ -128,10 +128,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void releaseWidget () {
-	if (caret != null) {
-		caret.releaseWidget ();
-		caret.releaseHandle ();
-	}
+	if (caret != null) caret.releaseResources ();
 	caret = null;
 	super.releaseWidget();
 }

@@ -759,8 +759,7 @@ void releaseShells () {
 			if (shell.parent != null && OS.PtWidgetParent (shell.shellHandle) == 0) {
 				shell.dispose ();
 			} else {
-				shell.releaseWidget ();
-				shell.releaseHandle ();
+				shell.releaseResources ();
 			}
 		}
 	}

@@ -206,14 +206,8 @@ void resizeClientArea () {
 }
 
 void releaseWidget () {
-	if (horizontalBar != null) {
-		horizontalBar.releaseWidget ();
-		horizontalBar.releaseHandle ();
-	}
-	if (verticalBar != null) {
-		verticalBar.releaseWidget ();
-		verticalBar.releaseHandle ();
-	}
+	if (horizontalBar != null) horizontalBar.releaseResources ();
+	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
 }
